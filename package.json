@@ -1,0 +1,42 @@
+{
+  "name": "autorest.incubator",
+  "version": "1.0.0",
+  "description": "AutoRest incubator Project",
+  "main": "dist/app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepare": "npm run build",
+    "test": "npm run build && mocha dist/test ",
+    "testci": "npm run build && mocha dist/test ",
+    "publish-preview": "npm test && node ./.scripts/publish",
+    "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar xv && erase *.tgz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azure/autorest.incubator.git"
+  },
+  "keywords": [
+    "AutoRest",
+    "Incubator"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Azure/autorest.incubator/issues"
+  },
+  "homepage": "https://github.com/Azure/autorest.incubator#readme",
+  "devDependencies": {
+    "@types/node": "^8.0.51",
+    "mocha": "3.2.0",
+    "mocha-typescript": "^1.1.4",
+    "semver": "^5.4.1",
+    "shx": "^0.2.2",
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "@microsoft.azure/tasks": "^2.0.12"
+  }
+}
