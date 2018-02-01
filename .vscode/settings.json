@@ -1,0 +1,31 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "files.eol": "\n",
+  "files.exclude": {
+    "node_modules/**": true,
+    "**/node_modules/**": true,
+    "**/*.js.map": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.d.ts": {
+      "when": "$(basename).ts"
+    },
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.tabSize": 2,
+    "editor.detectIndentation": false
+  }
+}
