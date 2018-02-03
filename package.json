@@ -37,6 +37,7 @@
     "typescript": "^2.6.1"
   },
   "dependencies": {
-    "@microsoft.azure/tasks": "^2.0.12"
+    "@microsoft.azure/tasks": "^2.0.12",
+    "@microsoft.azure/autorest-extension-base": "1.0.13"
   }
 }
