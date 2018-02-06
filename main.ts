@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AutoRestExtension, } from "@microsoft.azure/autorest-extension-base";
-import { process as normalizer } from "./normalizer/main";
+import { process as remodeler } from "./remodeler/main";
 
 async function main() {
   const pluginHost = new AutoRestExtension();
 
-  pluginHost.Add("normalizer", normalizer);
+  pluginHost.Add("remodeler", remodeler);
 
   await pluginHost.Run();
 }

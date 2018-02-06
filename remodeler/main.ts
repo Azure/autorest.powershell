@@ -7,12 +7,7 @@ export async function process(service: Host) {
   //
   for (const file of files) {
     const openapiDefinitionDocument = await service.ReadFile(file);
-
   }
 
-
-  // Get the code model
-  // const codeModel: CodeModel = load(await service.GetValue("code-model-v1.yaml"));
-
-
+  await service.WriteFile("foo.txt", "hello world");
 }

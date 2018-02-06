@@ -12,3 +12,61 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+
+### Autorest plugin configuration
+- Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
+AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
+
+
+#### Remodeler
+
+``` yaml 
+# remodeler:
+    
+
+    
+pipeline: 
+  remodeler:
+    input: openapi-document/identity
+    output-artifact: code-model-v2
+  remodeler/emitter:
+    input: remodeler
+    scope: scope-remodeler/emitter
+
+scope-remodeler/emitter:
+  input-artifact: code-model-v2
+  output-uri-expr: code-model-v2
+  is-object: true
+
+````
+
+
+
+
+
+
+
+#### LLC#
+
+``` yaml
+pipeline:
+  llcsharp/generate:
+    scope: llcsharp
+    plugin: llcsharp
+    input: remodeler
+    output-artifact: source-file-csharp
+  llcsharp/emitter:
+    input: generate
+    scope: scope-llcsharp/emitter
+
+scope-llcsharp/emitter:
+  input-artifact: source-file-csharp
+  
+```
+
+#### LLIA
+
+#### IA
+
+#### PowerShell
