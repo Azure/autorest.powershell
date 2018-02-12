@@ -36,8 +36,15 @@ pipeline:
 
 scope-remodeler/emitter:
   input-artifact: code-model-v2
-  output-uri-expr: code-model-v2
   is-object: true
+  
+  output-uri-expr: | 
+    "code-model-v2"
+  
+output-artifact: code-model-v2.yaml
+
+
+  
 
 ````
 

@@ -7,7 +7,7 @@
     "noEmitOnError": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
+    "noImplicitThis": false,
     "sourceMap": true,
     "strict": true,
     "declaration": true,
