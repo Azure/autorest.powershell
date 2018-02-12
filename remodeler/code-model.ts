@@ -111,8 +111,8 @@ export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> impl
   constructor(public name: string, public inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
     super(initializer);
     this.in = inWhere;
+    this.type = "apiKey";
   }
-  type: "apiKey";
 }
 export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAuthFlow> implements AuthorizationCodeOAuthFlow {
   constructor(public authorizationUrl: string, public tokenUrl: string, initializer?: Partial<AuthorizationCodeOAuthFlow>) {
@@ -123,9 +123,11 @@ export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAu
 export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecurityScheme> implements BearerHTTPSecurityScheme {
   constructor(initializer?: Partial<BearerHTTPSecurityScheme>) {
     super(initializer);
+    this.scheme = "bearer";
+    this.type = "http";
   }
-  scheme: "bearer";
-  type: "http";
+
+
 }
 export class ClientCredentialsFlow extends Initializer<ClientCredentialsFlow> implements ClientCredentialsFlow {
   constructor(public tokenUrl: string, initializer?: Partial<ClientCredentialsFlow>) {
@@ -228,14 +230,15 @@ export class MediaTypeWithExamples extends Initializer<MediaTypeWithExamples> im
 export class NonBearerHTTPSecurityScheme extends Initializer<NonBearerHTTPSecurityScheme> implements NonBearerHTTPSecurityScheme {
   constructor(public scheme: string, initializer?: Partial<NonBearerHTTPSecurityScheme>) {
     super(initializer);
+    this.type = "http";
   }
-  type: "http";
 }
 export class OAuth2SecurityScheme extends Initializer<OAuth2SecurityScheme> implements OAuth2SecurityScheme {
   constructor(public flows: OAuthFlows, initializer?: Partial<OAuth2SecurityScheme>) {
     super(initializer);
+    this.type = "oauth2";
   }
-  type: "oauth2";
+
 }
 export class OAuthFlows extends Initializer<OAuthFlows> implements OAuthFlows {
   constructor(initializer?: Partial<OAuthFlows>) {
@@ -245,8 +248,8 @@ export class OAuthFlows extends Initializer<OAuthFlows> implements OAuthFlows {
 export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecurityScheme> implements OpenIdConnectSecurityScheme {
   constructor(public openIdConnectUrl: string, initializer?: Partial<OpenIdConnectSecurityScheme>) {
     super(initializer);
+    this.type = "openIdConnect";
   }
-  type: "openIdConnect";
 }
 export class Operation extends Initializer<Operation> implements Operation {
   constructor(initializer?: Partial<Operation>) {
@@ -254,7 +257,7 @@ export class Operation extends Initializer<Operation> implements Operation {
   }
   tags = new Array<string>();
   parameters = new Array<Reference<Parameter>>();
-  responses: Responses;
+  responses = new Responses();
   callbacks = new Dictionary<Reference<Callback>>();
   security = new Array<SecurityRequirement>();
   servers = new Array<Server>();
@@ -263,8 +266,8 @@ export class Operation extends Initializer<Operation> implements Operation {
 export class ParameterWithContentInPath extends Initializer<ParameterWithContentInPath> implements ParameterWithContentInPath {
   constructor(public name: string, initializer?: Partial<ParameterWithContentInPath>) {
     super(initializer);
+    this.in = "path";
   }
-  in: "path";
   content = new Dictionary<MediaType>();
 }
 export class ParameterWithContentNotInPath extends Initializer<ParameterWithContentNotInPath> implements ParameterWithContentNotInPath {
@@ -278,65 +281,64 @@ export class ParameterWithSchemaWithExampleInCookie extends Initializer<Paramete
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInCookie>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "cookie";
   }
-  in: "cookie";
 }
 export class ParameterWithSchemaWithExampleInHeader extends Initializer<ParameterWithSchemaWithExampleInHeader> implements ParameterWithSchemaWithExampleInHeader {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInHeader>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "header";
   }
-  in: "header";
 }
 export class ParameterWithSchemaWithExampleInPath extends Initializer<ParameterWithSchemaWithExampleInPath> implements ParameterWithSchemaWithExampleInPath {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInPath>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "path";
+    this.required = true;
   }
-  in: "path";
-  required: true;
 }
 export class ParameterWithSchemaWithExampleInQuery extends Initializer<ParameterWithSchemaWithExampleInQuery> implements ParameterWithSchemaWithExampleInQuery {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInQuery>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "query";
   }
-  in: "query";
 }
 
 export class ParameterWithSchemaWithExamplesInCookie extends Initializer<ParameterWithSchemaWithExamplesInCookie> implements ParameterWithSchemaWithExamplesInCookie {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInCookie>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "cookie";
   }
-  in: "cookie";
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInHeader extends Initializer<ParameterWithSchemaWithExamplesInHeader> implements ParameterWithSchemaWithExamplesInHeader {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInHeader>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "header";
   }
-  in: "header";
+
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInPath extends Initializer<ParameterWithSchemaWithExamplesInPath> implements ParameterWithSchemaWithExamplesInPath {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInPath>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "path";
+    this.required = true;
   }
-  in: "path";
-  required: true;
-
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInQuery extends Initializer<ParameterWithSchemaWithExamplesInQuery> implements ParameterWithSchemaWithExamplesInQuery {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInQuery>) {
     super(initializer);
     this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.in = "query";
   }
-
-  in: "query";
   examples = new Dictionary<Reference<Example>>();
 }
 export class PasswordOAuthFlow extends Initializer<PasswordOAuthFlow> implements PasswordOAuthFlow {
@@ -349,7 +351,7 @@ export class PathItem extends Initializer<PathItem> implements PathItem {
   constructor(initializer?: Partial<PathItem>) {
     super(initializer);
   }
-  $ref?: string | PathItem;
+  //   $ref?: string | PathItem;
 
   servers = new Array<Server>();
   parameters = new Array<Reference<Parameter>>();
