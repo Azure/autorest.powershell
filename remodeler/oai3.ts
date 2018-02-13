@@ -4,7 +4,7 @@ import { Refable as Reference, Dictionary, Optional } from "./common";
 
 /** Nearly all classes can support additional key-value pairs where the key starts with 'x-' */
 export interface Extensions {
-
+  [key: string]: any;
 }
 
 /** Properties, Parameters, Operations and Schemas require additional support */
@@ -22,7 +22,6 @@ export interface WithOperations {
 
 /** Properties have additional data when referencing them */
 export type PropertyReference<T> = ExtraPropertyDetails & (Reference<T>);
-
 
 // ===================================================================================================================
 // code below this point should be identical between oai3.ts and code-model.ts 
@@ -57,14 +56,14 @@ export type Header = HeaderWithSchema | HeaderWithContent;
 export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
 export type Link = LinkWithOperationRef | LinkWithOperationId;
 export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-export type Parameter = ParameterWithSchema | ParameterWithContent;
-export type ParameterWithContent = ParameterWithContentInPath | ParameterWithContentNotInPath;
-export type ParameterWithSchema = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples;
+
+export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
 export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
 export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
+
 export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
 
-export type ParameterLocation = "query" | "header" | "cookie";
+export type ParameterLocation = "query" | "header" | "cookie" | "path";
 export type EncodingStyle = "form" | "spaceDelimited" | "pipeDelimited" | "deepObject";
 export type MatrixLabelSimple = "matrix" | "label" | "simple"
 export type JsonType = "array" | "boolean" | "integer" | "number" | "object" | "string";
@@ -229,129 +228,63 @@ export interface Operation extends Extensions, ImplementationDetails {
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterWithContentInPath extends Extensions, ImplementationDetails {
+export interface ParameterCommon extends ImplementationDetails, Extensions {
   name: string;
-  in: "path";
   description?: string;
-  required?: true;
-  deprecated?: boolean;
   allowEmptyValue?: boolean;
-  content: Dictionary<MediaType>;
+  deprecated?: boolean;
+  required?: boolean;
 }
-export interface ParameterWithContentNotInPath extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchema extends ParameterCommon {
+  schema: Reference<Schema>;
+  explode?: boolean;
+  allowReserved?: boolean;
+}
+export interface ParameterWithContent extends ParameterCommon {
   in: ParameterLocation;
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   content: Dictionary<MediaType>;
 }
-export interface ParameterWithSchemaWithExampleInCookie extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
   in: "cookie";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: "form";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInHeader extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
   in: "header";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: "simple";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInPath extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
   in: "path";
-  description?: string;
-  required: true;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: MatrixLabelSimple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInQuery extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
   in: "query";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: EncodingStyle;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
+}
+export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
+  in: "cookie";
+  style?: "form";
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
+  in: "header";
+  style?: "simple";
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
+  in: "path";
+  style?: MatrixLabelSimple;
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
+  in: "query";
+  style?: EncodingStyle;
+  examples: Dictionary<Reference<Example>>;
 }
 
-export interface ParameterWithSchemaWithExamplesInCookie extends Extensions, ImplementationDetails {
-  name: string;
-  in: "cookie";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: "form";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInHeader extends Extensions, ImplementationDetails {
-  name: string;
-  in: "header";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: "simple";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInPath extends Extensions, ImplementationDetails {
-  name: string;
-  in: "path";
-  description?: string;
-  required: true;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: MatrixLabelSimple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInQuery extends Extensions, ImplementationDetails {
-  name: string;
-  in: "query";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
 export interface PasswordOAuthFlow extends Extensions {
   tokenUrl: string; // uriref
   refreshUrl?: string; // uriref

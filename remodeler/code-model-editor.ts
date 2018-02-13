@@ -9,6 +9,7 @@ export class CodeModelEditor {
   add<TSource, TDestination>(name: string, original: Dereferenced<TSource>, target: Dictionary<Reference<TDestination>>, copyFunc: (name: string, source: TSource) => TDestination, newAlias: (a: any) => TDestination): TDestination {
     // is this an alias to another model?
     if (original.name) {
+      console.error(`adding something with a name: ${name},${original.name}`);
       // Yes, ensure the target is in the new model
       // (the assumption being that the target is the right instance if it is there with the expected name.)
       const actual = target[original.name] || this.add(original.name, { instance: original.instance }, target, copyFunc, newAlias);
@@ -25,7 +26,10 @@ export class CodeModelEditor {
 
     if (target[name] && target[name].$ref !== item) {
       // if the <T> is already in the collection of <T>, and it's not this instance...
-      throw new Error(`${name} exists in model.`);
+      //   throw new Error(`${name} exists in model.`);
+      console.error(`${name} exists in model.`);
+      item = target[name].$ref;
+      return item;
     }
 
     // add it.

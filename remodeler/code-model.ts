@@ -5,6 +5,20 @@ import { Dictionary, Reference, NotOptional as Optional } from "./common";
 // Constructors for Code Model classes
 //------------------------------------------------------------------------------------------------------------------ */
 
+function getAllPropertyNames(obj: any) {
+  const props = new Array<string>();
+
+  do {
+    Object.getOwnPropertyNames(obj).forEach(function (prop) {
+      if (props.indexOf(prop) === -1) {
+        props.push(prop);
+      }
+    });
+  } while (obj = Object.getPrototypeOf(obj));
+
+  return props;
+}
+
 /**
  * class implementation for all CodeModel classes
  * 
@@ -13,7 +27,14 @@ import { Dictionary, Reference, NotOptional as Optional } from "./common";
 export class Initializer<T> {
   extensions = new Dictionary<any>();
   constructor(initializer?: Partial<T>) {
-    Object.assign(this, initializer);
+    if (initializer) {
+      for (const i in (<any>initializer)) {
+        if ((<any>initializer)[i]) {
+          (<any>this)[i] = (<any>initializer)[i]
+        };
+      }
+      // Object.assign(this, initializer);
+    }
   }
 }
 
@@ -83,25 +104,33 @@ export interface ImplementationDetails {
 
 export interface Details {
   /** name used in actual implementation */
-  name: string;
+  name?: string;
 
   /** the container (ie, class) where this is contained */
-  container: string;
+  container?: string;
 
   /** namespace of the implementation of this item */
-  namespace: string;
+  namespace?: string;
 
   /** description text */
-  description: string;
+  description?: string;
 
   /** message used to go along with deprecation */
-  deprecationMessage: string;
+  deprecationMessage?: string;
 }
 
+
 /** Properties have additional data when referencing them */
-export interface PropertyReference<T> extends Reference<T>, ImplementationDetails {
+export interface PropertyReference<T> extends Reference<T>, ImplementationDetails, Extensions {
   /** description can be on the property reference, so that properties can have a description different from the type description. */
   description?: string;
+}
+
+export class PropertyReference<T> extends Initializer<PropertyReference<T>> implements PropertyReference<T>  {
+
+  constructor(initializer?: Partial<PropertyReference<T>>) {
+    super(initializer);
+  }
 }
 
 function isReference<T>(item: Reference<T> | T): item is Reference<T> {
@@ -126,8 +155,6 @@ export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecuritySche
     this.scheme = "bearer";
     this.type = "http";
   }
-
-
 }
 export class ClientCredentialsFlow extends Initializer<ClientCredentialsFlow> implements ClientCredentialsFlow {
   constructor(public tokenUrl: string, initializer?: Partial<ClientCredentialsFlow>) {
@@ -181,7 +208,7 @@ export class HeaderWithSchemaWithExample extends Initializer<HeaderWithSchemaWit
 export class HeaderWithSchemaWithExamples extends Initializer<HeaderWithSchemaWithExamples> implements HeaderWithSchemaWithExamples {
   constructor(schema: Schema | Reference<Schema>, initializer?: Partial<HeaderWithSchemaWithExamples>) {
     super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
+    this.schema = new Reference(isReference(schema) ? schema.$ref : schema);
   }
 }
 export class ImplicitOAuthFlow extends Initializer<ImplicitOAuthFlow> implements ImplicitOAuthFlow {
@@ -263,81 +290,78 @@ export class Operation extends Initializer<Operation> implements Operation {
   servers = new Array<Server>();
 }
 
-export class ParameterWithContentInPath extends Initializer<ParameterWithContentInPath> implements ParameterWithContentInPath {
-  constructor(public name: string, initializer?: Partial<ParameterWithContentInPath>) {
-    super(initializer);
-    this.in = "path";
-  }
-  content = new Dictionary<MediaType>();
-}
-export class ParameterWithContentNotInPath extends Initializer<ParameterWithContentNotInPath> implements ParameterWithContentNotInPath {
-  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<ParameterWithContentNotInPath>) {
+export class ParameterCommon extends Initializer<ParameterCommon> implements ParameterCommon {
+  in: ParameterLocation;
+  details: Details;
+  required?: boolean;
+
+  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<ParameterCommon>) {
     super(initializer);
     this.in = inWhere;
+    this.details = {};
+    if (inWhere === "path") {
+      this.required = true;
+    }
+  }
+}
+
+export class ParameterWithContent extends ParameterCommon implements ParameterWithContent {
+  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<ParameterWithContent>) {
+    super(name, inWhere, initializer);
   }
   content = new Dictionary<MediaType>();
 }
-export class ParameterWithSchemaWithExampleInCookie extends Initializer<ParameterWithSchemaWithExampleInCookie> implements ParameterWithSchemaWithExampleInCookie {
+
+export class ParameterWithSchema extends ParameterCommon {
+  constructor(public name: string, inWhere: ParameterLocation, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchema>) {
+    super(name, inWhere, initializer);
+    this.schema = new Reference(isReference(schema) ? schema.$ref : schema);
+  }
+}
+
+export class ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExampleInCookie {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInCookie>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "cookie";
+    super(name, "cookie", schema, initializer);
   }
 }
-export class ParameterWithSchemaWithExampleInHeader extends Initializer<ParameterWithSchemaWithExampleInHeader> implements ParameterWithSchemaWithExampleInHeader {
+export class ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExampleInHeader {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInHeader>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "header";
+    super(name, "header", schema, initializer);
   }
 }
-export class ParameterWithSchemaWithExampleInPath extends Initializer<ParameterWithSchemaWithExampleInPath> implements ParameterWithSchemaWithExampleInPath {
+export class ParameterWithSchemaWithExampleInPath extends ParameterWithSchema implements ParameterWithSchemaWithExampleInPath {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInPath>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "path";
-    this.required = true;
+    super(name, "path", schema, initializer);
   }
 }
-export class ParameterWithSchemaWithExampleInQuery extends Initializer<ParameterWithSchemaWithExampleInQuery> implements ParameterWithSchemaWithExampleInQuery {
+export class ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExampleInQuery {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInQuery>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "query";
+    super(name, "query", schema, initializer);
   }
 }
 
-export class ParameterWithSchemaWithExamplesInCookie extends Initializer<ParameterWithSchemaWithExamplesInCookie> implements ParameterWithSchemaWithExamplesInCookie {
+export class ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInCookie {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInCookie>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "cookie";
+    super(name, "cookie", schema, initializer);
   }
   examples = new Dictionary<Reference<Example>>();
 }
-export class ParameterWithSchemaWithExamplesInHeader extends Initializer<ParameterWithSchemaWithExamplesInHeader> implements ParameterWithSchemaWithExamplesInHeader {
+export class ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInHeader {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInHeader>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "header";
+    super(name, "header", schema, initializer);
   }
-
   examples = new Dictionary<Reference<Example>>();
 }
-export class ParameterWithSchemaWithExamplesInPath extends Initializer<ParameterWithSchemaWithExamplesInPath> implements ParameterWithSchemaWithExamplesInPath {
+export class ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInPath {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInPath>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "path";
+    super(name, "path", schema, initializer);
     this.required = true;
   }
   examples = new Dictionary<Reference<Example>>();
 }
-export class ParameterWithSchemaWithExamplesInQuery extends Initializer<ParameterWithSchemaWithExamplesInQuery> implements ParameterWithSchemaWithExamplesInQuery {
+export class ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInQuery {
   constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInQuery>) {
-    super(initializer);
-    this.schema = isReference(schema) ? schema : new Reference(schema);
-    this.in = "query";
+    super(name, "query", schema, initializer);
   }
   examples = new Dictionary<Reference<Example>>();
 }
@@ -352,7 +376,6 @@ export class PathItem extends Initializer<PathItem> implements PathItem {
     super(initializer);
   }
   //   $ref?: string | PathItem;
-
   servers = new Array<Server>();
   parameters = new Array<Reference<Parameter>>();
 }
@@ -433,14 +456,14 @@ export type Header = HeaderWithSchema | HeaderWithContent;
 export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
 export type Link = LinkWithOperationRef | LinkWithOperationId;
 export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-export type Parameter = ParameterWithSchema | ParameterWithContent;
-export type ParameterWithContent = ParameterWithContentInPath | ParameterWithContentNotInPath;
-export type ParameterWithSchema = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples;
+
+export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
 export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
 export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
+
 export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
 
-export type ParameterLocation = "query" | "header" | "cookie";
+export type ParameterLocation = "query" | "header" | "cookie" | "path";
 export type EncodingStyle = "form" | "spaceDelimited" | "pipeDelimited" | "deepObject";
 export type MatrixLabelSimple = "matrix" | "label" | "simple"
 export type JsonType = "array" | "boolean" | "integer" | "number" | "object" | "string";
@@ -605,129 +628,63 @@ export interface Operation extends Extensions, ImplementationDetails {
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterWithContentInPath extends Extensions, ImplementationDetails {
+export interface ParameterCommon extends ImplementationDetails, Extensions {
   name: string;
-  in: "path";
   description?: string;
-  required?: true;
-  deprecated?: boolean;
   allowEmptyValue?: boolean;
-  content: Dictionary<MediaType>;
+  deprecated?: boolean;
+  required?: boolean;
 }
-export interface ParameterWithContentNotInPath extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchema extends ParameterCommon {
+  schema: Reference<Schema>;
+  explode?: boolean;
+  allowReserved?: boolean;
+}
+export interface ParameterWithContent extends ParameterCommon {
   in: ParameterLocation;
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   content: Dictionary<MediaType>;
 }
-export interface ParameterWithSchemaWithExampleInCookie extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
   in: "cookie";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: "form";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInHeader extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
   in: "header";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: "simple";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInPath extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
   in: "path";
-  description?: string;
-  required: true;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: MatrixLabelSimple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
 }
-export interface ParameterWithSchemaWithExampleInQuery extends Extensions, ImplementationDetails {
-  name: string;
+export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
   in: "query";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
   style?: EncodingStyle;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
   example?: any;
+}
+export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
+  in: "cookie";
+  style?: "form";
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
+  in: "header";
+  style?: "simple";
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
+  in: "path";
+  style?: MatrixLabelSimple;
+  examples: Dictionary<Reference<Example>>;
+}
+export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
+  in: "query";
+  style?: EncodingStyle;
+  examples: Dictionary<Reference<Example>>;
 }
 
-export interface ParameterWithSchemaWithExamplesInCookie extends Extensions, ImplementationDetails {
-  name: string;
-  in: "cookie";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: "form";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInHeader extends Extensions, ImplementationDetails {
-  name: string;
-  in: "header";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: "simple";
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInPath extends Extensions, ImplementationDetails {
-  name: string;
-  in: "path";
-  description?: string;
-  required: true;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: MatrixLabelSimple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInQuery extends Extensions, ImplementationDetails {
-  name: string;
-  in: "query";
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-}
 export interface PasswordOAuthFlow extends Extensions {
   tokenUrl: string; // uriref
   refreshUrl?: string; // uriref

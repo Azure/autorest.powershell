@@ -50,14 +50,14 @@ export function dereference<T>(document: any, item: Refable<T>, stack = new Arra
   if (isReference(item)) {
     let node = document;
     const path = item.$ref;
-    if (stack.indexOf(path)) {
+    if (stack.indexOf(path) > -1) {
       throw new Error(`Circular $ref in Model -- ${path} :: ${JSON.stringify(stack)} `)
     }
     stack.push(path);
 
     let parts = path.replace("#/", "").split("/");
 
-    for (name in parts) {
+    for (name of parts) {
       if (!node[name]) {
         throw new Error(`Invalid Reference ${name} -- ${path}`);
       }
