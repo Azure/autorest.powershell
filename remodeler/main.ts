@@ -1,8 +1,9 @@
 import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
 import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from "js-yaml"
 import * as OpenAPI from "./oai3";
+import * as Interpretations from "./interpretations";
 import { dereference, getExtensionProperties, Reference, Dictionary, Refable, Dereferenced, isReference } from "./common";
-import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference } from "./code-model";
+import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType } from "./code-model";
 import { CodeModelEditor } from "./code-model-editor";
 
 import { inspect } from "util"
@@ -74,8 +75,8 @@ class Remodler {
     newSchema.minProperties = original.minProperties;
 
     newSchema.details = {
-      name: typeof (original["x-ms-client-name"]) === "string" ? original["x-ms-client-name"] : name,
-      description: original.description,
+      name: Interpretations.GetName(name, original),
+      description: Interpretations.GetDescription("", original),
     };
   }
   copySchemaArray(name: string, original: OpenAPI.Schema, newSchema: Schema) {
@@ -83,7 +84,6 @@ class Remodler {
     newSchema.minItems = original.minItems;
     newSchema.uniqueItems = original.uniqueItems;
     if (original.items) {
-      console.error()
       newSchema.items = this.refOrAddSchema(`${name}.itemType`, this.dereference(original.items))
     }
   }
@@ -93,7 +93,7 @@ class Remodler {
     newSchema.pattern = original.pattern;
   }
 
-  copySchema(name: string, original: OpenAPI.Schema): Schema {
+  copySchema = (name: string, original: OpenAPI.Schema): Schema => {
     const newSchema = new Schema({
       extensions: getExtensionProperties(original),
       type: original.type,
@@ -112,17 +112,17 @@ class Remodler {
     });
 
     switch (original.type) {
-      case "integer":
-      case "number":
+      case JsonType.Integer:
+      case JsonType.Number:
         this.copySchemaIntegerOrNumber(original, newSchema);
         break;
-      case "object":
+      case JsonType.Object:
         this.copySchemaObject(name, original, newSchema);
         break;
-      case "array":
+      case JsonType.Array:
         this.copySchemaArray(name, original, newSchema);
         break;
-      case "string":
+      case JsonType.String:
         this.copySchemaString(original, newSchema);
         break;
       case undefined:
@@ -131,7 +131,7 @@ class Remodler {
         this.copySchemaArray(name, original, newSchema);
         this.copySchemaString(original, newSchema);
         break;
-      case 'boolean':
+      case JsonType.Boolean:
         break;
       default:
         throw new Error(`Invalid type '${original.type}' in schema`);
@@ -205,13 +205,13 @@ class Remodler {
         const newPropSchema = this.refOrAddSchema(`${name[0] == '.' ? name : "." + name}.${propertyName}`, pschema);
         newSchema.properties[propertyName] = new PropertyReference({
           $ref: newPropSchema.$ref,
-          description: property.description || newPropSchema.$ref.description,
+          description: Interpretations.GetDescription(Interpretations.GetDescription("", newPropSchema.$ref), property),
+
           details: {
-            description: property.description || newPropSchema.$ref.description,
-            name: typeof (pschema.instance["x-ms-client-name"]) === "string" ? pschema.instance["x-ms-client-name"] : propertyName
+            description: Interpretations.GetDescription(Interpretations.GetDescription("", newPropSchema.$ref), property),
+            name: Interpretations.GetName(propertyName, pschema.instance)
           }
         })
-
       }
     }
 
@@ -221,13 +221,13 @@ class Remodler {
   private refOrAddSchema(nameIfInline: string, ref: Dereferenced<OpenAPI.Schema>) {
     if (!ref.name) {
       // inline schema - extract it out
-      return new Reference(this.editor.add(nameIfInline, ref, this.model.components.schemas, (n, o) => this.copySchema(n, o), (i) => new Schema(i)));
+      return new Reference(this.editor.add(nameIfInline, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i)));
     }
     // it's a reference, make sure it's in the model.
     if (this.model.components.schemas[ref.name]) {
       return new Reference(this.model.components.schemas[ref.name].$ref);
     }
-    return new Reference(this.editor.add(ref.name, ref, this.model.components.schemas, (n, o) => this.copySchema(n, o), (i) => new Schema(i)))
+    return new Reference(this.editor.add(ref.name, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i)))
   }
 
   remodelSchemas(source: Dictionary<Refable<OpenAPI.Schema>>) {
@@ -236,7 +236,7 @@ class Remodler {
       // schema should have name and 
       if (!this.model.components.schemas[name]) {
         // only add if it didn't get done before.
-        this.editor.add(name, this.dereference(source[name]), this.model.components.schemas, (n, o) => this.copySchema(n, o), (i) => new Schema(i));
+        this.editor.add(name, this.dereference(source[name]), this.model.components.schemas, this.copySchema, (i) => new Schema(i));
       }
     }
   }

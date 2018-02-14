@@ -8,12 +8,24 @@ export interface Extensions {
 }
 
 /** Properties, Parameters, Operations and Schemas require additional support */
-export interface ImplementationDetails {
+export interface Implementation<T> {
+}
+
+export interface Details {
 }
 
 /** Property References may have additional data that's not in the target reference */
-export interface ExtraPropertyDetails {
+export interface PropertyDetails extends Details, Extensions {
   description?: string;
+}
+
+export interface ParameterDetails extends Details {
+}
+
+export interface SchemaDetails extends Details {
+}
+
+export interface OperationDetails extends Details {
 }
 
 export interface WithOperations {
@@ -21,10 +33,72 @@ export interface WithOperations {
 }
 
 /** Properties have additional data when referencing them */
-export type PropertyReference<T> = ExtraPropertyDetails & (Reference<T>);
+export type PropertyReference<T> = PropertyDetails & (Reference<T>);
 
 // ===================================================================================================================
 // code below this point should be identical between oai3.ts and code-model.ts 
+
+
+/**
+ * @description The location of the parameter.
+ * 
+ * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#user-content-parameterIn
+ */
+export enum ParameterLocation {
+  Query = "query",
+  Header = "header",
+  Cookie = "cookie",
+  Path = "path",
+}
+
+/**
+ * @description common ways of serializing simple parameters
+ * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#style-values
+ */
+export enum EncodingStyle {
+  Matrix = "matrix",
+  Label = "label",
+  Simple = "simple",
+  Form = "form",
+  SpaceDelimited = "spaceDelimited",
+  PipeDelimited = "pipeDelimited",
+  DeepObject = "deepObject"
+}
+
+export enum JsonType {
+  Array = "array",
+  Boolean = "boolean",
+  Integer = "integer",
+  Number = "number",
+  Object = "object",
+  String = "string"
+}
+export enum Scheme {
+  Bearer = "bearer"
+}
+export enum SecurityType {
+  ApiKey = "apiKey",
+  Http = "http",
+  OAuth2 = "oauth2",
+  OpenIDConnect = "openIdConnect"
+}
+
+export type Callback = Dictionary<string>;
+export type SecurityRequirement = Dictionary<string>;
+export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
+export type Header = HeaderWithSchema | HeaderWithContent;
+export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
+export type Link = LinkWithOperationRef | LinkWithOperationId;
+export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
+
+export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
+export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
+export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
+
+export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
+
+export type QueryEncodingStyle = EncodingStyle.Form | EncodingStyle.SpaceDelimited | EncodingStyle.PipeDelimited | EncodingStyle.DeepObject;
+export type PathEncodingStyle = EncodingStyle.Matrix | EncodingStyle.Label | EncodingStyle.Simple;
 
 export interface Model extends Extensions {
   paths: Dictionary<PathItem>;
@@ -49,27 +123,8 @@ export interface Components extends Extensions, WithOperations {
   callbacks: Optional<Dictionary<Reference<Callback>>>;
 }
 
-export type Callback = Dictionary<string>;
-export type SecurityRequirement = Dictionary<string>;
-export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
-export type Header = HeaderWithSchema | HeaderWithContent;
-export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
-export type Link = LinkWithOperationRef | LinkWithOperationId;
-export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-
-export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
-export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
-export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
-
-export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
-
-export type ParameterLocation = "query" | "header" | "cookie" | "path";
-export type EncodingStyle = "form" | "spaceDelimited" | "pipeDelimited" | "deepObject";
-export type MatrixLabelSimple = "matrix" | "label" | "simple"
-export type JsonType = "array" | "boolean" | "integer" | "number" | "object" | "string";
-
 export interface APIKeySecurityScheme extends Extensions {
-  type: "apiKey";
+  type: SecurityType.ApiKey;
   name: string;
   in: ParameterLocation;
   description?: string;
@@ -81,9 +136,9 @@ export interface AuthorizationCodeOAuthFlow extends Extensions {
   scopes: Optional<Dictionary<string>>;
 }
 export interface BearerHTTPSecurityScheme extends Extensions {
-  scheme: "bearer";
+  scheme: Scheme.Bearer;
   bearerFormat?: string;
-  type: "http";
+  type: SecurityType.Http;
   description?: string;
 }
 export interface ClientCredentialsFlow extends Extensions {
@@ -104,7 +159,7 @@ export interface Discriminator extends Extensions {
 export interface Encoding extends Extensions {
   contentType?: string;
   headers: Optional<Dictionary<Header>>;
-  style?: EncodingStyle;
+  style?: QueryEncodingStyle;
   explode?: boolean;
   allowReserved?: boolean;
 }
@@ -132,7 +187,7 @@ export interface HeaderWithSchemaWithExample extends Extensions {
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  style?: "simple";
+  style?: EncodingStyle.Simple;
   explode?: boolean;
   allowReserved?: boolean;
   schema: Reference<Schema>;
@@ -143,7 +198,7 @@ export interface HeaderWithSchemaWithExamples extends Extensions {
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  style?: "simple";
+  style?: EncodingStyle.Simple;
   explode?: boolean;
   allowReserved?: boolean;
   schema: Reference<Schema>;
@@ -195,10 +250,10 @@ export interface MediaTypeWithExamples extends Extensions {
 export interface NonBearerHTTPSecurityScheme extends Extensions {
   scheme: string;
   description?: string;
-  type: "http";
+  type: SecurityType.Http;
 }
 export interface OAuth2SecurityScheme extends Extensions {
-  type: "oauth2";
+  type: SecurityType.OAuth2;
   flows: OAuthFlows;
   description?: string;
 }
@@ -209,11 +264,11 @@ export interface OAuthFlows extends Extensions {
   authorizationCode?: AuthorizationCodeOAuthFlow;
 }
 export interface OpenIdConnectSecurityScheme extends Extensions {
-  type: "openIdConnect";
+  type: SecurityType.OpenIDConnect;
   openIdConnectUrl: string; // url
   description?: string;
 }
-export interface Operation extends Extensions, ImplementationDetails {
+export interface Operation extends Extensions, Implementation<OperationDetails> {
   tags: Optional<Array<string>>;
   summary?: string;
   description?: string;
@@ -228,7 +283,7 @@ export interface Operation extends Extensions, ImplementationDetails {
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterCommon extends ImplementationDetails, Extensions {
+export interface ParameterCommon extends Implementation<ParameterDetails>, Extensions {
   name: string;
   description?: string;
   allowEmptyValue?: boolean;
@@ -245,43 +300,43 @@ export interface ParameterWithContent extends ParameterCommon {
   content: Dictionary<MediaType>;
 }
 export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
-  in: "cookie";
-  style?: "form";
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
-  in: "header";
-  style?: "simple";
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
-  in: "path";
-  style?: MatrixLabelSimple;
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
-  in: "query";
-  style?: EncodingStyle;
+  in: ParameterLocation.Query;
+  style?: QueryEncodingStyle;
   example?: any;
 }
 export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
-  in: "cookie";
-  style?: "form";
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
-  in: "header";
-  style?: "simple";
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
-  in: "path";
-  style?: MatrixLabelSimple;
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
-  in: "query";
-  style?: EncodingStyle;
+  in: ParameterLocation.Query;
+  style?: QueryEncodingStyle;
   examples: Dictionary<Reference<Example>>;
 }
 
@@ -320,7 +375,7 @@ export interface Response extends Extensions {
 export interface Responses extends Extensions {
   default?: Reference<Response>;
 }
-export interface Schema extends Extensions, ImplementationDetails {
+export interface Schema extends Extensions, Implementation<SchemaDetails> {
   /* common properties */
   type?: JsonType;
   title?: string;

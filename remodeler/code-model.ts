@@ -98,8 +98,8 @@ export interface Extensions {
   extensions: Dictionary<any>;
 }
 
-export interface ImplementationDetails {
-  details: Details;
+export interface Implementation<T extends Details> {
+  details: T;
 }
 
 export interface Details {
@@ -117,11 +117,31 @@ export interface Details {
 
   /** message used to go along with deprecation */
   deprecationMessage?: string;
+
 }
 
 
+export enum ImplementationLocation {
+  Method = "Method",
+  Client = "Client"
+}
+
+
+export interface PropertyDetails extends Details {
+}
+
+export interface ParameterDetails extends Details {
+  location: ImplementationLocation;
+}
+
+export interface SchemaDetails extends Details {
+}
+
+export interface OperationDetails extends Details {
+}
+
 /** Properties have additional data when referencing them */
-export interface PropertyReference<T> extends Reference<T>, ImplementationDetails, Extensions {
+export interface PropertyReference<T> extends Reference<T>, Implementation<PropertyDetails>, Extensions {
   /** description can be on the property reference, so that properties can have a description different from the type description. */
   description?: string;
 }
@@ -140,7 +160,7 @@ export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> impl
   constructor(public name: string, public inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
     super(initializer);
     this.in = inWhere;
-    this.type = "apiKey";
+    this.type = SecurityType.ApiKey;
   }
 }
 export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAuthFlow> implements AuthorizationCodeOAuthFlow {
@@ -152,8 +172,8 @@ export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAu
 export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecurityScheme> implements BearerHTTPSecurityScheme {
   constructor(initializer?: Partial<BearerHTTPSecurityScheme>) {
     super(initializer);
-    this.scheme = "bearer";
-    this.type = "http";
+    this.scheme = Scheme.Bearer;
+    this.type = SecurityType.Http;
   }
 }
 export class ClientCredentialsFlow extends Initializer<ClientCredentialsFlow> implements ClientCredentialsFlow {
@@ -257,13 +277,13 @@ export class MediaTypeWithExamples extends Initializer<MediaTypeWithExamples> im
 export class NonBearerHTTPSecurityScheme extends Initializer<NonBearerHTTPSecurityScheme> implements NonBearerHTTPSecurityScheme {
   constructor(public scheme: string, initializer?: Partial<NonBearerHTTPSecurityScheme>) {
     super(initializer);
-    this.type = "http";
+    this.type = SecurityType.Http;
   }
 }
 export class OAuth2SecurityScheme extends Initializer<OAuth2SecurityScheme> implements OAuth2SecurityScheme {
   constructor(public flows: OAuthFlows, initializer?: Partial<OAuth2SecurityScheme>) {
     super(initializer);
-    this.type = "oauth2";
+    this.type = SecurityType.OAuth2;
   }
 
 }
@@ -275,7 +295,7 @@ export class OAuthFlows extends Initializer<OAuthFlows> implements OAuthFlows {
 export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecurityScheme> implements OpenIdConnectSecurityScheme {
   constructor(public openIdConnectUrl: string, initializer?: Partial<OpenIdConnectSecurityScheme>) {
     super(initializer);
-    this.type = "openIdConnect";
+    this.type = SecurityType.OpenIDConnect;
   }
 }
 export class Operation extends Initializer<Operation> implements Operation {
@@ -292,76 +312,77 @@ export class Operation extends Initializer<Operation> implements Operation {
 
 export class ParameterCommon extends Initializer<ParameterCommon> implements ParameterCommon {
   in: ParameterLocation;
-  details: Details;
+  details: ParameterDetails;
   required?: boolean;
 
-  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<ParameterCommon>) {
+  constructor(public name: string, inWhere: ParameterLocation, location: ImplementationLocation, initializer?: Partial<ParameterCommon>) {
     super(initializer);
     this.in = inWhere;
-    this.details = {};
-    if (inWhere === "path") {
+    this.details = (<any>this).details || {};
+    this.details.location = location;
+
+    if (inWhere === ParameterLocation.Path) {
       this.required = true;
     }
   }
 }
 
 export class ParameterWithContent extends ParameterCommon implements ParameterWithContent {
-  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<ParameterWithContent>) {
-    super(name, inWhere, initializer);
+  constructor(public name: string, inWhere: ParameterLocation, location: ImplementationLocation, initializer?: Partial<ParameterWithContent>) {
+    super(name, inWhere, location, initializer);
   }
   content = new Dictionary<MediaType>();
 }
 
 export class ParameterWithSchema extends ParameterCommon {
-  constructor(public name: string, inWhere: ParameterLocation, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchema>) {
-    super(name, inWhere, initializer);
+  constructor(public name: string, inWhere: ParameterLocation, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchema>) {
+    super(name, inWhere, location, initializer);
     this.schema = new Reference(isReference(schema) ? schema.$ref : schema);
   }
 }
 
 export class ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExampleInCookie {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInCookie>) {
-    super(name, "cookie", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInCookie>) {
+    super(name, ParameterLocation.Cookie, schema, location, initializer);
   }
 }
 export class ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExampleInHeader {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInHeader>) {
-    super(name, "header", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInHeader>) {
+    super(name, ParameterLocation.Header, schema, location, initializer);
   }
 }
 export class ParameterWithSchemaWithExampleInPath extends ParameterWithSchema implements ParameterWithSchemaWithExampleInPath {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInPath>) {
-    super(name, "path", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInPath>) {
+    super(name, ParameterLocation.Path, schema, location, initializer);
   }
 }
 export class ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExampleInQuery {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExampleInQuery>) {
-    super(name, "query", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInQuery>) {
+    super(name, ParameterLocation.Query, schema, location, initializer);
   }
 }
-
 export class ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInCookie {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInCookie>) {
-    super(name, "cookie", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInCookie>) {
+    super(name, ParameterLocation.Cookie, schema, location, initializer);
   }
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInHeader {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInHeader>) {
-    super(name, "header", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInHeader>) {
+    super(name, ParameterLocation.Header, schema, location, initializer);
   }
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInPath {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInPath>) {
-    super(name, "path", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInPath>) {
+    super(name, ParameterLocation.Path, schema, location, initializer);
     this.required = true;
   }
   examples = new Dictionary<Reference<Example>>();
 }
 export class ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInQuery {
-  constructor(public name: string, schema: Schema | Reference<Schema>, initializer?: Partial<ParameterWithSchemaWithExamplesInQuery>) {
-    super(name, "query", schema, initializer);
+  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInQuery>) {
+    super(name, ParameterLocation.Query, schema, location, initializer);
   }
   examples = new Dictionary<Reference<Example>>();
 }
@@ -426,6 +447,68 @@ export class XML extends Initializer<XML> implements XML {
 // ===================================================================================================================
 // code below this point should be identical between oai3.ts and code-model.ts 
 
+
+/**
+ * @description The location of the parameter.
+ * 
+ * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#user-content-parameterIn
+ */
+export enum ParameterLocation {
+  Query = "query",
+  Header = "header",
+  Cookie = "cookie",
+  Path = "path",
+}
+
+/**
+ * @description common ways of serializing simple parameters
+ * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#style-values
+ */
+export enum EncodingStyle {
+  Matrix = "matrix",
+  Label = "label",
+  Simple = "simple",
+  Form = "form",
+  SpaceDelimited = "spaceDelimited",
+  PipeDelimited = "pipeDelimited",
+  DeepObject = "deepObject"
+}
+
+export enum JsonType {
+  Array = "array",
+  Boolean = "boolean",
+  Integer = "integer",
+  Number = "number",
+  Object = "object",
+  String = "string"
+}
+export enum Scheme {
+  Bearer = "bearer"
+}
+export enum SecurityType {
+  ApiKey = "apiKey",
+  Http = "http",
+  OAuth2 = "oauth2",
+  OpenIDConnect = "openIdConnect"
+}
+
+export type Callback = Dictionary<string>;
+export type SecurityRequirement = Dictionary<string>;
+export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
+export type Header = HeaderWithSchema | HeaderWithContent;
+export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
+export type Link = LinkWithOperationRef | LinkWithOperationId;
+export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
+
+export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
+export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
+export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
+
+export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
+
+export type QueryEncodingStyle = EncodingStyle.Form | EncodingStyle.SpaceDelimited | EncodingStyle.PipeDelimited | EncodingStyle.DeepObject;
+export type PathEncodingStyle = EncodingStyle.Matrix | EncodingStyle.Label | EncodingStyle.Simple;
+
 export interface Model extends Extensions {
   paths: Dictionary<PathItem>;
   openApi: string;
@@ -449,27 +532,8 @@ export interface Components extends Extensions, WithOperations {
   callbacks: Optional<Dictionary<Reference<Callback>>>;
 }
 
-export type Callback = Dictionary<string>;
-export type SecurityRequirement = Dictionary<string>;
-export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
-export type Header = HeaderWithSchema | HeaderWithContent;
-export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
-export type Link = LinkWithOperationRef | LinkWithOperationId;
-export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-
-export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
-export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
-export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
-
-export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
-
-export type ParameterLocation = "query" | "header" | "cookie" | "path";
-export type EncodingStyle = "form" | "spaceDelimited" | "pipeDelimited" | "deepObject";
-export type MatrixLabelSimple = "matrix" | "label" | "simple"
-export type JsonType = "array" | "boolean" | "integer" | "number" | "object" | "string";
-
 export interface APIKeySecurityScheme extends Extensions {
-  type: "apiKey";
+  type: SecurityType.ApiKey;
   name: string;
   in: ParameterLocation;
   description?: string;
@@ -481,9 +545,9 @@ export interface AuthorizationCodeOAuthFlow extends Extensions {
   scopes: Optional<Dictionary<string>>;
 }
 export interface BearerHTTPSecurityScheme extends Extensions {
-  scheme: "bearer";
+  scheme: Scheme.Bearer;
   bearerFormat?: string;
-  type: "http";
+  type: SecurityType.Http;
   description?: string;
 }
 export interface ClientCredentialsFlow extends Extensions {
@@ -504,7 +568,7 @@ export interface Discriminator extends Extensions {
 export interface Encoding extends Extensions {
   contentType?: string;
   headers: Optional<Dictionary<Header>>;
-  style?: EncodingStyle;
+  style?: QueryEncodingStyle;
   explode?: boolean;
   allowReserved?: boolean;
 }
@@ -532,7 +596,7 @@ export interface HeaderWithSchemaWithExample extends Extensions {
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  style?: "simple";
+  style?: EncodingStyle.Simple;
   explode?: boolean;
   allowReserved?: boolean;
   schema: Reference<Schema>;
@@ -543,7 +607,7 @@ export interface HeaderWithSchemaWithExamples extends Extensions {
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  style?: "simple";
+  style?: EncodingStyle.Simple;
   explode?: boolean;
   allowReserved?: boolean;
   schema: Reference<Schema>;
@@ -595,10 +659,10 @@ export interface MediaTypeWithExamples extends Extensions {
 export interface NonBearerHTTPSecurityScheme extends Extensions {
   scheme: string;
   description?: string;
-  type: "http";
+  type: SecurityType.Http;
 }
 export interface OAuth2SecurityScheme extends Extensions {
-  type: "oauth2";
+  type: SecurityType.OAuth2;
   flows: OAuthFlows;
   description?: string;
 }
@@ -609,11 +673,11 @@ export interface OAuthFlows extends Extensions {
   authorizationCode?: AuthorizationCodeOAuthFlow;
 }
 export interface OpenIdConnectSecurityScheme extends Extensions {
-  type: "openIdConnect";
+  type: SecurityType.OpenIDConnect;
   openIdConnectUrl: string; // url
   description?: string;
 }
-export interface Operation extends Extensions, ImplementationDetails {
+export interface Operation extends Extensions, Implementation<OperationDetails> {
   tags: Optional<Array<string>>;
   summary?: string;
   description?: string;
@@ -628,7 +692,7 @@ export interface Operation extends Extensions, ImplementationDetails {
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterCommon extends ImplementationDetails, Extensions {
+export interface ParameterCommon extends Implementation<ParameterDetails>, Extensions {
   name: string;
   description?: string;
   allowEmptyValue?: boolean;
@@ -645,43 +709,43 @@ export interface ParameterWithContent extends ParameterCommon {
   content: Dictionary<MediaType>;
 }
 export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
-  in: "cookie";
-  style?: "form";
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
-  in: "header";
-  style?: "simple";
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
-  in: "path";
-  style?: MatrixLabelSimple;
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
   example?: any;
 }
 export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
-  in: "query";
-  style?: EncodingStyle;
+  in: ParameterLocation.Query;
+  style?: QueryEncodingStyle;
   example?: any;
 }
 export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
-  in: "cookie";
-  style?: "form";
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
-  in: "header";
-  style?: "simple";
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
-  in: "path";
-  style?: MatrixLabelSimple;
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
   examples: Dictionary<Reference<Example>>;
 }
 export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
-  in: "query";
-  style?: EncodingStyle;
+  in: ParameterLocation.Query;
+  style?: QueryEncodingStyle;
   examples: Dictionary<Reference<Example>>;
 }
 
@@ -720,7 +784,7 @@ export interface Response extends Extensions {
 export interface Responses extends Extensions {
   default?: Reference<Response>;
 }
-export interface Schema extends Extensions, ImplementationDetails {
+export interface Schema extends Extensions, Implementation<SchemaDetails> {
   /* common properties */
   type?: JsonType;
   title?: string;
