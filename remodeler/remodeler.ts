@@ -266,10 +266,15 @@ export class Remodeler {
       summary: original.operation.summary,
       requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i)) : undefined,
       callbacks: todo_unimplemented,
-      parameters: todo_unimplemented,
       security: todo_unimplemented
     });
 
+    if (original.operation.parameters) {
+      for (const parameterName of original.operation.parameters) {
+        const p = this.dereference(parameterName);
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method), (i) => new Parameter(p.instance.name, ParameterLocation.Alias, ImplementationLocation.Alias, i)));
+      }
+    }
     // move responses to global section.
     for (const responseCode in original.operation.responses) {
       newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.components.responses, this.copyResponse, (i) => new Response(i.description || "", i));

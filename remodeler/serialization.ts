@@ -6,11 +6,17 @@ const propertyPriority = [
   "type",
   "format",
   "schema",
+  "operationId",
+  "path",
+  "method",
   "description"
 ];
 
 const propertyNegativePriority = [
-  "operations"
+  "callbacks",
+  "operations",
+  "extensions",
+  "details"
 ];
 
 function sortWithPriorty(a: any, b: any): number {
@@ -24,7 +30,7 @@ function sortWithPriorty(a: any, b: any): number {
 
   if (na > -1) {
     if (nb > -1) {
-      return nb - na;
+      return na - nb;
     }
     return 1;
   }

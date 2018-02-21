@@ -308,9 +308,9 @@ export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecuri
   }
 }
 
-export class HttpOperation extends Initializer<HttpOperation> implements Operation, Implementation<HttpOperationDetails> {
+export class HttpOperation extends Initializer<HttpOperation> implements HttpOperation, Implementation<HttpOperationDetails> {
   details: HttpOperationDetails
-  constructor(public path: string, public method: HttpMethod, initializer?: Partial<Operation>) {
+  constructor(public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
     super(initializer);
     this.details = (<any>this).details || {};
     this.tags = (<any>this).tags || new Array<string>();
