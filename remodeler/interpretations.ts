@@ -9,7 +9,10 @@ export function getName(defaultValue: string, original: OpenAPI.Extensions) {
 }
 
 export function getDescription(defaultValue: string | undefined, original: OpenAPI.Extensions & { title?: string, summary?: string, description?: string }) {
-  return original.description || original.title || original.summary || defaultValue;
+  if (original) {
+    return original.description || original.title || original.summary || defaultValue;
+  }
+  return defaultValue;
 }
 
 export function getParameterImplementationLocation(defaultValue: ImplementationLocation, original: OpenAPI.Parameter & OpenAPI.Extensions): ImplementationLocation {

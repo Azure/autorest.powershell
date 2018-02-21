@@ -1,4 +1,4 @@
-import { Dictionary, Reference, NotOptional as Optional } from "./common";
+import { Dictionary, NotOptional as Optional } from "./common";
 import { hasContent } from "./oai3";
 
 
@@ -21,10 +21,12 @@ function getAllPropertyNames(obj: any) {
 }
 
 
-function isReference<T>(item: Reference<T> | T): item is Reference<T> {
+/* function isReference<T>(item: Reference<T> | T): item is Reference<T> {
   return (<Reference<T>>item).$ref ? true : false;
 }
+*/
 
+export type Reference<T> = T;
 
 /**
  * class implementation for all CodeModel classes
@@ -61,8 +63,6 @@ export class Model extends Initializer<Model> implements Model {
 }
 
 export class Schema extends Initializer<Schema> implements Schema {
-
-
   constructor(initializer?: Partial<Schema>) {
     super(initializer);
     this.required = (<any>this).required || new Array<string>();
@@ -77,7 +77,7 @@ export class Schema extends Initializer<Schema> implements Schema {
 export class Components extends Initializer<Components> implements Components {
   constructor(initializer?: Partial<Schema>) {
     super(initializer);
-    this.schemas = (<any>this).schemas || new Dictionary<Reference<Schema>>();
+    this.schemas = this.schemas || new Dictionary<Reference<Schema>>();
     this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
     this.parameters = (<any>this).parameters || new Dictionary<Reference<Parameter>>();
     this.examples = (<any>this).examples || new Dictionary<Reference<Example>>();
@@ -171,9 +171,10 @@ export enum HttpMethod {
 }
 
 /** Properties have additional data when referencing them */
-export interface PropertyReference<T> extends Reference<T>, Implementation<PropertyDetails>, Extensions {
+export interface PropertyReference<T> extends Implementation<PropertyDetails>, Extensions {
   /** description can be on the property reference, so that properties can have a description different from the type description. */
   description?: string;
+  schema: Schema;
 }
 
 export class PropertyReference<T> extends Initializer<PropertyReference<T>> implements PropertyReference<T>  {
@@ -183,14 +184,14 @@ export class PropertyReference<T> extends Initializer<PropertyReference<T>> impl
 }
 
 export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> implements APIKeySecurityScheme {
-  constructor(public name: string, public inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
+  constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
     super(initializer);
     this.in = inWhere;
     this.type = SecurityType.ApiKey;
   }
 }
 export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAuthFlow> implements AuthorizationCodeOAuthFlow {
-  constructor(public authorizationUrl: string, public tokenUrl: string, initializer?: Partial<AuthorizationCodeOAuthFlow>) {
+  constructor(public authorizationUrl: string, tokenUrl: string, initializer?: Partial<AuthorizationCodeOAuthFlow>) {
     super(initializer);
     this.scopes = (<any>this).scopes || new Dictionary<string>();
   }
@@ -324,7 +325,7 @@ export class HttpOperation extends Initializer<HttpOperation> implements HttpOpe
 
 export class Parameter extends Initializer<Parameter> implements Parameter, Implementation<ParameterDetails> {
   details: ParameterDetails;
-  constructor(public name: string, public inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<Parameter>) {
+  constructor(public name: string, inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<Parameter>) {
     super(initializer);
     this.in = inWhere;
     this.details = (<any>this).details || {};

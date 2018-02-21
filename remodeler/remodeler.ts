@@ -165,11 +165,11 @@ export class Remodeler {
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
         const newPropSchema = this.refOrAddSchema(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema);
         newSchema.properties[propertyName] = new PropertyReference({
-          $ref: newPropSchema.$ref,
-          description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema.$ref), property),
+          schema: newPropSchema,
+          description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
 
           details: {
-            description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema.$ref), property),
+            description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
             name: Interpretations.getName(propertyName, propertySchema.instance),
             deprecationMessage: Interpretations.getDeprecationMessage(original)
           }
@@ -182,32 +182,21 @@ export class Remodeler {
   private refOrAdd<TSource, TDestination>(nameIfInline: string, ref: Dereferenced<TSource>, dictionary: Dictionary<Reference<TDestination>>, copyFunc: (name: string, source: TSource) => TDestination, newAlias: (a: Partial<TDestination>) => TDestination): Reference<TDestination> {
     if (!ref.name) {
       // inline definition - extract it out
-      return new Reference(this.editor.add(nameIfInline, ref, dictionary, copyFunc, newAlias));
+      return this.editor.add(nameIfInline, ref, dictionary, copyFunc, newAlias);
     }
+
     // it's a reference, make sure it's in the model.
     if (dictionary[ref.name]) {
-      return new Reference(dictionary[ref.name].$ref);
+      return dictionary[ref.name];
     }
 
     // it's a global instance that we haven't yet addded, add it and return the ref.
-    return new Reference(this.editor.add(ref.name, ref, dictionary, copyFunc, newAlias))
+    return this.editor.add(ref.name, ref, dictionary, copyFunc, newAlias);
   }
 
   private refOrAddSchema(nameIfInline: string, ref: Dereferenced<OpenAPI.Schema>) {
     return this.refOrAdd(nameIfInline, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i));
-    /*
-    if (!ref.name) {
-      // inline schema - extract it out
-      return new Reference(this.editor.add(nameIfInline, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i)));
-    }
-    // it's a reference, make sure it's in the model.
-    if (this.model.components.schemas[ref.name]) {
-      return new Reference(this.model.components.schemas[ref.name].$ref);
-    }
-    return new Reference(this.editor.add(ref.name, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i)))
-    */
   }
-
 
 
   copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client): Parameter {
@@ -231,7 +220,7 @@ export class Remodeler {
       style: style,
       explode: original.explode || (style === EncodingStyle.Form ? true : false),
       allowReserved: OpenAPI.isQueryParameter(original) && original.allowReserved ? true : false,
-      schema: OpenAPI.hasSchema(original) ? this.refOrAddSchema(`.${name}.`, this.dereference(original.schema)) : undefined,
+      schema: OpenAPI.hasSchema(original) ? this.refOrAddSchema(`.Parameter.${name}`, this.dereference(original.schema)) : undefined,
       extensions: getExtensionProperties(original),
     });
 

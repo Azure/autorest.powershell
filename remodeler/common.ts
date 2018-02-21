@@ -7,16 +7,6 @@ export class Dictionary<T> implements Dictionary<T> {
 
 }
 
-/** An instance or a reference to an instance */
-export interface Reference<T> {
-  $ref: T;
-}
-
-export class Reference<T> {
-  constructor(public $ref: T) {
-  }
-}
-
 export interface PathReference<T> {
   $ref: string;
 }
@@ -26,7 +16,9 @@ export interface Dereferenced<T> {
   name?: string;
 }
 
-export type Refable<T> = & T | PathReference<T>;
+export type Reference<T> = T;
+
+export type Refable<T> = T | PathReference<T>;
 export type Optional<T> = T | undefined;
 export type NotOptional<T> = T;
 

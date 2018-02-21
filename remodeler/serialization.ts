@@ -28,6 +28,19 @@ function sortWithPriorty(a: any, b: any): number {
   const na = propertyNegativePriority.indexOf(a);
   const nb = propertyNegativePriority.indexOf(b);
 
+  const dota = `${a}`.startsWith(".");
+  const dotb = `${b}`.startsWith(".");
+
+  if (dota) {
+    if (!dotb) {
+      return 1;
+    }
+  } else {
+    if (dotb) {
+      return -1;
+    }
+  }
+
   if (na > -1) {
     if (nb > -1) {
       return na - nb;
