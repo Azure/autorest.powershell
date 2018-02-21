@@ -380,12 +380,19 @@ export class Remodeler {
   }
 
   copyRequestBody = (name: string, original: OpenAPI.RequestBody): RequestBody => {
-    return new RequestBody({
+    const requestBody = new RequestBody({
       description: Interpretations.getDescription("", original),
       extensions: getExtensionProperties(original),
       required: original.required ? original.required : false,
-      content: this.copyMediaTypes(name, original),
     })
+
+    if (original.content) {
+      for (const mediaType in original.content) {
+        requestBody.content[mediaType] = this.copyMediaType(`${name}.${mediaType}`, original.content[mediaType]);
+      }
+    }
+
+    return requestBody;
   }
 
   copyCallback = (name: string, original: OpenAPI.Callback): Callback => {
