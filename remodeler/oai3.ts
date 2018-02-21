@@ -25,12 +25,34 @@ export interface ParameterDetails extends Details {
 export interface SchemaDetails extends Details {
 }
 
-export interface OperationDetails extends Details {
+export interface HttpOperationDetails extends Details {
 }
 
-export interface WithOperations {
-
+export function hasContent<T extends Partial<HasContent>>(parameter: T): parameter is HasContent & T {
+  return ((<HasContent>parameter).content) ? true : false;
 }
+export function hasSchema<T extends Partial<HasSchema>>(parameter: T): parameter is HasSchema & T {
+  return ((<HasSchema>parameter).schema) ? true : false;
+}
+export function hasExample<T extends HasExample>(parameter: T): parameter is HasExample & T {
+  return ((<HasExample>parameter).example) ? true : false;
+}
+export function hasExamples<T extends HasExamples>(parameter: T): parameter is HasExamples & T {
+  return ((<HasExamples>parameter).examples) ? true : false;
+}
+export function isCookieParameter(parameter: Parameter): parameter is InCookie & Parameter {
+  return parameter.in === ParameterLocation.Cookie ? true : false;
+}
+export function isHeaderParameter(parameter: Parameter): parameter is InHeader & Parameter {
+  return parameter.in === ParameterLocation.Header ? true : false;
+}
+export function isPathParameter(parameter: Parameter): parameter is InPath & Parameter {
+  return parameter.in === ParameterLocation.Path ? true : false;
+}
+export function isQueryParameter(parameter: Parameter): parameter is InQuery & Parameter {
+  return parameter.in === ParameterLocation.Query ? true : false;
+}
+
 
 /** Properties have additional data when referencing them */
 export type PropertyReference<T> = PropertyDetails & (Reference<T>);
@@ -83,17 +105,11 @@ export enum SecurityType {
   OpenIDConnect = "openIdConnect"
 }
 
-export type Callback = Dictionary<string>;
-export type SecurityRequirement = Dictionary<string>;
+export interface Callback extends Dictionary<PathItem> {
+}
+export interface SecurityRequirement extends Dictionary<string> {
+}
 export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
-export type Header = HeaderWithSchema | HeaderWithContent;
-export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
-export type Link = LinkWithOperationRef | LinkWithOperationId;
-export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-
-export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
-export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
-export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
 
 export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
 
@@ -111,7 +127,7 @@ export interface Model extends Extensions {
   components: Optional<Components>;
 }
 
-export interface Components extends Extensions, WithOperations {
+export interface Components extends Extensions {
   schemas: Optional<Dictionary<Reference<Schema>>>;
   responses: Optional<Dictionary<Reference<Response>>>
   parameters: Optional<Dictionary<Reference<Parameter>>>;
@@ -158,7 +174,7 @@ export interface Discriminator extends Extensions {
 }
 export interface Encoding extends Extensions {
   contentType?: string;
-  headers: Optional<Dictionary<Header>>;
+  headers: Optional<Dictionary<Reference<Header>>>;
   style?: QueryEncodingStyle;
   explode?: boolean;
   allowReserved?: boolean;
@@ -174,36 +190,14 @@ export interface ExternalDocumentation extends Extensions {
   url: string; // uriref
 }
 
-export interface HeaderWithContent extends Extensions {
+export interface Header extends Extensions, Partial<HasContent>, Partial<HasSchema>, Partial<HasExample>, Partial<HasExamples> {
   description?: string;
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  content: Dictionary<MediaType>;
+  allowReserved?: boolean;
 }
 
-export interface HeaderWithSchemaWithExample extends Extensions {
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle.Simple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  example?: any;
-}
-export interface HeaderWithSchemaWithExamples extends Extensions {
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle.Simple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>
-}
 export interface ImplicitOAuthFlow extends Extensions {
   authorizationUrl: string; // uriref
   refreshUrl?: string; // uriref
@@ -222,31 +216,20 @@ export interface License extends Extensions {
   url?: string; // uriref
 }
 
-export interface LinkWithOperationId extends Extensions {
+export interface Link extends Extensions {
+  operationRef?: string; // uriref
   operationId?: string;
   parameters: Optional<Dictionary<string>>;
   requestBody?: any;
   description?: string;
   server?: Server;
 }
-export interface LinkWithOperationRef extends Extensions {
-  operationRef?: string; // uriref
-  parameters: Optional<Dictionary<string>>;
-  requestBody?: any;
-  description?: string;
-  server?: Server;
+
+export interface MediaType extends Extensions, Partial<HasExample>, Partial<HasExamples> {
+  encoding: Optional<Dictionary<Encoding>>;
+  schema?: Reference<Schema>;
 }
 
-export interface MediaTypeWithExample extends Extensions {
-  schema?: Reference<Schema>;
-  example?: any;
-  encoding: Optional<Dictionary<Encoding>>;
-}
-export interface MediaTypeWithExamples extends Extensions {
-  schema?: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-  encoding: Optional<Dictionary<Encoding>>;
-}
 export interface NonBearerHTTPSecurityScheme extends Extensions {
   scheme: string;
   description?: string;
@@ -268,7 +251,7 @@ export interface OpenIdConnectSecurityScheme extends Extensions {
   openIdConnectUrl: string; // url
   description?: string;
 }
-export interface Operation extends Extensions, Implementation<OperationDetails> {
+export interface HttpOperation extends Extensions, Implementation<HttpOperationDetails> {
   tags: Optional<Array<string>>;
   summary?: string;
   description?: string;
@@ -276,68 +259,54 @@ export interface Operation extends Extensions, Implementation<OperationDetails> 
   operationId?: string;
   parameters: Optional<Array<Reference<Parameter>>>;
   requestBody?: Reference<RequestBody>;
-  responses: Responses;
+  responses: Dictionary<Reference<Response>>;
   callbacks: Optional<Dictionary<Reference<Callback>>>;
   deprecated?: boolean;
   security: Optional<Array<SecurityRequirement>>;
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterCommon extends Implementation<ParameterDetails>, Extensions {
+export interface HasSchema {
+  schema: Reference<Schema>;
+  explode?: boolean;
+}
+export interface HasContent {
+  content: Dictionary<MediaType>;
+}
+export interface HasExample {
+  example: any;
+}
+export interface HasExamples {
+  examples: Dictionary<Reference<HasExample>>;
+}
+export interface InCookie extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
+}
+export interface InHeader extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
+}
+export interface InPath extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
+}
+export interface InQuery extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Query;
+  allowReserved?: boolean;
+  style?: QueryEncodingStyle;
+}
+export interface Parameter extends Partial<HasSchema>, Partial<HasContent>, Partial<HasExample>, Partial<HasExamples> {
   name: string;
+  in: ParameterLocation;
+
   description?: string;
   allowEmptyValue?: boolean;
   deprecated?: boolean;
   required?: boolean;
-}
-export interface ParameterWithSchema extends ParameterCommon {
-  schema: Reference<Schema>;
-  explode?: boolean;
+  style?: EncodingStyle;
+
   allowReserved?: boolean;
-}
-export interface ParameterWithContent extends ParameterCommon {
-  in: ParameterLocation;
-  content: Dictionary<MediaType>;
-}
-export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
-  in: ParameterLocation.Cookie;
-  style?: EncodingStyle.Form;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
-  in: ParameterLocation.Header;
-  style?: EncodingStyle.Simple;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
-  in: ParameterLocation.Path;
-  style?: PathEncodingStyle;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
-  in: ParameterLocation.Query;
-  style?: QueryEncodingStyle;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
-  in: ParameterLocation.Cookie;
-  style?: EncodingStyle.Form;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
-  in: ParameterLocation.Header;
-  style?: EncodingStyle.Simple;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
-  in: ParameterLocation.Path;
-  style?: PathEncodingStyle;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
-  in: ParameterLocation.Query;
-  style?: QueryEncodingStyle;
-  examples: Dictionary<Reference<Example>>;
 }
 
 export interface PasswordOAuthFlow extends Extensions {
@@ -349,14 +318,14 @@ export interface PathItem extends Extensions {
   $ref?: string | PathItem;
   summary?: string;
   description?: string;
-  get?: Operation;
-  put?: Operation;
-  post?: Operation;
-  delete?: Operation;
-  options?: Operation;
-  head?: Operation;
-  patch?: Operation;
-  trace?: Operation;
+  get?: HttpOperation;
+  put?: HttpOperation;
+  post?: HttpOperation;
+  delete?: HttpOperation;
+  options?: HttpOperation;
+  head?: HttpOperation;
+  patch?: HttpOperation;
+  trace?: HttpOperation;
   servers: Optional<Array<Server>>;
   parameters: Optional<Array<Reference<Parameter>>>;
 }
@@ -364,7 +333,7 @@ export interface PathItem extends Extensions {
 export interface RequestBody extends Extensions {
   description?: string;
   content: Dictionary<MediaType>;
-  required?: boolean;
+  required: Optional<boolean>;
 }
 export interface Response extends Extensions {
   description: string;
@@ -372,9 +341,7 @@ export interface Response extends Extensions {
   content: Optional<Dictionary<MediaType>>;
   links: Optional<Dictionary<Reference<Link>>>;
 }
-export interface Responses extends Extensions {
-  default?: Reference<Response>;
-}
+
 export interface Schema extends Extensions, Implementation<SchemaDetails> {
   /* common properties */
   type?: JsonType;

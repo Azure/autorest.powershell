@@ -1,4 +1,5 @@
 import { Dictionary, Reference, NotOptional as Optional } from "./common";
+import { hasContent } from "./oai3";
 
 
 //------------------------------------------------------------------------------------------------------------------ */
@@ -18,6 +19,12 @@ function getAllPropertyNames(obj: any) {
 
   return props;
 }
+
+
+function isReference<T>(item: Reference<T> | T): item is Reference<T> {
+  return (<Reference<T>>item).$ref ? true : false;
+}
+
 
 /**
  * class implementation for all CodeModel classes
@@ -41,50 +48,51 @@ export class Initializer<T> {
 export class Model extends Initializer<Model> implements Model {
   info: Info;
   openApi = "3.0";
-  paths = new Dictionary<PathItem>();
-  components = new Components();
-  tags = new Array<Tag>();
-  servers = new Array<Server>();
-  security = new Array<SecurityRequirement>();
+
   constructor(title: string, version: string, initializer?: Partial<Model>) {
     super(initializer);
-    this.info = new Info(title, version, initializer ? initializer.info : {})
+    this.info = new Info(title, version, initializer ? initializer.info : {});
+    this.paths = (<any>this).paths || new Dictionary<PathItem>();
+    this.components = (<any>this).components || new Components();
+    this.tags = (<any>this).tags || new Array<Tag>();
+    this.servers = (<any>this).servers || new Array<Server>();
+    this.security = (<any>this).security || new Array<SecurityRequirement>();
   }
 }
 
-
 export class Schema extends Initializer<Schema> implements Schema {
-  required = new Array<string>();
-  enum = new Array<any>();
-  allOf = new Array<Reference<Schema>>();
-  oneOf = new Array<Reference<Schema>>();
-  anyOf = new Array<Reference<Schema>>();
-  properties = new Dictionary<PropertyReference<Schema>>();
+
 
   constructor(initializer?: Partial<Schema>) {
     super(initializer);
+    this.required = (<any>this).required || new Array<string>();
+    this.enum = (<any>this).enum || new Array<any>();
+    this.allOf = (<any>this).allOf || new Array<Reference<Schema>>();
+    this.oneOf = (<any>this).oneOf || new Array<Reference<Schema>>();
+    this.anyOf = (<any>this).anyOf || new Array<Reference<Schema>>();
+    this.properties = (<any>this).properties || new Dictionary<PropertyReference<Schema>>();
   }
 }
 
 export class Components extends Initializer<Components> implements Components {
-  schemas = new Dictionary<Reference<Schema>>();
-  responses = new Dictionary<Reference<Response>>();
-  parameters = new Dictionary<Reference<Parameter>>();
-  examples = new Dictionary<Reference<Example>>();
-  requestBodies = new Dictionary<Reference<RequestBody>>();
-  headers = new Dictionary<Reference<Header>>();
-  securitySchemes = new Dictionary<Reference<SecurityScheme>>();
-  links = new Dictionary<Reference<Link>>();
-  callbacks = new Dictionary<Reference<Callback>>();
-  operations = new Dictionary<Reference<Operation>>()
-
   constructor(initializer?: Partial<Schema>) {
     super(initializer);
+    this.schemas = (<any>this).schemas || new Dictionary<Reference<Schema>>();
+    this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
+    this.parameters = (<any>this).parameters || new Dictionary<Reference<Parameter>>();
+    this.examples = (<any>this).examples || new Dictionary<Reference<Example>>();
+    this.requestBodies = (<any>this).requestBodies || new Dictionary<Reference<RequestBody>>();
+    this.headers = (<any>this).headers || new Dictionary<Reference<Header>>();
+    this.securitySchemes = (<any>this).securitySchemes || new Dictionary<Reference<SecurityScheme>>();
+    this.links = (<any>this).links || new Dictionary<Reference<Link>>();
+    this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
+    this.operations = (<any>this).operations || new Dictionary<Reference<Operation>>()
   }
 }
 
+export type Operation = HttpOperation; //one day ...  | JsonRPCOperation  ...etc
 
-export interface WithOperations {
+export interface Components {
   /**
   * Dictionary of Operations in this model.
   * 
@@ -93,6 +101,7 @@ export interface WithOperations {
   operations: Dictionary<Reference<Operation>>;
 }
 
+/** In the CodeModel, Extensions are in a separate dictionary */
 export interface Extensions {
   /** additional metadata extensions */
   extensions: Dictionary<any>;
@@ -123,7 +132,9 @@ export interface Details {
 
 export enum ImplementationLocation {
   Method = "Method",
-  Client = "Client"
+  Client = "Client",
+  /** @internal */
+  Alias = "Alias"
 }
 
 
@@ -137,7 +148,26 @@ export interface ParameterDetails extends Details {
 export interface SchemaDetails extends Details {
 }
 
-export interface OperationDetails extends Details {
+export interface HttpOperationDetails extends Details {
+}
+
+export interface HttpOperation {
+  path: string;
+  method: HttpMethod;
+  pathDescription?: string;
+  pathSummary?: string;
+  pathExtensions?: Dictionary<any>;
+}
+
+export enum HttpMethod {
+  Get = "get",
+  Put = "put",
+  Post = "post",
+  Delete = "delete",
+  Options = "options",
+  Head = "head",
+  Patch = "patch",
+  Trace = "trace"
 }
 
 /** Properties have additional data when referencing them */
@@ -147,15 +177,11 @@ export interface PropertyReference<T> extends Reference<T>, Implementation<Prope
 }
 
 export class PropertyReference<T> extends Initializer<PropertyReference<T>> implements PropertyReference<T>  {
-
   constructor(initializer?: Partial<PropertyReference<T>>) {
     super(initializer);
   }
 }
 
-function isReference<T>(item: Reference<T> | T): item is Reference<T> {
-  return (<Reference<T>>item).$ref ? true : false;
-}
 export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> implements APIKeySecurityScheme {
   constructor(public name: string, public inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
     super(initializer);
@@ -166,8 +192,8 @@ export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> impl
 export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAuthFlow> implements AuthorizationCodeOAuthFlow {
   constructor(public authorizationUrl: string, public tokenUrl: string, initializer?: Partial<AuthorizationCodeOAuthFlow>) {
     super(initializer);
+    this.scopes = (<any>this).scopes || new Dictionary<string>();
   }
-  scopes = new Dictionary<string>();
 }
 export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecurityScheme> implements BearerHTTPSecurityScheme {
   constructor(initializer?: Partial<BearerHTTPSecurityScheme>) {
@@ -179,8 +205,13 @@ export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecuritySche
 export class ClientCredentialsFlow extends Initializer<ClientCredentialsFlow> implements ClientCredentialsFlow {
   constructor(public tokenUrl: string, initializer?: Partial<ClientCredentialsFlow>) {
     super(initializer);
+    this.scopes = (<any>this).scopes || new Dictionary<string>();
   }
-  scopes = new Dictionary<string>();
+}
+
+export class Callback implements Callback {
+  constructor() {
+  }
 }
 
 export class Contact extends Initializer<Contact> implements Contact {
@@ -192,14 +223,14 @@ export class Contact extends Initializer<Contact> implements Contact {
 export class Discriminator extends Initializer<Discriminator> implements Discriminator {
   constructor(public propertyName: string, initializer?: Partial<Discriminator>) {
     super(initializer);
+    this.mapping = (<any>this).mapping || new Dictionary<string>();
   }
-  mapping = new Dictionary<string>();
 }
 export class Encoding extends Initializer<Encoding> implements Encoding {
   constructor(initializer?: Partial<Encoding>) {
     super(initializer);
+    this.headers = (<any>this).headers || new Dictionary<Header>();
   }
-  headers = new Dictionary<Header>();
 }
 
 export class Example extends Initializer<Example> implements Example {
@@ -213,29 +244,18 @@ export class ExternalDocumentation extends Initializer<ExternalDocumentation> im
   }
 }
 
-export class HeaderWithContent extends Initializer<HeaderWithContent> implements HeaderWithContent {
-  constructor(initializer?: Partial<HeaderWithContent>) {
+export class Header extends Initializer<Header> implements Header {
+  constructor(initializer?: Partial<Header>) {
     super(initializer);
+    this.content = (<any>this).content || new Dictionary<MediaType>();
   }
-  content = new Dictionary<MediaType>();
 }
 
-export class HeaderWithSchemaWithExample extends Initializer<HeaderWithSchemaWithExample> implements HeaderWithSchemaWithExample {
-  constructor(schema: Schema | Reference<Schema>, initializer?: Partial<HeaderWithSchemaWithExample>) {
-    super(initializer);
-  }
-}
-export class HeaderWithSchemaWithExamples extends Initializer<HeaderWithSchemaWithExamples> implements HeaderWithSchemaWithExamples {
-  constructor(schema: Schema | Reference<Schema>, initializer?: Partial<HeaderWithSchemaWithExamples>) {
-    super(initializer);
-    this.schema = new Reference(isReference(schema) ? schema.$ref : schema);
-  }
-}
 export class ImplicitOAuthFlow extends Initializer<ImplicitOAuthFlow> implements ImplicitOAuthFlow {
   constructor(public authorizationUrl: string, initializer?: Partial<ImplicitOAuthFlow>) {
     super(initializer);
+    this.scopes = (<any>this).scopes || new Dictionary<string>();
   }
-  scopes = new Dictionary<string>();
 }
 export class Info extends Initializer<Info> implements Info {
   constructor(public title: string, public version: string, initializer?: Partial<Info>) {
@@ -248,32 +268,21 @@ export class License extends Initializer<License> implements License {
   }
 }
 
-export class LinkWithOperationId extends Initializer<LinkWithOperationId> implements LinkWithOperationId {
-  constructor(initializer?: Partial<LinkWithOperationId>) {
+export class Link extends Initializer<Link> implements Link {
+  constructor(initializer?: Partial<Link>) {
     super(initializer);
+    this.parameters = (<any>this).parameters || new Dictionary<string>();
   }
-  parameters = new Dictionary<string>();
-}
-export class LinkWithOperationRef extends Initializer<LinkWithOperationRef> implements LinkWithOperationRef {
-  constructor(initializer?: Partial<LinkWithOperationRef>) {
-    super(initializer);
-  }
-  parameters = new Dictionary<string>();
 }
 
-export class MediaTypeWithExample extends Initializer<MediaTypeWithExample> implements MediaTypeWithExample {
-  constructor(initializer?: Partial<MediaTypeWithExample>) {
+
+export class MediaType extends Initializer<MediaType> implements MediaType {
+  constructor(initializer?: Partial<MediaType>) {
     super(initializer);
+    this.encoding = (<any>this).encoding || new Dictionary<Encoding>();
   }
-  encoding = new Dictionary<Encoding>();
 }
-export class MediaTypeWithExamples extends Initializer<MediaTypeWithExamples> implements MediaTypeWithExamples {
-  constructor(initializer?: Partial<MediaTypeWithExamples>) {
-    super(initializer);
-  }
-  examples = new Dictionary<Reference<Example>>();
-  encoding = new Dictionary<Encoding>();
-}
+
 export class NonBearerHTTPSecurityScheme extends Initializer<NonBearerHTTPSecurityScheme> implements NonBearerHTTPSecurityScheme {
   constructor(public scheme: string, initializer?: Partial<NonBearerHTTPSecurityScheme>) {
     super(initializer);
@@ -298,125 +307,61 @@ export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecuri
     this.type = SecurityType.OpenIDConnect;
   }
 }
-export class Operation extends Initializer<Operation> implements Operation {
-  constructor(initializer?: Partial<Operation>) {
+
+export class HttpOperation extends Initializer<HttpOperation> implements Operation, Implementation<HttpOperationDetails> {
+  details: HttpOperationDetails
+  constructor(public path: string, public method: HttpMethod, initializer?: Partial<Operation>) {
     super(initializer);
+    this.details = (<any>this).details || {};
+    this.tags = (<any>this).tags || new Array<string>();
+    this.parameters = (<any>this).parameters || new Array<Reference<Parameter>>();
+    this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
+    this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
+    this.security = (<any>this).security || new Array<SecurityRequirement>();
+    this.servers = (<any>this).servers || new Array<Server>();
   }
-  tags = new Array<string>();
-  parameters = new Array<Reference<Parameter>>();
-  responses = new Responses();
-  callbacks = new Dictionary<Reference<Callback>>();
-  security = new Array<SecurityRequirement>();
-  servers = new Array<Server>();
 }
 
-export class ParameterCommon extends Initializer<ParameterCommon> implements ParameterCommon {
-  in: ParameterLocation;
+export class Parameter extends Initializer<Parameter> implements Parameter, Implementation<ParameterDetails> {
   details: ParameterDetails;
-  required?: boolean;
-
-  constructor(public name: string, inWhere: ParameterLocation, location: ImplementationLocation, initializer?: Partial<ParameterCommon>) {
+  constructor(public name: string, public inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<Parameter>) {
     super(initializer);
     this.in = inWhere;
     this.details = (<any>this).details || {};
-    this.details.location = location;
-
+    this.details.location = implementation;
     if (inWhere === ParameterLocation.Path) {
       this.required = true;
     }
   }
 }
 
-export class ParameterWithContent extends ParameterCommon implements ParameterWithContent {
-  constructor(public name: string, inWhere: ParameterLocation, location: ImplementationLocation, initializer?: Partial<ParameterWithContent>) {
-    super(name, inWhere, location, initializer);
-  }
-  content = new Dictionary<MediaType>();
-}
-
-export class ParameterWithSchema extends ParameterCommon {
-  constructor(public name: string, inWhere: ParameterLocation, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchema>) {
-    super(name, inWhere, location, initializer);
-    this.schema = new Reference(isReference(schema) ? schema.$ref : schema);
-  }
-}
-
-export class ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExampleInCookie {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInCookie>) {
-    super(name, ParameterLocation.Cookie, schema, location, initializer);
-  }
-}
-export class ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExampleInHeader {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInHeader>) {
-    super(name, ParameterLocation.Header, schema, location, initializer);
-  }
-}
-export class ParameterWithSchemaWithExampleInPath extends ParameterWithSchema implements ParameterWithSchemaWithExampleInPath {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInPath>) {
-    super(name, ParameterLocation.Path, schema, location, initializer);
-  }
-}
-export class ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExampleInQuery {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExampleInQuery>) {
-    super(name, ParameterLocation.Query, schema, location, initializer);
-  }
-}
-export class ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInCookie {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInCookie>) {
-    super(name, ParameterLocation.Cookie, schema, location, initializer);
-  }
-  examples = new Dictionary<Reference<Example>>();
-}
-export class ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInHeader {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInHeader>) {
-    super(name, ParameterLocation.Header, schema, location, initializer);
-  }
-  examples = new Dictionary<Reference<Example>>();
-}
-export class ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInPath {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInPath>) {
-    super(name, ParameterLocation.Path, schema, location, initializer);
-    this.required = true;
-  }
-  examples = new Dictionary<Reference<Example>>();
-}
-export class ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema implements ParameterWithSchemaWithExamplesInQuery {
-  constructor(public name: string, schema: Schema | Reference<Schema>, location: ImplementationLocation, initializer?: Partial<ParameterWithSchemaWithExamplesInQuery>) {
-    super(name, ParameterLocation.Query, schema, location, initializer);
-  }
-  examples = new Dictionary<Reference<Example>>();
-}
 export class PasswordOAuthFlow extends Initializer<PasswordOAuthFlow> implements PasswordOAuthFlow {
   constructor(public tokenUrl: string, initializer?: Partial<PasswordOAuthFlow>) {
     super(initializer);
+    this.scopes = (<any>this).scopes || new Dictionary<string>();
   }
-  scopes = new Dictionary<string>();
+
 }
 export class PathItem extends Initializer<PathItem> implements PathItem {
   constructor(initializer?: Partial<PathItem>) {
     super(initializer);
+    this.parameters = (<any>this).parameters || new Array<Reference<Parameter>>();
+    this.servers = (<any>this).servers || new Array<Server>();
   }
   //   $ref?: string | PathItem;
-  servers = new Array<Server>();
-  parameters = new Array<Reference<Parameter>>();
 }
 
 export class RequestBody extends Initializer<RequestBody> implements RequestBody {
   constructor(initializer?: Partial<RequestBody>) {
     super(initializer);
+    this.content = (<any>this).content || new Dictionary<MediaType>();
   }
-  content = new Dictionary<MediaType>();
 }
 export class Response extends Initializer<Response> implements Response {
   constructor(public description: string, initializer?: Partial<Response>) {
     super(initializer);
-  }
-  content = new Dictionary<MediaType>();
-  links = new Dictionary<Reference<Link>>();
-}
-export class Responses extends Initializer<Responses> implements Responses {
-  constructor(initializer?: Partial<Responses>) {
-    super(initializer);
+    this.content = (<any>this).content || new Dictionary<MediaType>();
+    this.links = (<any>this).links || new Dictionary<Reference<Link>>();
   }
 }
 
@@ -430,8 +375,8 @@ export class ServerVariable extends Initializer<ServerVariable> implements Serve
   constructor(defaultValue: string, initializer?: Partial<ServerVariable>) {
     super(initializer);
     this.default = defaultValue;
+    this.enum = (<any>this).enum || new Array<string>();
   }
-  enum = new Array<string>();
 }
 export class Tag extends Initializer<Tag> implements Tag {
   constructor(public name: string, initializer?: Partial<Tag>) {
@@ -442,6 +387,11 @@ export class XML extends Initializer<XML> implements XML {
   constructor(initializer?: Partial<XML>) {
     super(initializer);
   }
+}
+
+export enum ParameterLocation {
+  /** @internal */
+  Alias = "Alias"
 }
 
 // ===================================================================================================================
@@ -492,17 +442,11 @@ export enum SecurityType {
   OpenIDConnect = "openIdConnect"
 }
 
-export type Callback = Dictionary<string>;
-export type SecurityRequirement = Dictionary<string>;
+export interface Callback extends Dictionary<PathItem> {
+}
+export interface SecurityRequirement extends Dictionary<string> {
+}
 export type HTTPSecurityScheme = NonBearerHTTPSecurityScheme | BearerHTTPSecurityScheme;
-export type Header = HeaderWithSchema | HeaderWithContent;
-export type HeaderWithSchema = HeaderWithSchemaWithExample | HeaderWithSchemaWithExamples;
-export type Link = LinkWithOperationRef | LinkWithOperationId;
-export type MediaType = MediaTypeWithExample | MediaTypeWithExamples;
-
-export type Parameter = ParameterWithSchemaWithExample | ParameterWithSchemaWithExamples | ParameterWithContent;
-export type ParameterWithSchemaWithExample = ParameterWithSchemaWithExampleInPath | ParameterWithSchemaWithExampleInQuery | ParameterWithSchemaWithExampleInHeader | ParameterWithSchemaWithExampleInCookie;
-export type ParameterWithSchemaWithExamples = ParameterWithSchemaWithExamplesInPath | ParameterWithSchemaWithExamplesInQuery | ParameterWithSchemaWithExamplesInHeader | ParameterWithSchemaWithExamplesInCookie;
 
 export type SecurityScheme = APIKeySecurityScheme | HTTPSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
 
@@ -520,7 +464,7 @@ export interface Model extends Extensions {
   components: Optional<Components>;
 }
 
-export interface Components extends Extensions, WithOperations {
+export interface Components extends Extensions {
   schemas: Optional<Dictionary<Reference<Schema>>>;
   responses: Optional<Dictionary<Reference<Response>>>
   parameters: Optional<Dictionary<Reference<Parameter>>>;
@@ -567,7 +511,7 @@ export interface Discriminator extends Extensions {
 }
 export interface Encoding extends Extensions {
   contentType?: string;
-  headers: Optional<Dictionary<Header>>;
+  headers: Optional<Dictionary<Reference<Header>>>;
   style?: QueryEncodingStyle;
   explode?: boolean;
   allowReserved?: boolean;
@@ -583,36 +527,14 @@ export interface ExternalDocumentation extends Extensions {
   url: string; // uriref
 }
 
-export interface HeaderWithContent extends Extensions {
+export interface Header extends Extensions, Partial<HasContent>, Partial<HasSchema>, Partial<HasExample>, Partial<HasExamples> {
   description?: string;
   required?: boolean;
   deprecated?: boolean;
   allowEmptyValue?: boolean;
-  content: Dictionary<MediaType>;
+  allowReserved?: boolean;
 }
 
-export interface HeaderWithSchemaWithExample extends Extensions {
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle.Simple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  example?: any;
-}
-export interface HeaderWithSchemaWithExamples extends Extensions {
-  description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  style?: EncodingStyle.Simple;
-  explode?: boolean;
-  allowReserved?: boolean;
-  schema: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>
-}
 export interface ImplicitOAuthFlow extends Extensions {
   authorizationUrl: string; // uriref
   refreshUrl?: string; // uriref
@@ -631,31 +553,20 @@ export interface License extends Extensions {
   url?: string; // uriref
 }
 
-export interface LinkWithOperationId extends Extensions {
+export interface Link extends Extensions {
+  operationRef?: string; // uriref
   operationId?: string;
   parameters: Optional<Dictionary<string>>;
   requestBody?: any;
   description?: string;
   server?: Server;
 }
-export interface LinkWithOperationRef extends Extensions {
-  operationRef?: string; // uriref
-  parameters: Optional<Dictionary<string>>;
-  requestBody?: any;
-  description?: string;
-  server?: Server;
+
+export interface MediaType extends Extensions, Partial<HasExample>, Partial<HasExamples> {
+  encoding: Optional<Dictionary<Encoding>>;
+  schema?: Reference<Schema>;
 }
 
-export interface MediaTypeWithExample extends Extensions {
-  schema?: Reference<Schema>;
-  example?: any;
-  encoding: Optional<Dictionary<Encoding>>;
-}
-export interface MediaTypeWithExamples extends Extensions {
-  schema?: Reference<Schema>;
-  examples: Dictionary<Reference<Example>>;
-  encoding: Optional<Dictionary<Encoding>>;
-}
 export interface NonBearerHTTPSecurityScheme extends Extensions {
   scheme: string;
   description?: string;
@@ -677,7 +588,7 @@ export interface OpenIdConnectSecurityScheme extends Extensions {
   openIdConnectUrl: string; // url
   description?: string;
 }
-export interface Operation extends Extensions, Implementation<OperationDetails> {
+export interface HttpOperation extends Extensions, Implementation<HttpOperationDetails> {
   tags: Optional<Array<string>>;
   summary?: string;
   description?: string;
@@ -685,68 +596,54 @@ export interface Operation extends Extensions, Implementation<OperationDetails> 
   operationId?: string;
   parameters: Optional<Array<Reference<Parameter>>>;
   requestBody?: Reference<RequestBody>;
-  responses: Responses;
+  responses: Dictionary<Reference<Response>>;
   callbacks: Optional<Dictionary<Reference<Callback>>>;
   deprecated?: boolean;
   security: Optional<Array<SecurityRequirement>>;
   servers: Optional<Array<Server>>;
 }
 
-export interface ParameterCommon extends Implementation<ParameterDetails>, Extensions {
+export interface HasSchema {
+  schema: Reference<Schema>;
+  explode?: boolean;
+}
+export interface HasContent {
+  content: Dictionary<MediaType>;
+}
+export interface HasExample {
+  example: any;
+}
+export interface HasExamples {
+  examples: Dictionary<Reference<HasExample>>;
+}
+export interface InCookie extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Cookie;
+  style?: EncodingStyle.Form;
+}
+export interface InHeader extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Header;
+  style?: EncodingStyle.Simple;
+}
+export interface InPath extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Path;
+  style?: PathEncodingStyle;
+}
+export interface InQuery extends HasSchema, Partial<HasExample>, Partial<HasExamples> {
+  in: ParameterLocation.Query;
+  allowReserved?: boolean;
+  style?: QueryEncodingStyle;
+}
+export interface Parameter extends Partial<HasSchema>, Partial<HasContent>, Partial<HasExample>, Partial<HasExamples> {
   name: string;
+  in: ParameterLocation;
+
   description?: string;
   allowEmptyValue?: boolean;
   deprecated?: boolean;
   required?: boolean;
-}
-export interface ParameterWithSchema extends ParameterCommon {
-  schema: Reference<Schema>;
-  explode?: boolean;
+  style?: EncodingStyle;
+
   allowReserved?: boolean;
-}
-export interface ParameterWithContent extends ParameterCommon {
-  in: ParameterLocation;
-  content: Dictionary<MediaType>;
-}
-export interface ParameterWithSchemaWithExampleInCookie extends ParameterWithSchema {
-  in: ParameterLocation.Cookie;
-  style?: EncodingStyle.Form;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInHeader extends ParameterWithSchema {
-  in: ParameterLocation.Header;
-  style?: EncodingStyle.Simple;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInPath extends ParameterWithSchema {
-  in: ParameterLocation.Path;
-  style?: PathEncodingStyle;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExampleInQuery extends ParameterWithSchema {
-  in: ParameterLocation.Query;
-  style?: QueryEncodingStyle;
-  example?: any;
-}
-export interface ParameterWithSchemaWithExamplesInCookie extends ParameterWithSchema {
-  in: ParameterLocation.Cookie;
-  style?: EncodingStyle.Form;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInHeader extends ParameterWithSchema {
-  in: ParameterLocation.Header;
-  style?: EncodingStyle.Simple;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInPath extends ParameterWithSchema {
-  in: ParameterLocation.Path;
-  style?: PathEncodingStyle;
-  examples: Dictionary<Reference<Example>>;
-}
-export interface ParameterWithSchemaWithExamplesInQuery extends ParameterWithSchema {
-  in: ParameterLocation.Query;
-  style?: QueryEncodingStyle;
-  examples: Dictionary<Reference<Example>>;
 }
 
 export interface PasswordOAuthFlow extends Extensions {
@@ -758,14 +655,14 @@ export interface PathItem extends Extensions {
   $ref?: string | PathItem;
   summary?: string;
   description?: string;
-  get?: Operation;
-  put?: Operation;
-  post?: Operation;
-  delete?: Operation;
-  options?: Operation;
-  head?: Operation;
-  patch?: Operation;
-  trace?: Operation;
+  get?: HttpOperation;
+  put?: HttpOperation;
+  post?: HttpOperation;
+  delete?: HttpOperation;
+  options?: HttpOperation;
+  head?: HttpOperation;
+  patch?: HttpOperation;
+  trace?: HttpOperation;
   servers: Optional<Array<Server>>;
   parameters: Optional<Array<Reference<Parameter>>>;
 }
@@ -773,7 +670,7 @@ export interface PathItem extends Extensions {
 export interface RequestBody extends Extensions {
   description?: string;
   content: Dictionary<MediaType>;
-  required?: boolean;
+  required: Optional<boolean>;
 }
 export interface Response extends Extensions {
   description: string;
@@ -781,9 +678,7 @@ export interface Response extends Extensions {
   content: Optional<Dictionary<MediaType>>;
   links: Optional<Dictionary<Reference<Link>>>;
 }
-export interface Responses extends Extensions {
-  default?: Reference<Response>;
-}
+
 export interface Schema extends Extensions, Implementation<SchemaDetails> {
   /* common properties */
   type?: JsonType;

@@ -1,3 +1,4 @@
+
 export interface Dictionary<T> {
   [key: string]: T;
 }
@@ -73,8 +74,27 @@ export function dereference<T>(document: any, item: Refable<T>, stack = new Arra
   return { instance: item, name: undefined };
 }
 
-export function getExtensionProperties(object: any, prefix: string = "x-"): Dictionary<any> {
-  const result = new Dictionary<any>();
-  Object.keys(object).filter((v, i, a) => v.startsWith(prefix)).map((v, i, a) => result[v] = object[v]);
+export function clone(object: any) {
+  return object ? JSON.parse(JSON.stringify(object)) : undefined;
+}
+
+export function includeXDash<T>(dictionary: Dictionary<T>) {
+  return Object.keys(dictionary).filter((v, i, a) => v.startsWith('x-'));
+}
+export function excludeXDash<T>(dictionary: Dictionary<T>) {
+  return Object.keys(dictionary).filter((v, i, a) => !v.startsWith('x-'));
+}
+
+export function getExtensionProperties(dictionary: Dictionary<any>): Dictionary<any> {
+  return ToDictionary(includeXDash(dictionary), each => dictionary[each]);
+}
+
+export function ToDictionary<T>(keys: Array<string>, each: (index: string) => T) {
+  const result = new Dictionary<T>();
+  keys.map((v, i, a) => result[v] = each(v));
   return result;
+}
+
+export function CopyDictionary<TSource, TDestination>(dictionary: Dictionary<TSource>, each: (index: string) => TDestination) {
+  return ToDictionary(excludeXDash(dictionary), each);
 }
