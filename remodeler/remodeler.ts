@@ -320,9 +320,6 @@ export class Remodeler {
     });
   }
 
-  copyMediaTypes(containerName: string, original?: Dictionary<OpenAPI.MediaType>): Dictionary<MediaType> {
-    return original ? CopyDictionary(original, (key) => this.copyMediaType(`.${containerName}.${key}.`, original[key])) : new Dictionary<MediaType>();
-  }
 
   remodelPaths(source: Dictionary<Refable<OpenAPI.PathItem>>) {
     for (const path in source) {
