@@ -2,6 +2,7 @@ import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extens
 import { Remodeler } from "./remodeler";
 import * as OpenAPI from "./oai3";
 import { deserialize, serialize } from "./serialization";
+// import { writeFileSync } from "fs";
 
 export async function process(service: Host) {
   try {
@@ -13,6 +14,9 @@ export async function process(service: Host) {
       throw new Error("Inputs missing.");
     }
 
+    // const original = await service.ReadFile(files[0]);
+    // writeFileSync("C:/work/2018/autorest.incubator/original.yaml", serialize(JSON.parse(original)));
+
     // deserialize
     const remodeler = new Remodeler(await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), service);
 
@@ -23,6 +27,8 @@ export async function process(service: Host) {
 
     // output the model 
     await service.WriteFile("somefile.txt", serialize(codeModel), undefined/*,"code-model-v2"*/);
+
+
   } catch (E) {
     console.error(E);
   }

@@ -337,7 +337,7 @@ export interface RequestBody extends Extensions {
 }
 export interface Response extends Extensions {
   description: string;
-  headers?: any;
+  headers: Optional<Dictionary<Reference<Header>>>;
   content: Optional<Dictionary<MediaType>>;
   links: Optional<Dictionary<Reference<Link>>>;
 }

@@ -251,10 +251,6 @@ export class Remodeler {
   }
 
   copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }): HttpOperation => {
-
-
-    //    this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.RequestBody), this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i))
-    console.error(original.operation.requestBody);
     const newOperation = new HttpOperation(original.path, original.method, {
       pathDescription: original.pathItem.description,
       pathSummary: original.pathItem.summary,
@@ -271,9 +267,13 @@ export class Remodeler {
       requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i)) : undefined,
       callbacks: todo_unimplemented,
       parameters: todo_unimplemented,
-      security: todo_unimplemented,
-      responses: this.remodelT(original.operation.responses, this.model.components.responses, this.copyResponse, (i) => new Response(i.description || "", i)),
+      security: todo_unimplemented
     });
+
+    // move responses to global section.
+    for (const responseCode in original.operation.responses) {
+      newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.components.responses, this.copyResponse, (i) => new Response(i.description || "", i));
+    }
 
     return newOperation;
   }
@@ -287,6 +287,11 @@ export class Remodeler {
   copyHeaders = (containerName: string, original?: Dictionary<Refable<OpenAPI.Header>>): Dictionary<Reference<Header>> => {
     return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.headers, this.copyHeader, i => new Header(i))) : new Dictionary<Reference<Header>>();
   }
+
+  copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Reference<Link>> => {
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.links, this.copyLink, i => new Link(i))) : new Dictionary<Reference<Link>>();
+  }
+
 
   copyEncoding = (encodingName: string, original: OpenAPI.Encoding): Encoding => {
     return new Encoding({
@@ -302,16 +307,16 @@ export class Remodeler {
     return original ? CopyDictionary(original, (v) => this.copyEncoding(v, original[v])) : new Dictionary<Encoding>();
   }
 
-  copyMediaType = (mediaTypeName: string, original: OpenAPI.MediaType): MediaType => {
+  copyMediaType = (schemaName: string, original: OpenAPI.MediaType): MediaType => {
     return new MediaType({
-      schema: original.schema ? this.refOrAddSchema(`.${mediaTypeName}.`, this.dereference(original.schema)) : undefined,
+      schema: original.schema ? this.refOrAddSchema(schemaName, this.dereference(original.schema)) : undefined,
       encoding: this.copyEncodings(original.encoding),
       extensions: getExtensionProperties(original),
     });
   }
 
-  copyMediaTypes(original?: Dictionary<OpenAPI.MediaType>): Dictionary<MediaType> {
-    return original ? CopyDictionary(original, (key) => this.copyMediaType(key, original[key])) : new Dictionary<MediaType>();
+  copyMediaTypes(containerName: string, original?: Dictionary<OpenAPI.MediaType>): Dictionary<MediaType> {
+    return original ? CopyDictionary(original, (key) => this.copyMediaType(`.${containerName}.${key}.`, original[key])) : new Dictionary<MediaType>();
   }
 
   remodelPaths(source: Dictionary<Refable<OpenAPI.PathItem>>) {
@@ -354,11 +359,17 @@ export class Remodeler {
 
   copyResponse = (name: string, original: OpenAPI.Response): Response => {
     const response = new Response(original.description || "", {
-      content: todo_unimplemented,
+      // content: this.copyMediaTypes(name, original),
       extensions: getExtensionProperties(original),
-      headers: todo_unimplemented,
-      links: todo_unimplemented
+      headers: this.copyHeaders(name, original.headers),
+      links: this.copyLinks(name, original.links),
     });
+
+    if (original.content) {
+      for (const mediaType in original.content) {
+        response.content[mediaType] = this.copyMediaType(`${name}.${mediaType}`, original.content[mediaType]);
+      }
+    }
 
     return response;
   }
@@ -368,7 +379,7 @@ export class Remodeler {
       description: Interpretations.getDescription("", original),
       extensions: getExtensionProperties(original),
       required: original.required ? original.required : false,
-      content: this.copyMediaTypes(original),
+      content: this.copyMediaTypes(name, original),
     })
   }
 

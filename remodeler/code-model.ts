@@ -362,6 +362,7 @@ export class Response extends Initializer<Response> implements Response {
     super(initializer);
     this.content = (<any>this).content || new Dictionary<MediaType>();
     this.links = (<any>this).links || new Dictionary<Reference<Link>>();
+    this.headers = (<any>this).headers || new Dictionary<Reference<Header>>();
   }
 }
 
@@ -674,7 +675,7 @@ export interface RequestBody extends Extensions {
 }
 export interface Response extends Extensions {
   description: string;
-  headers?: any;
+  headers: Optional<Dictionary<Reference<Header>>>;
   content: Optional<Dictionary<MediaType>>;
   links: Optional<Dictionary<Reference<Link>>>;
 }

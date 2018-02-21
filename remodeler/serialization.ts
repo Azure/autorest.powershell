@@ -9,12 +9,31 @@ const propertyPriority = [
   "description"
 ];
 
+const propertyNegativePriority = [
+  "operations"
+];
+
 function sortWithPriorty(a: any, b: any): number {
   if (a == b) {
     return 0;
   }
   const ia = propertyPriority.indexOf(a);
   const ib = propertyPriority.indexOf(b);
+  const na = propertyNegativePriority.indexOf(a);
+  const nb = propertyNegativePriority.indexOf(b);
+
+  if (na > -1) {
+    if (nb > -1) {
+      return nb - na;
+    }
+    return 1;
+  }
+
+  if (nb > -1) {
+    return -1;
+  }
+
+
   if (ia != -1) {
     return ib != -1 ? ia - ib : -1;
   }
