@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "start": "node ./dist/main.js",
     "build": "tsc -p .",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test ",
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/Azure/autorest.incubator#readme",
   "devDependencies": {
+    "@types/js-yaml": "3.10.1",
     "@types/node": "^8.0.51",
     "mocha": "3.2.0",
     "mocha-typescript": "^1.1.4",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "@microsoft.azure/tasks": "^2.0.12",
-    "@microsoft.azure/autorest-extension-base": "1.0.13"
+    "@microsoft.azure/autorest-extension-base": "1.0.18",
+    "js-yaml": "^3.10.0"
   }
 }
