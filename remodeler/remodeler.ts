@@ -269,7 +269,19 @@ export class Remodeler {
   }
 
   copyHeader = (headerName: string, original: OpenAPI.Header): Header => {
-    const newHeader = new Header({});
+    const newHeader = new Header({
+      deprecated: original.deprecated || false,
+      description: Interpretations.getDescription("", original),
+      allowReserved: original.allowReserved ? true : false,
+      explode: original.explode || false,
+      extensions: getExtensionProperties(original),
+      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Header.${headerName}`, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
+      required: original.required || false,
+      content: todo_unimplemented,
+      allowEmptyValue: false // REALLY? this seems funny.
+    });
+
+    // TODO: not handled: Examples, Example, Content
 
     return newHeader;
   }
@@ -281,7 +293,6 @@ export class Remodeler {
   copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Link> => {
     return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.links, this.copyLink)) : new Dictionary<Link>();
   }
-
 
   copyEncoding = (encodingName: string, original: OpenAPI.Encoding): Encoding => {
     return new Encoding({
