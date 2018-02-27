@@ -20,12 +20,6 @@ function getAllPropertyNames(obj: any) {
   return props;
 }
 
-
-/* function isReference<T>(item: Reference<T> | T): item is Reference<T> {
-  return (<Reference<T>>item).$ref ? true : false;
-}
-*/
-
 export type Reference<T> = T;
 
 /**

@@ -2,7 +2,7 @@ import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extens
 import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from "js-yaml"
 import * as OpenAPI from "./oai3";
 import * as Interpretations from "./interpretations";
-import { dereference, getExtensionProperties, Reference, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
+import { dereference, getExtensionProperties, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
 import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback } from "./code-model";
 import { CodeModelEditor } from "./code-model-editor";
 
@@ -49,7 +49,7 @@ export class Remodeler {
     newSchema.minItems = original.minItems;
     newSchema.uniqueItems = original.uniqueItems;
     if (original.items) {
-      newSchema.items = this.refOrAddSchema(`${name}.itemType`, this.dereference(original.items))
+      newSchema.items = this.refOrAdd(`${name}.itemType`, this.dereference(original.items), this.model.components.schemas, this.copySchema)
     }
   }
 
@@ -133,21 +133,21 @@ export class Remodeler {
     }
     if (original.not) {
       // ensure that the original schema is copied over already.
-      newSchema.not = this.refOrAddSchema(`.${name}.not`, this.dereference(original.not))
+      newSchema.not = this.refOrAdd(`.${name}.not`, this.dereference(original.not), this.model.components.schemas, this.copySchema)
     }
     if (original.allOf) {
       for (const each in original.allOf) {
-        newSchema.allOf.push(this.refOrAddSchema(`.${name}.allOf.${each}`, this.dereference(original.allOf[each])));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.allOf.${each}`, this.dereference(original.allOf[each]), this.model.components.schemas, this.copySchema));
       }
     }
     if (original.anyOf) {
       for (const each in original.anyOf) {
-        newSchema.allOf.push(this.refOrAddSchema(`.${name}.anyOf.${each}`, this.dereference(original.anyOf[each])));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.anyOf.${each}`, this.dereference(original.anyOf[each]), this.model.components.schemas, this.copySchema));
       }
     }
     if (original.oneOf) {
       for (const each in original.oneOf) {
-        newSchema.allOf.push(this.refOrAddSchema(`.${name}.oneOf.${each}`, this.dereference(original.oneOf[each])));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.oneOf.${each}`, this.dereference(original.oneOf[each]), this.model.components.schemas, this.copySchema));
       }
     }
 
@@ -155,7 +155,7 @@ export class Remodeler {
       if (original.additionalProperties === true || original.additionalProperties === false) {
         newSchema.additionalProperties = original.additionalProperties;
       } else {
-        newSchema.additionalProperties = this.refOrAddSchema(`${name}.additionalItemType`, this.dereference(original.additionalProperties))
+        newSchema.additionalProperties = this.refOrAdd(`${name}.additionalItemType`, this.dereference(original.additionalProperties), this.model.components.schemas, this.copySchema);
       }
     }
 
@@ -163,7 +163,7 @@ export class Remodeler {
       for (const propertyName in original.properties) {
         const property = original.properties[propertyName];
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
-        const newPropSchema = this.refOrAddSchema(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema);
+        const newPropSchema = this.refOrAdd(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema, this.model.components.schemas, this.copySchema);
         newSchema.properties[propertyName] = new PropertyReference({
           schema: newPropSchema,
           description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
@@ -179,10 +179,10 @@ export class Remodeler {
     return newSchema;
   }
 
-  private refOrAdd<TSource, TDestination>(nameIfInline: string, ref: Dereferenced<TSource>, dictionary: Dictionary<Reference<TDestination>>, copyFunc: (name: string, source: TSource) => TDestination, newAlias: (a: Partial<TDestination>) => TDestination): Reference<TDestination> {
+  private refOrAdd<TSource, TDestination>(nameIfInline: string, ref: Dereferenced<TSource>, dictionary: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination): TDestination {
     if (!ref.name) {
       // inline definition - extract it out
-      return this.editor.add(nameIfInline, ref, dictionary, copyFunc, newAlias);
+      return this.editor.add(nameIfInline, ref, dictionary, copyFunc);
     }
 
     // it's a reference, make sure it's in the model.
@@ -191,11 +191,7 @@ export class Remodeler {
     }
 
     // it's a global instance that we haven't yet addded, add it and return the ref.
-    return this.editor.add(ref.name, ref, dictionary, copyFunc, newAlias);
-  }
-
-  private refOrAddSchema(nameIfInline: string, ref: Dereferenced<OpenAPI.Schema>) {
-    return this.refOrAdd(nameIfInline, ref, this.model.components.schemas, this.copySchema, (i) => new Schema(i));
+    return this.editor.add(ref.name, ref, dictionary, copyFunc);
   }
 
 
@@ -220,7 +216,7 @@ export class Remodeler {
       style: style,
       explode: original.explode || (style === EncodingStyle.Form ? true : false),
       allowReserved: OpenAPI.isQueryParameter(original) && original.allowReserved ? true : false,
-      schema: OpenAPI.hasSchema(original) ? this.refOrAddSchema(`.Parameter.${name}`, this.dereference(original.schema)) : undefined,
+      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Parameter.${name}`, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
       extensions: getExtensionProperties(original),
     });
 
@@ -235,7 +231,7 @@ export class Remodeler {
 
   remodelParameters(source: Dictionary<Refable<OpenAPI.Parameter>>) {
     for (const parameterName in source) {
-      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Client), (i) => new Parameter(parameterName, ParameterLocation.Alias, ImplementationLocation.Alias, i));
+      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Client));
     }
   }
 
@@ -253,7 +249,7 @@ export class Remodeler {
       externalDocs: Interpretations.getExternalDocs(original.operation.externalDocs),
       tags: original.operation.tags ? [...original.operation.tags] : [],
       summary: original.operation.summary,
-      requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i)) : undefined,
+      requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.components.requestBodies, this.copyRequestBody) : undefined,
       callbacks: todo_unimplemented,
       security: todo_unimplemented
     });
@@ -261,12 +257,12 @@ export class Remodeler {
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method), (i) => new Parameter(p.instance.name, ParameterLocation.Alias, ImplementationLocation.Alias, i)));
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method)));
       }
     }
     // move responses to global section.
     for (const responseCode in original.operation.responses) {
-      newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.components.responses, this.copyResponse, (i) => new Response(i.description || "", i));
+      newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.components.responses, this.copyResponse);
     }
 
     return newOperation;
@@ -278,12 +274,12 @@ export class Remodeler {
     return newHeader;
   }
 
-  copyHeaders = (containerName: string, original?: Dictionary<Refable<OpenAPI.Header>>): Dictionary<Reference<Header>> => {
-    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.headers, this.copyHeader, i => new Header(i))) : new Dictionary<Reference<Header>>();
+  copyHeaders = (containerName: string, original?: Dictionary<Refable<OpenAPI.Header>>): Dictionary<Header> => {
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.headers, this.copyHeader)) : new Dictionary<Header>();
   }
 
-  copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Reference<Link>> => {
-    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.links, this.copyLink, i => new Link(i))) : new Dictionary<Reference<Link>>();
+  copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Link> => {
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.links, this.copyLink)) : new Dictionary<Link>();
   }
 
 
@@ -303,7 +299,7 @@ export class Remodeler {
 
   copyMediaType = (schemaName: string, original: OpenAPI.MediaType): MediaType => {
     return new MediaType({
-      schema: original.schema ? this.refOrAddSchema(schemaName, this.dereference(original.schema)) : undefined,
+      schema: original.schema ? this.refOrAdd(schemaName, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
       encoding: this.copyEncodings(original.encoding),
       extensions: getExtensionProperties(original),
     });
@@ -314,35 +310,12 @@ export class Remodeler {
     for (const path in source) {
       const pathItem = this.dereference(source[path]);
       if (!pathItem.name) {
-        // it's not an alias.
-        // (we're not handling any aliases to pathItems, since we're not actually implementing paths in the code model. )
-        const i = pathItem.instance;
-        // handle methods
-        if (i.get) {
-          this.editor.add(Interpretations.getOperationId("get", path, i.get), { instance: { method: HttpMethod.Get, path, operation: i.get, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
+        for (const method of [HttpMethod.Delete, HttpMethod.Get, HttpMethod.Head, HttpMethod.Options, HttpMethod.Patch, HttpMethod.Post, HttpMethod.Put, HttpMethod.Trace]) {
+          const op = <OpenAPI.HttpOperation>pathItem.instance[method];
+          if (op) {
+            this.editor.add(Interpretations.getOperationId(method, path, op), { instance: { method: method, path, operation: op, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation);
+          }
         }
-        if (i.put) {
-          this.editor.add(Interpretations.getOperationId("put", path, i.put), { instance: { method: HttpMethod.Put, path, operation: i.put, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.post) {
-          this.editor.add(Interpretations.getOperationId("post", path, i.post), { instance: { method: HttpMethod.Post, path, operation: i.post, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.delete) {
-          this.editor.add(Interpretations.getOperationId("delete", path, i.delete), { instance: { method: HttpMethod.Delete, path, operation: i.delete, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.options) {
-          this.editor.add(Interpretations.getOperationId("options", path, i.options), { instance: { method: HttpMethod.Options, path, operation: i.options, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.head) {
-          this.editor.add(Interpretations.getOperationId("head", path, i.head), { instance: { method: HttpMethod.Head, path, operation: i.head, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.patch) {
-          this.editor.add(Interpretations.getOperationId("patch", path, i.patch), { instance: { method: HttpMethod.Patch, path, operation: i.patch, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-        if (i.trace) {
-          this.editor.add(Interpretations.getOperationId("trace", path, i.trace), { instance: { method: HttpMethod.Trace, path, operation: i.trace, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation, () => null);
-        }
-
       }
     }
   }
@@ -410,11 +383,11 @@ export class Remodeler {
   }
 */
 
-  remodelT<TSource, TDestination>(source: Dictionary<Refable<TSource>>, target: Dictionary<Reference<TDestination>>, copyFunc: (name: string, source: TSource) => TDestination, newAlias: (a: Partial<TDestination>) => TDestination): Dictionary<Reference<TDestination>> {
-    const result = new Dictionary<Reference<TDestination>>();
+  remodelT<TSource, TDestination>(source: Dictionary<Refable<TSource>>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination): Dictionary<TDestination> {
+    const result = new Dictionary<TDestination>();
 
     for (const name in source) {
-      result[name] = this.refOrAdd(name, this.dereference(source[name]), target, copyFunc, newAlias);
+      result[name] = this.refOrAdd(name, this.dereference(source[name]), target, copyFunc);
     }
     // if we need the set of references that we just added
     return result;
@@ -443,19 +416,19 @@ export class Remodeler {
   remodel(): CodeModel {
     if (this.oai.components) {
       if (this.oai.components.schemas) {
-        this.remodelT(this.oai.components.schemas, this.model.components.schemas, this.copySchema, (i) => new Schema(i));
+        this.remodelT(this.oai.components.schemas, this.model.components.schemas, this.copySchema);
       }
       if (this.oai.components.parameters) {
         this.remodelParameters(this.oai.components.parameters);
       }
       if (this.oai.components.headers) {
-        this.remodelT(this.oai.components.headers, this.model.components.headers, this.copyHeader, (i) => new Header(i));
+        this.remodelT(this.oai.components.headers, this.model.components.headers, this.copyHeader);
       }
       if (this.oai.components.requestBodies) {
-        this.remodelT(this.oai.components.requestBodies, this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i));
+        this.remodelT(this.oai.components.requestBodies, this.model.components.requestBodies, this.copyRequestBody);
       }
       if (this.oai.components.responses) {
-        this.remodelT(this.oai.components.responses, this.model.components.responses, this.copyResponse, (i) => new Response(i.description || "", i));
+        this.remodelT(this.oai.components.responses, this.model.components.responses, this.copyResponse);
       }
       /* todo: not implemented
       if (this.oai.components.callbacks) {
@@ -463,10 +436,10 @@ export class Remodeler {
       }
       */
       if (this.oai.components.examples) {
-        this.remodelT(this.oai.components.examples, this.model.components.examples, this.copyExample, (i) => new Example(i));
+        this.remodelT(this.oai.components.examples, this.model.components.examples, this.copyExample);
       }
       if (this.oai.components.links) {
-        this.remodelT(this.oai.components.links, this.model.components.links, this.copyLink, (i) => new Link(i));
+        this.remodelT(this.oai.components.links, this.model.components.links, this.copyLink);
       }
       if (this.oai.components.securitySchemes) {
         // todo: unimplemented
