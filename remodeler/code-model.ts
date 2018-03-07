@@ -41,12 +41,16 @@ export class Initializer<T> {
   }
 }
 
-export class Model extends Initializer<Model> implements Model {
+export class Model extends Initializer<Model> implements Model, Implementation<ClientDetails> {
   info: Info;
   openApi = "3.0";
+  details: ClientDetails;
 
   constructor(title: string, version: string, initializer?: Partial<Model>) {
     super(initializer);
+    this.details = (<any>this).details || {};
+    this.details.name = this.details.name || title;
+    this.details.privateData = {};
     this.info = new Info(title, version, initializer ? initializer.info : {});
     this.paths = (<any>this).paths || new Dictionary<PathItem>();
     this.components = (<any>this).components || new Components();
@@ -57,14 +61,20 @@ export class Model extends Initializer<Model> implements Model {
 }
 
 export class Schema extends Initializer<Schema> implements Schema {
-  constructor(initializer?: Partial<Schema>) {
+  details: SchemaDetails;
+
+  constructor(name: string, initializer?: Partial<Schema>) {
     super(initializer);
+    this.details = (<any>this).details || {};
+    this.details.name = this.details.name || name;
+    this.details.privateData = {};
     this.required = (<any>this).required || new Array<string>();
     this.enum = (<any>this).enum || new Array<any>();
     this.allOf = (<any>this).allOf || new Array<Reference<Schema>>();
     this.oneOf = (<any>this).oneOf || new Array<Reference<Schema>>();
     this.anyOf = (<any>this).anyOf || new Array<Reference<Schema>>();
     this.properties = (<any>this).properties || new Dictionary<PropertyReference<Schema>>();
+
   }
 }
 
@@ -85,6 +95,10 @@ export class Components extends Initializer<Components> implements Components {
 }
 
 export type Operation = HttpOperation; //one day ...  | JsonRPCOperation  ...etc
+
+export interface Model extends Implementation<ClientDetails> {
+
+}
 
 export interface Components {
   /**
@@ -107,7 +121,7 @@ export interface Implementation<T extends Details> {
 
 export interface Details {
   /** name used in actual implementation */
-  name?: string;
+  name: string;
 
   /** the container (ie, class) where this is contained */
   container?: string;
@@ -121,6 +135,8 @@ export interface Details {
   /** message used to go along with deprecation */
   deprecationMessage?: string;
 
+  /** object to store any additional private data during code generation */
+  privateData: Dictionary<any>;
 }
 
 
@@ -131,6 +147,9 @@ export enum ImplementationLocation {
   Alias = "Alias"
 }
 
+export interface ClientDetails extends Details {
+
+}
 
 export interface PropertyDetails extends Details {
 }
@@ -172,8 +191,13 @@ export interface PropertyReference<T> extends Implementation<PropertyDetails>, E
 }
 
 export class PropertyReference<T> extends Initializer<PropertyReference<T>> implements PropertyReference<T>  {
-  constructor(initializer?: Partial<PropertyReference<T>>) {
+  details: PropertyDetails;
+
+  constructor(name: string, initializer?: Partial<PropertyReference<T>>) {
     super(initializer);
+    this.details = (<any>this).details || {};
+    this.details.name = this.details.name || name;
+    this.details.privateData = {};
   }
 }
 
@@ -270,7 +294,6 @@ export class Link extends Initializer<Link> implements Link {
   }
 }
 
-
 export class MediaType extends Initializer<MediaType> implements MediaType {
   constructor(initializer?: Partial<MediaType>) {
     super(initializer);
@@ -304,16 +327,19 @@ export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecuri
 }
 
 export class HttpOperation extends Initializer<HttpOperation> implements HttpOperation, Implementation<HttpOperationDetails> {
-  details: HttpOperationDetails
-  constructor(public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
+  details: HttpOperationDetails;
+  constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
     super(initializer);
     this.details = (<any>this).details || {};
+    this.details.name = this.details.name || operationId;
+    this.details.privateData = {};
     this.tags = (<any>this).tags || new Array<string>();
     this.parameters = (<any>this).parameters || new Array<Reference<Parameter>>();
     this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
     this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
     this.security = (<any>this).security || new Array<SecurityRequirement>();
     this.servers = (<any>this).servers || new Array<Server>();
+
   }
 }
 
@@ -323,10 +349,14 @@ export class Parameter extends Initializer<Parameter> implements Parameter, Impl
     super(initializer);
     this.in = inWhere;
     this.details = (<any>this).details || {};
+    this.details.name = this.details.name || name;
     this.details.location = implementation;
+    this.details.privateData = {};
+
     if (inWhere === ParameterLocation.Path) {
       this.required = true;
     }
+
   }
 }
 

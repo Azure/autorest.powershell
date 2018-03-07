@@ -5,6 +5,8 @@ import * as Interpretations from "./interpretations";
 import { dereference, getExtensionProperties, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
 import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback } from "./code-model";
 import { CodeModelEditor } from "./code-model-editor";
+import { StringFormat } from "./known-format";
+import { ModelState } from "#common/model-state";
 
 const todo_unimplemented = undefined;
 
@@ -13,17 +15,17 @@ export class Remodeler {
   private model: CodeModel;
   private editor: CodeModelEditor;
 
-  constructor(private oai: OpenAPI.Model, private service: Host) {
+  private get oai(): OpenAPI.Model {
+    return this.modelState.model;
+  }
+
+  constructor(private modelState: ModelState<OpenAPI.Model>) {
     this.model = new CodeModel(this.oai.info.title, this.oai.info.version);
     this.editor = new CodeModelEditor(this.model);
   }
 
   private dereference<T>(item: Refable<T>): Dereferenced<T> {
     return dereference(this.oai, item);
-  }
-
-  private error(text: string, details: string) {
-    this.service.Message({ Channel: Channel.Error, Text: text, Details: details });
   }
 
   copySchemaIntegerOrNumber(original: OpenAPI.Schema, newSchema: Schema) {
@@ -41,6 +43,7 @@ export class Remodeler {
     newSchema.details = {
       name: Interpretations.getName(name, original),
       description: Interpretations.getDescription("", original),
+      privateData: {}
     };
   }
 
@@ -60,12 +63,52 @@ export class Remodeler {
   }
 
   copySchema = (name: string, original: OpenAPI.Schema): Schema => {
-    const newSchema = new Schema({
+    // normalize/warn about incorrect usage of binary/stream combinations
+    // OAI (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#data-types)
+    // indicates that format: string, type: binary is "any sequence of octets" (ie, the body should be treated as a stream of bytes)
+
+    // extant autorest has been using format: object, type: file -- which is not standard OAI.
+    // there has also been use of type: file -- which is not even remotely standard JSON Schema
+
+    let type = original.type;
+    let format = original.format;
+    if (<string>type === 'file') {
+      type = OpenAPI.JsonType.String;
+      format = StringFormat.Binary;
+      this.modelState.warning(
+        `The schema type 'file' is not a OAI standard type. This has been auto-corrected to 'type:string' and 'format:binary'`,
+        [`TypeFileNotValid`],
+        /* todo: find source location for this node */
+      )
+    }
+
+    if (type === JsonType.Object && format === 'file') {
+      type = OpenAPI.JsonType.String;
+      format = StringFormat.Binary;
+      this.modelState.warning(
+        `The schema type 'object' with format 'file' is not a standard OAI representation. This has been auto-corrected to 'type:string' and 'format:binary'`,
+        [`TypeObjectFormatFileNotValid`],
+        /* todo: find source location for this node */
+      );
+    }
+
+    if (type === undefined && original.properties) {
+      // they have a properties, but didn't say type: object. 
+      type = OpenAPI.JsonType.Object;
+      this.modelState.warning(
+        `The schema with an undefined type and decalared properties is a bit ambigious. This has been auto-corrected to 'type:object'`,
+        [`UndefinedTypeWithSchema`],
+        /* todo: find source location for this node */
+      );
+    }
+
+    const newSchema = new Schema(name, {
       extensions: getExtensionProperties(original),
-      type: original.type,
+      type: type,
+      format: format,
       title: original.title,
       description: original.description,
-      format: original.format,
+
       nullable: original.nullable || false,
       readOnly: original.readOnly || false,
       writeOnly: original.writeOnly || false,
@@ -77,7 +120,7 @@ export class Remodeler {
       example: original.example,
     });
 
-    switch (original.type) {
+    switch (type) {
       case JsonType.Integer:
       case JsonType.Number:
         this.copySchemaIntegerOrNumber(original, newSchema);
@@ -100,7 +143,7 @@ export class Remodeler {
       case JsonType.Boolean:
         break;
       default:
-        throw new Error(`Invalid type '${original.type}' in schema`);
+        throw new Error(`Invalid type '${type}' in schema`);
     }
 
     // copy the enum list across if it's specified
@@ -164,14 +207,15 @@ export class Remodeler {
         const property = original.properties[propertyName];
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
         const newPropSchema = this.refOrAdd(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema, this.model.components.schemas, this.copySchema);
-        newSchema.properties[propertyName] = new PropertyReference({
+        newSchema.properties[propertyName] = new PropertyReference(propertyName, {
           schema: newPropSchema,
           description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
 
           details: {
             description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
             name: Interpretations.getName(propertyName, propertySchema.instance),
-            deprecationMessage: Interpretations.getDeprecationMessage(original)
+            deprecationMessage: Interpretations.getDeprecationMessage(original),
+            privateData: {},
           }
         })
       }
@@ -236,7 +280,7 @@ export class Remodeler {
   }
 
   copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }): HttpOperation => {
-    const newOperation = new HttpOperation(original.path, original.method, {
+    const newOperation = new HttpOperation(name, original.path, original.method, {
       pathDescription: original.pathItem.description,
       pathSummary: original.pathItem.summary,
       pathExtensions: getExtensionProperties(original.pathItem),

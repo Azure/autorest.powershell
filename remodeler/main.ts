@@ -3,6 +3,9 @@ import { Remodeler } from "./remodeler";
 import * as OpenAPI from "./oai3";
 import { deserialize, serialize } from "./serialization";
 import { writeFileSync } from "fs";
+import { ModelState } from "#common/model-state";
+
+
 
 export async function process(service: Host) {
   try {
@@ -15,10 +18,10 @@ export async function process(service: Host) {
     }
 
     const original = await service.ReadFile(files[0]);
-    writeFileSync("C:/work/2018/autorest.incubator/original.yaml", serialize(JSON.parse(original)));
+    // writeFileSync("C:/work/2018/autorest.incubator/generated/original.yaml", serialize(JSON.parse(original)));
 
     // deserialize
-    const remodeler = new Remodeler(await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), service);
+    const remodeler = new Remodeler(new ModelState(service, await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), files[0]));
 
     // go!
     const codeModel = remodeler.remodel();
@@ -26,8 +29,7 @@ export async function process(service: Host) {
     // console.error(require("util").inspect(codeModel));
 
     // output the model 
-    await service.WriteFile("somefile.txt", serialize(codeModel), undefined/*,"code-model-v2"*/);
-
+    await service.WriteFile("code-model-v2.yaml", serialize(codeModel), undefined/*,"code-model-v2"*/);
 
   } catch (E) {
     console.error(E);

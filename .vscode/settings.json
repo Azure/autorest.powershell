@@ -3,6 +3,8 @@
   "files.eol": "\n",
   "files.exclude": {
     "node_modules/**": true,
+    "dist/**": true,
+    "generated/**": true,
     "**/node_modules/**": true,
     "**/*.js.map": true,
     "**/*.js": {

@@ -24,12 +24,11 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 ``` yaml 
 # remodeler:
     
-
-    
 pipeline: 
   remodeler:
     input: openapi-document/identity
     output-artifact: code-model-v2
+
   remodeler/emitter:
     input: remodeler
     scope: scope-remodeler/emitter
@@ -41,22 +40,16 @@ scope-remodeler/emitter:
   output-uri-expr: | 
     "code-model-v2"
   
-output-artifact: code-model-v2.yaml
-
-
+# output-artifact: code-model-v2.yaml
   
 
 ````
 
 
 
-
-
-
-
 #### LLC#
 
-``` yaml
+``` yaml $(llcsharp)
 pipeline:
   llcsharp/generate:
     scope: llcsharp
@@ -70,6 +63,10 @@ pipeline:
 scope-llcsharp/emitter:
   input-artifact: source-file-csharp
   
+output-artifact: 
+  - source-file-csharp
+  - code-model-v2.yaml
+
 ```
 
 #### LLIA
