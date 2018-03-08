@@ -1,5 +1,5 @@
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier, highestAccess } from "#lowlevel-csharp/code-dom/access-modifier";
+import { AccessModifier, highestAccess } from "#csharp-code-dom/access-modifier";
 import { Property } from "./property";
 
 export class InterfaceProperty extends Property {
@@ -10,7 +10,7 @@ export class InterfaceProperty extends Property {
     super(name, type);
   }
 
-  public get implementation(): string {
+  public get declaration(): string {
     const get = this.readVisibility === AccessModifier.Public ? "get;" : "";
     const set = this.writeVisibility === AccessModifier.Public ? "set;" : "";
 

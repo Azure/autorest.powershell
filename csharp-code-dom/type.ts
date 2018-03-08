@@ -2,7 +2,7 @@ import { Interface } from "./interface";
 import { Method } from "./method";
 import { Property } from "./property";
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier } from "#lowlevel-csharp/code-dom/access-modifier";
+import { AccessModifier } from "#csharp-code-dom/access-modifier";
 
 export class Type implements TypeDeclaration {
   public description: string = "";

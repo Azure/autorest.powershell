@@ -1,5 +1,5 @@
 import { Type } from "./type";
-import { comment, docComment, sortByName, indent, EOL } from "#common/text-manipulation";
+import { comment, docCommentPrefix, sortByName, indent, EOL } from "#common/text-manipulation";
 
 export class Interface extends Type {
   constructor(public name: string, public interfaces = new Array<Interface>(), public genericParameters = new Array<string>(), public where?: string) {
@@ -9,9 +9,9 @@ export class Interface extends Type {
   public get implementation(): string {
     const colon = this.interfaces.length > 0 ? ' : ' : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
-    const description = comment(this.description, docComment);
+    const description = comment(this.description, docCommentPrefix);
     const methods = this.methods.sort(sortByName).map(m => m.implementation).join(EOL);
-    const properties = this.properties.sort(sortByName).map(m => m.implementation).join(EOL);
+    const properties = this.properties.sort(sortByName).map(m => m.declaration).join(EOL);
 
     return `
 ${description}    

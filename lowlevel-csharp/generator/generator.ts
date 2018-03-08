@@ -3,7 +3,7 @@ import { Host, JsonPath } from "@microsoft.azure/autorest-extension-base";
 import { ModelState } from "#common/model-state";
 import { Model, Schema } from "remodeler/code-model";
 
-import { TypeDeclaration } from "#lowlevel-csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 import { Project } from "./project";
 
 

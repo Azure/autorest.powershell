@@ -1,12 +1,12 @@
 import * as codemodel from "#remodeler/code-model";
-import * as mscorlib from "../../code-dom/mscorlib";
+import * as mscorlib from "#csharp-code-dom/mscorlib";
 import * as message from "../messages";
 
-import { Class } from "../../code-dom/class";
+import { Class } from "#csharp-code-dom/class";
 import { OperationMethod } from "../operation/method";
 import { ModelState } from "#common/model-state";
 import { Model } from "#remodeler/code-model";
-import { Namespace } from "../../code-dom/namespace";
+import { Namespace } from "#csharp-code-dom/namespace";
 import { Project } from "../project";
 import { State } from "../generator";
 
@@ -25,8 +25,8 @@ export class ApiClass extends Class {
     project.serviceNamespace.addClass(result);
 
     // add operations from code model
-    for (const operation in state.model.components.operations) {
-      result.addMethod(await OperationMethod.Process(state.path('components', 'operations', operation), state.model.components.operations[operation]));
+    for (const operationName in state.model.components.operations) {
+      await OperationMethod.create(result, state.model.components.operations[operationName], state.path('components', 'operations', operationName));
     }
 
     // add constructors 

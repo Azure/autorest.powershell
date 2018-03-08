@@ -1,4 +1,4 @@
-export class Using {
+export class Import {
   constructor(private namespace: string) {
 
   }

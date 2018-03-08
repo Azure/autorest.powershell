@@ -1,7 +1,8 @@
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier, highestAccess } from "#lowlevel-csharp/code-dom/access-modifier";
+import { AccessModifier, highestAccess } from "#csharp-code-dom/access-modifier";
+import { Expression } from "#csharp-code-dom/expression";
 
-export class Property {
+export class Property implements Expression {
   public readVisibility = AccessModifier.Public;
   public writeVisibility = AccessModifier.Public;
 
@@ -20,7 +21,10 @@ export class Property {
     return this.writeVisibility == this.visibility ? "set" : `${this.writeVisibility} set`
   };
 
-  public get implementation(): string {
+  public get declaration(): string {
     return `${this.visibility} ${this.type.use} ${this.name} { ${this.getter}; ${this.setter}; };`
+  }
+  public get value(): string {
+    return `${this.name}`;
   }
 }

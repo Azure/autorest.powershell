@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#lowlevel-csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 
 export class DateTime implements TypeDeclaration {
   get implementation(): string {

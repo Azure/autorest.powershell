@@ -1,4 +1,4 @@
-import { Namespace } from "../../code-dom/namespace";
+import { Namespace } from "#csharp-code-dom/namespace";
 import { State } from "../generator";
 
 export class SupportNamespace extends Namespace {

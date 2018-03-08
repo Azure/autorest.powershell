@@ -1,9 +1,42 @@
 
 let indentation = "    ";
 
-export const lineComment = '//';
-export const docComment = '///';
+export const lineCommentPrefix = '//';
+export const docCommentPrefix = '///';
 export const EOL = '\n';
+export const CommaChar = ', ';
+
+
+
+declare global {
+  interface Array<T> {
+    joinWith(selector: (t: T) => string, separator?: string): string;
+  }
+
+  interface String {
+    capitalize(): string;
+  }
+}
+
+Array.prototype.joinWith = function <T>(selector: (t: T) => string, separator?: string): string {
+  return (<Array<T>>this).map(selector).filter(v => v ? true : false).join(separator || CommaChar);
+};
+
+String.prototype.capitalize = function (): string {
+  const result = <string>this;
+  if (result) {
+    return `${result.charAt(0).toUpperCase()}${result.substr(1)}`;
+  }
+  return result;
+
+}
+
+export function joinComma<T>(items: Array<T>, mapFn: (item: T) => string) {
+  return join(items.map(mapFn), CommaChar);
+}
+export function join<T>(items: Array<T>, separator: string) {
+  return items.filter(v => v ? true : false).join(separator);
+}
 
 export interface IHasName {
   name: string;
@@ -35,8 +68,10 @@ export function toMap<T>(source: Array<T>, eachFn: (item: T) => string): Map<str
   }
   return result;
 }
-
-export function comment(content: string, prefix = lineComment, factor = 0, maxLength = 120) {
+export function docComment(content: string, prefix = docCommentPrefix, factor = 0, maxLength = 120) {
+  return comment(content, prefix, factor, maxLength);
+}
+export function comment(content: string, prefix = lineCommentPrefix, factor = 0, maxLength = 120) {
   const result = new Array<string>();
   let line = '';
   prefix = indent(prefix, factor);
@@ -77,7 +112,7 @@ export function fixEOL(content: string) {
   return content.replace(/\r\n/g, EOL);
 }
 
-export function indent(content: string, factor: number): string {
+export function indent(content: string, factor: number = 1): string {
   const i = indentation.repeat(factor);
   content = i + fixEOL(content.trim());
   return content.split(/\n/g).join(`${EOL}${i}`);

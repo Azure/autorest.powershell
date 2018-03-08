@@ -1,8 +1,8 @@
 import { Host } from "@microsoft.azure/autorest-extension-base";
-import { Namespace } from "./code-dom/namespace";
-import { Interface } from "./code-dom/interface";
-import { Using } from "./code-dom/using";
-import { Class } from "./code-dom/class";
+import { Namespace } from "#csharp-code-dom/namespace";
+import { Interface } from "#csharp-code-dom/interface";
+import { Import } from "#csharp-code-dom/import";
+import { Class } from "#csharp-code-dom/class";
 import { safeLoad } from "js-yaml";
 import { ApiClass } from "./generator/operation/api-class";
 import { Model } from "#remodeler/code-model";

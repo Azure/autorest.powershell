@@ -32,6 +32,9 @@
       ],
       "#lowlevel-csharp/*": [
         "lowlevel-csharp/*"
+      ],
+      "#csharp-code-dom/*": [
+        "csharp-code-dom/*"
       ]
     }
   },

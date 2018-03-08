@@ -1,11 +1,11 @@
-import { Property } from "../../code-dom/property";
-import { TypeDeclaration } from "#lowlevel-csharp/code-dom/type-declaration";
+import { Property } from "#csharp-code-dom/property";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 import { ModelClass } from "./class";
 import { ModelInterface } from "./interface";
 import * as codeModel from "#remodeler/code-model";
 import { State } from "../generator";
-import { ToDo } from "../../code-dom/mscorlib";
-import { Interface } from "../../code-dom/interface";
+import { ToDo } from "#csharp-code-dom/mscorlib";
+import { Interface } from "#csharp-code-dom/interface";
 
 export class ModelProperty extends Property {
   protected constructor(name: string, type: TypeDeclaration) {

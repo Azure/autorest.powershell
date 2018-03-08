@@ -6,6 +6,7 @@
 import { AutoRestExtension, } from "@microsoft.azure/autorest-extension-base";
 import { process as remodeler } from "./remodeler/main";
 import { process as llcsharp } from "./lowlevel-csharp/main";
+import { CommaChar } from "#common/text-manipulation";
 
 require('source-map-support').install();
 

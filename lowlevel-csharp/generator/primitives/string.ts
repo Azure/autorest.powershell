@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "../../code-dom/type-declaration";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 
 export class String implements TypeDeclaration {
   constructor(private minLength?: number, private maxLength?: number, private pattern?: string, private choices?: Array<string>) {

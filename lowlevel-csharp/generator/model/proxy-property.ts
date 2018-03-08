@@ -1,5 +1,5 @@
-import { Property } from "../../code-dom/property";
-import { TypeDeclaration } from "../../code-dom/type-declaration";
+import { Property } from "#csharp-code-dom/property";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 import { ModelClass } from "./class";
 import { State } from "../generator";
 import { BackingField } from "./backing-field";
@@ -15,7 +15,7 @@ export class ProxyProperty extends Property {
     return pp;
   }
 
-  public get implementation(): string {
+  public get declaration(): string {
     return `
 ${this.visibility} ${this.type.use} ${this.name} { 
     ${this.getter} { return ${this.backingField.name}.${this.property.name}; } 

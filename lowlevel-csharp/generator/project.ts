@@ -1,7 +1,7 @@
-import { Project as codeDomProject } from "../code-dom/project";
+import { Project as codeDomProject } from "#csharp-code-dom/project";
 import { Model, JsonType } from "#remodeler/code-model";
 import { ApiClass } from "./operation/api-class";
-import { Namespace } from "../code-dom/namespace";
+import { Namespace } from "#csharp-code-dom/namespace";
 import * as message from "./messages";
 import { State } from "./generator";
 import { ModelClass } from "./model/class";

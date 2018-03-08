@@ -2,11 +2,11 @@ import { comment, indent, dotCombine, toMap, EOL } from "#common/text-manipulati
 import { Delegate } from "./delegate";
 import { Interface } from "./interface";
 import { Class } from "./class";
-import { Using } from "./using";
+import { Import } from "./import";
 import { Project } from "./project";
 
 export class Namespace {
-  private usings = new Array<Using>();
+  private usings = new Array<Import>();
   private classes = new Array<Class>();
   private interfaces = new Array<Interface>();
   private delegates = new Array<Delegate>();
@@ -17,7 +17,7 @@ export class Namespace {
 
   }
 
-  public addUsing(using: Using): Using {
+  public addUsing(using: Import): Import {
     this.usings.push(using);
     return using;
   }

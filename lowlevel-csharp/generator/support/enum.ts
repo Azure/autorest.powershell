@@ -1,4 +1,4 @@
-import { Class } from "../../code-dom/class";
+import { Class } from "#csharp-code-dom/class";
 import { Project } from "../project";
 import { State } from "../generator";
 import { Schema } from "#remodeler/code-model";

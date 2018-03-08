@@ -1,4 +1,4 @@
-import { Namespace } from "../../code-dom/namespace";
+import { Namespace } from "#csharp-code-dom/namespace";
 import { Project } from "../project";
 import { State } from "../generator";
 import { ModelsNamespace } from "../model/namespace";

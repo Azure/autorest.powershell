@@ -1,9 +1,9 @@
 import * as codeModel from "#remodeler/code-model";
 import { State } from "../generator";
 
-import { Field } from "../../code-dom/field";
+import { Field } from "#csharp-code-dom/field";
 import { ModelClass } from "./class";
-import { TypeDeclaration } from "#lowlevel-csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 
 export class BackingField extends Field {
   protected constructor(name: string, type: TypeDeclaration) {

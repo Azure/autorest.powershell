@@ -1,6 +1,6 @@
 import * as message from "../messages";
 import * as validation from "../validations";
-import { Namespace } from "../../code-dom/namespace";
+import { Namespace } from "#csharp-code-dom/namespace";
 import { Project } from "../project";
 import { State } from "../generator";
 import { Dictionary } from "#remodeler/common";
@@ -8,7 +8,7 @@ import { Schema, JsonType } from "#remodeler/code-model";
 import { ModelClass } from "./class";
 import { StringFormat } from "#remodeler/known-format";
 import { hasProperties } from "#common/text-manipulation";
-import { TypeDeclaration } from "#lowlevel-csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "#csharp-code-dom/type-declaration";
 import { getKnownFormatType } from "#remodeler/interpretations";
 
 import { Wildcard, UntypedWildcard } from "../primitives/wildcard"
@@ -39,9 +39,9 @@ export class ModelsNamespace extends Namespace {
   }
 
   public async init(): Promise<ModelsNamespace> {
-    for (const each in this.schemas) {
-      const schema = this.schemas[each];
-      const state = this.state.path(each);
+    for (const schemaName in this.schemas) {
+      const schema = this.schemas[schemaName];
+      const state = this.state.path(schemaName);
 
       // verify that the model isn't in a bad state
       if (validation.objectWithFormat(schema, state)) {

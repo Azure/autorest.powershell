@@ -1,14 +1,14 @@
 import * as codemodel from "#remodeler/code-model";
-import * as mscorlib from "../../code-dom/mscorlib";
+import * as mscorlib from "#csharp-code-dom/mscorlib";
 import * as message from "../messages";
-import { Class } from "../../code-dom/class";
+import { Class } from "#csharp-code-dom/class";
 import { ModelProperty } from "./property";
 import { ModelInterface } from "./interface"
 
 import { State } from "../generator";
 import { Schema } from "#remodeler/code-model";
-import { Namespace } from "../../code-dom/namespace";
-import { Interface } from "../../code-dom/interface";
+import { Namespace } from "#csharp-code-dom/namespace";
+import { Interface } from "#csharp-code-dom/interface";
 import { BackingField } from "./backing-field";
 import { ProxyProperty } from "./proxy-property";
 
@@ -40,7 +40,7 @@ export class ModelClass extends Class {
 
     // handle <allOf>s 
     // add an 'implements' for the interface for the allOf.
-    for (const allOf in schema.allOf) {
+    for (let allOf = 0; allOf < schema.allOf.length; allOf++) {
       const aSchema = schema.allOf[allOf];
       const aState = state.path("allOf");
 
@@ -64,10 +64,10 @@ export class ModelClass extends Class {
 
 
     // add properties
-    for (const each in schema.properties) {
-      const property = schema.properties[each];
+    for (const propertyName in schema.properties) {
+      const property = schema.properties[propertyName];
 
-      ModelProperty.create(modelClass, property, state.path('properties', each));
+      ModelProperty.create(modelClass, property, state.path('properties', propertyName));
     }
 
     if (schema.additionalProperties) {

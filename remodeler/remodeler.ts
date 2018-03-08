@@ -179,18 +179,18 @@ export class Remodeler {
       newSchema.not = this.refOrAdd(`.${name}.not`, this.dereference(original.not), this.model.components.schemas, this.copySchema)
     }
     if (original.allOf) {
-      for (const each in original.allOf) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.allOf.${each}`, this.dereference(original.allOf[each]), this.model.components.schemas, this.copySchema));
+      for (let index = 0; index < original.allOf.length; index++) {
+        newSchema.allOf.push(this.refOrAdd(`.${name}.allOf.${index}`, this.dereference(original.allOf[index]), this.model.components.schemas, this.copySchema));
       }
     }
     if (original.anyOf) {
-      for (const each in original.anyOf) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.anyOf.${each}`, this.dereference(original.anyOf[each]), this.model.components.schemas, this.copySchema));
+      for (let index = 0; index < original.anyOf.length; index++) {
+        newSchema.allOf.push(this.refOrAdd(`.${name}.anyOf.${index}`, this.dereference(original.anyOf[index]), this.model.components.schemas, this.copySchema));
       }
     }
     if (original.oneOf) {
-      for (const each in original.oneOf) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.oneOf.${each}`, this.dereference(original.oneOf[each]), this.model.components.schemas, this.copySchema));
+      for (let index = 0; index < original.oneOf.length; index++) {
+        newSchema.allOf.push(this.refOrAdd(`.${name}.oneOf.${index}`, this.dereference(original.oneOf[index]), this.model.components.schemas, this.copySchema));
       }
     }
 

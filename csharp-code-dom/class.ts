@@ -1,6 +1,6 @@
 import { Type } from "./type";
 import { Interface } from "./interface";
-import { comment, docComment, sortByName, indent, EOL } from "#common/text-manipulation";
+import { comment, docCommentPrefix, sortByName, indent, EOL } from "#common/text-manipulation";
 import { Field } from "./field";
 import { Method } from "./method";
 import { Property } from "./property";
@@ -19,7 +19,7 @@ export class Class extends Type {
 
     const extendsClass = this.extendsClass ? this.extendsClass.fullName : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
-    const description = comment(this.description, docComment);
+    const description = comment(this.description, docCommentPrefix);
     const partial = this.partial ? "partial " : "";
     return `
 ${description}
@@ -28,9 +28,9 @@ ${this.accessModifier} ${partial}class ${this.name}${colon}${extendsClass}${comm
   }
 
   public get implementation(): string {
-    const fields = this.fields.sort(sortByName).map(m => m.implementation).join(EOL);
+    const fields = this.fields.sort(sortByName).map(m => m.declaration).join(EOL);
     const methods = this.methods.sort(sortByName).map(m => m.implementation).join(EOL);
-    const properties = this.properties.sort(sortByName).map(m => m.implementation).join(EOL);
+    const properties = this.properties.sort(sortByName).map(m => m.declaration).join(EOL);
 
     return `
 ${this.declaration} {

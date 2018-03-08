@@ -1,6 +1,6 @@
 import { TypeDeclaration } from "./type-declaration";
 
-class LibraryType implements TypeDeclaration {
+export class LibraryType implements TypeDeclaration {
   constructor(private fullName: string) {
   }
 
@@ -31,3 +31,5 @@ export const Binary: TypeDeclaration = new LibraryType("byte[]");
 
 
 export const Task: TypeDeclaration = new LibraryType("System.Threading.Tasks.Task");
+export const CancellationToken: TypeDeclaration = new LibraryType("System.Threading.Tasks.CancellationToken");
+export const EventListener: TypeDeclaration = new LibraryType("Microsoft.Rest.EventListener");
