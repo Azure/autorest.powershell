@@ -4,10 +4,10 @@ import { Interface } from "#csharp-code-dom/interface";
 import { Import } from "#csharp-code-dom/import";
 import { Class } from "#csharp-code-dom/class";
 import { safeLoad } from "js-yaml";
-import { ApiClass } from "./generator/operation/api-class";
+import { ApiClass } from "./operation/api-class";
 import { Model } from "#remodeler/code-model";
-import { Project } from "./generator/project";
-import { State } from "./generator/generator";
+import { Project } from "./project";
+import { State } from "./generator";
 
 export async function deserialize<T>(text: string, filename: string) {
   return <T>safeLoad(await text, {
