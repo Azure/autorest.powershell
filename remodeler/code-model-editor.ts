@@ -6,7 +6,7 @@ export class CodeModelEditor {
 
   }
 
-  add<TSource, TDestination>(name: string, original: Dereferenced<TSource>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination, newAlias: (a: any) => TDestination): TDestination {
+  add<TSource, TDestination>(name: string, original: Dereferenced<TSource>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination): TDestination {
     // is this an alias to another model?
     if (original.name) {
       // console.error(`adding something with a name: ${name},${original.name}`);
@@ -19,7 +19,7 @@ export class CodeModelEditor {
       }
 
       // otherwise, create the referenced type, and then add it again with our name,
-      const actual = this.add(original.name, { instance: original.instance }, target, copyFunc, newAlias);
+      const actual = this.add(original.name, { instance: original.instance }, target, copyFunc);
       return this.safeAdd(target, name, actual);
     }
 

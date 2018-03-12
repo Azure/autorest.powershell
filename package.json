@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node ./dist/main.js",
-    "build": "tsc -p .",
+    "build": "tsc -p . && node .scripts/fix-aliased-imports.js",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test ",
     "testci": "npm run build && mocha dist/test ",
@@ -36,11 +36,13 @@
     "mocha-typescript": "^1.1.4",
     "semver": "^5.4.1",
     "shx": "^0.2.2",
-    "typescript": "^2.6.1"
+    "tspath": "^1.2.10",
+    "typescript": "2.7.2"
   },
   "dependencies": {
     "@microsoft.azure/tasks": "^2.0.12",
     "@microsoft.azure/autorest-extension-base": "1.0.18",
+    "source-map-support": "0.5.3",
     "js-yaml": "^3.10.0"
   }
 }

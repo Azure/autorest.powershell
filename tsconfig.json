@@ -21,7 +21,22 @@
       "es2017"
     ],
     "experimentalDecorators": true,
-    "newLine": "LF"
+    "newLine": "LF",
+    "baseUrl": ".",
+    "paths": {
+      "#common/*": [
+        "common/*"
+      ],
+      "#remodeler/*": [
+        "remodeler/*"
+      ],
+      "#lowlevel-csharp/*": [
+        "lowlevel-csharp/*"
+      ],
+      "#csharp/*": [
+        "csharp/*"
+      ]
+    }
   },
   "exclude": [
     "dist",
