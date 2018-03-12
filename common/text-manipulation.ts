@@ -124,4 +124,70 @@ export function all<T, U>(array: Array<T>, callbackfn: (value: T, index: number,
 
 export function hasProperties(obj: any) {
   return Object.getOwnPropertyNames(obj).length > 0 ? true : false;
-} 
+}
+
+export function deconstruct(identifier: string): Array<string> {
+  return identifier.replace(/([a-z]+)([A-Z])/g, "$1 $2").replace(/(\d+)([a-z|A-Z]+)/g, "$1 $2").split(/[\W|_]+/);
+}
+
+export function fixLeadingNumber(identifier: Array<string>): Array<string> {
+  if (identifier.length > 0 && /\d+/.exec(identifier[0])) {
+    return [...convert(parseInt(identifier[0])), ...identifier.slice(1)];
+  }
+  return identifier;
+}
+
+const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+const magnitude = ['thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'septillion', 'octillion']
+const magvalues = [10 ** 3, 10 ** 6, 10 ** 9, 10 ** 12, 10 ** 15, 10 ** 18, 10 ** 21, 10 ** 24, 10 ** 27];
+
+export function* convert(num: number): Iterable<string> {
+  if (!num) {
+    yield 'zero';
+    return;
+  }
+  if (num > 1e+30) {
+    yield 'lots';
+    return;;
+  }
+
+  if (num > 999) {
+    for (let i = magvalues.length; i > -1; i--) {
+      const c = magvalues[i];
+      if (num > c) {
+        yield* convert(Math.floor(num / c))
+        yield magnitude[i];
+        num = num % c
+
+      }
+    }
+  }
+  if (num > 99) {
+    yield ones[Math.floor(num / 100)];
+    yield `hundred`;
+    num %= 100
+  }
+  if (num > 19) {
+    yield tens[Math.floor(num / 10)];
+    num %= 10
+  }
+  if (num) {
+    yield ones[num];
+  }
+}
+
+export function camelCase(identifier: Array<string>): string {
+  switch (identifier.length) {
+    case 0:
+      return '';
+    case 1:
+      return identifier[0];
+  }
+  return `${identifier[0]}${pascalCase(identifier.slice(1))}`;
+}
+
+export function pascalCase(identifier: Array<string>): string {
+  return identifier.map(each => each.capitalize()).join("");
+}

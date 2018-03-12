@@ -51,11 +51,23 @@ scope-remodeler/emitter:
 
 ``` yaml $(llcsharp)
 pipeline:
+
+  llcsharp/inferrer:
+    scope: llcsharp
+    input: remodeler
+    output-artifact: code-model-v2
+
+  llcsharp/csnamer:
+    scope: llcsharp
+    input: inferrer
+    output-artifact: code-model-v2
+
   llcsharp/generate:
     scope: llcsharp
     plugin: llcsharp
-    input: remodeler
+    input: csnamer
     output-artifact: source-file-csharp
+
   llcsharp/emitter:
     input: generate
     scope: scope-llcsharp/emitter

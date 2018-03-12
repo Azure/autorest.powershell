@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node ./dist/main.js",
-    "build": "tsc -p . && node .scripts/replace-path.js",
+    "build": "tsc -p . && node .scripts/fix-aliased-imports.js",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test ",
     "testci": "npm run build && mocha dist/test ",
