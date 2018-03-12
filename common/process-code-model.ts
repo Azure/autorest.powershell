@@ -4,7 +4,7 @@ import { ModelState } from "#common/model-state";
 import { Model } from "remodeler/code-model";
 import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
 
-export async function process(service: Host) {
+export async function processCodeModel(processExtension: (input: Model, service: Host) => Promise<Model>, service: Host) {
   try {
     // Get the list of files 
     const files = await service.ListInputs();
@@ -17,9 +17,9 @@ export async function process(service: Host) {
     const original = await service.ReadFile(files[0]);
 
     // deserialize
-    const codeModel = await deserialize<Model>(await service.ReadFile(files[0]), files[0]);
+    let codeModel = await deserialize<Model>(await service.ReadFile(files[0]), files[0]);
 
-
+    codeModel = await processExtension(codeModel, service);
 
     // output the model 
     await service.WriteFile("code-model-v2.yaml", serialize(codeModel), undefined/*,"code-model-v2"*/);
