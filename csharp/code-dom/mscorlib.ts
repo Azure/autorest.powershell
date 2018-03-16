@@ -28,6 +28,8 @@ export const Float: TypeDeclaration = new LibraryType("float");
 export const Date: TypeDeclaration = new LibraryType("DateTime");
 export const Duration: TypeDeclaration = new LibraryType("TimeSpan");
 export const Binary: TypeDeclaration = new LibraryType("byte[]");
+export const Bool: TypeDeclaration = new LibraryType("bool");
+export const Object: TypeDeclaration = new LibraryType("object");
 
 
 export const Task: TypeDeclaration = new LibraryType("System.Threading.Tasks.Task");

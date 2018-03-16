@@ -147,6 +147,18 @@ export enum ImplementationLocation {
   Alias = "Alias"
 }
 
+export interface EnumValue {
+  value: any,
+  description: string,
+  name: string
+}
+
+export interface EnumDetails {
+  modelAsString: boolean;
+  values: Array<EnumValue>;
+  name: string
+}
+
 export interface ClientDetails extends Details {
 
 }
@@ -159,6 +171,7 @@ export interface ParameterDetails extends Details {
 }
 
 export interface SchemaDetails extends Details {
+  enum?: EnumDetails;
 }
 
 export interface HttpOperationDetails extends Details {

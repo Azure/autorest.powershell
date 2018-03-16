@@ -151,6 +151,8 @@ export class Remodeler {
       newSchema.enum = [...original.enum];
     }
 
+    newSchema.details.enum = Interpretations.getEnumDefinition(original);
+
     // object properties
     // discriminator
     if (original.discriminator && original.discriminator.propertyName) {

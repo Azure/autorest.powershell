@@ -9,31 +9,25 @@ import { State } from "../generator";
 import { Schema } from "#remodeler/code-model";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { Interface } from "#csharp/code-dom/interface";
-import { BackingField } from "./backing-field";
 import { ProxyProperty } from "./proxy-property";
+import { Field } from "#csharp/code-dom/field";
+import { AccessModifier } from "#csharp/code-dom/access-modifier";
 
 export class ModelClass extends Class {
 
-  protected constructor(parent: Namespace, name: string, state: State) {
-    super(parent, name);
-  }
-
-  public static async create(parent: Namespace, schema: Schema, state: State): Promise<ModelClass> {
-    if (schema.details.privateData["class-implementation"]) {
-      // if we've already created this type, return the implementation of it.
-      return schema.details.privateData["class-implementation"];
-    }
-    const modelClass = new ModelClass(parent, schema.details.name, state);
+  constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelClass>) {
+    super(namespace, schema.details.name);
+    this.apply(objectInitializer);
 
     // mark the code-model with the class we're creating.
-    schema.details.privateData["class-implementation"] = modelClass;
+    schema.details.privateData["class-implementation"] = this;
 
     // track the namespace we've used.
-    schema.details.namespace = parent.fullName;
+    schema.details.namespace = namespace.fullName;
 
     // create an interface for this model class
-    const modelInterface = await ModelInterface.create(parent, schema, state);
-    modelClass.interfaces.push(modelInterface);
+    const modelInterface = schema.details.privateData["interface-implementation"] || new ModelInterface(namespace, schema, state);
+    this.interfaces.push(modelInterface);
 
     // handle <allOf>s 
     // add an 'implements' for the interface for the allOf.
@@ -41,7 +35,7 @@ export class ModelClass extends Class {
       const aSchema = schema.allOf[allOf];
       const aState = state.path("allOf");
 
-      const td = await state.project.modelsNamespace.resolveTypeDeclaration(aSchema, aState);
+      const td = state.project.modelsNamespace.resolveTypeDeclaration(aSchema, aState);
 
       // add the interface as a parent to our interface.
       const iface: ModelInterface = aSchema.details.privateData["interface-implementation"];
@@ -49,12 +43,10 @@ export class ModelClass extends Class {
       modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = await BackingField.create(modelClass, `_allof_${allOf}`, td, aState);
+      const backingField = this.addField(new Field(`_allof_${allOf}`, td, { visibility: AccessModifier.Private }));
 
       // now, create proxy properties for the members
-      for (const each of iface.properties) {
-        await ProxyProperty.create(modelClass, backingField, each, state);
-      }
+      iface.allProperties.map(each => this.addProperty(new ProxyProperty(backingField, each, state)));
     }
     // generate a protected backing field for each
     // and then expand the nested properties into this class forwarding to the member.
@@ -64,7 +56,7 @@ export class ModelClass extends Class {
     for (const propertyName in schema.properties) {
       const property = schema.properties[propertyName];
 
-      ModelProperty.create(modelClass, property, state.path('properties', propertyName));
+      this.addProperty(new ModelProperty(this, property, state.path('properties', propertyName)));
     }
 
     if (schema.additionalProperties) {
@@ -78,11 +70,5 @@ export class ModelClass extends Class {
     }
 
 
-    // add constructors 
-
-    // add serialization 
-
-
-    return modelClass;
   }
 }

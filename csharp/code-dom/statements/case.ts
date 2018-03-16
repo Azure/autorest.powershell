@@ -2,8 +2,9 @@ import { OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/sta
 import { indent } from "#common/text-manipulation";
 
 export class Case extends Statements {
-  constructor(private value: string, body: OneOrMoreStatements) {
+  constructor(private value: string, body: OneOrMoreStatements, objectInitializer?: Partial<Case>) {
     super(body);
+    this.apply(objectInitializer);
   }
 
   protected get statementsImplementation(): string {
@@ -19,8 +20,9 @@ ${indent('break')};
 }
 
 export class DefaultCase extends Case {
-  constructor(body: OneOrMoreStatements) {
+  constructor(body: OneOrMoreStatements, objectInitializer?: Partial<DefaultCase>) {
     super("", body);
+    this.apply(objectInitializer);
   }
 
   public get implementation(): string {
@@ -34,8 +36,9 @@ ${indent('break')};
 
 
 export class TerminalDefaultCase extends Case {
-  constructor(body: OneOrMoreStatements) {
+  constructor(body: OneOrMoreStatements, objectInitializer?: Partial<TerminalDefaultCase>) {
     super("", body);
+    this.apply(objectInitializer);
   }
 
   public get implementation(): string {

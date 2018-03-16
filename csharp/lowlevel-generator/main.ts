@@ -48,7 +48,7 @@ export async function process(service: Host) {
 
     const modelState = new State(service, model, filename);
 
-    const project = await Project.create(modelState);
+    const project = new Project(modelState);
 
     await project.writeFiles(async (filename, content) => await service.WriteFile(filename, content, undefined));
 

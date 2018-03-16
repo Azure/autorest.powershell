@@ -4,8 +4,9 @@ import { Interface } from "./interface";
 import { Class } from "./class";
 import { Import } from "./import";
 import { Project } from "./project";
+import { Initializer } from "#csharp/code-dom/initializer";
 
-export class Namespace {
+export class Namespace extends Initializer {
   private usings = new Array<Import>();
   private classes = new Array<Class>();
   private interfaces = new Array<Interface>();
@@ -13,28 +14,39 @@ export class Namespace {
   private namespaces = new Array<Namespace>();
   public header: string = "";
 
-  constructor(public name: string, protected parent?: Project | Namespace) {
-
+  constructor(public name: string, protected parent?: Project | Namespace, objectInitializer?: Partial<Namespace>) {
+    super();
+    this.apply(objectInitializer);
   }
 
   public addUsing(using: Import): Import {
-    this.usings.push(using);
+    if (this.usings.indexOf(using) === -1) {
+      this.usings.push(using);
+    }
     return using;
   }
   public addClass(c: Class): Class {
-    this.classes.push(c);
+    if (this.classes.indexOf(c) === -1) {
+      this.classes.push(c);
+    }
     return c;
   }
   public addInterface(i: Interface): Interface {
-    this.interfaces.push(i);
+    if (this.interfaces.indexOf(i) === -1) {
+      this.interfaces.push(i);
+    }
     return i;
   }
   public addDelegate(delegate: Delegate): Delegate {
-    this.delegates.push(delegate);
+    if (this.delegates.indexOf(delegate) === -1) {
+      this.delegates.push(delegate);
+    }
     return delegate;
   }
   public addNamespace(n: Namespace): Namespace {
-    this.namespaces.push(n);
+    if (this.namespaces.indexOf(n) === -1) {
+      this.namespaces.push(n);
+    }
     return n;
   }
 

@@ -131,7 +131,7 @@ export function deconstruct(identifier: string): Array<string> {
 }
 
 export function fixLeadingNumber(identifier: Array<string>): Array<string> {
-  if (identifier.length > 0 && /\d+/.exec(identifier[0])) {
+  if (identifier.length > 0 && /^\d+/.exec(identifier[0])) {
     return [...convert(parseInt(identifier[0])), ...identifier.slice(1)];
   }
   return identifier;

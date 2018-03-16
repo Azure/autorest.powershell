@@ -1,9 +1,12 @@
 import { Namespace } from "./namespace";
 import { all } from "#common/text-manipulation";
+import { Initializer } from "#csharp/code-dom/initializer";
 
-export class Project {
+export class Project extends Initializer {
   private namespaces = new Array<Namespace>();
-  constructor() {
+  constructor(objectInitializer?: Partial<Project>) {
+    super();
+    this.apply(objectInitializer);
   }
 
   public addNamespace(n: Namespace): Namespace {

@@ -7,25 +7,27 @@ import { Property } from "./property";
 import { Namespace } from "./namespace";
 
 export class Class extends Type {
+  protected classOrStruct: "class" | "struct" = "class";
   protected fields = new Array<Field>();
   public partial: boolean = false;
 
-  constructor(parent: Namespace, name: string, public parentClass?: Class, interfaces = new Array<Interface>(), genericParameters = new Array<string>(), where?: string) {
-    super(parent, name, interfaces, genericParameters, where);
-    parent.addClass(this);
+  constructor(namespace: Namespace, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
+    super(namespace, name);
+    this.apply(objectIntializer);
+    namespace.addClass(this);
   }
 
   public get declaration(): string {
-    const colon = (this.parentClass || this.interfaces.length > 0) ? ' : ' : '';
-    const comma = (this.parentClass && this.interfaces.length > 0) ? ", " : '';
+    const colon = (this.parent || this.interfaces.length > 0) ? ' : ' : '';
+    const comma = (this.parent && this.interfaces.length > 0) ? ", " : '';
 
-    const extendsClass = this.parentClass ? this.parentClass.fullName : '';
+    const extendsClass = this.parent ? this.parent.fullName : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
     const description = comment(this.description, docCommentPrefix);
     const partial = this.partial ? "partial " : "";
     return `
 ${description}
-${this.accessModifier} ${partial}class ${this.name}${colon}${extendsClass}${comma}${implementsInterfaces}
+${this.accessModifier} ${partial}${this.classOrStruct} ${this.name}${colon}${extendsClass}${comma}${implementsInterfaces}
 `.trim();
   }
 
@@ -33,7 +35,6 @@ ${this.accessModifier} ${partial}class ${this.name}${colon}${extendsClass}${comm
     const fields = this.fields.sort(sortByName).map(m => m.declaration).join(EOL);
     const methods = this.methods.sort(sortByName).map(m => m.implementation).join(EOL);
     const properties = this.properties.sort(sortByName).map(m => m.declaration).join(EOL);
-
     return `
 ${this.declaration} {
 ${indent(fields, 1)}

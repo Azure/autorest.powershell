@@ -1,11 +1,13 @@
 import { TypeDeclaration } from "./type-declaration";
 import { Expression } from "#csharp/code-dom/expression";
+import { Initializer } from "#csharp/code-dom/initializer";
 
-export class Parameter implements Expression {
+export class Parameter extends Initializer implements Expression {
   public description: string = "";
 
-  public constructor(private name: string, private type: TypeDeclaration, public genericParameters = new Array<string>(), public where?: string) {
-
+  public constructor(private name: string, private type: TypeDeclaration, public genericParameters = new Array<string>(), public where?: string, objectInitializer?: Partial<Parameter>) {
+    super();
+    this.apply(objectInitializer);
   }
 
   public get comment() {

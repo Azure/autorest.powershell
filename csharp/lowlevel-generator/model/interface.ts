@@ -5,24 +5,17 @@ import { Interface } from "#csharp/code-dom/interface";
 import { ModelInterfaceProperty } from "./interface-property";
 
 export class ModelInterface extends Interface {
-  protected constructor(parent: Namespace, name: string, state: State) {
-    super(parent, `I${name}`);
-  }
+  constructor(parent: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelInterface>) {
+    super(parent, `I${schema.details.name}`);
+    this.apply(objectInitializer);
 
-  public static async create(parent: Namespace, schema: Schema, state: State): Promise<ModelInterface> {
-    if (schema.details.privateData["interface-implementation"]) {
-      // if we've already created this type, return the implementation of it.
-      return schema.details.privateData["interface-implementation"];
-    }
-    const modelInterface = new ModelInterface(parent, schema.details.name, state);
-    schema.details.privateData["interface-implementation"] = modelInterface;
+    schema.details.privateData["interface-implementation"] = this;
 
     for (const propertyName in schema.properties) {
-      const property = schema.properties[propertyName];
-
-      ModelInterfaceProperty.create(modelInterface, property, state.path('properties', propertyName));
+      this.addProperty(new ModelInterfaceProperty(this, schema.properties[propertyName], state.path('properties', propertyName)));
     }
 
-    return modelInterface;
+
   }
+
 }

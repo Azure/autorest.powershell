@@ -2,10 +2,11 @@ import { Statement } from "#csharp/code-dom/statements/statement";
 import { Expression } from "#csharp/code-dom/expression";
 import { Case } from "#csharp/code-dom/statements/case";
 import { indent, EOL } from "#common/text-manipulation";
+import { Initializer } from "#csharp/code-dom/initializer";
 
 export type OneOrMoreCases = (() => Iterable<Case>) | Iterable<Case> | Case;
 
-export class Switch implements Statement {
+export class Switch extends Initializer implements Statement {
   protected caseStatements = new Array<Case>();
 
   public get implementation(): string {
@@ -15,7 +16,9 @@ switch( ${this.expression.value} )
 ${indent(this.caseStatements.map(each => each.implementation).join(EOL))}
 }`
   }
-  constructor(protected expression: Expression, cases: OneOrMoreCases) {
+  constructor(protected expression: Expression, cases: OneOrMoreCases, objectInitializer?: Partial<Switch>) {
+    super();
+    this.apply(objectInitializer);
     this.add(cases);
   }
   public add(cases: OneOrMoreCases) {

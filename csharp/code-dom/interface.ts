@@ -3,8 +3,9 @@ import { comment, docCommentPrefix, sortByName, indent, EOL } from "#common/text
 import { Namespace } from "./namespace";
 
 export class Interface extends Type {
-  constructor(parent: Namespace, name: string, interfaces = new Array<Interface>(), genericParameters = new Array<string>(), where?: string) {
-    super(parent, name, interfaces, genericParameters, where);
+  constructor(parent: Namespace, name: string, objectIntializer?: Partial<Interface>) {
+    super(parent, name);
+    this.apply(objectIntializer);
     parent.addInterface(this);
   }
 

@@ -4,15 +4,20 @@ import { Property } from "./property";
 import { TypeDeclaration } from "./type-declaration";
 import { AccessModifier } from "#csharp/code-dom/access-modifier";
 import { Namespace } from "#csharp/code-dom/namespace";
+import { Initializer } from "#csharp/code-dom/initializer";
 
-export class Type implements TypeDeclaration {
+export class Type extends Initializer implements TypeDeclaration {
   public description: string = "";
   public methods = new Array<Method>();
   public properties = new Array<Property>();
+  public genericParameters = new Array<string>();
+  public where?: string;
+  public interfaces = new Array<Interface>();
   public accessModifier = AccessModifier.Public;
 
-  constructor(public parent: Namespace, public name: string, public interfaces = new Array<Interface>(), public genericParameters = new Array<string>(), public where?: string) {
-
+  constructor(public namespace: Namespace, public name: string, objectIntializer?: Partial<Type>) {
+    super();
+    this.apply(objectIntializer);
   }
 
   public get allProperties(): Array<Property> {
@@ -28,7 +33,7 @@ export class Type implements TypeDeclaration {
   }
 
   public get fullName(): string {
-    return `${this.parent.fullName}.${this.name}${this.genericDeclaration}`;
+    return `${this.namespace.fullName}.${this.name}${this.genericDeclaration}`;
   }
 
   public get use(): string {

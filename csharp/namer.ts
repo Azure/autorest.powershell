@@ -6,10 +6,15 @@ import { Model } from "remodeler/code-model";
 import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
 
 export async function process(service: Host) {
-  return await processCodeModel(inferStuff, service);
+  return await processCodeModel(nameStuffRight, service);
 }
 
-async function inferStuff(codeModel: Model, service: Host): Promise<Model> {
+async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
+
+  // set the namespace for the service
+  const serviceNamespace = await service.GetValue("namespace") || "Sample.API";
+  codeModel.details.namespace = serviceNamespace;
+
   for (const each in codeModel.components.operations) {
     const op = codeModel.components.operations[each];
     const details = op.details;
@@ -33,6 +38,17 @@ async function inferStuff(codeModel: Model, service: Host): Promise<Model> {
       const d = schema.properties[propertyName].details
       d.name = pascalCase(fixLeadingNumber(deconstruct(d.name)));
     }
+
+    // fix enum names 
+    if (schema.details.enum) {
+      schema.details.enum.name = pascalCase(fixLeadingNumber(deconstruct(schema.details.enum.name)));
+
+      // and the value names themselves
+      for (const value of schema.details.enum.values) {
+        value.name = pascalCase(fixLeadingNumber(deconstruct(value.name)));
+      }
+    }
   }
+
   return codeModel;
 }
