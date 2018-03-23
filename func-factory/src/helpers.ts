@@ -8,9 +8,11 @@ export function deepEquals<T>(a: T, b: T) {
   return safeDump(a, { sortKeys: true, skipInvalid: true }) === safeDump(b, { sortKeys: true, skipInvalid: true });
 }
 
-export function objMap<T, U>(f: (key: string, arg: T) => U, o: { [key: string]: T }): { [key: string]: U } {
+export type Diff<A, B> = A extends B ? never : A;
+
+export function objMap<T, U>(f: (key: string, arg: Diff<T, undefined>) => U, o: { [key: string]: T }): { [key: string]: U } {
   const result: { [key: string]: U } = {};
-  for (const entry of Object.entries(o)) result[entry[0]] = f(entry[0], entry[1]);
+  for (const entry of Object.entries(o)) if (entry[1] !== undefined) result[entry[0]] = f(entry[0], entry[1] as any);
   return result;
 }
 
