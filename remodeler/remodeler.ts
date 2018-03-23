@@ -217,6 +217,7 @@ export class Remodeler {
             description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
             name: Interpretations.getName(propertyName, propertySchema.instance),
             deprecationMessage: Interpretations.getDeprecationMessage(original),
+            required: original.required ? original.required.indexOf(propertyName) > -1 : false,
             privateData: {},
           }
         })
@@ -354,11 +355,12 @@ export class Remodeler {
     return original ? CopyDictionary(original, (v) => this.copyEncoding(v, original[v])) : new Dictionary<Encoding>();
   }
 
-  copyMediaType = (schemaName: string, original: OpenAPI.MediaType): MediaType => {
+  copyMediaType = (mimeType: string, key: string, original: OpenAPI.MediaType): MediaType => {
     return new MediaType({
-      schema: original.schema ? this.refOrAdd(schemaName, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
+      schema: original.schema ? this.refOrAdd(key, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
       encoding: this.copyEncodings(original.encoding),
       extensions: getExtensionProperties(original),
+      accepts: [mimeType]
     });
   }
 
@@ -388,7 +390,7 @@ export class Remodeler {
 
     if (original.content) {
       for (const mediaType in original.content) {
-        response.content[mediaType] = this.copyMediaType(`${name}.${mediaType}`, original.content[mediaType]);
+        response.content[mediaType] = this.copyMediaType(mediaType, `${name}.${mediaType}`, original.content[mediaType]);
       }
     }
 
@@ -404,7 +406,7 @@ export class Remodeler {
 
     if (original.content) {
       for (const mediaType in original.content) {
-        requestBody.content[mediaType] = this.copyMediaType(`${name}.${mediaType}`, original.content[mediaType]);
+        requestBody.content[mediaType] = this.copyMediaType(mediaType, `${name}.${mediaType}`, original.content[mediaType]);
       }
     }
 

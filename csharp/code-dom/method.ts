@@ -55,3 +55,28 @@ ${indent(super.implementation)}
 
   }
 }
+
+export class PartialMethod extends Method {
+  constructor(name: string, returnType: TypeDeclaration = mscorlib.Void, objectIntializer?: Partial<PartialMethod>) {
+    super(name, returnType);
+    this.apply(objectIntializer);
+  }
+
+  public get declaration(): string {
+    const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
+    const stat = this.isStatic ? "static " : "";
+    const asynch = this.isAsync ? "async " : "";
+    return `
+${this.summaryDocumentation}
+${this.parameterDocumentation}
+partial ${stat}${asynch}${this.returnType.use} ${this.name}(${parameterDeclaration})
+`.trim();
+  }
+
+  public get implementation(): string {
+    return `
+${this.declaration};`.trim();
+
+  }
+
+}

@@ -8,6 +8,8 @@ import { Namespace } from "./namespace";
 
 export class Class extends Type {
   protected classOrStruct: "class" | "struct" = "class";
+  public isStatic: boolean = false;
+
   protected fields = new Array<Field>();
   public partial: boolean = false;
 
@@ -25,9 +27,11 @@ export class Class extends Type {
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
     const description = comment(this.description, docCommentPrefix);
     const partial = this.partial ? "partial " : "";
+    const stat = this.isStatic ? "static " : "";
+
     return `
 ${description}
-${this.accessModifier} ${partial}${this.classOrStruct} ${this.name}${colon}${extendsClass}${comma}${implementsInterfaces}
+${this.accessModifier} ${stat}${partial}${this.classOrStruct} ${this.name}${colon}${extendsClass}${comma}${implementsInterfaces}
 `.trim();
   }
 

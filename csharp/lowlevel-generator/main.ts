@@ -17,7 +17,7 @@ import { deserialize } from "#common/yaml";
 
 // model constructors? 
 //    - allOf creation?
-// enum generator
+
 // validations
 // serialization/deserialization/polymorphic deserializer/shape deserializer?
 // url construction
@@ -29,7 +29,6 @@ import { deserialize } from "#common/yaml";
 
 // client runtime
 
-// later: refactor create/async to be consistent
 
 export async function process(service: Host) {
   try {

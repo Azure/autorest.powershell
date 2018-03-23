@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Duration implements TypeDeclaration {
   get implementation(): string {
@@ -7,7 +7,16 @@ export class Duration implements TypeDeclaration {
   get use(): string {
     return `TimeSpan`
   }
-  validation(propertyName: string): string {
-    throw new Error("Method not implemented.");
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
+  validateValue(propertyName: string): string {
+    return `/* duration validate value for ${propertyName} */`;
+  }
+  jsonserialize(propertyName: string): string {
+    return `/* duration json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* duration json deserialize for ${propertyName} */`;
   }
 }

@@ -2,5 +2,4 @@
 export interface TypeDeclaration {
   implementation: string;
   use: string;
-  validation(propertyName: string): string;
 }

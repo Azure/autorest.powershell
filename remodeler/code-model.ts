@@ -32,11 +32,8 @@ export class Initializer<T> {
   constructor(initializer?: Partial<T>) {
     if (initializer) {
       for (const i in (<any>initializer)) {
-        if ((<any>initializer)[i]) {
-          (<any>this)[i] = (<any>initializer)[i]
-        };
+        (<any>this)[i] = (<any>initializer)[i]
       }
-      // Object.assign(this, initializer);
     }
   }
 }
@@ -164,6 +161,8 @@ export interface ClientDetails extends Details {
 }
 
 export interface PropertyDetails extends Details {
+  required: boolean;
+
 }
 
 export interface ParameterDetails extends Details {
@@ -210,6 +209,7 @@ export class PropertyReference<T> extends Initializer<PropertyReference<T>> impl
     super(initializer);
     this.details = (<any>this).details || {};
     this.details.name = this.details.name || name;
+    this.details.required = this.details.required || false;
     this.details.privateData = {};
   }
 }
@@ -307,10 +307,15 @@ export class Link extends Initializer<Link> implements Link {
   }
 }
 
+export interface MediaType {
+  accepts: Array<string>;
+}
+
 export class MediaType extends Initializer<MediaType> implements MediaType {
   constructor(initializer?: Partial<MediaType>) {
     super(initializer);
     this.encoding = (<any>this).encoding || new Dictionary<Encoding>();
+    this.accepts = (<any>this).accepts || new Array<string>();
   }
 }
 
@@ -352,6 +357,7 @@ export class HttpOperation extends Initializer<HttpOperation> implements HttpOpe
     this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
     this.security = (<any>this).security || new Array<SecurityRequirement>();
     this.servers = (<any>this).servers || new Array<Server>();
+    this.deprecated = (<any>this).deprecated || false;
 
   }
 }
@@ -365,7 +371,9 @@ export class Parameter extends Initializer<Parameter> implements Parameter, Impl
     this.details.name = this.details.name || name;
     this.details.location = implementation;
     this.details.privateData = {};
-
+    this.deprecated = (<any>this).deprecated || false;
+    this.required = (<any>this).required || false;
+    this.allowEmptyValue = (<any>this).allowEmptyValue || false;
     if (inWhere === ParameterLocation.Path) {
       this.required = true;
     }
@@ -568,10 +576,10 @@ export interface ExternalDocumentation extends Extensions {
 
 export interface Header extends Extensions, Partial<HasContent>, Partial<HasSchema>, Partial<HasExample>, Partial<HasExamples> {
   description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  allowReserved?: boolean;
+  required: Optional<boolean>;
+  deprecated: Optional<boolean>;
+  allowEmptyValue: Optional<boolean>;
+  allowReserved: Optional<boolean>;
 }
 
 export interface ImplicitOAuthFlow extends Extensions {
@@ -637,7 +645,7 @@ export interface HttpOperation extends Extensions, Implementation<HttpOperationD
   requestBody?: Reference<RequestBody>;
   responses: Dictionary<Reference<Response>>;
   callbacks: Optional<Dictionary<Reference<Callback>>>;
-  deprecated?: boolean;
+  deprecated: Optional<boolean>;
   security: Optional<Array<SecurityRequirement>>;
   servers: Optional<Array<Server>>;
 }
@@ -677,9 +685,9 @@ export interface Parameter extends Partial<HasSchema>, Partial<HasContent>, Part
   in: ParameterLocation;
 
   description?: string;
-  allowEmptyValue?: boolean;
-  deprecated?: boolean;
-  required?: boolean;
+  allowEmptyValue: Optional<boolean>;
+  deprecated: Optional<boolean>;
+  required: Optional<boolean>;
   style?: EncodingStyle;
 
   allowReserved?: boolean;

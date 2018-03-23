@@ -6,11 +6,6 @@ import { Model, Schema } from "remodeler/code-model";
 import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
 import { Project } from "./project";
 
-
-export interface PrivateData {
-
-}
-
 export class State extends ModelState<Model> {
 
   public get project(): Project {

@@ -8,13 +8,13 @@ import { Schema, JsonType } from "#remodeler/code-model";
 import { ModelClass } from "./class";
 import { StringFormat } from "#remodeler/known-format";
 import { hasProperties } from "#common/text-manipulation";
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 import { getKnownFormatType } from "#remodeler/interpretations";
 
 import { Wildcard, UntypedWildcard } from "../primitives/wildcard"
 import { EnumClass } from "../support/enum";
 import { ByteArray } from "../primitives/byte-array";
-import { Boolean } from "../primitives/boolean";
+import { Boolean, NullableBoolean } from "../primitives/boolean";
 import { Float } from "../primitives/floatingpoint";
 import { ArrayOf } from "../primitives/array";
 import { Integer } from "../primitives/integer";
@@ -22,8 +22,10 @@ import { Date } from "../primitives/date";
 import { DateTime, DateTime1123 } from "../primitives/date-time";
 import { Duration } from "../primitives/duration";
 import { Uuid } from "../primitives/Uuid";
-import { String } from "../primitives/string";
+import { String, NullableString } from "../primitives/string";
 import { Char } from "../primitives/char";
+import { PrivateData } from "#csharp/lowlevel-generator/private-data";
+import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
 
 
 export class ModelsNamespace extends Namespace {
@@ -43,21 +45,21 @@ export class ModelsNamespace extends Namespace {
       if (validation.objectWithFormat(schema, state)) {
         continue;
       }
-      this.resolveTypeDeclaration(schema, state);
+      this.resolveTypeDeclaration(schema, true, state);
     }
-
-
   }
 
   private static INVALID = <any>null;
 
-  public resolveTypeDeclaration(schema: Schema | undefined, state: State): TypeDeclaration {
+  public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): TypeDeclaration {
     if (!schema) {
       throw new Error("SCHEMA MISSING?")
     }
+    const privateData: PrivateData = schema.details.privateData;
+
     // have we done this object already?
-    if (schema.details.privateData["type-declaration"]) {
-      return schema.details.privateData["type-declaration"];
+    if (privateData.typeDeclaration) {
+      return privateData.typeDeclaration;
     }
 
     // determine if we need a new model class for the type or just a known type object
@@ -67,12 +69,126 @@ export class ModelsNamespace extends Namespace {
         if (schema.additionalProperties && !hasProperties(schema.properties)) {
           if (schema.additionalProperties === true) {
             // the object is a wildcard for all key/object-value pairs 
-            return this.createWildcardObject(schema, state);
+            return privateData.typeDeclaration = new UntypedWildcard();
           } else {
             // the object is a wildcard for all key/<specific-type>-value pairs
-            const wcSchema = this.resolveTypeDeclaration(schema.additionalProperties, state.path("additionalProperties"));
+            const wcSchema = this.resolveTypeDeclaration(schema.additionalProperties, false, state.path("additionalProperties"));
 
-            return this.createWildcardForSchema(schema, wcSchema, state);
+            return privateData.typeDeclaration = new Wildcard(wcSchema);
+          }
+        }
+
+        // otherwise, if it has additionalProperties
+        // it's a regular object, that has a catch-all for unspecified properties.
+        // (handled in ModelClass itself)
+        const mc = privateData.classImplementation || new ModelClass(this, schema, this.state);
+        return privateData.typeDeclaration = <ModelInterface>privateData.interfaceImplementation;
+
+      case JsonType.String:
+        switch (schema.format) {
+          case StringFormat.Base64Url:
+          case StringFormat.Byte:
+            // member should be byte array
+            // on wire format should be base64url 
+            return privateData.typeDeclaration = new ByteArray();
+
+          case StringFormat.Binary:
+            // represent as a stream 
+            // wire format is stream of bytes
+            throw new Error("Method not implemented.");
+
+          case StringFormat.Char:
+            // a single character
+            return privateData.typeDeclaration = new Char(schema.enum.length > 0 ? schema.enum : undefined);
+
+          case StringFormat.Date:
+            return privateData.typeDeclaration = new Date();
+
+          case StringFormat.DateTime:
+            return privateData.typeDeclaration = new DateTime();
+
+          case StringFormat.DateTimeRfc1123:
+            return privateData.typeDeclaration = new DateTime1123();
+
+          case StringFormat.Duration:
+            return privateData.typeDeclaration = new Duration();
+
+          case StringFormat.Uuid:
+            return privateData.typeDeclaration = new Uuid();
+
+          case StringFormat.Password:
+          case StringFormat.None:
+          case undefined:
+          case null:
+            if (schema.extensions["x-ms-enum"]) {
+              // this value is an enum type instead of a plain string. 
+              const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
+              if (ec.length > 0) {
+                return privateData.typeDeclaration = <EnumClass>ec[0];
+              }
+              return privateData.typeDeclaration = new EnumClass(schema, state);
+            }
+
+            // just a regular old string.
+            return privateData.typeDeclaration = required ? new String(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined) : new NullableString(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
+
+          default:
+            state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
+        }
+        break;
+
+      case JsonType.Boolean:
+        return privateData.typeDeclaration = required ? new Boolean() : new NullableBoolean();
+
+      case JsonType.Integer:
+        return privateData.typeDeclaration = new Integer();
+
+      case JsonType.Number:
+        return privateData.typeDeclaration = new Float();
+
+      case JsonType.Array:
+        const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path("items"));
+        return privateData.typeDeclaration = new ArrayOf(aSchema);
+
+      case undefined:
+        console.error(`schema 'undefined': ${schema.details.name} `);
+        // "any" case
+        // this can happen when a model is just an all-of something else. (sub in the other type?)
+        break;
+
+      default:
+        this.state.error(`Schema is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
+        return ModelsNamespace.INVALID;
+    }
+    return ModelsNamespace.INVALID;
+  }
+}
+
+/* 
+ Note: removed validation from above -- the validation should be in a separate step before we get into the cs* extensions.
+
+public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): TypeDeclaration {
+    if (!schema) {
+      throw new Error("SCHEMA MISSING?")
+    }
+    // have we done this object already?
+    if (privateData.typeDeclaration) {
+      return privateData.typeDeclaration;
+    }
+
+    // determine if we need a new model class for the type or just a known type object
+    switch (schema.type) {
+      case JsonType.Object:
+        // for certain, this should be a class of some sort.
+        if (schema.additionalProperties && !hasProperties(schema.properties)) {
+          if (schema.additionalProperties === true) {
+            // the object is a wildcard for all key/object-value pairs
+            return privateData.typeDeclaration = new UntypedWildcard();
+          } else {
+            // the object is a wildcard for all key/<specific-type>-value pairs
+            const wcSchema = this.resolveTypeDeclaration(schema.additionalProperties, false, state.path("additionalProperties"));
+
+            return privateData.typeDeclaration = new Wildcard(wcSchema);
           }
         }
 
@@ -80,9 +196,9 @@ export class ModelsNamespace extends Namespace {
         // it's a regular object, that has a catch-all for unspecified properties.
         // (handled in ModelClass itself)
 
-        const mc = schema.details.privateData["class-implementation"] || new ModelClass(this, schema, this.state);
-        schema.details.privateData["type-declaration"] = schema.details.privateData["interface-implementation"];
-        return schema.details.privateData["type-declaration"];
+        const mc = privateData.classImplementation || new ModelClass(this, schema, this.state);
+        privateData.typeDeclaration = privateData.interfaceInplementation;
+        return privateData.typeDeclaration;
 
       case JsonType.String:
         switch (schema.format) {
@@ -92,64 +208,69 @@ export class ModelsNamespace extends Namespace {
               return ModelsNamespace.INVALID;
             }
             // member should be byte array
-            // on wire format should be base64url 
-            return this.createByteArray(schema, state);
+            // on wire format should be base64url
+            return privateData.typeDeclaration = new ByteArray();
 
           case StringFormat.Binary:
             if (validation.schemaHasEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            // represent as a stream 
+            // represent as a stream
             // wire format is stream of bytes
-            return this.createStream(schema, state);
+            throw new Error("Method not implemented.");
 
           case StringFormat.Char:
             // a single character
             if (validation.hasXmsEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            return this.createChar(schema, state);
+            return privateData.typeDeclaration = new Char(schema.enum.length > 0 ? schema.enum : undefined);
 
           case StringFormat.Date:
             if (validation.schemaHasEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
 
-            return this.createDate(schema, state);
+            return privateData.typeDeclaration = new Date();
+
           case StringFormat.DateTime:
             if (validation.schemaHasEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            return this.createDateTime(schema, state);
+            return privateData.typeDeclaration = new DateTime();
 
           case StringFormat.DateTimeRfc1123:
             if (validation.schemaHasEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            return this.createDateTime1123(schema, state);
+            return privateData.typeDeclaration = new DateTime1123();
 
           case StringFormat.Duration:
             if (validation.schemaHasEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            return this.createDuration(schema, state);
+            return privateData.typeDeclaration = new Duration();
 
           case StringFormat.Uuid:
             if (validation.hasXmsEnum(schema, state)) {
               return ModelsNamespace.INVALID;
             }
-            return this.createUuid(schema, state);
+            return privateData.typeDeclaration = new Uuid();
 
           case StringFormat.Password:
           case StringFormat.None:
           case undefined:
           case null:
             if (schema.extensions["x-ms-enum"]) {
-              // this value is an enum type instead of a plain string. 
-              return this.createEnum(schema, state);
+              // this value is an enum type instead of a plain string.
+              const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
+              if (ec.length > 0) {
+                return privateData.typeDeclaration = <EnumClass>ec[0];
+              }
+              return privateData.typeDeclaration = new EnumClass(schema, state);
             }
             // just a regular old string.
-            return this.createString(schema, state);
+            return privateData.typeDeclaration = new String(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
 
           default:
             state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
@@ -160,19 +281,19 @@ export class ModelsNamespace extends Namespace {
         if (validation.hasXmsEnum(schema, state)) {
           return ModelsNamespace.INVALID;
         }
-        return this.createBoolean(schema, state);
+        return privateData.typeDeclaration = required ? new Boolean() : new NullableBoolean();
 
       case JsonType.Integer:
         if (validation.hasXmsEnum(schema, state)) {
           return ModelsNamespace.INVALID;
         }
-        return this.createInteger(schema, state);
+        return privateData.typeDeclaration = new Integer();
 
       case JsonType.Number:
         if (validation.hasXmsEnum(schema, state)) {
           return ModelsNamespace.INVALID;
         }
-        return this.createFloatingpoint(schema, state);
+        return privateData.typeDeclaration = new Float();
 
       case JsonType.Array:
         if (validation.hasXmsEnum(schema, state)) {
@@ -181,12 +302,13 @@ export class ModelsNamespace extends Namespace {
         if (validation.arrayMissingItems(schema, state)) {
           return ModelsNamespace.INVALID;
         }
-        const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, state.path("items"));
-        return this.createArray(schema, aSchema, state);
+        const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path("items"));
+        return privateData.typeDeclaration = new ArrayOf(aSchema);
 
       case undefined:
         console.error(`schema 'undefined': ${schema.details.name} `);
         // "any" case
+        // this can happen when a model is just an all-of something else. (sub in the other type?)
         break;
 
       default:
@@ -196,64 +318,17 @@ export class ModelsNamespace extends Namespace {
     return ModelsNamespace.INVALID;
   }
 
-  createWildcardObject(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new UntypedWildcard();
-  }
-  createWildcardForSchema(schema: Schema, typeDecl: TypeDeclaration, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Wildcard(typeDecl);
-  }
-  createByteArray(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new ByteArray();
-  }
-  createEnum(schema: Schema, state: State): TypeDeclaration {
-    // throw new Error("Method not implemented.");
-    // this schema has an x-ms-enum. Need to create the enum class definition 
-    // first check for an enumclass with the same name
-    const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
-    if (ec.length > 0) {
-      return schema.details.privateData["type-declaration"] = ec[0];
-    }
 
-    return schema.details.privateData["type-declaration"] = new EnumClass(schema, state);
-  }
-  createStream(schema: Schema, state: State): TypeDeclaration {
-    throw new Error("Method not implemented.");
-  }
-  createBoolean(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Boolean();
-  }
-  createFloatingpoint(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Float();
-  }
-  createArray(schema: Schema, typeDecl: TypeDeclaration, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new ArrayOf(typeDecl);
-  }
-  createInteger(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Integer();
-  }
-  createDate(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Date();
-  }
-  createDateTime(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new DateTime();
-  }
-  createDateTime1123(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new DateTime1123();
-  }
-  createDuration(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Duration();
-  }
-  createUuid(schema: Schema, state: State): TypeDeclaration {
-    return schema.details.privateData["type-declaration"] = new Uuid();
-  }
-  createString(schema: Schema, state: State): TypeDeclaration {
-    // create a validated string typedeclaration.
-    return schema.details.privateData["type-declaration"] = new String(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
-  }
-  createChar(schema: Schema, state: State): TypeDeclaration {
-    // create a validated string typedeclaration.
-    return schema.details.privateData["type-declaration"] = new Char(schema.enum.length > 0 ? schema.enum : undefined);
-  }
+
+
+
+
+
 
 }
+
+
+  
+  
+ */
 

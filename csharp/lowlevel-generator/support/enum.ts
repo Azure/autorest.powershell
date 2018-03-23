@@ -15,8 +15,9 @@ import { Method } from "#csharp/code-dom/method";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
 import { Struct } from "#csharp/code-dom/struct";
 import { Operator } from "#csharp/code-dom/operator";
+import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
 
-export class EnumClass extends Struct {
+export class EnumClass extends Struct implements TypeDeclaration {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schema.details.enum) {
       throw new Error("ENUM AINT XMSENUM");
@@ -100,7 +101,18 @@ export class EnumClass extends Struct {
       isOverride: true,
       description: `Returns hashCode for enum ${this.name}`,
     })).add(`return this.${backingField.value}.GetHashCode();`);
+  }
 
-
+  public validateValue(propertyName: string): string {
+    return ``;
+  }
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
+  jsonserialize(propertyName: string): string {
+    return '/***/';
+  }
+  jsondeserialize(propertyName: string): string {
+    return '/***/';
   }
 }

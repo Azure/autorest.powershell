@@ -8,6 +8,8 @@ import { ModelClass } from "./model/class";
 import { ModelsNamespace } from "./model/namespace";
 import { ServiceNamespace } from "./operation/namespace";
 import { SupportNamespace } from "./support/namespace";
+import { JsonSerializerClass } from "#csharp/lowlevel-generator/support/json-serializer";
+import { Import } from "#csharp/code-dom/import";
 
 export class Project extends codeDomProject {
 
@@ -24,7 +26,13 @@ export class Project extends codeDomProject {
     this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, state.model.components.schemas, state.path('components', 'schemas')));
 
     // create API class
-    new ApiClass(this, state);
+    new ApiClass(this.serviceNamespace, state);
+
+    // create serialization support
+    new JsonSerializerClass(this.supportNamespace, state)
+    this.modelsNamespace.addUsing(new Import(this.supportNamespace.fullName));
+
+
 
     // abort now if we have any errors.
     state.checkpoint();

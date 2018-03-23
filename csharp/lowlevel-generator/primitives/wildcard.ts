@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Wildcard implements TypeDeclaration {
 
@@ -11,8 +11,17 @@ export class Wildcard implements TypeDeclaration {
   get use(): string {
     return `System.Collections.Generic.Dictionary<string,${this.leafType.use}>`;
   }
-  validation(propertyName: string): string {
-    throw new Error("Method not implemented.");
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
+  validateValue(propertyName: string): string {
+    return `/* wildcard validate value for ${propertyName} */`;
+  }
+  jsonserialize(propertyName: string): string {
+    return `/* wildcard json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* wildcard json deserialize for ${propertyName} */`;
   }
 }
 
@@ -29,7 +38,16 @@ export class UntypedWildcard implements TypeDeclaration {
   get use(): string {
     return `System.Collections.Generic.Dictionary<string,object>`;
   }
-  validation(propertyName: string): string {
-    throw new Error("Method not implemented.");
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
+  validateValue(propertyName: string): string {
+    return `/* untyped wildcard validate value for ${propertyName} */`;
+  }
+  jsonserialize(propertyName: string): string {
+    return `/* untyped wildcard boolean json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* untyped wildcard json deserialize for ${propertyName} */`;
   }
 }

@@ -1,3 +1,4 @@
+import { Dictionary } from "#remodeler/common";
 
 let indentation = "    ";
 
@@ -110,6 +111,15 @@ export function dotCombine(prefix: string, content: string) {
 
 export function fixEOL(content: string) {
   return content.replace(/\r\n/g, EOL);
+}
+
+export function map<T, U>(dictionary: Dictionary<T>, callbackfn: (key: string, value: T) => U, thisArg?: any): U[] {
+  return Object.getOwnPropertyNames(dictionary).map((key) => callbackfn(key, dictionary[key]));
+}
+export function selectMany<T>(multiArray: T[][]): T[] {
+  const result = new Array<T>();
+  multiArray.map(v => result.push(...v));
+  return result;
 }
 
 export function indent(content: string, factor: number = 1): string {

@@ -5,6 +5,7 @@ export enum AccessModifier {
   ProtectedInternal = "protected internal",
   PrivateProtected = "private protected",
   Private = "private",
+  Default = "",
 }
 
 const order = [AccessModifier.Public, AccessModifier.Internal, AccessModifier.Protected, AccessModifier.ProtectedInternal, AccessModifier.PrivateProtected, AccessModifier.Private];

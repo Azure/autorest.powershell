@@ -15,14 +15,14 @@ import { ISendAsync } from "../clientruntime";
 export class ApiClass extends Class {
 
   protected sender: Property;
-  constructor(protected project: Project, protected state: State, objectInitializer?: Partial<ApiClass>) {
-    super(project.serviceNamespace, state.model.details.name);
+  constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<ApiClass>) {
+    super(namespace, state.model.details.name);
     this.apply(objectInitializer);
     // add basics
     this.sender = this.addProperty(new Property("Sender", ISendAsync));
 
     // remember the namespace for this class.
-    state.model.details.namespace = project.serviceNamespace.fullName;
+    state.model.details.namespace = namespace.fullName;
 
     // add operations from code model
     for (const operationName in state.model.components.operations) {
