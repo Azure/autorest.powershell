@@ -1,23 +1,21 @@
 import { ProcImplementations } from "../src/reference-generator";
-import { ProcDefinitions, Proc, FlexArgs, GraphContext, FlexCallbacks } from "../src/graph-context";
-import { Type, typeNominal } from "../src/type";
 import { DeepMutable, objMap } from "../src/helpers";
-import { Graph } from "../src/graph";
+import { Graph, Types, GraphContext } from "../src/index";
 
-export const typeNumber: Type = typeNominal("number");
-export const typeBoolean: Type = typeNominal("boolean");
-export const typeString: Type = typeNominal("string");
+export const typeNumber: Types.Type = Types.typeNominal("number");
+export const typeBoolean: Types.Type = Types.typeNominal("boolean");
+export const typeString: Types.Type = Types.typeNominal("string");
 
-const builtInDefs: ProcDefinitions = {};
+const builtInDefs: GraphContext.ProcDefinitions = {};
 const builtInImpls: ProcImplementations = {};
 
-const addBuiltIn = (name: string, defInline: (args: { [id: string]: string }, cb: { [flow: string]: (args: { [id: string]: string }) => string }) => string, proc: Proc) => {
+const addBuiltIn = (name: string, defInline: (args: { [id: string]: string }, cb: { [flow: string]: (args: { [id: string]: string }) => string }) => string, proc: GraphContext.Proc) => {
   (builtInImpls as any)[name] = { defInline: defInline };
-  (builtInDefs as { [id: string]: Proc | undefined })[name] = proc;
+  (builtInDefs as { [id: string]: GraphContext.Proc | undefined })[name] = proc;
 };
 
 
-export function getBuiltInDefs(): ProcDefinitions { return builtInDefs; }
+export function getBuiltInDefs(): GraphContext.ProcDefinitions { return builtInDefs; }
 export function getBuiltInImpls(): ProcImplementations { return builtInImpls; }
 
 // number comparison
@@ -103,12 +101,11 @@ addBuiltIn("lt-res=>condition-if1", (args, cb) => `${args.a} < ${args.b} ? ${cb.
 
 
 
-
 // run
-export function runGraph(graph: Graph, args: FlexArgs, expectedCb: string, subExpression: string = ""): any {
-  const context = new GraphContext(graph, getBuiltInDefs());
+export function runGraph(graph: Graph.Graph, args: GraphContext.FlexArgs, expectedCb: string, subExpression: string = ""): any {
+  const context = new GraphContext.GraphContext(graph, getBuiltInDefs());
   const func = context.build(getBuiltInImpls());
-  const cps: FlexCallbacks = objMap(id => (x: FlexArgs) => { throw `unexpected result flow ${id}`; }, graph.outputFlows);
+  const cps: GraphContext.FlexCallbacks = objMap(id => (x: GraphContext.FlexArgs) => { throw `unexpected result flow ${id}`; }, graph.outputFlows);
   let res: any;
   let resAssigned = false;
   cps[expectedCb] = x => { res = x; resAssigned = true };

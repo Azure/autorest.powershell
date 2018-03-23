@@ -14,7 +14,6 @@ export interface SymbolSource {
   readonly origin: ControlSource;
   readonly id: string;
 }
-/* @internal */
 export interface SymbolSink {
   readonly target: ControlSink;
   readonly id: string;
@@ -34,7 +33,6 @@ export interface ControlFlow {
   readonly target: ControlSink;
 }
 
-/* @internal */
 export interface DataFlow {
   readonly source: SymbolSource;
   readonly target: SymbolSink;
