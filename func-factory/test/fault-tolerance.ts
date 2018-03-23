@@ -2,7 +2,7 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
 import { GraphContext } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString } from "./common";
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, MyTType, typeAssignableTo } from "./common";
 import { generateTS, GenerationFlavor } from "../src/reference-generator";
 import { DeepMutable, objMap, tsc } from "../src/helpers";
 
@@ -14,12 +14,12 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
  * Bottom line: GraphContext and the reference generator should never throw.
  */
 
-function compileGraph(graph: Graph, expectCompiles: boolean): void {
-  let context: GraphContext;
-  try { context = new GraphContext(graph, getBuiltInDefs()); }
+function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
+  let context: GraphContext<MyTType>;
+  try { context = new GraphContext(graph, typeAssignableTo, x => x, getBuiltInDefs()); }
   catch (e) { console.error("Error: GraphContext creation failed"); throw e; }
   let funcTs: string;
-  try { funcTs = generateTS(context, getBuiltInImpls(), GenerationFlavor.ContInlineProc); }
+  try { funcTs = generateTS(context, getBuiltInImpls(), x => x, GenerationFlavor.ContInlineProc); }
   catch (e) { console.error("Error: Code generation failed"); throw e; }
   let funcJs: string;
   try { funcJs = tsc("const f = " + funcTs); if (!expectCompiles) throw "Compilation succeeded unexpectedly."; }
@@ -28,7 +28,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
 
 @suite class FaultTolerance {
   @test "addition good"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -39,7 +39,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, true);
   }
   @test "addition bad procID"() {
-    const addA: NodeProc = { procID: "asd" /* bad operation */, inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "asd" /* bad operation */, inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -50,7 +50,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad proc input dst"() {
-    const addA: NodeProc = { procID: "add", inputs: { aa: /*bad dst*/ { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { aa: /*bad dst*/ { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -61,7 +61,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad symbol source"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "aa" /*bad src*/ }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "aa" /*bad src*/ }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -72,7 +72,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition missing edge 1"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         // { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -83,7 +83,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition missing edge 2"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -94,7 +94,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition circular edge"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "proc", node: addA } }, // circular
@@ -105,7 +105,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad control flow source"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -116,7 +116,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad control flow target"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -127,7 +127,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad input type"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -138,7 +138,7 @@ function compileGraph(graph: Graph, expectCompiles: boolean): void {
     }, false);
   }
   @test "addition bad output type"() {
-    const addA: NodeProc = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
+    const addA: NodeProc<MyTType> = { procID: "add", inputs: { a: { origin: { type: "entry" }, id: "a" }, b: { origin: { type: "entry" }, id: "b" } } };
     compileGraph({
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },

@@ -2,12 +2,12 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
 import { GraphContext, FlexArgs, FlexCallbacks } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph } from "./common";
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from "./common";
 import { objMap } from "../src/helpers";
 
 @suite class Mutation {
   @test "build graph"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
@@ -18,9 +18,9 @@ import { objMap } from "../src/helpers";
       }
     };
 
-    const len: NodeProc = { procID: "strlen", inputs: {} };
+    const len: NodeProc<MyTType> = { procID: "strlen", inputs: {} };
 
-    let ga = new GraphContext(g, getBuiltInDefs())
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs())
       .connectControlFlow({ type: "proc", node: len, flow: "result" }, { type: "output", flow: "result" })
       .connectControlFlow({ type: "entry" }, { type: "proc", node: len })
       .connectDataFlow({ origin: { type: "proc", node: len, flow: "result" }, id: "length" }, { target: { type: "output", flow: "result" }, id: "length" })

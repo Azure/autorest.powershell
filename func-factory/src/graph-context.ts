@@ -1,5 +1,4 @@
 import { SymbolSource, Graph, NodePhi, NodeProc, ControlSource, ControlSink, SymbolSink, ControlFlow, DataFlow } from "./graph";
-import { Type, typeEquals } from "./type";
 import {
   getNodes,
   getDataSources,
@@ -16,22 +15,22 @@ import {
   getSymbolSinkType,
   getSymbolSourceType
 } from "./graph-analysis";
-import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateSymbolLink, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from "./graph-validation";
+import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from "./graph-validation";
 import { objMap, setExcept, lundef, clone, objReplace, tsc, Obj, trycatch, error, deepEquals, errorUnreachable } from "./helpers";
 import { ProcImplementation, generateTS, GenerationFlavor, ProcImplementations } from "./reference-generator";
 
-export interface Proc {
+export interface Proc<TType> {
   readonly pure: boolean, // side effect free?
-  readonly inputs: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly type: Type } | undefined }; // data sink
-  readonly outputFlows: { readonly [flow: string]: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly nameSources: ReadonlyArray<string>, readonly type: Type } | undefined } | undefined }; // data source
+  readonly inputs: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly type: TType } | undefined }; // data sink
+  readonly outputFlows: { readonly [flow: string]: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly nameSources: ReadonlyArray<string>, readonly type: TType } | undefined } | undefined }; // data source
 }
-export interface ProcDefinitions {
-  readonly [id: string]: Proc | undefined;
+export interface ProcDefinitions<TType> {
+  readonly [id: string]: Proc<TType> | undefined;
 }
 
-export interface SymbolInstance {
-  readonly source: SymbolSource;
-  readonly type: Type;
+export interface SymbolInstance<TType> {
+  readonly source: SymbolSource<TType>;
+  readonly type: TType;
   readonly names: ReadonlyArray<string>;
 }
 
@@ -58,37 +57,37 @@ export interface Sample {
 /**
  * Operations for validating, analyzing and manipulating graphs.
  */
-export class GraphContext {
+export class GraphContext<TType> {
   // vertices
-  public readonly nodesPhi: ReadonlyArray<NodePhi>;
-  public readonly nodesProc: ReadonlyArray<NodeProc>;
+  public readonly nodesPhi: ReadonlyArray<NodePhi<TType>>;
+  public readonly nodesProc: ReadonlyArray<NodeProc<TType>>;
   // control flow connectors
-  public readonly controlSources: ReadonlyArray<ControlSource>;
-  public readonly controlSinks: ReadonlyArray<ControlSink>;
-  private readonly controlSourceNorm: (x: ControlSource) => ControlSource | undefined;
-  private readonly controlSinkNorm: (x: ControlSink) => ControlSink | undefined;
+  public readonly controlSources: ReadonlyArray<ControlSource<TType>>;
+  public readonly controlSinks: ReadonlyArray<ControlSink<TType>>;
+  private readonly controlSourceNorm: (x: ControlSource<TType>) => ControlSource<TType> | undefined;
+  private readonly controlSinkNorm: (x: ControlSink<TType>) => ControlSink<TType> | undefined;
   // data flow connectors
-  public readonly symbolSources: ReadonlyArray<SymbolSource>;
-  public readonly symbolSinks: ReadonlyArray<SymbolSink>;
-  private readonly symbolSourceNorm: (x: SymbolSource) => SymbolSource | undefined;
-  private readonly symbolSinkNorm: (x: SymbolSink) => SymbolSink | undefined;
+  public readonly symbolSources: ReadonlyArray<SymbolSource<TType>>;
+  public readonly symbolSinks: ReadonlyArray<SymbolSink<TType>>;
+  private readonly symbolSourceNorm: (x: SymbolSource<TType>) => SymbolSource<TType> | undefined;
+  private readonly symbolSinkNorm: (x: SymbolSink<TType>) => SymbolSink<TType> | undefined;
   // control flow
-  public readonly controlFlow: ReadonlyArray<ControlFlow>;
+  public readonly controlFlow: ReadonlyArray<ControlFlow<TType>>;
   // data flow
-  public readonly dataFlow: ReadonlyArray<DataFlow>;
+  public readonly dataFlow: ReadonlyArray<DataFlow<TType>>;
   // symbols
-  public symbols: ReadonlyArray<SymbolInstance>;
-  public getSymbolFromSource: (src: SymbolSource) => SymbolInstance | undefined;
-  private supply: ReadonlyMap<ControlSource, ReadonlySet<SymbolInstance>>;
-  private demand: ReadonlyMap<ControlSink, ReadonlySet<SymbolInstance>>;
-  public getSupply(x: ControlSource): ReadonlySet<SymbolInstance> { return lundef(this.controlSourceNorm(x), x => this.supply.get(x)) || new Set<SymbolInstance>(); }
-  public getDemand(x: ControlSink): ReadonlySet<SymbolInstance> { return lundef(this.controlSinkNorm(x), x => this.demand.get(x)) || new Set<SymbolInstance>(); }
+  public symbols: ReadonlyArray<SymbolInstance<TType>>;
+  public getSymbolFromSource: (src: SymbolSource<TType>) => SymbolInstance<TType> | undefined;
+  private supply: ReadonlyMap<ControlSource<TType>, ReadonlySet<SymbolInstance<TType>>>;
+  private demand: ReadonlyMap<ControlSink<TType>, ReadonlySet<SymbolInstance<TType>>>;
+  public getSupply(x: ControlSource<TType>): ReadonlySet<SymbolInstance<TType>> { return lundef(this.controlSourceNorm(x), x => this.supply.get(x)) || new Set<SymbolInstance<TType>>(); }
+  public getDemand(x: ControlSink<TType>): ReadonlySet<SymbolInstance<TType>> { return lundef(this.controlSinkNorm(x), x => this.demand.get(x)) || new Set<SymbolInstance<TType>>(); }
 
   // opportunities
-  public unconnectedControlSources: ReadonlyArray<ControlSource>;
-  public unconnectedControlSinks: ReadonlyArray<ControlSink>;
-  public unconnectedSymbolSources: ReadonlyArray<SymbolSource>;
-  public unconnectedSymbolSinks: ReadonlyArray<SymbolSink>;
+  public unconnectedControlSources: ReadonlyArray<ControlSource<TType>>;
+  public unconnectedControlSinks: ReadonlyArray<ControlSink<TType>>;
+  public unconnectedSymbolSources: ReadonlyArray<SymbolSource<TType>>;
+  public unconnectedSymbolSinks: ReadonlyArray<SymbolSink<TType>>;
 
   // quality
   public readonly problems: ReadonlyArray<GraphProblem>;
@@ -136,9 +135,15 @@ export class GraphContext {
     return result;
   }
 
+  private updateGraph(graph: Graph<TType>): GraphContext<TType> {
+    return new GraphContext(graph, this.typeAssignableTo, this.typeToTS, this.procs, this.samples);
+  }
+
   public constructor(
-    public readonly graph: Graph,
-    public readonly procs: ProcDefinitions,
+    public readonly graph: Graph<TType>,
+    public readonly typeAssignableTo: (from: TType, to: TType) => boolean,
+    public readonly typeToTS: (type: TType) => string,
+    public readonly procs: ProcDefinitions<TType>,
     public readonly samples: Sample[] = []) {
 
     const problems: GraphProblem[] = [];
@@ -171,21 +176,21 @@ export class GraphContext {
 
     // control flow edges
     this.controlFlow = graph.edges.map(x => ({ source: this.controlSourceNorm(x.source), target: this.controlSinkNorm(x.target) }))
-      .filter((x): x is ControlFlow => x.source !== undefined && x.target !== undefined);
+      .filter((x): x is ControlFlow<TType> => x.source !== undefined && x.target !== undefined);
     // (validate)
     validateRawControlFlow(graph.edges, this.controlSourceNorm, this.controlSinkNorm, onProblem);
     validateControlFlow(this.controlFlow, controlSources, controlSinks, onProblem);
 
     // data flow edges
     this.dataFlow = symbolSinks.map(x => ({ source: lundef(getSymbolSourceOf(graph, procs, x), this.symbolSourceNorm), target: x }))
-      .filter((x): x is DataFlow => x.source !== undefined && x.target !== undefined);
+      .filter((x): x is DataFlow<TType> => x.source !== undefined && x.target !== undefined);
     // (validate)
     validateRawDataFlow(graph, procs, symbolSinks, this.symbolSourceNorm, onProblem);
-    validateDataFlow(graph, procs, this.dataFlow, onProblem);
+    validateDataFlow(graph, procs, this.dataFlow, this.typeAssignableTo, onProblem);
 
     // symbols
     this.getSymbolFromSource = getSymbolMapper(graph, procs, symbolSources, this.symbolSourceNorm);
-    this.symbols = symbolSources.map(this.getSymbolFromSource).filter((x): x is SymbolInstance => x !== undefined);
+    this.symbols = symbolSources.map(this.getSymbolFromSource).filter((x): x is SymbolInstance<TType> => x !== undefined);
     const { demand, supply } = getMarket(graph, this.controlFlow, controlSources, controlSinks, symbolSources, this.controlSourceNorm, this.controlSinkNorm, this.getSymbolFromSource);
     this.supply = supply;
     this.demand = demand;
@@ -200,41 +205,41 @@ export class GraphContext {
   }
 
   // traversal
-  public nodeSource2Sinks(x: ControlSource): ReadonlyArray<ControlSink> {
+  public nodeSource2Sinks(x: ControlSource<TType>): ReadonlyArray<ControlSink<TType>> {
     return nodeSource2Sinks(x, this.controlSinks);
   }
 
-  public nodeSource2Sources(x: ControlSource): ReadonlyArray<ControlSource> {
+  public nodeSource2Sources(x: ControlSource<TType>): ReadonlyArray<ControlSource<TType>> {
     return nodeSource2Sources(x, this.controlSources);
   }
 
-  public nodeSink2Sinks(x: ControlSink): ReadonlyArray<ControlSink> {
+  public nodeSink2Sinks(x: ControlSink<TType>): ReadonlyArray<ControlSink<TType>> {
     return nodeSink2Sinks(x, this.controlSinks);
   }
 
-  public nodeSink2Sources(x: ControlSink): ReadonlyArray<ControlSource> {
+  public nodeSink2Sources(x: ControlSink<TType>): ReadonlyArray<ControlSource<TType>> {
     return nodeSink2Sources(x, this.controlSources);
   }
 
-  public edgeSink2Source(x: ControlSink): ControlSource | undefined {
+  public edgeSink2Source(x: ControlSink<TType>): ControlSource<TType> | undefined {
     const y = this.controlSinkNorm(x);
     return this.controlFlow.filter(f => f.target === y).map(x => x.source)[0];
   }
 
-  public edgeSource2Sink(x: ControlSource): ControlSink | undefined {
+  public edgeSource2Sink(x: ControlSource<TType>): ControlSink<TType> | undefined {
     const y = this.controlSourceNorm(x);
     return this.controlFlow.filter(f => f.source === y).map(x => x.target)[0];
   }
 
-  public getSymbolSinkType(x: SymbolSink): Type | undefined {
+  public getSymbolSinkType(x: SymbolSink<TType>): TType | undefined {
     return getSymbolSinkType(this.graph, this.procs, x);
   }
 
-  public getSymbolSourceType(x: SymbolSource): Type | undefined {
+  public getSymbolSourceType(x: SymbolSource<TType>): TType | undefined {
     return getSymbolSourceType(this.graph, this.procs, x);
   }
 
-  public getGraphProc(): Proc {
+  public getGraphProc(): Proc<TType> {
     return {
       pure: [...this.nodesProc].map(x => this.procs[x.procID]).every(x => x === undefined ? false : x.pure),
       inputs: objMap((_, value) => value && !value.value && ({ type: value.type, names: value.names }) || undefined, this.graph.inputs),
@@ -248,7 +253,7 @@ export class GraphContext {
 
   // EXECUTION
   public compile(impls: ProcImplementations): string {
-    return generateTS(this, impls, GenerationFlavor.ContInlineProc);
+    return generateTS(this, impls, this.typeToTS, GenerationFlavor.ContInlineProc);
   }
   public build(impls: ProcImplementations): FlexFunc {
     const funcTs = this.compile(impls);
@@ -257,21 +262,21 @@ export class GraphContext {
   }
 
   // MUTATION
-  public removeControlFlow(edge: ControlFlow): GraphContext {
-    return new GraphContext({
+  public removeControlFlow(edge: ControlFlow<TType>): GraphContext<TType> {
+    return this.updateGraph({
       inputs: this.graph.inputs,
       edges: this.graph.edges.filter(x => edge.source !== this.controlSourceNorm(x.source) || edge.target !== this.controlSinkNorm(x.target)),
       outputFlows: this.graph.outputFlows
-    }, this.procs, this.samples);
+    });
   }
-  public connectControlFlow(source: ControlSource, sink: ControlSink): GraphContext {
-    return new GraphContext({
+  public connectControlFlow(source: ControlSource<TType>, sink: ControlSink<TType>): GraphContext<TType> {
+    return this.updateGraph({
       inputs: this.graph.inputs,
       edges: this.graph.edges.concat([{ source: source, target: sink }]),
       outputFlows: this.graph.outputFlows
-    }, this.procs, this.samples);
+    });
   }
-  public connectDataFlow(source: SymbolSource, sink: SymbolSink): GraphContext {
+  public connectDataFlow(source: SymbolSource<TType>, sink: SymbolSink<TType>): GraphContext<TType> {
     switch (sink.target.type) {
       case "output": {
         const change =
@@ -283,7 +288,7 @@ export class GraphContext {
             }));
         let graph = this.graph;
         if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return new GraphContext(graph, this.procs, this.samples);
+        return this.updateGraph(graph);
       }
       case "phi": {
         const flow = sink.target.flow;
@@ -295,7 +300,7 @@ export class GraphContext {
           });
         let graph = this.graph;
         if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return new GraphContext(graph, this.procs, this.samples);
+        return this.updateGraph(graph);
       }
       case "proc": {
         const change =
@@ -306,13 +311,13 @@ export class GraphContext {
           });
         let graph = this.graph;
         if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return new GraphContext(graph, this.procs, this.samples);
+        return this.updateGraph(graph);
       }
     }
   }
 
   // SYNTHESIS
-  public synthesizeNextGeneration(): Array<GraphContext> {
+  public synthesizeNextGeneration(): Array<GraphContext<TType>> {
     if (this.canGenerateWorkingCode) return [];
     if (this.unconnectedSymbolSinks.length === 0 && this.unconnectedControlSources.length === 0) return [];
     // THEN: population of changes (grade based on name stuff)
@@ -326,7 +331,7 @@ export class GraphContext {
     const symSink = this.unconnectedSymbolSinks.map(symSink => ({ symSink: symSink, ctrlSrc: this.edgeSink2Source(symSink.target) })).filter(x => x.ctrlSrc !== undefined)[0];
     const symSinkType = this.getSymbolSinkType(symSink.symSink) || errorUnreachable();
     const available = this.getSupply(symSink.ctrlSrc || errorUnreachable());
-    const sym = [...available].filter(x => typeEquals(x.type, symSinkType));
+    const sym = [...available].filter(x => this.typeAssignableTo(x.type, symSinkType));
     const resultConnect = sym.map(x => this.connectDataFlow(x.source, symSink.symSink));
     // 3) insert operation 
     const edge = this.controlFlow.find(x => x.target === symSink.symSink.target) || errorUnreachable();
@@ -336,8 +341,8 @@ export class GraphContext {
       return Object.keys(outFlows)
         .map(flowId => {
           const flow = outFlows[flowId] || {};
-          const procNode: NodeProc = { procID: procId, inputs: {} };
-          return Object.entries(flow).filter(x => lundef(x[1], _ => typeEquals(_.type, symSinkType)) || false)
+          const procNode: NodeProc<TType> = { procID: procId, inputs: {} };
+          return Object.entries(flow).filter(x => lundef(x[1], _ => this.typeAssignableTo(_.type, symSinkType)) || false)
             .map(x => x[0])
             .map(outId => ga
               .connectControlFlow(edge.source, { type: "proc", node: procNode })
@@ -350,8 +355,8 @@ export class GraphContext {
     return resultConnect.concat(resultAddProc);
   }
 
-  public synthesize(maxPopulationSize: number | undefined = undefined): GraphContext | undefined {
-    let population: Array<GraphContext> = [this];
+  public synthesize(maxPopulationSize: number | undefined = undefined): GraphContext<TType> | undefined {
+    let population: Array<GraphContext<TType>> = [this];
     while (true) {
       const c = population.pop();
       if (c === undefined) return undefined;
@@ -363,8 +368,8 @@ export class GraphContext {
       population.push(...nextGeneration.filter(x => !x.canGenerateWorkingCode));
 
       if (maxPopulationSize !== undefined) population = population.slice(-maxPopulationSize);
-      const nsize = (ga: GraphContext) => ga.nodesPhi.length + ga.nodesProc.length;
-      const nscore = (ga: GraphContext) => ga.score;
+      const nsize = (ga: GraphContext<TType>) => ga.nodesPhi.length + ga.nodesProc.length;
+      const nscore = (ga: GraphContext<TType>) => ga.score;
       population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(a) - nscore(b) : nsize(b) - nsize(a)).slice(0, maxPopulationSize);
     }
   }

@@ -1,45 +1,44 @@
 import { JSONValue } from "./json";
-import { Type } from "./type";
 
-export type ControlSource =
+export type ControlSource<TType> =
   { readonly type: "entry" } |
-  { readonly type: "phi", readonly node: NodePhi } |
-  { readonly type: "proc", readonly node: NodeProc, readonly flow: string };
-export type ControlSink =
+  { readonly type: "phi", readonly node: NodePhi<TType> } |
+  { readonly type: "proc", readonly node: NodeProc<TType>, readonly flow: string };
+export type ControlSink<TType> =
   { readonly type: "output", readonly flow: string } |
-  { readonly type: "phi", readonly node: NodePhi, readonly flow: string } |
-  { readonly type: "proc", readonly node: NodeProc };
+  { readonly type: "phi", readonly node: NodePhi<TType>, readonly flow: string } |
+  { readonly type: "proc", readonly node: NodeProc<TType> };
 
-export interface SymbolSource {
-  readonly origin: ControlSource;
+export interface SymbolSource<TType> {
+  readonly origin: ControlSource<TType>;
   readonly id: string;
 }
-export interface SymbolSink {
-  readonly target: ControlSink;
+export interface SymbolSink<TType> {
+  readonly target: ControlSink<TType>;
   readonly id: string;
 }
 
-export interface NodePhi {
-  readonly merge: { readonly [id: string]: { readonly type: Type, readonly sources: { readonly [flow: string]: SymbolSource | undefined } } | undefined };
+export interface NodePhi<TType> {
+  readonly merge: { readonly [id: string]: { readonly type: TType, readonly sources: { readonly [flow: string]: SymbolSource<TType> | undefined } } | undefined };
 }
 
-export interface NodeProc {
+export interface NodeProc<TType> {
   readonly procID: string;
-  readonly inputs: { readonly [id: string]: SymbolSource | undefined };
+  readonly inputs: { readonly [id: string]: SymbolSource<TType> | undefined };
 }
 
-export interface ControlFlow {
-  readonly source: ControlSource;
-  readonly target: ControlSink;
+export interface ControlFlow<TType> {
+  readonly source: ControlSource<TType>;
+  readonly target: ControlSink<TType>;
 }
 
-export interface DataFlow {
-  readonly source: SymbolSource;
-  readonly target: SymbolSink;
+export interface DataFlow<TType> {
+  readonly source: SymbolSource<TType>;
+  readonly target: SymbolSink<TType>;
 }
 
-export interface Graph {
-  readonly edges: ReadonlyArray<ControlFlow>;
-  readonly inputs: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly type: Type, readonly value?: JSONValue } | undefined }; // symbol source
-  readonly outputFlows: { readonly [flow: string]: { readonly [id: string]: { readonly source?: SymbolSource | undefined, readonly type: Type } | undefined } | undefined }; // symbol sink
+export interface Graph<TType> {
+  readonly edges: ReadonlyArray<ControlFlow<TType>>;
+  readonly inputs: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly type: TType, readonly value?: JSONValue } | undefined }; // symbol source
+  readonly outputFlows: { readonly [flow: string]: { readonly [id: string]: { readonly source?: SymbolSource<TType> | undefined, readonly type: TType } | undefined } | undefined }; // symbol sink
 }

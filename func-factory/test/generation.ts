@@ -2,20 +2,20 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
 import { GraphContext, FlexFunc, FlexArgs, FlexCallbacks } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, runGraph } from "./common";
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, runGraph, MyTType } from "./common";
 import { generateTS, GenerationFlavor } from "../src/reference-generator";
 import { DeepMutable, objMap, tsc } from "../src/helpers";
 
 @suite class Generation {
   @test "addition"() {
-    const addA: NodeProc = {
+    const addA: NodeProc<MyTType> = {
       procID: "add",
       inputs: {
         a: { origin: { type: "entry" }, id: "a" },
         b: { origin: { type: "entry" }, id: "b" }
       }
     };
-    const graph: Graph = {
+    const graph: Graph<MyTType> = {
       edges: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
@@ -40,22 +40,22 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
   }
 
   @test "loop"() {
-    const inputPhi: NodePhi = { merge: {} };
-    const inputPhiMutable: DeepMutable<NodePhi> = inputPhi;
-    const ltA: NodeProc = {
+    const inputPhi: NodePhi<MyTType> = { merge: {} };
+    const inputPhiMutable: DeepMutable<NodePhi<MyTType>> = inputPhi;
+    const ltA: NodeProc<MyTType> = {
       procID: "lt",
       inputs: {
         "a": { origin: { type: "phi", node: inputPhi }, id: "x" },
         "b": { origin: { type: "entry" }, id: "end" }
       }
     };
-    const ifA: NodeProc = {
+    const ifA: NodeProc<MyTType> = {
       procID: "if",
       inputs: {
         "condition": { origin: { type: "proc", node: ltA, flow: "result" }, id: "res" }
       }
     };
-    const addA: NodeProc = {
+    const addA: NodeProc<MyTType> = {
       procID: "add",
       inputs: {
         "a": { origin: { type: "phi", node: inputPhi }, id: "x" },
@@ -73,7 +73,7 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
       }
     };
 
-    const graph: Graph = {
+    const graph: Graph<MyTType> = {
       edges: [
         { source: { type: "phi", node: inputPhi }, target: { type: "proc", node: ltA } },
         { source: { type: "entry" }, target: { type: "phi", node: inputPhi, flow: "init" } },

@@ -1,15 +1,14 @@
 import { NodePhi, SymbolSource, NodeProc, ControlSink, ControlSource, ControlFlow, Graph, SymbolSink } from "./graph";
 import { error, objMap, lundef, errorUnreachable } from "./helpers";
-import { typeEmpty, Type, typeUnion, typeEquals } from "./type";
 import { validateNodePhi, validateNodeProc } from "./graph-validation";
 import { ProcDefinitions, SymbolInstance, Proc } from "./graph-context";
 
-export function getNodes(g: Graph): { nodesPhi: Iterable<NodePhi>, nodesProc: Iterable<NodeProc> } {
-  const nodesPhi = new Set<NodePhi>();
-  const nodesProc = new Set<NodeProc>();
+export function getNodes<TType>(g: Graph<TType>): { nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>> } {
+  const nodesPhi = new Set<NodePhi<TType>>();
+  const nodesProc = new Set<NodeProc<TType>>();
 
-  const visitSymbolSource = (ss: SymbolSource | undefined): void => ss !== undefined && visitDataConnector(ss.origin) || undefined;
-  const visitDataConnector = (ds: ControlSource | ControlSink): void => {
+  const visitSymbolSource = (ss: SymbolSource<TType> | undefined): void => ss !== undefined && visitDataConnector(ss.origin) || undefined;
+  const visitDataConnector = (ds: ControlSource<TType> | ControlSink<TType>): void => {
     switch (ds.type) {
       case "phi":
         visitPhi(ds.node);
@@ -19,12 +18,12 @@ export function getNodes(g: Graph): { nodesPhi: Iterable<NodePhi>, nodesProc: It
         break;
     }
   };
-  const visitPhi = (nodePhi: NodePhi): void => {
+  const visitPhi = (nodePhi: NodePhi<TType>): void => {
     if (nodesPhi.has(nodePhi)) return;
     nodesPhi.add(nodePhi);
     for (const x of Object.values(nodePhi.merge)) if (x !== undefined) for (const y of Object.values(x.sources)) visitSymbolSource(y);
   };
-  const visitProc = (nodeProc: NodeProc): void => {
+  const visitProc = (nodeProc: NodeProc<TType>): void => {
     if (nodesProc.has(nodeProc)) return;
     nodesProc.add(nodeProc);
     for (const x of Object.values(nodeProc.inputs)) visitSymbolSource(x);
@@ -48,15 +47,15 @@ export function getNodes(g: Graph): { nodesPhi: Iterable<NodePhi>, nodesProc: It
 
 
 
-export function getDataSources(g: Graph, procs: ProcDefinitions, nodesPhi: Iterable<NodePhi>, nodesProc: Iterable<NodeProc>): {
-  controlSources: ReadonlyArray<ControlSource>,
-  controlSourceEquals: (a: ControlSource, b: ControlSource) => boolean
+export function getDataSources<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
+  controlSources: ReadonlyArray<ControlSource<TType>>,
+  controlSourceEquals: (a: ControlSource<TType>, b: ControlSource<TType>) => boolean
 } {
-  const controlSources: ControlSource[] = [];
+  const controlSources: ControlSource<TType>[] = [];
   controlSources.push({ type: "entry" });
   for (const n of nodesPhi) controlSources.push({ type: "phi", node: n });
   for (const n of nodesProc) for (const f in (procs[n.procID] || { outputFlows: {} }).outputFlows) controlSources.push({ type: "proc", node: n, flow: f });
-  const controlSourceEquals = (a: ControlSource, b: ControlSource): boolean => {
+  const controlSourceEquals = (a: ControlSource<TType>, b: ControlSource<TType>): boolean => {
     if (a.type === "entry" && b.type === "entry")
       return true;
     if (a.type === "phi" && b.type === "phi")
@@ -68,15 +67,15 @@ export function getDataSources(g: Graph, procs: ProcDefinitions, nodesPhi: Itera
   return { controlSources, controlSourceEquals };
 }
 
-export function getControlSinks(g: Graph, procs: ProcDefinitions, nodesPhi: Iterable<NodePhi>, nodesProc: Iterable<NodeProc>): {
-  controlSinks: ReadonlyArray<ControlSink>,
-  controlSinkEquals: (a: ControlSink, b: ControlSink) => boolean
+export function getControlSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
+  controlSinks: ReadonlyArray<ControlSink<TType>>,
+  controlSinkEquals: (a: ControlSink<TType>, b: ControlSink<TType>) => boolean
 } {
-  const controlSinks: ControlSink[] = [];
+  const controlSinks: ControlSink<TType>[] = [];
   for (const f in g.outputFlows) controlSinks.push({ type: "output", flow: f });
   for (const n of nodesPhi) for (const m of Object.values(n.merge)) if (m !== undefined) for (const f in m.sources) controlSinks.push({ type: "phi", node: n, flow: f });
   for (const n of nodesProc) controlSinks.push({ type: "proc", node: n });
-  const controlSinkEquals = (a: ControlSink, b: ControlSink): boolean => {
+  const controlSinkEquals = (a: ControlSink<TType>, b: ControlSink<TType>): boolean => {
     if (a.type === "output" && b.type === "output")
       return a.flow === b.flow;
     if (a.type === "phi" && b.type === "phi")
@@ -88,11 +87,11 @@ export function getControlSinks(g: Graph, procs: ProcDefinitions, nodesPhi: Iter
   return { controlSinks, controlSinkEquals };
 }
 
-export function getSymbolSources(g: Graph, procs: ProcDefinitions, controlSources: Iterable<ControlSource>, controlSourceEquals: (a: ControlSource, b: ControlSource) => boolean): {
-  symbolSources: ReadonlyArray<SymbolSource>,
-  symbolSourceEquals: (a: SymbolSource, b: SymbolSource) => boolean
+export function getSymbolSources<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, controlSources: Iterable<ControlSource<TType>>, controlSourceEquals: (a: ControlSource<TType>, b: ControlSource<TType>) => boolean): {
+  symbolSources: ReadonlyArray<SymbolSource<TType>>,
+  symbolSourceEquals: (a: SymbolSource<TType>, b: SymbolSource<TType>) => boolean
 } {
-  const symbolSources: SymbolSource[] = [];
+  const symbolSources: SymbolSource<TType>[] = [];
   for (const s of controlSources)
     switch (s.type) {
       case "entry":
@@ -105,15 +104,15 @@ export function getSymbolSources(g: Graph, procs: ProcDefinitions, controlSource
         for (const id in (procs[s.node.procID] || { outputFlows: <{ [id: string]: undefined }>{} }).outputFlows[s.flow] || {}) symbolSources.push({ origin: s, id: id });
         break;
     }
-  const symbolSourceEquals = (a: SymbolSource, b: SymbolSource): boolean => controlSourceEquals(a.origin, b.origin) && a.id === b.id;
+  const symbolSourceEquals = (a: SymbolSource<TType>, b: SymbolSource<TType>): boolean => controlSourceEquals(a.origin, b.origin) && a.id === b.id;
   return { symbolSources, symbolSourceEquals };
 }
 
-export function getSymbolSinks(g: Graph, procs: ProcDefinitions, controlSinks: Iterable<ControlSink>, controlSinkEquals: (a: ControlSink, b: ControlSink) => boolean): {
-  symbolSinks: ReadonlyArray<SymbolSink>,
-  symbolSinkEquals: (a: SymbolSink, b: SymbolSink) => boolean
+export function getSymbolSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, controlSinks: Iterable<ControlSink<TType>>, controlSinkEquals: (a: ControlSink<TType>, b: ControlSink<TType>) => boolean): {
+  symbolSinks: ReadonlyArray<SymbolSink<TType>>,
+  symbolSinkEquals: (a: SymbolSink<TType>, b: SymbolSink<TType>) => boolean
 } {
-  const symbolSinks: SymbolSink[] = [];
+  const symbolSinks: SymbolSink<TType>[] = [];
   for (const s of controlSinks)
     switch (s.type) {
       case "output":
@@ -126,19 +125,19 @@ export function getSymbolSinks(g: Graph, procs: ProcDefinitions, controlSinks: I
         for (const id in (procs[s.node.procID] || { inputs: {} }).inputs) symbolSinks.push({ target: s, id: id });
         break;
     }
-  const symbolSinkEquals = (a: SymbolSink, b: SymbolSink): boolean => controlSinkEquals(a.target, b.target) && a.id === b.id;
+  const symbolSinkEquals = (a: SymbolSink<TType>, b: SymbolSink<TType>): boolean => controlSinkEquals(a.target, b.target) && a.id === b.id;
   return { symbolSinks, symbolSinkEquals };
 }
 
-export function getSymbolMapper(g: Graph, procs: ProcDefinitions, symbolSources: ReadonlyArray<SymbolSource>, symbolSourceNorm: (a: SymbolSource) => SymbolSource | undefined):
-  (src: SymbolSource) => SymbolInstance | undefined {
+export function getSymbolMapper<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, symbolSources: ReadonlyArray<SymbolSource<TType>>, symbolSourceNorm: (a: SymbolSource<TType>) => SymbolSource<TType> | undefined):
+  (src: SymbolSource<TType>) => SymbolInstance<TType> | undefined {
   interface SymbolInstanceMutable {
-    source: SymbolSource;
-    type: Type;
+    source: SymbolSource<TType>;
+    type: TType;
     names: Array<string>;
   }
 
-  const symbols = new Map<SymbolSource, SymbolInstanceMutable>();
+  const symbols = new Map<SymbolSource<TType>, SymbolInstanceMutable>();
   // init symbols (only statically known names and types)
   for (const src of symbolSources) {
     const type = getSymbolSourceType(g, procs, src);
@@ -151,7 +150,7 @@ export function getSymbolMapper(g: Graph, procs: ProcDefinitions, symbolSources:
       symbols.set(src, symbol);
     }
   }
-  const getSymbol = (src: SymbolSource): SymbolInstanceMutable | undefined => {
+  const getSymbol = (src: SymbolSource<TType>): SymbolInstanceMutable | undefined => {
     const x = symbolSourceNorm(src);
     return x && symbols.get(x);
   };
@@ -201,22 +200,13 @@ export function getSymbolMapper(g: Graph, procs: ProcDefinitions, symbolSources:
           }
         }
       }
-      // type
-      if (transfer.transferType) {
-        const type = transfer.source.type;
-        const newType = typeUnion(transfer.target.type, type);
-        if (!typeEquals(transfer.target.type, newType)) {
-          transfer.target.type = newType;
-          redo = true;
-        }
-      }
     }
   }
 
   return getSymbol;
 }
 
-export function nodeSource2Sinks(x: ControlSource, controlSinks: ReadonlyArray<ControlSink>): ReadonlyArray<ControlSink> {
+export function nodeSource2Sinks<TType>(x: ControlSource<TType>, controlSinks: ReadonlyArray<ControlSink<TType>>): ReadonlyArray<ControlSink<TType>> {
   switch (x.type) {
     case "entry": return [];
     case "phi": return controlSinks.filter(y => y.type === "phi" && y.node === x.node);
@@ -224,7 +214,7 @@ export function nodeSource2Sinks(x: ControlSource, controlSinks: ReadonlyArray<C
     default: return errorUnreachable();
   }
 }
-export function nodeSource2Sources(x: ControlSource, controlSources: ReadonlyArray<ControlSource>): ReadonlyArray<ControlSource> {
+export function nodeSource2Sources<TType>(x: ControlSource<TType>, controlSources: ReadonlyArray<ControlSource<TType>>): ReadonlyArray<ControlSource<TType>> {
   switch (x.type) {
     case "entry": return controlSources.filter(y => y.type === "entry");
     case "phi": return controlSources.filter(y => y.type === "phi" && y.node === x.node);
@@ -232,7 +222,7 @@ export function nodeSource2Sources(x: ControlSource, controlSources: ReadonlyArr
     default: return errorUnreachable();
   }
 }
-export function nodeSink2Sinks(x: ControlSink, controlSinks: ReadonlyArray<ControlSink>): ReadonlyArray<ControlSink> {
+export function nodeSink2Sinks<TType>(x: ControlSink<TType>, controlSinks: ReadonlyArray<ControlSink<TType>>): ReadonlyArray<ControlSink<TType>> {
   switch (x.type) {
     case "output": return controlSinks.filter(y => y.type === "output");
     case "phi": return controlSinks.filter(y => y.type === "phi" && y.node === x.node);
@@ -240,7 +230,7 @@ export function nodeSink2Sinks(x: ControlSink, controlSinks: ReadonlyArray<Contr
     default: return errorUnreachable();
   }
 }
-export function nodeSink2Sources(x: ControlSink, controlSources: ReadonlyArray<ControlSource>): ReadonlyArray<ControlSource> {
+export function nodeSink2Sources<TType>(x: ControlSink<TType>, controlSources: ReadonlyArray<ControlSource<TType>>): ReadonlyArray<ControlSource<TType>> {
   switch (x.type) {
     case "output": return [];
     case "phi": return controlSources.filter(y => y.type === "phi" && y.node === x.node);
@@ -249,7 +239,7 @@ export function nodeSink2Sources(x: ControlSink, controlSources: ReadonlyArray<C
   }
 }
 
-export function getSymbolSourceType(graph: Graph, procs: ProcDefinitions, src: SymbolSource): Type | undefined {
+export function getSymbolSourceType<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): TType | undefined {
   const dsrc = src.origin;
   switch (dsrc.type) {
     case "entry": {
@@ -269,7 +259,7 @@ export function getSymbolSourceType(graph: Graph, procs: ProcDefinitions, src: S
     default: return errorUnreachable();
   }
 }
-export function getSymbolSinkType(graph: Graph, procs: ProcDefinitions, symbolSink: SymbolSink): Type | undefined {
+export function getSymbolSinkType<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): TType | undefined {
   const controlSink = symbolSink.target;
   switch (controlSink.type) {
     case "output": {
@@ -289,7 +279,7 @@ export function getSymbolSinkType(graph: Graph, procs: ProcDefinitions, symbolSi
     default: return errorUnreachable();
   }
 }
-export function getSymbolSourceKnownNames(graph: Graph, procs: ProcDefinitions, src: SymbolSource): ReadonlyArray<string> {
+export function getSymbolSourceKnownNames<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): ReadonlyArray<string> {
   const dsrc = src.origin;
   switch (dsrc.type) {
     case "entry": {
@@ -309,7 +299,7 @@ export function getSymbolSourceKnownNames(graph: Graph, procs: ProcDefinitions, 
     default: return errorUnreachable();
   }
 }
-export function getSymbolSinkKnownNames(graph: Graph, procs: ProcDefinitions, symbolSink: SymbolSink): ReadonlyArray<string> {
+export function getSymbolSinkKnownNames<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): ReadonlyArray<string> {
   const controlSink = symbolSink.target;
   switch (controlSink.type) {
     case "output":
@@ -325,7 +315,7 @@ export function getSymbolSinkKnownNames(graph: Graph, procs: ProcDefinitions, sy
   }
 }
 
-export function getSymbolSourceOf(graph: Graph, procs: ProcDefinitions, symbolSink: SymbolSink): SymbolSource | undefined {
+export function getSymbolSourceOf<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): SymbolSource<TType> | undefined {
   const controlSink = symbolSink.target;
   switch (controlSink.type) {
     case "output":
@@ -337,33 +327,33 @@ export function getSymbolSourceOf(graph: Graph, procs: ProcDefinitions, symbolSi
   }
 }
 
-export function getMarket(
-  g: Graph,
-  flows: ReadonlyArray<ControlFlow>,
-  controlSources: ReadonlyArray<ControlSource>,
-  controlSinks: ReadonlyArray<ControlSink>,
-  symbolSources: ReadonlyArray<SymbolSource>,
-  controlSourceNorm: (a: ControlSource) => ControlSource | undefined,
-  controlSinkNorm: (a: ControlSink) => ControlSink | undefined,
-  _getSymbol: (src: SymbolSource) => SymbolInstance | undefined): { supply: ReadonlyMap<ControlSource, ReadonlySet<SymbolInstance>>, demand: ReadonlyMap<ControlSink, ReadonlySet<SymbolInstance>> } {
+export function getMarket<TType>(
+  g: Graph<TType>,
+  flows: ReadonlyArray<ControlFlow<TType>>,
+  controlSources: ReadonlyArray<ControlSource<TType>>,
+  controlSinks: ReadonlyArray<ControlSink<TType>>,
+  symbolSources: ReadonlyArray<SymbolSource<TType>>,
+  controlSourceNorm: (a: ControlSource<TType>) => ControlSource<TType> | undefined,
+  controlSinkNorm: (a: ControlSink<TType>) => ControlSink<TType> | undefined,
+  _getSymbol: (src: SymbolSource<TType>) => SymbolInstance<TType> | undefined): { supply: ReadonlyMap<ControlSource<TType>, ReadonlySet<SymbolInstance<TType>>>, demand: ReadonlyMap<ControlSink<TType>, ReadonlySet<SymbolInstance<TType>>> } {
 
-  const getSymbol = (src: SymbolSource | undefined): SymbolInstance | undefined => src === undefined ? undefined : _getSymbol(src);
+  const getSymbol = (src: SymbolSource<TType> | undefined): SymbolInstance<TType> | undefined => src === undefined ? undefined : _getSymbol(src);
 
   // adjacency
-  const flowOut = new Map<ControlSource, ControlFlow>();
-  const flowIn = new Map<ControlSink, ControlFlow>();
+  const flowOut = new Map<ControlSource<TType>, ControlFlow<TType>>();
+  const flowIn = new Map<ControlSink<TType>, ControlFlow<TType>>();
   for (const f of flows) {
     flowOut.set(f.source, f);
     flowIn.set(f.target, f);
   }
 
   // propagate available symbols through flow (forward)
-  const supply = new Map<ControlSource, Set<SymbolInstance>>(controlSources.map<[ControlSource, Set<SymbolInstance>]>(x => [x, new Set<SymbolInstance>()]));
+  const supply = new Map<ControlSource<TType>, Set<SymbolInstance<TType>>>(controlSources.map<[ControlSource<TType>, Set<SymbolInstance<TType>>]>(x => [x, new Set<SymbolInstance<TType>>()]));
   for (const src of symbolSources) {
     // - init
-    const conditions = new Map<ControlSource, Set<ControlFlow>>();
-    conditions.set(src.origin, new Set<ControlFlow>());
-    const updated = new Set<ControlSource>();
+    const conditions = new Map<ControlSource<TType>, Set<ControlFlow<TType>>>();
+    conditions.set(src.origin, new Set<ControlFlow<TType>>());
+    const updated = new Set<ControlSource<TType>>();
     updated.add(src.origin);
 
     // - propagate (fixed-point iteration; need to detect self-sustaining cycles involving phi!)
@@ -374,7 +364,7 @@ export function getMarket(
       if (flow !== undefined) {
         const sink = flow.target;
         // -- collect influx conditions
-        const conditionsToProceed = new Set<ControlFlow>();
+        const conditionsToProceed = new Set<ControlFlow<TType>>();
         for (const influx of nodeSink2Sinks(sink, controlSinks).map(x => flowIn.get(x)).filter(x => x) as any) {
           const influxConditions = conditions.get(influx.source);
           if (influxConditions) for (const x of influxConditions) conditionsToProceed.add(x);
@@ -383,7 +373,7 @@ export function getMarket(
 
         // -- propagate conditions
         for (const outflux of nodeSink2Sources(sink, controlSources).map(x => flowOut.get(x)).filter(x => x) as any) {
-          const newCond = new Set<ControlFlow>(conditionsToProceed);
+          const newCond = new Set<ControlFlow<TType>>(conditionsToProceed);
           newCond.delete(outflux);
           const previousCond = conditions.get(outflux.source);
           if (!previousCond || previousCond.size > newCond.size) {
@@ -402,10 +392,10 @@ export function getMarket(
   }
 
   // mark required symbols
-  const demand = new Map<ControlSink, Set<SymbolInstance>>(controlSinks.map<[ControlSink, Set<SymbolInstance>]>(x => [x, new Set<SymbolInstance>()]));
-  const updated = new Set<ControlSink>();
+  const demand = new Map<ControlSink<TType>, Set<SymbolInstance<TType>>>(controlSinks.map<[ControlSink<TType>, Set<SymbolInstance<TType>>]>(x => [x, new Set<SymbolInstance<TType>>()]));
+  const updated = new Set<ControlSink<TType>>();
   for (const ds of controlSinks) {
-    const markRequired = (sym: SymbolInstance | undefined) => {
+    const markRequired = (sym: SymbolInstance<TType> | undefined) => {
       if (sym !== undefined) {
         (demand.get(ds) || errorUnreachable()).add(sym);
         updated.add(ds);
@@ -439,7 +429,7 @@ export function getMarket(
     for (const sym of demand.get(update) || []) {
       if (sym.source.origin !== source) {
         for (const predFlow of predFlows) {
-          const set = demand.get(predFlow) || new Set<SymbolInstance>();
+          const set = demand.get(predFlow) || new Set<SymbolInstance<TType>>();
           if (!set.has(sym)) {
             set.add(sym);
             demand.set(predFlow, set);

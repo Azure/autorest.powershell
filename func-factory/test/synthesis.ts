@@ -2,12 +2,12 @@ import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
 import { GraphContext, FlexArgs, FlexCallbacks } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph } from "./common";
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from "./common";
 import { objMap, error } from "../src/helpers";
 
 @suite class Synthesis {
   @test "simple"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
@@ -17,13 +17,13 @@ import { objMap, error } from "../src/helpers";
       }
     };
 
-    let ga = new GraphContext(g, getBuiltInDefs()).synthesize() || error("synthesis failed to produce working code");
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs()).synthesize() || error("synthesis failed to produce working code");
     assert.equal(runGraph(ga.graph, { text: "asd" }, "result", ".length"), 3);
     assert.equal(runGraph(ga.graph, { text: "hello world" }, "result", ".length"), 11);
     assert.equal(runGraph(ga.graph, { text: "" }, "result", ".length"), 0);
   }
   @test "simple with samples"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
@@ -33,7 +33,7 @@ import { objMap, error } from "../src/helpers";
       }
     };
 
-    let ga = new GraphContext(g, getBuiltInDefs(), [
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
       { impl: getBuiltInImpls(), input: { text: "asd" }, output: { length: 3 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { text: "hello world" }, output: { length: 11 }, outputFlow: "result" }
     ]).synthesize() || error("synthesis failed to produce working code");
@@ -43,7 +43,7 @@ import { objMap, error } from "../src/helpers";
   }
 
   @test "add 2"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         a: { type: typeNumber, names: [] },
@@ -54,7 +54,7 @@ import { objMap, error } from "../src/helpers";
       }
     };
 
-    let ga = new GraphContext(g, getBuiltInDefs(), [
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
       { impl: getBuiltInImpls(), input: { a: 3, b: 4 }, output: { sum: 7 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 4, b: 5 }, output: { sum: 9 }, outputFlow: "result" }
     ]).synthesize() || error("synthesis failed to produce working code");
@@ -64,7 +64,7 @@ import { objMap, error } from "../src/helpers";
   }
 
   @test "add 3"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         a: { type: typeNumber, names: [] },
@@ -76,7 +76,7 @@ import { objMap, error } from "../src/helpers";
       }
     };
 
-    let ga = new GraphContext(g, getBuiltInDefs(), [
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
       { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 5 }, output: { sum: 12 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 4, b: 5, c: 6 }, output: { sum: 15 }, outputFlow: "result" }
     ]).synthesize() || error("synthesis failed to produce working code");
@@ -86,7 +86,7 @@ import { objMap, error } from "../src/helpers";
   }
 
   @test "add 4"() {
-    const g: Graph = {
+    const g: Graph<MyTType> = {
       edges: [],
       inputs: {
         a: { type: typeNumber, names: [] },
@@ -99,7 +99,7 @@ import { objMap, error } from "../src/helpers";
       }
     };
 
-    let ga = new GraphContext(g, getBuiltInDefs(), [
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
       { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 5, d: 6 }, output: { sum: 18 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 4, b: 5, c: 6, d: 7 }, output: { sum: 22 }, outputFlow: "result" }
     ]).synthesize() || error("synthesis failed to produce working code");
