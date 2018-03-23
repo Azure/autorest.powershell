@@ -1,3 +1,4 @@
+import { Dictionary } from "#remodeler/common";
 
 let indentation = "    ";
 
@@ -112,6 +113,15 @@ export function fixEOL(content: string) {
   return content.replace(/\r\n/g, EOL);
 }
 
+export function map<T, U>(dictionary: Dictionary<T>, callbackfn: (key: string, value: T) => U, thisArg?: any): U[] {
+  return Object.getOwnPropertyNames(dictionary).map((key) => callbackfn(key, dictionary[key]));
+}
+export function selectMany<T>(multiArray: T[][]): T[] {
+  const result = new Array<T>();
+  multiArray.map(v => result.push(...v));
+  return result;
+}
+
 export function indent(content: string, factor: number = 1): string {
   const i = indentation.repeat(factor);
   content = i + fixEOL(content.trim());
@@ -131,7 +141,7 @@ export function deconstruct(identifier: string): Array<string> {
 }
 
 export function fixLeadingNumber(identifier: Array<string>): Array<string> {
-  if (identifier.length > 0 && /\d+/.exec(identifier[0])) {
+  if (identifier.length > 0 && /^\d+/.exec(identifier[0])) {
     return [...convert(parseInt(identifier[0])), ...identifier.slice(1)];
   }
   return identifier;

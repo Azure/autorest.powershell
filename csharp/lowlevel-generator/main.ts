@@ -17,7 +17,7 @@ import { deserialize } from "#common/yaml";
 
 // model constructors? 
 //    - allOf creation?
-// enum generator
+
 // validations
 // serialization/deserialization/polymorphic deserializer/shape deserializer?
 // url construction
@@ -29,7 +29,6 @@ import { deserialize } from "#common/yaml";
 
 // client runtime
 
-// later: refactor create/async to be consistent
 
 export async function process(service: Host) {
   try {
@@ -48,7 +47,7 @@ export async function process(service: Host) {
 
     const modelState = new State(service, model, filename);
 
-    const project = await Project.create(modelState);
+    const project = new Project(modelState);
 
     await project.writeFiles(async (filename, content) => await service.WriteFile(filename, content, undefined));
 

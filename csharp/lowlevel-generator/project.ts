@@ -8,77 +8,37 @@ import { ModelClass } from "./model/class";
 import { ModelsNamespace } from "./model/namespace";
 import { ServiceNamespace } from "./operation/namespace";
 import { SupportNamespace } from "./support/namespace";
+import { JsonSerializerClass } from "#csharp/lowlevel-generator/support/json-serializer";
+import { Import } from "#csharp/code-dom/import";
 
 export class Project extends codeDomProject {
 
-  protected constructor() {
+  constructor(protected state: State) {
     super();
-  }
-
-  private _serviceNamespace?: ServiceNamespace;
-  private _modelsNamespace?: ModelsNamespace;
-  private _supportNamespace?: SupportNamespace;
-
-  public get serviceNamespace(): ServiceNamespace {
-    if (this._serviceNamespace) {
-      return this._serviceNamespace;
-    }
-    throw Error("Missing Service Namespace");
-  }
-
-  public get modelsNamespace(): ModelsNamespace {
-    if (this._modelsNamespace) {
-      return this._modelsNamespace;
-    }
-    throw Error("Missing Models Namespace");
-  }
-
-  public get supportNamespace(): SupportNamespace {
-    if (this._supportNamespace) {
-      return this._supportNamespace;
-    }
-    throw Error("Missing Support Namespace");
-  }
-
-
-  public addNamespace(n: Namespace): Namespace {
-    if (n instanceof ModelsNamespace) {
-      this._modelsNamespace = n;
-    }
-    if (n instanceof ServiceNamespace) {
-      this._serviceNamespace = n;
-    }
-    if (n instanceof SupportNamespace) {
-      this._supportNamespace = n;
-    }
-    return super.addNamespace(n);
-  }
-
-  public static async create(state: State): Promise<Project> {
-    const project = new Project();
-    state.project = project;
-    return await project.init(state);
-  }
-
-  private async init(state: State): Promise<Project> {
-
+    state.project = this;
     // add project namespace
-    await ServiceNamespace.create(state);
+    this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));
 
     // add support namespace
-    await SupportNamespace.create(this.serviceNamespace, state);
+    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, state));
 
     // add model classes
-    await ModelsNamespace.create(this.serviceNamespace, state.model.components.schemas, state.path('components', 'schemas'));
-
+    this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, state.model.components.schemas, state.path('components', 'schemas')));
 
     // create API class
-    await ApiClass.create(this, state);
+    new ApiClass(this.serviceNamespace, state);
+
+    // create serialization support
+    new JsonSerializerClass(this.supportNamespace, state)
+    this.modelsNamespace.addUsing(new Import(this.supportNamespace.fullName));
+
+
 
     // abort now if we have any errors.
     state.checkpoint();
-
-    return this;
   }
 
+  public serviceNamespace: ServiceNamespace;
+  public modelsNamespace: ModelsNamespace;
+  public supportNamespace: SupportNamespace;
 }

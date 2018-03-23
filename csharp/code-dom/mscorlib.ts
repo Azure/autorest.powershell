@@ -8,10 +8,6 @@ export class LibraryType implements TypeDeclaration {
     return `${this.fullName}`;
   }
 
-  public validation(propertyName: string): string {
-    return '';
-  }
-
   public get implementation(): string {
     return ``;
   }
@@ -28,8 +24,9 @@ export const Float: TypeDeclaration = new LibraryType("float");
 export const Date: TypeDeclaration = new LibraryType("DateTime");
 export const Duration: TypeDeclaration = new LibraryType("TimeSpan");
 export const Binary: TypeDeclaration = new LibraryType("byte[]");
-
+export const Bool: TypeDeclaration = new LibraryType("bool");
+export const Object: TypeDeclaration = new LibraryType("object");
+export const ThisObject: TypeDeclaration = new LibraryType("this object");
 
 export const Task: TypeDeclaration = new LibraryType("System.Threading.Tasks.Task");
 export const CancellationToken: TypeDeclaration = new LibraryType("System.Threading.CancellationToken");
-export const EventListener: TypeDeclaration = new LibraryType("Microsoft.Rest.EventListener");

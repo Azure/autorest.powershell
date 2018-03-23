@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Date implements TypeDeclaration {
   get implementation(): string {
@@ -7,7 +7,16 @@ export class Date implements TypeDeclaration {
   get use(): string {
     return `System.DateTime`
   }
-  validation(propertyName: string): string {
-    throw new Error("Method not implemented.");
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
+  validateValue(propertyName: string): string {
+    return `/* date validate value for ${propertyName} */`;
+  }
+  jsonserialize(propertyName: string): string {
+    return `/* date json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* date json deserialize for ${propertyName} */`;
   }
 }

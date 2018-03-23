@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 
 export class String implements TypeDeclaration {
   constructor(private minLength?: number, private maxLength?: number, private pattern?: string, private choices?: Array<string>) {
@@ -13,12 +13,13 @@ export class String implements TypeDeclaration {
 
   valueRequired(propertyName: string): string {
     return `
-if( $VALUE == null ) {
+if( $VALUE == null ) 
+{
   $ERROR;
 }`.trim();
   };
 
-  validation(propertyName: string): string {
+  validateValue(propertyName: string): string {
     return `
 ${this.validateMinLength(propertyName)}
 ${this.validateMaxLength(propertyName)}
@@ -28,37 +29,46 @@ ${this.validateEnum(propertyName)}
     ;
   }
 
+
+  public validatePresence(propertyName: string): string {
+    return `await listener.AssertNotNull(nameof(${propertyName}),${propertyName});`.trim();
+  }
+
   private validateMinLength(propertyName: string): string {
     if (!this.minLength) {
       return '';
     }
-    return `
-if( ${propertyName}.Length < ${this.minLength}) {
-  throw new Exception("${propertyName} length is less than ${this.minLength}");
-}`.trim();
+    return `await listener.AssertMinimumLength(nameof(${propertyName}),${propertyName},${this.minLength});`
   }
   private validateMaxLength(propertyName: string): string {
     if (!this.minLength) {
       return '';
     }
-    return `
-if( ${propertyName}.Length > ${this.maxLength}) {
-  throw new Exception("${propertyName} length is greatere than ${this.maxLength}");
-}`.trim();
+    return `await listener.AssertMaximumLength(nameof(${propertyName}),${propertyName},${this.minLength});`
   }
   private validateRegex(propertyName: string): string {
     if (!this.pattern) {
       return '';
     }
-    return `
-if( !System.Text.RegularExpressions.Regex.Match(${propertyName}, "${this.pattern}") ) {}
-  throw new Exception("${propertyName} does not validate against patter '${this.pattern}'");
-}`.trim();
+    return `await listener.AssertRegEx(nameof(${propertyName}),${propertyName},@"${this.pattern}");`
   }
   private validateEnum(propertyName: string): string {
     if (!this.choices) {
       return '';
     }
-    return '// todo validate enum choices';
+    return `await listener.AssertEnum(nameof(${propertyName}),${propertyName},${this.choices.joinWith((v) => `@"${v}"`)});`
+  }
+  jsonserialize(propertyName: string): string {
+    return `/* string json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* string json deserialize for ${propertyName} */`;
+  }
+}
+
+
+export class NullableString extends String {
+  public validatePresence(propertyName: string): string {
+    return ``;
   }
 }

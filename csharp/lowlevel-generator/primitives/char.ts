@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Char implements TypeDeclaration {
   constructor(private choices?: Array<string>) {
@@ -11,12 +11,15 @@ export class Char implements TypeDeclaration {
   get use(): string {
     return 'char';
   }
+  public validatePresence(propertyName: string): string {
+    return ``;
+  }
 
   valueRequired(propertyName: string): string {
     return ``
   };
 
-  validation(propertyName: string): string {
+  validateValue(propertyName: string): string {
     return `
 ${this.validateEnum(propertyName)}
     `.trim();
@@ -29,4 +32,12 @@ ${this.validateEnum(propertyName)}
     }
     return '// todo validate enum choices';
   }
+
+  jsonserialize(propertyName: string): string {
+    return `/* char json serialize for ${propertyName} */`;
+  }
+  jsondeserialize(propertyName: string): string {
+    return `/* char json deserialize for ${propertyName} */`;
+  }
+
 }

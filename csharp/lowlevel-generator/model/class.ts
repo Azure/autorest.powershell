@@ -9,31 +9,39 @@ import { State } from "../generator";
 import { Schema } from "#remodeler/code-model";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { Interface } from "#csharp/code-dom/interface";
-import { BackingField } from "./backing-field";
 import { ProxyProperty } from "./proxy-property";
+import { Field } from "#csharp/code-dom/field";
+import { AccessModifier } from "#csharp/code-dom/access-modifier";
+import { IJsonSerializable, EventListener, IValidates } from "#csharp/lowlevel-generator/clientruntime";
+import { Statements, OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { PrivateData } from "#csharp/lowlevel-generator/private-data";
+import { EOL } from "#common/text-manipulation";
+import { Method } from "#csharp/code-dom/method";
+import { Parameter } from "#csharp/code-dom/parameter";
 
 export class ModelClass extends Class {
 
-  protected constructor(parent: Namespace, name: string, state: State) {
-    super(parent, name);
-  }
+  public serializeStatements = new Statements();
+  private validateMethod?: Method;
 
-  public static async create(parent: Namespace, schema: Schema, state: State): Promise<ModelClass> {
-    if (schema.details.privateData["class-implementation"]) {
-      // if we've already created this type, return the implementation of it.
-      return schema.details.privateData["class-implementation"];
-    }
-    const modelClass = new ModelClass(parent, schema.details.name, state);
+  constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelClass>) {
+    super(namespace, schema.details.name);
+    this.apply(objectInitializer);
+
+    const privateData: PrivateData = schema.details.privateData;
 
     // mark the code-model with the class we're creating.
-    schema.details.privateData["class-implementation"] = modelClass;
+    privateData.classImplementation = this;
 
     // track the namespace we've used.
-    schema.details.namespace = parent.fullName;
+    schema.details.namespace = namespace.fullName;
+
+    // mark it as json serializable
+    this.interfaces.push(IJsonSerializable);
 
     // create an interface for this model class
-    const modelInterface = await ModelInterface.create(parent, schema, state);
-    modelClass.interfaces.push(modelInterface);
+    const modelInterface = privateData.interfaceImplementation || new ModelInterface(namespace, schema, this, state);
+    this.interfaces.push(modelInterface);
 
     // handle <allOf>s 
     // add an 'implements' for the interface for the allOf.
@@ -41,20 +49,20 @@ export class ModelClass extends Class {
       const aSchema = schema.allOf[allOf];
       const aState = state.path("allOf");
 
-      const td = await state.project.modelsNamespace.resolveTypeDeclaration(aSchema, aState);
+      const td = state.project.modelsNamespace.resolveTypeDeclaration(aSchema, true, aState);
 
       // add the interface as a parent to our interface.
-      const iface: ModelInterface = aSchema.details.privateData["interface-implementation"];
+      const iface: ModelInterface = aSchema.details.privateData.interfaceImplementation;
 
       modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = await BackingField.create(modelClass, `_allof_${allOf}`, td, aState);
+      const backingField = this.addField(new Field(`_allof_${allOf}`, td, { visibility: AccessModifier.Private }));
 
       // now, create proxy properties for the members
-      for (const each of iface.properties) {
-        await ProxyProperty.create(modelClass, backingField, each, state);
-      }
+      iface.allProperties.map(each => this.addProperty(new ProxyProperty(backingField, each, state)));
+
+      this.serializeStatements.add(`${backingField.value}?.ToJson(result);`)
     }
     // generate a protected backing field for each
     // and then expand the nested properties into this class forwarding to the member.
@@ -64,7 +72,9 @@ export class ModelClass extends Class {
     for (const propertyName in schema.properties) {
       const property = schema.properties[propertyName];
 
-      ModelProperty.create(modelClass, property, state.path('properties', propertyName));
+      const prop = this.addProperty(new ModelProperty(this, property, state.path('properties', propertyName)));
+
+      this.serializeStatements.add(`result.Add("${propertyName}",${prop.name}.ToJson());`);
     }
 
     if (schema.additionalProperties) {
@@ -77,12 +87,43 @@ export class ModelClass extends Class {
       }
     }
 
+    // add validation function
+    const statements = new Statements();
+    this.properties.map(each => statements.add((<ModelProperty>each).validatePresenceStatement));
+    this.properties.map(each => statements.add((<ModelProperty>each).validationStatement));
 
-    // add constructors 
+    // const propVal = this.properties.joinWith(each => (<ModelProperty>each).validationStatement, EOL);
+    // const propValPresence = this.properties.joinWith(each => (<ModelProperty>each).validatePresenceStatement, EOL);
 
-    // add serialization 
+    if (statements.count > 0) {
+      // we do have something to valdiate!
 
+      // add the IValidates implementation to this object.
+      this.interfaces.push(IValidates);
+      this.validateMethod = this.addMethod(new Method("Validate", mscorlib.Task, {
+        parameters: [new Parameter("listener", EventListener)],
+        isAsync: true,
+      }));
+      this.validateMethod.add(statements);
+    }
 
-    return modelClass;
+  }
+
+  validatePresence(propertyName: string): OneOrMoreStatements {
+    return `await listener.AssertNotNull(nameof(${propertyName}),${propertyName});`.trim();
+  }
+
+  validateValue(propertyName: string): OneOrMoreStatements {
+    //if (this.validateMethod) {
+    //return `${propertyName}.Validate(listener);`
+    //}
+    // return `(${propertyName} as Microsoft.Rest.ClientRuntime.IValidates)?.Validate(listener);`;
+    return `await listener.AssertObjectIsValid(nameof(${propertyName}), ${propertyName});`;
+  }
+  jsonserialize(propertyName: string): OneOrMoreStatements {
+    return `/* serialize json object  here */`;
+  }
+  jsondeserialize(propertyName: string): OneOrMoreStatements {
+    return `/* deserialize json object here */`;
   }
 }

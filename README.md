@@ -52,14 +52,14 @@ scope-remodeler/emitter:
 ``` yaml $(llcsharp)
 pipeline:
 
-  llcsharp/inferrer:
+  llcsharp/csinferrer:
     scope: llcsharp
     input: remodeler
     output-artifact: code-model-v2
 
   llcsharp/csnamer:
     scope: llcsharp
-    input: inferrer
+    input: csinferrer
     output-artifact: code-model-v2
 
   llcsharp/generate:

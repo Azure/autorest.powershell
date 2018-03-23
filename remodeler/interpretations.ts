@@ -1,7 +1,13 @@
 import * as OpenAPI from "./oai3";
-import { ImplementationLocation, Server, ExternalDocumentation, MediaType } from "./code-model";
+import { ImplementationLocation, Server, ExternalDocumentation, MediaType, EnumDetails, EnumValue } from "./code-model";
 import { getExtensionProperties, clone, Dictionary } from "./common";
 import { Remodeler } from "./remodeler";
+
+interface XMSEnum {
+  modelAsString?: boolean;
+  values: [{ value: any, description?: string, name?: string }];
+  name: string
+}
 
 
 export function getName(defaultValue: string, original: OpenAPI.Extensions) {
@@ -27,8 +33,30 @@ export function getParameterImplementationLocation(defaultValue: ImplementationL
   }
   return defaultValue;
 }
-export function getEnumDefinition() {
-
+export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undefined {
+  const xmse = <XMSEnum>original["x-ms-enum"];
+  if (xmse && original.enum) {
+    return {
+      name: xmse.name,
+      values: xmse.values ?
+        xmse.values.map((each) => {
+          return {
+            description: each.description || '',
+            name: each.name || '${each.value}',
+            value: each.value
+          };
+        }) :
+        original.enum.map(each => {
+          return {
+            description: '',
+            name: each,
+            value: each
+          };
+        }),
+      modelAsString: xmse.modelAsString ? true : false
+    }
+  }
+  return undefined;
 }
 
 export function getKnownFormatType() {
