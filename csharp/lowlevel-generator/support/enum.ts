@@ -4,18 +4,19 @@ import { State } from "../generator";
 import { Schema } from "#remodeler/code-model";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { Interface } from "#csharp/code-dom/interface";
-import { ConstantField } from "#csharp/code-dom/field";
+import { InitializedField } from "#csharp/code-dom/field";
 import { StringExpression } from "#csharp/code-dom/expression";
 import { Constructor } from "#csharp/code-dom/constructor";
 import { Parameter } from "#csharp/code-dom/parameter";
 import { String } from "#csharp/code-dom/mscorlib";
 import { Property } from "#csharp/code-dom/property";
-import { AccessModifier } from "#csharp/code-dom/access-modifier";
+import { Access, Static, Modifier } from "#csharp/code-dom/access-modifier";
 import { Method } from "#csharp/code-dom/method";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
 import { Struct } from "#csharp/code-dom/struct";
 import { Operator } from "#csharp/code-dom/operator";
 import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
+import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 
 export class EnumClass extends Struct implements TypeDeclaration {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {
@@ -32,26 +33,27 @@ export class EnumClass extends Struct implements TypeDeclaration {
 
     // add known enum values
     for (const evalue of schema.details.enum.values) {
-      const field = this.addField(new ConstantField(evalue.name, this, new StringExpression(evalue.value)));
-      field.isStatic = true;
+      const field = this.addField(new InitializedField(evalue.name, this, new StringExpression(evalue.value)));
+      field.static = Modifier.Static;
       field.description = evalue.description;
     }
 
     // add backingField
-    const backingField = this.addProperty(new Property('value', String));
-    backingField.readVisibility = AccessModifier.Private;
-    backingField.writeVisibility = AccessModifier.Private;
+    const backingField = this.addProperty(new Property('value', String, {
+      getAccess: Access.Private,
+      setAccess: Access.Private
+    }));
 
     // add private constructor 
     const p = new Parameter('underlyingValue', String)
     const ctor = this.addMethod(new Constructor(this, {
-      accessModifier: AccessModifier.Private,
+      access: Access.Private,
       parameters: [p],
     })).add(`this.${backingField.value} = ${p.value};`);
 
     // add toString Method
     this.addMethod(new Method("ToString", mscorlib.String, {
-      isOverride: true,
+      override: Modifier.Override,
       description: `Returns string representation for ${this.name}`
     })).add(`return this.${backingField.value};`)
 
@@ -63,42 +65,42 @@ export class EnumClass extends Struct implements TypeDeclaration {
 
     // add Equals Method(object)
     this.addMethod(new Method("Equals", mscorlib.Bool, {
-      isOverride: true,
+      override: Modifier.Override,
       description: `Compares values of enum type ${this.name} (override for Object)`,
       parameters: [new Parameter("obj", mscorlib.Object)]
     })).add(`return obj is ${this.name} && Equals((${this.name})obj);`)
 
     // add implicit operator(string)
     this.addMethod(new Operator(`implicit operator ${this.name}`, {
-      isStatic: true,
+      static: Modifier.Static,
       description: `Implicit operator to convert string to ${this.name}`,
       parameters: [new Parameter('value', mscorlib.String)]
     })).add(`return new ${this.name}(value);`);
 
     // add implicit operator(thistype)
     this.addMethod(new Operator(`implicit operator string`, {
-      isStatic: true,
+      static: Modifier.Static,
       description: `Implicit operator to convert ${this.name} to string`,
       parameters: [new Parameter('e', this)]
     })).add(`return e.${backingField.value};`);
 
     // add operator ==
     this.addMethod(new Method(`operator ==`, mscorlib.Bool, {
-      isStatic: true,
+      static: Modifier.Static,
       description: `Overriding == operator for enum ${this.name}`,
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return e2.Equals(e1);`);
 
     // add opeator != 
     this.addMethod(new Method(`operator !=`, mscorlib.Bool, {
-      isStatic: true,
+      static: Modifier.Static,
       description: `Overriding != operator for enum ${this.name}`,
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return !e2.Equals(e1);`);
 
     // add getHashCode
     this.addMethod(new Method(`GetHashCode`, mscorlib.Int, {
-      isOverride: true,
+      override: Modifier.Override,
       description: `Returns hashCode for enum ${this.name}`,
     })).add(`return this.${backingField.value}.GetHashCode();`);
   }
@@ -109,10 +111,14 @@ export class EnumClass extends Struct implements TypeDeclaration {
   public validatePresence(propertyName: string): string {
     return ``;
   }
-  jsonserialize(propertyName: string): string {
-    return '/***/';
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
+    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
+
   jsondeserialize(propertyName: string): string {
     return '/***/';
+  }
+  serializeInstanceToJson(instance: string): OneOrMoreStatements {
+    return `Carbon.Json.JsonString.Create(${instance})`;
   }
 }

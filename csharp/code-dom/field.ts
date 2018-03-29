@@ -1,11 +1,15 @@
 import { TypeDeclaration } from "./type-declaration";
 import { Expression } from "#csharp/code-dom/expression";
-import { AccessModifier } from "#csharp/code-dom/access-modifier";
+import { Access, Static, Modifier, New, ReadOnly, Volitile } from "#csharp/code-dom/access-modifier";
 import { Initializer } from "#csharp/code-dom/initializer";
 
 export class Field extends Initializer implements Expression {
-  public visibility: AccessModifier = AccessModifier.Public;
-  public isStatic: boolean = false;
+  public "new": New = Modifier.None;
+  public access = Access.Public;
+  public "static": Static = Modifier.None;
+  public "readonly": ReadOnly = Modifier.None;
+  public volitile: Volitile = Modifier.None;
+
   public description: string = "";
 
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Field>) {
@@ -14,7 +18,7 @@ export class Field extends Initializer implements Expression {
   }
 
   public get declaration(): string {
-    return `${this.visibility} ${this.type.use} ${this.name};`
+    return `${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.use} ${this.name};`.slim()
   }
 
   public get value(): string {
@@ -22,15 +26,14 @@ export class Field extends Initializer implements Expression {
   }
 }
 
-export class ConstantField extends Field {
-  constructor(name: string, type: TypeDeclaration, public valueExpression: Expression, objectInitializer?: Partial<ConstantField>) {
+export class InitializedField extends Field {
+  constructor(name: string, type: TypeDeclaration, public valueExpression: Expression, objectInitializer?: Partial<InitializedField>) {
     super(name, type);
     this.apply(objectInitializer);
   }
 
   public get declaration(): string {
-    const stat = this.isStatic ? " static " : " ";
-    return `${this.visibility}${stat}${this.type.use} ${this.name} = ${this.valueExpression.value};`
+    return `${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.use} ${this.name} = ${this.valueExpression.value};`.slim();
   }
 }
 

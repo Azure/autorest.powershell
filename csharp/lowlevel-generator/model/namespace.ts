@@ -6,7 +6,7 @@ import { State } from "../generator";
 import { Dictionary } from "#remodeler/common";
 import { Schema, JsonType } from "#remodeler/code-model";
 import { ModelClass } from "./class";
-import { StringFormat } from "#remodeler/known-format";
+import { StringFormat, IntegerFormat, NumberFormat } from "#remodeler/known-format";
 import { hasProperties } from "#common/text-manipulation";
 import { TypeDeclaration } from "../type-declaration";
 import { getKnownFormatType } from "#remodeler/interpretations";
@@ -14,15 +14,15 @@ import { getKnownFormatType } from "#remodeler/interpretations";
 import { Wildcard, UntypedWildcard } from "../primitives/wildcard"
 import { EnumClass } from "../support/enum";
 import { ByteArray } from "../primitives/byte-array";
-import { Boolean, NullableBoolean } from "../primitives/boolean";
+import { Boolean } from "../primitives/boolean";
 import { Float } from "../primitives/floatingpoint";
 import { ArrayOf } from "../primitives/array";
-import { Integer } from "../primitives/integer";
+import { Integer, Numeric } from "../primitives/integer";
 import { Date } from "../primitives/date";
-import { DateTime, DateTime1123 } from "../primitives/date-time";
+import { DateTime, DateTime1123, UnixTime } from "../primitives/date-time";
 import { Duration } from "../primitives/duration";
 import { Uuid } from "../primitives/Uuid";
-import { String, NullableString } from "../primitives/string";
+import { String } from "../primitives/string";
 import { Char } from "../primitives/char";
 import { PrivateData } from "#csharp/lowlevel-generator/private-data";
 import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
@@ -99,22 +99,22 @@ export class ModelsNamespace extends Namespace {
 
           case StringFormat.Char:
             // a single character
-            return privateData.typeDeclaration = new Char(schema.enum.length > 0 ? schema.enum : undefined);
+            return privateData.typeDeclaration = new Char(required, schema.enum.length > 0 ? schema.enum : undefined);
 
           case StringFormat.Date:
-            return privateData.typeDeclaration = new Date();
+            return privateData.typeDeclaration = new Date(required);
 
           case StringFormat.DateTime:
-            return privateData.typeDeclaration = new DateTime();
+            return privateData.typeDeclaration = new DateTime(required);
 
           case StringFormat.DateTimeRfc1123:
-            return privateData.typeDeclaration = new DateTime1123();
+            return privateData.typeDeclaration = new DateTime1123(required);
 
           case StringFormat.Duration:
-            return privateData.typeDeclaration = new Duration();
+            return privateData.typeDeclaration = new Duration(required);
 
           case StringFormat.Uuid:
-            return privateData.typeDeclaration = new Uuid();
+            return privateData.typeDeclaration = new Uuid(required);
 
           case StringFormat.Password:
           case StringFormat.None:
@@ -130,7 +130,7 @@ export class ModelsNamespace extends Namespace {
             }
 
             // just a regular old string.
-            return privateData.typeDeclaration = required ? new String(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined) : new NullableString(schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
+            return privateData.typeDeclaration = new String(required, schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
 
           default:
             state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
@@ -138,17 +138,40 @@ export class ModelsNamespace extends Namespace {
         break;
 
       case JsonType.Boolean:
-        return privateData.typeDeclaration = required ? new Boolean() : new NullableBoolean();
+        return privateData.typeDeclaration = new Boolean(required);
 
       case JsonType.Integer:
-        return privateData.typeDeclaration = new Integer();
+        switch (schema.format) {
+          case IntegerFormat.Int64:
+          case IntegerFormat.None:
+            return privateData.typeDeclaration = new Numeric(required ? 'long' : 'long?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+          case IntegerFormat.UnixTime:
+            return privateData.typeDeclaration = new UnixTime(required);
+          case IntegerFormat.Int32:
+            return privateData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+        }
+        // fallback to int if the format isn't recognized
+        return privateData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+
 
       case JsonType.Number:
-        return privateData.typeDeclaration = new Float();
+        switch (schema.format) {
+          case NumberFormat.None:
+          case NumberFormat.Double:
+            return privateData.typeDeclaration = new Numeric(required ? 'double' : 'double?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+          case NumberFormat.Float:
+            return privateData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+          case NumberFormat.Decimal:
+            return privateData.typeDeclaration = new Numeric(required ? 'decimal' : 'decimal?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+        }
+        // fallback to float if the format isn't recognized
+        return privateData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
 
       case JsonType.Array:
+
         const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path("items"));
-        return privateData.typeDeclaration = new ArrayOf(aSchema);
+        return privateData.typeDeclaration = new ArrayOf(aSchema, required, schema.minItems, schema.maxItems, schema.uniqueItems);
+
 
       case undefined:
         console.error(`schema 'undefined': ${schema.details.name} `);

@@ -1,15 +1,21 @@
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier, highestAccess } from "#csharp/code-dom/access-modifier";
+import { Access, highestAccess, New, Static, Modifier, Virtual, Sealed, Override, Abstract, Extern } from "#csharp/code-dom/access-modifier";
 import { Expression } from "#csharp/code-dom/expression";
 import { Initializer } from "#csharp/code-dom/initializer";
 
 export class Property extends Initializer implements Expression {
-  public readVisibility = AccessModifier.Public;
-  public writeVisibility = AccessModifier.Public;
-  public isStatic: boolean = false;
+  public "new": New = Modifier.None;
+  public getAccess = Access.Public;
+  public setAccess = Access.Public;
+  public "static": Static = Modifier.None;
+  public virtual: Virtual = Modifier.None;
+  public sealed: Sealed = Modifier.None;
+  public override: Override = Modifier.None;
+  public abstract: Abstract = Modifier.None;
+  public extern: Extern = Modifier.None;
 
-  public get visibility(): AccessModifier {
-    return highestAccess(this.readVisibility, this.writeVisibility);
+  protected get visibility(): Access {
+    return highestAccess(this.getAccess, this.setAccess);
   }
 
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Property>) {
@@ -18,15 +24,14 @@ export class Property extends Initializer implements Expression {
   }
 
   protected get getter(): string {
-    return this.readVisibility == this.visibility ? "get" : `${this.readVisibility} get`
+    return this.getAccess == this.visibility ? "get" : `${this.getAccess} get`
   };
   protected get setter(): string {
-    return this.writeVisibility == this.visibility ? "set" : `${this.writeVisibility} set`
+    return this.setAccess == this.visibility ? "set" : `${this.setAccess} set`
   };
 
   public get declaration(): string {
-    const stat = this.isStatic ? " static " : " ";
-    return `${this.visibility}${stat}${this.type.use} ${this.name} { ${this.getter}; ${this.setter}; }`
+    return `${this.new}${this.visibility} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.type.use} ${this.name} { ${this.getter}; ${this.setter}; }`.slim();
   }
   public get value(): string {
     return `${this.name}`;

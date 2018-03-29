@@ -10,12 +10,11 @@ export class Operator extends Method {
 
   public get declaration(): string {
     const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
-    const overrideOrNew = this.isOverride ? " override " : this.isNew ? " new " : " ";
-    const stat = this.isStatic ? " static" : "";
+
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-${this.accessModifier}${stat}${overrideOrNew} ${this.name}(${parameterDeclaration}) 
-`.trim();
+${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.name}(${parameterDeclaration}) 
+`.slim();
   }
 }

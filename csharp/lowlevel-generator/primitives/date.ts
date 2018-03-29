@@ -1,6 +1,10 @@
 import { TypeDeclaration } from "../type-declaration";
+import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 
 export class Date implements TypeDeclaration {
+  constructor(protected required: boolean) {
+  }
+
   get implementation(): string {
     return `System.DateTime`;
   };
@@ -13,10 +17,13 @@ export class Date implements TypeDeclaration {
   validateValue(propertyName: string): string {
     return `/* date validate value for ${propertyName} */`;
   }
-  jsonserialize(propertyName: string): string {
-    return `/* date json serialize for ${propertyName} */`;
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
   jsondeserialize(propertyName: string): string {
     return `/* date json deserialize for ${propertyName} */`;
+  }
+  serializeInstanceToJson(instance: string): OneOrMoreStatements {
+    return `Carbon.Json.JsonString.CreateDate(${instance})`;
   }
 }

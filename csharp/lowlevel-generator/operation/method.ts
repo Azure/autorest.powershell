@@ -17,12 +17,13 @@ import { Finally } from "#csharp/code-dom/statements/finally";
 import { Switch } from "#csharp/code-dom/statements/switch";
 import { Case, DefaultCase, TerminalDefaultCase } from "#csharp/code-dom/statements/case";
 import { ClientRuntime, EventListener as EventListenr } from "#csharp/lowlevel-generator/clientruntime";
+import { Modifier } from "#csharp/code-dom/access-modifier";
 
 export class OperationMethod extends Method {
   constructor(protected parent: Class, protected operation: codemodel.HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(operation.details.name, mscorlib.Task);
     this.apply(objectInitializer);
-    this.isAsync = true;
+    this.async = Modifier.Async;
 
     // add parameters
     const methodParameters = this.operation.parameters.map((value, index) => <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index))));
