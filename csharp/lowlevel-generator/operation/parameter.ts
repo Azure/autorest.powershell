@@ -24,10 +24,10 @@ export class OperationParameter extends Parameter {
     return (<TypeDeclaration>this.type).validateValue(this.name);
   }
   public get jsonSerializationStatement(): OneOrMoreStatements {
-    return (<TypeDeclaration>this.type).jsonserialize(this.name);
+    return '/* operation parameter */'// (<TypeDeclaration>this.type).jsonserialize(this.name);
   }
   public get jsonDeserializationStatement(): OneOrMoreStatements {
-    return (<TypeDeclaration>this.type).jsondeserialize(this.name);
+    return '/* operation parameter */'// (<TypeDeclaration>this.type).jsondeserialize(this.name);
   }
 }
 
@@ -44,10 +44,10 @@ export class OperationBodyParameter extends Parameter {
     return (<TypeDeclaration>this.type).validateValue(this.name);
   }
   public get jsonSerializationStatement(): OneOrMoreStatements {
-    return (<TypeDeclaration>this.type).jsonserialize(this.name);
+    return '/* body parameter */'//  (<TypeDeclaration>this.type).jsonserialize(this.name);
   }
   public get jsonDeserializationStatement(): OneOrMoreStatements {
-    return (<TypeDeclaration>this.type).jsondeserialize(this.name);
+    return '/* body parameter */'// (<TypeDeclaration>this.type).jsondeserialize(this.name);
   }
 
 }

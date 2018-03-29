@@ -14,11 +14,14 @@ export class ModelInterface extends Interface implements TypeDeclaration {
   validateValue(propertyName: string): OneOrMoreStatements {
     return this.classImplementation.validateValue(propertyName);
   }
-  jsonserialize(propertyName: string): OneOrMoreStatements {
-    return this.classImplementation.jsonserialize(propertyName);
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return this.classImplementation.serializationImplementation("result", propertyName, serializedName);
   }
   jsondeserialize(propertyName: string): OneOrMoreStatements {
     return this.classImplementation.jsondeserialize(propertyName);
+  }
+  serializeInstanceToJson(instance: string): OneOrMoreStatements {
+    return this.classImplementation.serializeInstanceToJson(instance);
   }
 
   constructor(parent: Namespace, schema: Schema, public classImplementation: ModelClass, state: State, objectInitializer?: Partial<ModelInterface>) {
@@ -30,8 +33,5 @@ export class ModelInterface extends Interface implements TypeDeclaration {
     for (const propertyName in schema.properties) {
       this.addProperty(new ModelInterfaceProperty(this, schema.properties[propertyName], state.path('properties', propertyName)));
     }
-
-
   }
-
 }

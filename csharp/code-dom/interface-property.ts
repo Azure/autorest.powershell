@@ -1,11 +1,11 @@
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier, highestAccess } from "#csharp/code-dom/access-modifier";
+import { Access, highestAccess } from "#csharp/code-dom/access-modifier";
 import { Property } from "./property";
 import { Interface } from "#csharp/code-dom/interface";
 
 export class InterfaceProperty extends Property {
-  public readVisibility = AccessModifier.Public;
-  public writeVisibility = AccessModifier.Public;
+  public getAccess = Access.Public;
+  public setAccess = Access.Public;
 
   constructor(name: string, type: TypeDeclaration, objectInitializer?: Partial<InterfaceProperty>) {
     super(name, type);
@@ -13,8 +13,8 @@ export class InterfaceProperty extends Property {
   }
 
   public get declaration(): string {
-    const get = this.readVisibility === AccessModifier.Public ? "get;" : "";
-    const set = this.writeVisibility === AccessModifier.Public ? "set;" : "";
+    const get = this.getAccess === Access.Public ? "get;" : "";
+    const set = this.setAccess === Access.Public ? "set;" : "";
 
     return `${this.type.use} ${this.name} { ${get} ${set} }`
   }

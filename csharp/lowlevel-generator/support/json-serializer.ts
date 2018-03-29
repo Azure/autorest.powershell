@@ -6,7 +6,7 @@ import { JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
 import { Parameter } from "#csharp/code-dom/parameter";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
 import { Interface } from "#csharp/code-dom/interface";
-import { AccessModifier } from "#csharp/code-dom/access-modifier";
+import { Access, Modifier } from "#csharp/code-dom/access-modifier";
 import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
 import { EOL } from "#common/text-manipulation";
 import { ModelClass } from "#csharp/lowlevel-generator/model/class";
@@ -21,11 +21,12 @@ export class JsonSerializerClass extends Class {
     this.partial = true;
     this.isStatic = true;
 
-    const tojson = this.addMethod(new Method("ToJson", JsonNode, { isStatic: true }));
+    const tojson = this.addMethod(new Method("ToJson", JsonNode, { static: Modifier.Static }));
     const objP = tojson.addParameter(new Parameter("obj", mscorlib.ThisObject));
     const container = tojson.addParameter(new Parameter("container", JsonObject, { defaultInitializer: `= null` }));
     tojson.add(`return null;`);
 
+    /*
     // add the json serialize method to each model class 
     for (const each in state.model.components.schemas) {
       const schema = state.model.components.schemas[each];
@@ -39,7 +40,7 @@ export class JsonSerializerClass extends Class {
 
         // add partial methods for future customization
         const btj = clss.addMethod(new PartialMethod("BeforeToJson", mscorlib.Void, {
-          accessModifier: AccessModifier.Default,
+          access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),
             new Parameter("returnNow", mscorlib.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the serialization should be processed, or if the method should return instantly." }),
@@ -47,7 +48,7 @@ export class JsonSerializerClass extends Class {
         }));
 
         const atj = clss.addMethod(new PartialMethod("AfterToJson", mscorlib.Void, {
-          accessModifier: AccessModifier.Default,
+          access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),
           ]
@@ -77,6 +78,8 @@ if( returnNow )
 
       }
     }
+    */
+
     // create internal method to find deserializer method
     // ie GetJsonDeserializerFor_INTERFACENAME(JsonNode json) 
 

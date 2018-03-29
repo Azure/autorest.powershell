@@ -7,8 +7,6 @@ export const docCommentPrefix = '///';
 export const EOL = '\n';
 export const CommaChar = ', ';
 
-
-
 declare global {
   interface Array<T> {
     joinWith(selector: (t: T) => string, separator?: string): string;
@@ -16,6 +14,8 @@ declare global {
 
   interface String {
     capitalize(): string;
+    uncapitalize(): string;
+    slim(): string;
   }
 }
 
@@ -25,11 +25,14 @@ Array.prototype.joinWith = function <T>(selector: (t: T) => string, separator?: 
 
 String.prototype.capitalize = function (): string {
   const result = <string>this;
-  if (result) {
-    return `${result.charAt(0).toUpperCase()}${result.substr(1)}`;
-  }
-  return result;
-
+  return result ? `${result.charAt(0).toUpperCase()}${result.substr(1)}` : result;
+}
+String.prototype.uncapitalize = function (): string {
+  const result = <string>this;
+  return result ? `${result.charAt(0).toLowerCase()}${result.substr(1)}` : result;
+}
+String.prototype.slim = function (): string {
+  return <string>this.trim().replace(/([^ ])  +/g, "$1 ");
 }
 
 export function joinComma<T>(items: Array<T>, mapFn: (item: T) => string) {
@@ -193,11 +196,18 @@ export function camelCase(identifier: Array<string>): string {
     case 0:
       return '';
     case 1:
-      return identifier[0];
+      return identifier[0].uncapitalize();
   }
-  return `${identifier[0]}${pascalCase(identifier.slice(1))}`;
+  return `${identifier[0].uncapitalize()}${pascalCase(identifier.slice(1))}`;
 }
 
 export function pascalCase(identifier: Array<string>): string {
   return identifier.map(each => each.capitalize()).join("");
+}
+
+export function fixPropertyName(text: string): string {
+  if (text.indexOf('[') > -1) {
+    return `$"${text.replace(/\[(.*)\]/, "[{$1}]")}"`;
+  }
+  return `nameof(${text})`;
 }

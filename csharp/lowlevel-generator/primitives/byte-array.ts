@@ -1,4 +1,5 @@
 import { TypeDeclaration } from "../type-declaration";
+import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 
 export class ByteArray implements TypeDeclaration {
   get implementation(): string {
@@ -13,10 +14,13 @@ export class ByteArray implements TypeDeclaration {
   validateValue(propertyName: string): string {
     return `/* byte array validate value for ${propertyName} */`;
   }
-  jsonserialize(propertyName: string): string {
-    return `/* byte array json serialize for ${propertyName} */`;
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
   jsondeserialize(propertyName: string): string {
     return `/* byte array json deserialize for ${propertyName} */`;
+  }
+  serializeInstanceToJson(instance: string): OneOrMoreStatements {
+    return '';
   }
 }

@@ -3,7 +3,8 @@ import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 export interface TypeDeclaration extends BaseTypeDeclaration {
   validatePresence(propertyName: string): OneOrMoreStatements;
   validateValue(propertyName: string): OneOrMoreStatements;
-  jsonserialize(propertyName: string): OneOrMoreStatements;
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements;
+  serializeInstanceToJson(instance: string): OneOrMoreStatements;
   jsondeserialize(propertyName: string): OneOrMoreStatements;
 }
 
@@ -27,7 +28,10 @@ export class LibraryType implements TypeDeclaration {
     return ``;
   }
 
-  jsonserialize(propertyName: string): OneOrMoreStatements {
+  serializeInstanceToJson(instance: string): OneOrMoreStatements {
+    return '';
+  }
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return ``;
   }
   jsondeserialize(propertyName: string): OneOrMoreStatements {

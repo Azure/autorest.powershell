@@ -1,19 +1,15 @@
 import { TypeDeclaration } from "../type-declaration";
+import { Numeric } from "#csharp/lowlevel-generator/primitives/integer";
 
-export class Float implements TypeDeclaration {
+export class Float extends Numeric {
   get implementation(): string {
     return `float`;
   };
   get use(): string {
     return `float`
   }
-  public validatePresence(propertyName: string): string {
-    return ``;
-  }
-  validateValue(propertyName: string): string {
-    return `/* float validate value for ${propertyName} */`;
-  }
-  jsonserialize(propertyName: string): string {
+
+  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `/* float json serialize for ${propertyName} */`;
   }
   jsondeserialize(propertyName: string): string {

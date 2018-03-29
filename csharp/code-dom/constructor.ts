@@ -14,7 +14,7 @@ export class Constructor extends Method {
     return ` 
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-${this.accessModifier} ${this.name}(${parameterDeclaration})
-`.trim();
+${this.access} ${this.static} ${this.abstract} ${this.name}(${parameterDeclaration}) 
+`.slim();
   }
 }

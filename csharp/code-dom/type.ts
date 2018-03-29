@@ -2,7 +2,7 @@ import { Interface } from "./interface";
 import { Method } from "./method";
 import { Property } from "./property";
 import { TypeDeclaration } from "./type-declaration";
-import { AccessModifier } from "#csharp/code-dom/access-modifier";
+import { Access } from "#csharp/code-dom/access-modifier";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { Initializer } from "#csharp/code-dom/initializer";
 
@@ -13,7 +13,7 @@ export class Type extends Initializer implements TypeDeclaration {
   public genericParameters = new Array<string>();
   public where?: string;
   public interfaces = new Array<Interface>();
-  public accessModifier = AccessModifier.Public;
+  public accessModifier = Access.Public;
 
   constructor(public namespace: Namespace, public name: string, objectIntializer?: Partial<Type>) {
     super();

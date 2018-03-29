@@ -3,7 +3,7 @@ import { LiteralStatement } from "#csharp/code-dom/statements/literal";
 import { Initializer } from "../initializer";
 
 export type OneOrMoreStatements = string | (() => Iterable<string | Statement>) | Iterable<string | Statement> | Statement;
-export type ManyStatements = OneOrMoreStatements | (() => Iterable<OneOrMoreStatements>);
+export type StatementPossibilities = OneOrMoreStatements | (() => Iterable<OneOrMoreStatements>);
 
 export interface Statement {
   implementation: string;
@@ -27,50 +27,46 @@ export class Statements extends Initializer implements Statement {
     return this.statements.length
   }
 
-  public add(statements: ManyStatements): Statements {
-    if (typeof statements === 'function') {
-      // console.error(statements);
-      for (const each of statements()) {
-        this.aadd(each);
-      }
-      //statements = statements();
+  public add(statements: StatementPossibilities): Statements {
+    if (typeof statements !== 'function') {
+      return this.appendStatements(statements);
+    }
+    // unroll statements
+    for (const each of statements()) {
+      this.appendStatements(each);
+    }
+    return this;
+  }
+
+  private appendStatements(statements: OneOrMoreStatements): Statements {
+    if (!statements) {
       return this;
     }
-    return this.aadd(statements);
-    /*if (typeof statements === 'string') {
-      statements = new LiteralStatement(statements);
-    }
-    if (typeof statements === 'object') {
-      if (isStatement(statements)) {
-        this.statements.push(statements);
-      } else {
-        for (const statement of statements) {
-          this.statements.push(typeof statement === 'string' ? new LiteralStatement(statement) : statement);
-        }
-      }
-    }
-    return this;*/
-  }
-  private aadd(statements: OneOrMoreStatements): Statements {
+
     if (typeof statements === 'function') {
-      console.error(statements);
       statements = statements();
     }
+
     if (typeof statements === 'string') {
-      this.statements.push(new LiteralStatement(statements));
+      if (statements.trim().length > 0) {
+        this.statements.push(new LiteralStatement(statements));
+      }
       return this;
     }
+
     if (typeof statements === 'object') {
-      console.error(statements);
       if (isStatement(statements)) {
         this.statements.push(statements);
-      } else if (statements instanceof Statements) {
-        this.statements.push(...statements.statements)
+        return this;
       }
-      else {
-        for (const statement of statements) {
-          this.statements.push(typeof statement === 'string' ? new LiteralStatement(statement) : statement);
-        }
+
+      if (statements instanceof Statements) {
+        this.statements.push(...statements.statements)
+        return this;
+      }
+
+      for (const statement of statements) {
+        this.statements.push(typeof statement === 'string' ? new LiteralStatement(statement) : statement);
       }
     }
     return this;
