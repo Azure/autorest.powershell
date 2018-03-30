@@ -452,6 +452,9 @@ export class Tag extends WithExtensions implements Tag {
   }
 }
 export class XML extends WithExtensions implements XML {
+  attribute = false;
+  wrapped = false;
+
   constructor(initializer?: Partial<XML>) {
     super();
     this.apply(initializer);
@@ -817,6 +820,6 @@ export interface XML extends Extensions {
   name?: string;
   namespace?: string; // url
   prefix?: string;
-  attribute?: boolean;
-  wrapped?: boolean;
+  attribute: boolean;
+  wrapped: boolean;
 }
