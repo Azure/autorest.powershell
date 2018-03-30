@@ -7,7 +7,7 @@ import { ApiClass } from "./operation/api-class";
 import { Model } from "#remodeler/code-model";
 import { Project } from "./project";
 import { State } from "./generator";
-import { deserialize } from "#common/yaml";
+import { deserialize, serialize } from "#common/yaml";
 
 // todo:
 // interpretations:
@@ -50,7 +50,7 @@ export async function process(service: Host) {
     const project = new Project(modelState);
 
     await project.writeFiles(async (filename, content) => await service.WriteFile(filename, content, undefined));
-
+    await service.WriteFile("code-model-v2.csharp.yaml", serialize(model), undefined);
 
   } catch (E) {
     console.error(E);

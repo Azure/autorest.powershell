@@ -43,7 +43,6 @@ export class Remodeler {
     newSchema.details = {
       name: Interpretations.getName(name, original),
       description: Interpretations.getDescription("", original),
-      privateData: {}
     };
   }
 
@@ -95,11 +94,11 @@ export class Remodeler {
     if (type === undefined && original.properties) {
       // they have a properties, but didn't say type: object. 
       type = OpenAPI.JsonType.Object;
-      this.modelState.warning(
-        `The schema with an undefined type and decalared properties is a bit ambigious. This has been auto-corrected to 'type:object'`,
-        [`UndefinedTypeWithSchema`],
-        /* todo: find source location for this node */
-      );
+      // this.modelState.warning(
+      //        `The schema with an undefined type and decalared properties is a bit ambigious. This has been auto-corrected to 'type:object'`,
+      //      [`UndefinedTypeWithSchema`],
+      /* todo: find source location for this node */
+      //      );
     }
 
     const newSchema = new Schema(name, {
@@ -218,7 +217,6 @@ export class Remodeler {
             name: Interpretations.getName(propertyName, propertySchema.instance),
             deprecationMessage: Interpretations.getDeprecationMessage(original),
             required: original.required ? original.required.indexOf(propertyName) > -1 : false,
-            privateData: {},
           }
         })
       }

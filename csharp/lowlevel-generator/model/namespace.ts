@@ -24,7 +24,7 @@ import { Duration } from "../primitives/duration";
 import { Uuid } from "../primitives/Uuid";
 import { String } from "../primitives/string";
 import { Char } from "../primitives/char";
-import { PrivateData } from "#csharp/lowlevel-generator/private-data";
+import { CSharpData } from "#csharp/lowlevel-generator/private-data";
 import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
 
 
@@ -55,11 +55,11 @@ export class ModelsNamespace extends Namespace {
     if (!schema) {
       throw new Error("SCHEMA MISSING?")
     }
-    const privateData: PrivateData = schema.details.privateData;
+    const implData: CSharpData = (schema.details.csharp = schema.details.csharp || {});
 
     // have we done this object already?
-    if (privateData.typeDeclaration) {
-      return privateData.typeDeclaration;
+    if (implData.typeDeclaration) {
+      return implData.typeDeclaration;
     }
 
     // determine if we need a new model class for the type or just a known type object
@@ -69,20 +69,19 @@ export class ModelsNamespace extends Namespace {
         if (schema.additionalProperties && !hasProperties(schema.properties)) {
           if (schema.additionalProperties === true) {
             // the object is a wildcard for all key/object-value pairs 
-            return privateData.typeDeclaration = new UntypedWildcard();
+            return implData.typeDeclaration = new UntypedWildcard();
           } else {
             // the object is a wildcard for all key/<specific-type>-value pairs
             const wcSchema = this.resolveTypeDeclaration(schema.additionalProperties, false, state.path("additionalProperties"));
-
-            return privateData.typeDeclaration = new Wildcard(wcSchema);
+            return implData.typeDeclaration = new Wildcard(wcSchema);
           }
         }
 
         // otherwise, if it has additionalProperties
         // it's a regular object, that has a catch-all for unspecified properties.
         // (handled in ModelClass itself)
-        const mc = privateData.classImplementation || new ModelClass(this, schema, this.state);
-        return privateData.typeDeclaration = <ModelInterface>privateData.interfaceImplementation;
+        const mc = implData.classImplementation || new ModelClass(this, schema, this.state);
+        return implData.typeDeclaration = <ModelInterface>implData.interfaceImplementation;
 
       case JsonType.String:
         switch (schema.format) {
@@ -90,7 +89,7 @@ export class ModelsNamespace extends Namespace {
           case StringFormat.Byte:
             // member should be byte array
             // on wire format should be base64url 
-            return privateData.typeDeclaration = new ByteArray();
+            return implData.typeDeclaration = new ByteArray();
 
           case StringFormat.Binary:
             // represent as a stream 
@@ -99,22 +98,22 @@ export class ModelsNamespace extends Namespace {
 
           case StringFormat.Char:
             // a single character
-            return privateData.typeDeclaration = new Char(required, schema.enum.length > 0 ? schema.enum : undefined);
+            return implData.typeDeclaration = new Char(required, schema.enum.length > 0 ? schema.enum : undefined);
 
           case StringFormat.Date:
-            return privateData.typeDeclaration = new Date(required);
+            return implData.typeDeclaration = new Date(required);
 
           case StringFormat.DateTime:
-            return privateData.typeDeclaration = new DateTime(required);
+            return implData.typeDeclaration = new DateTime(required);
 
           case StringFormat.DateTimeRfc1123:
-            return privateData.typeDeclaration = new DateTime1123(required);
+            return implData.typeDeclaration = new DateTime1123(required);
 
           case StringFormat.Duration:
-            return privateData.typeDeclaration = new Duration(required);
+            return implData.typeDeclaration = new Duration(required);
 
           case StringFormat.Uuid:
-            return privateData.typeDeclaration = new Uuid(required);
+            return implData.typeDeclaration = new Uuid(required);
 
           case StringFormat.Password:
           case StringFormat.None:
@@ -124,13 +123,13 @@ export class ModelsNamespace extends Namespace {
               // this value is an enum type instead of a plain string. 
               const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
               if (ec.length > 0) {
-                return privateData.typeDeclaration = <EnumClass>ec[0];
+                return implData.typeDeclaration = <EnumClass>ec[0];
               }
-              return privateData.typeDeclaration = new EnumClass(schema, state);
+              return implData.typeDeclaration = new EnumClass(schema, state);
             }
 
             // just a regular old string.
-            return privateData.typeDeclaration = new String(required, schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
+            return implData.typeDeclaration = new String(required, schema.minLength, schema.maxLength, schema.pattern, schema.enum.length > 0 ? schema.enum : undefined);
 
           default:
             state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
@@ -138,39 +137,39 @@ export class ModelsNamespace extends Namespace {
         break;
 
       case JsonType.Boolean:
-        return privateData.typeDeclaration = new Boolean(required);
+        return implData.typeDeclaration = new Boolean(required);
 
       case JsonType.Integer:
         switch (schema.format) {
           case IntegerFormat.Int64:
           case IntegerFormat.None:
-            return privateData.typeDeclaration = new Numeric(required ? 'long' : 'long?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+            return implData.typeDeclaration = new Numeric(required ? 'long' : 'long?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
           case IntegerFormat.UnixTime:
-            return privateData.typeDeclaration = new UnixTime(required);
+            return implData.typeDeclaration = new UnixTime(required);
           case IntegerFormat.Int32:
-            return privateData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+            return implData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
         }
         // fallback to int if the format isn't recognized
-        return privateData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+        return implData.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
 
 
       case JsonType.Number:
         switch (schema.format) {
           case NumberFormat.None:
           case NumberFormat.Double:
-            return privateData.typeDeclaration = new Numeric(required ? 'double' : 'double?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+            return implData.typeDeclaration = new Numeric(required ? 'double' : 'double?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
           case NumberFormat.Float:
-            return privateData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+            return implData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
           case NumberFormat.Decimal:
-            return privateData.typeDeclaration = new Numeric(required ? 'decimal' : 'decimal?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+            return implData.typeDeclaration = new Numeric(required ? 'decimal' : 'decimal?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
         }
         // fallback to float if the format isn't recognized
-        return privateData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
+        return implData.typeDeclaration = new Numeric(required ? 'float' : 'float?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
 
       case JsonType.Array:
 
         const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path("items"));
-        return privateData.typeDeclaration = new ArrayOf(aSchema, required, schema.minItems, schema.maxItems, schema.uniqueItems);
+        return implData.typeDeclaration = new ArrayOf(aSchema, required, schema.minItems, schema.maxItems, schema.uniqueItems);
 
 
       case undefined:

@@ -4,7 +4,7 @@ import { Property } from "./property";
 import { TypeDeclaration } from "./type-declaration";
 import { Access } from "#csharp/code-dom/access-modifier";
 import { Namespace } from "#csharp/code-dom/namespace";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export class Type extends Initializer implements TypeDeclaration {
   public description: string = "";

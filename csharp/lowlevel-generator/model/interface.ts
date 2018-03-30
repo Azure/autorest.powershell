@@ -27,8 +27,8 @@ export class ModelInterface extends Interface implements TypeDeclaration {
   constructor(parent: Namespace, schema: Schema, public classImplementation: ModelClass, state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.name}`);
     this.apply(objectInitializer);
-
-    schema.details.privateData.interfaceImplementation = this;
+    const implData = (schema.details.csharp = schema.details.csharp || {});
+    implData.interfaceImplementation = this;
 
     for (const propertyName in schema.properties) {
       this.addProperty(new ModelInterfaceProperty(this, schema.properties[propertyName], state.path('properties', propertyName)));

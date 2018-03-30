@@ -14,7 +14,7 @@ import { Field, InitializedField } from "#csharp/code-dom/field";
 import { Access, Modifier } from "#csharp/code-dom/access-modifier";
 import { IJsonSerializable, EventListener, IValidates } from "#csharp/lowlevel-generator/clientruntime";
 import { Statements, OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { PrivateData } from "#csharp/lowlevel-generator/private-data";
+import { CSharpData } from "#csharp/lowlevel-generator/private-data";
 import { EOL, camelCase, deconstruct, fixPropertyName } from "#common/text-manipulation";
 import { Method, PartialMethod } from "#csharp/code-dom/method";
 import { Parameter } from "#csharp/code-dom/parameter";
@@ -27,16 +27,17 @@ export class ModelClass extends Class {
   private validateMethod?: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelClass>) {
+    const implData: CSharpData = (schema.details.csharp = schema.details.csharp || {});
+
     super(namespace, schema.details.name);
     this.apply(objectInitializer);
     this.partial = true;
     const serializeStatements = new Statements();
 
-    const privateData: PrivateData = schema.details.privateData;
     const validationStatements = new Statements();
 
     // mark the code-model with the class we're creating.
-    privateData.classImplementation = this;
+    implData.classImplementation = this;
 
     // track the namespace we've used.
     schema.details.namespace = namespace.fullName;
@@ -45,7 +46,7 @@ export class ModelClass extends Class {
     this.interfaces.push(IJsonSerializable);
 
     // create an interface for this model class
-    const modelInterface = privateData.interfaceImplementation || new ModelInterface(namespace, schema, this, state);
+    const modelInterface = implData.interfaceImplementation || new ModelInterface(namespace, schema, this, state);
     this.interfaces.push(modelInterface);
 
     // handle <allOf>s 
@@ -55,11 +56,11 @@ export class ModelClass extends Class {
       const aState = state.path("allOf");
 
       const td = state.project.modelsNamespace.resolveTypeDeclaration(aSchema, true, aState);
-      const className = aSchema.details.privateData.classImplementation.fullName;
+      const className = aSchema.details.csharp.classImplementation.fullName;
       const fieldName = camelCase(deconstruct(className.replace(/^.*\./, '')));
 
       // add the interface as a parent to our interface.
-      const iface: ModelInterface = aSchema.details.privateData.interfaceImplementation;
+      const iface: ModelInterface = aSchema.details.csharp.interfaceImplementation;
 
       modelInterface.interfaces.push(iface);
 

@@ -1,6 +1,6 @@
 import { TypeDeclaration } from "./type-declaration";
 import { Expression } from "#csharp/code-dom/expression";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
 
 export class Parameter extends Initializer implements Expression {

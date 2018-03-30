@@ -1,7 +1,7 @@
 import { TypeDeclaration } from "./type-declaration";
 import { Expression } from "#csharp/code-dom/expression";
 import { Access, Static, Modifier, New, ReadOnly, Volitile } from "#csharp/code-dom/access-modifier";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export class Field extends Initializer implements Expression {
   public "new": New = Modifier.None;

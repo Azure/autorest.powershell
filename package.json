@@ -37,7 +37,7 @@
     "semver": "^5.4.1",
     "shx": "^0.2.2",
     "tspath": "^1.2.10",
-    "typescript": "insiders"
+    "typescript": "2.8.1"
   },
   "dependencies": {
     "@microsoft.azure/tasks": "^2.0.12",
