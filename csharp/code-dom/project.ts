@@ -1,6 +1,6 @@
 import { Namespace } from "./namespace";
 import { all } from "#common/text-manipulation";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export class Project extends Initializer {
   private namespaces = new Array<Namespace>();

@@ -2,7 +2,7 @@ import { Statement } from "#csharp/code-dom/statements/statement";
 import { Expression } from "#csharp/code-dom/expression";
 import { Case } from "#csharp/code-dom/statements/case";
 import { indent, EOL } from "#common/text-manipulation";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export type OneOrMoreCases = (() => Iterable<Case>) | Iterable<Case> | Case;
 

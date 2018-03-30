@@ -1,5 +1,6 @@
 import { Dictionary, NotOptional as Optional } from "./common";
 import { hasContent } from "./oai3";
+import { Initializer } from "#common/initializer";
 
 
 //------------------------------------------------------------------------------------------------------------------ */
@@ -27,67 +28,59 @@ export type Reference<T> = T;
  * 
  * Initializes the extensions dictionary and implements the Partial Object Initializer.
  */
-export class Initializer<T> {
+export class WithExtensions extends Initializer {
   extensions = new Dictionary<any>();
-  constructor(initializer?: Partial<T>) {
-    if (initializer) {
-      for (const i in (<any>initializer)) {
-        (<any>this)[i] = (<any>initializer)[i]
-      }
-    }
-  }
 }
 
-export class Model extends Initializer<Model> implements Model, Implementation<ClientDetails> {
+export class Model extends WithExtensions implements Model, Implementation<ClientDetails> {
   info: Info;
   openApi = "3.0";
   details: ClientDetails;
+  paths = new Dictionary<PathItem>();
+  components = new Components();
+  tags = new Array<Tag>();
+  servers = new Array<Server>();
+  security = new Array<SecurityRequirement>();
 
   constructor(title: string, version: string, initializer?: Partial<Model>) {
-    super(initializer);
-    this.details = (<any>this).details || {};
-    this.details.name = this.details.name || title;
-    this.details.privateData = {};
+    super();
+    this.details = { name: title };
     this.info = new Info(title, version, initializer ? initializer.info : {});
-    this.paths = (<any>this).paths || new Dictionary<PathItem>();
-    this.components = (<any>this).components || new Components();
-    this.tags = (<any>this).tags || new Array<Tag>();
-    this.servers = (<any>this).servers || new Array<Server>();
-    this.security = (<any>this).security || new Array<SecurityRequirement>();
+    this.apply(initializer);
   }
 }
 
-export class Schema extends Initializer<Schema> implements Schema {
+export class Schema extends WithExtensions implements Schema {
   details: SchemaDetails;
+  required = new Array<string>();
+  enum = new Array<any>();
+  allOf = new Array<Reference<Schema>>();
+  oneOf = new Array<Reference<Schema>>();
+  anyOf = new Array<Reference<Schema>>();
+  properties = new Dictionary<PropertyReference<Schema>>();
 
   constructor(name: string, initializer?: Partial<Schema>) {
-    super(initializer);
-    this.details = (<any>this).details || {};
-    this.details.name = this.details.name || name;
-    this.details.privateData = {};
-    this.required = (<any>this).required || new Array<string>();
-    this.enum = (<any>this).enum || new Array<any>();
-    this.allOf = (<any>this).allOf || new Array<Reference<Schema>>();
-    this.oneOf = (<any>this).oneOf || new Array<Reference<Schema>>();
-    this.anyOf = (<any>this).anyOf || new Array<Reference<Schema>>();
-    this.properties = (<any>this).properties || new Dictionary<PropertyReference<Schema>>();
-
+    super();
+    this.details = { name: name };
+    this.apply(initializer);
   }
 }
 
-export class Components extends Initializer<Components> implements Components {
+export class Components extends WithExtensions implements Components {
+  schemas = new Dictionary<Reference<Schema>>();
+  responses = new Dictionary<Reference<Response>>();
+  parameters = new Dictionary<Reference<Parameter>>();
+  examples = new Dictionary<Reference<Example>>();
+  requestBodies = new Dictionary<Reference<RequestBody>>();
+  headers = new Dictionary<Reference<Header>>();
+  securitySchemes = new Dictionary<Reference<SecurityScheme>>();
+  links = new Dictionary<Reference<Link>>();
+  callbacks = new Dictionary<Reference<Callback>>();
+  operations = new Dictionary<Reference<Operation>>()
+
   constructor(initializer?: Partial<Schema>) {
-    super(initializer);
-    this.schemas = this.schemas || new Dictionary<Reference<Schema>>();
-    this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
-    this.parameters = (<any>this).parameters || new Dictionary<Reference<Parameter>>();
-    this.examples = (<any>this).examples || new Dictionary<Reference<Example>>();
-    this.requestBodies = (<any>this).requestBodies || new Dictionary<Reference<RequestBody>>();
-    this.headers = (<any>this).headers || new Dictionary<Reference<Header>>();
-    this.securitySchemes = (<any>this).securitySchemes || new Dictionary<Reference<SecurityScheme>>();
-    this.links = (<any>this).links || new Dictionary<Reference<Link>>();
-    this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
-    this.operations = (<any>this).operations || new Dictionary<Reference<Operation>>()
+    super();
+    this.apply(initializer);
   }
 }
 
@@ -116,7 +109,7 @@ export interface Implementation<T extends Details> {
   details: T;
 }
 
-export interface Details {
+export interface Details extends Dictionary<any> {
   /** name used in actual implementation */
   name: string;
 
@@ -133,7 +126,7 @@ export interface Details {
   deprecationMessage?: string;
 
   /** object to store any additional private data during code generation */
-  privateData: Dictionary<any>;
+  // privateData: Dictionary<any>;
 }
 
 
@@ -162,7 +155,6 @@ export interface ClientDetails extends Details {
 
 export interface PropertyDetails extends Details {
   required: boolean;
-
 }
 
 export interface ParameterDetails extends Details {
@@ -202,42 +194,48 @@ export interface PropertyReference<T> extends Implementation<PropertyDetails>, E
   schema: Schema;
 }
 
-export class PropertyReference<T> extends Initializer<PropertyReference<T>> implements PropertyReference<T>  {
+export class PropertyReference<T> extends WithExtensions implements PropertyReference<T>  {
   details: PropertyDetails;
 
   constructor(name: string, initializer?: Partial<PropertyReference<T>>) {
-    super(initializer);
-    this.details = (<any>this).details || {};
-    this.details.name = this.details.name || name;
-    this.details.required = this.details.required || false;
-    this.details.privateData = {};
+    super();
+    this.details = {
+      name: name,
+      required: false
+    }
+    this.apply(initializer);
   }
 }
 
-export class APIKeySecurityScheme extends Initializer<APIKeySecurityScheme> implements APIKeySecurityScheme {
+export class APIKeySecurityScheme extends WithExtensions implements APIKeySecurityScheme {
   constructor(public name: string, inWhere: ParameterLocation, initializer?: Partial<APIKeySecurityScheme>) {
-    super(initializer);
+    super();
     this.in = inWhere;
     this.type = SecurityType.ApiKey;
+    this.apply(initializer);
   }
 }
-export class AuthorizationCodeOAuthFlow extends Initializer<AuthorizationCodeOAuthFlow> implements AuthorizationCodeOAuthFlow {
+export class AuthorizationCodeOAuthFlow extends WithExtensions implements AuthorizationCodeOAuthFlow {
+  scopes = new Dictionary<string>();
   constructor(public authorizationUrl: string, tokenUrl: string, initializer?: Partial<AuthorizationCodeOAuthFlow>) {
-    super(initializer);
-    this.scopes = (<any>this).scopes || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
 }
-export class BearerHTTPSecurityScheme extends Initializer<BearerHTTPSecurityScheme> implements BearerHTTPSecurityScheme {
+export class BearerHTTPSecurityScheme extends WithExtensions implements BearerHTTPSecurityScheme {
+  scheme = Scheme.Bearer;
+
   constructor(initializer?: Partial<BearerHTTPSecurityScheme>) {
-    super(initializer);
-    this.scheme = Scheme.Bearer;
+    super();
     this.type = SecurityType.Http;
+    this.apply(initializer);
   }
 }
-export class ClientCredentialsFlow extends Initializer<ClientCredentialsFlow> implements ClientCredentialsFlow {
+export class ClientCredentialsFlow extends WithExtensions implements ClientCredentialsFlow {
+  scopes = new Dictionary<string>();
   constructor(public tokenUrl: string, initializer?: Partial<ClientCredentialsFlow>) {
-    super(initializer);
-    this.scopes = (<any>this).scopes || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
 }
 
@@ -246,64 +244,75 @@ export class Callback implements Callback {
   }
 }
 
-export class Contact extends Initializer<Contact> implements Contact {
+export class Contact extends WithExtensions implements Contact {
   constructor(initializer?: Partial<Contact>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
 
-export class Discriminator extends Initializer<Discriminator> implements Discriminator {
+export class Discriminator extends WithExtensions implements Discriminator {
+  mapping = new Dictionary<string>();
+
   constructor(public propertyName: string, initializer?: Partial<Discriminator>) {
-    super(initializer);
-    this.mapping = (<any>this).mapping || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
 }
-export class Encoding extends Initializer<Encoding> implements Encoding {
+export class Encoding extends WithExtensions implements Encoding {
+  headers = new Dictionary<Header>();
   constructor(initializer?: Partial<Encoding>) {
-    super(initializer);
-    this.headers = (<any>this).headers || new Dictionary<Header>();
+    super();
+    this.apply(initializer);
   }
 }
 
-export class Example extends Initializer<Example> implements Example {
+export class Example extends WithExtensions implements Example {
   constructor(initializer?: Partial<Example>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
-export class ExternalDocumentation extends Initializer<ExternalDocumentation> implements ExternalDocumentation {
+export class ExternalDocumentation extends WithExtensions implements ExternalDocumentation {
   constructor(public url: string, initializer?: Partial<ExternalDocumentation>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
 
-export class Header extends Initializer<Header> implements Header {
+export class Header extends WithExtensions implements Header {
+  content = new Dictionary<MediaType>();
   constructor(initializer?: Partial<Header>) {
-    super(initializer);
-    this.content = (<any>this).content || new Dictionary<MediaType>();
+    super();
+    this.apply(initializer);
   }
 }
 
-export class ImplicitOAuthFlow extends Initializer<ImplicitOAuthFlow> implements ImplicitOAuthFlow {
+export class ImplicitOAuthFlow extends WithExtensions implements ImplicitOAuthFlow {
+  scopes = new Dictionary<string>();
   constructor(public authorizationUrl: string, initializer?: Partial<ImplicitOAuthFlow>) {
-    super(initializer);
-    this.scopes = (<any>this).scopes || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
 }
-export class Info extends Initializer<Info> implements Info {
+export class Info extends WithExtensions implements Info {
   constructor(public title: string, public version: string, initializer?: Partial<Info>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
-export class License extends Initializer<License> implements License {
+export class License extends WithExtensions implements License {
   constructor(public name: string, initializer?: Partial<License>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
 
-export class Link extends Initializer<Link> implements Link {
+export class Link extends WithExtensions implements Link {
+  parameters = new Dictionary<string>();
   constructor(initializer?: Partial<Link>) {
-    super(initializer);
-    this.parameters = (<any>this).parameters || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
 }
 
@@ -311,136 +320,145 @@ export interface MediaType {
   accepts: Array<string>;
 }
 
-export class MediaType extends Initializer<MediaType> implements MediaType {
+export class MediaType extends WithExtensions implements MediaType {
+  encoding = new Dictionary<Encoding>();
+  accepts = new Array<string>();
   constructor(initializer?: Partial<MediaType>) {
-    super(initializer);
-    this.encoding = (<any>this).encoding || new Dictionary<Encoding>();
-    this.accepts = (<any>this).accepts || new Array<string>();
+    super();
+    this.apply(initializer);
   }
 }
 
-export class NonBearerHTTPSecurityScheme extends Initializer<NonBearerHTTPSecurityScheme> implements NonBearerHTTPSecurityScheme {
+export class NonBearerHTTPSecurityScheme extends WithExtensions implements NonBearerHTTPSecurityScheme {
   constructor(public scheme: string, initializer?: Partial<NonBearerHTTPSecurityScheme>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
     this.type = SecurityType.Http;
   }
 }
-export class OAuth2SecurityScheme extends Initializer<OAuth2SecurityScheme> implements OAuth2SecurityScheme {
+export class OAuth2SecurityScheme extends WithExtensions implements OAuth2SecurityScheme {
   constructor(public flows: OAuthFlows, initializer?: Partial<OAuth2SecurityScheme>) {
-    super(initializer);
+    super();
     this.type = SecurityType.OAuth2;
+    this.apply(initializer);
   }
 
 }
-export class OAuthFlows extends Initializer<OAuthFlows> implements OAuthFlows {
+export class OAuthFlows extends WithExtensions implements OAuthFlows {
   constructor(initializer?: Partial<OAuthFlows>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
-export class OpenIdConnectSecurityScheme extends Initializer<OpenIdConnectSecurityScheme> implements OpenIdConnectSecurityScheme {
+export class OpenIdConnectSecurityScheme extends WithExtensions implements OpenIdConnectSecurityScheme {
   constructor(public openIdConnectUrl: string, initializer?: Partial<OpenIdConnectSecurityScheme>) {
-    super(initializer);
+    super();
     this.type = SecurityType.OpenIDConnect;
+    this.apply(initializer);
   }
 }
 
-export class HttpOperation extends Initializer<HttpOperation> implements HttpOperation, Implementation<HttpOperationDetails> {
+export class HttpOperation extends WithExtensions implements HttpOperation, Implementation<HttpOperationDetails> {
   details: HttpOperationDetails;
+  tags = new Array<string>();
+  parameters = new Array<Reference<Parameter>>();
+  responses = new Dictionary<Reference<Response>>();
+  callbacks = new Dictionary<Reference<Callback>>();
+  security = new Array<SecurityRequirement>();
+  servers = new Array<Server>();
+  deprecated = false;
+
   constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
-    super(initializer);
-    this.details = (<any>this).details || {};
-    this.details.name = this.details.name || operationId;
-    this.details.privateData = {};
-    this.tags = (<any>this).tags || new Array<string>();
-    this.parameters = (<any>this).parameters || new Array<Reference<Parameter>>();
-    this.responses = (<any>this).responses || new Dictionary<Reference<Response>>();
-    this.callbacks = (<any>this).callbacks || new Dictionary<Reference<Callback>>();
-    this.security = (<any>this).security || new Array<SecurityRequirement>();
-    this.servers = (<any>this).servers || new Array<Server>();
-    this.deprecated = (<any>this).deprecated || false;
+    super();
+    this.details = {
+      name: operationId,
+    };
 
+    this.apply(initializer);
   }
 }
 
-export class Parameter extends Initializer<Parameter> implements Parameter, Implementation<ParameterDetails> {
+export class Parameter extends WithExtensions implements Parameter, Implementation<ParameterDetails> {
   details: ParameterDetails;
+  deprecated = false;
+  required = false;
+  allowEmptyValue = false;
+
   constructor(public name: string, inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<Parameter>) {
-    super(initializer);
+    super();
     this.in = inWhere;
-    this.details = (<any>this).details || {};
-    this.details.name = this.details.name || name;
-    this.details.location = implementation;
-    this.details.privateData = {};
-    this.deprecated = (<any>this).deprecated || false;
-    this.required = (<any>this).required || false;
-    this.allowEmptyValue = (<any>this).allowEmptyValue || false;
-    if (inWhere === ParameterLocation.Path) {
-      this.required = true;
-    }
-
+    this.details = {
+      name: name,
+      location: implementation,
+    };
+    this.required = inWhere === ParameterLocation.Path;
+    this.apply(initializer);
   }
 }
 
-export class PasswordOAuthFlow extends Initializer<PasswordOAuthFlow> implements PasswordOAuthFlow {
+export class PasswordOAuthFlow extends WithExtensions implements PasswordOAuthFlow {
+  scopes = new Dictionary<string>();
   constructor(public tokenUrl: string, initializer?: Partial<PasswordOAuthFlow>) {
-    super(initializer);
-    this.scopes = (<any>this).scopes || new Dictionary<string>();
+    super();
+    this.apply(initializer);
   }
-
 }
-export class PathItem extends Initializer<PathItem> implements PathItem {
+export class PathItem extends WithExtensions implements PathItem {
+  parameters = new Array<Reference<Parameter>>();
+  servers = new Array<Server>();
   constructor(initializer?: Partial<PathItem>) {
-    super(initializer);
-    this.parameters = (<any>this).parameters || new Array<Reference<Parameter>>();
-    this.servers = (<any>this).servers || new Array<Server>();
+    super();
+    this.apply(initializer);
   }
   //   $ref?: string | PathItem;
 }
 
-export class RequestBody extends Initializer<RequestBody> implements RequestBody {
+export class RequestBody extends WithExtensions implements RequestBody {
+  content = new Dictionary<MediaType>();
   constructor(initializer?: Partial<RequestBody>) {
-    super(initializer);
-    this.content = (<any>this).content || new Dictionary<MediaType>();
+    super();
+    this.apply(initializer);
   }
 }
-export class Response extends Initializer<Response> implements Response {
+export class Response extends WithExtensions implements Response {
+  content = new Dictionary<MediaType>();
+  links = new Dictionary<Reference<Link>>();
+  headers = new Dictionary<Reference<Header>>();
   constructor(public description: string, initializer?: Partial<Response>) {
-    super(initializer);
-    this.content = (<any>this).content || new Dictionary<MediaType>();
-    this.links = (<any>this).links || new Dictionary<Reference<Link>>();
-    this.headers = (<any>this).headers || new Dictionary<Reference<Header>>();
+    super();
+    this.apply(initializer);
   }
 }
 
-export class Server extends Initializer<Server> implements Server {
-  constructor(public url: string, initializer?: Partial<Server>) {
-    super(initializer);
-  }
+export class Server extends WithExtensions implements Server {
   variables = new Dictionary<ServerVariable>();
+  constructor(public url: string, initializer?: Partial<Server>) {
+    super();
+    this.apply(initializer);
+  }
 }
-export class ServerVariable extends Initializer<ServerVariable> implements ServerVariable {
+export class ServerVariable extends WithExtensions implements ServerVariable {
+  enum = new Array<string>();
   constructor(defaultValue: string, initializer?: Partial<ServerVariable>) {
-    super(initializer);
+    super();
     this.default = defaultValue;
-    this.enum = (<any>this).enum || new Array<string>();
+    this.apply(initializer);
   }
 }
-export class Tag extends Initializer<Tag> implements Tag {
+export class Tag extends WithExtensions implements Tag {
   constructor(public name: string, initializer?: Partial<Tag>) {
-    super(initializer);
+    super();
+    this.apply(initializer);
   }
 }
-export class XML extends Initializer<XML> implements XML {
-  constructor(initializer?: Partial<XML>) {
-    super(initializer);
-    this.attribute = (<any>this).attribute || false;
-    this.wrapped = (<any>this).wrapped || false;
-  }
-}
+export class XML extends WithExtensions implements XML {
+  attribute = false;
+  wrapped = false;
 
-export enum ParameterLocation {
-  /** @internal */
-  Alias = "Alias"
+  constructor(initializer?: Partial<XML>) {
+    super();
+    this.apply(initializer);
+  }
 }
 
 // ===================================================================================================================

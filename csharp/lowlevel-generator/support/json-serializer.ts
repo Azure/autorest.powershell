@@ -10,7 +10,7 @@ import { Access, Modifier } from "#csharp/code-dom/access-modifier";
 import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
 import { EOL } from "#common/text-manipulation";
 import { ModelClass } from "#csharp/lowlevel-generator/model/class";
-import { PrivateData } from "#csharp/lowlevel-generator/private-data";
+import { CSharpData } from "#csharp/lowlevel-generator/private-data";
 
 export class JsonSerializerClass extends Class {
 

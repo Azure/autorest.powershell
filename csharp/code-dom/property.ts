@@ -1,7 +1,7 @@
 import { TypeDeclaration } from "./type-declaration";
 import { Access, highestAccess, New, Static, Modifier, Virtual, Sealed, Override, Abstract, Extern } from "#csharp/code-dom/access-modifier";
 import { Expression } from "#csharp/code-dom/expression";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export class Property extends Initializer implements Expression {
   public "new": New = Modifier.None;

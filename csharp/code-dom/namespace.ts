@@ -4,7 +4,7 @@ import { Interface } from "./interface";
 import { Class } from "./class";
 import { Import } from "./import";
 import { Project } from "./project";
-import { Initializer } from "#csharp/code-dom/initializer";
+import { Initializer } from "#common/initializer";
 
 export class Namespace extends Initializer {
   private usings = new Array<Import>();
