@@ -26,7 +26,10 @@ export class ApiClass extends Class {
 
     // add operations from code model
     for (const operationName in state.model.components.operations) {
-      this.addMethod(new OperationMethod(this, state.model.components.operations[operationName], state.path('components', 'operations', operationName)));
+      const operation = state.model.components.operations[operationName];
+      if (codemodel.isHttpOperation(operation)) {
+        this.addMethod(new OperationMethod(this, operation, state.path('components', 'operations', operationName)));
+      }
     }
 
   }

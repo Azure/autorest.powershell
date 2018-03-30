@@ -84,7 +84,48 @@ export class Components extends WithExtensions implements Components {
   }
 }
 
-export type Operation = HttpOperation; //one day ...  | JsonRPCOperation  ...etc
+export function isHttpOperation(operation: Operation): operation is HttpOperation {
+  if ((<any>operation).path) {
+    return true;
+  }
+  return false;
+}
+
+export function isMyOperation(operation: Operation): operation is MyOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'MyOperation') {
+    return true;
+  }
+  return false;
+}
+
+export interface MyOperation {
+  operationType: string;
+  summary?: string;
+  description?: string;
+  parameters: Optional<Array<Reference<Parameter>>>;
+  responses: Dictionary<Reference<Response>>;
+  deprecated: Optional<boolean>;
+}
+
+export class MyOperation extends WithExtensions implements MyOperation, Implementation<MyOperationDetails> {
+  details: MyOperationDetails;
+  parameters = new Array<Reference<Parameter>>();
+  responses = new Dictionary<Reference<Response>>();
+  deprecated = false;
+  operationType = "MyOperation";
+
+  constructor(name: string, initializer?: Partial<MyOperation>) {
+    super();
+    this.details = {
+      name: name,
+    };
+
+    this.apply(initializer);
+  }
+}
+
+
+export type Operation = HttpOperation | MyOperation; //one day ...  | JsonRPCOperation  ...etc
 
 export interface Model extends Implementation<ClientDetails> {
 
@@ -166,6 +207,9 @@ export interface SchemaDetails extends Details {
 }
 
 export interface HttpOperationDetails extends Details {
+}
+
+export interface MyOperationDetails extends Details {
 }
 
 export interface HttpOperation {
