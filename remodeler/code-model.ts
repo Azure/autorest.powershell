@@ -433,6 +433,8 @@ export class Tag extends Initializer<Tag> implements Tag {
 export class XML extends Initializer<XML> implements XML {
   constructor(initializer?: Partial<XML>) {
     super(initializer);
+    this.attribute = (<any>this).attribute || false;
+    this.wrapped = (<any>this).wrapped || false;
   }
 }
 
@@ -800,6 +802,6 @@ export interface XML extends Extensions {
   name?: string;
   namespace?: string; // url
   prefix?: string;
-  attribute?: boolean;
-  wrapped?: boolean;
+  attribute: boolean;
+  wrapped: boolean;
 }
