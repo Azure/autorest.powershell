@@ -14,13 +14,15 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
   for (const operation of Object.values(model.components.operations).filter(isHttpOperation)) {
     const names = getCommandName(operation.details.name, service.Message);
     const name = names[0]; // pick first candidate!?
-    model.components.operations[`<HL>${name.noun}_${name.verb}`] = new HighLevelOperation("wat", {
+    const hlOp = new HighLevelOperation("wat", {
       deprecated: operation.deprecated,
       description: operation.description,
       summary: operation.summary,
       parameters: operation.parameters, // TODO
       responses: operation.responses // TODO
     });
+    hlOp.details.names = names;
+    model.components.operations[`<HL>${name.noun}_${name.verb}`] = hlOp;
   }
   return model;
 }
