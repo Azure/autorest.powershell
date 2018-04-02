@@ -263,7 +263,7 @@ function existsVerb(verb: string) {
   return mapVerb(verb).length > 0;
 }
 
-function getCommandName(operationId: string, onMessage: (message: Message) => void): { noun?: string, verb: string }[] {
+export function getCommandName(operationId: string, onMessage: (message: Message) => void): { noun?: string, verb: string }[] {
   const opIdValues = operationId.split("_", 2);
 
   // OperationId can be specified without '_' (Underscore), Verb will retrieved by the below logic for non-approved verbs.
