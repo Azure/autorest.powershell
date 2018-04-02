@@ -3,8 +3,7 @@ import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } fr
 import * as OpenAPI from "./oai3";
 import * as Interpretations from "./interpretations";
 import { dereference, getExtensionProperties, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
-import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback } from "./code-model";
-import { CodeModelEditor } from "./code-model-editor";
+import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback, Operation } from "./code-model";
 import { StringFormat } from "./known-format";
 import { ModelState } from "#common/model-state";
 
@@ -13,7 +12,6 @@ const todo_unimplemented = undefined;
 export class Remodeler {
 
   private model: CodeModel;
-  private editor: CodeModelEditor;
 
   private get oai(): OpenAPI.Model {
     return this.modelState.model;
@@ -21,7 +19,6 @@ export class Remodeler {
 
   constructor(private modelState: ModelState<OpenAPI.Model>) {
     this.model = new CodeModel(this.oai.info.title, this.oai.info.version);
-    this.editor = new CodeModelEditor(this.model);
   }
 
   private dereference<T>(item: Refable<T>): Dereferenced<T> {
@@ -61,13 +58,16 @@ export class Remodeler {
     newSchema.pattern = original.pattern;
   }
 
-  copySchema = (name: string, original: OpenAPI.Schema): Schema => {
+  copySchema = (name: string, original: OpenAPI.Schema, targetDictionary: Dictionary<Schema>): Schema => {
     // normalize/warn about incorrect usage of binary/stream combinations
     // OAI (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#data-types)
     // indicates that format: string, type: binary is "any sequence of octets" (ie, the body should be treated as a stream of bytes)
 
     // extant autorest has been using format: object, type: file -- which is not standard OAI.
     // there has also been use of type: file -- which is not even remotely standard JSON Schema
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
 
     let type = original.type;
     let format = original.format;
@@ -118,6 +118,8 @@ export class Remodeler {
       default: original.default,
       example: original.example,
     });
+
+    this.addOrThrow(targetDictionary, name, newSchema);
 
     switch (type) {
       case JsonType.Integer:
@@ -224,10 +226,61 @@ export class Remodeler {
     return newSchema;
   }
 
-  private refOrAdd<TSource, TDestination>(nameIfInline: string, ref: Dereferenced<TSource>, dictionary: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination): TDestination {
+  add<TSource, TDestination>(name: string, original: Dereferenced<TSource>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource, destinationDictionary: Dictionary<TDestination>) => TDestination): TDestination {
+    // is this an alias to another model?
+    if (original.name) {
+      // console.error(`adding something with a name: ${name},${original.name}`);
+      // Yes, ensure the target is in the new model
+      // (the assumption being that the target is the right instance if it is there with the expected name.)
+
+      if (target[original.name]) {
+        // the target model is already added to this return it as the instance.
+        return this.safeAdd(target, name, target[original.name]);
+      }
+
+      // otherwise, create the referenced type, and then add it again with our name,
+      const actual = this.add(original.name, { instance: original.instance }, target, copyFunc);
+      return this.safeAdd(target, name, actual);
+    }
+
+    // copy it over and add it to the model
+    const newValue = copyFunc(name, original.instance, target);
+
+    return newValue;
+    // return this.safeAdd(target, name, copyFunc(name, original.instance, target));
+  }
+
+  private addOrThrow<T>(target: Dictionary<T>, name: string, item: T): T {
+    if (target) {
+      if (target[name]) {
+        throw new Error(`Duplicate Item! ${name}`);
+      }
+      // add it.
+      target[name] = item;
+    }
+    return item;
+  }
+
+  private safeAdd<T>(target: Dictionary<T>, name: string, item: T): T {
+    if (target[name] && target[name] !== item) {
+      // if the <T> is already in the collection of <T>, and it's not this instance...
+      //   throw new Error(`${name} exists in model.`);
+      console.error(`${name} exists in model.`);
+      // console.error(target[name]);
+      // console.error(item);
+      item = target[name];
+      return item;
+    }
+
+    // add it.
+    target[name] = item;
+    return item;
+  }
+
+  private refOrAdd<TSource, TDestination>(nameIfInline: string, ref: Dereferenced<TSource>, dictionary: Dictionary<TDestination>, copyFunc: (name: string, source: TSource, destinationDictionary: Dictionary<TDestination>) => TDestination): TDestination {
     if (!ref.name) {
       // inline definition - extract it out
-      return this.editor.add(nameIfInline, ref, dictionary, copyFunc);
+      return this.add(nameIfInline, ref, dictionary, copyFunc);
     }
 
     // it's a reference, make sure it's in the model.
@@ -236,12 +289,13 @@ export class Remodeler {
     }
 
     // it's a global instance that we haven't yet addded, add it and return the ref.
-    return this.editor.add(ref.name, ref, dictionary, copyFunc);
+    return this.add(ref.name, ref, dictionary, copyFunc);
   }
 
-
-  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client): Parameter {
-
+  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<Parameter>): Parameter {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
     const location = Interpretations.getParameterImplementationLocation(implementationLocation, original)
 
     const style = OpenAPI.isCookieParameter(original) ? EncodingStyle.Form :
@@ -264,6 +318,7 @@ export class Remodeler {
       schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Parameter.${name}`, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
       extensions: getExtensionProperties(original),
     });
+    this.addOrThrow(targetDictionary, name, newParameter);
 
     newParameter.details.name = Interpretations.getName(original.name, original);
     newParameter.details.deprecationMessage = Interpretations.getDeprecationMessage(original);
@@ -276,11 +331,14 @@ export class Remodeler {
 
   remodelParameters(source: Dictionary<Refable<OpenAPI.Parameter>>) {
     for (const parameterName in source) {
-      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Client));
+      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.components.parameters, (n, o, d) => this.copyParameter(n, o, ImplementationLocation.Client, this.model.components.parameters));
     }
   }
 
-  copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }): HttpOperation => {
+  copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<Operation>): HttpOperation => {
+    if (targetDictionary && targetDictionary[name]) {
+      return <HttpOperation>targetDictionary[name];
+    }
     const newOperation = new HttpOperation(name, original.path, original.method, {
       pathDescription: original.pathItem.description,
       pathSummary: original.pathItem.summary,
@@ -299,10 +357,12 @@ export class Remodeler {
       security: todo_unimplemented
     });
 
+    this.addOrThrow(targetDictionary, name, newOperation);
+
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method)));
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o, t) => this.copyParameter(n, o, ImplementationLocation.Method, this.model.components.parameters)));
       }
     }
     // move responses to global section.
@@ -313,7 +373,11 @@ export class Remodeler {
     return newOperation;
   }
 
-  copyHeader = (headerName: string, original: OpenAPI.Header): Header => {
+  copyHeader = (headerName: string, original: OpenAPI.Header, targetDictionary: Dictionary<Header>): Header => {
+    if (targetDictionary && targetDictionary[headerName]) {
+      return targetDictionary[headerName];
+    }
+
     const newHeader = new Header({
       deprecated: original.deprecated || false,
       description: Interpretations.getDescription("", original),
@@ -325,6 +389,7 @@ export class Remodeler {
       content: todo_unimplemented,
       allowEmptyValue: false // REALLY? this seems funny.
     });
+    this.addOrThrow(targetDictionary, headerName, newHeader);
 
     // TODO: not handled: Examples, Example, Content
 
@@ -370,7 +435,7 @@ export class Remodeler {
         for (const method of [HttpMethod.Delete, HttpMethod.Get, HttpMethod.Head, HttpMethod.Options, HttpMethod.Patch, HttpMethod.Post, HttpMethod.Put, HttpMethod.Trace]) {
           const op = <OpenAPI.HttpOperation>pathItem.instance[method];
           if (op) {
-            this.editor.add(Interpretations.getOperationId(method, path, op), { instance: { method: method, path, operation: op, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation);
+            this.add(Interpretations.getOperationId(method, path, op), { instance: { method: method, path, operation: op, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation);
           }
         }
       }
@@ -378,13 +443,18 @@ export class Remodeler {
   }
 
 
-  copyResponse = (name: string, original: OpenAPI.Response): Response => {
+  copyResponse = (name: string, original: OpenAPI.Response, targetDictionary: Dictionary<Response>): Response => {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
+
     const response = new Response(original.description || "", {
       // content: this.copyMediaTypes(name, original),
       extensions: getExtensionProperties(original),
       headers: this.copyHeaders(name, original.headers),
       links: this.copyLinks(name, original.links),
     });
+    this.addOrThrow(targetDictionary, name, response);
 
     if (original.content) {
       for (const mediaType in original.content) {
@@ -395,12 +465,18 @@ export class Remodeler {
     return response;
   }
 
-  copyRequestBody = (name: string, original: OpenAPI.RequestBody): RequestBody => {
+  copyRequestBody = (name: string, original: OpenAPI.RequestBody, targetDictionary: Dictionary<RequestBody>): RequestBody => {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
+
     const requestBody = new RequestBody({
       description: Interpretations.getDescription("", original),
       extensions: getExtensionProperties(original),
       required: original.required ? original.required : false,
     })
+
+    this.addOrThrow(targetDictionary, name, requestBody);
 
     if (original.content) {
       for (const mediaType in original.content) {
@@ -411,15 +487,29 @@ export class Remodeler {
     return requestBody;
   }
 
-  copyCallback = (name: string, original: OpenAPI.Callback): Callback => {
+  copyCallback = (name: string, original: OpenAPI.Callback, targetDictionary: Dictionary<Callback>): Callback => {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
+
     const callback = new Callback();
+    this.addOrThrow(targetDictionary, name, callback);
     return callback;
   }
-  copyExample = (name: string, original: OpenAPI.Example): Example => {
+  copyExample = (name: string, original: OpenAPI.Example, targetDictionary: Dictionary<Example>): Example => {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
+
     const example = new Example();
+    this.addOrThrow(targetDictionary, name, example);
     return example;
   }
-  copyLink = (name: string, original: OpenAPI.Link): Link => {
+  copyLink = (name: string, original: OpenAPI.Link, targetDictionary: Dictionary<Link>): Link => {
+    if (targetDictionary && targetDictionary[name]) {
+      return targetDictionary[name];
+    }
+
     const link = new Link({
       description: original.description,
       extensions: getExtensionProperties(original),
@@ -429,6 +519,7 @@ export class Remodeler {
       requestBody: todo_unimplemented,
       server: original.server ? Interpretations.copyServer(original.server) : undefined
     });
+    this.addOrThrow(targetDictionary, name, link);
     return link;
   }
 
@@ -440,7 +531,7 @@ export class Remodeler {
   }
 */
 
-  remodelT<TSource, TDestination>(source: Dictionary<Refable<TSource>>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource) => TDestination): Dictionary<TDestination> {
+  remodelT<TSource, TDestination>(source: Dictionary<Refable<TSource>>, target: Dictionary<TDestination>, copyFunc: (name: string, source: TSource, targetDictionary: Dictionary<TDestination>) => TDestination): Dictionary<TDestination> {
     const result = new Dictionary<TDestination>();
 
     for (const name in source) {
@@ -518,35 +609,6 @@ export class Remodeler {
     if (this.oai.externalDocs) {
       this.model.externalDocs = Interpretations.getExternalDocs(this.oai.externalDocs)
     }
-
     return this.model;
   }
 }
-
-
-  /*
-   remodelSchemas(source: Dictionary<Refable<OpenAPI.Schema>>) {
-    for (const name in source) {
-      // take each schema and copy it across
-      // only add if it didn't get done before.
-      this.refOrAdd(name, this.dereference(source[name]), this.model.components.schemas, this.copySchema, (i) => new Schema(i));
-    }
-  }
-   remodelResponses(source: Dictionary<Refable<OpenAPI.Response>>) {
-    for (const responseName in source) {
-      this.refOrAdd(responseName, this.dereference(source[responseName]), this.model.components.requestBodies, this.copyResponse, (i) => new RequestBody(i));
-    }
-  }
-
-  remodelRequestBodies(source: Dictionary<Refable<OpenAPI.RequestBody>>) {
-    for (const bodyName in source) {
-      this.refOrAdd(bodyName, this.dereference(source[bodyName]), this.model.components.requestBodies, this.copyRequestBody, (i) => new RequestBody(i));
-    }
-  }
-
-  remodelHeaders(source: Dictionary<Refable<OpenAPI.Header>>) {
-    for (const headerName in source) {
-      this.refOrAdd(headerName, this.dereference(source[headerName]), this.model.components.headers, this.copyHeader, (i) => new Header(i));
-    }
-  }
-  */
