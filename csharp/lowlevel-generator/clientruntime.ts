@@ -1,7 +1,7 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { Interface } from "#csharp/code-dom/interface";
 import { LibraryType } from "#csharp/code-dom/mscorlib";
 import { Namespace } from "#csharp/code-dom/namespace";
-import { Interface } from "#csharp/code-dom/interface";
+import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
 
 export const ClientRuntime: Namespace = new Namespace("Microsoft.Rest.ClientRuntime");
 

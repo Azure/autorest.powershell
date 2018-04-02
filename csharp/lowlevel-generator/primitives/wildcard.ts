@@ -1,6 +1,6 @@
-import { TypeDeclaration } from "../type-declaration";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import { fixPropertyName } from "#common/text-manipulation";
+import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Wildcard implements TypeDeclaration {
 

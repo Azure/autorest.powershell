@@ -1,14 +1,12 @@
-import * as codemodel from "#remodeler/code-model";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Class } from "#csharp/code-dom/class";
-import { Parameter } from "#csharp/code-dom/parameter";
-
-import { Model } from "#remodeler/code-model";
-import { State } from "../generator";
-import { TypeDeclaration, LibraryType } from "../type-declaration";
 import { Method } from "#csharp/code-dom/method";
-import { ClientRuntime } from "#csharp/lowlevel-generator/clientruntime";
+import * as mscorlib from "#csharp/code-dom/mscorlib";
+import { Parameter } from "#csharp/code-dom/parameter";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { ClientRuntime } from "#csharp/lowlevel-generator/clientruntime";
+import * as codemodel from "#remodeler/code-model";
+import { State } from "../generator";
+import { LibraryType, TypeDeclaration } from "../type-declaration";
+
 
 export class OperationParameter extends Parameter {
   constructor(parent: Method, param: codemodel.Parameter, state: State, objectInitializer?: Partial<OperationParameter>) {

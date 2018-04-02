@@ -1,6 +1,6 @@
-import { TypeDeclaration } from "../type-declaration";
 import { fixPropertyName } from "#common/text-manipulation";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class ArrayOf implements TypeDeclaration {
 
@@ -27,7 +27,7 @@ export class ArrayOf implements TypeDeclaration {
 if( ${propertyName} != null )  {
     for(int __i = 0; __i< ${propertyName}.Length; __i++) {
         ${this.type.validateValue(`${propertyName}[__i]`)}
-    }  
+    }
 }
 `.trim();
   }

@@ -1,22 +1,20 @@
-import { Class } from "#csharp/code-dom/class";
-import { Project } from "../project";
-import { State } from "../generator";
-import { Schema } from "#remodeler/code-model";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Interface } from "#csharp/code-dom/interface";
-import { InitializedField } from "#csharp/code-dom/field";
-import { StringExpression } from "#csharp/code-dom/expression";
+import { Access, Modifier } from "#csharp/code-dom/access-modifier";
 import { Constructor } from "#csharp/code-dom/constructor";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { String } from "#csharp/code-dom/mscorlib";
-import { Property } from "#csharp/code-dom/property";
-import { Access, Static, Modifier } from "#csharp/code-dom/access-modifier";
+import { StringExpression } from "#csharp/code-dom/expression";
+import { InitializedField } from "#csharp/code-dom/field";
+import { Interface } from "#csharp/code-dom/interface";
 import { Method } from "#csharp/code-dom/method";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Struct } from "#csharp/code-dom/struct";
+import { String } from "#csharp/code-dom/mscorlib";
+import { Namespace } from "#csharp/code-dom/namespace";
 import { Operator } from "#csharp/code-dom/operator";
-import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
+import { Parameter } from "#csharp/code-dom/parameter";
+import { Property } from "#csharp/code-dom/property";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { Struct } from "#csharp/code-dom/struct";
+import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
+import { Schema } from "#remodeler/code-model";
+import { State } from "../generator";
 
 export class EnumClass extends Struct implements TypeDeclaration {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {
@@ -44,7 +42,7 @@ export class EnumClass extends Struct implements TypeDeclaration {
       setAccess: Access.Private
     }));
 
-    // add private constructor 
+    // add private constructor
     const p = new Parameter('underlyingValue', String)
     const ctor = this.addMethod(new Constructor(this, {
       access: Access.Private,
@@ -91,7 +89,7 @@ export class EnumClass extends Struct implements TypeDeclaration {
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return e2.Equals(e1);`);
 
-    // add opeator != 
+    // add opeator !=
     this.addMethod(new Method(`operator !=`, mscorlib.Bool, {
       static: Modifier.Static,
       description: `Overriding != operator for enum ${this.name}`,

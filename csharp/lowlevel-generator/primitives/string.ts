@@ -1,6 +1,6 @@
-import { TypeDeclaration } from "../type-declaration";
 import { fixPropertyName } from "#common/text-manipulation";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class String implements TypeDeclaration {
   constructor(protected required: boolean, private minLength?: number, private maxLength?: number, private pattern?: string, private choices?: Array<string>) {
@@ -15,7 +15,7 @@ export class String implements TypeDeclaration {
 
   valueRequired(propertyName: string): string {
     return this.required ? `
-if( $VALUE == null ) 
+if( $VALUE == null )
 {
   $ERROR;
 }`.trim() : '';

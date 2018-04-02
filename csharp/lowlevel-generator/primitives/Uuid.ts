@@ -1,6 +1,6 @@
-import { TypeDeclaration } from "../type-declaration";
 import { fixPropertyName } from "#common/text-manipulation";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Uuid implements TypeDeclaration {
   constructor(protected required: boolean) {

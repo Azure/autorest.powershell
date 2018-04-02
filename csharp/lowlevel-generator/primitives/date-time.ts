@@ -1,5 +1,5 @@
-import { TypeDeclaration } from "../type-declaration";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class DateTime implements TypeDeclaration {
   constructor(protected required: boolean) {

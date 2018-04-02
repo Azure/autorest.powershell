@@ -1,12 +1,9 @@
 import { Property } from "#csharp/code-dom/property";
-import { TypeDeclaration, LibraryType } from "../type-declaration";
-import { ModelClass } from "./class";
-import { ModelInterface } from "./interface";
+import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import * as codeModel from "#remodeler/code-model";
 import { State } from "../generator";
-import { ToDo } from "#csharp/code-dom/mscorlib";
-import { Interface } from "#csharp/code-dom/interface";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
+import { ModelClass } from "./class";
 
 export class ModelProperty extends Property {
   private required: boolean;

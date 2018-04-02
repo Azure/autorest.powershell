@@ -1,10 +1,7 @@
-import { Type } from "./type";
-import { Interface } from "./interface";
-import { comment, docCommentPrefix, sortByName, indent, EOL } from "#common/text-manipulation";
+import { EOL, comment, docCommentPrefix, indent, sortByName } from "#common/text-manipulation";
 import { Field } from "./field";
-import { Method } from "./method";
-import { Property } from "./property";
 import { Namespace } from "./namespace";
+import { Type } from "./type";
 
 export class Class extends Type {
   protected classOrStruct: "class" | "struct" = "class";

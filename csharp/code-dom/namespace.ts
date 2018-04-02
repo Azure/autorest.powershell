@@ -1,10 +1,10 @@
-import { comment, indent, dotCombine, toMap, EOL } from "#common/text-manipulation";
-import { Delegate } from "./delegate";
-import { Interface } from "./interface";
-import { Class } from "./class";
-import { Import } from "./import";
-import { Project } from "./project";
 import { Initializer } from "#common/initializer";
+import { EOL, comment, dotCombine, indent, toMap } from "#common/text-manipulation";
+import { Class } from "./class";
+import { Delegate } from "./delegate";
+import { Import } from "./import";
+import { Interface } from "./interface";
+import { Project } from "./project";
 
 export class Namespace extends Initializer {
   private usings = new Array<Import>();
@@ -66,9 +66,9 @@ export class Namespace extends Initializer {
   public async writeFiles(writer: (filename: string, content: string) => Promise<void>) {
     const basePath = this.fullName.replace(/\./g, '/');
 
-    // write out all the files 
+    // write out all the files
 
-    // handle nested namespaces 
+    // handle nested namespaces
     const children = this.namespaces.map(namespace => namespace.writeFiles(writer));
 
     // combine class (XYZ) and interfaces (IXYZ) together in a single file
@@ -114,7 +114,7 @@ export class Namespace extends Initializer {
 ${header}
 
 namespace ${this.fullName} {
-${imports}  
+${imports}
 
 ${body}
 }

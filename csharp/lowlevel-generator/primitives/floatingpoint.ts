@@ -1,4 +1,3 @@
-import { TypeDeclaration } from "../type-declaration";
 import { Numeric } from "#csharp/lowlevel-generator/primitives/integer";
 
 export class Float extends Numeric {

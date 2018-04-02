@@ -1,6 +1,6 @@
-import { EOL, indent } from "#common/text-manipulation";
-import { LiteralStatement } from "#csharp/code-dom/statements/literal";
 import { Initializer } from "#common/initializer";
+import { EOL } from "#common/text-manipulation";
+import { LiteralStatement } from "#csharp/code-dom/statements/literal";
 
 export type OneOrMoreStatements = string | (() => Iterable<string | Statement>) | Iterable<string | Statement> | Statement;
 export type StatementPossibilities = OneOrMoreStatements | (() => Iterable<OneOrMoreStatements>);

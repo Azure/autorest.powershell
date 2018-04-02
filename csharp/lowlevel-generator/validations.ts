@@ -1,7 +1,7 @@
+import { JsonType, Schema } from "#remodeler/code-model";
+import { State } from "./generator";
 import * as message from "./messages";
 
-import { Schema, JsonType } from "#remodeler/code-model";
-import { State } from "./generator";
 
 export function objectWithFormat(schema: Schema, state: State): boolean {
   if (schema.type === JsonType.Object && schema.format) {

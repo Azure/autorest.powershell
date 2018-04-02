@@ -1,10 +1,10 @@
-import { Statement, Statements } from "./statements/statement";
-import { Parameter } from "./parameter";
-import { TypeDeclaration } from "./type-declaration";
+import { CommaChar, EOL, docComment, indent } from "#common/text-manipulation";
+import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from "#csharp/code-dom/access-modifier";
+import { summary } from "#csharp/code-dom/doc-comments";
 import * as mscorlib from "./mscorlib";
-import { Access, New, Modifier, Static, Override, Virtual, Sealed, Abstract, Extern, Async } from "#csharp/code-dom/access-modifier";
-import { docCommentPrefix, comment, indent, EOL, CommaChar, join, joinComma, docComment } from "#common/text-manipulation";
-import { xmlize, summary } from "#csharp/code-dom/doc-comments";
+import { Parameter } from "./parameter";
+import { Statements } from "./statements/statement";
+import { TypeDeclaration } from "./type-declaration";
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();
@@ -43,7 +43,7 @@ export class Method extends Statements {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.use} ${this.name}(${parameterDeclaration}) 
+${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.use} ${this.name}(${parameterDeclaration})
 `.slim();
   }
 
@@ -51,7 +51,7 @@ ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.o
     return `
 ${this.declaration}
 {
-${indent(super.implementation)}  
+${indent(super.implementation)}
 }`.trim();
 
   }
@@ -68,7 +68,7 @@ export class PartialMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.use} ${this.name}(${parameterDeclaration}) 
+partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.use} ${this.name}(${parameterDeclaration})
 `.slim();
   }
 

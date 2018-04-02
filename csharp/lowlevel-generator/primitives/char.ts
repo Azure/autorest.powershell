@@ -1,5 +1,5 @@
-import { TypeDeclaration } from "../type-declaration";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Char implements TypeDeclaration {
   constructor(protected required: boolean, private choices?: Array<string>) {

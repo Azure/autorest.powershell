@@ -1,8 +1,8 @@
-import { Statement } from "#csharp/code-dom/statements/statement";
+import { Initializer } from "#common/initializer";
+import { EOL, indent } from "#common/text-manipulation";
 import { Expression } from "#csharp/code-dom/expression";
 import { Case } from "#csharp/code-dom/statements/case";
-import { indent, EOL } from "#common/text-manipulation";
-import { Initializer } from "#common/initializer";
+import { Statement } from "#csharp/code-dom/statements/statement";
 
 export type OneOrMoreCases = (() => Iterable<Case>) | Iterable<Case> | Case;
 

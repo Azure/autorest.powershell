@@ -1,31 +1,28 @@
-import * as message from "../messages";
-import * as validation from "../validations";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Project } from "../project";
-import { State } from "../generator";
-import { Dictionary } from "#remodeler/common";
-import { Schema, JsonType } from "#remodeler/code-model";
-import { ModelClass } from "./class";
-import { StringFormat, IntegerFormat, NumberFormat } from "#remodeler/known-format";
 import { hasProperties } from "#common/text-manipulation";
-import { TypeDeclaration } from "../type-declaration";
-import { getKnownFormatType } from "#remodeler/interpretations";
-
-import { Wildcard, UntypedWildcard } from "../primitives/wildcard"
-import { EnumClass } from "../support/enum";
-import { ByteArray } from "../primitives/byte-array";
-import { Boolean } from "../primitives/boolean";
-import { Float } from "../primitives/floatingpoint";
+import { Namespace } from "#csharp/code-dom/namespace";
+import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
+import { CSharpData } from "#csharp/lowlevel-generator/private-data";
+import { JsonType, Schema } from "#remodeler/code-model";
+import { Dictionary } from "#remodeler/common";
+import { IntegerFormat, NumberFormat, StringFormat } from "#remodeler/known-format";
+import { State } from "../generator";
+import * as message from "../messages";
+import { Uuid } from "../primitives/Uuid";
 import { ArrayOf } from "../primitives/array";
-import { Integer, Numeric } from "../primitives/integer";
+import { Boolean } from "../primitives/boolean";
+import { ByteArray } from "../primitives/byte-array";
+import { Char } from "../primitives/char";
 import { Date } from "../primitives/date";
 import { DateTime, DateTime1123, UnixTime } from "../primitives/date-time";
 import { Duration } from "../primitives/duration";
-import { Uuid } from "../primitives/Uuid";
+import { Numeric } from "../primitives/integer";
 import { String } from "../primitives/string";
-import { Char } from "../primitives/char";
-import { CSharpData } from "#csharp/lowlevel-generator/private-data";
-import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
+import { UntypedWildcard, Wildcard } from "../primitives/wildcard";
+import { EnumClass } from "../support/enum";
+import { TypeDeclaration } from "../type-declaration";
+import * as validation from "../validations";
+import { ModelClass } from "./class";
+
 
 
 export class ModelsNamespace extends Namespace {
@@ -68,7 +65,7 @@ export class ModelsNamespace extends Namespace {
         // for certain, this should be a class of some sort.
         if (schema.additionalProperties && !hasProperties(schema.properties)) {
           if (schema.additionalProperties === true) {
-            // the object is a wildcard for all key/object-value pairs 
+            // the object is a wildcard for all key/object-value pairs
             return implData.typeDeclaration = new UntypedWildcard();
           } else {
             // the object is a wildcard for all key/<specific-type>-value pairs
@@ -88,11 +85,11 @@ export class ModelsNamespace extends Namespace {
           case StringFormat.Base64Url:
           case StringFormat.Byte:
             // member should be byte array
-            // on wire format should be base64url 
+            // on wire format should be base64url
             return implData.typeDeclaration = new ByteArray();
 
           case StringFormat.Binary:
-            // represent as a stream 
+            // represent as a stream
             // wire format is stream of bytes
             throw new Error("Method not implemented.");
 
@@ -120,7 +117,7 @@ export class ModelsNamespace extends Namespace {
           case undefined:
           case null:
             if (schema.extensions["x-ms-enum"]) {
-              // this value is an enum type instead of a plain string. 
+              // this value is an enum type instead of a plain string.
               const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
               if (ec.length > 0) {
                 return implData.typeDeclaration = <EnumClass>ec[0];
@@ -186,7 +183,7 @@ export class ModelsNamespace extends Namespace {
   }
 }
 
-/* 
+/*
  Note: removed validation from above -- the validation should be in a separate step before we get into the cs* extensions.
 
 public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): TypeDeclaration {
@@ -350,7 +347,7 @@ public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, sta
 }
 
 
-  
-  
+
+
  */
 

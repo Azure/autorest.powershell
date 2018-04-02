@@ -1,9 +1,6 @@
-import { Host, JsonPath } from "@microsoft.azure/autorest-extension-base";
-
 import { ModelState } from "#common/model-state";
-import { Model, Schema } from "remodeler/code-model";
-
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { Host, JsonPath } from "@microsoft.azure/autorest-extension-base";
+import { Model } from "remodeler/code-model";
 import { Project } from "./project";
 
 export class State extends ModelState<Model> {

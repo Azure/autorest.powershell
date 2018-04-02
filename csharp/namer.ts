@@ -1,9 +1,7 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
-import { ModelState } from "#common/model-state";
+import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from "#common/text-manipulation";
+import { Host } from "@microsoft.azure/autorest-extension-base";
 import { Model } from "remodeler/code-model";
-import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
 
 export async function process(service: Host) {
   return await processCodeModel(nameStuffRight, service);
@@ -39,7 +37,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
       d.name = pascalCase(fixLeadingNumber(deconstruct(d.name)));
     }
 
-    // fix enum names 
+    // fix enum names
     if (schema.details.enum) {
       schema.details.enum.name = pascalCase(fixLeadingNumber(deconstruct(schema.details.enum.name)));
 

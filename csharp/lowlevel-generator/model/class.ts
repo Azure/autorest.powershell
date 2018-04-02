@@ -1,25 +1,21 @@
-import * as codemodel from "#remodeler/code-model";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import * as message from "../messages";
-import { Class } from "#csharp/code-dom/class";
-import { ModelProperty } from "./property";
-import { ModelInterface } from "./interface";
-
-import { State } from "../generator";
-import { Schema } from "#remodeler/code-model";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Interface } from "#csharp/code-dom/interface";
-import { ProxyProperty } from "./proxy-property";
-import { Field, InitializedField } from "#csharp/code-dom/field";
-import { Access, Modifier } from "#csharp/code-dom/access-modifier";
-import { IJsonSerializable, EventListener, IValidates } from "#csharp/lowlevel-generator/clientruntime";
-import { Statements, OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { CSharpData } from "#csharp/lowlevel-generator/private-data";
 import { EOL, camelCase, deconstruct, fixPropertyName } from "#common/text-manipulation";
+import { Access, Modifier } from "#csharp/code-dom/access-modifier";
+import { Class } from "#csharp/code-dom/class";
+import { InitializedField } from "#csharp/code-dom/field";
 import { Method, PartialMethod } from "#csharp/code-dom/method";
+import * as mscorlib from "#csharp/code-dom/mscorlib";
+import { Namespace } from "#csharp/code-dom/namespace";
 import { Parameter } from "#csharp/code-dom/parameter";
-import { JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
 import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
+import { OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/statement";
+import { EventListener, IJsonSerializable, IValidates, JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
+import { CSharpData } from "#csharp/lowlevel-generator/private-data";
+import { Schema } from "#remodeler/code-model";
+import { State } from "../generator";
+import { ModelInterface } from "./interface";
+import { ModelProperty } from "./property";
+import { ProxyProperty } from "./proxy-property";
+
 
 export class ModelClass extends Class {
 
@@ -49,7 +45,7 @@ export class ModelClass extends Class {
     const modelInterface = implData.interfaceImplementation || new ModelInterface(namespace, schema, this, state);
     this.interfaces.push(modelInterface);
 
-    // handle <allOf>s 
+    // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (let allOf = 0; allOf < schema.allOf.length; allOf++) {
       const aSchema = schema.allOf[allOf];
@@ -95,7 +91,7 @@ export class ModelClass extends Class {
         // we should generate an additionalProperties property that catches all extra properties as object
         const valueSchema = {};
       } else {
-        // we should generate an additionalProperties property that catches all extra properties as the type specified by 
+        // we should generate an additionalProperties property that catches all extra properties as the type specified by
         const valueSchema = schema.additionalProperties;
       }
     }

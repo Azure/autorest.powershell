@@ -1,5 +1,5 @@
-import { TypeDeclaration } from "../type-declaration";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { TypeDeclaration } from "../type-declaration";
 
 export class Stream implements TypeDeclaration {
   get implementation(): string {

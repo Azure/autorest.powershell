@@ -1,11 +1,11 @@
-import { State } from "../generator";
-import { Schema } from "#remodeler/code-model";
-import { Namespace } from "#csharp/code-dom/namespace";
 import { Interface } from "#csharp/code-dom/interface";
-import { ModelInterfaceProperty } from "./interface-property";
-import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
-import { ModelClass } from "#csharp/lowlevel-generator/model/class";
+import { Namespace } from "#csharp/code-dom/namespace";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { ModelClass } from "#csharp/lowlevel-generator/model/class";
+import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
+import { Schema } from "#remodeler/code-model";
+import { State } from "../generator";
+import { ModelInterfaceProperty } from "./interface-property";
 
 export class ModelInterface extends Interface implements TypeDeclaration {
   validatePresence(propertyName: string): OneOrMoreStatements {

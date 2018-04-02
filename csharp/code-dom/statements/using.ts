@@ -1,5 +1,5 @@
-import { Statements, Statement, OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import { indent } from "#common/text-manipulation";
+import { OneOrMoreStatements, Statement, Statements } from "#csharp/code-dom/statements/statement";
 
 export class Using extends Statements {
   constructor(private usingStatement: Statement | string, statements: OneOrMoreStatements, objectInitializer?: Partial<Using>) {

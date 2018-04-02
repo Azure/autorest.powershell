@@ -1,13 +1,8 @@
-import { Host } from "@microsoft.azure/autorest-extension-base";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Interface } from "#csharp/code-dom/interface";
-import { Import } from "#csharp/code-dom/import";
-import { Class } from "#csharp/code-dom/class";
-import { ApiClass } from "./operation/api-class";
-import { Model } from "#remodeler/code-model";
-import { Project } from "./project";
-import { State } from "./generator";
 import { deserialize, serialize } from "#common/yaml";
+import { Model } from "#remodeler/code-model";
+import { Host } from "@microsoft.azure/autorest-extension-base";
+import { State } from "./generator";
+import { Project } from "./project";
 
 // todo:
 // interpretations:
@@ -15,14 +10,14 @@ import { deserialize, serialize } from "#common/yaml";
 //  - nullable values?
 //
 
-// model constructors? 
+// model constructors?
 //    - allOf creation?
 
 // validations
 // serialization/deserialization/polymorphic deserializer/shape deserializer?
 // url construction
 // security
-// mime-type 
+// mime-type
 // create schema for returned headers and deserialize (or... add parameters to OnResponse?)
 // streams
 // non json payloads (xml, formdata, multipart-mime)
@@ -32,7 +27,7 @@ import { deserialize, serialize } from "#common/yaml";
 
 export async function process(service: Host) {
   try {
-    // Get the list of files 
+    // Get the list of files
     const files = await service.ListInputs();
 
     // get the openapi document
