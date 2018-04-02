@@ -29,13 +29,8 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
 
 function getPluralizationService(): any {
   const result = new EnglishPluralizationService();
-  const customMappings: { [key: string]: string }[] = [
-    { "Database": "Databases" },
-    { "database": "databases" }
-  ];
-  for (const mapping of customMappings)
-    for (const key in mapping)
-      result.AddWord(key, mapping[key]);
+  result.AddWord("Database", "Databases");
+  result.AddWord("database", "databases");
   return result;
 }
 
