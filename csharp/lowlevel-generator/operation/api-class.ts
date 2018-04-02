@@ -31,7 +31,6 @@ export class ApiClass extends Class {
         this.addMethod(new OperationMethod(this, operation, state.path('components', 'operations', operationName)));
       }
     }
-
   }
 
 }

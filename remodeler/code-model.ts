@@ -99,7 +99,7 @@ export function isMyOperation(operation: Operation): operation is MyOperation {
 }
 
 export interface MyOperation {
-  operationType: string;
+  operationType: "MyOperation";
   summary?: string;
   description?: string;
   parameters: Optional<Array<Reference<Parameter>>>;
@@ -112,7 +112,7 @@ export class MyOperation extends WithExtensions implements MyOperation, Implemen
   parameters = new Array<Reference<Parameter>>();
   responses = new Dictionary<Reference<Response>>();
   deprecated = false;
-  operationType = "MyOperation";
+  operationType: "MyOperation" = "MyOperation";
 
   constructor(name: string, initializer?: Partial<MyOperation>) {
     super();
