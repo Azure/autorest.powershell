@@ -17,11 +17,11 @@ export async function processCodeModel(processExtension: (input: Model, service:
     const original = await service.ReadFile(files[0]);
 
     // deserialize
-    let codeModel = await deserialize<Model>(await service.ReadFile(files[0]), files[0]);
+    let codeModel = await deserialize<Model>(original, files[0]);
 
     codeModel = await processExtension(codeModel, service);
 
-    // output the model 
+    // output the model
     await service.WriteFile("code-model-v2.yaml", serialize(codeModel), undefined/*,"code-model-v2"*/);
 
   } catch (E) {

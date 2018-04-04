@@ -91,41 +91,45 @@ export function isHttpOperation(operation: Operation): operation is HttpOperatio
   return false;
 }
 
-export function isMyOperation(operation: Operation): operation is MyOperation {
-  if ((<any>operation).operationType && (<any>operation).operationType === 'MyOperation') {
+export function isHighLevelOperation(operation: Operation): operation is HighLevelOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'HighLevelOperation') {
     return true;
   }
   return false;
 }
 
-export interface MyOperation {
-  operationType: "MyOperation";
+export interface HighLevelOperation {
+  operationType: "HighLevelOperation";
   summary?: string;
   description?: string;
-  parameters: Optional<Array<Reference<Parameter>>>;
-  responses: Dictionary<Reference<Response>>;
-  deprecated: Optional<boolean>;
+  parameters: Dictionary<Reference<{ schema: Schema, required: boolean }>>;
+  responses: Dictionary<Reference<Dictionary<Schema>>>;
+  deprecated: boolean;
+  name: {
+    noun: string,
+    verb: string
+  }
 }
 
-export class MyOperation extends WithExtensions implements MyOperation, Implementation<MyOperationDetails> {
+export class HighLevelOperation extends WithExtensions implements HighLevelOperation, Implementation<MyOperationDetails> {
   details: MyOperationDetails;
-  parameters = new Array<Reference<Parameter>>();
-  responses = new Dictionary<Reference<Response>>();
-  deprecated = false;
-  operationType: "MyOperation" = "MyOperation";
+  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+  responses = new Dictionary<Reference<Dictionary<Schema>>>();
+  operationType: "HighLevelOperation" = "HighLevelOperation";
 
-  constructor(name: string, initializer?: Partial<MyOperation>) {
+  constructor(name: string, deprecated: boolean, initializer?: Partial<HighLevelOperation>) {
     super();
     this.details = {
       name: name,
     };
+    this.deprecated = deprecated;
 
     this.apply(initializer);
   }
 }
 
 
-export type Operation = HttpOperation | MyOperation; //one day ...  | JsonRPCOperation  ...etc
+export type Operation = HttpOperation | HighLevelOperation; //one day ...  | JsonRPCOperation  ...etc
 
 export interface Model extends Implementation<ClientDetails> {
 

@@ -2,7 +2,7 @@ import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extens
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model } from "remodeler/code-model";
+import { Model, isHttpOperation } from "remodeler/code-model";
 import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
 
 export async function process(service: Host) {
@@ -15,8 +15,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
   const serviceNamespace = await service.GetValue("namespace") || "Sample.API";
   codeModel.details.namespace = serviceNamespace;
 
-  for (const each in codeModel.components.operations) {
-    const op = codeModel.components.operations[each];
+  for (const op of Object.values(codeModel.components.operations).filter(isHttpOperation)) {
     const details = op.details;
 
     // operations have pascal cased names
