@@ -2,9 +2,10 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, HighLevelOperation } from "#remodeler/code-model";
+import { Model, isHttpOperation, HighLevelOperation, Schema } from "#remodeler/code-model";
 import { EnglishPluralizationService } from "./english-pluralization-service";
 import { pascalCase } from "#common/text-manipulation";
+import { Dictionary } from "#remodeler/common";
 
 export async function process(service: Host) {
   return await processCodeModel(inferSignatures, service);
@@ -14,15 +15,27 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
   for (const operation of Object.values(model.components.operations).filter(isHttpOperation)) {
     const names = getCommandName(operation.details.name, service.Message);
     const name = names[0]; // pick first candidate!?
-    const hlOp = new HighLevelOperation("wat", {
-      deprecated: operation.deprecated,
+    const parameters = new Dictionary<{ schema: Schema, required: boolean }>();
+    const responses = new Dictionary<Dictionary<Schema>>();
+    for (const parameter of operation.parameters) {
+      parameters[parameter.name] = {
+        schema: parameter.schema || (() => { throw "no schema"; })(), // TODO: handle parameter.content!
+        required: parameter.required
+      };
+    }
+    for (const [responseCode, response] of Object.entries(operation.responses)) {
+      responses[responseCode] = { result: Object.values(response.content)[0].schema || (() => { throw "no schema"; })() }; // TODO: derive the actually desired return type!
+    }
+
+    const hlname = `<HL>${name.noun}_${name.verb}`;
+    const hlOp = new HighLevelOperation(hlname, operation.deprecated, {
       description: operation.description,
       summary: operation.summary,
-      parameters: operation.parameters, // TODO
-      responses: operation.responses // TODO
+      parameters: parameters,
+      responses: responses
     });
     hlOp.details.names = names;
-    model.components.operations[`<HL>${name.noun}_${name.verb}`] = hlOp;
+    model.components.operations[hlname] = hlOp;
   }
   return model;
 }

@@ -2,7 +2,7 @@ import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extens
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model } from "remodeler/code-model";
+import { Model, isHttpOperation } from "remodeler/code-model";
 import { map } from "#common/text-manipulation";
 
 export async function process(service: Host) {
@@ -11,6 +11,7 @@ export async function process(service: Host) {
 
 async function inferStuff(model: Model, service: Host): Promise<Model> {
   map(model.components.operations, (key, operation) => {
+    if (!isHttpOperation(operation)) return null;
     // TODO: mimetypes might start with the mimetype and have extra stuff after
     // this should be fixed if it happens.
 

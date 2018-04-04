@@ -2,8 +2,9 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, HighLevelOperation, Schema } from "#remodeler/code-model";
+import { Model, isHttpOperation, HighLevelOperation, Schema, JsonType } from "#remodeler/code-model";
 import { pascalCase } from "#common/text-manipulation";
+import { Dictionary } from "#remodeler/common";
 
 export async function process(service: Host) {
   return await processCodeModel(inferSignatures, service);
@@ -18,21 +19,40 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-// export function getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation> {
-//   const name = schema.details.name;
+export function* getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation> {
+  const name = schema.details.name;
 
-//   // constructor
-//   const hlOp = new HighLevelOperation(`<LL>${name}_ctor`, {
-//     deprecated: schema.deprecated,
-//     description: `Creates a new ${name}`,
-//     parameters: operation.parameters,
-//     responses: {
-//       result: {
+  // potentially an object?
+  if (schema.type === undefined || schema.type === JsonType.Object) {
 
-//       }
-//     }
-//   });
-//   yield hlOp;
+    // constructor
+    const parameters = new Dictionary<{ schema: Schema, required: boolean }>();
+    for (const [propertyName, property] of Object.entries(schema.properties)) {
+      parameters[propertyName] = { schema: property.schema, required: property.details.required };
+    }
+    const hlOp = new HighLevelOperation(`<LL>${name}_ctor`, schema.deprecated, {
+      description: `Creates a new '${name}'`,
+      parameters: parameters,
+      responses: {
+        result: { result: schema }
+      }
+    });
+    yield hlOp;
 
-//   // 
-// }
+    // getters
+    for (const [propertyName, property] of Object.entries(schema.properties)) {
+      const hlOp = new HighLevelOperation(`<LL>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, {
+        description: `Gets '${propertyName}' from '${name}'`,
+        parameters: {
+          obj: { schema: schema, required: true }
+        },
+        responses: {
+          result: { result: property.schema },
+          undefined: {}
+        }
+      });
+      yield hlOp;
+    }
+
+  }
+}

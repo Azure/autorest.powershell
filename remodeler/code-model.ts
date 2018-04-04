@@ -102,8 +102,8 @@ export interface HighLevelOperation {
   operationType: "HighLevelOperation";
   summary?: string;
   description?: string;
-  parameters: Array<Reference<Parameter>>;
-  responses: Dictionary<Reference<Response>>;
+  parameters: Dictionary<Reference<{ schema: Schema, required: boolean }>>;
+  responses: Dictionary<Reference<Dictionary<Schema>>>;
   deprecated: boolean;
   name: {
     noun: string,
@@ -113,16 +113,16 @@ export interface HighLevelOperation {
 
 export class HighLevelOperation extends WithExtensions implements HighLevelOperation, Implementation<MyOperationDetails> {
   details: MyOperationDetails;
-  parameters = new Array<Reference<Parameter>>();
-  responses = new Dictionary<Reference<Response>>();
-  deprecated = false;
+  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+  responses = new Dictionary<Reference<Dictionary<Schema>>>();
   operationType: "HighLevelOperation" = "HighLevelOperation";
 
-  constructor(name: string, initializer?: Partial<HighLevelOperation>) {
+  constructor(name: string, deprecated: boolean, initializer?: Partial<HighLevelOperation>) {
     super();
     this.details = {
       name: name,
     };
+    this.deprecated = deprecated;
 
     this.apply(initializer);
   }
