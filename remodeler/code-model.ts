@@ -98,8 +98,8 @@ export function isHighLevelOperation(operation: Operation): operation is HighLev
   return false;
 }
 
-export function isLowLevelOperation(operation: Operation): operation is LowLevelOperation {
-  if ((<any>operation).operationType && (<any>operation).operationType === 'LowLevelOperation') {
+export function isIntrinsicOperation(operation: Operation): operation is IntrinsicOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'IntrinsicOperation') {
     return true;
   }
   return false;
@@ -140,17 +140,17 @@ export class HighLevelOperation extends WithExtensions implements HighLevelOpera
   }
 }
 
-export interface LowLevelOperation extends ProgrammaticOperation {
-  operationType: "LowLevelOperation";
+export interface IntrinsicOperation extends ProgrammaticOperation {
+  operationType: "IntrinsicOperation";
 }
 
-export class LowLevelOperation extends WithExtensions implements LowLevelOperation, Implementation<MyOperationDetails> {
+export class IntrinsicOperation extends WithExtensions implements IntrinsicOperation, Implementation<MyOperationDetails> {
   details: MyOperationDetails;
   parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
   responses = new Dictionary<Reference<Dictionary<Schema>>>();
-  operationType: "LowLevelOperation" = "LowLevelOperation";
+  operationType: "IntrinsicOperation" = "IntrinsicOperation";
 
-  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<LowLevelOperation>) {
+  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<IntrinsicOperation>) {
     super();
     this.details = {
       name: name,
@@ -163,7 +163,7 @@ export class LowLevelOperation extends WithExtensions implements LowLevelOperati
 }
 
 
-export type Operation = HttpOperation | HighLevelOperation | LowLevelOperation; //one day ...  | JsonRPCOperation  ...etc
+export type Operation = HttpOperation | HighLevelOperation | IntrinsicOperation; //one day ...  | JsonRPCOperation  ...etc
 
 export interface Model extends Implementation<ClientDetails> {
 
