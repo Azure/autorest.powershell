@@ -8,17 +8,18 @@ import { objMap } from "../src/helpers";
 @suite class Mutation {
   @test "build graph"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
       },
       outputFlows: {
-        result: { length: { type: typeNumber } },
+        result: { length: typeNumber },
         error: {}
       }
     };
 
-    const len: NodeProc<MyTType> = { procID: "strlen", inputs: {} };
+    const len: NodeProc<MyTType> = { procID: "strlen" };
 
     let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs())
       .connectControlFlow({ type: "proc", node: len, flow: "result" }, { type: "output", flow: "result" })

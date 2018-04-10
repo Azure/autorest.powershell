@@ -19,12 +19,12 @@ export interface SymbolSink<TType> {
 }
 
 export interface NodePhi<TType> {
-  readonly merge: { readonly [id: string]: { readonly type: TType, readonly sources: { readonly [flow: string]: SymbolSource<TType> | undefined } } | undefined };
+  readonly merge: { readonly [id: string]: TType | undefined };
+  readonly flows: ReadonlyArray<string>;
 }
 
 export interface NodeProc<TType> {
   readonly procID: string;
-  readonly inputs: { readonly [id: string]: SymbolSource<TType> | undefined };
 }
 
 export interface ControlFlow<TType> {
@@ -37,8 +37,23 @@ export interface DataFlow<TType> {
   readonly target: SymbolSink<TType>;
 }
 
+export interface GraphInputFlow<TType> {
+  readonly [id: string]: {
+    readonly names: ReadonlyArray<string>,
+    readonly type: TType,
+    readonly value?: JSONValue
+  } | undefined;
+}
+
+export interface GraphOutputFlows<TType> {
+  readonly [flow: string]: {
+    readonly [id: string]: TType | undefined
+  } | undefined;
+}
+
 export interface Graph<TType> {
-  readonly edges: ReadonlyArray<ControlFlow<TType>>;
-  readonly inputs: { readonly [id: string]: { readonly names: ReadonlyArray<string>, readonly type: TType, readonly value?: JSONValue } | undefined }; // symbol source
-  readonly outputFlows: { readonly [flow: string]: { readonly [id: string]: { readonly source?: SymbolSource<TType> | undefined, readonly type: TType } | undefined } | undefined }; // symbol sink
+  readonly controlFlow: ReadonlyArray<ControlFlow<TType>>;
+  readonly dataFlow: ReadonlyArray<DataFlow<TType>>;
+  readonly inputs: GraphInputFlow<TType>;
+  readonly outputFlows: GraphOutputFlows<TType>;
 }

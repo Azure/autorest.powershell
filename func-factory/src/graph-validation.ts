@@ -4,8 +4,8 @@ import { ProcDefinitions, GraphProblem, SymbolInstance } from "./graph-context";
 import { getSymbolSourceType, getSymbolSinkType, getSymbolSourceOf } from "./graph-analysis";
 
 function validateSymbolLink<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>, sink: SymbolSink<TType>, typeAssignableTo: (from: TType, to: TType) => boolean, onProblem: (problem: GraphProblem) => void): void {
-  const sourceType = getSymbolSourceType(graph, procs, src);
-  const sinkType = getSymbolSinkType(graph, procs, sink);
+  const sourceType = getSymbolSourceType(graph.inputs, procs, src);
+  const sinkType = getSymbolSinkType(graph.outputFlows, procs, sink);
   if (sourceType === undefined) {
     onProblem({ severity: "error", message: `Symbol source of input '${sink.id}' not found.`, graphComponent: sink.target, needsHumanIntervention: true });
     return;
@@ -29,13 +29,6 @@ export function validateNodeProc<TType>(n: NodeProc<TType>, procs: ProcDefinitio
     onProblem({ severity: "error", message: `Procedure '${id}' not found.`, graphComponent: n, needsHumanIntervention: true });
     return;
   }
-  // inputs expected by proc match inputs given
-  const demand = Object.keys(proc.inputs);
-  const supply = Object.keys(n.inputs);
-  for (const x of setExcept(demand, supply))
-    onProblem({ severity: "error", message: `Procedure '${id}' requires input '${x}'.`, graphComponent: n, needsHumanIntervention: false });
-  for (const x of setExcept(supply, demand))
-    onProblem({ severity: "warning", message: `Procedure '${id}' does not know input '${x}'.`, graphComponent: n, needsHumanIntervention: false });
 }
 
 export function validateRawControlFlow<TType>(rawEdges: ReadonlyArray<ControlFlow<TType>>, controlSourceNorm: (x: ControlSource<TType>) => ControlSource<TType> | undefined, controlSinkNorm: (x: ControlSink<TType>) => ControlSink<TType> | undefined, onProblem: (p: GraphProblem) => void): void {
@@ -62,10 +55,10 @@ export function validateControlFlow<TType>(edges: ReadonlyArray<ControlFlow<TTyp
   }
 }
 
-export function validateRawDataFlow<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSinks: Iterable<SymbolSink<TType>>, symbolSourceNorm: (x: SymbolSource<TType>) => SymbolSource<TType> | undefined, onProblem: (p: GraphProblem) => void): void {
+export function validateRawDataFlow<TType>(dataFlow: ReadonlyArray<DataFlow<TType>>, procs: ProcDefinitions<TType>, symbolSinks: Iterable<SymbolSink<TType>>, symbolSourceNorm: (x: SymbolSource<TType>) => SymbolSource<TType> | undefined, symbolSinkNorm: (x: SymbolSink<TType>) => SymbolSink<TType> | undefined, onProblem: (p: GraphProblem) => void): void {
   // symbol source exists?
   for (const sink of symbolSinks) {
-    let src = getSymbolSourceOf(graph, procs, sink);
+    let src = getSymbolSourceOf(dataFlow, sink, symbolSinkNorm);
     if (src === undefined) onProblem({ severity: "error", message: `Symbol sink '${sink.id}' unconnected.`, graphComponent: sink.target, needsHumanIntervention: false });
     else {
       src = symbolSourceNorm(src);
@@ -74,9 +67,20 @@ export function validateRawDataFlow<TType>(graph: Graph<TType>, procs: ProcDefin
   }
 }
 
-export function validateDataFlow<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, edges: ReadonlyArray<DataFlow<TType>>, typeAssignableTo: (from: TType, to: TType) => boolean, onProblem: (p: GraphProblem) => void): void {
+export function validateDataFlow<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, edges: ReadonlyArray<DataFlow<TType>>, symbolSources: Iterable<SymbolSource<TType>>, symbolSinks: Iterable<SymbolSink<TType>>, typeAssignableTo: (from: TType, to: TType) => boolean, onProblem: (p: GraphProblem) => void): void {
   for (const edge of edges)
     validateSymbolLink(graph, procs, edge.source, edge.target, typeAssignableTo, onProblem);
+  // number of connections
+  for (const x of symbolSources) {
+    const adjacent = edges.filter(f => f.source === x).length;
+    if (adjacent > 1) onProblem({ severity: "error", message: `More than one outgoing data flow.`, graphComponent: x, needsHumanIntervention: true });
+    if (adjacent < 1) onProblem({ severity: "error", message: `No outgoing data flow.`, graphComponent: x, needsHumanIntervention: false });
+  }
+  for (const x of symbolSinks) {
+    const adjacent = edges.filter(f => f.target === x).length;
+    if (adjacent > 1) onProblem({ severity: "error", message: `More than one incoming data flow.`, graphComponent: x, needsHumanIntervention: false });
+    if (adjacent < 1) onProblem({ severity: "warning", message: `No incoming data flow.`, graphComponent: x, needsHumanIntervention: false });
+  }
 }
 
 export function validateSymbolAvailability<TType>(edges: Iterable<ControlFlow<TType>>, supply: ReadonlyMap<ControlSource<TType>, ReadonlySet<SymbolInstance<TType>>>, demand: ReadonlyMap<ControlSink<TType>, ReadonlySet<SymbolInstance<TType>>>, onProblem: (p: GraphProblem) => void): void {

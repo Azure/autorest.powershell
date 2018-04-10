@@ -8,12 +8,13 @@ import { objMap, error } from "../src/helpers";
 @suite class Synthesis {
   @test "simple"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
       },
       outputFlows: {
-        result: { length: { type: typeNumber } }
+        result: { length: typeNumber }
       }
     };
 
@@ -24,12 +25,13 @@ import { objMap, error } from "../src/helpers";
   }
   @test "simple with samples"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         text: { type: typeString, names: ["text"] }
       },
       outputFlows: {
-        result: { length: { type: typeNumber } }
+        result: { length: typeNumber }
       }
     };
 
@@ -44,13 +46,14 @@ import { objMap, error } from "../src/helpers";
 
   @test "add 2"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         a: { type: typeNumber, names: [] },
         b: { type: typeNumber, names: [] }
       },
       outputFlows: {
-        result: { sum: { type: typeNumber } }
+        result: { sum: typeNumber }
       }
     };
 
@@ -65,14 +68,15 @@ import { objMap, error } from "../src/helpers";
 
   @test "add 3"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         a: { type: typeNumber, names: [] },
         b: { type: typeNumber, names: [] },
         c: { type: typeNumber, names: [] }
       },
       outputFlows: {
-        result: { sum: { type: typeNumber } }
+        result: { sum: typeNumber }
       }
     };
 
@@ -87,7 +91,8 @@ import { objMap, error } from "../src/helpers";
 
   @test "add 4"() {
     const g: Graph<MyTType> = {
-      edges: [],
+      controlFlow: [],
+      dataFlow: [],
       inputs: {
         a: { type: typeNumber, names: [] },
         b: { type: typeNumber, names: [] },
@@ -95,7 +100,7 @@ import { objMap, error } from "../src/helpers";
         d: { type: typeNumber, names: [] }
       },
       outputFlows: {
-        result: { sum: { type: typeNumber } }
+        result: { sum: typeNumber }
       }
     };
 
