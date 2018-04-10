@@ -106,12 +106,38 @@ import { ProcImplementation } from "../src/reference-generator";
     };
 
     let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
+      { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 6, d: 5 }, output: { sum: 18 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 5, d: 6 }, output: { sum: 18 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 4, b: 5, c: 6, d: 7 }, output: { sum: 22 }, outputFlow: "result" }
     ]).synthesize() || error("synthesis failed to produce working code");
-    const test = (a: number, b: number, c: number, d: number): void => assert.equal(runGraph(ga.graph, { a, b, c, d }, "result", ".sum"), a + b + c + d);
+    const test = (a: number, b: number, c: number, d: number): void => {
+      const sum = runGraph(ga.graph, { a, b, c, d }, "result", ".sum");
+      assert.equal(sum, a + b + c + d, `${a} + ${b} + ${c} + ${d} != ${sum}\n${ga.compile(getBuiltInImpls())}`);
+    };
     for (let i = 0; i < 4; ++i)
       test(Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0);
+  }
+
+  @test "select"() {
+    const g: Graph<MyTType> = {
+      controlFlow: [],
+      dataFlow: [],
+      inputs: {
+        a: { type: typeNumber, names: [] },
+        b: { type: typeNumber, names: [] },
+        c: { type: typeNumber, names: [] },
+        d: { type: typeNumber, names: [] }
+      },
+      outputFlows: {
+        result: { sum: typeNumber }
+      }
+    };
+
+    debugger;
+    let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
+      { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 5, d: 6 }, output: { sum: 5 }, outputFlow: "result" },
+      { impl: getBuiltInImpls(), input: { a: 4, b: 5, c: 6, d: 7 }, output: { sum: 6 }, outputFlow: "result" }
+    ]).synthesize() || error("synthesis failed to produce working code");
   }
 
   @test "name preference"() {
@@ -155,8 +181,8 @@ import { ProcImplementation } from "../src/reference-generator";
         }
       }
     };
-    let ga = new GraphContext(g, typeAssignableTo, x => x, {/* "concat": concatDef*/ }, [
-      { impl: { /*"concat": concatImpl*/ }, input: { a: "a", b: 1, c: "c", d: 2, e: "e", f: "f", g: "g", h: "h", i: "i", j: "j", k: "k", l: "l", m: "m", n: "n", o: "o", p: "p" }, output: { res: "a" /*ncj*/ }, outputFlow: "result" },
+    let ga = new GraphContext(g, typeAssignableTo, x => x, { "concat": concatDef }, [
+      { impl: { "concat": concatImpl }, input: { a: "a", b: 1, c: "c", d: 2, e: "e", f: "f", g: "g", h: "h", i: "i", j: "j", k: "k", l: "l", m: "m", n: "n", o: "o", p: "p" }, output: { res: "ncj" }, outputFlow: "result" },
     ]).synthesize() || error("synthesis failed to produce working code");
   }
 

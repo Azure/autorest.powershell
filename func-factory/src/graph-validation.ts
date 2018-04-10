@@ -73,8 +73,7 @@ export function validateDataFlow<TType>(graph: Graph<TType>, procs: ProcDefiniti
   // number of connections
   for (const x of symbolSources) {
     const adjacent = edges.filter(f => f.source === x).length;
-    if (adjacent > 1) onProblem({ severity: "error", message: `More than one outgoing data flow.`, graphComponent: x, needsHumanIntervention: true });
-    if (adjacent < 1) onProblem({ severity: "error", message: `No outgoing data flow.`, graphComponent: x, needsHumanIntervention: false });
+    if (adjacent < 1) onProblem({ severity: "warning", message: `No outgoing data flow.`, graphComponent: x, needsHumanIntervention: false });
   }
   for (const x of symbolSinks) {
     const adjacent = edges.filter(f => f.target === x).length;

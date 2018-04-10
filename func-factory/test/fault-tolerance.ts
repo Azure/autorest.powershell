@@ -236,4 +236,17 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
     }, false);
   }
 
+  @test "selection good"() {
+    compileGraph({
+      controlFlow: [
+        { source: { type: "entry" }, target: { type: "output", flow: "result" } }
+      ],
+      dataFlow: [
+        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "output", flow: "result" }, id: "res" } }
+      ],
+      inputs: { a: { names: ["a"], type: typeNumber }, b: { names: ["b"], type: typeNumber } },
+      outputFlows: { result: { res: typeNumber } }
+    }, true);
+  }
+
 }
