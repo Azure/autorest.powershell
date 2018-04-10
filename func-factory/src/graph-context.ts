@@ -102,7 +102,7 @@ export class GraphContext<TType> {
   public get score(): number {
     return this._score || (this._score = (() => {
       if (!this.canBeFixedWithSynthesis) return 0;
-      if (this.canGenerateWorkingCode && !this.matchesSamples()) return 0;
+      if (this.canGenerateWorkingCode) return this.matchesSamples() ? 1 : 0;
       return Math.pow(0.75, this.unconnectedControlSources.length)
         * Math.pow(0.9, this.unconnectedControlSinks.length)
         * Math.pow(0.9, Math.abs(this.unconnectedSymbolSources.length - this.unconnectedSymbolSinks.length))

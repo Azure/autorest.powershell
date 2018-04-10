@@ -1,9 +1,10 @@
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
-import { GraphContext, FlexArgs, FlexCallbacks, Sample } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from "./common";
+import { GraphContext, FlexArgs, FlexCallbacks, Sample, Proc } from "../src/graph-context";
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo, typeBoolean } from "./common";
 import { objMap, error } from "../src/helpers";
+import { ProcImplementation } from "../src/reference-generator";
 
 @suite class Synthesis {
   @test "simple"() {
@@ -111,6 +112,52 @@ import { objMap, error } from "../src/helpers";
     const test = (a: number, b: number, c: number, d: number): void => assert.equal(runGraph(ga.graph, { a, b, c, d }, "result", ".sum"), a + b + c + d);
     for (let i = 0; i < 4; ++i)
       test(Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0);
+  }
+
+  @test "name preference"() {
+    const g: Graph<MyTType> = {
+      controlFlow: [],
+      dataFlow: [],
+      inputs: {
+        a: { type: typeString, names: [] },
+        b: { type: typeNumber, names: [] },
+        c: { type: typeString, names: ["main"] },
+        d: { type: typeNumber, names: ["suffix"] },
+        e: { type: typeString, names: ["cowbell"] },
+        f: { type: typeString, names: [] },
+        g: { type: typeString, names: [] },
+        h: { type: typeString, names: [] },
+        i: { type: typeString, names: [] },
+        j: { type: typeString, names: ["suffix"] },
+        k: { type: typeString, names: [] },
+        l: { type: typeString, names: [] },
+        m: { type: typeString, names: [] },
+        n: { type: typeString, names: ["prefix"] },
+        o: { type: typeString, names: [] },
+        p: { type: typeString, names: [] }
+      },
+      outputFlows: {
+        result: { res: typeString }
+      }
+    };
+
+    const concatImpl: ProcImplementation = { defInline: (args, cb) => cb.result({ res: `(${args.a} + ${args.b} + ${args.c})` }) };
+    const concatDef: Proc<MyTType> = {
+      pure: true,
+      inputs: {
+        a: { names: ["prefix"], type: typeString },
+        b: { names: ["main"], type: typeString },
+        c: { names: ["suffix"], type: typeString }
+      },
+      outputFlows: {
+        result: {
+          res: { names: ["combined"], nameSources: ["b"], type: typeString }
+        }
+      }
+    };
+    let ga = new GraphContext(g, typeAssignableTo, x => x, {/* "concat": concatDef*/ }, [
+      { impl: { /*"concat": concatImpl*/ }, input: { a: "a", b: 1, c: "c", d: 2, e: "e", f: "f", g: "g", h: "h", i: "i", j: "j", k: "k", l: "l", m: "m", n: "n", o: "o", p: "p" }, output: { res: "a" /*ncj*/ }, outputFlow: "result" },
+    ]).synthesize() || error("synthesis failed to produce working code");
   }
 
   @test "two calls, one field read, one field write"() {
