@@ -98,13 +98,24 @@ export function isHighLevelOperation(operation: Operation): operation is HighLev
   return false;
 }
 
-export interface HighLevelOperation {
-  operationType: "HighLevelOperation";
+export function isLowLevelOperation(operation: Operation): operation is LowLevelOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'LowLevelOperation') {
+    return true;
+  }
+  return false;
+}
+
+export interface ProgrammaticOperation {
   summary?: string;
   description?: string;
   parameters: Dictionary<Reference<{ schema: Schema, required: boolean }>>;
   responses: Dictionary<Reference<Dictionary<Schema>>>;
   deprecated: boolean;
+  pure: boolean; // side-effect free? May be helpful for deciding how to generate code.
+}
+
+export interface HighLevelOperation extends ProgrammaticOperation {
+  operationType: "HighLevelOperation";
   name: {
     noun: string,
     verb: string
@@ -117,19 +128,42 @@ export class HighLevelOperation extends WithExtensions implements HighLevelOpera
   responses = new Dictionary<Reference<Dictionary<Schema>>>();
   operationType: "HighLevelOperation" = "HighLevelOperation";
 
-  constructor(name: string, deprecated: boolean, initializer?: Partial<HighLevelOperation>) {
+  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<HighLevelOperation>) {
     super();
     this.details = {
       name: name,
     };
     this.deprecated = deprecated;
+    this.pure = pure;
+
+    this.apply(initializer);
+  }
+}
+
+export interface LowLevelOperation extends ProgrammaticOperation {
+  operationType: "LowLevelOperation";
+}
+
+export class LowLevelOperation extends WithExtensions implements LowLevelOperation, Implementation<MyOperationDetails> {
+  details: MyOperationDetails;
+  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+  responses = new Dictionary<Reference<Dictionary<Schema>>>();
+  operationType: "LowLevelOperation" = "LowLevelOperation";
+
+  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<LowLevelOperation>) {
+    super();
+    this.details = {
+      name: name,
+    };
+    this.deprecated = deprecated;
+    this.pure = pure;
 
     this.apply(initializer);
   }
 }
 
 
-export type Operation = HttpOperation | HighLevelOperation; //one day ...  | JsonRPCOperation  ...etc
+export type Operation = HttpOperation | HighLevelOperation | LowLevelOperation; //one day ...  | JsonRPCOperation  ...etc
 
 export interface Model extends Implementation<ClientDetails> {
 
