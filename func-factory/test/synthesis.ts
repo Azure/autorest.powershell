@@ -1,7 +1,7 @@
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import { Graph, NodePhi, NodeProc } from "../src/graph";
-import { GraphContext, FlexArgs, FlexCallbacks } from "../src/graph-context";
+import { GraphContext, FlexArgs, FlexCallbacks, Sample } from "../src/graph-context";
 import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from "./common";
 import { objMap, error } from "../src/helpers";
 
@@ -111,5 +111,15 @@ import { objMap, error } from "../src/helpers";
     const test = (a: number, b: number, c: number, d: number): void => assert.equal(runGraph(ga.graph, { a, b, c, d }, "result", ".sum"), a + b + c + d);
     for (let i = 0; i < 4; ++i)
       test(Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0, Math.random() * 1000 | 0);
+  }
+
+  @test "two calls, one field read, one field write"() {
+    // supposed to infer the following:
+    // x = f(a: string, b: string, n: string);
+    // y = g(a: string, c: string, x.n: string);
+    // x.y = y;
+    // return x;
+
+    // TODO
   }
 }
