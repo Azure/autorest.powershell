@@ -8,29 +8,23 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
 
 @suite class Generation {
   @test "addition"() {
-    const addA: NodeProc<MyTType> = {
-      procID: "add",
-      inputs: {
-        a: { origin: { type: "entry" }, id: "a" },
-        b: { origin: { type: "entry" }, id: "b" }
-      }
-    };
+    const addA: NodeProc<MyTType> = { procID: "add" };
     const graph: Graph<MyTType> = {
-      edges: [
+      controlFlow: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
+      ],
+      dataFlow: [
+        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "proc", node: addA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "b" }, target: { target: { type: "proc", node: addA }, id: "b" } },
+        { source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }, target: { target: { type: "output", flow: "result" }, id: "res" } }
       ],
       inputs: {
         a: { names: ["a"], type: typeNumber },
         b: { names: ["b"], type: typeNumber }
       },
       outputFlows: {
-        result: {
-          res: {
-            type: typeNumber,
-            source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }
-          }
-        }
+        result: { res: typeNumber }
       }
     };
 
@@ -40,41 +34,13 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
   }
 
   @test "loop"() {
-    const inputPhi: NodePhi<MyTType> = { merge: {} };
-    const inputPhiMutable: DeepMutable<NodePhi<MyTType>> = inputPhi;
-    const ltA: NodeProc<MyTType> = {
-      procID: "lt",
-      inputs: {
-        "a": { origin: { type: "phi", node: inputPhi }, id: "x" },
-        "b": { origin: { type: "entry" }, id: "end" }
-      }
-    };
-    const ifA: NodeProc<MyTType> = {
-      procID: "if",
-      inputs: {
-        "condition": { origin: { type: "proc", node: ltA, flow: "result" }, id: "res" }
-      }
-    };
-    const addA: NodeProc<MyTType> = {
-      procID: "add",
-      inputs: {
-        "a": { origin: { type: "phi", node: inputPhi }, id: "x" },
-        "b": { origin: { type: "entry" }, id: "n1" }
-      }
-    };
-
-    inputPhiMutable.merge = {
-      "x": {
-        type: typeNumber,
-        sources: {
-          init: { origin: { type: "entry" }, id: "start" },
-          loop: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }
-        }
-      }
-    };
+    const inputPhi: NodePhi<MyTType> = { merge: { "x": typeNumber }, flows: ["init", "loop"] };
+    const ltA: NodeProc<MyTType> = { procID: "lt" };
+    const ifA: NodeProc<MyTType> = { procID: "if" };
+    const addA: NodeProc<MyTType> = { procID: "add" };
 
     const graph: Graph<MyTType> = {
-      edges: [
+      controlFlow: [
         { source: { type: "phi", node: inputPhi }, target: { type: "proc", node: ltA } },
         { source: { type: "entry" }, target: { type: "phi", node: inputPhi, flow: "init" } },
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "phi", node: inputPhi, flow: "loop" } },
@@ -82,18 +48,23 @@ import { DeepMutable, objMap, tsc } from "../src/helpers";
         { source: { type: "proc", node: ifA, flow: "true" }, target: { type: "proc", node: addA } },
         { source: { type: "proc", node: ifA, flow: "false" }, target: { type: "output", flow: "result" } }
       ],
+      dataFlow: [
+        { source: { origin: { type: "entry" }, id: "start" }, target: { target: { type: "phi", node: inputPhi, flow: "init" }, id: "x" } },
+        { source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }, target: { target: { type: "phi", node: inputPhi, flow: "loop" }, id: "x" } },
+        { source: { origin: { type: "phi", node: inputPhi }, id: "x" }, target: { target: { type: "proc", node: addA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "n1" }, target: { target: { type: "proc", node: addA }, id: "b" } },
+        { source: { origin: { type: "proc", node: ltA, flow: "result" }, id: "res" }, target: { target: { type: "proc", node: ifA }, id: "condition" } },
+        { source: { origin: { type: "phi", node: inputPhi }, id: "x" }, target: { target: { type: "proc", node: ltA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "end" }, target: { target: { type: "proc", node: ltA }, id: "b" } },
+        { source: { origin: { type: "phi", node: inputPhi }, id: "x" }, target: { target: { type: "output", flow: "result" }, id: "res" } },
+      ],
       inputs: {
         start: { names: ["start"], type: typeNumber },
         end: { names: ["end"], type: typeNumber },
         n1: { names: ["1"], type: typeNumber, value: 1 }
       },
       outputFlows: {
-        result: {
-          res: {
-            type: typeNumber,
-            source: { origin: { type: "phi", node: inputPhi }, id: "x" }
-          }
-        }
+        result: { res: typeNumber }
       }
     };
 

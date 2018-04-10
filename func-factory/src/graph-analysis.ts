@@ -1,4 +1,4 @@
-import { NodePhi, SymbolSource, NodeProc, ControlSink, ControlSource, ControlFlow, Graph, SymbolSink } from "./graph";
+import { NodePhi, SymbolSource, NodeProc, ControlSink, ControlSource, ControlFlow, Graph, SymbolSink, DataFlow, GraphOutputFlows, GraphInputFlow } from "./graph";
 import { error, objMap, lundef, errorUnreachable } from "./helpers";
 import { validateNodePhi, validateNodeProc } from "./graph-validation";
 import { ProcDefinitions, SymbolInstance, Proc } from "./graph-context";
@@ -7,34 +7,24 @@ export function getNodes<TType>(g: Graph<TType>): { nodesPhi: Iterable<NodePhi<T
   const nodesPhi = new Set<NodePhi<TType>>();
   const nodesProc = new Set<NodeProc<TType>>();
 
-  const visitSymbolSource = (ss: SymbolSource<TType> | undefined): void => ss !== undefined && visitDataConnector(ss.origin) || undefined;
-  const visitDataConnector = (ds: ControlSource<TType> | ControlSink<TType>): void => {
+  const visitDataConnector = (ss: SymbolSource<TType> | SymbolSink<TType>): void => visitControlConnector('origin' in ss ? ss.origin : ss.target);
+  const visitControlConnector = (ds: ControlSource<TType> | ControlSink<TType>): void => {
     switch (ds.type) {
       case "phi":
-        visitPhi(ds.node);
+        nodesPhi.add(ds.node);
         break;
       case "proc":
-        visitProc(ds.node);
+        nodesProc.add(ds.node);
         break;
     }
   };
-  const visitPhi = (nodePhi: NodePhi<TType>): void => {
-    if (nodesPhi.has(nodePhi)) return;
-    nodesPhi.add(nodePhi);
-    for (const x of Object.values(nodePhi.merge)) if (x !== undefined) for (const y of Object.values(x.sources)) visitSymbolSource(y);
-  };
-  const visitProc = (nodeProc: NodeProc<TType>): void => {
-    if (nodesProc.has(nodeProc)) return;
-    nodesProc.add(nodeProc);
-    for (const x of Object.values(nodeProc.inputs)) visitSymbolSource(x);
-  };
 
-  for (const f of Object.values(g.outputFlows))
-    if (f !== undefined)
-      for (const x of Object.values(f))
-        if (x !== undefined)
-          visitSymbolSource(x.source);
-  for (const e of g.edges) {
+  for (const e of g.controlFlow) {
+    visitControlConnector(e.source);
+    visitControlConnector(e.target);
+  }
+
+  for (const e of g.dataFlow) {
     visitDataConnector(e.source);
     visitDataConnector(e.target);
   }
@@ -47,7 +37,7 @@ export function getNodes<TType>(g: Graph<TType>): { nodesPhi: Iterable<NodePhi<T
 
 
 
-export function getDataSources<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
+export function getControlSources<TType>(procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
   controlSources: ReadonlyArray<ControlSource<TType>>,
   controlSourceEquals: (a: ControlSource<TType>, b: ControlSource<TType>) => boolean
 } {
@@ -67,13 +57,13 @@ export function getDataSources<TType>(g: Graph<TType>, procs: ProcDefinitions<TT
   return { controlSources, controlSourceEquals };
 }
 
-export function getControlSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
+export function getControlSinks<TType>(outputFlows: GraphOutputFlows<TType>, procs: ProcDefinitions<TType>, nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>>): {
   controlSinks: ReadonlyArray<ControlSink<TType>>,
   controlSinkEquals: (a: ControlSink<TType>, b: ControlSink<TType>) => boolean
 } {
   const controlSinks: ControlSink<TType>[] = [];
-  for (const f in g.outputFlows) controlSinks.push({ type: "output", flow: f });
-  for (const n of nodesPhi) for (const m of Object.values(n.merge)) if (m !== undefined) for (const f in m.sources) controlSinks.push({ type: "phi", node: n, flow: f });
+  for (const f in outputFlows) controlSinks.push({ type: "output", flow: f });
+  for (const n of nodesPhi) for (const f of n.flows) controlSinks.push({ type: "phi", node: n, flow: f });
   for (const n of nodesProc) controlSinks.push({ type: "proc", node: n });
   const controlSinkEquals = (a: ControlSink<TType>, b: ControlSink<TType>): boolean => {
     if (a.type === "output" && b.type === "output")
@@ -87,7 +77,7 @@ export function getControlSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<T
   return { controlSinks, controlSinkEquals };
 }
 
-export function getSymbolSources<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, controlSources: Iterable<ControlSource<TType>>, controlSourceEquals: (a: ControlSource<TType>, b: ControlSource<TType>) => boolean): {
+export function getSymbolSources<TType>(inputs: GraphInputFlow<TType>, procs: ProcDefinitions<TType>, controlSources: Iterable<ControlSource<TType>>, controlSourceEquals: (a: ControlSource<TType>, b: ControlSource<TType>) => boolean): {
   symbolSources: ReadonlyArray<SymbolSource<TType>>,
   symbolSourceEquals: (a: SymbolSource<TType>, b: SymbolSource<TType>) => boolean
 } {
@@ -95,7 +85,7 @@ export function getSymbolSources<TType>(g: Graph<TType>, procs: ProcDefinitions<
   for (const s of controlSources)
     switch (s.type) {
       case "entry":
-        for (const id in g.inputs) symbolSources.push({ origin: s, id: id });
+        for (const id in inputs) symbolSources.push({ origin: s, id: id });
         break;
       case "phi":
         for (const id in s.node.merge) symbolSources.push({ origin: s, id: id });
@@ -108,7 +98,7 @@ export function getSymbolSources<TType>(g: Graph<TType>, procs: ProcDefinitions<
   return { symbolSources, symbolSourceEquals };
 }
 
-export function getSymbolSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, controlSinks: Iterable<ControlSink<TType>>, controlSinkEquals: (a: ControlSink<TType>, b: ControlSink<TType>) => boolean): {
+export function getSymbolSinks<TType>(outputFlows: GraphOutputFlows<TType>, procs: ProcDefinitions<TType>, controlSinks: Iterable<ControlSink<TType>>, controlSinkEquals: (a: ControlSink<TType>, b: ControlSink<TType>) => boolean): {
   symbolSinks: ReadonlyArray<SymbolSink<TType>>,
   symbolSinkEquals: (a: SymbolSink<TType>, b: SymbolSink<TType>) => boolean
 } {
@@ -116,7 +106,7 @@ export function getSymbolSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TT
   for (const s of controlSinks)
     switch (s.type) {
       case "output":
-        for (const id in g.outputFlows[s.flow] || {}) symbolSinks.push({ target: s, id: id });
+        for (const id in outputFlows[s.flow] || {}) symbolSinks.push({ target: s, id: id });
         break;
       case "phi":
         for (const id in s.node.merge) symbolSinks.push({ target: s, id: id });
@@ -129,7 +119,7 @@ export function getSymbolSinks<TType>(g: Graph<TType>, procs: ProcDefinitions<TT
   return { symbolSinks, symbolSinkEquals };
 }
 
-export function getSymbolMapper<TType>(g: Graph<TType>, procs: ProcDefinitions<TType>, symbolSources: ReadonlyArray<SymbolSource<TType>>, symbolSourceNorm: (a: SymbolSource<TType>) => SymbolSource<TType> | undefined):
+export function getSymbolMapper<TType>(inputs: GraphInputFlow<TType>, dataFlow: ReadonlyArray<DataFlow<TType>>, procs: ProcDefinitions<TType>, symbolSources: ReadonlyArray<SymbolSource<TType>>, symbolSourceNorm: (a: SymbolSource<TType>) => SymbolSource<TType> | undefined, symbolSinkNorm: (a: SymbolSink<TType>) => SymbolSink<TType> | undefined):
   (src: SymbolSource<TType>) => SymbolInstance<TType> | undefined {
   interface SymbolInstanceMutable {
     source: SymbolSource<TType>;
@@ -140,11 +130,11 @@ export function getSymbolMapper<TType>(g: Graph<TType>, procs: ProcDefinitions<T
   const symbols = new Map<SymbolSource<TType>, SymbolInstanceMutable>();
   // init symbols (only statically known names and types)
   for (const src of symbolSources) {
-    const type = getSymbolSourceType(g, procs, src);
+    const type = getSymbolSourceType(inputs, procs, src);
     if (type) {
       const symbol: SymbolInstanceMutable = {
         source: src,
-        names: getSymbolSourceKnownNames(g, procs, src).slice(),
+        names: getSymbolSourceKnownNames(inputs, procs, src).slice(),
         type: type
       };
       symbols.set(src, symbol);
@@ -155,33 +145,35 @@ export function getSymbolMapper<TType>(g: Graph<TType>, procs: ProcDefinitions<T
     return x && symbols.get(x);
   };
 
-  // name/type propagation across symbols
-  const transfers: { source: SymbolInstanceMutable, target: SymbolInstanceMutable, transferType: boolean, transferNames: boolean }[] = [];
+  // name propagation across symbols
+  const transfers: { source: SymbolInstanceMutable, target: SymbolInstanceMutable }[] = [];
   // - collect
   for (const target of symbolSources) {
     switch (target.origin.type) {
       case "entry":
         break;
-      case "phi":
-        lundef(target.origin.node.merge[target.id], x =>
-          Object.values(x.sources).forEach(source =>
-            lundef(source, source =>
+      case "phi": {
+        const node = target.origin.node;
+        Object.keys(node).forEach(flow =>
+          lundef(flow, flow =>
+            lundef(getSymbolSourceOf(dataFlow, { target: { type: "phi", node, flow }, id: target.id }, symbolSinkNorm), source =>
               lundef(getSymbol(source), s1 =>
                 lundef(getSymbol(target), s2 =>
-                  transfers.push({ source: s1, target: s2, transferType: true, transferNames: true }))))));
+                  transfers.push({ source: s1, target: s2 }))))));
+      }
         break;
-      case "proc":
+      case "proc": {
         const flow = target.origin.flow;
         const node = target.origin.node;
         lundef(procs[node.procID], _ =>
           lundef(_.outputFlows[flow], _ =>
             lundef(_[target.id], _ =>
               _.nameSources.forEach(sourceId =>
-                lundef(node.inputs[sourceId], source =>
+                lundef(getSymbolSourceOf(dataFlow, { target: { type: "proc", node }, id: sourceId }, symbolSinkNorm), source =>
                   lundef(getSymbol(source), s1 =>
                     lundef(getSymbol(target), s2 =>
-                      transfers.push({ source: s1, target: s2, transferType: false, transferNames: true }))))))));
-
+                      transfers.push({ source: s1, target: s2 }))))))));
+      }
         break;
       default: return errorUnreachable();
     }
@@ -192,12 +184,10 @@ export function getSymbolMapper<TType>(g: Graph<TType>, procs: ProcDefinitions<T
     redo = false;
     for (const transfer of transfers) {
       // names
-      if (transfer.transferNames) {
-        for (const name of transfer.source.names) {
-          if (!transfer.target.names.includes(name)) {
-            transfer.target.names.push(name);
-            redo = true;
-          }
+      for (const name of transfer.source.names) {
+        if (!transfer.target.names.includes(name)) {
+          transfer.target.names.push(name);
+          redo = true;
         }
       }
     }
@@ -239,16 +229,15 @@ export function nodeSink2Sources<TType>(x: ControlSink<TType>, controlSources: R
   }
 }
 
-export function getSymbolSourceType<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): TType | undefined {
+export function getSymbolSourceType<TType>(inputs: GraphInputFlow<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): TType | undefined {
   const dsrc = src.origin;
   switch (dsrc.type) {
     case "entry": {
-      const x = graph.inputs[src.id];
+      const x = inputs[src.id];
       return x && x.type;
     }
     case "phi": {
-      const x = dsrc.node.merge[src.id];
-      return x && x.type;
+      return dsrc.node.merge[src.id];
     }
     case "proc": {
       const proc = procs[dsrc.node.procID];
@@ -259,17 +248,15 @@ export function getSymbolSourceType<TType>(graph: Graph<TType>, procs: ProcDefin
     default: return errorUnreachable();
   }
 }
-export function getSymbolSinkType<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): TType | undefined {
+export function getSymbolSinkType<TType>(outputFlows: GraphOutputFlows<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): TType | undefined {
   const controlSink = symbolSink.target;
   switch (controlSink.type) {
     case "output": {
-      const flow = graph.outputFlows[controlSink.flow];
-      const x = flow && flow[symbolSink.id];
-      return x && x.type;
+      const flow = outputFlows[controlSink.flow];
+      return flow && flow[symbolSink.id];
     }
     case "phi": {
-      const x = controlSink.node.merge[symbolSink.id];
-      return x && x.type;
+      return controlSink.node.merge[symbolSink.id];
     }
     case "proc": {
       const proc = procs[controlSink.node.procID];
@@ -279,11 +266,11 @@ export function getSymbolSinkType<TType>(graph: Graph<TType>, procs: ProcDefinit
     default: return errorUnreachable();
   }
 }
-export function getSymbolSourceKnownNames<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): ReadonlyArray<string> {
+export function getSymbolSourceKnownNames<TType>(inputs: GraphInputFlow<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>): ReadonlyArray<string> {
   const dsrc = src.origin;
   switch (dsrc.type) {
     case "entry": {
-      const x = graph.inputs[src.id];
+      const x = inputs[src.id];
       return x && x.names || [];
     }
     case "phi": {
@@ -299,7 +286,7 @@ export function getSymbolSourceKnownNames<TType>(graph: Graph<TType>, procs: Pro
     default: return errorUnreachable();
   }
 }
-export function getSymbolSinkKnownNames<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): ReadonlyArray<string> {
+export function getSymbolSinkKnownNames<TType>(procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): ReadonlyArray<string> {
   const controlSink = symbolSink.target;
   switch (controlSink.type) {
     case "output":
@@ -315,20 +302,12 @@ export function getSymbolSinkKnownNames<TType>(graph: Graph<TType>, procs: ProcD
   }
 }
 
-export function getSymbolSourceOf<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, symbolSink: SymbolSink<TType>): SymbolSource<TType> | undefined {
-  const controlSink = symbolSink.target;
-  switch (controlSink.type) {
-    case "output":
-      return ((graph.outputFlows[controlSink.flow] || <{ [id: string]: { source: undefined } }>{})[symbolSink.id] || { source: undefined }).source;
-    case "phi":
-      return (controlSink.node.merge[symbolSink.id] || { sources: <{ [id: string]: undefined }>{} }).sources[controlSink.flow];
-    case "proc":
-      return controlSink.node.inputs[symbolSink.id];
-  }
+export function getSymbolSourceOf<TType>(dataFlow: ReadonlyArray<DataFlow<TType>>, symbolSink: SymbolSink<TType>, symbolSinkNorm: (a: SymbolSink<TType>) => SymbolSink<TType> | undefined): SymbolSource<TType> | undefined {
+  return dataFlow.filter(x => symbolSinkNorm(x.target) === symbolSinkNorm(symbolSink) && symbolSinkNorm(symbolSink) !== undefined).map(x => x.source)[0];
 }
 
 export function getMarket<TType>(
-  g: Graph<TType>,
+  dataFlow: ReadonlyArray<DataFlow<TType>>,
   flows: ReadonlyArray<ControlFlow<TType>>,
   controlSources: ReadonlyArray<ControlSource<TType>>,
   controlSinks: ReadonlyArray<ControlSink<TType>>,
@@ -394,27 +373,10 @@ export function getMarket<TType>(
   // mark required symbols
   const demand = new Map<ControlSink<TType>, Set<SymbolInstance<TType>>>(controlSinks.map<[ControlSink<TType>, Set<SymbolInstance<TType>>]>(x => [x, new Set<SymbolInstance<TType>>()]));
   const updated = new Set<ControlSink<TType>>();
-  for (const ds of controlSinks) {
-    const markRequired = (sym: SymbolInstance<TType> | undefined) => {
-      if (sym !== undefined) {
-        (demand.get(ds) || errorUnreachable()).add(sym);
-        updated.add(ds);
-      }
-    };
-    switch (ds.type) {
-      case "output":
-        for (const sym of Object.values(g.outputFlows[ds.flow] || {}).map(x => x && x.source).map(getSymbol))
-          markRequired(sym);
-        break;
-      case "phi":
-        for (const sym of Object.values(ds.node.merge).map(x => x && x.sources[ds.flow]).map(getSymbol))
-          markRequired(sym); // TODO: only if outgoing symbol is required
-        break;
-      case "proc":
-        for (const sym of Object.values(ds.node.inputs).map(getSymbol))
-          markRequired(sym);
-        break;
-    }
+  for (const ds of dataFlow) {
+    const controlSink = ds.target.target;
+    (demand.get(controlSink) || errorUnreachable()).add(getSymbol(ds.source) || errorUnreachable()); // TODO: for phi, only if outgoing symbol is required?
+    updated.add(controlSink);
   }
 
 

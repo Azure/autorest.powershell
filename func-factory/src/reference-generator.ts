@@ -55,12 +55,9 @@ export function generateTS<TType>(ga: GraphContext<TType>, procs: ProcImplementa
     if (sink.type === "phi") {
       const source = ga.nodeSink2Sources(sink)[0];
       const merge = sink.node.merge;
-      for (const entry of Object.entries(merge)) {
-        const val = entry[1];
-        if (val !== undefined) {
-          const outSym = [...ga.getSupply(source)].find(s => s.source.origin === source && s.source.id === entry[0]) || errorUnreachable();
-          symbols.push({ id: entry[0], type: outSym.type, symbol: new Set<SymbolInstance<TType>>(Object.values(val.sources).map(getSymbol).filter(x => x) as any).add(outSym) });
-        }
+      for (const id of Object.keys(merge)) {
+        const outSym = [...ga.getSupply(source)].find(s => s.source.origin === source && s.source.id === id) || errorUnreachable();
+        symbols.push({ id: id, type: outSym.type, symbol: new Set<SymbolInstance<TType>>(sink.node.flows.map(flow => ga.edgeSymbolSink2Source({ id, target: { type: "phi", flow, node: sink.node } })).map(getSymbol).filter(x => x) as any).add(outSym) });
       }
     }
     for (const symbol of ga.getDemand(sink)) {
@@ -119,7 +116,8 @@ export function generateTS<TType>(ga: GraphContext<TType>, procs: ProcImplementa
       result.push(`  const ${sig.id} = ${asyncModifier}(${sig.symbols.map(x => `${x.id}: ${typeToTS(x.type)}`).join(', ')}): ${asyncVoid} => /**/;`);
       continue;
     }
-    const argsInline1: { [id: string]: string } = objMap(x => n.inputs[x] === undefined ? `/* ${x} */` : getSymbolId(lundef(n.inputs[x], x => lundef(ga.getSymbolFromSource(x), x => [x])) || []), proc.inputs);
+    const getInput = (arg: string): SymbolSource<TType> | undefined => ga.edgeSymbolSink2Source({ id: arg, target: { type: "proc", node: n } });
+    const argsInline1: { [id: string]: string } = objMap(x => getInput(x) === undefined ? `/* ${x} */` : getSymbolId(lundef(getInput(x), x => lundef(ga.getSymbolFromSource(x), x => [x])) || []), proc.inputs);
     const argsInline2: { [id: string]: (args: { [id: string]: string }) => string } = {};
     for (const x of Object.entries(proc.outputFlows)) {
       const v = x[1]; if (v === undefined) continue;
