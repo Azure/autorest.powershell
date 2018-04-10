@@ -44,7 +44,7 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
     }, true);
   }
   @test "addition bad procID"() {
-    const addA: NodeProc<MyTType> = { procID: "asd" };
+    const addA: NodeProc<MyTType> = { procID: "asd" /*bad*/ };
     compileGraph({
       controlFlow: [
         { source: { type: "entry" }, target: { type: "proc", node: addA } },
@@ -139,7 +139,7 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
       outputFlows: { result: { res: typeNumber } }
     }, false);
   }
-  @test "addition bad proc input dst"() {
+  @test "addition bad data source"() {
     const addA: NodeProc<MyTType> = { procID: "add" };
     compileGraph({
       controlFlow: [
@@ -147,7 +147,7 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
       ],
       dataFlow: [
-        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "proc", node: addA }, id: "aa" /*bad dst*/ } },
+        { source: { origin: { type: "entry" }, id: "aa" /*bad*/ }, target: { target: { type: "proc", node: addA }, id: "a" } },
         { source: { origin: { type: "entry" }, id: "b" }, target: { target: { type: "proc", node: addA }, id: "b" } },
         { source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }, target: { target: { type: "output", flow: "result" }, id: "res" } }
       ],
@@ -155,7 +155,7 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
       outputFlows: { result: { res: typeNumber } }
     }, false);
   }
-  @test "addition bad symbol source"() {
+  @test "addition bad data sink"() {
     const addA: NodeProc<MyTType> = { procID: "add" };
     compileGraph({
       controlFlow: [
@@ -163,9 +163,41 @@ function compileGraph(graph: Graph<MyTType>, expectCompiles: boolean): void {
         { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
       ],
       dataFlow: [
-        { source: { origin: { type: "entry" }, id: "aa" /*bad src*/ }, target: { target: { type: "proc", node: addA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "proc", node: addA }, id: "aa" /*bad*/ } },
         { source: { origin: { type: "entry" }, id: "b" }, target: { target: { type: "proc", node: addA }, id: "b" } },
         { source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }, target: { target: { type: "output", flow: "result" }, id: "res" } }
+      ],
+      inputs: { a: { names: ["a"], type: typeNumber }, b: { names: ["b"], type: typeNumber } },
+      outputFlows: { result: { res: typeNumber } }
+    }, false);
+  }
+  @test "addition bad data source CF"() {
+    const addA: NodeProc<MyTType> = { procID: "add" };
+    compileGraph({
+      controlFlow: [
+        { source: { type: "entry" }, target: { type: "proc", node: addA } },
+        { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
+      ],
+      dataFlow: [
+        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "proc", node: addA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "b" }, target: { target: { type: "proc", node: addA }, id: "b" } },
+        { source: { origin: { type: "proc", node: addA, flow: "resalt" /*bad*/ }, id: "res" }, target: { target: { type: "output", flow: "result" }, id: "res" } }
+      ],
+      inputs: { a: { names: ["a"], type: typeNumber }, b: { names: ["b"], type: typeNumber } },
+      outputFlows: { result: { res: typeNumber } }
+    }, false);
+  }
+  @test "addition bad data sink CF"() {
+    const addA: NodeProc<MyTType> = { procID: "add" };
+    compileGraph({
+      controlFlow: [
+        { source: { type: "entry" }, target: { type: "proc", node: addA } },
+        { source: { type: "proc", node: addA, flow: "result" }, target: { type: "output", flow: "result" } }
+      ],
+      dataFlow: [
+        { source: { origin: { type: "entry" }, id: "a" }, target: { target: { type: "proc", node: addA }, id: "a" } },
+        { source: { origin: { type: "entry" }, id: "b" }, target: { target: { type: "proc", node: addA }, id: "b" } },
+        { source: { origin: { type: "proc", node: addA, flow: "result" }, id: "res" }, target: { target: { type: "output", flow: "resalt" /*bad*/ }, id: "res" } }
       ],
       inputs: { a: { names: ["a"], type: typeNumber }, b: { names: ["b"], type: typeNumber } },
       outputFlows: { result: { res: typeNumber } }
