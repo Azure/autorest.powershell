@@ -30,7 +30,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
     for (const [propertyName, property] of Object.entries(schema.properties)) {
       parameters[propertyName] = { schema: property.schema, required: property.details.required };
     }
-    const hlOp = new IntrinsicOperation(`<LL>${name}_ctor`, schema.deprecated, true, {
+    const hlOp = new IntrinsicOperation(`<INTR>${name}_ctor`, schema.deprecated, true, {
       description: `Creates a new '${name}'`,
       parameters: parameters,
       responses: {
@@ -41,7 +41,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
 
     // getters
     for (const [propertyName, property] of Object.entries(schema.properties)) {
-      const hlOp = new IntrinsicOperation(`<LL>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, true, {
+      const hlOp = new IntrinsicOperation(`<INTR>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, true, {
         description: `Gets '${propertyName}' from '${name}'`,
         parameters: {
           obj: { schema: schema, required: true }
@@ -56,7 +56,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
 
     // setters
     for (const [propertyName, property] of Object.entries(schema.properties)) {
-      const hlOp = new IntrinsicOperation(`<LL>${name}_set_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, false, {
+      const hlOp = new IntrinsicOperation(`<INTR>${name}_set_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, false, {
         description: `Sets '${propertyName}' from '${name}'`,
         parameters: {
           obj: { schema: schema, required: true },
