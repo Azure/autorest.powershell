@@ -357,19 +357,19 @@ export class GraphContext<TType> {
   public synthesize(maxPopulationSize: number | undefined = undefined): GraphContext<TType> | undefined {
     let population: Array<GraphContext<TType>> = [this];
     while (true) {
-      const c = population.pop();
+      const c = population.shift();
       if (c === undefined) return undefined;
       const nextGeneration = c.synthesizeNextGeneration();
 
-      const solutions = nextGeneration.find(x => x.score === 1);
-      if (solutions !== undefined) return solutions;
+      const solution = nextGeneration.find(x => x.score === 1);
+      if (solution !== undefined) return solution;
 
       population.push(...nextGeneration.filter(x => !x.canGenerateWorkingCode));
 
-      if (maxPopulationSize !== undefined) population = population.slice(-maxPopulationSize);
       const nsize = (ga: GraphContext<TType>) => ga.nodesPhi.length + ga.nodesProc.length;
       const nscore = (ga: GraphContext<TType>) => ga.score;
-      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(a) - nscore(b) : nsize(b) - nsize(a)).slice(0, maxPopulationSize);
+      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(b) - nscore(a) : nsize(a) - nsize(b));
+      if (maxPopulationSize !== undefined) population = population.slice(0, maxPopulationSize);
     }
   }
 }
