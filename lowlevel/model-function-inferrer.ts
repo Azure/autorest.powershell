@@ -2,7 +2,7 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, HighLevelOperation, Schema, JsonType } from "#remodeler/code-model";
+import { Model, isHttpOperation, IntrinsicOperation, Schema, JsonType } from "#remodeler/code-model";
 import { pascalCase } from "#common/text-manipulation";
 import { Dictionary } from "#remodeler/common";
 
@@ -19,7 +19,7 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-export function* getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation> {
+export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation> {
   const name = schema.details.name;
 
   // potentially an object?
@@ -30,7 +30,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation
     for (const [propertyName, property] of Object.entries(schema.properties)) {
       parameters[propertyName] = { schema: property.schema, required: property.details.required };
     }
-    const hlOp = new HighLevelOperation(`<LL>${name}_ctor`, schema.deprecated, {
+    const hlOp = new IntrinsicOperation(`<INTR>${name}_ctor`, schema.deprecated, true, {
       description: `Creates a new '${name}'`,
       parameters: parameters,
       responses: {
@@ -41,7 +41,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation
 
     // getters
     for (const [propertyName, property] of Object.entries(schema.properties)) {
-      const hlOp = new HighLevelOperation(`<LL>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, {
+      const hlOp = new IntrinsicOperation(`<INTR>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, true, {
         description: `Gets '${propertyName}' from '${name}'`,
         parameters: {
           obj: { schema: schema, required: true }
@@ -49,6 +49,21 @@ export function* getSchemaFunctions(schema: Schema): Iterable<HighLevelOperation
         responses: {
           result: { result: property.schema },
           undefined: {}
+        }
+      });
+      yield hlOp;
+    }
+
+    // setters
+    for (const [propertyName, property] of Object.entries(schema.properties)) {
+      const hlOp = new IntrinsicOperation(`<INTR>${name}_set_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, false, {
+        description: `Sets '${propertyName}' from '${name}'`,
+        parameters: {
+          obj: { schema: schema, required: true },
+          prop: { schema: property.schema, required: true }
+        },
+        responses: {
+          result: {}
         }
       });
       yield hlOp;

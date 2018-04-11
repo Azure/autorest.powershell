@@ -13,7 +13,8 @@ import {
   nodeSink2Sinks,
   nodeSink2Sources,
   getSymbolSinkType,
-  getSymbolSourceType
+  getSymbolSourceType,
+  getSymbolSinkKnownNames
 } from "./graph-analysis";
 import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from "./graph-validation";
 import { objMap, setExcept, lundef, clone, objReplace, tsc, Obj, trycatch, error, deepEquals, errorUnreachable } from "./helpers";
@@ -102,11 +103,11 @@ export class GraphContext<TType> {
   public get score(): number {
     return this._score || (this._score = (() => {
       if (!this.canBeFixedWithSynthesis) return 0;
-      if (this.canGenerateWorkingCode && !this.matchesSamples()) return 0;
+      if (this.canGenerateWorkingCode) return this.matchesSamples() ? 1 : 0;
       return Math.pow(0.75, this.unconnectedControlSources.length)
         * Math.pow(0.9, this.unconnectedControlSinks.length)
         * Math.pow(0.9, Math.abs(this.unconnectedSymbolSources.length - this.unconnectedSymbolSinks.length))
-        * Math.pow(0.95, this.unconnectedSymbolSinks.length + this.unconnectedSymbolSinks.length)
+        * Math.pow(0.95, this.unconnectedSymbolSources.length + this.unconnectedSymbolSinks.length)
         * Math.pow(0.95, this.problems.length);
     })());
   }
@@ -296,11 +297,25 @@ export class GraphContext<TType> {
     });
   }
 
+  /**
+   * Calculates proximity score between two sets of names (associated with a symbol each).
+   * Higher score means higher proximity and hence higher likelihood that the associated symbols are related - and could be plumbed together.
+   * 
+   * NOTE: This can be way more sophisticated, e.g. case insensitivity, partial score for substring match, etc. 
+   */
+  private nameProximity(names1: ReadonlyArray<string>, names2: ReadonlyArray<string>): number {
+    let result = 0;
+    for (const name of names1)
+      if (names2.includes(name))
+        result++;
+    return result;
+  }
+
   // SYNTHESIS
   public synthesizeNextGeneration(): Array<GraphContext<TType>> {
-    if (this.canGenerateWorkingCode) return [];
+    // if (this.canGenerateWorkingCode) return [];
     if (this.unconnectedSymbolSinks.length === 0 && this.unconnectedControlSources.length === 0) return [];
-    // THEN: population of changes (grade based on name stuff)
+    // TODO: grade based on name stuff
 
     // 1) connect ctrl flow
     if (this.unconnectedControlSources.length > 0) {
@@ -312,7 +327,11 @@ export class GraphContext<TType> {
     const symSinkType = this.getSymbolSinkType(symSink.symSink) || errorUnreachable();
     const available = this.getSupply(symSink.ctrlSrc || errorUnreachable());
     const sym = [...available].filter(x => this.typeAssignableTo(x.type, symSinkType));
-    const resultConnect = sym.map(x => this.connectDataFlow(x.source, symSink.symSink));
+    const resultConnect = sym
+      .sort((x, y) =>
+        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(y.source), _ => _.names) || []) -
+        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(x.source), _ => _.names) || []))
+      .map(x => this.connectDataFlow(x.source, symSink.symSink));
     // 3) insert operation 
     const edge = this.controlFlow.find(x => x.target === symSink.symSink.target) || errorUnreachable();
     const ga = this.removeControlFlow(edge);

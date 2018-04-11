@@ -28,7 +28,7 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
     }
 
     const hlname = `<HL>${name.noun}_${name.verb}`;
-    const hlOp = new HighLevelOperation(hlname, operation.deprecated, {
+    const hlOp = new HighLevelOperation(hlname, operation.deprecated, false, {
       description: operation.description,
       summary: operation.summary,
       parameters: parameters,

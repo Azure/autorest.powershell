@@ -23,26 +23,36 @@ function makePrimitiveProperty(name: string, required: boolean, type: JsonType, 
       }
     });
 
-    const hlOps = [...getSchemaFunctions(schema)];
+    const intrinsicOps = [...getSchemaFunctions(schema)];
 
-    const hlOpCtor = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpCtor.parameters).length, 2); // = #properties
-    assert.strictEqual(Object.values(hlOpCtor.responses).length, 1);
-    assert.strictEqual(hlOpCtor.deprecated, false);
-    assert.strictEqual(hlOpCtor.parameters.size.required, true);
-    assert.strictEqual(hlOpCtor.parameters.shape.required, false);
+    const intrinsicOpCtor = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpCtor.parameters).length, 2); // = #properties
+    assert.strictEqual(Object.values(intrinsicOpCtor.responses).length, 1);
+    assert.strictEqual(intrinsicOpCtor.deprecated, false);
+    assert.strictEqual(intrinsicOpCtor.parameters.size.required, true);
+    assert.strictEqual(intrinsicOpCtor.parameters.shape.required, false);
 
-    const hlOpGetSize = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetSize.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetSize.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetSize.deprecated, false);
+    const intrinsicOpGetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetSize.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetSize.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetSize.deprecated, false);
 
-    const hlOpGetShape = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetShape.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetShape.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetShape.deprecated, false);
+    const intrinsicOpGetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetShape.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetShape.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetShape.deprecated, false);
 
-    assert.strictEqual(hlOps.length, 0);
+    const intrinsicOpSetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetSize.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetSize.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetSize.deprecated, false);
+
+    const intrinsicOpSetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetShape.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetShape.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetShape.deprecated, false);
+
+    assert.strictEqual(intrinsicOps.length, 0);
   }
 
   @test "as expected deprecated type"() {
@@ -55,26 +65,36 @@ function makePrimitiveProperty(name: string, required: boolean, type: JsonType, 
       }
     });
 
-    const hlOps = [...getSchemaFunctions(schema)];
+    const intrinsicOps = [...getSchemaFunctions(schema)];
 
-    const hlOpCtor = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpCtor.parameters).length, 2); // = #properties
-    assert.strictEqual(Object.values(hlOpCtor.responses).length, 1);
-    assert.strictEqual(hlOpCtor.deprecated, true);
-    assert.strictEqual(hlOpCtor.parameters.size.required, true);
-    assert.strictEqual(hlOpCtor.parameters.shape.required, false);
+    const intrinsicOpCtor = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpCtor.parameters).length, 2); // = #properties
+    assert.strictEqual(Object.values(intrinsicOpCtor.responses).length, 1);
+    assert.strictEqual(intrinsicOpCtor.deprecated, true);
+    assert.strictEqual(intrinsicOpCtor.parameters.size.required, true);
+    assert.strictEqual(intrinsicOpCtor.parameters.shape.required, false);
 
-    const hlOpGetSize = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetSize.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetSize.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetSize.deprecated, true);
+    const intrinsicOpGetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetSize.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetSize.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetSize.deprecated, true);
 
-    const hlOpGetShape = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetShape.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetShape.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetShape.deprecated, true);
+    const intrinsicOpGetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetShape.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetShape.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetShape.deprecated, true);
 
-    assert.strictEqual(hlOps.length, 0);
+    const intrinsicOpSetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetSize.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetSize.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetSize.deprecated, true);
+
+    const intrinsicOpSetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetShape.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetShape.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetShape.deprecated, true);
+
+    assert.strictEqual(intrinsicOps.length, 0);
   }
 
   @test "as expected deprecated property"() {
@@ -87,25 +107,35 @@ function makePrimitiveProperty(name: string, required: boolean, type: JsonType, 
       }
     });
 
-    const hlOps = [...getSchemaFunctions(schema)];
+    const intrinsicOps = [...getSchemaFunctions(schema)];
 
-    const hlOpCtor = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpCtor.parameters).length, 2); // = #properties
-    assert.strictEqual(Object.values(hlOpCtor.responses).length, 1);
-    assert.strictEqual(hlOpCtor.deprecated, false);
-    assert.strictEqual(hlOpCtor.parameters.size.required, true);
-    assert.strictEqual(hlOpCtor.parameters.shape.required, false);
+    const intrinsicOpCtor = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpCtor.parameters).length, 2); // = #properties
+    assert.strictEqual(Object.values(intrinsicOpCtor.responses).length, 1);
+    assert.strictEqual(intrinsicOpCtor.deprecated, false);
+    assert.strictEqual(intrinsicOpCtor.parameters.size.required, true);
+    assert.strictEqual(intrinsicOpCtor.parameters.shape.required, false);
 
-    const hlOpGetSize = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetSize.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetSize.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetSize.deprecated, false);
+    const intrinsicOpGetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetSize.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetSize.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetSize.deprecated, false);
 
-    const hlOpGetShape = hlOps.shift() || fail("more HL ops expected");
-    assert.strictEqual(Object.values(hlOpGetShape.parameters).length, 1);
-    assert.strictEqual(Object.values(hlOpGetShape.responses).length, 2); // success/failure
-    assert.strictEqual(hlOpGetShape.deprecated, true);
+    const intrinsicOpGetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpGetShape.parameters).length, 1);
+    assert.strictEqual(Object.values(intrinsicOpGetShape.responses).length, 2); // success/failure
+    assert.strictEqual(intrinsicOpGetShape.deprecated, true);
 
-    assert.strictEqual(hlOps.length, 0);
+    const intrinsicOpSetSize = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetSize.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetSize.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetSize.deprecated, false);
+
+    const intrinsicOpSetShape = intrinsicOps.shift() || fail("more intrinsic ops expected");
+    assert.strictEqual(Object.values(intrinsicOpSetShape.parameters).length, 2);
+    assert.strictEqual(Object.values(intrinsicOpSetShape.responses).length, 1);
+    assert.strictEqual(intrinsicOpSetShape.deprecated, true);
+
+    assert.strictEqual(intrinsicOps.length, 0);
   }
 }
