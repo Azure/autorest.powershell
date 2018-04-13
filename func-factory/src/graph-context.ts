@@ -106,6 +106,7 @@ export class GraphContext<TType> {
       if (this.canGenerateWorkingCode) return this.matchesSamples() ? 1 : 0;
       return Math.pow(0.75, this.unconnectedControlSources.length)
         * Math.pow(0.9, this.unconnectedControlSinks.length)
+        * (1 - 0.1 * Math.pow(0.9, this.dataFlow.map(x => this.nameProximity(getSymbolSinkKnownNames(this.procs, x.target), lundef(this.getSymbolFromSource(x.source), _ => _.names) || [])).reduce((a, b) => a + b, 0)))
         * Math.pow(0.9, Math.abs(this.unconnectedSymbolSources.length - this.unconnectedSymbolSinks.length))
         * Math.pow(0.95, this.unconnectedSymbolSources.length + this.unconnectedSymbolSinks.length)
         * Math.pow(0.95, this.problems.length);
@@ -327,11 +328,7 @@ export class GraphContext<TType> {
     const symSinkType = this.getSymbolSinkType(symSink.symSink) || errorUnreachable();
     const available = this.getSupply(symSink.ctrlSrc || errorUnreachable());
     const sym = [...available].filter(x => this.typeAssignableTo(x.type, symSinkType));
-    const resultConnect = sym
-      .sort((x, y) =>
-        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(y.source), _ => _.names) || []) -
-        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(x.source), _ => _.names) || []))
-      .map(x => this.connectDataFlow(x.source, symSink.symSink));
+    const resultConnect = sym.map(x => this.connectDataFlow(x.source, symSink.symSink));
     // 3) insert operation 
     const edge = this.controlFlow.find(x => x.target === symSink.symSink.target) || errorUnreachable();
     const ga = this.removeControlFlow(edge);

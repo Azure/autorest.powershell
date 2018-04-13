@@ -133,7 +133,6 @@ import { ProcImplementation } from "../src/reference-generator";
       }
     };
 
-    debugger;
     let ga = new GraphContext(g, typeAssignableTo, x => x, getBuiltInDefs(), [
       { impl: getBuiltInImpls(), input: { a: 3, b: 4, c: 5, d: 6 }, output: { sum: 5 }, outputFlow: "result" },
       { impl: getBuiltInImpls(), input: { a: 4, b: 5, c: 6, d: 7 }, output: { sum: 6 }, outputFlow: "result" }
@@ -187,12 +186,93 @@ import { ProcImplementation } from "../src/reference-generator";
   }
 
   @test "two calls, one field read, one field write"() {
-    // supposed to infer the following:
+    // supposed to infer the following (function call contains actual parameter, not formal parameter)
+    //
     // x = f(a: string, b: string, n: string);
     // y = g(a: string, c: string, x.n: string);
     // x.y = y;
     // return x;
 
-    // TODO
+    const fImpl: ProcImplementation = {
+      defInline: (args, cb) => cb.result({
+        res: `(${args.a} === "mySubscription" as string && ${args.b} === "someRG" as string && ${args.n} === "fred cowbell" as string ? { serverName: "server 1" } : {})`
+      })
+    };
+    const fDef: Proc<MyTType> = {
+      pure: false,
+      inputs: {
+        a: { names: ["subscription"], type: typeString },
+        b: { names: ["resourceGroup"], type: typeString },
+        n: { names: ["name"], type: typeString }
+      },
+      outputFlows: {
+        result: { res: { names: ["resource"], nameSources: [], type: "SqlServer" } }
+      }
+    };
+    const gImpl: ProcImplementation = {
+      defInline: (args, cb) => cb.result({
+        res: `(${args.a} === "mySubscription" as string && ${args.n} === "server 1" as string ? { color: "red", size: ${args.c} } : {})`
+      })
+    };
+    const gDef: Proc<MyTType> = {
+      pure: false,
+      inputs: {
+        a: { names: ["subscription"], type: typeString },
+        c: { names: ["size"], type: typeString },
+        n: { names: ["serverName"], type: typeString }
+      },
+      outputFlows: {
+        result: { res: { names: ["details"], nameSources: [], type: "SqlServerDetails" } }
+      }
+    };
+    const getServerNameImpl: ProcImplementation = { defInline: (args, cb) => cb.result({ res: `${args.a}.serverName` }) };
+    const getServerNameDef: Proc<MyTType> = {
+      pure: true,
+      inputs: {
+        a: { names: ["server"], type: "SqlServer" }
+      },
+      outputFlows: {
+        result: { res: { names: ["serverName"], nameSources: [], type: typeString } }
+      }
+    };
+    const setDetailsImpl: ProcImplementation = { defInline: (args, cb) => cb.result({ res: `(() => { ${args.a}.details = ${args.b}; })()` }) };
+    const setDetailsDef: Proc<MyTType> = {
+      pure: false,
+      inputs: {
+        a: { names: ["server"], type: "SqlServer" },
+        b: { names: ["details"], type: "SqlServerDetails" }
+      },
+      outputFlows: { result: {} }
+    };
+
+    const nodeF = { procID: "f" };
+    const nodeGetServerName = { procID: "getServerName" };
+    const nodeG = { procID: "g" };
+    const nodeSetDetails = { procID: "setDetails" };
+
+    const g: Graph<MyTType> = {
+      controlFlow: [  // user hint: there must be a call to "f", "g" and "setDetails" and "getServerName"
+        { source: { type: "proc", node: nodeF, flow: "result" }, target: { type: "proc", node: nodeGetServerName } },
+        { source: { type: "proc", node: nodeGetServerName, flow: "result" }, target: { type: "proc", node: nodeG } },
+        { source: { type: "proc", node: nodeG, flow: "result" }, target: { type: "proc", node: nodeSetDetails } },
+        { source: { type: "proc", node: nodeSetDetails, flow: "result" }, target: { type: "output", flow: "result" } }
+      ],
+      dataFlow: [],
+      inputs: {
+        a: { type: typeString, names: ["subscription"] },
+        b: { type: typeString, names: ["resourceGroup"] },
+        c: { type: typeString, names: ["size"] },
+        n: { type: typeString, names: ["name"] }
+      },
+      outputFlows: {
+        result: { res: "SqlServer" }
+      }
+    };
+    let ga = new GraphContext(g, typeAssignableTo, x => x.startsWith("Sql") ? "any" : x, { "f": fDef, "g": gDef, "getServerName": getServerNameDef, "setDetails": setDetailsDef }, [
+      {
+        impl: { "f": fImpl, "g": gImpl, "getServerName": getServerNameImpl, "setDetails": setDetailsImpl },
+        input: { a: "mySubscription", b: "someRG", c: "large", n: "fred cowbell" }, output: { res: { serverName: "server 1", details: { color: "red", size: "large" } } }, outputFlow: "result"
+      }
+    ]).synthesize() || error("synthesis failed to produce working code");
   }
 }
