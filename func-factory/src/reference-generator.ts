@@ -11,7 +11,7 @@ export interface ProcImplementation {
 }
 export type ProcImplementations = { readonly [id: string]: ProcImplementation | undefined };
 
-export function generateTS2<TType>(ga: GraphContext<TType>, procs: ProcImplementations, typeToTS: (type: TType) => string, flavor: GenerationFlavor = GenerationFlavor.ContInlineProc): string {
+export function generateTS<TType>(ga: GraphContext<TType>, procs: ProcImplementations, typeToTS: (type: TType) => string, flavor: GenerationFlavor = GenerationFlavor.ContInlineProc): string {
 
   const getSymbol = (x: SymbolSource<TType> | undefined) => x && ga.getSymbolFromSource(x);
   const controlSinks = ga.controlSinks;
@@ -158,7 +158,7 @@ export function generateTS2<TType>(ga: GraphContext<TType>, procs: ProcImplement
 }
 
 // experimental (mutable state rather than parameters)
-export function generateTS<TType>(ga: GraphContext<TType>, procs: ProcImplementations, typeToTS: (type: TType) => string, flavor: GenerationFlavor = GenerationFlavor.ContInlineProc): string {
+export function generateTS2<TType>(ga: GraphContext<TType>, procs: ProcImplementations, typeToTS: (type: TType) => string, flavor: GenerationFlavor = GenerationFlavor.ContInlineProc): string {
 
   const getSymbol = (x: SymbolSource<TType> | undefined) => x && ga.getSymbolFromSource(x);
   const controlSinks = ga.controlSinks;

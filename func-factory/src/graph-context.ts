@@ -361,6 +361,9 @@ export class GraphContext<TType> {
       const solution = nextGeneration.find(x => x.score === 1);
       if (solution !== undefined) return solution;
 
+      // // dump working code with imperfect score (helpful for seeing which direction the algorithm explores):
+      // for (const x of nextGeneration.filter(x => x.canGenerateWorkingCode).map(x => x.compile(x.samples[0].impl)))
+      //   console.log(x);
       population.push(...nextGeneration.filter(x => !x.canGenerateWorkingCode));
 
       const nsize = (ga: GraphContext<TType>) => ga.nodesPhi.length + ga.nodesProc.length;

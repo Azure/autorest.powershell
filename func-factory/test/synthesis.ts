@@ -235,7 +235,7 @@ import { ProcImplementation } from "../src/reference-generator";
         result: { res: { names: ["serverName"], nameSources: [], type: typeString } }
       }
     };
-    const setDetailsImpl: ProcImplementation = { defInline: (args, cb) => cb.result({ res: `(() => { ${args.a}.details = ${args.b}; })()` }) };
+    const setDetailsImpl: ProcImplementation = { defInline: (args, cb) => `(() => { ${args.a}.details = ${args.b}; ${cb.result({})} })()` };
     const setDetailsDef: Proc<MyTType> = {
       pure: false,
       inputs: {
