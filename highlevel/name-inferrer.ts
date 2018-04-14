@@ -14,7 +14,7 @@ export async function process(service: Host) {
 async function inferSignatures(model: Model, service: Host): Promise<Model> {
   for (const operation of Object.values(model.components.operations).filter(isHttpOperation)) {
     const names = getCommandName(operation.details.name, service.Message);
-    const name = names[0]; // pick first candidate!?
+    const name = names[0]; // TODO: pick first candidate!?
     const parameters = new Dictionary<{ schema: Schema, required: boolean }>();
     const responses = new Dictionary<Dictionary<Schema>>();
     for (const parameter of operation.parameters) {
@@ -24,6 +24,7 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
       };
     }
     for (const [responseCode, response] of Object.entries(operation.responses)) {
+      // TODO: after refactoring 'operation.responses', revisit this
       responses[responseCode] = { result: Object.values(response.content)[0].schema || (() => { throw "no schema"; })() }; // TODO: derive the actually desired return type!
     }
 

@@ -106,6 +106,7 @@ export class GraphContext<TType> {
       if (this.canGenerateWorkingCode) return this.matchesSamples() ? 1 : 0;
       return Math.pow(0.75, this.unconnectedControlSources.length)
         * Math.pow(0.9, this.unconnectedControlSinks.length)
+        * (1 - 0.1 * Math.pow(0.9, this.dataFlow.map(x => this.nameProximity(getSymbolSinkKnownNames(this.procs, x.target), lundef(this.getSymbolFromSource(x.source), _ => _.names) || [])).reduce((a, b) => a + b, 0)))
         * Math.pow(0.9, Math.abs(this.unconnectedSymbolSources.length - this.unconnectedSymbolSinks.length))
         * Math.pow(0.95, this.unconnectedSymbolSources.length + this.unconnectedSymbolSinks.length)
         * Math.pow(0.95, this.problems.length);
@@ -327,11 +328,7 @@ export class GraphContext<TType> {
     const symSinkType = this.getSymbolSinkType(symSink.symSink) || errorUnreachable();
     const available = this.getSupply(symSink.ctrlSrc || errorUnreachable());
     const sym = [...available].filter(x => this.typeAssignableTo(x.type, symSinkType));
-    const resultConnect = sym
-      .sort((x, y) =>
-        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(y.source), _ => _.names) || []) -
-        this.nameProximity(getSymbolSinkKnownNames(this.procs, symSink.symSink), lundef(this.getSymbolFromSource(x.source), _ => _.names) || []))
-      .map(x => this.connectDataFlow(x.source, symSink.symSink));
+    const resultConnect = sym.map(x => this.connectDataFlow(x.source, symSink.symSink));
     // 3) insert operation 
     const edge = this.controlFlow.find(x => x.target === symSink.symSink.target) || errorUnreachable();
     const ga = this.removeControlFlow(edge);
@@ -357,19 +354,22 @@ export class GraphContext<TType> {
   public synthesize(maxPopulationSize: number | undefined = undefined): GraphContext<TType> | undefined {
     let population: Array<GraphContext<TType>> = [this];
     while (true) {
-      const c = population.pop();
+      const c = population.shift();
       if (c === undefined) return undefined;
       const nextGeneration = c.synthesizeNextGeneration();
 
-      const solutions = nextGeneration.find(x => x.score === 1);
-      if (solutions !== undefined) return solutions;
+      const solution = nextGeneration.find(x => x.score === 1);
+      if (solution !== undefined) return solution;
 
+      // // dump working code with imperfect score (helpful for seeing which direction the algorithm explores):
+      // for (const x of nextGeneration.filter(x => x.canGenerateWorkingCode).map(x => x.compile(x.samples[0].impl)))
+      //   console.log(x);
       population.push(...nextGeneration.filter(x => !x.canGenerateWorkingCode));
 
-      if (maxPopulationSize !== undefined) population = population.slice(-maxPopulationSize);
       const nsize = (ga: GraphContext<TType>) => ga.nodesPhi.length + ga.nodesProc.length;
       const nscore = (ga: GraphContext<TType>) => ga.score;
-      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(a) - nscore(b) : nsize(b) - nsize(a)).slice(0, maxPopulationSize);
+      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(b) - nscore(a) : nsize(a) - nsize(b));
+      if (maxPopulationSize !== undefined) population = population.slice(0, maxPopulationSize);
     }
   }
 }
