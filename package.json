@@ -10,7 +10,7 @@
     "start": "node ./dist/main.js",
     "build": "tsc -p . && node .scripts/fix-aliased-imports.js",
     "prepare": "npm run build",
-    "test": "npm run build && mocha dist/test && mocha dist/func-factory/test --timeout 100000",
+    "test": "npm run build && mocha dist/test && mocha dist/func-factory/test --timeout 100000 && mocha dist/highlevel/test --timeout 10000 && mocha dist/lowlevel/test --timeout 5000",
     "testci": "npm run test",
     "publish-preview": "npm test && node ./.scripts/publish",
     "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar xv && erase *.tgz"

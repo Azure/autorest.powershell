@@ -1,7 +1,8 @@
 import { processCodeModel } from "#common/process-code-model";
-import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from "#common/text-manipulation";
+import { ModelState } from "#common/model-state";
+import { Model, isHttpOperation } from "#remodeler/code-model";
+import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
 import { Host } from "@microsoft.azure/autorest-extension-base";
-import { Model } from "remodeler/code-model";
 
 export async function process(service: Host) {
   return await processCodeModel(nameStuffRight, service);
@@ -16,9 +17,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
   // fix client name
   codeModel.details.name = pascalCase(fixLeadingNumber(deconstruct(codeModel.details.name)));
 
-
-  for (const each in codeModel.components.operations) {
-    const op = codeModel.components.operations[each];
+  for (const op of Object.values(codeModel.components.operations).filter(isHttpOperation)) {
     const details = op.details;
 
     // operations have pascal cased names

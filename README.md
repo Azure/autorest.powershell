@@ -48,7 +48,7 @@ scope-remodeler/emitter:
 # output-artifact: code-model-v2.yaml
   
 
-````
+```
 
 
 
@@ -94,5 +94,31 @@ output-artifact:
 #### LLIA
 
 #### IA
+
+#### HighLevel
+
+
+``` yaml
+
+pipeline:
+  hlnameinferrer/hlnameinferrer:
+    scope: hlnameinferrer
+    input: remodeler
+    output-artifact: code-model-v2
+
+  hlnameinferrer/emitter:
+    input: hlnameinferrer
+    scope: scope-hlnameinferrer/emitter
+
+scope-hlnameinferrer/emitter:
+  input-artifact: code-model-v2
+  is-object: true
+  output-uri-expr: |
+    "code-model-v2-post-hlnameinferrer"
+
+output-artifact: code-model-v2.yaml
+  
+
+```
 
 #### PowerShell

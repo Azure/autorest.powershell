@@ -91,41 +91,79 @@ export function isHttpOperation(operation: Operation): operation is HttpOperatio
   return false;
 }
 
-export function isMyOperation(operation: Operation): operation is MyOperation {
-  if ((<any>operation).operationType && (<any>operation).operationType === 'MyOperation') {
+export function isHighLevelOperation(operation: Operation): operation is HighLevelOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'HighLevelOperation') {
     return true;
   }
   return false;
 }
 
-export interface MyOperation {
-  operationType: "MyOperation";
-  summary?: string;
-  description?: string;
-  parameters: Optional<Array<Reference<Parameter>>>;
-  responses: Dictionary<Reference<Response>>;
-  deprecated: Optional<boolean>;
+export function isIntrinsicOperation(operation: Operation): operation is IntrinsicOperation {
+  if ((<any>operation).operationType && (<any>operation).operationType === 'IntrinsicOperation') {
+    return true;
+  }
+  return false;
 }
 
-export class MyOperation extends WithExtensions implements MyOperation, Implementation<MyOperationDetails> {
-  details: MyOperationDetails;
-  parameters = new Array<Reference<Parameter>>();
-  responses = new Dictionary<Reference<Response>>();
-  deprecated = false;
-  operationType: "MyOperation" = "MyOperation";
+export interface ProgrammaticOperation {
+  summary?: string;
+  description?: string;
+  parameters: Dictionary<Reference<{ schema: Schema, required: boolean }>>;
+  responses: Dictionary<Reference<Dictionary<Schema>>>;
+  deprecated: boolean;
+  pure: boolean; // side-effect free? May be helpful for deciding how to generate code.
+}
 
-  constructor(name: string, initializer?: Partial<MyOperation>) {
+export interface HighLevelOperation extends ProgrammaticOperation {
+  operationType: "HighLevelOperation";
+  name: {
+    noun: string,
+    verb: string
+  }
+}
+
+export class HighLevelOperation extends WithExtensions implements HighLevelOperation, Implementation<MyOperationDetails> {
+  details: MyOperationDetails;
+  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+  responses = new Dictionary<Reference<Dictionary<Schema>>>();
+  operationType: "HighLevelOperation" = "HighLevelOperation";
+
+  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<HighLevelOperation>) {
     super();
     this.details = {
       name: name,
     };
+    this.deprecated = deprecated;
+    this.pure = pure;
+
+    this.apply(initializer);
+  }
+}
+
+export interface IntrinsicOperation extends ProgrammaticOperation {
+  operationType: "IntrinsicOperation";
+}
+
+export class IntrinsicOperation extends WithExtensions implements IntrinsicOperation, Implementation<MyOperationDetails> {
+  details: MyOperationDetails;
+  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+  responses = new Dictionary<Reference<Dictionary<Schema>>>();
+  operationType: "IntrinsicOperation" = "IntrinsicOperation";
+
+  constructor(name: string, deprecated: boolean, pure: boolean, initializer?: Partial<IntrinsicOperation>) {
+    super();
+    this.details = {
+      name: name,
+    };
+    this.deprecated = deprecated;
+    this.pure = pure;
 
     this.apply(initializer);
   }
 }
 
 
-export type Operation = HttpOperation | MyOperation; //one day ...  | JsonRPCOperation  ...etc
+export type Operation = HttpOperation | HighLevelOperation | IntrinsicOperation; //one day ...  | JsonRPCOperation  ...etc
 
 export interface Model extends Implementation<ClientDetails> {
 

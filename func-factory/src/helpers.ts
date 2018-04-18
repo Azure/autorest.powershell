@@ -20,6 +20,7 @@ export function error(message: string): never {
   throw new Error(message);
 }
 export function errorUnreachable(): never {
+  debugger;
   return error("unreachable");
 }
 

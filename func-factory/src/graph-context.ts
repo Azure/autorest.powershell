@@ -1,7 +1,7 @@
 import { SymbolSource, Graph, NodePhi, NodeProc, ControlSource, ControlSink, SymbolSink, ControlFlow, DataFlow } from "./graph";
 import {
   getNodes,
-  getDataSources,
+  getControlSources,
   getControlSinks,
   getSymbolSinks,
   getSymbolSources,
@@ -13,7 +13,8 @@ import {
   nodeSink2Sinks,
   nodeSink2Sources,
   getSymbolSinkType,
-  getSymbolSourceType
+  getSymbolSourceType,
+  getSymbolSinkKnownNames
 } from "./graph-analysis";
 import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from "./graph-validation";
 import { objMap, setExcept, lundef, clone, objReplace, tsc, Obj, trycatch, error, deepEquals, errorUnreachable } from "./helpers";
@@ -102,11 +103,12 @@ export class GraphContext<TType> {
   public get score(): number {
     return this._score || (this._score = (() => {
       if (!this.canBeFixedWithSynthesis) return 0;
-      if (this.canGenerateWorkingCode && !this.matchesSamples()) return 0;
+      if (this.canGenerateWorkingCode) return this.matchesSamples() ? 1 : 0;
       return Math.pow(0.75, this.unconnectedControlSources.length)
         * Math.pow(0.9, this.unconnectedControlSinks.length)
+        * (1 - 0.1 * Math.pow(0.9, this.dataFlow.map(x => this.nameProximity(getSymbolSinkKnownNames(this.procs, x.target), lundef(this.getSymbolFromSource(x.source), _ => _.names) || [])).reduce((a, b) => a + b, 0)))
         * Math.pow(0.9, Math.abs(this.unconnectedSymbolSources.length - this.unconnectedSymbolSinks.length))
-        * Math.pow(0.95, this.unconnectedSymbolSinks.length + this.unconnectedSymbolSinks.length)
+        * Math.pow(0.95, this.unconnectedSymbolSources.length + this.unconnectedSymbolSinks.length)
         * Math.pow(0.95, this.problems.length);
     })());
   }
@@ -159,39 +161,39 @@ export class GraphContext<TType> {
     for (const nodeProc of nodesProc) validateNodeProc(nodeProc, procs, onProblem);
 
     // control flow connectors
-    const { controlSources, controlSourceEquals } = getDataSources(graph, procs, nodesPhi, nodesProc);
+    const { controlSources, controlSourceEquals } = getControlSources(procs, nodesPhi, nodesProc);
     this.controlSources = controlSources;
     this.controlSourceNorm = x => controlSources.find(y => controlSourceEquals(x, y));
-    const { controlSinks, controlSinkEquals } = getControlSinks(graph, procs, nodesPhi, nodesProc);
+    const { controlSinks, controlSinkEquals } = getControlSinks(graph.outputFlows, procs, nodesPhi, nodesProc);
     this.controlSinks = controlSinks;
     this.controlSinkNorm = x => controlSinks.find(y => controlSinkEquals(x, y));
 
     // data flow connectors
-    const { symbolSources, symbolSourceEquals } = getSymbolSources(graph, procs, controlSources, controlSourceEquals);
+    const { symbolSources, symbolSourceEquals } = getSymbolSources(graph.inputs, procs, controlSources, controlSourceEquals);
     this.symbolSources = symbolSources;
     this.symbolSourceNorm = x => symbolSources.find(y => symbolSourceEquals(x, y));
-    const { symbolSinks, symbolSinkEquals } = getSymbolSinks(graph, procs, controlSinks, controlSinkEquals);
+    const { symbolSinks, symbolSinkEquals } = getSymbolSinks(graph.outputFlows, procs, controlSinks, controlSinkEquals);
     this.symbolSinks = symbolSinks;
     this.symbolSinkNorm = x => symbolSinks.find(y => symbolSinkEquals(x, y));
 
     // control flow edges
-    this.controlFlow = graph.edges.map(x => ({ source: this.controlSourceNorm(x.source), target: this.controlSinkNorm(x.target) }))
+    this.controlFlow = graph.controlFlow.map(x => ({ source: this.controlSourceNorm(x.source), target: this.controlSinkNorm(x.target) }))
       .filter((x): x is ControlFlow<TType> => x.source !== undefined && x.target !== undefined);
     // (validate)
-    validateRawControlFlow(graph.edges, this.controlSourceNorm, this.controlSinkNorm, onProblem);
+    validateRawControlFlow(graph.controlFlow, this.controlSourceNorm, this.controlSinkNorm, onProblem);
     validateControlFlow(this.controlFlow, controlSources, controlSinks, onProblem);
 
     // data flow edges
-    this.dataFlow = symbolSinks.map(x => ({ source: lundef(getSymbolSourceOf(graph, procs, x), this.symbolSourceNorm), target: x }))
+    this.dataFlow = graph.dataFlow.map(x => ({ source: this.symbolSourceNorm(x.source), target: this.symbolSinkNorm(x.target) }))
       .filter((x): x is DataFlow<TType> => x.source !== undefined && x.target !== undefined);
     // (validate)
-    validateRawDataFlow(graph, procs, symbolSinks, this.symbolSourceNorm, onProblem);
-    validateDataFlow(graph, procs, this.dataFlow, this.typeAssignableTo, onProblem);
+    validateRawDataFlow(graph.dataFlow, procs, symbolSinks, this.symbolSourceNorm, this.symbolSinkNorm, onProblem);
+    validateDataFlow(graph, procs, this.dataFlow, this.symbolSources, this.symbolSinks, this.typeAssignableTo, onProblem);
 
     // symbols
-    this.getSymbolFromSource = getSymbolMapper(graph, procs, symbolSources, this.symbolSourceNorm);
+    this.getSymbolFromSource = getSymbolMapper(graph.inputs, this.dataFlow, procs, symbolSources, this.symbolSourceNorm, this.symbolSinkNorm);
     this.symbols = symbolSources.map(this.getSymbolFromSource).filter((x): x is SymbolInstance<TType> => x !== undefined);
-    const { demand, supply } = getMarket(graph, this.controlFlow, controlSources, controlSinks, symbolSources, this.controlSourceNorm, this.controlSinkNorm, this.getSymbolFromSource);
+    const { demand, supply } = getMarket(this.dataFlow, this.controlFlow, controlSources, controlSinks, symbolSources, this.controlSourceNorm, this.controlSinkNorm, this.getSymbolFromSource);
     this.supply = supply;
     this.demand = demand;
     // (validate that symbols are available where required)
@@ -231,12 +233,22 @@ export class GraphContext<TType> {
     return this.controlFlow.filter(f => f.source === y).map(x => x.target)[0];
   }
 
+  public edgeSymbolSink2Source(x: SymbolSink<TType>): SymbolSource<TType> | undefined {
+    const y = this.symbolSinkNorm(x);
+    return this.dataFlow.filter(f => f.target === y).map(x => x.source)[0];
+  }
+
+  public edgeSymbolSource2Sink(x: SymbolSource<TType>): SymbolSink<TType> | undefined {
+    const y = this.symbolSourceNorm(x);
+    return this.dataFlow.filter(f => f.source === y).map(x => x.target)[0];
+  }
+
   public getSymbolSinkType(x: SymbolSink<TType>): TType | undefined {
-    return getSymbolSinkType(this.graph, this.procs, x);
+    return getSymbolSinkType(this.graph.outputFlows, this.procs, x);
   }
 
   public getSymbolSourceType(x: SymbolSource<TType>): TType | undefined {
-    return getSymbolSourceType(this.graph, this.procs, x);
+    return getSymbolSourceType(this.graph.inputs, this.procs, x);
   }
 
   public getGraphProc(): Proc<TType> {
@@ -245,8 +257,7 @@ export class GraphContext<TType> {
       inputs: objMap((_, value) => value && !value.value && ({ type: value.type, names: value.names }) || undefined, this.graph.inputs),
       outputFlows: objMap((_, ofTarget) => ofTarget && objMap((_, sy) => {
         if (sy === undefined) return undefined;
-        const sym = sy.source && this.getSymbolFromSource(sy.source);
-        return { names: sym ? sym.names : [], type: sy.type, nameSources: [] };
+        return { names: [] /* TODO: could grab name candidates from data source */, type: sy, nameSources: [] };
       }, ofTarget), this.graph.outputFlows)
     };
   }
@@ -265,62 +276,47 @@ export class GraphContext<TType> {
   public removeControlFlow(edge: ControlFlow<TType>): GraphContext<TType> {
     return this.updateGraph({
       inputs: this.graph.inputs,
-      edges: this.graph.edges.filter(x => edge.source !== this.controlSourceNorm(x.source) || edge.target !== this.controlSinkNorm(x.target)),
+      controlFlow: this.graph.controlFlow.filter(x => edge.source !== this.controlSourceNorm(x.source) || edge.target !== this.controlSinkNorm(x.target)),
+      dataFlow: this.graph.dataFlow,
       outputFlows: this.graph.outputFlows
     });
   }
   public connectControlFlow(source: ControlSource<TType>, sink: ControlSink<TType>): GraphContext<TType> {
     return this.updateGraph({
       inputs: this.graph.inputs,
-      edges: this.graph.edges.concat([{ source: source, target: sink }]),
+      controlFlow: this.graph.controlFlow.concat([{ source: source, target: sink }]),
+      dataFlow: this.graph.dataFlow,
       outputFlows: this.graph.outputFlows
     });
   }
   public connectDataFlow(source: SymbolSource<TType>, sink: SymbolSink<TType>): GraphContext<TType> {
-    switch (sink.target.type) {
-      case "output": {
-        const change =
-          lundef(this.graph.outputFlows[sink.target.flow], x =>
-            lundef(x[sink.id], x => {
-              const y = clone(x);
-              (y as any).source = source;
-              return { src: x, dst: y };
-            }));
-        let graph = this.graph;
-        if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return this.updateGraph(graph);
-      }
-      case "phi": {
-        const flow = sink.target.flow;
-        const change =
-          lundef(sink.target.node.merge[sink.id], x => {
-            const y = clone(x);
-            (y.sources as any)[flow] = source;
-            return { src: x, dst: y };
-          });
-        let graph = this.graph;
-        if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return this.updateGraph(graph);
-      }
-      case "proc": {
-        const change =
-          lundef(sink.target.node.inputs, x => {
-            const y = clone(x);
-            (y as any)[sink.id] = source;
-            return { src: x, dst: y };
-          });
-        let graph = this.graph;
-        if (change !== undefined) graph = objReplace(graph, change.src, change.dst);
-        return this.updateGraph(graph);
-      }
-    }
+    return this.updateGraph({
+      inputs: this.graph.inputs,
+      controlFlow: this.graph.controlFlow,
+      dataFlow: this.graph.dataFlow.concat([{ source: source, target: sink }]),
+      outputFlows: this.graph.outputFlows
+    });
+  }
+
+  /**
+   * Calculates proximity score between two sets of names (associated with a symbol each).
+   * Higher score means higher proximity and hence higher likelihood that the associated symbols are related - and could be plumbed together.
+   * 
+   * NOTE: This can be way more sophisticated, e.g. case insensitivity, partial score for substring match, etc. 
+   */
+  private nameProximity(names1: ReadonlyArray<string>, names2: ReadonlyArray<string>): number {
+    let result = 0;
+    for (const name of names1)
+      if (names2.includes(name))
+        result++;
+    return result;
   }
 
   // SYNTHESIS
   public synthesizeNextGeneration(): Array<GraphContext<TType>> {
-    if (this.canGenerateWorkingCode) return [];
+    // if (this.canGenerateWorkingCode) return [];
     if (this.unconnectedSymbolSinks.length === 0 && this.unconnectedControlSources.length === 0) return [];
-    // THEN: population of changes (grade based on name stuff)
+    // TODO: grade based on name stuff
 
     // 1) connect ctrl flow
     if (this.unconnectedControlSources.length > 0) {
@@ -341,7 +337,7 @@ export class GraphContext<TType> {
       return Object.keys(outFlows)
         .map(flowId => {
           const flow = outFlows[flowId] || {};
-          const procNode: NodeProc<TType> = { procID: procId, inputs: {} };
+          const procNode: NodeProc<TType> = { procID: procId };
           return Object.entries(flow).filter(x => lundef(x[1], _ => this.typeAssignableTo(_.type, symSinkType)) || false)
             .map(x => x[0])
             .map(outId => ga
@@ -358,19 +354,22 @@ export class GraphContext<TType> {
   public synthesize(maxPopulationSize: number | undefined = undefined): GraphContext<TType> | undefined {
     let population: Array<GraphContext<TType>> = [this];
     while (true) {
-      const c = population.pop();
+      const c = population.shift();
       if (c === undefined) return undefined;
       const nextGeneration = c.synthesizeNextGeneration();
 
-      const solutions = nextGeneration.find(x => x.score === 1);
-      if (solutions !== undefined) return solutions;
+      const solution = nextGeneration.find(x => x.score === 1);
+      if (solution !== undefined) return solution;
 
+      // // dump working code with imperfect score (helpful for seeing which direction the algorithm explores):
+      // for (const x of nextGeneration.filter(x => x.canGenerateWorkingCode).map(x => x.compile(x.samples[0].impl)))
+      //   console.log(x);
       population.push(...nextGeneration.filter(x => !x.canGenerateWorkingCode));
 
-      if (maxPopulationSize !== undefined) population = population.slice(-maxPopulationSize);
       const nsize = (ga: GraphContext<TType>) => ga.nodesPhi.length + ga.nodesProc.length;
       const nscore = (ga: GraphContext<TType>) => ga.score;
-      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(a) - nscore(b) : nsize(b) - nsize(a)).slice(0, maxPopulationSize);
+      population = population.sort((a, b) => nsize(a) == nsize(b) ? nscore(b) - nscore(a) : nsize(a) - nsize(b));
+      if (maxPopulationSize !== undefined) population = population.slice(0, maxPopulationSize);
     }
   }
 }

@@ -11,6 +11,8 @@ import { process as llcsharp } from "./csharp/lowlevel-generator/main";
 import { process as csnamer } from "./csharp/namer";
 import { process as csinferrer } from "./csharp/inferrer";
 
+import { process as hlnameinferrer } from "./highlevel/name-inferrer";
+
 import { CommaChar } from "#common/text-manipulation";
 
 require('source-map-support').install();
@@ -26,6 +28,9 @@ async function main() {
   pluginHost.Add("csinferrer", csinferrer);
   pluginHost.Add("csnamer", csnamer);
   pluginHost.Add("llcsharp", llcsharp);
+
+  // powershell extensions
+  pluginHost.Add("hlnameinferrer", hlnameinferrer);
 
   await pluginHost.Run();
 }
