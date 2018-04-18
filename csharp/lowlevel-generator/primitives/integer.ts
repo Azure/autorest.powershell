@@ -1,8 +1,8 @@
 import { fixPropertyName } from "#common/text-manipulation";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { TypeDeclaration } from "../type-declaration";
+import { PropertyType } from "../type-declaration";
 
-export class Numeric implements TypeDeclaration {
+export class Numeric implements PropertyType {
   constructor(protected numericType: string, protected minimum: number | undefined, protected exclusiveMinimum: boolean | undefined, protected maximum: number | undefined, protected exclusiveMaximum: boolean | undefined, protected multipleOf: number | undefined) {
 
   }
@@ -40,28 +40,16 @@ ${this.validateMultipleOf(propertyName)}
   protected validateMultipleOf(propertyName: string): string {
     return this.multipleOf ? `await listener.AssertIsMultipleOf(${fixPropertyName(propertyName)},${propertyName},${this.multipleOf});` : "";
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return ``;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.NumberProperty("${serializedName}", ref ${propertyName});`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonNumber n ? n : default(${this.implementation})`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonNumber.Create(${instance})`;
-  }
-}
-
-export class Integer extends Numeric {
-  get implementation(): string {
-    return `int`;
-  };
-  get use(): string {
-    return `int`;
-  }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
-    return `/* integer json serialize for ${propertyName} */`;
-  }
-  jsondeserialize(propertyName: string): string {
-    return `/* integer json deserialize for ${propertyName} */`;
   }
 }

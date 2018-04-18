@@ -1,4 +1,4 @@
-import { EOL, camelCase, deconstruct, fixPropertyName } from "#common/text-manipulation";
+import { EOL, camelCase, deconstruct, fixPropertyName, pascalCase, fixLeadingNumber, indent } from "#common/text-manipulation";
 import { Access, Modifier } from "#csharp/code-dom/access-modifier";
 import { Class } from "#csharp/code-dom/class";
 import { InitializedField } from "#csharp/code-dom/field";
@@ -15,20 +15,63 @@ import { State } from "../generator";
 import { ModelInterface } from "./interface";
 import { ModelProperty } from "./property";
 import { ProxyProperty } from "./proxy-property";
-
+import { Constructor } from "#csharp/code-dom/constructor";
+import { Switch } from "#csharp/code-dom/statements/switch";
+import { Case, TerminalCase } from "#csharp/code-dom/statements/case";
+import { If } from "#csharp/code-dom/statements/if";
 
 export class ModelClass extends Class {
 
   //  public serializeStatements = new Statements();
   private validateMethod?: Method;
+  public isPolymorphic: boolean;
+  private discriminators: Map<string, ModelClass>;
+  private parentModelClasses: Array<ModelClass>;
+  private modelInterface: ModelInterface;
+  private schema: Schema;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelClass>) {
     const implData: CSharpData = (schema.details.csharp = schema.details.csharp || {});
-
     super(namespace, schema.details.name);
+    this.isPolymorphic = false;
+    this.discriminators = new Map<string, ModelClass>();
+    this.parentModelClasses = new Array<ModelClass>();
+    this.schema = schema;
+
     this.apply(objectInitializer);
     this.partial = true;
+
+    if (schema.discriminator) {
+      // this has a discriminator property.
+      // our children are expected to tell us who they are 
+      this.isPolymorphic = true;
+      // we'll add a deserializer factory method a bit later..
+    }
+
+    if (schema.extensions["x-ms-discriminator-value"]) {
+      // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
+      // um. just how do we *really* know which allOf is polymorphic? 
+      // that's really sad.
+      for (let allOf = 0; allOf < schema.allOf.length; allOf++) {
+        const parentSchema = schema.allOf[allOf];
+        const aState = state.path("allOf", allOf);
+        const parentDecl = state.project.modelsNamespace.resolveTypeDeclaration(parentSchema, true, aState);
+
+        const parentClass = parentSchema.details.csharp.classImplementation;
+        if (parentClass.isPolymorphic) {
+          // remember this class for later. 
+          this.parentModelClasses.push(parentClass);
+
+          // tell that parent who we are.
+          parentClass.addDiscriminator(schema.extensions["x-ms-discriminator-value"], this);
+        }
+      }
+    }
+
+    const defaultConstructor = this.addMethod(new Constructor(this)); // default constructor for fits and giggles.
+
     const serializeStatements = new Statements();
+    const deserializeStatements = new Statements();
 
     const validationStatements = new Statements();
 
@@ -38,16 +81,17 @@ export class ModelClass extends Class {
     // track the namespace we've used.
     schema.details.namespace = namespace.fullName;
 
-    // mark it as json serializable
-    this.interfaces.push(IJsonSerializable);
+
 
     // create an interface for this model class
     const modelInterface = implData.interfaceImplementation || new ModelInterface(namespace, schema, this, state);
     this.interfaces.push(modelInterface);
+    this.modelInterface = modelInterface;
 
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (let allOf = 0; allOf < schema.allOf.length; allOf++) {
+      // gs01: Critical -- pull thru parent allOf's!
       const aSchema = schema.allOf[allOf];
       const aState = state.path("allOf");
 
@@ -68,6 +112,9 @@ export class ModelClass extends Class {
 
       serializeStatements.add(`${backingField.value}?.ToJson(result);`);
 
+      deserializeStatements.add(`${backingField.value} = new ${className}(json);`);
+
+
       validationStatements.add(td.validatePresence(backingField.name));
       validationStatements.add(td.validateValue(backingField.name));
     }
@@ -84,6 +131,8 @@ export class ModelClass extends Class {
 
       // this.serializeStatements.add(`result.Add("${propertyName}",${prop.name}.ToJson());`);
       serializeStatements.add(prop.jsonSerializationStatement);
+
+      deserializeStatements.add(prop.jsonDeserializationStatement);
     }
 
     if (schema.additionalProperties) {
@@ -130,6 +179,22 @@ export class ModelClass extends Class {
       ]
     }));
 
+    const bfj = this.addMethod(new PartialMethod("BeforeFromJson", mscorlib.Void, {
+      access: Access.Default,
+      parameters: [
+        new Parameter("json", JsonObject, { description: "The JsonNode that should be deserialized into this object." }),
+        new Parameter("returnNow", mscorlib.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the deserialization should be processed, or if the method should return instantly." }),
+      ]
+    }));
+
+    const afj = this.addMethod(new PartialMethod("AfterFromJson", mscorlib.Void, {
+      access: Access.Default,
+      parameters: [
+        new Parameter("json", JsonObject, { description: "The JsonNode that should be deserialized into this object." }),
+      ]
+    }));
+
+
     const toJsonMethod = this.addMethod(new Method("ToJson", JsonNode));
     const container = toJsonMethod.addParameter(new Parameter("container", JsonObject));
     toJsonMethod.add(function* () {
@@ -138,11 +203,8 @@ export class ModelClass extends Class {
 
       yield `bool returnNow = false;`;
       yield `${btj.name}(ref result, ref returnNow);`;
-      yield `
-if( returnNow )
-{
-    return result;
-}`.trim();
+
+      yield new If({ value: `returnNow` }, `return result;`);
 
       // get serialization statements
       yield serializeStatements;
@@ -150,6 +212,49 @@ if( returnNow )
       yield `${atj.name}(ref result);`;
       yield `return result;`;
     });
+
+
+    if (this.isPolymorphic) {
+      // ok, let's build the polymorphic deserializer method now.
+
+    }
+
+    // and let's fill in the deserializer constructor statements now.
+    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [new Parameter("json", JsonObject)], access: Access.Internal })); // deserialization constructor
+    deserializerConstructor.add(function* () {
+      yield `bool returnNow = false;`;
+      yield `${bfj.name}(json, ref returnNow);`;
+      yield new If({ value: `returnNow` }, `return;`);
+
+      yield deserializeStatements;
+      yield `${afj.name}(json);`;
+    });
+  }
+
+  public get implementation(): string {
+    // gotta write this just before we write out the class, since we had to wait until everyone had reported to their parents.
+    const d = this.discriminators;
+    const isp = this.isPolymorphic;
+    // create the FromJson method 
+    const fromJson = this.addMethod(new Method("FromJson", this.modelInterface, { parameters: [new Parameter("node", JsonNode)], static: Modifier.Static, }));
+    fromJson.add(function* () {
+      yield new If({ value: `!(node is ${JsonObject.use} json )` }, `return null;`);
+      if (isp) {
+        yield "// Polymorphic type -- select the appropriate constructor using the discriminator";
+        /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
+
+        yield new Switch({ value: `json.StringProperty("${this.schema.discriminator.propertyName}")` }, function* () {
+          for (const v of d) {
+            yield new TerminalCase(`"${v[0]}"`, function* () {
+              yield `return new ${v[1].use}(json);`
+            });
+          }
+        })
+      }
+      yield `return new ${this.use}(json);`
+    }.bind(this));
+
+    return super.implementation;
   }
 
   validatePresence(propertyName: string): OneOrMoreStatements {
@@ -158,13 +263,29 @@ if( returnNow )
   validateValue(propertyName: string): OneOrMoreStatements {
     return `await listener.AssertObjectIsValid(${fixPropertyName(propertyName)}, ${propertyName}); `;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): OneOrMoreStatements {
-    return `/* deserialize json object here */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    // we're always going to go thru FromJson; it'll handle nulls and polymorphism.
+    return `${propertyName} = ${this.use}.FromJson(${containerName}.Property("${serializedName}"));`.trim();
   }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${this.use}.FromJson(${nodeExpression})`
+  }
+
+
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `${instance}?.ToJson()`;
+  }
+
+  addDiscriminator(discriminatorValue: string, modelClass: ModelClass) {
+    this.discriminators.set(discriminatorValue, modelClass);
+
+    // tell any polymorphic parents incase we're doing subclass of a subclass.
+    for (const each of this.parentModelClasses) {
+      each.addDiscriminator(discriminatorValue, modelClass);
+    }
+
   }
 }

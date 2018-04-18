@@ -2,14 +2,14 @@ import { indent } from "#common/text-manipulation";
 import { OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/statement";
 import { Expression } from "#csharp/code-dom/expression";
 
-export class Try extends Statements {
-  constructor(statements: OneOrMoreStatements, objectInitializer?: Partial<Try>) {
+export class If extends Statements {
+  constructor(public conditional: Expression, statements: OneOrMoreStatements, objectInitializer?: Partial<If>) {
     super(statements);
     this.apply(objectInitializer);
   }
   public get implementation(): string {
     return `
-try
+if(${this.conditional.value})
 {
 ${indent(super.implementation)}
 }`.trim();

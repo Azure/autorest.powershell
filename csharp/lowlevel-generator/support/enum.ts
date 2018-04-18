@@ -12,11 +12,11 @@ import { Parameter } from "#csharp/code-dom/parameter";
 import { Property } from "#csharp/code-dom/property";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import { Struct } from "#csharp/code-dom/struct";
-import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
+import { PropertyType } from "#csharp/lowlevel-generator/type-declaration";
 import { Schema } from "#remodeler/code-model";
 import { State } from "../generator";
 
-export class EnumClass extends Struct implements TypeDeclaration {
+export class EnumClass extends Struct implements PropertyType {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schema.details.enum) {
       throw new Error("ENUM AINT XMSENUM");
@@ -109,12 +109,14 @@ export class EnumClass extends Struct implements TypeDeclaration {
   public validatePresence(propertyName: string): string {
     return ``;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-
-  jsondeserialize(propertyName: string): string {
-    return '/***/';
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${propertyName} = ${containerName}.StringProperty("${serializedName}");`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonString s ? s : null`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonString.Create(${instance})`;

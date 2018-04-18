@@ -29,8 +29,13 @@ pipeline:
     input: openapi-document/identity
     output-artifact: code-model-v2
 
-  remodeler/emitter:
+  remodeler/inferrer:
+    scope: remodeler
     input: remodeler
+    output-artifact: code-model-v2
+
+  remodeler/emitter:
+    input: inferrer
     scope: scope-remodeler/emitter
 
 scope-remodeler/emitter:
@@ -52,9 +57,14 @@ scope-remodeler/emitter:
 ``` yaml $(llcsharp)
 pipeline:
 
-  llcsharp/csinferrer:
+  llcsharp/inferrer:
     scope: llcsharp
     input: remodeler
+    output-artifact: code-model-v2
+
+  llcsharp/csinferrer:
+    scope: llcsharp
+    input: inferrer
     output-artifact: code-model-v2
 
   llcsharp/csnamer:

@@ -17,7 +17,7 @@ export class Method extends Statements {
   public abstract: Abstract = Modifier.None;
   public extern: Extern = Modifier.None;
   public async: Async = Modifier.None;
-
+  public isPartial = false;
   public description: string = "";
 
   constructor(public name: string, protected returnType: TypeDeclaration = mscorlib.Void, objectIntializer?: Partial<Method>) {
@@ -47,6 +47,15 @@ ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.o
 `.slim();
   }
 
+  public get interfaceDeclaration(): string {
+    const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
+    return `
+${this.summaryDocumentation}
+${this.parameterDocumentation}
+${this.returnType.use} ${this.name}(${parameterDeclaration});
+`.slim();
+  }
+
   public get implementation(): string {
     return `
 ${this.declaration}
@@ -57,7 +66,9 @@ ${indent(super.implementation)}
   }
 }
 
+
 export class PartialMethod extends Method {
+  public isPartial = true;
   constructor(name: string, returnType: TypeDeclaration = mscorlib.Void, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
     this.apply(objectIntializer);

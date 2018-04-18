@@ -1,7 +1,7 @@
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { TypeDeclaration } from "../type-declaration";
+import { PropertyType } from "../type-declaration";
 
-export class Date implements TypeDeclaration {
+export class Date implements PropertyType {
   constructor(protected required: boolean) {
   }
 
@@ -15,13 +15,16 @@ export class Date implements TypeDeclaration {
     return ``;
   }
   validateValue(propertyName: string): string {
-    return `/* date validate value for ${propertyName} */`;
+    return `/* FIXME?: date validate value for ${propertyName} */`;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* date json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.StringProperty("${serializedName}", ref ${propertyName});`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonString s ? s : default(${this.implementation})`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonString.CreateDate(${instance})`;

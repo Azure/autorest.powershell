@@ -1,7 +1,7 @@
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { TypeDeclaration } from "../type-declaration";
+import { PropertyType } from "../type-declaration";
 
-export class Char implements TypeDeclaration {
+export class Char implements PropertyType {
   constructor(protected required: boolean, private choices?: Array<string>) {
 
   }
@@ -31,14 +31,16 @@ ${this.validateEnum(propertyName)}
     return '// todo validate enum choices';
   }
 
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* char json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.StringProperty("${serializedName}", ref ${propertyName});`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonString s ? s : default(${this.implementation})`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonString.Create(${instance})`;
   }
-
 }

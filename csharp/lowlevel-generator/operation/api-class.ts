@@ -4,7 +4,7 @@ import { Property } from "#csharp/code-dom/property";
 import * as codemodel from "#remodeler/code-model";
 import { ISendAsync } from "../clientruntime";
 import { State } from "../generator";
-import { OperationMethod } from "../operation/method";
+import { OperationMethod, CallMethod, ValidationMethod } from "../operation/method";
 
 
 export class ApiClass extends Class {
@@ -23,7 +23,18 @@ export class ApiClass extends Class {
     for (const operationName in state.model.components.operations) {
       const operation = state.model.components.operations[operationName];
       if (codemodel.isHttpOperation(operation)) {
-        this.addMethod(new OperationMethod(this, operation, state.path('components', 'operations', operationName)));
+
+        // an operation has parameters for parameters, body, callbacks, listener and sender
+        // we need to make sure that the parameters for a given operation are consistent between the operation method, the call method, and the validation method.
+        // can we generate the common parameters here and just give them to the methods? (ie, can we share the instances between the methods?)
+        // code-dom doesn't store references from the child to the parent, so as long as the definitions work without modification, it looks like we can.
+
+
+        // we'll do that work in the OM and expose them as public properties.
+        const operationMethod = new OperationMethod(this, operation, state.path('components', 'operations', operationName))
+        this.addMethod(operationMethod);
+        this.addMethod(new CallMethod(this, operationMethod, state.path('components', 'operations', operationName)));
+        this.addMethod(new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationName)));
       }
     }
   }

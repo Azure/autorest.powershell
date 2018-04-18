@@ -113,12 +113,13 @@ export class Namespace extends Initializer {
     return `
 ${header}
 
-namespace ${this.fullName} {
+namespace ${this.fullName}
+{
 ${imports}
 
 ${body}
 }
-`.trim().replace(/ *$/gm, '').replace(/\n\n/g, '\n');
+`.trim().replace(/ *$/gm, '').replace(/\n\n/g, '\n').replace(/^\s*EOL\s*$/igm, '');
   }
 }
 

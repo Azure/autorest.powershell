@@ -13,6 +13,10 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
   const serviceNamespace = await service.GetValue("namespace") || "Sample.API";
   codeModel.details.namespace = serviceNamespace;
 
+  // fix client name
+  codeModel.details.name = pascalCase(fixLeadingNumber(deconstruct(codeModel.details.name)));
+
+
   for (const each in codeModel.components.operations) {
     const op = codeModel.components.operations[each];
     const details = op.details;

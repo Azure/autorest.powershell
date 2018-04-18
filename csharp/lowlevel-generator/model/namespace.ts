@@ -2,7 +2,7 @@ import { hasProperties } from "#common/text-manipulation";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
 import { CSharpData } from "#csharp/lowlevel-generator/private-data";
-import { JsonType, Schema } from "#remodeler/code-model";
+import { JsonType, Schema, Header } from "#remodeler/code-model";
 import { Dictionary } from "#remodeler/common";
 import { IntegerFormat, NumberFormat, StringFormat } from "#remodeler/known-format";
 import { State } from "../generator";
@@ -19,7 +19,7 @@ import { Numeric } from "../primitives/integer";
 import { String } from "../primitives/string";
 import { UntypedWildcard, Wildcard } from "../primitives/wildcard";
 import { EnumClass } from "../support/enum";
-import { TypeDeclaration } from "../type-declaration";
+import { PropertyType } from "../type-declaration";
 import * as validation from "../validations";
 import { ModelClass } from "./class";
 
@@ -48,7 +48,11 @@ export class ModelsNamespace extends Namespace {
 
   private static INVALID = <any>null;
 
-  public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): TypeDeclaration {
+  public resolveHeaderTypeDeclaration(headers: Dictionary<Header>, required: boolean, state: State): PropertyType | null {
+    return null;
+  }
+
+  public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): PropertyType {
     if (!schema) {
       throw new Error("SCHEMA MISSING?")
     }

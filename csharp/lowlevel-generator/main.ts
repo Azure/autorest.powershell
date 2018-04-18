@@ -4,27 +4,6 @@ import { Host } from "@microsoft.azure/autorest-extension-base";
 import { State } from "./generator";
 import { Project } from "./project";
 
-// todo:
-// interpretations:
-//  - readonly properties
-//  - nullable values?
-//
-
-// model constructors?
-//    - allOf creation?
-
-// validations
-// serialization/deserialization/polymorphic deserializer/shape deserializer?
-// url construction
-// security
-// mime-type
-// create schema for returned headers and deserialize (or... add parameters to OnResponse?)
-// streams
-// non json payloads (xml, formdata, multipart-mime)
-
-// client runtime
-
-
 export async function process(service: Host) {
   try {
     // Get the list of files

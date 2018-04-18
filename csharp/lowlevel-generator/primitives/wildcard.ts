@@ -1,14 +1,14 @@
 import { fixPropertyName } from "#common/text-manipulation";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { TypeDeclaration } from "../type-declaration";
+import { PropertyType } from "../type-declaration";
 
-export class Wildcard implements TypeDeclaration {
+export class Wildcard implements PropertyType {
 
-  constructor(protected leafType: TypeDeclaration) {
+  constructor(protected leafType: PropertyType) {
   }
 
   get implementation(): string {
-    return `/*wildcard*/`;
+    return `/* FIXME: wildcard*/`;
   };
   get use(): string {
     return `System.Collections.Generic.Dictionary<string,${this.leafType.use}>`;
@@ -17,21 +17,24 @@ export class Wildcard implements TypeDeclaration {
     return ``;
   }
   validateValue(propertyName: string): string {
-    return `/* wildcard validate value for ${propertyName} */`;
+    return ``;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* wildcard json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.DictionaryProperty("${serializedName}", ref ${propertyName}, __each => ${this.leafType.jsonDeserializationImplementationOnNode("__each")} );`
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonObject.Create( ${instance}, __each=> ${this.leafType.serializeInstanceToJson("__each")})`;
   }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `/* FIXME: wildcard deserialize node */`;
+  }
 }
 
 
-export class UntypedWildcard implements TypeDeclaration {
+export class UntypedWildcard implements PropertyType {
 
   constructor() {
 
@@ -49,13 +52,16 @@ export class UntypedWildcard implements TypeDeclaration {
   validateValue(propertyName: string): string {
     return `/* untyped wildcard validate value for ${propertyName} */`;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* untyped wildcard json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `/* FIXME: untyped wildcard json deserialize for ${propertyName} */`;
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `/* FIXME: untyped wildcard deserialize node */`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return '';
+    return '/* FIXME: untyped wildcard serialize  */';
   }
 }

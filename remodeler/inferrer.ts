@@ -20,6 +20,11 @@ async function inferStuff(model: Model, service: Host): Promise<Model> {
       if (content["application/json"] && content["text/json"]) {
         content["application/json"].accepts.push("text/json");
         delete content["text/json"];
+        service.Message({
+          Channel: Channel.Debug,
+          Text: `operation '${operation.details.name}' lists both "application/json" and "text/json" -- these are being combined.`
+        })
+
       }
       return null;
     });
