@@ -32,7 +32,7 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
     }
     const hlOp = new IntrinsicOperation(`<INTR>${name}_ctor`, schema.deprecated, true, {
       description: `Creates a new '${name}'`,
-      parameters: parameters,
+      // parameters: parameters, // todo : fix this
       responses: {
         result: { result: schema }
       }
@@ -43,9 +43,9 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
     for (const [propertyName, property] of Object.entries(schema.properties)) {
       const hlOp = new IntrinsicOperation(`<INTR>${name}_get_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, true, {
         description: `Gets '${propertyName}' from '${name}'`,
-        parameters: {
-          obj: { schema: schema, required: true }
-        },
+        // parameters: { // todo : fix this
+        // obj: { schema: schema, required: true }
+        // },
         responses: {
           result: { result: property.schema },
           undefined: {}
@@ -58,10 +58,10 @@ export function* getSchemaFunctions(schema: Schema): Iterable<IntrinsicOperation
     for (const [propertyName, property] of Object.entries(schema.properties)) {
       const hlOp = new IntrinsicOperation(`<INTR>${name}_set_${propertyName}`, schema.deprecated || property.details.deprecationMessage !== undefined, false, {
         description: `Sets '${propertyName}' from '${name}'`,
-        parameters: {
-          obj: { schema: schema, required: true },
-          prop: { schema: property.schema, required: true }
-        },
+        // parameters: { // todo : fix this
+        // obj: { schema: schema, required: true },
+        // prop: { schema: property.schema, required: true }
+        //},
         responses: {
           result: {}
         }

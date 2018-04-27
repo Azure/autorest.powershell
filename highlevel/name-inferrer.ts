@@ -2,7 +2,7 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, HighLevelOperation, Schema } from "#remodeler/code-model";
+import { Model, isHttpOperation, HighLevelOperation, Schema, IParameter, ImplementationLocation } from "#remodeler/code-model";
 import { EnglishPluralizationService } from "./english-pluralization-service";
 import { pascalCase } from "#common/text-manipulation";
 import { Dictionary } from "#remodeler/common";
@@ -15,17 +15,29 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
   for (const operation of Object.values(model.components.operations).filter(isHttpOperation)) {
     const names = getCommandName(operation.details.name, service.Message);
     const name = names[0]; // TODO: pick first candidate!?
-    const parameters = new Dictionary<{ schema: Schema, required: boolean }>();
+    const parameters = new Dictionary<IParameter>();
     const responses = new Dictionary<Dictionary<Schema>>();
+
+
     for (const parameter of operation.parameters) {
       parameters[parameter.name] = {
+        name: parameter.name,
+        description: "<description>",
+        allowEmptyValue: false,
+        deprecated: false,
+        details: { name: parameter.name, location: ImplementationLocation.Method },
         schema: parameter.schema || (() => { throw "no schema"; })(), // TODO: handle parameter.content!
         required: parameter.required
       };
     }
+
+
     for (const [responseCode, response] of Object.entries(operation.responses)) {
+      const values = Object.values(response.content);
       // TODO: after refactoring 'operation.responses', revisit this
-      responses[responseCode] = { result: Object.values(response.content)[0].schema || (() => { throw "no schema"; })() }; // TODO: derive the actually desired return type!
+      if (values.length) {
+        responses[responseCode] = { result: values[0].schema || (() => { throw "no schema"; })() }; // TODO: derive the actually desired return type!
+      }
     }
 
     const hlname = `<HL>${name.noun}_${name.verb}`;
@@ -33,7 +45,7 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
       description: operation.description,
       summary: operation.summary,
       parameters: parameters,
-      responses: responses
+      responses: responses,
     });
     hlOp.details.names = names;
     model.components.operations[hlname] = hlOp;
@@ -176,6 +188,7 @@ const cmdVerbMap_Custom: { [verb: string]: string | string[] } = {
   "Make": "New",
   "Regenerate": "New", // Alternatives: Redo, Update, Reset
   "CreateOrUpdate": ["New", "Set"],
+  "CreateOrReplace": ["New", "Set"],
   "Failover": "Set",
   "Assign": "Set",
   "Configure": "Set",
@@ -277,13 +290,14 @@ function existsVerb(verb: string) {
   return mapVerb(verb).length > 0;
 }
 
-export function getCommandName(operationId: string, onMessage: (message: Message) => void): { noun?: string, verb: string }[] {
+export function getCommandName(operationId: string, onMessage: (message: Message) => void): { noun?: string, verb: string, variant: string }[] {
   const opIdValues = operationId.split("_", 2);
 
   // OperationId can be specified without '_' (Underscore), Verb will retrieved by the below logic for non-approved verbs.
   let cmdNoun = opIdValues.length === 2 ? getSingularizedValue(opIdValues[0]) : "";
   let cmdVerb = opIdValues.length === 2 ? opIdValues[1] : getSingularizedValue(operationId);
   let cmdVerbs: string[] = [cmdVerb];
+  let variant = operationId;
 
   if (!Object
     .keys(cmdVerbMap_GetVerb)
@@ -376,7 +390,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
     let verb = pascalCase([v]);
     if (!cmdNoun) verb = getSingularizedValue(verb);
     onMessage({ Channel: Channel.Verbose, Text: `Operation '${operationId}': Using noun '${cmdNoun}' and verb '${verb}'.` });
-    return { noun: cmdNoun, verb: verb };
+    return { noun: cmdNoun, verb: verb, variant };
   });
   return nameInfos;
 }

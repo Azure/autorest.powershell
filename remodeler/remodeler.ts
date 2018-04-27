@@ -3,7 +3,7 @@ import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } fr
 import * as OpenAPI from "./oai3";
 import * as Interpretations from "./interpretations";
 import { dereference, getExtensionProperties, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
-import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback, Operation } from "./code-model";
+import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, HttpOperationParameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback, Operation } from "./code-model";
 import { StringFormat } from "./known-format";
 import { ModelState } from "#common/model-state";
 
@@ -292,7 +292,7 @@ export class Remodeler {
     return this.add(ref.name, ref, dictionary, copyFunc);
   }
 
-  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<Parameter>): Parameter {
+  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<HttpOperationParameter>): HttpOperationParameter {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
@@ -307,7 +307,7 @@ export class Remodeler {
           (original.style === EncodingStyle.DeepObject || original.style === EncodingStyle.PipeDelimited || original.style === EncodingStyle.SpaceDelimited ? original.style : EncodingStyle.Form);
 
 
-    const newParameter = new Parameter(original.name, original.in, location, {
+    const newParameter = new HttpOperationParameter(original.name, original.in, location, {
       allowEmptyValue: (OpenAPI.isQueryParameter(original) && original.allowEmptyValue) || false,
       description: Interpretations.getDescription("", original),
       required: original.required || false,

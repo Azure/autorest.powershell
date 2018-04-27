@@ -74,7 +74,18 @@
   
 # Tasks:
 
+## Detector 
+- x-ms-enums should add tabcompleter
+
+
+
 ## P0/Critical
+- READONLY PROPERTIES: DO NOT SERIALIZE, make setter private (or remove?). 
+  (but still has to clone them/dump them) 
+  
+- Header deserialization: 
+   - add properties to the model classes where they found
+
 - LLC#: URI Path population (and support the other endpoints?) + Parameterized Hosts ( is this sufficient? (can I make those just 'super' path parameters? ) )
 - LLC#: Finish new deserialization 
 
@@ -125,6 +136,10 @@
   interpretation: nullable values
   model constructors? (required fields?)
   non json payloads (xml, formdata, multipart-mime)
+
+## P1 - followup
+  Adding explicit serializers for objects in PS: https://github.com/PowerShell/PowerShell/issues/3173  
+
 
 ## P2/Pickup
 - Take PSInferrer/GraphSovler up where JB left off

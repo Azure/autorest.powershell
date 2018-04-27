@@ -69,7 +69,7 @@ export class Schema extends WithExtensions implements Schema {
 export class Components extends WithExtensions implements Components {
   schemas = new Dictionary<Reference<Schema>>();
   responses = new Dictionary<Reference<Response>>();
-  parameters = new Dictionary<Reference<Parameter>>();
+  parameters = new Dictionary<Reference<HttpOperationParameter>>();
   examples = new Dictionary<Reference<Example>>();
   requestBodies = new Dictionary<Reference<RequestBody>>();
   headers = new Dictionary<Reference<Header>>();
@@ -105,26 +105,43 @@ export function isIntrinsicOperation(operation: Operation): operation is Intrins
   return false;
 }
 
+export interface IParameter {
+  name: string;
+  schema: Schema;
+  description: string;
+  allowEmptyValue: boolean;
+  deprecated: boolean;
+  required: boolean;
+  details: ParameterDetails;
+}
+
 export interface ProgrammaticOperation {
   summary?: string;
   description?: string;
-  parameters: Dictionary<Reference<{ schema: Schema, required: boolean }>>;
-  responses: Dictionary<Reference<Dictionary<Schema>>>;
+  parameters: Dictionary<IParameter>;
+  responses: Dictionary<Dictionary<Schema>>;
   deprecated: boolean;
   pure: boolean; // side-effect free? May be helpful for deciding how to generate code.
 }
 
 export interface HighLevelOperation extends ProgrammaticOperation {
   operationType: "HighLevelOperation";
-  name: {
-    noun: string,
-    verb: string
-  }
+  verb: string;
+  noun: string;
+  variant: string;
+  asjob: boolean;
+  "call-graph": Array<string>;
+  /*
+    name: {
+      noun: string,
+      verb: string
+    }
+    */
 }
 
-export class HighLevelOperation extends WithExtensions implements HighLevelOperation, Implementation<MyOperationDetails> {
-  details: MyOperationDetails;
-  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+export class HighLevelOperation extends WithExtensions implements HighLevelOperation, Implementation<ProgramaticOperationDetails> {
+  details: ProgramaticOperationDetails;
+  parameters = new Dictionary<IParameter>();
   responses = new Dictionary<Reference<Dictionary<Schema>>>();
   operationType: "HighLevelOperation" = "HighLevelOperation";
 
@@ -144,9 +161,9 @@ export interface IntrinsicOperation extends ProgrammaticOperation {
   operationType: "IntrinsicOperation";
 }
 
-export class IntrinsicOperation extends WithExtensions implements IntrinsicOperation, Implementation<MyOperationDetails> {
-  details: MyOperationDetails;
-  parameters = new Dictionary<Reference<{ schema: Schema, required: boolean }>>();
+export class IntrinsicOperation extends WithExtensions implements IntrinsicOperation, Implementation<ProgramaticOperationDetails> {
+  details: ProgramaticOperationDetails;
+  parameters = new Dictionary<IParameter>();
   responses = new Dictionary<Reference<Dictionary<Schema>>>();
   operationType: "IntrinsicOperation" = "IntrinsicOperation";
 
@@ -192,9 +209,6 @@ export interface Details extends Dictionary<any> {
   /** name used in actual implementation */
   name: string;
 
-  /** the container (ie, class) where this is contained */
-  container?: string;
-
   /** namespace of the implementation of this item */
   namespace?: string;
 
@@ -212,8 +226,6 @@ export interface Details extends Dictionary<any> {
 export enum ImplementationLocation {
   Method = "Method",
   Client = "Client",
-  /** @internal */
-  Alias = "Alias"
 }
 
 export interface EnumValue {
@@ -247,7 +259,7 @@ export interface SchemaDetails extends Details {
 export interface HttpOperationDetails extends Details {
 }
 
-export interface MyOperationDetails extends Details {
+export interface ProgramaticOperationDetails extends Details {
 }
 
 export interface HttpOperation {
@@ -443,7 +455,7 @@ export class OpenIdConnectSecurityScheme extends WithExtensions implements OpenI
 export class HttpOperation extends WithExtensions implements HttpOperation, Implementation<HttpOperationDetails> {
   details: HttpOperationDetails;
   tags = new Array<string>();
-  parameters = new Array<Reference<Parameter>>();
+  parameters = new Array<Reference<HttpOperationParameter>>();
   responses = new Dictionary<Reference<Response>>();
   callbacks = new Dictionary<Reference<Callback>>();
   security = new Array<SecurityRequirement>();
@@ -460,13 +472,13 @@ export class HttpOperation extends WithExtensions implements HttpOperation, Impl
   }
 }
 
-export class Parameter extends WithExtensions implements Parameter, Implementation<ParameterDetails> {
+export class HttpOperationParameter extends WithExtensions implements HttpOperationParameter, Implementation<ParameterDetails> {
   details: ParameterDetails;
   deprecated = false;
   required = false;
   allowEmptyValue = false;
 
-  constructor(public name: string, inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<Parameter>) {
+  constructor(public name: string, inWhere: ParameterLocation, implementation: ImplementationLocation, initializer?: Partial<HttpOperationParameter>) {
     super();
     this.in = inWhere;
     this.details = {
@@ -486,7 +498,7 @@ export class PasswordOAuthFlow extends WithExtensions implements PasswordOAuthFl
   }
 }
 export class PathItem extends WithExtensions implements PathItem {
-  parameters = new Array<Reference<Parameter>>();
+  parameters = new Array<Reference<HttpOperationParameter>>();
   servers = new Array<Server>();
   constructor(initializer?: Partial<PathItem>) {
     super();
@@ -616,7 +628,7 @@ export interface Model extends Extensions {
 export interface Components extends Extensions {
   schemas: Optional<Dictionary<Reference<Schema>>>;
   responses: Optional<Dictionary<Reference<Response>>>
-  parameters: Optional<Dictionary<Reference<Parameter>>>;
+  parameters: Optional<Dictionary<Reference<HttpOperationParameter>>>;
   examples: Optional<Dictionary<Reference<Example>>>;
   requestBodies: Optional<Dictionary<Reference<RequestBody>>>;
   headers: Optional<Dictionary<Reference<Header>>>;
@@ -743,7 +755,7 @@ export interface HttpOperation extends Extensions, Implementation<HttpOperationD
   description?: string;
   externalDocs?: ExternalDocumentation;
   operationId?: string;
-  parameters: Optional<Array<Reference<Parameter>>>;
+  parameters: Optional<Array<Reference<HttpOperationParameter>>>;
   requestBody?: Reference<RequestBody>;
   responses: Dictionary<Reference<Response>>;
   callbacks: Optional<Dictionary<Reference<Callback>>>;
@@ -782,7 +794,7 @@ export interface InQuery extends HasSchema, Partial<HasExample>, Partial<HasExam
   allowReserved?: boolean;
   style?: QueryEncodingStyle;
 }
-export interface Parameter extends Partial<HasSchema>, Partial<HasContent>, Partial<HasExample>, Partial<HasExamples> {
+export interface HttpOperationParameter extends Partial<HasSchema>, Partial<HasContent>, Partial<HasExample>, Partial<HasExamples> {
   name: string;
   in: ParameterLocation;
 
@@ -813,7 +825,7 @@ export interface PathItem extends Extensions {
   patch?: HttpOperation;
   trace?: HttpOperation;
   servers: Optional<Array<Server>>;
-  parameters: Optional<Array<Reference<Parameter>>>;
+  parameters: Optional<Array<Reference<HttpOperationParameter>>>;
 }
 
 export interface RequestBody extends Extensions {

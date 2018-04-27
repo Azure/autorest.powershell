@@ -5,11 +5,16 @@ import { ModelState } from "#common/model-state";
 import { Model, isHttpOperation } from "#remodeler/code-model";
 import { map } from "#common/text-manipulation";
 
+// Universal version - 
+// tweaks the code model to adjust things so that the code will generate better.
+
 export async function process(service: Host) {
-  return await processCodeModel(inferStuff, service);
+  return await processCodeModel(tweakModel, service);
 }
 
-async function inferStuff(model: Model, service: Host): Promise<Model> {
+async function tweakModel(model: Model, service: Host): Promise<Model> {
+
+  // consolodate compatible response types.
   map(model.components.operations, (key, operation) => {
     if (!isHttpOperation(operation)) return null;
     // TODO: mimetypes might start with the mimetype and have extra stuff after

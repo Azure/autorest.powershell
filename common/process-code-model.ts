@@ -22,7 +22,7 @@ export async function processCodeModel(processExtension: (input: Model, service:
     codeModel = await processExtension(codeModel, service);
 
     // output the model
-    await service.WriteFile("code-model-v2.yaml", serialize(codeModel), undefined/*,"code-model-v2"*/);
+    await service.WriteFile("code-model-v2.yaml", serialize(codeModel), undefined, "code-model-v2");
 
   } catch (E) {
     console.error(E);

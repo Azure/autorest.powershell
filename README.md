@@ -19,52 +19,25 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 
-#### Remodeler
 
-``` yaml 
-# remodeler:
-    
-pipeline: 
-  remodeler:
-    input: openapi-document/identity
-    output-artifact: code-model-v2
-
-  remodeler/inferrer:
-    scope: remodeler
-    input: remodeler
-    output-artifact: code-model-v2
-
-  remodeler/emitter:
-    input: inferrer
-    scope: scope-remodeler/emitter
-
-scope-remodeler/emitter:
-  input-artifact: code-model-v2
-  is-object: true
-  
-  output-uri-expr: | 
-    "code-model-v2"
-  
-# output-artifact: code-model-v2.yaml
-  
-
-```
 
 
 
 #### LLC#
 
 ``` yaml $(llcsharp)
+enable-remodeler: true
+
 pipeline:
 
-  llcsharp/inferrer:
+  llcsharp/tweakcodemodel:
     scope: llcsharp
     input: remodeler
     output-artifact: code-model-v2
 
   llcsharp/csinferrer:
     scope: llcsharp
-    input: inferrer
+    input: tweakcodemodel
     output-artifact: code-model-v2
 
   llcsharp/csnamer:
@@ -95,22 +68,23 @@ output-artifact:
 
 #### IA
 
-#### HighLevel
 
+#### PowerShell
 
-``` yaml
+``` yaml $(powershell)
+enable-remodeler: true
 
 pipeline:
-  hlnameinferrer/hlnameinferrer:
-    scope: hlnameinferrer
-    input: remodeler
+  powershell/hlnameinferrer:
+    scope: powershell
+    input: tweakcodemodel
     output-artifact: code-model-v2
 
-  hlnameinferrer/emitter:
+  powershell/emitter:
     input: hlnameinferrer
-    scope: scope-hlnameinferrer/emitter
+    scope: scope-powershell/emitter
 
-scope-hlnameinferrer/emitter:
+scope-powershell/emitter:
   input-artifact: code-model-v2
   is-object: true
   output-uri-expr: |
@@ -121,4 +95,78 @@ output-artifact: code-model-v2.yaml
 
 ```
 
-#### PowerShell
+
+#### Remodeler
+
+``` yaml  $(enable-remodeler)
+    
+pipeline: 
+  remodeler:
+    input: openapi-document/identity
+    output-artifact: code-model-v2
+
+
+  remodeler/emitter:
+    input: remodeler
+    scope: scope-remodeler/emitter
+
+scope-remodeler/emitter:
+  input-artifact: code-model-v2
+  is-object: true
+  
+  output-uri-expr: | 
+    "code-model-v2"
+  
+# output-artifact: code-model-v2.yaml
+  
+
+```
+
+``` yaml $(grr) 
+    
+pipeline: 
+  remodeler:
+    input: openapi-document/identity   # the plugin where we get inputs from
+
+  tweakcodemodel:
+    input: remodeler
+
+  tweakcodemodelazure:
+    input: tweakcodemodel
+
+  csnamer:
+    input: tweakcodemodelazure
+
+  llcsharp:
+    input: csnamer
+
+  # powershell generator needs the model after the csnamer is done
+  powershell:
+    input: 
+      - csnamer  # needs both the code model after the csnamer is done
+      - llcsharp # and the generated c# files
+
+  # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
+  cmv2/emitter:
+    input: tweakcodemodelazure
+    scope: code-model-emitter-settings
+
+  # the default emitter will emit everything (no processing) from the inputs listed here.
+  default/emitter:
+    input: 
+     - llcsharp
+     - powershell 
+   
+
+# Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.  
+code-model-emitter-settings:
+  input-artifact: code-model-v2
+  is-object: true
+  output-uri-expr: | 
+    "code-model-v2"
+
+# testing:  ask for the files we need  
+output-artifact: 
+  - code-model-v2.yaml # this is filtered outby default.
+
+```

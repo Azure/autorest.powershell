@@ -1,13 +1,11 @@
 import { deserialize, serialize } from "#common/yaml";
 import { Model } from "#remodeler/code-model";
 import { Host } from "@microsoft.azure/autorest-extension-base";
-import { State } from "./generator";
-import { Project } from "./project";
 
 export async function process(service: Host) {
   try {
     // Get the list of files
-    const files = await service.ListInputs();
+    const files = await service.ListInputs("code-model-v2");
 
     // get the openapi document
     if (files.length != 1) {
@@ -19,12 +17,8 @@ export async function process(service: Host) {
     const codeModelText = await service.ReadFile(filename);
     const model = await deserialize<Model>(codeModelText, filename);
 
-    const modelState = new State(service, model, filename);
-
-    const project = new Project(modelState);
-
-    await project.writeFiles(async (filename, content) => await service.WriteFile(filename, content, undefined, "source-file-csharp"));
-    await service.WriteFile("code-model-v2.csharp.yaml", serialize(model), undefined, "source-file-other");
+    // await service.WriteFile("code-model-v2.powershell.yaml", serialize(model), undefined, "source-file-yaml");
+    // await service.WriteFile("code-model-v2.powershell.yaml", serialize(model), undefined, "source-file-yaml");
 
   } catch (E) {
     console.error(E);

@@ -12,7 +12,7 @@ import { pascalCase, fixLeadingNumber, deconstruct } from "#common/text-manipula
 
 export class OperationParameter extends Parameter {
 
-  constructor(parent: Method, public param: codemodel.Parameter, state: State, objectInitializer?: Partial<OperationParameter>) {
+  constructor(parent: Method, public param: codemodel.HttpOperationParameter, state: State, objectInitializer?: Partial<OperationParameter>) {
 
     super(param.details.name, state.project.modelsNamespace.resolveTypeDeclaration(param.schema, param.required, state.path('schema')));
     this.apply(objectInitializer);
