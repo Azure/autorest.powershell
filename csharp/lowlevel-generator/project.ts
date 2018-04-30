@@ -1,5 +1,5 @@
 import { Project as codeDomProject } from "#csharp/code-dom/project";
-import { Model, JsonType } from "#remodeler/code-model";
+import { Model } from "#common/code-model/code-model";
 import { ApiClass } from "./operation/api-class";
 import { Namespace } from "#csharp/code-dom/namespace";
 import * as message from "./messages";
@@ -10,6 +10,7 @@ import { ServiceNamespace } from "./operation/namespace";
 import { SupportNamespace } from "./support/namespace";
 import { JsonSerializerClass } from "#csharp/lowlevel-generator/support/json-serializer";
 import { Import } from "#csharp/code-dom/import";
+import { JsonType } from "#common/code-model/schema";
 
 export class Project extends codeDomProject {
 
@@ -23,7 +24,7 @@ export class Project extends codeDomProject {
     this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, state));
 
     // add model classes
-    this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, state.model.components.schemas, state.path('components', 'schemas')));
+    this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, state.model.schemas, state.path('components', 'schemas')));
 
     // create API class
     new ApiClass(this.serviceNamespace, state);

@@ -2,18 +2,22 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, IntrinsicOperation, Schema, JsonType } from "#remodeler/code-model";
+import { Model } from "#common/code-model/code-model";
 import { pascalCase } from "#common/text-manipulation";
-import { Dictionary } from "#remodeler/common";
+import { Dictionary } from "#common/dictionary";
+import { IntrinsicOperation } from "#common/code-model/programatic-operation";
+import { isHttpOperation } from "#common/code-model/http-operation";
+import { JsonType, Schema } from "#common/code-model/schema";
 
 export async function process(service: Host) {
   return await processCodeModel(inferSignatures, service);
 }
 
 async function inferSignatures(model: Model, service: Host): Promise<Model> {
-  for (const schema of Object.values(model.components.schemas)) {
+  for (const schema of Object.values(model.schemas)) {
     for (const op of getSchemaFunctions(schema)) {
-      model.components.operations[op.details.name] = op;
+      // todo: fix this.
+      // model.commands.operations[op.details.name] = op;
     }
   }
   return model;

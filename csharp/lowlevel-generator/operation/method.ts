@@ -1,26 +1,21 @@
-import { Class } from "#csharp/code-dom/class";
-import * as codemodel from "#remodeler/code-model";
-import { Method } from "#csharp/code-dom/method";
+import {Class} from "#csharp/code-dom/class";
+import {Method} from "#csharp/code-dom/method";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { OperationParameter, OperationBodyParameter, CallbackParameter } from "../operation/parameter";
-
-import { Model } from "#remodeler/code-model";
-import * as message from "../messages";
-import { all, EOL, camelCase, fixLeadingNumber, deconstruct, map, selectMany, pascalCase, indent } from "#common/text-manipulation";
-import { State } from "../generator";
-import { Statement, Statements, OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { Expression } from "#csharp/code-dom/expression";
-import { Using } from "#csharp/code-dom/statements/using";
-import { Try } from "#csharp/code-dom/statements/try";
-import { Finally } from "#csharp/code-dom/statements/finally";
-import { Switch } from "#csharp/code-dom/statements/switch";
-import { Case, DefaultCase, TerminalDefaultCase } from "#csharp/code-dom/statements/case";
-import { ClientRuntime, EventListener as EventListenr, ISendAsync } from "#csharp/lowlevel-generator/clientruntime";
-import { Modifier, Access } from "#csharp/code-dom/access-modifier";
-import { If } from "#csharp/code-dom/statements/if";
-import { URL } from "url";
-import { request } from "http";
+import {Parameter} from "#csharp/code-dom/parameter";
+import {CallbackParameter, OperationBodyParameter, OperationParameter} from "../operation/parameter";
+import {camelCase, deconstruct, EOL, fixLeadingNumber, indent, map} from "#common/text-manipulation";
+import {State} from "../generator";
+import {Statement} from "#csharp/code-dom/statements/statement";
+import {Expression} from "#csharp/code-dom/expression";
+import {Using} from "#csharp/code-dom/statements/using";
+import {Try} from "#csharp/code-dom/statements/try";
+import {Finally} from "#csharp/code-dom/statements/finally";
+import {Switch} from "#csharp/code-dom/statements/switch";
+import {Case, DefaultCase, TerminalDefaultCase} from "#csharp/code-dom/statements/case";
+import {ClientRuntime, EventListener as EventListenr, ISendAsync} from "#csharp/lowlevel-generator/clientruntime";
+import {Access, Modifier} from "#csharp/code-dom/access-modifier";
+import {If} from "#csharp/code-dom/statements/if";
+import {HttpOperation, ParameterLocation} from "#common/code-model/http-operation";
 
 export class OperationMethod extends Method {
   public methodParameters: OperationParameter[];
@@ -37,7 +32,7 @@ export class OperationMethod extends Method {
     }[];
   }[]
 
-  constructor(protected parent: Class, public operation: codemodel.HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
+  constructor(protected parent: Class, public operation: HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(operation.details.name, mscorlib.Task);
     this.apply(objectInitializer);
     this.async = Modifier.Async;
@@ -144,10 +139,10 @@ export class OperationMethod extends Method {
 
     let path = this.operation.path;
 
-    const headerParams = this.methodParameters.filter(each => each.param.in === codemodel.ParameterLocation.Header);
-    const pathParams = this.methodParameters.filter(each => each.param.in === codemodel.ParameterLocation.Path);
-    const queryParams = this.methodParameters.filter(each => each.param.in === codemodel.ParameterLocation.Query);
-    const cookieParams = this.methodParameters.filter(each => each.param.in === codemodel.ParameterLocation.Cookie);
+    const headerParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Header);
+    const pathParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Path);
+    const queryParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Query);
+    const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
     for (const pp of pathParams) {
       path = path.replace(`{${pp.param.name}}`, `{System.Uri.EscapeDataString(${pp.use})}`);

@@ -1,4 +1,4 @@
-import { Dictionary } from "#remodeler/common";
+import { Dictionary } from "#common/dictionary";
 
 let indentation = "    ";
 

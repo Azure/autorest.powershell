@@ -2,8 +2,8 @@ import { hasProperties } from "#common/text-manipulation";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { ModelInterface } from "#csharp/lowlevel-generator/model/interface";
 import { CSharpData } from "#csharp/lowlevel-generator/private-data";
-import { JsonType, Schema, Header } from "#remodeler/code-model";
-import { Dictionary } from "#remodeler/common";
+import { Header } from "#common/code-model/http-operation";
+import { Dictionary } from "#common/dictionary";
 import { IntegerFormat, NumberFormat, StringFormat } from "#remodeler/known-format";
 import { State } from "../generator";
 import * as message from "../messages";
@@ -22,6 +22,7 @@ import { EnumClass } from "../support/enum";
 import { PropertyType } from "../type-declaration";
 import * as validation from "../validations";
 import { ModelClass } from "./class";
+import {JsonType, Schema} from "#common/code-model/schema";
 
 
 

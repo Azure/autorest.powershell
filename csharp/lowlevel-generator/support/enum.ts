@@ -13,7 +13,7 @@ import { Property } from "#csharp/code-dom/property";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import { Struct } from "#csharp/code-dom/struct";
 import { PropertyType } from "#csharp/lowlevel-generator/type-declaration";
-import { Schema } from "#remodeler/code-model";
+import { Schema } from "#common/code-model/schema";
 import { State } from "../generator";
 
 export class EnumClass extends Struct implements PropertyType {

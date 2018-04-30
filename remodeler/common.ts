@@ -1,11 +1,4 @@
-
-export interface Dictionary<T> {
-  [key: string]: T;
-}
-
-export class Dictionary<T> implements Dictionary<T> {
-
-}
+import {Dictionary, ToDictionary} from "#common/dictionary";
 
 export interface PathReference<T> {
   $ref: string;
@@ -20,7 +13,7 @@ export type Reference<T> = T;
 
 export type Refable<T> = T | PathReference<T>;
 export type Optional<T> = T | undefined;
-export type NotOptional<T> = T;
+
 
 export function typeOf(obj: any) {
   const t = typeof (obj);
@@ -81,12 +74,3 @@ export function getExtensionProperties(dictionary: Dictionary<any>): Dictionary<
   return ToDictionary(includeXDash(dictionary), each => dictionary[each]);
 }
 
-export function ToDictionary<T>(keys: Array<string>, each: (index: string) => T) {
-  const result = new Dictionary<T>();
-  keys.map((v, i, a) => result[v] = each(v));
-  return result;
-}
-
-export function CopyDictionary<TSource, TDestination>(dictionary: Dictionary<TSource>, each: (index: string) => TDestination) {
-  return ToDictionary(excludeXDash(dictionary), each);
-}

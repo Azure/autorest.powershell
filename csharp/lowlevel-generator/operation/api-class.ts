@@ -1,10 +1,10 @@
 import { Class } from "#csharp/code-dom/class";
 import { Namespace } from "#csharp/code-dom/namespace";
 import { Property } from "#csharp/code-dom/property";
-import * as codemodel from "#remodeler/code-model";
 import { ISendAsync } from "../clientruntime";
 import { State } from "../generator";
-import { OperationMethod, CallMethod, ValidationMethod } from "../operation/method";
+import { CallMethod, OperationMethod, ValidationMethod } from "../operation/method";
+import { isHttpOperation } from "#common/code-model/http-operation";
 
 
 export class ApiClass extends Class {
@@ -20,9 +20,9 @@ export class ApiClass extends Class {
     state.model.details.namespace = namespace.fullName;
 
     // add operations from code model
-    for (const operationName in state.model.components.operations) {
-      const operation = state.model.components.operations[operationName];
-      if (codemodel.isHttpOperation(operation)) {
+    for (const operationName in state.model.http.operations) {
+      const operation = state.model.http.operations[operationName];
+      if (isHttpOperation(operation)) {
 
         // an operation has parameters for parameters, body, callbacks, listener and sender
         // we need to make sure that the parameters for a given operation are consistent between the operation method, the call method, and the validation method.

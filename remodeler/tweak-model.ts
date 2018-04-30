@@ -2,8 +2,9 @@ import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extens
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation } from "#remodeler/code-model";
+import { Model } from "#common/code-model/code-model";
 import { map } from "#common/text-manipulation";
+import { isHttpOperation } from "#common/code-model/http-operation";
 
 // Universal version - 
 // tweaks the code model to adjust things so that the code will generate better.
@@ -15,7 +16,7 @@ export async function process(service: Host) {
 async function tweakModel(model: Model, service: Host): Promise<Model> {
 
   // consolodate compatible response types.
-  map(model.components.operations, (key, operation) => {
+  map(model.http.operations, (key, operation) => {
     if (!isHttpOperation(operation)) return null;
     // TODO: mimetypes might start with the mimetype and have extra stuff after
     // this should be fixed if it happens.

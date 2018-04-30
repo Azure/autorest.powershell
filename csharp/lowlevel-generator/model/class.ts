@@ -10,7 +10,7 @@ import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
 import { OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/statement";
 import { EventListener, IJsonSerializable, IValidates, JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
 import { CSharpData } from "#csharp/lowlevel-generator/private-data";
-import { Schema } from "#remodeler/code-model";
+import { Schema } from "#common/code-model/schema";
 import { State } from "../generator";
 import { ModelInterface } from "./interface";
 import { ModelProperty } from "./property";

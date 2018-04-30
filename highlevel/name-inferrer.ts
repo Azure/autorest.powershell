@@ -2,17 +2,21 @@ import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autore
 import { deserialize, serialize } from "#common/yaml";
 import { processCodeModel } from "#common/process-code-model";
 import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation, HighLevelOperation, Schema, IParameter, ImplementationLocation } from "#remodeler/code-model";
+import { Model } from "#common/code-model/code-model";
 import { EnglishPluralizationService } from "./english-pluralization-service";
 import { pascalCase } from "#common/text-manipulation";
-import { Dictionary } from "#remodeler/common";
+import { Dictionary } from "#common/dictionary";
+import { CommandOperation } from "#common/code-model/command-operation";
+import { isHttpOperation } from "#common/code-model/http-operation";
+import { Schema } from "#common/code-model/schema";
+import { ImplementationLocation, IParameter } from "#common/code-model/components";
 
 export async function process(service: Host) {
   return await processCodeModel(inferSignatures, service);
 }
 
 async function inferSignatures(model: Model, service: Host): Promise<Model> {
-  for (const operation of Object.values(model.components.operations).filter(isHttpOperation)) {
+  for (const operation of Object.values(model.http.operations).filter(isHttpOperation)) {
     const names = getCommandName(operation.details.name, service.Message);
     const name = names[0]; // TODO: pick first candidate!?
     const parameters = new Dictionary<IParameter>();
@@ -20,15 +24,15 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
 
 
     for (const parameter of operation.parameters) {
-      parameters[parameter.name] = {
-        name: parameter.name,
+      // schema: parameter.schema || (() => { throw "no schema"; })(), // TODO: fix handle parameter.content!
+      parameters[parameter.name] = new IParameter(parameter.name, parameter.schema, {
+        extensions: new Dictionary<any>(),
         description: "<description>",
         allowEmptyValue: false,
         deprecated: false,
         details: { name: parameter.name, location: ImplementationLocation.Method },
-        schema: parameter.schema || (() => { throw "no schema"; })(), // TODO: handle parameter.content!
         required: parameter.required
-      };
+      });
     }
 
 
@@ -41,14 +45,16 @@ async function inferSignatures(model: Model, service: Host): Promise<Model> {
     }
 
     const hlname = `<HL>${name.noun}_${name.verb}`;
-    const hlOp = new HighLevelOperation(hlname, operation.deprecated, false, {
+    const hlOp = new CommandOperation(hlname, {
+      deprecated: operation.deprecated,
+      pure: false,
       description: operation.description,
       summary: operation.summary,
-      parameters: parameters,
+      // parameters: parameters, // todo:fix
       responses: responses,
     });
     hlOp.details.names = names;
-    model.components.operations[hlname] = hlOp;
+    model.commands.operations[hlname] = hlOp;
   }
   return model;
 }

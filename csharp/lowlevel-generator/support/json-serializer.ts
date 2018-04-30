@@ -22,7 +22,7 @@ export class JsonSerializerClass extends Class {
     const container = tojson.addParameter(new Parameter("container", JsonObject, { defaultInitializer: `= null` }));
     tojson.add(`return null;`);
 
-    const schemas = state.model.components.schemas;
+    const schemas = state.model.schemas;
 
     // iterate thru all the models
     // each model should have a class and an interface.

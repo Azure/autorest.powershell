@@ -1,4 +1,5 @@
-import { Refable as Reference, Dictionary, Optional } from "./common";
+import { Refable as Reference, Optional } from "./common";
+import {Dictionary} from "#common/dictionary";
 
 // OAI3 variants for the basic model definitions.
 
@@ -192,10 +193,10 @@ export interface ExternalDocumentation extends Extensions {
 
 export interface Header extends Extensions, Partial<HasContent>, Partial<HasSchema>, Partial<HasExample>, Partial<HasExamples> {
   description?: string;
-  required?: boolean;
-  deprecated?: boolean;
-  allowEmptyValue?: boolean;
-  allowReserved?: boolean;
+  required: Optional<boolean>;
+  deprecated: Optional<boolean>;
+  allowEmptyValue: Optional<boolean>;
+  allowReserved: Optional<boolean>;
 }
 
 export interface ImplicitOAuthFlow extends Extensions {
@@ -301,9 +302,9 @@ export interface Parameter extends Partial<HasSchema>, Partial<HasContent>, Part
   in: ParameterLocation;
 
   description?: string;
-  allowEmptyValue?: boolean;
-  deprecated?: boolean;
-  required?: boolean;
+  allowEmptyValue: Optional<boolean>;
+  deprecated: Optional<boolean>;
+  required: Optional<boolean>;
   style?: EncodingStyle;
 
   allowReserved?: boolean;

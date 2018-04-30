@@ -1,18 +1,18 @@
-import { Method } from "#csharp/code-dom/method";
+import {Method} from "#csharp/code-dom/method";
 import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { ClientRuntime } from "#csharp/lowlevel-generator/clientruntime";
-import * as codemodel from "#remodeler/code-model";
-import { State } from "../generator";
-import { PropertyType } from "../type-declaration";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { pascalCase, fixLeadingNumber, deconstruct } from "#common/text-manipulation";
+import {Parameter} from "#csharp/code-dom/parameter";
+import {OneOrMoreStatements} from "#csharp/code-dom/statements/statement";
+import {ClientRuntime} from "#csharp/lowlevel-generator/clientruntime";
+import {State} from "../generator";
+import {PropertyType} from "../type-declaration";
+import {Namespace} from "#csharp/code-dom/namespace";
+import {HttpOperationParameter} from "#common/code-model/http-operation";
+import {Schema} from "#common/code-model/schema";
 
 
 export class OperationParameter extends Parameter {
 
-  constructor(parent: Method, public param: codemodel.HttpOperationParameter, state: State, objectInitializer?: Partial<OperationParameter>) {
+  constructor(parent: Method, public param: HttpOperationParameter, state: State, objectInitializer?: Partial<OperationParameter>) {
 
     super(param.details.name, state.project.modelsNamespace.resolveTypeDeclaration(param.schema, param.required, state.path('schema')));
     this.apply(objectInitializer);
@@ -35,7 +35,7 @@ export class OperationParameter extends Parameter {
 }
 
 export class OperationBodyParameter extends Parameter {
-  constructor(parent: Method, name: string, description: string, schema: codemodel.Schema, required: boolean, state: State, objectInitializer?: Partial<OperationBodyParameter>) {
+  constructor(parent: Method, name: string, description: string, schema: Schema, required: boolean, state: State, objectInitializer?: Partial<OperationBodyParameter>) {
     super(name, state.project.modelsNamespace.resolveTypeDeclaration(schema, required, state.path('schema')));
     this.apply(objectInitializer);
     this.description = description || schema.details.description || "";

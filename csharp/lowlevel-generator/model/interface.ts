@@ -3,7 +3,7 @@ import { Namespace } from "#csharp/code-dom/namespace";
 import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
 import { ModelClass } from "#csharp/lowlevel-generator/model/class";
 import { PropertyType } from "#csharp/lowlevel-generator/type-declaration";
-import { Schema } from "#remodeler/code-model";
+import { Schema } from "#common/code-model/schema";
 import { State } from "../generator";
 import { ModelInterfaceProperty } from "./interface-property";
 import { Method } from "#csharp/code-dom/method";
