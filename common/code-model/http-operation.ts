@@ -1,7 +1,7 @@
-import { Dictionary } from "#common/dictionary";
-import { Schema } from "#common/code-model/schema";
-import { SecurityScheme } from "#common/code-model/security-scheme";
-import { Extensions } from "#common/code-model/extensions";
+import { Dictionary } from '#common/dictionary';
+import { Schema } from '#common/code-model/schema';
+import { SecurityScheme } from '#common/code-model/security-scheme';
+import { Extensions } from '#common/code-model/extensions';
 import {
   Components,
   Details, Example, ExternalDocumentation, ImplementationLocation,
@@ -9,7 +9,7 @@ import {
   IOperationBase,
   IParameter, Link,
   ParameterDetails, Server, SecurityRequirement
-} from "#common/code-model/components";
+} from '#common/code-model/components';
 
 
 export interface HttpOperationDetails extends Details {

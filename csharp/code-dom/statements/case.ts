@@ -1,5 +1,5 @@
-import { indent } from "#common/text-manipulation";
-import { OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/statement";
+import { indent } from '#common/text-manipulation';
+import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 
 export class Case extends Statements {
   constructor(protected value: string, body: OneOrMoreStatements, objectInitializer?: Partial<Case>) {

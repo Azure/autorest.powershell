@@ -1,6 +1,6 @@
-import { fixPropertyName } from "#common/text-manipulation";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { PropertyType } from "../type-declaration";
+import { fixPropertyName } from '#common/text-manipulation';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
 export class Numeric implements PropertyType {
   constructor(protected numericType: string, protected minimum: number | undefined, protected exclusiveMinimum: boolean | undefined, protected maximum: number | undefined, protected exclusiveMaximum: boolean | undefined, protected multipleOf: number | undefined) {

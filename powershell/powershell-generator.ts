@@ -1,6 +1,6 @@
-import { deserialize, serialize } from "#common/yaml";
-import { Model } from "#common/code-model/code-model";
-import { Host } from "@microsoft.azure/autorest-extension-base";
+import { deserialize, serialize } from '#common/yaml';
+import { Model } from '#common/code-model/code-model';
+import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export async function process(service: Host) {
   try {

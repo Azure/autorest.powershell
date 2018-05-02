@@ -1,6 +1,6 @@
-import { fixPropertyName } from "#common/text-manipulation";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { PropertyType } from "../type-declaration";
+import { fixPropertyName } from '#common/text-manipulation';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
 export class String implements PropertyType {
   constructor(protected required: boolean, private minLength?: number, private maxLength?: number, private pattern?: string, private choices?: Array<string>) {

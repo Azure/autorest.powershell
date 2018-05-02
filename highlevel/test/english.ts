@@ -1,7 +1,7 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
 
-import { EnglishPluralizationService } from "../english-pluralization-service";
+import { EnglishPluralizationService } from '../english-pluralization-service';
 
 const service = new EnglishPluralizationService();
 service.AddWord("Database", "Databases");

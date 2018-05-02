@@ -1,7 +1,7 @@
-import { ModelState } from "#common/model-state";
-import { Host, JsonPath } from "@microsoft.azure/autorest-extension-base";
-import { Model } from "#common/code-model/code-model";
-import { Project } from "./project";
+import { ModelState } from '#common/model-state';
+import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
+import { Model } from '#common/code-model/code-model';
+import { Project } from './project';
 
 export class State extends ModelState<Model> {
 

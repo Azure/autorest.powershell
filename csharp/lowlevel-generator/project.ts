@@ -1,16 +1,16 @@
-import { Project as codeDomProject } from "#csharp/code-dom/project";
-import { Model } from "#common/code-model/code-model";
-import { ApiClass } from "./operation/api-class";
-import { Namespace } from "#csharp/code-dom/namespace";
-import * as message from "./messages";
-import { State } from "./generator";
-import { ModelClass } from "./model/class";
-import { ModelsNamespace } from "./model/namespace";
-import { ServiceNamespace } from "./operation/namespace";
-import { SupportNamespace } from "./support/namespace";
-import { JsonSerializerClass } from "#csharp/lowlevel-generator/support/json-serializer";
-import { Import } from "#csharp/code-dom/import";
-import { JsonType } from "#common/code-model/schema";
+import { Project as codeDomProject } from '#csharp/code-dom/project';
+import { Model } from '#common/code-model/code-model';
+import { ApiClass } from './operation/api-class';
+import { Namespace } from '#csharp/code-dom/namespace';
+import * as message from './messages';
+import { State } from './generator';
+import { ModelClass } from './model/class';
+import { ModelsNamespace } from './model/namespace';
+import { ServiceNamespace } from './operation/namespace';
+import { SupportNamespace } from './support/namespace';
+import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
+import { Import } from '#csharp/code-dom/import';
+import { JsonType } from '#common/code-model/schema';
 
 export class Project extends codeDomProject {
 

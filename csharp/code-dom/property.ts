@@ -1,9 +1,9 @@
-import { Initializer } from "#common/initializer";
-import { Abstract, Access, Extern, Modifier, New, Override, Sealed, Static, Virtual, highestAccess } from "#csharp/code-dom/access-modifier";
-import { Expression } from "#csharp/code-dom/expression";
-import { TypeDeclaration } from "./type-declaration";
-import { comment, docCommentPrefix, docComment } from "#common/text-manipulation";
-import { summary } from "#csharp/code-dom/doc-comments";
+import { Initializer } from '#common/initializer';
+import { Abstract, Access, Extern, Modifier, New, Override, Sealed, Static, Virtual, highestAccess } from '#csharp/code-dom/access-modifier';
+import { Expression } from '#csharp/code-dom/expression';
+import { TypeDeclaration } from './type-declaration';
+import { comment, docCommentPrefix, docComment } from '#common/text-manipulation';
+import { summary } from '#csharp/code-dom/doc-comments';
 
 export class Property extends Initializer implements Expression {
   public "new": New = Modifier.None;

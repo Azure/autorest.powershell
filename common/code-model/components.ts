@@ -1,6 +1,6 @@
-import { Extensions } from "#common/code-model/extensions";
-import { Dictionary } from "#common/dictionary";
-import { Schema } from "#common/code-model/schema";
+import { Extensions } from '#common/code-model/extensions';
+import { Dictionary } from '#common/dictionary';
+import { Schema } from '#common/code-model/schema';
 
 export interface IOperationBase {
 

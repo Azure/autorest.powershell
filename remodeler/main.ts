@@ -1,9 +1,9 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { Remodeler } from "./remodeler";
-import * as OpenAPI from "./oai3";
-import { deserialize, serialize } from "#common/yaml";
-import { writeFileSync } from "fs";
-import { ModelState } from "#common/model-state";
+import { Host, ArtifactMessage, Channel } from '@microsoft.azure/autorest-extension-base';
+import { Remodeler } from './remodeler';
+import * as OpenAPI from './oai3';
+import { deserialize, serialize } from '#common/yaml';
+import { writeFileSync } from 'fs';
+import { ModelState } from '#common/model-state';
 
 export async function process(service: Host) {
   try {

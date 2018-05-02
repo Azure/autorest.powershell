@@ -1,5 +1,5 @@
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { PropertyType } from "../type-declaration";
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
 export class Duration implements PropertyType {
   constructor(protected required: boolean) {

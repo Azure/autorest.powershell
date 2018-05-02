@@ -1,5 +1,5 @@
-import { Refable as Reference, Optional } from "./common";
-import {Dictionary} from "#common/dictionary";
+import { Refable as Reference, Optional } from './common';
+import { Dictionary } from '#common/dictionary';
 
 // OAI3 variants for the basic model definitions.
 

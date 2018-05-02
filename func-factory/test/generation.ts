@@ -1,10 +1,10 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
-import { Graph, NodePhi, NodeProc } from "../src/graph";
-import { GraphContext, FlexFunc, FlexArgs, FlexCallbacks } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, runGraph, MyTType } from "./common";
-import { generateTS, GenerationFlavor } from "../src/reference-generator";
-import { DeepMutable, objMap, tsc } from "../src/helpers";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
+import { Graph, NodePhi, NodeProc } from '../src/graph';
+import { GraphContext, FlexFunc, FlexArgs, FlexCallbacks } from '../src/graph-context';
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, runGraph, MyTType } from './common';
+import { generateTS, GenerationFlavor } from '../src/reference-generator';
+import { DeepMutable, objMap, tsc } from '../src/helpers';
 
 @suite class Generation {
   @test "addition"() {

@@ -1,13 +1,13 @@
-import {Method} from "#csharp/code-dom/method";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import {Parameter} from "#csharp/code-dom/parameter";
-import {OneOrMoreStatements} from "#csharp/code-dom/statements/statement";
-import {ClientRuntime} from "#csharp/lowlevel-generator/clientruntime";
-import {State} from "../generator";
-import {PropertyType} from "../type-declaration";
-import {Namespace} from "#csharp/code-dom/namespace";
-import {HttpOperationParameter} from "#common/code-model/http-operation";
-import {Schema} from "#common/code-model/schema";
+import {Method} from '#csharp/code-dom/method';
+import * as mscorlib from '#csharp/code-dom/mscorlib';
+import {Parameter} from '#csharp/code-dom/parameter';
+import {OneOrMoreStatements} from '#csharp/code-dom/statements/statement';
+import {ClientRuntime} from '#csharp/lowlevel-generator/clientruntime';
+import {State} from '../generator';
+import {PropertyType} from '../type-declaration';
+import {Namespace} from '#csharp/code-dom/namespace';
+import {HttpOperationParameter} from '#common/code-model/http-operation';
+import {Schema} from '#common/code-model/schema';
 
 
 export class OperationParameter extends Parameter {

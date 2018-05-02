@@ -1,7 +1,7 @@
-import { Interface } from "#csharp/code-dom/interface";
-import { LibraryType } from "#csharp/code-dom/mscorlib";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+import { Interface } from '#csharp/code-dom/interface';
+import { LibraryType } from '#csharp/code-dom/mscorlib';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 
 export const ClientRuntime: Namespace = new Namespace("Microsoft.Rest.ClientRuntime");
 
@@ -14,4 +14,5 @@ export const IValidates: Interface = new Interface(ClientRuntime, "IValidates");
 
 export const JsonNode: TypeDeclaration = new LibraryType(`Carbon.Json.JsonNode`);
 export const JsonObject: TypeDeclaration = new LibraryType(`Carbon.Json.JsonObject`);
+export const JsonMode: TypeDeclaration = new LibraryType(`Microsoft.Rest.ClientRuntime.JsonMode`);
 

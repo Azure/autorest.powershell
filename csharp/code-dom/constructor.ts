@@ -1,6 +1,6 @@
-import { CommaChar } from "#common/text-manipulation";
-import { Class } from "./class";
-import { Method } from "./method";
+import { CommaChar } from '#common/text-manipulation';
+import { Class } from './class';
+import { Method } from './method';
 
 export class Constructor extends Method {
   constructor(protected containingClass: Class, objectIntializer?: Partial<Method>) {

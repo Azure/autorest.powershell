@@ -1,8 +1,8 @@
-import { Components, IOperationBase, IParameter } from "#common/code-model/components";
-import { Extensions } from "#common/code-model/extensions";
-import { Dictionary } from "#common/dictionary";
-import { Schema } from "#common/code-model/schema";
-import { ProgramaticOperationDetails, ProgrammaticOperation } from "#common/code-model/programatic-operation";
+import { Components, IOperationBase, IParameter } from '#common/code-model/components';
+import { Extensions } from '#common/code-model/extensions';
+import { Dictionary } from '#common/dictionary';
+import { Schema } from '#common/code-model/schema';
+import { ProgramaticOperationDetails, ProgrammaticOperation } from '#common/code-model/programatic-operation';
 
 export function isCommandOperation(operation: IOperationBase): operation is CommandOperation {
   if ((<any>operation).operationType && (<any>operation).operationType === 'CommandOperation') {

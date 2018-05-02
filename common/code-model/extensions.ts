@@ -1,5 +1,5 @@
-import { Dictionary } from "#common/dictionary";
-import { Initializer } from "#common/initializer";
+import { Dictionary } from '#common/dictionary';
+import { Initializer } from '#common/initializer';
 
 export class Extensions extends Initializer implements Extensions {
   extensions = new Dictionary<any>();

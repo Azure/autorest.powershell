@@ -1,10 +1,10 @@
-import { Initializer } from "#common/initializer";
-import { EOL, comment, dotCombine, indent, toMap } from "#common/text-manipulation";
-import { Class } from "./class";
-import { Delegate } from "./delegate";
-import { Import } from "./import";
-import { Interface } from "./interface";
-import { Project } from "./project";
+import { Initializer } from '#common/initializer';
+import { EOL, comment, dotCombine, indent, toMap } from '#common/text-manipulation';
+import { Class } from './class';
+import { Delegate } from './delegate';
+import { Import } from './import';
+import { Interface } from './interface';
+import { Project } from './project';
 
 export class Namespace extends Initializer {
   private usings = new Array<Import>();

@@ -1,8 +1,8 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { deserialize, serialize } from "#common/yaml";
-import { ModelState } from "#common/model-state";
-import { Model } from "#common/code-model/code-model";
-import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
+import { Host, ArtifactMessage, Channel } from '@microsoft.azure/autorest-extension-base';
+import { deserialize, serialize } from '#common/yaml';
+import { ModelState } from '#common/model-state';
+import { Model } from '#common/code-model/code-model';
+import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from '#common/text-manipulation';
 
 export async function processCodeModel(processExtension: (input: Model, service: Host) => Promise<Model>, service: Host) {
   try {

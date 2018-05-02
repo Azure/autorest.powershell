@@ -1,20 +1,20 @@
-import { Access, Modifier } from "#csharp/code-dom/access-modifier";
-import { Constructor } from "#csharp/code-dom/constructor";
-import { StringExpression } from "#csharp/code-dom/expression";
-import { InitializedField } from "#csharp/code-dom/field";
-import { Interface } from "#csharp/code-dom/interface";
-import { Method } from "#csharp/code-dom/method";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { String } from "#csharp/code-dom/mscorlib";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Operator } from "#csharp/code-dom/operator";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { Property } from "#csharp/code-dom/property";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { Struct } from "#csharp/code-dom/struct";
-import { PropertyType } from "#csharp/lowlevel-generator/type-declaration";
-import { Schema } from "#common/code-model/schema";
-import { State } from "../generator";
+import { Access, Modifier } from '#csharp/code-dom/access-modifier';
+import { Constructor } from '#csharp/code-dom/constructor';
+import { StringExpression } from '#csharp/code-dom/expression';
+import { InitializedField } from '#csharp/code-dom/field';
+import { Interface } from '#csharp/code-dom/interface';
+import { Method } from '#csharp/code-dom/method';
+import * as mscorlib from '#csharp/code-dom/mscorlib';
+import { String } from '#csharp/code-dom/mscorlib';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Operator } from '#csharp/code-dom/operator';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { Property } from '#csharp/code-dom/property';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Struct } from '#csharp/code-dom/struct';
+import { PropertyType } from '#csharp/lowlevel-generator/type-declaration';
+import { Schema } from '#common/code-model/schema';
+import { State } from '../generator';
 
 export class EnumClass extends Struct implements PropertyType {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {

@@ -1,5 +1,5 @@
-import { Dictionary } from "#common/dictionary";
-import { Extensions } from "#common/code-model/extensions";
+import { Dictionary } from '#common/dictionary';
+import { Extensions } from '#common/code-model/extensions';
 
 export class Contact extends Extensions implements Contact {
   extensions = new Dictionary<any>();

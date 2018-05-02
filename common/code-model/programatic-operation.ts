@@ -1,7 +1,7 @@
-import { Dictionary } from "#common/dictionary";
-import { Schema } from "#common/code-model/schema";
-import { Extensions } from "#common/code-model/extensions";
-import { Details, IOperation, IOperationBase, IParameter } from "#common/code-model/components";
+import { Dictionary } from '#common/dictionary';
+import { Schema } from '#common/code-model/schema';
+import { Extensions } from '#common/code-model/extensions';
+import { Details, IOperation, IOperationBase, IParameter } from '#common/code-model/components';
 
 export interface ProgrammaticOperation extends IOperation<IParameter> {
   responses: Dictionary<Dictionary<Schema>>;

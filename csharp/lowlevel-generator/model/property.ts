@@ -1,13 +1,13 @@
-import {BackedProperty} from "#csharp/code-dom/property";
-import {OneOrMoreStatements} from "#csharp/code-dom/statements/statement";
-import {State} from "../generator";
-import {PropertyType} from "../type-declaration";
-import {ModelClass} from "./class";
-import {Property, Schema} from "#common/code-model/schema";
+import { BackedProperty } from '#csharp/code-dom/property';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { State } from '../generator';
+import { PropertyType } from '../type-declaration';
+import { ModelClass } from './class';
+import { Property, Schema } from '#common/code-model/schema';
 
 export class ModelProperty extends BackedProperty {
   private required: boolean;
-  constructor(parent: ModelClass, property: Property<Schema>, protected serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
+  constructor(parent: ModelClass, property: Property, protected serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
     super(property.details.name, state.project.modelsNamespace.resolveTypeDeclaration(property.schema, property.details.required, state.path("schema")));
     this.apply(objectInitializer);
     this.description = property.details.description || "";

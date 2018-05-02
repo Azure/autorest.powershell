@@ -1,6 +1,6 @@
-import { EOL, comment, docCommentPrefix, indent, sortByName } from "#common/text-manipulation";
-import { Namespace } from "./namespace";
-import { Type } from "./type";
+import { EOL, comment, docCommentPrefix, indent, sortByName } from '#common/text-manipulation';
+import { Namespace } from './namespace';
+import { Type } from './type';
 
 export class Interface extends Type {
   constructor(parent: Namespace, name: string, objectIntializer?: Partial<Interface>) {

@@ -1,4 +1,4 @@
-import {Dictionary, ToDictionary} from "#common/dictionary";
+import { Dictionary, ToDictionary } from '#common/dictionary';
 
 export interface PathReference<T> {
   $ref: string;

@@ -168,5 +168,7 @@ code-model-emitter-settings:
 # testing:  ask for the files we need  
 output-artifact: 
   - code-model-v2.yaml # this is filtered outby default.
+  - source-file-csharp
+  - source-file-other
 
 ```

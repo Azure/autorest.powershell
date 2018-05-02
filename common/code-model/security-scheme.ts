@@ -1,6 +1,6 @@
-import { Dictionary } from "#common/dictionary";
-import { ParameterLocation } from "#common/code-model/http-operation";
-import { Extensions } from "#common/code-model/extensions";
+import { Dictionary } from '#common/dictionary';
+import { ParameterLocation } from '#common/code-model/http-operation';
+import { Extensions } from '#common/code-model/extensions';
 
 
 export enum Scheme {

@@ -1,12 +1,12 @@
-import { Modifier } from "#csharp/code-dom/access-modifier";
-import { Class } from "#csharp/code-dom/class";
-import { Method } from "#csharp/code-dom/method";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
-import { State } from "#csharp/lowlevel-generator/generator";
-import { CSharpData } from "#csharp/lowlevel-generator/private-data";
+import { Modifier } from '#csharp/code-dom/access-modifier';
+import { Class } from '#csharp/code-dom/class';
+import { Method } from '#csharp/code-dom/method';
+import * as mscorlib from '#csharp/code-dom/mscorlib';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { JsonNode, JsonObject } from '#csharp/lowlevel-generator/clientruntime';
+import { State } from '#csharp/lowlevel-generator/generator';
+import { CSharpData } from '#csharp/lowlevel-generator/private-data';
 
 export class JsonSerializerClass extends Class {
 

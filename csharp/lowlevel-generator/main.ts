@@ -1,8 +1,8 @@
-import { deserialize, serialize } from "#common/yaml";
-import { Model } from "#common/code-model/code-model";
-import { Host } from "@microsoft.azure/autorest-extension-base";
-import { State } from "./generator";
-import { Project } from "./project";
+import { deserialize, serialize } from '#common/yaml';
+import { Model } from '#common/code-model/code-model';
+import { Host } from '@microsoft.azure/autorest-extension-base';
+import { State } from './generator';
+import { Project } from './project';
 
 export async function process(service: Host) {
   try {

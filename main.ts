@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutoRestExtension, } from "@microsoft.azure/autorest-extension-base";
-import { process as remodeler } from "./remodeler/main";
-import { process as tweakCodeModel } from "./remodeler/tweak-model";
-import { process as tweakCodeModelAzure } from "./remodeler/tweak-model-azure";
+import { AutoRestExtension, } from '@microsoft.azure/autorest-extension-base';
+import { process as remodeler } from './remodeler/main';
+import { process as tweakCodeModel } from './remodeler/tweak-model';
+import { process as tweakCodeModelAzure } from './remodeler/tweak-model-azure';
 
-import { process as llcsharp } from "./csharp/lowlevel-generator/main";
-import { process as powershell } from "./powershell/powershell-generator";
-import { process as csnamer } from "./csharp/namer";
-import { process as csinferrer } from "./csharp/inferrer";
+import { process as llcsharp } from './csharp/lowlevel-generator/main';
+import { process as powershell } from './powershell/powershell-generator';
+import { process as csnamer } from './csharp/namer';
+import { process as csinferrer } from './csharp/inferrer';
 
-import { process as hlnameinferrer } from "./highlevel/name-inferrer";
+import { process as hlnameinferrer } from './highlevel/name-inferrer';
 
-import { CommaChar } from "#common/text-manipulation";
+import { CommaChar } from '#common/text-manipulation';
 
 require('source-map-support').install();
 

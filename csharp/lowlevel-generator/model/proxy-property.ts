@@ -1,6 +1,6 @@
-import { Field } from "#csharp/code-dom/field";
-import { Property } from "#csharp/code-dom/property";
-import { State } from "../generator";
+import { Field } from '#csharp/code-dom/field';
+import { Property } from '#csharp/code-dom/property';
+import { State } from '../generator';
 
 export class ProxyProperty extends Property {
   constructor(protected backingFieldObject: Field, protected backingFieldProperty: Property, state: State, objectInitializer?: Partial<ProxyProperty>) {

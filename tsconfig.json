@@ -35,8 +35,17 @@
       ],
       "#csharp/*": [
         "csharp/*"
+      ],
+      "#highlevel/*": [
+        "highlevel/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "name": "tslint-language-service",
+        "configFile": "./tslint.json"
+      }
+    ]
   },
   "exclude": [
     "dist",

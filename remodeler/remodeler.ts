@@ -1,11 +1,11 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from "js-yaml"
-import * as OpenAPI from "./oai3";
-import * as Interpretations from "./interpretations";
-import { dereference, getExtensionProperties, Refable, Dereferenced, isReference, clone } from "./common";
-import { Model as CodeModel} from "../common/code-model/code-model";
-import { StringFormat } from "./known-format";
-import { ModelState } from "#common/model-state";
+import { Host, ArtifactMessage, Channel } from '@microsoft.azure/autorest-extension-base';
+import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from 'js-yaml'
+import * as OpenAPI from './oai3';
+import * as Interpretations from './interpretations';
+import { dereference, getExtensionProperties, Refable, Dereferenced, isReference, clone } from './common';
+import { Model as CodeModel } from '../common/code-model/code-model';
+import { StringFormat } from './known-format';
+import { ModelState } from '#common/model-state';
 import {
   Encoding, EncodingStyle,
   Header,
@@ -13,19 +13,19 @@ import {
   HttpOperation,
   HttpOperationParameter,
   MediaType, ParameterLocation, RequestBody, Response, Callback
-} from "#common/code-model/http-operation";
-import { CopyDictionary, Dictionary } from "#common/dictionary";
-import { SecurityScheme } from "#common/code-model/security-scheme";
-import { Discriminator, JsonType, Property, Schema, XML } from "#common/code-model/schema";
+} from '#common/code-model/http-operation';
+import { CopyDictionary, Dictionary } from '#common/dictionary';
+import { SecurityScheme } from '#common/code-model/security-scheme';
+import { Discriminator, JsonType, Property, Schema, XML } from '#common/code-model/schema';
 import {
-    Example,
-    ExternalDocumentation,
-    ImplementationLocation,
-    Link,
-    SecurityRequirement,
-    Server,
-    Tag
-} from "#common/code-model/components";
+  Example,
+  ExternalDocumentation,
+  ImplementationLocation,
+  Link,
+  SecurityRequirement,
+  Server,
+  Tag
+} from '#common/code-model/components';
 
 const todo_unimplemented = undefined;
 

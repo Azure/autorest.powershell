@@ -1,4 +1,4 @@
-import { SymbolSource, Graph, NodePhi, NodeProc, ControlSource, ControlSink, SymbolSink, ControlFlow, DataFlow } from "./graph";
+import { SymbolSource, Graph, NodePhi, NodeProc, ControlSource, ControlSink, SymbolSink, ControlFlow, DataFlow } from './graph';
 import {
   getNodes,
   getControlSources,
@@ -15,10 +15,10 @@ import {
   getSymbolSinkType,
   getSymbolSourceType,
   getSymbolSinkKnownNames
-} from "./graph-analysis";
-import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from "./graph-validation";
-import { objMap, setExcept, lundef, clone, objReplace, tsc, Obj, trycatch, error, deepEquals, errorUnreachable } from "./helpers";
-import { ProcImplementation, generateTS, GenerationFlavor, ProcImplementations } from "./reference-generator";
+} from './graph-analysis';
+import { validateNodeProc, validateNodePhi, validateRawControlFlow, validateControlFlow, validateRawDataFlow, validateDataFlow, validateSymbolAvailability } from './graph-validation';
+import { objMap, setExcept, lundef, clone, objReplace, tsc, Obj, trycatch, error, deepEquals, errorUnreachable } from './helpers';
+import { ProcImplementation, generateTS, GenerationFlavor, ProcImplementations } from './reference-generator';
 
 export interface Proc<TType> {
   readonly pure: boolean, // side effect free?

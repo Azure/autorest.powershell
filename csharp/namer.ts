@@ -1,9 +1,9 @@
-import { processCodeModel } from "#common/process-code-model";
-import { ModelState } from "#common/model-state";
-import { Model } from "#common/code-model/code-model";
-import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
-import { Host } from "@microsoft.azure/autorest-extension-base";
-import { isHttpOperation } from "#common/code-model/http-operation";
+import { processCodeModel } from '#common/process-code-model';
+import { ModelState } from '#common/model-state';
+import { Model } from '#common/code-model/code-model';
+import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from '#common/text-manipulation';
+import { Host } from '@microsoft.azure/autorest-extension-base';
+import { isHttpOperation } from '#common/code-model/http-operation';
 
 export async function process(service: Host) {
   return await processCodeModel(nameStuffRight, service);

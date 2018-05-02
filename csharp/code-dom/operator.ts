@@ -1,5 +1,5 @@
-import { CommaChar } from "#common/text-manipulation";
-import { Method } from "./method";
+import { CommaChar } from '#common/text-manipulation';
+import { Method } from './method';
 
 export class Operator extends Method {
   constructor(name: string, objectIntializer?: Partial<Method>) {

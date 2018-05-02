@@ -1,7 +1,7 @@
-import { JsonType} from "#common/code-model/schema";
-import { State } from "./generator";
-import * as message from "./messages";
-import {Schema} from "#common/code-model/schema";
+import { JsonType} from '#common/code-model/schema';
+import { State } from './generator';
+import * as message from './messages';
+import {Schema} from '#common/code-model/schema';
 
 
 export function objectWithFormat(schema: Schema, state: State): boolean {

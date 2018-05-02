@@ -1,6 +1,6 @@
-import { Dictionary } from "#common/dictionary";
-import { Details, ExternalDocumentation } from "#common/code-model/components";
-import { Extensions } from "#common/code-model/extensions";
+import { Dictionary } from '#common/dictionary';
+import { Details, ExternalDocumentation } from '#common/code-model/components';
+import { Extensions } from '#common/code-model/extensions';
 
 export interface PropertyDetails extends Details {
   required: boolean;
@@ -18,8 +18,13 @@ export interface EnumDetails {
   name: string
 }
 
+export enum Purpose {
+  Header = "Header",
+}
+
 export interface SchemaDetails extends Details {
   enum?: EnumDetails;
+  purpose?: Purpose;
 }
 
 export class Schema extends Extensions implements Schema {
@@ -29,7 +34,7 @@ export class Schema extends Extensions implements Schema {
   allOf = new Array<Schema>();
   oneOf = new Array<Schema>();
   anyOf = new Array<Schema>();
-  properties = new Dictionary<Property<Schema>>();
+  properties = new Dictionary<Property>();
   extensions = new Dictionary<any>();
 
   constructor(name: string, initializer?: Partial<Schema>) {
@@ -39,7 +44,7 @@ export class Schema extends Extensions implements Schema {
   }
 }
 
-export interface Property<T> extends Extensions {
+export interface Property extends Extensions {
   details: PropertyDetails;
 
   /** description can be on the property reference, so that properties can have a description different from the type description. */
@@ -48,11 +53,11 @@ export interface Property<T> extends Extensions {
   schema: Schema;
 }
 
-export class Property<T> extends Extensions implements Property<T> {
+export class Property extends Extensions implements Property {
   details: PropertyDetails;
   extensions = new Dictionary<any>();
 
-  constructor(name: string, initializer?: Partial<Property<T>>) {
+  constructor(name: string, initializer?: Partial<Property>) {
     super();
     this.details = {
       name: name,
@@ -84,6 +89,14 @@ export enum JsonType {
   Number = "number",
   Object = "object",
   String = "string"
+}
+
+export function isJsonType(type: JsonType, schema?: Schema): schema is Schema {
+  return schema ? schema.type === type : false;
+}
+
+export function isSchemaObject(schema?: Schema): schema is Schema {
+  return isJsonType(JsonType.Object, schema);
 }
 
 export class XML extends Extensions implements XML {
@@ -159,6 +172,6 @@ export interface Schema extends Extensions {
   oneOf: Array<Schema>;
   anyOf: Array<Schema>;
   items?: Schema;
-  properties: Dictionary<Property<Schema>>;
+  properties: Dictionary<Property>;
   additionalProperties?: boolean | Schema;
 }

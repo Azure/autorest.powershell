@@ -1,10 +1,10 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
-import { Graph, NodePhi, NodeProc } from "../src/graph";
-import { GraphContext, FlexArgs, FlexCallbacks, Sample, Proc } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo, typeBoolean } from "./common";
-import { objMap, error } from "../src/helpers";
-import { ProcImplementation } from "../src/reference-generator";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
+import { Graph, NodePhi, NodeProc } from '../src/graph';
+import { GraphContext, FlexArgs, FlexCallbacks, Sample, Proc } from '../src/graph-context';
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo, typeBoolean } from './common';
+import { objMap, error } from '../src/helpers';
+import { ProcImplementation } from '../src/reference-generator';
 
 @suite class Synthesis {
   @test "simple"() {

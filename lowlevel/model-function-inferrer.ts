@@ -1,13 +1,13 @@
-import { Host, ArtifactMessage, Channel, Message } from "@microsoft.azure/autorest-extension-base";
-import { deserialize, serialize } from "#common/yaml";
-import { processCodeModel } from "#common/process-code-model";
-import { ModelState } from "#common/model-state";
-import { Model } from "#common/code-model/code-model";
-import { pascalCase } from "#common/text-manipulation";
-import { Dictionary } from "#common/dictionary";
-import { IntrinsicOperation } from "#common/code-model/programatic-operation";
-import { isHttpOperation } from "#common/code-model/http-operation";
-import { JsonType, Schema } from "#common/code-model/schema";
+import { Host, ArtifactMessage, Channel, Message } from '@microsoft.azure/autorest-extension-base';
+import { deserialize, serialize } from '#common/yaml';
+import { processCodeModel } from '#common/process-code-model';
+import { ModelState } from '#common/model-state';
+import { Model } from '#common/code-model/code-model';
+import { pascalCase } from '#common/text-manipulation';
+import { Dictionary } from '#common/dictionary';
+import { IntrinsicOperation } from '#common/code-model/programatic-operation';
+import { isHttpOperation } from '#common/code-model/http-operation';
+import { JsonType, Schema } from '#common/code-model/schema';
 
 export async function process(service: Host) {
   return await processCodeModel(inferSignatures, service);

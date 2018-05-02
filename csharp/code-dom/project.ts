@@ -1,6 +1,6 @@
-import { Initializer } from "#common/initializer";
-import { all } from "#common/text-manipulation";
-import { Namespace } from "./namespace";
+import { Initializer } from '#common/initializer';
+import { all } from '#common/text-manipulation';
+import { Namespace } from './namespace';
 
 export class Project extends Initializer {
   private namespaces = new Array<Namespace>();

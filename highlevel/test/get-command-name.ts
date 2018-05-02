@@ -1,6 +1,6 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
-import { getCommandName } from "../name-inferrer";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
+import { getCommandName } from '../name-inferrer';
 
 const samples: [string, { noun?: string, verb: string }[]][] = [
   ["ApplicationGateways_Delete",

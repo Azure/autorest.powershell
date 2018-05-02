@@ -1,4 +1,4 @@
-import { Host, ArtifactMessage, Channel, JsonPath } from "@microsoft.azure/autorest-extension-base";
+import { Host, ArtifactMessage, Channel, JsonPath } from '@microsoft.azure/autorest-extension-base';
 
 export class ModelState<T> {
   protected errorCount = 0;

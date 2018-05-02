@@ -1,14 +1,14 @@
-import { Interface } from "#csharp/code-dom/interface";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
-import { ModelClass } from "#csharp/lowlevel-generator/model/class";
-import { PropertyType } from "#csharp/lowlevel-generator/type-declaration";
-import { Schema } from "#common/code-model/schema";
-import { State } from "../generator";
-import { ModelInterfaceProperty } from "./interface-property";
-import { Method } from "#csharp/code-dom/method";
-import { JsonNode, JsonObject, IJsonSerializable } from "#csharp/lowlevel-generator/clientruntime";
-import { Parameter } from "#csharp/code-dom/parameter";
+import { Interface } from '#csharp/code-dom/interface';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { ModelClass } from '#csharp/lowlevel-generator/model/class';
+import { PropertyType } from '#csharp/lowlevel-generator/type-declaration';
+import { Schema } from '#common/code-model/schema';
+import { State } from '../generator';
+import { ModelInterfaceProperty } from './interface-property';
+import { Method } from '#csharp/code-dom/method';
+import { JsonNode, JsonObject, IJsonSerializable } from '#csharp/lowlevel-generator/clientruntime';
+import { Parameter } from '#csharp/code-dom/parameter';
 
 export class ModelInterface extends Interface implements PropertyType {
   validatePresence(propertyName: string): OneOrMoreStatements {

@@ -1,0 +1,51 @@
+{
+  "defaultSeverity": "warn",
+  "extends": [
+    "tslint-microsoft-contrib",
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
+    "missing-jsdoc": false,
+    "interface-name": false,
+    "no-angle-bracket-type-assertion": false,
+    "strict-boolean-expressions": false,
+    "newline-before-return": false,
+    "prefer-array-literal": false,
+    "no-parameter-reassignment": false,
+    "arrow-parens": false,
+    "max-classes-per-file": false,
+    "no-void-expression": false,
+    "object-literal-key-quotes": false,
+    "binary-expression-operand-order": false,
+    "export-name": false,
+    "no-single-line-block-comment": false,
+    "max-func-body-length": false,
+    "no-increment-decrement": false,
+    "no-multiline-string": false,
+    "space-before-function-paren": false,
+    "no-function-expression": false,
+    "no-unnecessary-bind": false,
+    "no-unsafe-any": false,
+    "no-relative-imports": false,
+    "array-type": [
+      true,
+      "generic"
+    ],
+    "max-line-length": [
+      true,
+      220
+    ],
+    "prefer-for-of": true,
+    "quotemark": {
+      "options": [
+        "single"
+      ]
+    }
+  },
+  "rulesDirectory": [
+    "node_modules/tslint-microsoft-contrib"
+  ]
+}

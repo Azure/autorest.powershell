@@ -1,11 +1,11 @@
-import * as OpenAPI from "./oai3";
-import { Server} from "../common/code-model/components";
-import { getExtensionProperties, clone} from "./common";
-import { Remodeler } from "./remodeler";
-import {Dictionary} from "#common/dictionary";
-import {EnumDetails, EnumValue} from "#common/code-model/schema";
-import {MediaType} from "#common/code-model/http-operation";
-import {ExternalDocumentation, ImplementationLocation} from "#common/code-model/components";
+import * as OpenAPI from './oai3';
+import { Server } from '../common/code-model/components';
+import { getExtensionProperties, clone } from './common';
+import { Remodeler } from './remodeler';
+import { Dictionary } from '#common/dictionary';
+import { EnumDetails, EnumValue } from '#common/code-model/schema';
+import { MediaType } from '#common/code-model/http-operation';
+import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
 
 interface XMSEnum {
   modelAsString?: boolean;

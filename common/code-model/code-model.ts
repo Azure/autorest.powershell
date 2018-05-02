@@ -1,10 +1,10 @@
-import { HttpComponents } from "#common/code-model/http-operation";
-import { Dictionary } from "#common/dictionary";
-import { Schema } from "#common/code-model/schema";
-import { Info } from "#common/code-model/info";
-import { CommandComponents } from "#common/code-model/command-operation";
-import { Extensions } from "#common/code-model/extensions";
-import { Details, ExternalDocumentation, SecurityRequirement, Server, Tag } from "./components";
+import { HttpComponents } from '#common/code-model/http-operation';
+import { Dictionary } from '#common/dictionary';
+import { Schema } from '#common/code-model/schema';
+import { Info } from '#common/code-model/info';
+import { CommandComponents } from '#common/code-model/command-operation';
+import { Extensions } from '#common/code-model/extensions';
+import { Details, ExternalDocumentation, SecurityRequirement, Server, Tag } from './components';
 
 //------------------------------------------------------------------------------------------------------------------ */
 // Constructors for Code Model classes

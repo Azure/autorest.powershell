@@ -1,10 +1,10 @@
-import { Class } from "#csharp/code-dom/class";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Property } from "#csharp/code-dom/property";
-import { ISendAsync } from "../clientruntime";
-import { State } from "../generator";
-import { CallMethod, OperationMethod, ValidationMethod } from "../operation/method";
-import { isHttpOperation } from "#common/code-model/http-operation";
+import { Class } from '#csharp/code-dom/class';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Property } from '#csharp/code-dom/property';
+import { ISendAsync } from '../clientruntime';
+import { State } from '../generator';
+import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
+import { isHttpOperation } from '#common/code-model/http-operation';
 
 
 export class ApiClass extends Class {

@@ -1,10 +1,10 @@
-import { CommaChar, EOL, docComment, indent } from "#common/text-manipulation";
-import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from "#csharp/code-dom/access-modifier";
-import { summary } from "#csharp/code-dom/doc-comments";
-import * as mscorlib from "./mscorlib";
-import { Parameter } from "./parameter";
-import { Statements } from "./statements/statement";
-import { TypeDeclaration } from "./type-declaration";
+import { CommaChar, EOL, docComment, indent } from '#common/text-manipulation';
+import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
+import { summary } from '#csharp/code-dom/doc-comments';
+import * as mscorlib from './mscorlib';
+import { Parameter } from './parameter';
+import { Statements } from './statements/statement';
+import { TypeDeclaration } from './type-declaration';
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();

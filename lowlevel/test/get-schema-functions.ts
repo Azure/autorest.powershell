@@ -1,15 +1,15 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
-import { getSchemaFunctions } from "../model-function-inferrer";
-import { Property } from "#common/code-model/schema";
-import { JsonType } from "#remodeler/oai3";
-import { Schema } from "#common/code-model/schema";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
+import { getSchemaFunctions } from '../model-function-inferrer';
+import { Property } from '#common/code-model/schema';
+import { JsonType } from '#remodeler/oai3';
+import { Schema } from '#common/code-model/schema';
 
 function fail(message: string): never {
   throw message;
 }
 
-function makePrimitiveProperty(name: string, required: boolean, type: JsonType, deprecated: boolean): Property<Schema> {
+function makePrimitiveProperty(name: string, required: boolean, type: JsonType, deprecated: boolean): Property {
   return new Property(name, { schema: new Schema(name, { type }), details: { required, name, deprecationMessage: deprecated ? "deprecated" : undefined } });
 }
 

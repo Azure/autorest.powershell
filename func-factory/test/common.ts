@@ -1,6 +1,6 @@
-import { ProcImplementations } from "../src/reference-generator";
-import { DeepMutable, objMap } from "../src/helpers";
-import { Graph, GraphContext } from "../src/index";
+import { ProcImplementations } from '../src/reference-generator';
+import { DeepMutable, objMap } from '../src/helpers';
+import { Graph, GraphContext } from '../src/index';
 
 export type MyTType = string;
 export const typeNumber = "number";

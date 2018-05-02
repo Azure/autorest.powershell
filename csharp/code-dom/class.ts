@@ -1,8 +1,8 @@
-import { EOL, comment, docCommentPrefix, indent, sortByName } from "#common/text-manipulation";
-import { Field } from "./field";
-import { Namespace } from "./namespace";
-import { Type } from "./type";
-import { Method } from "#csharp/code-dom/method";
+import { EOL, comment, docCommentPrefix, indent, sortByName } from '#common/text-manipulation';
+import { Field } from './field';
+import { Namespace } from './namespace';
+import { Type } from './type';
+import { Method } from '#csharp/code-dom/method';
 
 export function sortByNamePartialFirst(a: Method, b: Method): number {
   if (a.isPartial !== b.isPartial) {

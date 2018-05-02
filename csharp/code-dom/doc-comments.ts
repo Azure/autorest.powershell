@@ -1,4 +1,4 @@
-import { EOL } from "#common/text-manipulation";
+import { EOL } from '#common/text-manipulation';
 
 export const summary = (text: string): string => xmlize("summary", text);
 

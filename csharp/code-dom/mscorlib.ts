@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "./type-declaration";
+import { TypeDeclaration } from './type-declaration';
 
 export class LibraryType implements TypeDeclaration {
   constructor(private fullName: string) {
