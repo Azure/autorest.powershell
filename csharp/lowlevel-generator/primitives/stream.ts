@@ -1,7 +1,7 @@
-import { TypeDeclaration } from "../type-declaration";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
-export class Stream implements TypeDeclaration {
+export class Stream implements PropertyType {
   get implementation(): string {
     return `System.IO.Stream`;
   };
@@ -14,11 +14,14 @@ export class Stream implements TypeDeclaration {
   validateValue(propertyName: string): string {
     return `/* stream validate value for ${propertyName} */`;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `/* stream json serialize for ${propertyName} */`;
   }
-  jsondeserialize(propertyName: string): string {
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `/* stream json deserialize for ${propertyName} */`;
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return ``;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return '';

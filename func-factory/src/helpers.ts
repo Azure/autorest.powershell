@@ -1,5 +1,5 @@
-import { safeDump, safeLoad } from "js-yaml";
-import { ScriptTarget } from "typescript";
+import { safeDump, safeLoad } from 'js-yaml';
+import { ScriptTarget } from 'typescript';
 
 export type Obj<T> = { [id: string]: T };
 
@@ -74,7 +74,7 @@ export type DeepMutableObject<T extends { [x: string]: any }, K extends string> 
   { [P in K]?: DeepMutable<T[P]>; };
 
 
-import * as tscs from "typescript-simple";
+import * as tscs from 'typescript-simple';
 export function tsc(code: string): string {
   return tscs(code, { lib: ["es2017"], target: ScriptTarget.ES2017, strict: true });
 }

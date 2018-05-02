@@ -1,8 +1,8 @@
-import { TypeDeclaration } from "../type-declaration";
-import { fixPropertyName } from "#common/text-manipulation";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { fixPropertyName } from '#common/text-manipulation';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
-export class String implements TypeDeclaration {
+export class String implements PropertyType {
   constructor(protected required: boolean, private minLength?: number, private maxLength?: number, private pattern?: string, private choices?: Array<string>) {
 
   }
@@ -15,7 +15,7 @@ export class String implements TypeDeclaration {
 
   valueRequired(propertyName: string): string {
     return this.required ? `
-if( $VALUE == null ) 
+if( $VALUE == null )
 {
   $ERROR;
 }`.trim() : '';
@@ -60,11 +60,14 @@ ${this.validateEnum(propertyName)}
     }
     return `await listener.AssertEnum(${fixPropertyName(propertyName)},${propertyName},${this.choices.joinWith((v) => `@"${v}"`)});`
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* string json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${containerName}.StringProperty("${serializedName}", ref ${propertyName});`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonString s ? s : null`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonString.Create(${instance})`;

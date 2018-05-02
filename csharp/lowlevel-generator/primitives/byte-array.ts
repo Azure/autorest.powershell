@@ -1,7 +1,7 @@
-import { TypeDeclaration } from "../type-declaration";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { PropertyType } from '../type-declaration';
 
-export class ByteArray implements TypeDeclaration {
+export class ByteArray implements PropertyType {
   get implementation(): string {
     return `byte[]`;
   };
@@ -14,13 +14,16 @@ export class ByteArray implements TypeDeclaration {
   validateValue(propertyName: string): string {
     return `/* byte array validate value for ${propertyName} */`;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-  jsondeserialize(propertyName: string): string {
-    return `/* byte array json deserialize for ${propertyName} */`;
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `/* FIXME: byte array json deserialize for ${propertyName} */`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return '';
+    return '/* FIXME: byte array json serialize instance to json */';
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `/* FIXME: byte array json deserialize node */`;
   }
 }

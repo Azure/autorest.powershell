@@ -1,7 +1,7 @@
-import { TypeDeclaration } from "./type-declaration";
-import { Expression } from "#csharp/code-dom/expression";
-import { Initializer } from "#common/initializer";
-import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
+import { Initializer } from '#common/initializer';
+import { Expression } from '#csharp/code-dom/expression';
+import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
+import { TypeDeclaration } from './type-declaration';
 
 export class Parameter extends Initializer implements Expression {
   public description: string = "";

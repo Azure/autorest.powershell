@@ -1,8 +1,8 @@
-import { GraphContext, Proc, SymbolInstance } from "./graph-context";
-import { SymbolSource, ControlSink } from "./graph";
-import { JSONValue } from "./json";
-import { objMap, error, lundef, setIntersect, errorUnreachable } from "./helpers";
-import { nodeSink2Sources } from "./graph-analysis";
+import { GraphContext, Proc, SymbolInstance } from './graph-context';
+import { SymbolSource, ControlSink } from './graph';
+import { JSONValue } from './json';
+import { objMap, error, lundef, setIntersect, errorUnreachable } from './helpers';
+import { nodeSink2Sources } from './graph-analysis';
 
 export enum GenerationFlavor { ContInlineProc, ContInlineProcAsync };
 

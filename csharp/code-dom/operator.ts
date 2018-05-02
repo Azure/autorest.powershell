@@ -1,6 +1,5 @@
-import { Method } from "./method";
-import { docComment, EOL, CommaChar, indent } from "#common/text-manipulation";
-import { Class } from "./class";
+import { CommaChar } from '#common/text-manipulation';
+import { Method } from './method';
 
 export class Operator extends Method {
   constructor(name: string, objectIntializer?: Partial<Method>) {
@@ -14,7 +13,7 @@ export class Operator extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.name}(${parameterDeclaration}) 
+${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.name}(${parameterDeclaration})
 `.slim();
   }
 }

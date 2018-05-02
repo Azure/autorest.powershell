@@ -1,9 +1,9 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
-import { Graph, NodePhi, NodeProc } from "../src/graph";
-import { GraphContext, FlexArgs, FlexCallbacks } from "../src/graph-context";
-import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from "./common";
-import { objMap } from "../src/helpers";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
+import { Graph, NodePhi, NodeProc } from '../src/graph';
+import { GraphContext, FlexArgs, FlexCallbacks } from '../src/graph-context';
+import { getBuiltInDefs, getBuiltInImpls, typeNumber, typeString, runGraph, MyTType, typeAssignableTo } from './common';
+import { objMap } from '../src/helpers';
 
 @suite class Mutation {
   @test "build graph"() {

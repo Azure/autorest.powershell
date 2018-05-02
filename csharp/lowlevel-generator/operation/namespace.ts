@@ -1,8 +1,5 @@
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Project } from "../project";
-import { State } from "../generator";
-import { ModelsNamespace } from "../model/namespace";
-import * as message from "../messages";
+import { Namespace } from '#csharp/code-dom/namespace';
+import { State } from '../generator';
 
 export class ServiceNamespace extends Namespace {
   constructor(public state: State, objectInitializer?: Partial<ServiceNamespace>) {

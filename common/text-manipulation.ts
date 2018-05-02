@@ -1,4 +1,4 @@
-import { Dictionary } from "#remodeler/common";
+import { Dictionary } from '#common/dictionary';
 
 let indentation = "    ";
 
@@ -31,6 +31,7 @@ String.prototype.uncapitalize = function (): string {
   const result = <string>this;
   return result ? `${result.charAt(0).toLowerCase()}${result.substr(1)}` : result;
 }
+/** Trims the string and removes multi leading spaces? */
 String.prototype.slim = function (): string {
   return <string>this.trim().replace(/([^ ])  +/g, "$1 ");
 }
@@ -119,6 +120,13 @@ export function fixEOL(content: string) {
 export function map<T, U>(dictionary: Dictionary<T>, callbackfn: (key: string, value: T) => U, thisArg?: any): U[] {
   return Object.getOwnPropertyNames(dictionary).map((key) => callbackfn(key, dictionary[key]));
 }
+
+export function ToMap<T>(dictionary: Dictionary<T>): Map<string, T> {
+  const result = new Map<string, T>();
+  Object.getOwnPropertyNames(dictionary).map(key => result.set(key, dictionary[key]));
+  return result;
+}
+
 export function selectMany<T>(multiArray: T[][]): T[] {
   const result = new Array<T>();
   multiArray.map(v => result.push(...v));

@@ -1,7 +1,7 @@
-import { NodePhi, SymbolSource, NodeProc, ControlSink, ControlSource, ControlFlow, Graph, SymbolSink, DataFlow, GraphOutputFlows, GraphInputFlow } from "./graph";
-import { error, objMap, lundef, errorUnreachable } from "./helpers";
-import { validateNodePhi, validateNodeProc } from "./graph-validation";
-import { ProcDefinitions, SymbolInstance, Proc } from "./graph-context";
+import { NodePhi, SymbolSource, NodeProc, ControlSink, ControlSource, ControlFlow, Graph, SymbolSink, DataFlow, GraphOutputFlows, GraphInputFlow } from './graph';
+import { error, objMap, lundef, errorUnreachable } from './helpers';
+import { validateNodePhi, validateNodeProc } from './graph-validation';
+import { ProcDefinitions, SymbolInstance, Proc } from './graph-context';
 
 export function getNodes<TType>(g: Graph<TType>): { nodesPhi: Iterable<NodePhi<TType>>, nodesProc: Iterable<NodeProc<TType>> } {
   const nodesPhi = new Set<NodePhi<TType>>();

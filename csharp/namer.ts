@@ -1,9 +1,9 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { deserialize, serialize } from "#common/yaml";
-import { processCodeModel } from "#common/process-code-model";
-import { ModelState } from "#common/model-state";
-import { Model, isHttpOperation } from "remodeler/code-model";
-import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from "#common/text-manipulation";
+import { processCodeModel } from '#common/process-code-model';
+import { ModelState } from '#common/model-state';
+import { Model } from '#common/code-model/code-model';
+import { deconstruct, fixLeadingNumber, pascalCase, camelCase } from '#common/text-manipulation';
+import { Host } from '@microsoft.azure/autorest-extension-base';
+import { isHttpOperation } from '#common/code-model/http-operation';
 
 export async function process(service: Host) {
   return await processCodeModel(nameStuffRight, service);
@@ -15,7 +15,10 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
   const serviceNamespace = await service.GetValue("namespace") || "Sample.API";
   codeModel.details.namespace = serviceNamespace;
 
-  for (const op of Object.values(codeModel.components.operations).filter(isHttpOperation)) {
+  // fix client name
+  codeModel.details.name = pascalCase(fixLeadingNumber(deconstruct(codeModel.details.name)));
+
+  for (const op of Object.values(codeModel.http.operations).filter(isHttpOperation)) {
     const details = op.details;
 
     // operations have pascal cased names
@@ -27,8 +30,8 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
     }
   }
 
-  for (const schemaName in codeModel.components.schemas) {
-    const schema = codeModel.components.schemas[schemaName];
+  for (const schemaName in codeModel.schemas) {
+    const schema = codeModel.schemas[schemaName];
     // schema names are pascalCased
     schema.details.name = pascalCase(fixLeadingNumber(deconstruct(schema.details.name)));;
 
@@ -38,7 +41,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
       d.name = pascalCase(fixLeadingNumber(deconstruct(d.name)));
     }
 
-    // fix enum names 
+    // fix enum names
     if (schema.details.enum) {
       schema.details.enum.name = pascalCase(fixLeadingNumber(deconstruct(schema.details.enum.name)));
 

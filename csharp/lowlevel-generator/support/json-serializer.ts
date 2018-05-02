@@ -1,16 +1,12 @@
-import { Class } from "#csharp/code-dom/class";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { State } from "#csharp/lowlevel-generator/generator";
-import { Method, PartialMethod } from "#csharp/code-dom/method";
-import { JsonNode, JsonObject } from "#csharp/lowlevel-generator/clientruntime";
-import { Parameter } from "#csharp/code-dom/parameter";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Interface } from "#csharp/code-dom/interface";
-import { Access, Modifier } from "#csharp/code-dom/access-modifier";
-import { ParameterModifier } from "#csharp/code-dom/parameter-modifier";
-import { EOL } from "#common/text-manipulation";
-import { ModelClass } from "#csharp/lowlevel-generator/model/class";
-import { CSharpData } from "#csharp/lowlevel-generator/private-data";
+import { Modifier } from '#csharp/code-dom/access-modifier';
+import { Class } from '#csharp/code-dom/class';
+import { Method } from '#csharp/code-dom/method';
+import * as mscorlib from '#csharp/code-dom/mscorlib';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { JsonNode, JsonObject } from '#csharp/lowlevel-generator/clientruntime';
+import { State } from '#csharp/lowlevel-generator/generator';
+import { CSharpData } from '#csharp/lowlevel-generator/private-data';
 
 export class JsonSerializerClass extends Class {
 
@@ -26,8 +22,34 @@ export class JsonSerializerClass extends Class {
     const container = tojson.addParameter(new Parameter("container", JsonObject, { defaultInitializer: `= null` }));
     tojson.add(`return null;`);
 
+    const schemas = state.model.schemas;
+
+    // iterate thru all the models
+    // each model should have a class and an interface.
+    // if the class has a discriminator value, tell the parent model that it has children
+    for (const schemaName in schemas) {
+      const schema = schemas[schemaName];
+      const state = this.state.path("components", "schemas", schemaName);
+      if (schema.details.csharp && schema.details.csharp.classImplementation) {
+        // must be a class.
+        const implData: CSharpData = schema.details.csharp;
+
+      }
+
+
+      schema.details
+      const x = state.project.modelsNamespace.resolveTypeDeclaration(schema, true, state);
+    }
+
+    // when we generate DeserializeTo[..](Carbon.Json.JsonObject json) we should check if we have any children
+    // if there are, generate (switch statement) code that matches the discriminator value to the appropriate deserialize function
+    // there probably should be a default that if there wasn't a match, fall back to deserializing for this model class.
+
+    // emit the deserialization for a given class
+
+
     /*
-    // add the json serialize method to each model class 
+    // add the json serialize method to each model class
     for (const each in state.model.components.schemas) {
       const schema = state.model.components.schemas[each];
 
@@ -81,10 +103,10 @@ if( returnNow )
     */
 
     // create internal method to find deserializer method
-    // ie GetJsonDeserializerFor_INTERFACENAME(JsonNode json) 
+    // ie GetJsonDeserializerFor_INTERFACENAME(JsonNode json)
 
     // create method to deserialize JsonNode to the target type.
-    // ie Deserialize_INTERFACENAME(JsonNode json) 
+    // ie Deserialize_INTERFACENAME(JsonNode json)
 
     // add master 'toJson' method
 

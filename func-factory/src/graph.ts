@@ -1,4 +1,4 @@
-import { JSONValue } from "./json";
+import { JSONValue } from './json';
 
 export type ControlSource<TType> =
   { readonly type: "entry" } |

@@ -1,7 +1,7 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
-import * as assert from "assert";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
+import * as assert from 'assert';
 
-import { clone, setExcept, setIntersect, setIsEmpty, setIsEqual, setIsSubset, tsc, objReplace, deepEquals } from "../src/helpers";
+import { clone, setExcept, setIntersect, setIsEmpty, setIsEqual, setIsSubset, tsc, objReplace, deepEquals } from '../src/helpers';
 
 @suite class HelpersClone {
   @test "primitive"() {

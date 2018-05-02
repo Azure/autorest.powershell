@@ -1,24 +1,22 @@
-import { Class } from "#csharp/code-dom/class";
-import { Project } from "../project";
-import { State } from "../generator";
-import { Schema } from "#remodeler/code-model";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Interface } from "#csharp/code-dom/interface";
-import { InitializedField } from "#csharp/code-dom/field";
-import { StringExpression } from "#csharp/code-dom/expression";
-import { Constructor } from "#csharp/code-dom/constructor";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { String } from "#csharp/code-dom/mscorlib";
-import { Property } from "#csharp/code-dom/property";
-import { Access, Static, Modifier } from "#csharp/code-dom/access-modifier";
-import { Method } from "#csharp/code-dom/method";
-import * as mscorlib from "#csharp/code-dom/mscorlib";
-import { Struct } from "#csharp/code-dom/struct";
-import { Operator } from "#csharp/code-dom/operator";
-import { TypeDeclaration } from "#csharp/lowlevel-generator/type-declaration";
-import { OneOrMoreStatements } from "#csharp/code-dom/statements/statement";
+import { Access, Modifier } from '#csharp/code-dom/access-modifier';
+import { Constructor } from '#csharp/code-dom/constructor';
+import { StringExpression } from '#csharp/code-dom/expression';
+import { InitializedField } from '#csharp/code-dom/field';
+import { Interface } from '#csharp/code-dom/interface';
+import { Method } from '#csharp/code-dom/method';
+import * as mscorlib from '#csharp/code-dom/mscorlib';
+import { String } from '#csharp/code-dom/mscorlib';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Operator } from '#csharp/code-dom/operator';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { Property } from '#csharp/code-dom/property';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Struct } from '#csharp/code-dom/struct';
+import { PropertyType } from '#csharp/lowlevel-generator/type-declaration';
+import { Schema } from '#common/code-model/schema';
+import { State } from '../generator';
 
-export class EnumClass extends Struct implements TypeDeclaration {
+export class EnumClass extends Struct implements PropertyType {
   constructor(schema: Schema, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schema.details.enum) {
       throw new Error("ENUM AINT XMSENUM");
@@ -44,7 +42,7 @@ export class EnumClass extends Struct implements TypeDeclaration {
       setAccess: Access.Private
     }));
 
-    // add private constructor 
+    // add private constructor
     const p = new Parameter('underlyingValue', String)
     const ctor = this.addMethod(new Constructor(this, {
       access: Access.Private,
@@ -91,7 +89,7 @@ export class EnumClass extends Struct implements TypeDeclaration {
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return e2.Equals(e1);`);
 
-    // add opeator != 
+    // add opeator !=
     this.addMethod(new Method(`operator !=`, mscorlib.Bool, {
       static: Modifier.Static,
       description: `Overriding != operator for enum ${this.name}`,
@@ -111,12 +109,14 @@ export class EnumClass extends Struct implements TypeDeclaration {
   public validatePresence(propertyName: string): string {
     return ``;
   }
-  serializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
+  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }
-
-  jsondeserialize(propertyName: string): string {
-    return '/***/';
+  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
+    return `${propertyName} = ${containerName}.StringProperty("${serializedName}");`
+  }
+  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
+    return `${nodeExpression} is Carbon.Json.JsonString s ? s : null`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.JsonString.Create(${instance})`;

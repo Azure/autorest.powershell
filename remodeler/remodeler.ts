@@ -1,11 +1,31 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from "js-yaml"
-import * as OpenAPI from "./oai3";
-import * as Interpretations from "./interpretations";
-import { dereference, getExtensionProperties, Dictionary, Refable, Dereferenced, isReference, CopyDictionary, clone } from "./common";
-import { Model as CodeModel, Server, SecurityRequirement, Schema, Discriminator, ExternalDocumentation, XML, PropertyReference, JsonType, Parameter, ParameterLocation, ImplementationLocation, EncodingStyle, HttpOperation, HttpMethod, RequestBody, MediaType, Encoding, Header, Tag, SecurityScheme, Link, Example, Response, Callback, Operation } from "./code-model";
-import { StringFormat } from "./known-format";
-import { ModelState } from "#common/model-state";
+import { Host, ArtifactMessage, Channel } from '@microsoft.azure/autorest-extension-base';
+import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from 'js-yaml'
+import * as OpenAPI from './oai3';
+import * as Interpretations from './interpretations';
+import { dereference, getExtensionProperties, Refable, Dereferenced, isReference, clone } from './common';
+import { Model as CodeModel } from '../common/code-model/code-model';
+import { StringFormat } from './known-format';
+import { ModelState } from '#common/model-state';
+import {
+  Encoding, EncodingStyle,
+  Header,
+  HttpMethod,
+  HttpOperation,
+  HttpOperationParameter,
+  MediaType, ParameterLocation, RequestBody, Response, Callback
+} from '#common/code-model/http-operation';
+import { CopyDictionary, Dictionary } from '#common/dictionary';
+import { SecurityScheme } from '#common/code-model/security-scheme';
+import { Discriminator, JsonType, Property, Schema, XML } from '#common/code-model/schema';
+import {
+  Example,
+  ExternalDocumentation,
+  ImplementationLocation,
+  Link,
+  SecurityRequirement,
+  Server,
+  Tag
+} from '#common/code-model/components';
 
 const todo_unimplemented = undefined;
 
@@ -48,7 +68,7 @@ export class Remodeler {
     newSchema.minItems = original.minItems;
     newSchema.uniqueItems = original.uniqueItems;
     if (original.items) {
-      newSchema.items = this.refOrAdd(`${name}.itemType`, this.dereference(original.items), this.model.components.schemas, this.copySchema)
+      newSchema.items = this.refOrAdd(`${name}.itemType`, this.dereference(original.items), this.model.schemas, this.copySchema)
     }
   }
 
@@ -179,21 +199,21 @@ export class Remodeler {
     }
     if (original.not) {
       // ensure that the original schema is copied over already.
-      newSchema.not = this.refOrAdd(`.${name}.not`, this.dereference(original.not), this.model.components.schemas, this.copySchema)
+      newSchema.not = this.refOrAdd(`.${name}.not`, this.dereference(original.not), this.model.schemas, this.copySchema)
     }
     if (original.allOf) {
       for (let index = 0; index < original.allOf.length; index++) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.allOf.${index}`, this.dereference(original.allOf[index]), this.model.components.schemas, this.copySchema));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.allOf.${index}`, this.dereference(original.allOf[index]), this.model.schemas, this.copySchema));
       }
     }
     if (original.anyOf) {
       for (let index = 0; index < original.anyOf.length; index++) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.anyOf.${index}`, this.dereference(original.anyOf[index]), this.model.components.schemas, this.copySchema));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.anyOf.${index}`, this.dereference(original.anyOf[index]), this.model.schemas, this.copySchema));
       }
     }
     if (original.oneOf) {
       for (let index = 0; index < original.oneOf.length; index++) {
-        newSchema.allOf.push(this.refOrAdd(`.${name}.oneOf.${index}`, this.dereference(original.oneOf[index]), this.model.components.schemas, this.copySchema));
+        newSchema.allOf.push(this.refOrAdd(`.${name}.oneOf.${index}`, this.dereference(original.oneOf[index]), this.model.schemas, this.copySchema));
       }
     }
 
@@ -201,7 +221,7 @@ export class Remodeler {
       if (original.additionalProperties === true || original.additionalProperties === false) {
         newSchema.additionalProperties = original.additionalProperties;
       } else {
-        newSchema.additionalProperties = this.refOrAdd(`${name}.additionalItemType`, this.dereference(original.additionalProperties), this.model.components.schemas, this.copySchema);
+        newSchema.additionalProperties = this.refOrAdd(`${name}.additionalItemType`, this.dereference(original.additionalProperties), this.model.schemas, this.copySchema);
       }
     }
 
@@ -209,8 +229,8 @@ export class Remodeler {
       for (const propertyName in original.properties) {
         const property = original.properties[propertyName];
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
-        const newPropSchema = this.refOrAdd(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema, this.model.components.schemas, this.copySchema);
-        newSchema.properties[propertyName] = new PropertyReference(propertyName, {
+        const newPropSchema = this.refOrAdd(`${name[0] == '.' ? name : "." + name}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
+        newSchema.properties[propertyName] = new Property(propertyName, {
           schema: newPropSchema,
           description: Interpretations.getDescription(Interpretations.getDescription("", newPropSchema), property),
 
@@ -292,7 +312,7 @@ export class Remodeler {
     return this.add(ref.name, ref, dictionary, copyFunc);
   }
 
-  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<Parameter>): Parameter {
+  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<HttpOperationParameter>): HttpOperationParameter {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
@@ -307,7 +327,7 @@ export class Remodeler {
           (original.style === EncodingStyle.DeepObject || original.style === EncodingStyle.PipeDelimited || original.style === EncodingStyle.SpaceDelimited ? original.style : EncodingStyle.Form);
 
 
-    const newParameter = new Parameter(original.name, original.in, location, {
+    const newParameter = new HttpOperationParameter(original.name, original.in, location, {
       allowEmptyValue: (OpenAPI.isQueryParameter(original) && original.allowEmptyValue) || false,
       description: Interpretations.getDescription("", original),
       required: original.required || false,
@@ -315,7 +335,7 @@ export class Remodeler {
       style: style,
       explode: original.explode || (style === EncodingStyle.Form ? true : false),
       allowReserved: OpenAPI.isQueryParameter(original) && original.allowReserved ? true : false,
-      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Parameter.${name}`, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
+      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Parameter.${name}`, this.dereference(original.schema), this.model.schemas, this.copySchema) : undefined,
       extensions: getExtensionProperties(original),
     });
     this.addOrThrow(targetDictionary, name, newParameter);
@@ -331,11 +351,11 @@ export class Remodeler {
 
   remodelParameters(source: Dictionary<Refable<OpenAPI.Parameter>>) {
     for (const parameterName in source) {
-      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.components.parameters, (n, o, d) => this.copyParameter(n, o, ImplementationLocation.Client, this.model.components.parameters));
+      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.http.parameters, (n, o, d) => this.copyParameter(n, o, ImplementationLocation.Client, this.model.http.parameters));
     }
   }
 
-  copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<Operation>): HttpOperation => {
+  copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<HttpOperation>): HttpOperation => {
     if (targetDictionary && targetDictionary[name]) {
       return <HttpOperation>targetDictionary[name];
     }
@@ -352,7 +372,7 @@ export class Remodeler {
       externalDocs: Interpretations.getExternalDocs(original.operation.externalDocs),
       tags: original.operation.tags ? [...original.operation.tags] : [],
       summary: original.operation.summary,
-      requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.components.requestBodies, this.copyRequestBody) : undefined,
+      requestBody: original.operation.requestBody ? this.refOrAdd(`.${name}.requestBody`, this.dereference(original.operation.requestBody), this.model.http.requestBodies, this.copyRequestBody) : undefined,
       callbacks: todo_unimplemented,
       security: todo_unimplemented
     });
@@ -362,12 +382,12 @@ export class Remodeler {
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.components.parameters, (n, o, t) => this.copyParameter(n, o, ImplementationLocation.Method, this.model.components.parameters)));
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o, t) => this.copyParameter(n, o, ImplementationLocation.Method, this.model.http.parameters)));
       }
     }
     // move responses to global section.
     for (const responseCode in original.operation.responses) {
-      newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.components.responses, this.copyResponse);
+      newOperation.responses[responseCode] = this.refOrAdd(`.${name}.${responseCode}`, this.dereference(original.operation.responses[responseCode]), this.model.http.responses, this.copyResponse);
     }
 
     return newOperation;
@@ -384,7 +404,7 @@ export class Remodeler {
       allowReserved: original.allowReserved ? true : false,
       explode: original.explode || false,
       extensions: getExtensionProperties(original),
-      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Header.${headerName}`, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
+      schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Header.${headerName}`, this.dereference(original.schema), this.model.schemas, this.copySchema) : undefined,
       required: original.required || false,
       content: todo_unimplemented,
       allowEmptyValue: false // REALLY? this seems funny.
@@ -397,11 +417,11 @@ export class Remodeler {
   }
 
   copyHeaders = (containerName: string, original?: Dictionary<Refable<OpenAPI.Header>>): Dictionary<Header> => {
-    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.headers, this.copyHeader)) : new Dictionary<Header>();
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.http.headers, this.copyHeader)) : new Dictionary<Header>();
   }
 
   copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Link> => {
-    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.components.links, this.copyLink)) : new Dictionary<Link>();
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.http.links, this.copyLink)) : new Dictionary<Link>();
   }
 
   copyEncoding = (encodingName: string, original: OpenAPI.Encoding): Encoding => {
@@ -420,7 +440,7 @@ export class Remodeler {
 
   copyMediaType = (mimeType: string, key: string, original: OpenAPI.MediaType): MediaType => {
     return new MediaType({
-      schema: original.schema ? this.refOrAdd(key, this.dereference(original.schema), this.model.components.schemas, this.copySchema) : undefined,
+      schema: original.schema ? this.refOrAdd(key, this.dereference(original.schema), this.model.schemas, this.copySchema) : undefined,
       encoding: this.copyEncodings(original.encoding),
       extensions: getExtensionProperties(original),
       accepts: [mimeType]
@@ -435,7 +455,7 @@ export class Remodeler {
         for (const method of [HttpMethod.Delete, HttpMethod.Get, HttpMethod.Head, HttpMethod.Options, HttpMethod.Patch, HttpMethod.Post, HttpMethod.Put, HttpMethod.Trace]) {
           const op = <OpenAPI.HttpOperation>pathItem.instance[method];
           if (op) {
-            this.add(Interpretations.getOperationId(method, path, op), { instance: { method: method, path, operation: op, pathItem: pathItem.instance } }, this.model.components.operations, this.copyOperation);
+            this.add(Interpretations.getOperationId(method, path, op), { instance: { method: method, path, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }
         }
       }
@@ -564,19 +584,19 @@ export class Remodeler {
   remodel(): CodeModel {
     if (this.oai.components) {
       if (this.oai.components.schemas) {
-        this.remodelT(this.oai.components.schemas, this.model.components.schemas, this.copySchema);
+        this.remodelT(this.oai.components.schemas, this.model.schemas, this.copySchema);
       }
       if (this.oai.components.parameters) {
         this.remodelParameters(this.oai.components.parameters);
       }
       if (this.oai.components.headers) {
-        this.remodelT(this.oai.components.headers, this.model.components.headers, this.copyHeader);
+        this.remodelT(this.oai.components.headers, this.model.http.headers, this.copyHeader);
       }
       if (this.oai.components.requestBodies) {
-        this.remodelT(this.oai.components.requestBodies, this.model.components.requestBodies, this.copyRequestBody);
+        this.remodelT(this.oai.components.requestBodies, this.model.http.requestBodies, this.copyRequestBody);
       }
       if (this.oai.components.responses) {
-        this.remodelT(this.oai.components.responses, this.model.components.responses, this.copyResponse);
+        this.remodelT(this.oai.components.responses, this.model.http.responses, this.copyResponse);
       }
       /* todo: not implemented
       if (this.oai.components.callbacks) {
@@ -584,10 +604,10 @@ export class Remodeler {
       }
       */
       if (this.oai.components.examples) {
-        this.remodelT(this.oai.components.examples, this.model.components.examples, this.copyExample);
+        this.remodelT(this.oai.components.examples, this.model.http.examples, this.copyExample);
       }
       if (this.oai.components.links) {
-        this.remodelT(this.oai.components.links, this.model.components.links, this.copyLink);
+        this.remodelT(this.oai.components.links, this.model.http.links, this.copyLink);
       }
       if (this.oai.components.securitySchemes) {
         // todo: unimplemented

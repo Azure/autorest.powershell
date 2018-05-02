@@ -1,8 +1,6 @@
-import { Host, ArtifactMessage, Channel } from "@microsoft.azure/autorest-extension-base";
-import { deserialize, serialize } from "#common/yaml";
-import { processCodeModel } from "#common/process-code-model";
-import { ModelState } from "#common/model-state";
-import { Model } from "remodeler/code-model";
+import { processCodeModel } from '#common/process-code-model';
+import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Model } from '#common/code-model/code-model';
 
 export async function process(service: Host) {
   return await processCodeModel(inferStuff, service);

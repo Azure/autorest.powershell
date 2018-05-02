@@ -1,6 +1,6 @@
-import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
+import { suite, test, slow, timeout, skip, only } from 'mocha-typescript';
 import * as tasks from '@microsoft.azure/tasks'
-import * as assert from "assert";
+import * as assert from 'assert';
 import * as os from 'os'
 
 @suite class Testing {

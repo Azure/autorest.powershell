@@ -1,10 +1,10 @@
-import { Interface } from "./interface";
-import { Method } from "./method";
-import { Property } from "./property";
-import { TypeDeclaration } from "./type-declaration";
-import { Access } from "#csharp/code-dom/access-modifier";
-import { Namespace } from "#csharp/code-dom/namespace";
-import { Initializer } from "#common/initializer";
+import { Initializer } from '#common/initializer';
+import { Access } from '#csharp/code-dom/access-modifier';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Interface } from './interface';
+import { Method } from './method';
+import { Property } from './property';
+import { TypeDeclaration } from './type-declaration';
 
 export class Type extends Initializer implements TypeDeclaration {
   public description: string = "";

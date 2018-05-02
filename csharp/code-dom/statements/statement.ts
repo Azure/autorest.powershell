@@ -1,6 +1,6 @@
-import { EOL, indent } from "#common/text-manipulation";
-import { LiteralStatement } from "#csharp/code-dom/statements/literal";
-import { Initializer } from "#common/initializer";
+import { Initializer } from '#common/initializer';
+import { EOL } from '#common/text-manipulation';
+import { LiteralStatement } from '#csharp/code-dom/statements/literal';
 
 export type OneOrMoreStatements = string | (() => Iterable<string | Statement>) | Iterable<string | Statement> | Statement;
 export type StatementPossibilities = OneOrMoreStatements | (() => Iterable<OneOrMoreStatements>);
@@ -12,6 +12,7 @@ export interface Statement {
 export function isStatement(object: OneOrMoreStatements): object is Statement {
   return (<any>object).implementation ? true : false;
 }
+
 export class Statements extends Initializer implements Statement {
   protected statements = new Array<Statement>();
 
@@ -24,7 +25,7 @@ export class Statements extends Initializer implements Statement {
   }
 
   public get count(): number {
-    return this.statements.length
+    return this.statements.length;
   }
 
   public add(statements: StatementPossibilities): Statements {
@@ -76,5 +77,3 @@ export class Statements extends Initializer implements Statement {
     return `${this.statements.joinWith(each => each.implementation, EOL)}`.trim();
   }
 }
-
-

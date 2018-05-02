@@ -1,4 +1,4 @@
-import { TypeDeclaration } from "./type-declaration";
+import { TypeDeclaration } from './type-declaration';
 
 export class LibraryType implements TypeDeclaration {
   constructor(private fullName: string) {
@@ -30,3 +30,4 @@ export const ThisObject: TypeDeclaration = new LibraryType("this object");
 
 export const Task: TypeDeclaration = new LibraryType("System.Threading.Tasks.Task");
 export const CancellationToken: TypeDeclaration = new LibraryType("System.Threading.CancellationToken");
+export const HttpRequestMessage: TypeDeclaration = new LibraryType("System.Net.Http.HttpRequestMessage");

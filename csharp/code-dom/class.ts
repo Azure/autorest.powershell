@@ -1,10 +1,15 @@
-import { Type } from "./type";
-import { Interface } from "./interface";
-import { comment, docCommentPrefix, sortByName, indent, EOL } from "#common/text-manipulation";
-import { Field } from "./field";
-import { Method } from "./method";
-import { Property } from "./property";
-import { Namespace } from "./namespace";
+import { EOL, comment, docCommentPrefix, indent, sortByName } from '#common/text-manipulation';
+import { Field } from './field';
+import { Namespace } from './namespace';
+import { Type } from './type';
+import { Method } from '#csharp/code-dom/method';
+
+export function sortByNamePartialFirst(a: Method, b: Method): number {
+  if (a.isPartial !== b.isPartial) {
+    return a.isPartial ? -1 : 1;
+  }
+  return sortByName(a, b);
+}
 
 export class Class extends Type {
   protected classOrStruct: "class" | "struct" = "class";
@@ -37,10 +42,11 @@ ${this.accessModifier} ${stat}${partial}${this.classOrStruct} ${this.name}${colo
 
   public get implementation(): string {
     const fields = this.fields.sort(sortByName).map(m => m.declaration).join(EOL);
-    const methods = this.methods.sort(sortByName).map(m => m.implementation).join(EOL);
+    const methods = this.methods.sort(sortByNamePartialFirst).map(m => m.implementation).join(EOL);
     const properties = this.properties.sort(sortByName).map(m => m.declaration).join(EOL);
     return `
-${this.declaration} {
+${this.declaration} 
+{
 ${indent(fields, 1)}
 ${indent(properties, 1)}
 ${indent(methods, 1)}

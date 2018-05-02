@@ -1,7 +1,7 @@
-import { NodeProc, NodePhi, ControlSource, ControlSink, ControlFlow, Graph, SymbolSource, SymbolSink, DataFlow } from "./graph";
-import { setIsEqual, setIsSubset, setExcept, error } from "./helpers";
-import { ProcDefinitions, GraphProblem, SymbolInstance } from "./graph-context";
-import { getSymbolSourceType, getSymbolSinkType, getSymbolSourceOf } from "./graph-analysis";
+import { NodeProc, NodePhi, ControlSource, ControlSink, ControlFlow, Graph, SymbolSource, SymbolSink, DataFlow } from './graph';
+import { setIsEqual, setIsSubset, setExcept, error } from './helpers';
+import { ProcDefinitions, GraphProblem, SymbolInstance } from './graph-context';
+import { getSymbolSourceType, getSymbolSinkType, getSymbolSourceOf } from './graph-analysis';
 
 function validateSymbolLink<TType>(graph: Graph<TType>, procs: ProcDefinitions<TType>, src: SymbolSource<TType>, sink: SymbolSink<TType>, typeAssignableTo: (from: TType, to: TType) => boolean, onProblem: (problem: GraphProblem) => void): void {
   const sourceType = getSymbolSourceType(graph.inputs, procs, src);
