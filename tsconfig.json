@@ -7,7 +7,7 @@
     "noEmitOnError": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "noImplicitThis": false,
+    "noImplicitThis": true,
     "sourceMap": true,
     "strict": true,
     "declaration": true,
@@ -15,14 +15,15 @@
     "noEmitHelpers": false,
     "target": "es2017",
     "types": [
-      "node"
+      "node",
+      "mocha"
     ],
     "lib": [
       "es2017"
     ],
     "experimentalDecorators": true,
     "newLine": "LF",
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
       "#common/*": [
         "common/*"
@@ -36,6 +37,9 @@
       "#csharp/*": [
         "csharp/*"
       ],
+      "#powershell/*": [
+        "powershell/*"
+      ],
       "#highlevel/*": [
         "highlevel/*"
       ]
@@ -47,6 +51,9 @@
       }
     ]
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "dist",
     "node_modules",

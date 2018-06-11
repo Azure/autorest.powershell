@@ -291,3 +291,8 @@ dist/*
 node_modules/*
 package-lock.json
 generated/*
+resources/obj/*
+resources/bin/*
+*.tgz
+package/*
+

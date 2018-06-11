@@ -1,5 +1,5 @@
 !dist/**/*
-test/
+src/
 dist/test/
 package/
 .npmignore
@@ -9,3 +9,6 @@ tsconfig.json
 *.tgz
 .vscode
 .scripts
+attic/
+generated/
+notes.md

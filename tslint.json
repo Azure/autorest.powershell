@@ -30,13 +30,20 @@
     "no-unnecessary-bind": false,
     "no-unsafe-any": false,
     "no-relative-imports": false,
+    "member-ordering": false,
+    "whitespace": false,
+    "no-reserved-keywords": false,
+    "trailing-comma": false,
+    "switch-default": false,
+    "member-access": false,
+    "no-this-assignment": false,
     "array-type": [
       true,
       "generic"
     ],
     "max-line-length": [
       true,
-      220
+      420
     ],
     "prefer-for-of": true,
     "quotemark": {
