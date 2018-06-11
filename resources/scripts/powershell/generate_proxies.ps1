@@ -1,3 +1,5 @@
+pushd $PSScriptRoot
+
  dotnet restore
  dotnet build
  
@@ -87,3 +89,4 @@ $outputs.Keys |% {
     set-content "exported/${cmdletname}.ps1" -value $text
 }
   
+  popd
