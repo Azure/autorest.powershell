@@ -18,6 +18,10 @@ async function getTag(package_json) {
     return suffix; 
   }
 
+  if( process.env.BUILD_SOURCEBRANCHNAME ) {
+    return process.env.BUILD_SOURCEBRANCHNAME === "master" || process.env.BUILD_SOURCEBRANCHNAME ==="HEAD" ? "preview" : process.env.BUILD_SOURCEBRANCHNAME;
+  }
+
   const branch = (await exec("git rev-parse --abbrev-ref HEAD")).stdout.trim();
   return !branch || branch === "master" ? "preview" : branch;
 }
