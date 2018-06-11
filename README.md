@@ -19,10 +19,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 
-
-
-
-
 #### LLC#
 
 ``` yaml $(llcsharp)
@@ -64,42 +60,10 @@ output-artifact:
 
 ```
 
-#### LLIA
-
-#### IA
-
-
-#### PowerShell
-
-``` yaml $(powershell)
-enable-remodeler: true
-
-pipeline:
-  powershell/hlnameinferrer:
-    scope: powershell
-    input: tweakcodemodel
-    output-artifact: code-model-v2
-
-  powershell/emitter:
-    input: hlnameinferrer
-    scope: scope-powershell/emitter
-
-scope-powershell/emitter:
-  input-artifact: code-model-v2
-  is-object: true
-  output-uri-expr: |
-    "code-model-v2-post-hlnameinferrer"
-
-output-artifact: code-model-v2.yaml
-  
-
-```
-
-
 #### Remodeler
 
 ``` yaml  $(enable-remodeler)
-    
+  
 pipeline: 
   remodeler:
     input: openapi-document/identity
@@ -122,29 +86,47 @@ scope-remodeler/emitter:
 
 ```
 
-``` yaml $(grr) 
-    
+#### PowerShell
+
+
+``` yaml $(powershell) 
+api-folder: api
+runtime-folder: runtime
+cmdlet-folder: cmdlets/generated
+custom-cmdlet-folder: cmdlets/custom
+use-namespace-folders: false
+
 pipeline: 
+
+  # "Shake the tree", and normalize the model
   remodeler:
     input: openapi-document/identity   # the plugin where we get inputs from
-
+  
+  # Make some interpretations about what some things in the model mean
   tweakcodemodel:
     input: remodeler
 
+  # Specific things for Azure 
   tweakcodemodelazure:
     input: tweakcodemodel
 
+  # Choose names for everything in c#
   csnamer:
     input: tweakcodemodelazure
 
-  llcsharp:
-    input: csnamer
-
-  # powershell generator needs the model after the csnamer is done
+  # creates high-level commands
+  create-commands: 
+    input: csnamer # brings the code-model-v2 with it. 
+      
+  # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
     input: 
+      - create-commands # and the generated c# files
       - csnamer  # needs both the code model after the csnamer is done
-      - llcsharp # and the generated c# files
+
+  # generates c# files for http-operations
+  llcsharp:
+    input: csnamer
 
   # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
   cmv2/emitter:
@@ -156,6 +138,7 @@ pipeline:
     input: 
      - llcsharp
      - powershell 
+     - create-commands 
    
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.  
@@ -167,8 +150,10 @@ code-model-emitter-settings:
 
 # testing:  ask for the files we need  
 output-artifact: 
-  - code-model-v2.yaml # this is filtered outby default.
+  - code-model-v2.yaml # this is filtered outby default. (remove before production)
   - source-file-csharp
   - source-file-other
+  - source-file-csproj
+  - source-file-powershell
 
 ```

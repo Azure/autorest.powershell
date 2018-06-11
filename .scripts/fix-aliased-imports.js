@@ -16,7 +16,7 @@ function fixImports(filePath) {
         const sourcePath = path.dirname(filePath);
         const targetPath = path.dirname(path.resolve(importOptions.outDir + '/' + importOptions.baseUrl + '/' + importOptions.paths[tscpath]))
         const relativePath = path.relative(sourcePath, targetPath).replace(/\\/g,"/");
-        return `require("./${relativePath}/`.replace(`"./..`,`"..`); // fix messy parent referential path. 
+        return `require("./${relativePath}/`.replace(`"./..`,`"..`).replace("../src/","../"); // fix messy parent referential path. 
         });
       }
     if( write ) {
@@ -45,3 +45,12 @@ function processDirectory(dir){
 }
 
 processDirectory(`${__dirname}/../dist`);
+
+// fix weird issue with namespace class and importing stuff
+let namespc = fs.readFileSync(`${__dirname}/../dist/csharp/code-dom/namespace.js`,"utf8");
+const c = namespc.indexOf('const interface_1 = require("./interface");');
+if( c > 0 ) {
+  namespc = namespc.replace( 'const interface_1 = require("./interface");', '');
+  namespc = namespc.replace(/interface_1\./gi,'require("./interface").');
+}
+fs.writeFileSync(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);

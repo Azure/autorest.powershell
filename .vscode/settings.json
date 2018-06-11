@@ -5,6 +5,9 @@
     "node_modules/**": true,
     "dist/**": true,
     "generated/**": true,
+    "generated": true,
+    "ps-generated/**": true,
+    "generated2/**": true,
     "**/node_modules/**": true,
     "**/*.js.map": true,
     "**/*.js": {
@@ -16,7 +19,9 @@
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
-    "**/.DS_Store": true
+    "**/.DS_Store": true,
+    "**/obj/**": true,
+    "**/bin/**": true
   },
   "[typescript]": {
     "editor.formatOnSave": true,
@@ -28,6 +33,12 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.tabSize": 2,
+    "editor.detectIndentation": false
+  },
+  "[csharp]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.tabSize": 4,
     "editor.detectIndentation": false
   },
   "typescript.tsdk": "node_modules\\typescript\\lib"
