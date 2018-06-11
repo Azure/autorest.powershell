@@ -44,7 +44,7 @@ export async function process(service: Host) {
     const model = await deserialize<Model>(codeModelText, codemodel);
 
     cfg.moduleName = cfg.moduleName || model.info.title.replace(/client/ig, '');
-    cfg.csproj = cfg.csproj || `${cfg.moduleName}.csproj`;
+    cfg.csproj = cfg.csproj || `${cfg.moduleName}.private.csproj`;
     cfg.psd1 = cfg.psd1 || `${cfg.moduleName}.psd1`;
     cfg.psm1 = cfg.psm1 || `${cfg.moduleName}.psm1`;
 
@@ -131,13 +131,13 @@ async function generateModule(service: Host) {
   service.WriteFile(cfg.psd1, `@{
     ModuleVersion="1.0"
     NestedModules = @(
-    "./bin/Debug/netstandard2.0/${cfg.moduleName}.dll"
-    "./${cfg.psm1}"
+    "./bin/Debug/netstandard2.0/${cfg.moduleName}.private.dll"
+    "${cfg.psm1}"
     )
     # don't export any actual cmdlets by default
-    # CmdletsToExport = ''
+    CmdletsToExport = ''
 
-    
+    # export the functions that we loaded (these are the proxy cmdlets)
     FunctionsToExport = '*-*'
 }
 `, undefined, 'source-file-powershell');
@@ -149,7 +149,11 @@ async function generateModule(service: Host) {
 
 #region AzureCommonInitialization
 
-Get-ChildItem './exported' -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach { 
+# load the private module
+ipmo "$PSScriptRoot/bin/Debug/netstandard2.0/${cfg.moduleName}.private.dll"
+
+# export the 'exported' cmdlets 
+Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach { 
     Write-Verbose "Dot sourcing private script file: $($_.Name)"
     . $_.FullName
     # Explicity export the member
