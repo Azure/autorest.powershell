@@ -33,9 +33,10 @@
   "homepage": "https://github.com/Azure/autorest.incubator#readme",
   "devDependencies": {
     "@types/js-yaml": "3.10.1",
+    "@types/mocha": "latest",
     "@types/node": "^8.0.51",
-    "mocha": "^5.1.1",
-    "mocha-typescript": "^1.1.4",
+    "mocha": "latest",
+    "mocha-typescript": "latest",
     "semver": "^5.4.1",
     "shx": "^0.2.2",
     "tslint": "^5.9.1",
@@ -47,8 +48,8 @@
   },
   "dependencies": {
     "@microsoft.azure/tasks": "^2.0.12",
-    "@microsoft.azure/autorest-extension-base": "1.0.18",
-    "@microsoft.azure/async-io": "1.0.24",
+    "@microsoft.azure/autorest-extension-base": "1.0.19",
+    "@microsoft.azure/async-io": "2.0.19",
     "source-map-support": "0.5.3",
     "js-yaml": "^3.10.0",
     "typescript-simple": "8.0.6"

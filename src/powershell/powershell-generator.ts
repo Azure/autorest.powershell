@@ -135,7 +135,7 @@ async function generateModule(service: Host) {
     "./${cfg.psm1}"
     )
     # don't export any actual cmdlets by default
-    CmdletsToExport = ''
+    # CmdletsToExport = ''
 
     
     FunctionsToExport = '*-*'
