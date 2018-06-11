@@ -15,7 +15,8 @@
     "noEmitHelpers": false,
     "target": "es2017",
     "types": [
-      "node"
+      "node",
+      "mocha"
     ],
     "lib": [
       "es2017"
