@@ -9,7 +9,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using GetEventData=System.Func<EventData>;
+    using GetEventData = System.Func<EventData>;
 
     public interface IValidates
     {
@@ -23,9 +23,11 @@ namespace Microsoft.Rest.ClientRuntime
     /// The interface is designed to be as minimal as possible, allow for quick peeking of the event type (<c>id</c>) 
     /// and the cancellation status and provides a delegate for retrieving the event details themselves.
     /// </remarks>
-    public interface IEventListener {
-          Task Signal(string id, CancellationToken token, GetEventData createMessage);
-          CancellationToken Token { get; }
+    public interface IEventListener
+    {
+        Task Signal(string id, CancellationToken token, GetEventData createMessage);
+        CancellationToken Token { get; }
+        System.Action Cancel { get; }
     }
 
 #if OLD
@@ -41,52 +43,52 @@ namespace Microsoft.Rest.ClientRuntime
 #endif
     public static class IEventListenerExtensions
     {
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
-        public static Task Signal(this IEventListener instance, string id,CancellationToken token) => instance.Signal(id, token,() => new EventData { });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText) => instance.Signal(id, token, () => new EventData { Message = messageText });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText, HttpRequestMessage request) => instance.Signal(id, token, () => new EventData { Message = messageText, RequestMessage = request });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText, HttpResponseMessage response) => instance.Signal(id,token, () => new EventData { Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText, double magnitude) => instance.Signal(id,token, () => new EventData { Message = messageText, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText, double magnitude, HttpRequestMessage request) => instance.Signal(id, token,() => new EventData { Message = messageText, RequestMessage = request, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  string messageText, double magnitude, HttpResponseMessage response) => instance.Signal(id, token,() => new EventData { Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  HttpRequestMessage request) => instance.Signal(id,token, () => new EventData { RequestMessage = request });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  HttpRequestMessage request, HttpResponseMessage response) => instance.Signal(id, token,() => new EventData { RequestMessage = request, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  HttpResponseMessage response) => instance.Signal(id, token,() => new EventData { RequestMessage = response.RequestMessage, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id, CancellationToken token,  EventData message) => instance.Signal(id, token,() => message);
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token) => instance.Signal(id, token, () => new EventData { Id = id, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText, HttpRequestMessage request) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, RequestMessage = request, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText, HttpResponseMessage response) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText, double magnitude) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText, double magnitude, HttpRequestMessage request) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, RequestMessage = request, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, string messageText, double magnitude, HttpResponseMessage response) => instance.Signal(id, token, () => new EventData { Id = id, Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, HttpRequestMessage request) => instance.Signal(id, token, () => new EventData { Id = id, RequestMessage = request, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, HttpRequestMessage request, HttpResponseMessage response) => instance.Signal(id, token, () => new EventData { Id = id, RequestMessage = request, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, HttpResponseMessage response) => instance.Signal(id, token, () => new EventData { Id = id, RequestMessage = response.RequestMessage, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, CancellationToken token, EventData message) => instance.Signal(id, token, () => { message.Id = id; message.Cancel = instance.Cancel; return message; });
 
-      public static Task Signal(this IEventListener instance, string id,  Func<EventData> createMessage) => instance.Signal(id, instance.Token, createMessage);
-        public static Task Signal(this IEventListener instance, string id) => instance.Signal(id, instance.Token,() => new EventData { });
-        public static Task Signal(this IEventListener instance, string id,  string messageText) => instance.Signal(id, instance.Token, () => new EventData { Message = messageText });
-        public static Task Signal(this IEventListener instance, string id,  string messageText, HttpRequestMessage request) => instance.Signal(id, instance.Token, () => new EventData { Message = messageText, RequestMessage = request });
-        public static Task Signal(this IEventListener instance, string id,  string messageText, HttpResponseMessage response) => instance.Signal(id,instance.Token, () => new EventData { Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id,  string messageText, double magnitude) => instance.Signal(id,instance.Token, () => new EventData { Message = messageText, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id,  string messageText, double magnitude, HttpRequestMessage request) => instance.Signal(id, instance.Token,() => new EventData { Message = messageText, RequestMessage = request, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id,  string messageText, double magnitude, HttpResponseMessage response) => instance.Signal(id, instance.Token,() => new EventData { Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Value = magnitude });
-        public static Task Signal(this IEventListener instance, string id,  HttpRequestMessage request) => instance.Signal(id,instance.Token, () => new EventData { RequestMessage = request });
-        public static Task Signal(this IEventListener instance, string id,  HttpRequestMessage request, HttpResponseMessage response) => instance.Signal(id, instance.Token,() => new EventData { RequestMessage = request, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id,  HttpResponseMessage response) => instance.Signal(id, instance.Token,() => new EventData { RequestMessage = response.RequestMessage, ResponseMessage = response });
-        public static Task Signal(this IEventListener instance, string id,  EventData message) => instance.Signal(id, instance.Token,() => message);
+        public static Task Signal(this IEventListener instance, string id, Func<EventData> createMessage) => instance.Signal(id, instance.Token, createMessage);
+        public static Task Signal(this IEventListener instance, string id) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText, HttpRequestMessage request) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, RequestMessage = request, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText, HttpResponseMessage response) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText, double magnitude) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText, double magnitude, HttpRequestMessage request) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, RequestMessage = request, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, string messageText, double magnitude, HttpResponseMessage response) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = messageText, RequestMessage = response.RequestMessage, ResponseMessage = response, Value = magnitude, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, HttpRequestMessage request) => instance.Signal(id, instance.Token, () => new EventData { Id = id, RequestMessage = request, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, HttpRequestMessage request, HttpResponseMessage response) => instance.Signal(id, instance.Token, () => new EventData { Id = id, RequestMessage = request, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, HttpResponseMessage response) => instance.Signal(id, instance.Token, () => new EventData { Id = id, RequestMessage = response.RequestMessage, ResponseMessage = response, Cancel = instance.Cancel });
+        public static Task Signal(this IEventListener instance, string id, EventData message) => instance.Signal(id, instance.Token, () => { message.Id = id; message.Cancel = instance.Cancel; return message; });
 
 
         public static async Task AssertNotNull(this IEventListener instance, string parameterName, object value)
         {
             if (value == null)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"'{parameterName}' should not be null", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"'{parameterName}' should not be null", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertMinimumLength(this IEventListener instance, string parameterName, string value, int length)
         {
             if (value != null && value.Length < length)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"Length of '{parameterName}' is less than {length}", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Length of '{parameterName}' is less than {length}", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertMaximumLength(this IEventListener instance, string parameterName, string value, int length)
         {
             if (value != null && value.Length > length)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"Length of '{parameterName}' is greater than {length}", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Length of '{parameterName}' is greater than {length}", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
 
@@ -94,14 +96,14 @@ namespace Microsoft.Rest.ClientRuntime
         {
             if (value != null && !System.Text.RegularExpressions.Regex.Match(value, regularExpression).Success)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"'{parameterName}' does not validate against pattern /{regularExpression}/", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"'{parameterName}' does not validate against pattern /{regularExpression}/", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertEnum(this IEventListener instance, string parameterName, string value, params string[] values)
         {
             if (!values.Any(each => each.Equals(value)))
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"'{parameterName}' is not one of ({values.Aggregate((c, e) => $"'{e}',{c}")}", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"'{parameterName}' is not one of ({values.Aggregate((c, e) => $"'{e}',{c}")}", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertObjectIsValid(this IEventListener instance, string parameterName, object inst)
@@ -113,35 +115,35 @@ namespace Microsoft.Rest.ClientRuntime
         {
             if (null != value && ((T)value).CompareTo(max) >= 0)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"Value of '{parameterName}' must be less than {max} (value is {value})", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be less than {max} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertIsGreaterThan<T>(this IEventListener instance, string parameterName, T? value, T max) where T : struct, System.IComparable<T>
         {
             if (null != value && ((T)value).CompareTo(max) <= 0)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"Value of '{parameterName}' must be greater than {max} (value is {value})", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be greater than {max} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertIsLessThanOrEqual<T>(this IEventListener instance, string parameterName, T? value, T max) where T : struct, System.IComparable<T>
         {
             if (null != value && ((T)value).CompareTo(max) > 0)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"Value of '{parameterName}' must be less than or equal to {max} (value is {value})", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be less than or equal to {max} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertIsGreaterThanOrEqual<T>(this IEventListener instance, string parameterName, T? value, T max) where T : struct, System.IComparable<T>
         {
             if (null != value && ((T)value).CompareTo(max) < 0)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"Value of '{parameterName}' must be greater than or equal to {max} (value is {value})", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be greater than or equal to {max} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertIsMultipleOf(this IEventListener instance, string parameterName, Int64? value, Int64 multiple)
         {
             if (null != value && value % multiple != 0)
             {
-                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName });
+                await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
             }
         }
         public static async Task AssertIsMultipleOf(this IEventListener instance, string parameterName, double? value, double multiple)
@@ -151,7 +153,7 @@ namespace Microsoft.Rest.ClientRuntime
                 var i = (Int64)(value / multiple);
                 if (i != value / multiple)
                 {
-                    await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning,instance.Token, () => new EventData { Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName });
+                    await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
                 }
             }
         }
@@ -162,7 +164,7 @@ namespace Microsoft.Rest.ClientRuntime
                 var i = (Int64)(value / multiple);
                 if (i != value / multiple)
                 {
-                    await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token,() => new EventData { Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName });
+                    await instance.Signal(Microsoft.Rest.ClientRuntime.Events.ValidationWarning, instance.Token, () => new EventData { Id = Microsoft.Rest.ClientRuntime.Events.ValidationWarning, Message = $"Value of '{parameterName}' must be multiple of {multiple} (value is {value})", Parameter = parameterName, Cancel = instance.Cancel });
                 }
             }
         }
@@ -301,6 +303,7 @@ namespace Microsoft.Rest.ClientRuntime
         {
         }
 
+        public Action Cancel => base.Cancel;
         private Event tracer;
 
         public EventListener(params (string name, Event callback)[] initializer)
@@ -346,7 +349,8 @@ namespace Microsoft.Rest.ClientRuntime
         }
 
 
-        public async Task Signal(string id, CancellationToken token, GetEventData createMessage) {
+        public async Task Signal(string id, CancellationToken token, GetEventData createMessage)
+        {
             if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
             {
                 var message = createMessage();

@@ -13,6 +13,7 @@ import { Statements } from '#csharp/code-dom/statements/statement';
 import { Using } from '#csharp/code-dom/statements/using';
 import { HttpPipeline } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
+import { Parameter } from '#csharp/code-dom/parameter';
 
 export class ModuleClass extends Class {
 
@@ -36,10 +37,10 @@ export class ModuleClass extends Class {
     const OnNewRequest = this.add(new Property('OnNewRequest', pipelineAction));
 
     // create the pipeline property
-    // todo: setup non-poweshell version of pipeline.
+    // todo: setup non-azure version of pipeline.
     const pipelineProperty: Property = this.add(new BackedProperty('Pipeline', HttpPipeline, {
       getterStatements: new Statements(function* () {
-        yield `var result = this._pipeline.Clone();`;
+        yield `var result = this._pipeline.Clone();`; //ouch
         yield If(`${OnNewRequest.value} != null`, function* () {
           yield `    ${OnNewRequest.value}( (step)=> { result.Prepend(step); } , (step)=> { result.Append(step); } );`;
         });
@@ -69,9 +70,16 @@ export class ModuleClass extends Class {
 
     this.add(new Method('Init', mscorlib.Void)).add(function* () {
       yield If(`${OnModuleLoad.value} != null`, function* () {
-        yield `${OnModuleLoad.value}( (step)=> { ${pipelineProperty.value}.Prepend(step); } , (step)=> { ${pipelineProperty.value}.Append(step); } );`;
+        yield `${OnModuleLoad.value}( (step)=> { ${pipelineProperty.valuePrivate}.Prepend(step); } , (step)=> { ${pipelineProperty.valuePrivate}.Append(step); } );`;
       });
     });
 
+    mscorlib.String, mscorlib.CancellationToken, mscorlib.Func(mscorlib.EventArgs)
+    const pId = new Parameter('id', mscorlib.String);
+    const pToken = new Parameter('token', mscorlib.CancellationToken);
+    const pGetEvent = new Parameter('getEventData', mscorlib.Func(mscorlib.EventArgs));
+    this.add(new Method('Signal', mscorlib.Task(), { parameters: [pId, pToken, pGetEvent] , async: Modifier.Async })).add(function* () {
+      yield If(`${EventListener.value} != null`, `await ${EventListener.value}(${pId.value},${pToken.value},${pGetEvent.value});`);
+    });
   }
 }

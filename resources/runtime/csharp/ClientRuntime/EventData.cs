@@ -4,7 +4,7 @@ namespace Microsoft.Rest.ClientRuntime
 
     using System;
     using System.Threading;
-    
+
     ///<summary>Represents the data in signaled event.</summary>
     public partial class EventData
     {
@@ -12,7 +12,7 @@ namespace Microsoft.Rest.ClientRuntime
         /// The type of the event being signaled
         /// </summary>
         public string Id;
-        
+
         /// <summary>
         /// The user-ready message from the event.
         /// </summary>
@@ -29,7 +29,7 @@ namespace Microsoft.Rest.ClientRuntime
         /// Use for progress-style events
         /// </summary>
         public double Value;
-        
+
         /// <summary>
         /// Any extended data for an event should be serialized to JSON and stored here.
         /// </summary>
@@ -61,14 +61,14 @@ namespace Microsoft.Rest.ClientRuntime
         public object ResponseMessage;
 
         /// <summary>
-        /// The CancellationTokenSource for this event. 
+        /// Cancellation method for this event. 
         /// 
-        /// If the event consumer wishes to cancel the request that initiated this event, call <c>Cancel()</c> on the CancellationTokenSource.
+        /// If the event consumer wishes to cancel the request that initiated this event, call <c>Cancel()</c>
         /// </summary>
         /// <remarks>
-        /// The original initiator of the request must provide the CancellationTokenSource instance.
+        /// The original initiator of the request must provide the implementation of this.
         /// </remarks>
-        public CancellationTokenSource CancellationTokenSource;
+        public System.Action Cancel;
     }
 
 }

@@ -16,7 +16,6 @@ export interface GeneratorSettings {
 }
 
 export class State extends ModelState<Model> {
-
   public get project(): Project {
     if (this.prj)
       return this.prj;
@@ -33,5 +32,4 @@ export class State extends ModelState<Model> {
   public path(...childPath: JsonPath): State {
     return new State(this.service, this.model, this.documentName, [...this.currentPath, ...childPath], this.project);
   }
-
 }

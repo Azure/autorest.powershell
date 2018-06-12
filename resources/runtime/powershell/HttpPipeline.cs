@@ -8,21 +8,21 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Collections;
     using System.Linq;
 
-    using GetEventData=System.Func<EventData>;
+    using GetEventData = System.Func<EventData>;
     using NextDelegate = System.Func<
-            System.Net.Http.HttpRequestMessage /* request */, 
-            System.Func<                
-                string /* id */, 
-                System.Threading.CancellationToken /* token */, 
-                System.Func<System.EventArgs> /* getEventData */, 
+            System.Net.Http.HttpRequestMessage /* request */,
+            System.Func<
+                string /* id */,
+                System.Threading.CancellationToken /* token */,
+                System.Func<System.EventArgs> /* getEventData */,
             /* returnType */ System.Threading.Tasks.Task>, /*eventListener */
-        /* returnType */ System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>
+                                                           /* returnType */ System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>
     >;
 
-    using EventListenerDelegate = System.Func<                
-        string /* id */, 
-        System.Threading.CancellationToken /* token */, 
-        System.Func<System.EventArgs> /* getEventData */, 
+    using EventListenerDelegate = System.Func<
+        string /* id */,
+        System.Threading.CancellationToken /* token */,
+        System.Func<System.EventArgs> /* getEventData */,
     /* returnType */ System.Threading.Tasks.Task>;
 
     using SendAsyncStepDelegate = System.Func<
@@ -35,9 +35,9 @@ namespace Microsoft.Rest.ClientRuntime
                 /* returnType */ System.Threading.Tasks.Task> /* eventListener */,
 
             System.Func<
-                System.Net.Http.HttpRequestMessage, 
-                System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, 
-            System.Threading.Tasks.Task>, 
+                System.Net.Http.HttpRequestMessage,
+                System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>,
+            System.Threading.Tasks.Task>,
 
           System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>> /*next*/,
         System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>;
@@ -51,6 +51,8 @@ namespace Microsoft.Rest.ClientRuntime
             _listener = listener;
         }
         public CancellationToken Token => CancellationToken.None;
+        public System.Action Cancel => () => { };
+
 
         public Task Signal(string id, CancellationToken token, GetEventData createMessage)
         {

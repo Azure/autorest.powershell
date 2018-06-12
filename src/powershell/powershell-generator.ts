@@ -1,4 +1,5 @@
 import { Model } from '#common/code-model/code-model';
+import { execute, resolveFullPath } from '#common/exec';
 import { resources } from '#common/locations';
 import { copyResources } from '#common/utility';
 import { deserialize, serialize } from '#common/yaml';
@@ -6,8 +7,6 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State, GeneratorSettings } from './state';
-
-
 
 let _settings: GeneratorSettings | undefined;
 async function settings(service: Host): Promise<GeneratorSettings> {
@@ -28,7 +27,7 @@ async function settings(service: Host): Promise<GeneratorSettings> {
 async function wait(items: Iterable<Promise<void>>) {
   await Promise.all([...items]);
 }
-export async function process(service: Host) {
+export async function processRequest(service: Host) {
   try {
     // Get the list of files
     const files = await service.ListInputs('code-model-v2');
@@ -61,9 +60,9 @@ export async function process(service: Host) {
     // wait for all the generation to be done
     await generateCsproj(service);
     await copyRuntime(service);
-    await generateProxies(service);
     await generateCsproj(service);
-    await generateModule(service);
+    await generateModule(service, project);
+    // await generateProxies(service);
 
     // debug data
     service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
@@ -73,16 +72,20 @@ export async function process(service: Host) {
   }
 }
 
-function* generate(service: Host) {
-  yield generateCsproj(service);
-  yield copyRuntime(service);
-  yield generateProxies(service);
-  yield generateCsproj(service);
-  yield generateModule(service);
-}
 
 async function generateProxies(service: Host) {
-  // "C:/Program Files/PowerShell/6-preview/pwsh.exe"
+  const cfg = await settings(service);
+  const of = await service.GetValue('output-folder');
+
+  // find the pwsh executable.
+  const pwsh = await resolveFullPath('pwsh', process.platform === 'win32' ? ['c:/Program Files/PowerShell', 'c:/Program Files (x86)/PowerShell'] : []);
+  if (!pwsh) {
+    // no powershell core found.
+    throw new Error("PowerShell Core (pwsh) not found in path. Please ensure that pwsh is available.");
+  }
+
+  console.error(`${pwsh} -command "${of}/generate_proxies.ps1"`);
+
 }
 
 async function copyRuntime(service: Host) {
@@ -121,7 +124,7 @@ async function generateCsproj(service: Host) {
   }
 }
 
-async function generateModule(service: Host) {
+async function generateModule(service: Host, project: Project) {
   // write out the psd1 file if it's not there.
   const cfg = await settings(service);
   // if (!await service.ReadFile(cfg.psd1)) {
@@ -160,12 +163,16 @@ Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Obj
     Export-ModuleMember -Function $_.BaseName
 }
 
-if ( $false ) {
-# this module instance.
-  $instance =  [Sample.API.Cmdlets.ModuleOne]::Instance
+$module = ipmo -passthru -ea 0 "$PSScriptRoot/../CommonModule"
+
+if ($module) {
+  Write-Host "Loaded Common Module '$($module.Name)'"
+
+  # this module instance.
+  $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
   # ask for the table of functions we can call in the common module.
-  $VTable = Register-Module
+  $VTable = Register-AzureModule
 
   # delegate responsibility to the common module for tweaking the pipeline at module load
   $instance.OnModuleLoad = $VTable.OnModuleLoad

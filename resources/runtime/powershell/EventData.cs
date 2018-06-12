@@ -36,7 +36,7 @@ namespace Microsoft.Rest.ClientRuntime
                 sv?.Value?.GetType();
                 sv?.RequestMessage?.GetType();
                 sv?.ResponseMessage?.GetType();
-                sv?.CancellationTokenSource?.GetType();
+                sv?.Cancel?.GetType();
             }
             catch
             {
@@ -57,7 +57,7 @@ namespace Microsoft.Rest.ClientRuntime
                     Value = sv.Value,
                     RequestMessage = sv.RequestMessage,
                     ResponseMessage = sv.ResponseMessage,
-                    CancellationTokenSource = sv.CancellationTokenSource
+                    Cancel = sv.Cancel
                 };
             }
             catch

@@ -66,6 +66,9 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
   public get value(): string {
     return `${this.name}`;
   }
+  public get valuePrivate(): string {
+    return `${this.name}`;
+  }
 
   public toString(): string {
     return this.value;

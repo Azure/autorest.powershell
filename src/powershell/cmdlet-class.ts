@@ -288,20 +288,20 @@ export class CmdletClass extends Class {
   }
 
   private implementIEventListener() {
+    const $this = this;
     const _cts = this.add(new InitializedField('_cancellationTokenSource', mscorlib.CancellationTokenSource, new LiteralExpression(`new ${mscorlib.CancellationTokenSource.declaration}()`), { access: Access.Private }));
     this.cancellationToken = this.add(new LambdaProperty('Token', mscorlib.CancellationToken, new LiteralExpression(`${_cts.value}.Token`)));
-    this.add(new Method('Cancel')).add(`${_cts.value}.Cancel();`);
-
-    const msDelay = new Parameter('millisecondDelay', mscorlib.Int);
-    this.add(new Method('CancelAfter', undefined, { parameters: [msDelay] })).add(`${_cts.value}.CancelAfter(${msDelay.value});`);
-
-    const tsDelay = new Parameter('delay', mscorlib.TimeSpan);
-    this.add(new Method('CancelAfter', undefined, { parameters: [tsDelay] })).add(`${_cts.value}.CancelAfter(${tsDelay.value});`);
+    this.add(new LambdaProperty('Cancel', mscorlib.Action(), new LiteralExpression(`${_cts.value}.Cancel`)));
 
     const id = new Parameter('id', mscorlib.String);
     const token = new Parameter('token', mscorlib.CancellationToken);
     const messageData = new Parameter('messageData', mscorlib.Func(EventData));
-    this.add(new Method('Signal', mscorlib.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(`// todo - impl `);
+    this.add(new Method('Signal', mscorlib.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
+      yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value});`;
+      yield If(`${token.value}.IsCancellationRequested`, `return;`);
+
+      // any handling of the signal on our side...
+    });
   }
 
   private addPowershellParameters(operation: CommandOperation) {
@@ -312,7 +312,7 @@ export class CmdletClass extends Class {
       const td = CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, this.state);
       const p = this.add(new CmdletParameter(parameter.details.powershell.name, td, parameter));
 
-      p.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description}"`)] }));
+      p.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`)] }));
     }
   }
 

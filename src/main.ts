@@ -9,7 +9,7 @@ import { process as tweakCodeModel } from './remodeler/tweak-model';
 import { process as tweakCodeModelAzure } from './remodeler/tweak-model-azure';
 
 import { process as llcsharp } from './csharp/lowlevel-generator/main';
-import { process as powershell } from './powershell/powershell-generator';
+import { processRequest as powershell } from './powershell/powershell-generator';
 import { process as createcommands } from './powershell/create-commands';
 
 import { process as csnamer } from './csharp/namer';
