@@ -1,5 +1,5 @@
 
-import { Dictionary, values, length, items } from '#common/dictionary';
+import { Dictionary, values, length, items, keys } from '#common/dictionary';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
 import { processCodeModel } from '#common/process-code-model';
 import { deconstruct, pascalCase, fixLeadingNumber } from '#common/text-manipulation';
@@ -9,8 +9,9 @@ import { Lazy } from '@microsoft.azure/tasks';
 import { getAllProperties } from '#common/code-model/schema';
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Schema, } from '#csharp/lowlevel-generator/code-model';
 import { IParameter } from '#common/code-model/components';
+import { HttpOperation, HttpOperationParameter } from '#common/code-model/http-operation';
 
 // import { getCommandName } from './name-inferrer';
 
@@ -38,6 +39,13 @@ export async function process(service: Host) {
   return processCodeModel(commandCreator, service);
 }
 
+async function commonParameters(): Promise<Array<string>> {
+  return [
+    'resourceGroupName',
+    'subscriptionId'
+  ];
+}
+
 async function commandCreator(model: Model, service: Host): Promise<Model> {
   // check to see if there are already operations in the configuration that we should load
   // and check to see if we should infer new operations
@@ -47,92 +55,121 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-async function detect(model: Model, service: Host): Promise<Model> {
-  service.Message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
-  let count = 0;
+async function addVariant(vname: string, parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+  const body = operation.requestBody && values(operation.requestBody.content).linq.first();
+  const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
 
-  for (const operation of values(model.http.operations)) {
-    for (const variant of doit(operation.operationId)) {
-
-      // now synthesize parameter set variants multiplexed by the variants.
-      const [constants, params] = values(operation.parameters).linq.bifurcate(parameter => parameter.details.constantValue ? true : false);
-      const [requiredParameters, optionalParameters] = values(params).linq.bifurcate(parameter => parameter.required);
-
-      const constantParameters = constants.map(each => `'${each.details.constantValue}'`);
-
-      const combos = combinations(optionalParameters);
-
-      const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-      const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
-
-      const properties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
-
-      const bodyProperties = properties.joinWith(each => each.details.csharp.name);
-
-      const bodyType = (bodyProperties) ? `/* Properties: ${bodyProperties} */` : '';
-
-      const polymorphicBodies = (body && body.schema && body.schema.details.csharp.polymorphicChildren && body.schema.details.csharp.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.csharp.polymorphicChildren).joinWith(child => child.details.csharp.name) : '';
-
-      const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyType, operation.operationId]));
-
-
-      // no optionals:
-      service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyType} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
-      const op = model.commands.operations[`${count++}`] = new CommandOperation(operation.operationId, {
-        ...variant,
-        details: {
-          ...operation.details,
-          powershell: {
-            ...operation.details.csharp,
-            name: vname
-          }
-          //name: vname
-        },
-        operationId: operation.operationId,
-        parameters: requiredParameters.map(each => { each.details.powershell = { ...each.details.csharp, name: pascalCase(fixLeadingNumber(deconstruct(each.details.csharp.name))) }; return each; }), // todo: Azure-specific tweaking of the parameters that are added to the command (ie, SubscriptionId/DefaultContext/etc)
-        callGraph: [operation],
-      });
-      if (body && body.schema) {
-        op.parameters.push(new IParameter(bodyParameterName, body.schema, {
-          details: {
-            powershell: {
-              description: body.schema.details.default.description,
-              name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
-            }
-          }
-        }));
+  const op = model.commands.operations[`${length(model.commands.operations)}`] = new CommandOperation(operation.operationId, {
+    ...variant,
+    details: {
+      ...operation.details,
+      powershell: {
+        ...operation.details.csharp,
+        name: vname
       }
+    },
+    operationId: operation.operationId,
+    parameters: parameters.map(each => {
+      each.details.powershell = {
+        ...each.details.csharp,
+        name: pascalCase(fixLeadingNumber(deconstruct(each.details.csharp.name)))
+      };
+      return each;
+    }),
+    callGraph: [operation],
+  });
 
-      // optionals matrix:
-      for (const combo of combos) {
-        const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyType, operation.operationId]));
-
-        service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} // ${operation.operationId} => ${JSON.stringify(variant)} taking ${combo.joinWith(each => each.name)} ; ${constantParameters} ;${requiredParameters.joinWith(each => each.name)} ; ${bodyType} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
-        model.commands.operations[`${count++}`] = new CommandOperation(operation.operationId, {
-          ...variant,
-          details: {
-            ...operation.details,
-            powershell: {
-              ...operation.details.csharp,
-              name: vname
-            }
-          },
-          operationId: operation.operationId,
-          parameters: [...requiredParameters, ...combo].map(each => { each.details.powershell = { ...each.details.csharp, name: pascalCase(fixLeadingNumber(deconstruct(each.details.csharp.name))) }; return each; }), // todo: Azure-specific tweaking of the parameters that are added to the command (ie, SubscriptionId/DefaultContext/etc)
-          callGraph: [operation],
-        });
-
-        if (body && body.schema) {
-          op.parameters.push(new IParameter(bodyParameterName, body.schema, {
-            details: {
-              powershell: {
-                description: body.schema.details.default.description,
-                name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
-              }
-            }
-          }));
+  if (body && body.schema) {
+    op.parameters.push(new IParameter(bodyParameterName, body.schema, {
+      details: {
+        powershell: {
+          description: body.schema.details.default.description,
+          name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
         }
       }
+    }));
+  }
+}
+
+async function addVariants(parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+  // now synthesize parameter set variants multiplexed by the variants.
+
+  const [constants, params] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
+  const [requiredParameters, optionalParameters] = values(params).linq.bifurcate(parameter => parameter.required);
+
+  const constantParameters = constants.map(each => `'${each.details.default.constantValue}'`);
+
+  const combos = combinations(optionalParameters);
+
+  const body = operation.requestBody && values(operation.requestBody.content).linq.first();
+  const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
+
+  const properties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
+
+  const bodyProperties = properties.joinWith(each => each.details.csharp.name);
+
+  const polymorphicBodies = (body && body.schema && body.schema.details.csharp.polymorphicChildren && body.schema.details.csharp.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.csharp.polymorphicChildren).joinWith(child => child.details.csharp.name) : '';
+
+  const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyProperties, operation.operationId]));
+
+
+  // no optionals:
+  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyProperties} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
+  await addVariant(vname, [...constants, ...requiredParameters], operation, variant, model, service);
+
+  // handle optional parameter variants
+  for (const combo of combos) {
+    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyProperties, operation.operationId]));
+    await addVariant(vname, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
+  }
+}
+
+async function detect(model: Model, service: Host): Promise<Model> {
+  service.Message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
+  // let count = 0;
+
+  const commonCandidates = await commonParameters();
+
+  for (const operation of values(model.http.operations)) {
+    for (const variant of inferCommandNames(operation.operationId)) {
+
+      // no common parameters
+      await addVariants(operation.parameters, operation, variant, model, service);
+
+      // see if we have parameters that can be made common
+      const possibleCommon = values(operation.parameters).linq.where(parameter => commonCandidates.includes(parameter.name)).linq.toArray();
+      if (possibleCommon.length > 0) {
+        // yes! make some combos that include the common parameters
+        const combos = combinations(possibleCommon);
+        for (const combo of combos) {
+          // now, take the operation parameters, and find the ones where that are in our set of combo,
+          const some = operation.parameters.map(param => {
+            if (combo.includes(param)) {
+              const newParam = {
+                ...param,
+                details: {
+                  ...param.details,
+                  default: {
+                    ...param.details.default,
+                    originalParam: param,
+                    fromHost: true
+                  }
+                }
+              };
+              return <HttpOperationParameter><any>newParam;
+            }
+            return param;
+          });
+
+          // and shallow copy the parameter, into a new one, and overw
+          await addVariants(some, operation, variant, model, service);
+        }
+
+      }
+
+
+      // make some variants where subscriptionId and resourceGroupName are pulled from common module
+
     }
   }
 
@@ -168,7 +205,7 @@ interface CommandVariant {
   variant: string;
 }
 
-function doit(operationId: string): Array<CommandVariant> {
+function inferCommandNames(operationId: string): Array<CommandVariant> {
   const pluralization = pluralizationService.Value;
 
   let [group, method] = operationId.split('_', 2);

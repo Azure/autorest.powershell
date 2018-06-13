@@ -7,7 +7,7 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { Is, IsDeclaration, LiteralExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as mscorlib from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
@@ -18,7 +18,7 @@ import { Return } from '#csharp/code-dom/statements/return';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Ternery } from '#csharp/code-dom/ternery';
-import { EventListener, IValidates, JsonMode, JsonNode, JsonObject, KeyValuePairs, IEventListener } from '#csharp/lowlevel-generator/clientruntime';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { forEachLeadingCommentRange } from 'typescript';
@@ -73,15 +73,15 @@ export class ModelClass extends Class implements Serialization, Validation {
     this.addPartialMethods();
 
     // set up the declaration for the toJson method.
-    const container = new Parameter('container', JsonObject);
-    const mode = new Parameter('serializationMode', JsonMode);
+    const container = new Parameter('container', ClientRuntime.JsonObject);
+    const mode = new Parameter('serializationMode', ClientRuntime.JsonMode);
 
-    const toJsonMethod = this.addMethod(new Method('ToJson', JsonNode, {
+    const toJsonMethod = this.addMethod(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
     }));
 
     // setup the declaration for the json deserializer constructor
-    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [new Parameter('json', JsonObject)], access: Access.Internal }));
+    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [new Parameter('json', ClientRuntime.JsonObject)], access: Access.Internal }));
 
     if (this.schema.discriminator) {
       // this has a discriminator property.
@@ -185,10 +185,10 @@ export class ModelClass extends Class implements Serialization, Validation {
       // we do have something to valdiate!
 
       // add the IValidates implementation to this object.
-      this.interfaces.push(IValidates);
-      this.validateMethod = this.addMethod(new Method('Validate', mscorlib.Task(), {
+      this.interfaces.push(ClientRuntime.IValidates);
+      this.validateMethod = this.addMethod(new Method('Validate', dotnet.System.Threading.Tasks.Task(), {
         async: Modifier.Async,
-        parameters: [new Parameter('listener', IEventListener)],
+        parameters: [new Parameter('listener', ClientRuntime.IEventListener)],
       }));
       this.validateMethod.add(validationStatements);
     }
@@ -197,7 +197,7 @@ export class ModelClass extends Class implements Serialization, Validation {
 
     // generate the implementation for toJson
     toJsonMethod.add(function* () {
-      yield `var result = ${container.use} ?? new ${JsonObject.declaration}();`;
+      yield `var result = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
       yield EOL;
 
       yield `bool returnNow = false;`;
@@ -230,7 +230,7 @@ export class ModelClass extends Class implements Serialization, Validation {
 
     if (this.hasHeaderProperties) {
       // add header deserializer method
-      const headers = new Parameter('headers', KeyValuePairs);
+      const headers = new Parameter('headers', ClientRuntime.KeyValuePairs);
       const readHeaders = new Method('ReadHeaders', this, {
         access: Access.Internal,
         parameters: [headers],
@@ -258,14 +258,14 @@ export class ModelClass extends Class implements Serialization, Validation {
     const d = this.discriminators;
     const isp = this.isPolymorphic;
     // create the FromJson method
-    const node = new Parameter('node', JsonNode);
+    const node = new Parameter('node', ClientRuntime.JsonNode);
     const fromJson = this.addMethod(new Method('FromJson', this.modelInterface, { parameters: [node], static: Modifier.Static }));
     fromJson.add(function* () {
 
-      const json = IsDeclaration(node, JsonObject, 'json');
+      const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
 
       if (isp) {
-        yield If(Not(json.check), Return(mscorlib.Null));
+        yield If(Not(json.check), Return(dotnet.Null));
         yield '// Polymorphic type -- select the appropriate constructor using the discriminator';
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
 
@@ -281,7 +281,7 @@ export class ModelClass extends Class implements Serialization, Validation {
         yield Return($this.newInstance(json));
       } else {
         // just tell it to create the instance (providing that it's a JSonObject)
-        yield Return(Ternery(json.check, $this.newInstance(json), mscorlib.Null));
+        yield Return(Ternery(json.check, $this.newInstance(json), dotnet.Null));
       }
     });
 
@@ -319,33 +319,33 @@ export class ModelClass extends Class implements Serialization, Validation {
 
   protected addPartialMethods() {
     // add partial methods for future customization
-    this.btj = this.addMethod(new PartialMethod('BeforeToJson', mscorlib.Void, {
+    this.btj = this.addMethod(new PartialMethod('BeforeToJson', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
-        new Parameter('returnNow', mscorlib.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
+        new Parameter('container', ClientRuntime.JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
+        new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
       ],
     }));
 
-    this.atj = this.addMethod(new PartialMethod('AfterToJson', mscorlib.Void, {
+    this.atj = this.addMethod(new PartialMethod('AfterToJson', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
+        new Parameter('container', ClientRuntime.JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
       ],
     }));
 
-    this.bfj = this.addMethod(new PartialMethod('BeforeFromJson', mscorlib.Void, {
+    this.bfj = this.addMethod(new PartialMethod('BeforeFromJson', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('json', JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
-        new Parameter('returnNow', mscorlib.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
+        new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
+        new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
     }));
 
-    this.afj = this.addMethod(new PartialMethod('AfterFromJson', mscorlib.Void, {
+    this.afj = this.addMethod(new PartialMethod('AfterFromJson', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('json', JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
+        new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
       ],
     }));
   }

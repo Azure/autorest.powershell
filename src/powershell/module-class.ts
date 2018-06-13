@@ -4,14 +4,14 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { LiteralExpression } from '#csharp/code-dom/expression';
 import { Import, Alias } from '#csharp/code-dom/import';
 import { Method } from '#csharp/code-dom/method';
-import * as mscorlib from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { BackedProperty, ImplementedProperty, LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';
 import { If } from '#csharp/code-dom/statements/if'
 import { Return } from '#csharp/code-dom/statements/return';
 import { Statements } from '#csharp/code-dom/statements/statement';
 import { Using } from '#csharp/code-dom/statements/using';
-import { HttpPipeline } from '#csharp/lowlevel-generator/clientruntime';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
 import { Parameter } from '#csharp/code-dom/parameter';
 
@@ -28,17 +28,18 @@ export class ModuleClass extends Class {
     }));
 
     // get the name of the client API class
-    const clientAPI = new mscorlib.LibraryType(`${this.state.model.details.csharp.namespace}.${this.state.model.details.csharp.name}`);
+    const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+
     const clientProperty = this.add(new Property('ClientAPI', clientAPI));
 
-    const pipelineAction = new mscorlib.LibraryType(`System.Action<PipelineChangeDelegate,PipelineChangeDelegate>`);
+    const pipelineAction = new dotnet.LibraryType(dotnet.System, `Action<PipelineChangeDelegate,PipelineChangeDelegate>`);
 
     const OnModuleLoad = this.add(new Property('OnModuleLoad', pipelineAction));
     const OnNewRequest = this.add(new Property('OnNewRequest', pipelineAction));
 
     // create the pipeline property
     // todo: setup non-azure version of pipeline.
-    const pipelineProperty: Property = this.add(new BackedProperty('Pipeline', HttpPipeline, {
+    const pipelineProperty: Property = this.add(new BackedProperty('Pipeline', ClientRuntime.HttpPipeline, {
       getterStatements: new Statements(function* () {
         yield `var result = this._pipeline.Clone();`; //ouch
         yield If(`${OnNewRequest.value} != null`, function* () {
@@ -54,31 +55,31 @@ export class ModuleClass extends Class {
     })).add(function* () {
       yield `/// constructor`;
       yield clientProperty.assignPrivate(clientAPI.newInstance());
-      yield pipelineProperty.assignPrivate(HttpPipeline.newInstance());
+      yield pipelineProperty.assignPrivate(ClientRuntime.HttpPipeline.newInstance());
     });
 
-    const eventListener = mscorlib.Func(mscorlib.String, mscorlib.CancellationToken, mscorlib.Func(mscorlib.EventArgs), mscorlib.Task());
-    const nextStep = mscorlib.Func(mscorlib.HttpRequestMessage, eventListener, mscorlib.Task(mscorlib.HttpResponseMessage));
+    const eventListener = dotnet.System.Func(dotnet.String, dotnet.System.Threading.CancellationToken, dotnet.System.Func(dotnet.System.EventArgs), dotnet.System.Threading.Tasks.Task());
+    const nextStep = dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, eventListener, dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage));
 
-    const eventListenerDelegate = namespace.add(new Alias('EventListenerDelegate', mscorlib.Func(mscorlib.String, mscorlib.CancellationToken, mscorlib.Func(mscorlib.EventArgs), mscorlib.Task())));
-    const getParameterDelegate = namespace.add(new Alias('GetParameterDelegate', mscorlib.Func(mscorlib.String, mscorlib.Dictionary(mscorlib.String, mscorlib.Object), mscorlib.String, mscorlib.Object)));
-    const sendAsyncStep = namespace.add(new Alias('SendAsyncStep', mscorlib.Func(mscorlib.HttpRequestMessage, eventListener, nextStep, mscorlib.Task(mscorlib.HttpResponseMessage))));
-    const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', mscorlib.Action(sendAsyncStep.fullDefinition)));
+    const eventListenerDelegate = namespace.add(new Alias('EventListenerDelegate', dotnet.System.Func(dotnet.String, dotnet.System.Threading.CancellationToken, dotnet.System.Func(dotnet.System.EventArgs), dotnet.System.Threading.Tasks.Task())));
+    const getParameterDelegate = namespace.add(new Alias('GetParameterDelegate', dotnet.System.Func(dotnet.String, dotnet.System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), dotnet.String, dotnet.Object)));
+    const sendAsyncStep = namespace.add(new Alias('SendAsyncStep', dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, eventListener, nextStep, dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage))));
+    const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', dotnet.System.Action(sendAsyncStep.fullDefinition)));
 
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate));
 
-    this.add(new Method('Init', mscorlib.Void)).add(function* () {
+    this.add(new Method('Init', dotnet.Void)).add(function* () {
       yield If(`${OnModuleLoad.value} != null`, function* () {
         yield `${OnModuleLoad.value}( (step)=> { ${pipelineProperty.valuePrivate}.Prepend(step); } , (step)=> { ${pipelineProperty.valuePrivate}.Append(step); } );`;
       });
     });
 
-    mscorlib.String, mscorlib.CancellationToken, mscorlib.Func(mscorlib.EventArgs)
-    const pId = new Parameter('id', mscorlib.String);
-    const pToken = new Parameter('token', mscorlib.CancellationToken);
-    const pGetEvent = new Parameter('getEventData', mscorlib.Func(mscorlib.EventArgs));
-    this.add(new Method('Signal', mscorlib.Task(), { parameters: [pId, pToken, pGetEvent] , async: Modifier.Async })).add(function* () {
+
+    const pId = new Parameter('id', dotnet.String);
+    const pToken = new Parameter('token', dotnet.System.Threading.CancellationToken);
+    const pGetEvent = new Parameter('getEventData', dotnet.System.Func(dotnet.System.EventArgs));
+    this.add(new Method('Signal', dotnet.System.Threading.Tasks.Task(), { parameters: [pId, pToken, pGetEvent], async: Modifier.Async })).add(function* () {
       yield If(`${EventListener.value} != null`, `await ${EventListener.value}(${pId.value},${pToken.value},${pGetEvent.value});`);
     });
   }

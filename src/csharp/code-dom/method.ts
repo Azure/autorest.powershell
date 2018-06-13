@@ -1,7 +1,7 @@
 import { CommaChar, EOL, docComment, indent } from '#common/text-manipulation';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { summary } from '#csharp/code-dom/doc-comments';
-import * as mscorlib from './mscorlib';
+import * as dotnet from './mscorlib';
 import { Parameter } from './parameter';
 import { Statements, OneOrMoreStatements } from './statements/statement';
 import { TypeDeclaration } from './type-declaration';
@@ -23,7 +23,7 @@ export class Method extends Statements {
   public description: string = "";
   public body?: OneOrMoreStatements;
 
-  constructor(public name: string, protected returnType: TypeDeclaration = mscorlib.Void, objectIntializer?: Partial<Method>) {
+  constructor(public name: string, protected returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<Method>) {
     super();
     this.apply(objectIntializer);
     // easy access to allow statements in the initalizer.
@@ -83,7 +83,7 @@ ${indent(super.implementation)}
 
 export class PartialMethod extends Method {
   public isPartial = true;
-  constructor(name: string, returnType: TypeDeclaration = mscorlib.Void, objectIntializer?: Partial<PartialMethod>) {
+  constructor(name: string, returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
     this.apply(objectIntializer);
   }
@@ -103,7 +103,7 @@ partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} 
 }
 
 export class LambdaMethod extends Method {
-  constructor(name: string, returnType: TypeDeclaration = mscorlib.Void, protected expression: Expression, objectIntializer?: Partial<PartialMethod>) {
+  constructor(name: string, returnType: TypeDeclaration = dotnet.Void, protected expression: Expression, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
     this.apply(objectIntializer);
   }

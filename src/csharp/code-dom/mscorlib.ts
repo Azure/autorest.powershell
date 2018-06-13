@@ -1,13 +1,17 @@
-import { LiteralExpression, Expression } from '#csharp/code-dom/expression';
-import { TypeDeclaration } from './type-declaration';
+import { intersect } from '#common/intersect';
+import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
-import { Method } from '#csharp/code-dom/method';
-import { Class } from '#csharp/code-dom/class';
-import { Property } from '#csharp/code-dom/property';
 import { Parameter } from '#csharp/code-dom/parameter';
+import { Property } from '#csharp/code-dom/property';
+import { TypeDeclaration } from './type-declaration';
 
 export class LibraryType implements TypeDeclaration {
-  constructor(private fullName: string) {
+  private get fullName() {
+    return this.namespace.fullName ? `${this.namespace.fullName}.${this.name}` : this.name;
+  }
+  private namespace: Namespace;
+  constructor(namespace: Namespace | string, private name: string) {
+    this.namespace = typeof (namespace) === 'string' ? new Namespace(namespace) : namespace;
   }
 
   public get declaration(): string {
@@ -64,49 +68,77 @@ export class EnumType implements TypeDeclaration {
   }
 }
 
+export const None: Namespace = new Namespace('');
+const system: Namespace = new Namespace('System');
+const threading = new Namespace('Threading', system);
+const tasks = new Namespace('Tasks', threading);
+const action = new LibraryType(system, 'Action');
+const collections = new Namespace('Collections', system);
+const generic = new Namespace('Generic', collections);
+const net = new Namespace('Net', system);
+const http = new Namespace('Http', net);
+const task = new LibraryType(tasks, 'Task');
 
-export const Unknown: TypeDeclaration = new LibraryType('null');
-export const ToDo: TypeDeclaration = new LibraryType('null');
-export const Void: TypeDeclaration = new LibraryType('void');
-export const String: TypeDeclaration = new LibraryType('string');
-export const Int: TypeDeclaration = new LibraryType('int');
-export const Long: TypeDeclaration = new LibraryType('long');
-export const Double: TypeDeclaration = new LibraryType('double');
-export const Float: TypeDeclaration = new LibraryType('float');
-export const Date: TypeDeclaration = new LibraryType('DateTime');
-export const Duration: TypeDeclaration = new LibraryType('TimeSpan');
-export const Binary: TypeDeclaration = new LibraryType('byte[]');
-export const Bool: TypeDeclaration = new LibraryType('bool');
-export const Object: TypeDeclaration = new LibraryType('object');
-export const ThisObject: TypeDeclaration = new LibraryType('this object');
-export const Var: TypeDeclaration = new LibraryType('var');
+export const System = intersect(system, {
+  Threading: intersect(threading, {
+    CancellationToken: new LibraryType(threading, 'CancellationToken'),
+    CancellationTokenSource: new LibraryType(threading, 'CancellationTokenSource'),
+
+    Tasks: intersect(tasks, {
+      Task(taskType?: TypeDeclaration): TypeDeclaration {
+        return taskType ? new LibraryType(tasks, `Task<${taskType.declaration}>`) : task;
+      }
+    })
+
+  }),
+  DateTime: new LibraryType(system, 'DateTime'),
+  EventArgs: new LibraryType(system, 'EventArgs'),
+  Exception: new LibraryType(system, 'Exception'),
+  TimeSpan: new LibraryType(system, 'TimeSpan'),
+  Net: intersect(net, {
+    Http: intersect(http, {
+      HttpRequestMessage: new LibraryType(http, 'HttpRequestMessage'),
+      HttpResponseMessage: new LibraryType(http, 'HttpResponseMessage'),
+    })
+  }),
+  Collections: intersect(collections, {
+    Generic: intersect(generic, {
+      Dictionary(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
+        return new LibraryType(generic, `Dictionary<${keyType.declaration},${valueType.declaration}>`);
+      },
+      KeyValuePair(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
+        return new LibraryType(generic, `KeyValuePair<${keyType.declaration},${valueType.declaration}>`);
+      },
+      IEnumerable(type: TypeDeclaration): TypeDeclaration {
+        return new LibraryType(generic, `IEnumerable<${type.declaration}>`);
+      }
+    })
+  }),
+  Action(...actionParameters: Array<TypeDeclaration>): TypeDeclaration {
+    return actionParameters.length === 0 ? action : new LibraryType(system, `Action<${actionParameters.joinWith(each => each.declaration)}>`);
+  },
+
+  Func(...funcParameters: Array<TypeDeclaration>): TypeDeclaration {
+    return new LibraryType(system, `Func<${funcParameters.joinWith(each => each.declaration)}>`);
+  }
+});
+
+export const Unknown: TypeDeclaration = new LibraryType(None, 'null');
+export const ToDo: TypeDeclaration = new LibraryType(None, 'null');
+export const Void: TypeDeclaration = new LibraryType(None, 'void');
+export const String: TypeDeclaration = new LibraryType(None, 'string');
+export const Int: TypeDeclaration = new LibraryType(None, 'int');
+export const Long: TypeDeclaration = new LibraryType(None, 'long');
+export const Double: TypeDeclaration = new LibraryType(None, 'double');
+export const Float: TypeDeclaration = new LibraryType(None, 'float');
+export const Binary: TypeDeclaration = new LibraryType(None, 'byte[]');
+export const Bool: TypeDeclaration = new LibraryType(None, 'bool');
+export const Object: TypeDeclaration = new LibraryType(None, 'object');
+export const ThisObject: TypeDeclaration = new LibraryType(None, 'this object');
+export const Var: TypeDeclaration = new LibraryType(None, 'var');
+
+// export const Date: TypeDeclaration = new LibraryType(System, 'DateTime');
+// export const Duration: TypeDeclaration = new LibraryType(System, 'TimeSpan');
+
 export const Null = new LiteralExpression('null');
 export const This = new LiteralExpression('this');
-
-const task: TypeDeclaration = new LibraryType('System.Threading.Tasks.Task');
-const action: TypeDeclaration = new LibraryType('System.Action');
-
-export const TimeSpan: TypeDeclaration = new LibraryType('System.TimeSpan');
-export const Exception: TypeDeclaration = new LibraryType('System.Exception');
-export const CancellationToken: TypeDeclaration = new LibraryType('System.Threading.CancellationToken');
-export const CancellationTokenSource: TypeDeclaration = new LibraryType('System.Threading.CancellationTokenSource');
-export const HttpRequestMessage: TypeDeclaration = new LibraryType('System.Net.Http.HttpRequestMessage');
-export const HttpResponseMessage: TypeDeclaration = new LibraryType('System.Net.Http.HttpResponseMessage');
-export const EventArgs: TypeDeclaration = new LibraryType('System.EventArgs');
-
-export function Func(...funcParameters: Array<TypeDeclaration>): TypeDeclaration {
-  return new LibraryType(`System.Func<${funcParameters.joinWith(each => each.declaration)}>`);
-}
-export function Action(...actionParameters: Array<TypeDeclaration>): TypeDeclaration {
-  return actionParameters.length === 0 ? action : new LibraryType(`System.Action<${actionParameters.joinWith(each => each.declaration)}>`);
-}
-
-export function Dictionary(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
-  return new LibraryType(`System.Collections.Generic.Dictionary<${keyType.declaration},${valueType.declaration}>`);
-}
-
-export function Task(taskType?: TypeDeclaration): TypeDeclaration {
-  return taskType ? new LibraryType(`System.Threading.Tasks.Task<${taskType.declaration}>`) : task;
-}
-
-export const MyEnum = new EnumType(new Namespace(""), "MyType").withMembers<{ A: Expression; B: Expression; C: Expression }>();

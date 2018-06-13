@@ -5,7 +5,7 @@ import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { IJsonSerializable, JsonNode, JsonObject } from '#csharp/lowlevel-generator/clientruntime';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { State } from '../generator';
@@ -46,7 +46,7 @@ export class ModelInterface extends Interface implements Serialization, Validati
     }
 
     // mark it as json serializable
-    this.interfaces.push(IJsonSerializable);
+    this.interfaces.push(ClientRuntime.IJsonSerializable);
 
   }
 }

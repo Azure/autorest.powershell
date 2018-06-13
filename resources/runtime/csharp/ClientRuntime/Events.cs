@@ -1,7 +1,7 @@
 
 namespace Microsoft.Rest.ClientRuntime
 {
-    public static class Events
+    public static partial class Events
     {
         public const string Log = nameof(Log);
         public const string Validation = nameof(Validation);
@@ -9,6 +9,12 @@ namespace Microsoft.Rest.ClientRuntime
         public const string AfterValidation = nameof(AfterValidation);
         public const string RequestCreated = nameof(RequestCreated);
         public const string ResponseCreated = nameof(ResponseCreated);
+        public const string URLCreated = nameof(URLCreated);
         public const string Finally = nameof(Finally);
+        public const string HeaderParametersAdded = nameof( HeaderParametersAdded);
+        public const string BodyContentSet = nameof( BodyContentSet);
+        public const string BeforeCall = nameof( BeforeCall);
+        public const string BeforeResponseDispatch = nameof( BeforeResponseDispatch);
+
     }
 }

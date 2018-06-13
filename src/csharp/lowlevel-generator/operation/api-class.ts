@@ -1,7 +1,7 @@
 import { Class } from '#csharp/code-dom/class';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Property } from '#csharp/code-dom/property';
-import { ISendAsync } from '../clientruntime';
+import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
 import { items } from '#common/dictionary';
@@ -15,7 +15,7 @@ export class ApiClass extends Class {
     super(namespace, state.model.details.csharp.name);
     this.apply(objectInitializer);
     // add basics
-    this.sender = this.add(new Property("Sender", ISendAsync));
+    this.sender = this.add(new Property("Sender", ClientRuntime.ISendAsync));
 
     // add operations from code model
     for (const { key: operationName, value: operation } of items(state.model.http.operations)) {

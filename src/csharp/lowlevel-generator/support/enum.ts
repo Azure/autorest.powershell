@@ -1,32 +1,31 @@
+import { Schema } from '#common/code-model/schema';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Constructor } from '#csharp/code-dom/constructor';
 import { StringExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Interface } from '#csharp/code-dom/interface';
 import { Method } from '#csharp/code-dom/method';
-import * as mscorlib from '#csharp/code-dom/mscorlib';
-import { String } from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Operator } from '#csharp/code-dom/operator';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Struct } from '#csharp/code-dom/struct';
-import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
-import { Schema } from '#common/code-model/schema';
-import { State } from '../generator';
-import { ObjectFeatures } from '#csharp/schema/object';
 import { EnumFeatures } from '#csharp/schema/enum';
+import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
+import { ObjectFeatures } from '#csharp/schema/object';
+import { State } from '../generator';
 
 export class EnumClass extends Struct implements Serialization, Validation {
   schemaWithFeatures: EnumFeatures;
   constructor(schemaWithFeatures: EnumFeatures, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schemaWithFeatures.schema.details.csharp.enum) {
-      throw new Error("ENUM AINT XMSENUM");
+      throw new Error('ENUM AINT XMSENUM');
     }
 
     super(state.project.supportNamespace, schemaWithFeatures.schema.details.csharp.enum.name, undefined, {
-      interfaces: [new Interface(new Namespace("System"), "IEquatable", {
+      interfaces: [new Interface(new Namespace('System'), 'IEquatable', {
         genericParameters: [`${schemaWithFeatures.schema.details.csharp.enum.name}`]
       })],
     });
@@ -42,42 +41,42 @@ export class EnumClass extends Struct implements Serialization, Validation {
     }
 
     // add backingField
-    const backingField = this.add(new Property('value', String, {
+    const backingField = this.add(new Property('value', dotnet.String, {
       getAccess: Access.Private,
       setAccess: Access.Private
     }));
 
     // add private constructor
-    const p = new Parameter('underlyingValue', String)
+    const p = new Parameter('underlyingValue', dotnet.String);
     const ctor = this.addMethod(new Constructor(this, {
       access: Access.Private,
       parameters: [p],
     })).add(`this.${backingField.value} = ${p.value};`);
 
     // add toString Method
-    this.addMethod(new Method("ToString", mscorlib.String, {
+    this.addMethod(new Method('ToString', dotnet.String, {
       override: Modifier.Override,
       description: `Returns string representation for ${this.name}`
-    })).add(`return this.${backingField.value};`)
+    })).add(`return this.${backingField.value};`);
 
     // add Equals Method(thistype)
-    this.addMethod(new Method("Equals", mscorlib.Bool, {
+    this.addMethod(new Method('Equals', dotnet.Bool, {
       description: `Compares values of enum type ${this.name}`,
-      parameters: [new Parameter("e", this)]
-    })).add(`return ${backingField.value}.Equals(e.${backingField.value});`)
+      parameters: [new Parameter('e', this)]
+    })).add(`return ${backingField.value}.Equals(e.${backingField.value});`);
 
     // add Equals Method(object)
-    this.addMethod(new Method("Equals", mscorlib.Bool, {
+    this.addMethod(new Method('Equals', dotnet.Bool, {
       override: Modifier.Override,
       description: `Compares values of enum type ${this.name} (override for Object)`,
-      parameters: [new Parameter("obj", mscorlib.Object)]
-    })).add(`return obj is ${this.name} && Equals((${this.name})obj);`)
+      parameters: [new Parameter('obj', dotnet.Object)]
+    })).add(`return obj is ${this.name} && Equals((${this.name})obj);`);
 
     // add implicit operator(string)
     this.addMethod(new Operator(`implicit operator ${this.name}`, {
       static: Modifier.Static,
       description: `Implicit operator to convert string to ${this.name}`,
-      parameters: [new Parameter('value', mscorlib.String)]
+      parameters: [new Parameter('value', dotnet.String)]
     })).add(`return new ${this.name}(value);`);
 
     // add implicit operator(thistype)
@@ -88,21 +87,21 @@ export class EnumClass extends Struct implements Serialization, Validation {
     })).add(`return e.${backingField.value};`);
 
     // add operator ==
-    this.addMethod(new Method(`operator ==`, mscorlib.Bool, {
+    this.addMethod(new Method(`operator ==`, dotnet.Bool, {
       static: Modifier.Static,
       description: `Overriding == operator for enum ${this.name}`,
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return e2.Equals(e1);`);
 
     // add opeator !=
-    this.addMethod(new Method(`operator !=`, mscorlib.Bool, {
+    this.addMethod(new Method(`operator !=`, dotnet.Bool, {
       static: Modifier.Static,
       description: `Overriding != operator for enum ${this.name}`,
       parameters: [new Parameter('e1', this), new Parameter('e2', this)]
     })).add(`return !e2.Equals(e1);`);
 
     // add getHashCode
-    this.addMethod(new Method(`GetHashCode`, mscorlib.Int, {
+    this.addMethod(new Method(`GetHashCode`, dotnet.Int, {
       override: Modifier.Override,
       description: `Returns hashCode for enum ${this.name}`,
     })).add(`return this.${backingField.value}.GetHashCode();`);

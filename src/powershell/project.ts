@@ -4,7 +4,6 @@ import { Namespace } from '#csharp/code-dom/namespace';
 import { State, GeneratorSettings } from './state';
 
 import { Import } from '#csharp/code-dom/import';
-import { JsonType } from '#common/code-model/schema';
 import { values, items } from '#common/dictionary';
 import { CmdletClass } from './cmdlet-class';
 import { ModuleClass } from '#powershell/module-class';
@@ -33,7 +32,7 @@ export class CmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<CmdletNamespace>) {
     super("Cmdlets", parent);
     this.apply(objectInitializer);
-
+    this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.IEventListenerExtensions"));
     // generate cmdlet classes on top of the SDK
     for (const { key: id, value: operation } of items(state.model.commands.operations)) {
       this.addClass(new CmdletClass(this, operation, state.path("commands", "operations", id)));

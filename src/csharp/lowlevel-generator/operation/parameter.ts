@@ -1,7 +1,7 @@
 
 
 import { Method } from '#csharp/code-dom/method';
-import * as mscorlib from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
@@ -71,12 +71,12 @@ export class CallbackParameter extends Parameter {
   public bodyResponse: (Serialization & Validation) | null;
   public headerResponse: (Serialization & Validation) | null;
   public supportNamespace: Namespace;
-  public responseType: mscorlib.LibraryType;
+  public responseType: dotnet.LibraryType;
 
   // constructor(parent: Method, name: string, responseParameters: Array<TypeDeclaration>, state: State, objectInitializer?: Partial<CallbackParameter>) {
   constructor(parent: Method, name: string, bodyResponse: (Serialization & Validation) | null, headerResponse: (Serialization & Validation) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
-    let responseDelegateType: mscorlib.LibraryType;
-    let responsePayloadType: mscorlib.LibraryType;
+    let responseDelegateType: dotnet.LibraryType;
+    let responsePayloadType: dotnet.LibraryType;
 
     const genericParameters = bodyResponse ?
       headerResponse ?
@@ -86,12 +86,12 @@ export class CallbackParameter extends Parameter {
         `<${headerResponse.declaration}>` :
         ``;
 
-    super(name, new mscorlib.LibraryType(`${ClientRuntime.fullName}.OnResponse${genericParameters}`));
+    super(name, new dotnet.LibraryType(ClientRuntime, `OnResponse${genericParameters}`));
     this.genParameters = genericParameters;
     this.bodyResponse = bodyResponse;
     this.headerResponse = headerResponse;
     this.supportNamespace = state.project.supportNamespace;
-    this.responseType = new mscorlib.LibraryType(`${ClientRuntime.fullName}.Response${genericParameters}`);
+    this.responseType = new dotnet.LibraryType(ClientRuntime, `Response${genericParameters}`);
     this.apply(objectInitializer);
   }
 

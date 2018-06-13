@@ -37,6 +37,7 @@
     "switch-default": false,
     "member-access": false,
     "no-this-assignment": false,
+    "object-literal-sort-keys": false,
     "array-type": [
       true,
       "generic"

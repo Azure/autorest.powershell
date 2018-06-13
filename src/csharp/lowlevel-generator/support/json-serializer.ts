@@ -1,10 +1,10 @@
 import { Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Method } from '#csharp/code-dom/method';
-import * as mscorlib from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
-import { JsonNode, JsonObject } from '#csharp/lowlevel-generator/clientruntime';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#csharp/lowlevel-generator/generator';
 import { items } from '#common/dictionary';
 
@@ -17,9 +17,9 @@ export class JsonSerializerClass extends Class {
     this.partial = true;
     this.isStatic = true;
 
-    const tojson = this.addMethod(new Method("ToJson", JsonNode, { static: Modifier.Static }));
-    const objP = tojson.addParameter(new Parameter("obj", mscorlib.ThisObject));
-    const container = tojson.addParameter(new Parameter("container", JsonObject, { defaultInitializer: `= null` }));
+    const tojson = this.addMethod(new Method("ToJson", ClientRuntime.JsonNode, { static: Modifier.Static }));
+    const objP = tojson.addParameter(new Parameter("obj", dotnet.ThisObject));
+    const container = tojson.addParameter(new Parameter("container", ClientRuntime.JsonObject, { defaultInitializer: `= null` }));
     tojson.add(`return null;`);
 
     const schemas = state.model.schemas;
@@ -59,15 +59,15 @@ export class JsonSerializerClass extends Class {
         clss.partial = true;
 
         // add partial methods for future customization
-        const btj = clss.addMethod(new PartialMethod("BeforeToJson", mscorlib.Void, {
+        const btj = clss.addMethod(new PartialMethod("BeforeToJson", dotnet.Void, {
           access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),
-            new Parameter("returnNow", mscorlib.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the serialization should be processed, or if the method should return instantly." }),
+            new Parameter("returnNow", dotnet.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the serialization should be processed, or if the method should return instantly." }),
           ]
         }));
 
-        const atj = clss.addMethod(new PartialMethod("AfterToJson", mscorlib.Void, {
+        const atj = clss.addMethod(new PartialMethod("AfterToJson", dotnet.Void, {
           access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),

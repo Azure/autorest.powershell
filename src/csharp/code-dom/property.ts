@@ -7,6 +7,7 @@ import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
 import { ExpressionStatement, Instance, Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
+import { Dictionary } from '#common/dictionary';
 
 export class Property extends Initializer implements Variable, Instance {
   public 'new': New = Modifier.None;
@@ -19,7 +20,7 @@ export class Property extends Initializer implements Variable, Instance {
   public abstract: Abstract = Modifier.None;
   public extern: Extern = Modifier.None;
   public attributes = new Array<Attribute>();
-
+  public metadata: Dictionary<any> = {};
   public description: string = '';
 
   protected get visibility(): Access {

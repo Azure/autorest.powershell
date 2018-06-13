@@ -129,7 +129,13 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
   for (const operation of values(model.http.operations)) {
     for (const parameter of values(operation.parameters)) {
       if (parameter.schema.enum.length === 1) {
+        // parameters with an enum single value are constants
         parameter.details.default.constantValue = parameter.schema.enum[0];
+      }
+
+      if (parameter.name === "api-version") {
+        // api-version constant parameter pulls value from the model/info/version
+        parameter.details.default.constantValue = model.info.version;
       }
     }
   }
