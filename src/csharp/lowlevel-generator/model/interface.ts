@@ -37,6 +37,7 @@ export class ModelInterface extends Interface implements Serialization, Validati
   }
   constructor(parent: Namespace, schema: Schema, public classImplementation: ModelClass, state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.csharp.name}`);
+    this.partial = true;
     this.apply(objectInitializer);
     const implData = (schema.details.csharp = schema.details.csharp || {});
     implData.interfaceImplementation = this;

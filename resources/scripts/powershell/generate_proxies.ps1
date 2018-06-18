@@ -34,7 +34,9 @@ $commands |% {
     $cmdlet = $outputs[$targetCmdlet]
     
     # add the variant
-    $newCmdlet.variants.add( $variant, [System.Management.Automation.ProxyCommand]::GetBegin( $metadata ) )
+    $gb = [System.Management.Automation.ProxyCommand]::GetBegin( $metadata ) 
+    $ct = $metadata.Parameters.Keys.Count
+    $newCmdlet.variants.add( $variant, @{ method = $gb; pcount = $ct; name = $name} )
 
     # copy parameters across
     $metadata.Parameters.Keys |% {
@@ -59,32 +61,45 @@ $outputs.Keys |% {
     $cmdletname= $_
     $each = $outputs[$cmdletname]
     $cmd = [System.Management.Automation.ProxyCommand]::create($each.cmdlet)
-    $b = [System.Management.Automation.ProxyCommand]::GetBegin($each.cmdlet)
+
+    if( $each.variants.Count -eq 1 ) {
+        $text = $cmd
+    } else {
+        $b = [System.Management.Automation.ProxyCommand]::GetBegin($each.cmdlet)
     
-    $newBegin = "`n"
-    $newBegin = $newBegin + '  switch ($PsCmdlet.ParameterSetName) { ';
-    $newBegin = $newBegin + "`n"
-    
-    $each.variants.Keys |% {
-        $name = $_;
-        $variant = $each.variants[$name];
-        $t =  "`n  '$_' {`n"
-        $t = $t + $variant
+        $newBegin = "`n"
+        $newBegin = $newBegin + '  switch ($PsCmdlet.ParameterSetName) { ';
+        $newBegin = $newBegin + "`n"
+        $pc = 100
+
+        $each.variants.Keys |% {
+            $name = $_;
+
+            if ( $each.variants[$name].pcount -lt $pc ) {
+                # write-host "$name => $pc $($each.variants[$name].pcount)"
+                $pc = $each.variants[$name].pcount
+                $defaultImpl = $each.variants[$name].method
+                $defaultName = $name
+            }
+            
+            $variant = $each.variants[$name].method;
+            $t =  "`n  '$_' {`n"
+            $t = $t + $variant
+            $t = $t + "`n}`n"
+            $newBegin = $newBegin  + $t;
+        }
+
+        # add a default case (choose the first?)
+        $t =  "`n  default {`n"
+        $t = $t + $defaultImpl
         $t = $t + "`n}`n"
         $newBegin = $newBegin  + $t;
+
+        $newBegin = $newBegin + "`n}`n";
+            
+        $text = $cmd.replace( $b, $newBegin ) 
+        $text = $text.replace( "[CmdletBinding()]", "[CmdletBinding(DefaultParameterSetName='$defaultName')]")
     }
-
-    # add a default case (choose the first?)
-    $name = $each.variants.Keys[0]
-    $variant = $each.variants[$name];
-    $t =  "`n  default {`n"
-    $t = $t + $variant
-    $t = $t + "`n}`n"
-    $newBegin = $newBegin  + $t;
-
-    $newBegin = $newBegin + "`n}`n";
-        
-    $text = $cmd.replace( $b, $newBegin ) 
     $text = "function ${cmdletname} {`n$text`n}`n"
     set-content "exported/${cmdletname}.ps1" -value $text
 }

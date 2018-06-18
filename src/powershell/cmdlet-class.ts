@@ -76,7 +76,7 @@ export class CmdletClass extends Class {
   private addCommonStuff() {
 
     // pipeline property
-    this.add(new LambdaProperty('Pipeline', ClientRuntime.HttpPipeline, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Pipeline`)));
+    // this.add(new LambdaProperty('Pipeline', ClientRuntime.HttpPipeline, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Pipeline`),{ access}));
 
     // client API property (todo: fill this in correctly)
     const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
@@ -133,7 +133,7 @@ export class CmdletClass extends Class {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-      const pipeline = new LocalVariable('pipeline', dotnet.Var, { initializer: $this.$<Property>('Pipeline').invokeMethod('Clone') });
+      const pipeline = new LocalVariable('pipeline', dotnet.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
       yield pipeline.declarationStatement;
 
       yield pipeline.invokeMethod('Prepend', $this.$<Property>('HttpPipelinePrepend'));
@@ -313,8 +313,9 @@ export class CmdletClass extends Class {
     this.add(new Method('Signal', dotnet.System.Threading.Tasks.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
       yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value});`;
       yield If(`${token.value}.IsCancellationRequested`, `return;`);
-
+      yield `WriteDebug($"{id}, {messageData().Message ?? "<empty>"}");`
       // any handling of the signal on our side...
+
     });
   }
 
@@ -340,7 +341,7 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter.details.default.originalParam
           },
         }));
-        this.$<Method>("BeginProcessing").add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameterValue("this-module-name", this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
+        this.$<Method>("BeginProcessing").add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameterValue(${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Name, this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
 
       } else {

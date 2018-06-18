@@ -20,7 +20,7 @@ export class Class extends Type {
   public isStatic: boolean = false;
 
   protected fields = new Array<Field>();
-  public partial: boolean = false;
+
 
   constructor(namespace: Namespace, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
     super(namespace, name);

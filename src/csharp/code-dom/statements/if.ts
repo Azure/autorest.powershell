@@ -22,6 +22,27 @@ ${indent(super.implementation)}
   }
 }
 
+export class ElseIfStatement extends Statements {
+  conditional: Expression;
+  constructor(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+    super(statements);
+    this.conditional = toExpression(conditional);
+    this.apply(objectInitializer);
+  }
+  public get implementation(): string {
+    return `
+else if(${this.conditional.value})
+{
+${indent(super.implementation)}
+}`.trim();
+  }
+}
+
+export function ElseIf(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+  return new ElseIfStatement(conditional, statements, objectInitializer);
+}
+
+
 export function Else(statements: OneOrMoreStatements, objectInitializer?: Partial<ElseStatement>) {
   return new ElseStatement(statements, objectInitializer);
 }

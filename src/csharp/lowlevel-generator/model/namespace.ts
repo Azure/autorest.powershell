@@ -1,41 +1,26 @@
-import { hasProperties } from '#common/text-manipulation';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { ModelInterface } from '#csharp/lowlevel-generator/model/interface';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { Header } from '#common/code-model/http-operation';
 import { Dictionary, items } from '#common/dictionary';
-import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
-import { State } from '../generator';
-import * as message from '../messages';
-import { Uuid } from '#csharp/schema/Uuid';
-import { ArrayOf } from '#csharp/schema/array';
-import { Boolean } from '#csharp/schema/boolean';
-import { ByteArray } from '#csharp/schema/byte-array';
-import { Char } from '#csharp/schema/char';
-import { Date } from '#csharp/schema/date';
-import { DateTime, DateTime1123, UnixTime } from '#csharp/schema/date-time';
-import { Duration } from '#csharp/schema/duration';
-import { Numeric } from '#csharp/schema/integer';
-import { String } from '#csharp/schema/string';
-import { UntypedWildcard, Wildcard } from '#csharp/schema/wildcard';
-import { EnumClass } from '../support/enum';
+import { Import } from '#csharp/code-dom/import';
+import { Namespace } from '#csharp/code-dom/namespace';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { ModelInterface } from '#csharp/lowlevel-generator/model/interface';
+import { EnumFeatures } from '#csharp/schema/enum';
+import { ObjectFeatures } from '#csharp/schema/object';
+import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { Serialization, Validation } from '../../schema/extended-type-declaration';
+import { State } from '../generator';
+import { EnumClass } from '../support/enum';
 import * as validation from '../validations';
 import { ModelClass } from './model-class';
-import { JsonType } from '#common/code-model/schema';
-import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
-import { ObjectFeatures } from '#csharp/schema/object';
-import { EnumFeatures } from '#csharp/schema/enum';
-import { Import } from '#csharp/code-dom/import';
 
 export class ModelsNamespace extends Namespace {
 
   resolver = new SchemaDefinitionResolver();
 
   constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelsNamespace>) {
-    super("Models", parent);
+    super('Models', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.IEventListenerExtensions"));
+    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.IEventListenerExtensions'));
 
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;
@@ -59,7 +44,7 @@ export class ModelsNamespace extends Namespace {
 
   public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): Serialization & Validation {
     if (!schema) {
-      throw new Error("SCHEMA MISSING?")
+      throw new Error('SCHEMA MISSING?');
     }
 
     const td = this.resolver.resolveTypeDeclaration(schema, required, state);
@@ -73,7 +58,7 @@ export class ModelsNamespace extends Namespace {
     }
 
     if (td instanceof EnumFeatures) {
-      const ec = state.project.supportNamespace.findClassByName(schema.extensions["x-ms-enum"].name);
+      const ec = state.project.supportNamespace.findClassByName(schema.extensions['x-ms-enum'].name);
       if (ec.length > 0) {
         return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
       }
@@ -181,7 +166,6 @@ export class ModelsNamespace extends Namespace {
       // fallback to int if the format isn't recognized
       return schema.details.csharp.typeDeclaration = new Numeric(required ? 'int' : 'int?', schema.minimum, schema.exclusiveMinimum, schema.maximum, schema.exclusiveMaximum, schema.multipleOf);
 
-
     case JsonType.Number:
       switch (schema.format) {
         case NumberFormat.None:
@@ -199,7 +183,6 @@ export class ModelsNamespace extends Namespace {
 
       const aSchema = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path("items"));
       return schema.details.csharp.typeDeclaration = new ArrayOf(aSchema, required, schema.minItems, schema.maxItems, schema.uniqueItems);
-
 
     case undefined:
       console.error(`schema 'undefined': ${schema.details.csharp.name} `);
@@ -370,17 +353,7 @@ public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, sta
     return ModelsNamespace.INVALID;
   }
 
-
-
-
-
-
-
-
 }
-
-
-
 
  */
 

@@ -8,25 +8,7 @@ import { join } from 'path';
 import { Project } from './project';
 import { State, GeneratorSettings } from './state';
 
-let _settings: GeneratorSettings | undefined;
-async function settings(service: Host): Promise<GeneratorSettings> {
 
-  return _settings || (_settings = {
-    azure: await service.GetValue('azure') || await service.GetValue('azure-arm') || false,
-    cmdletFolder: await service.GetValue('cmdlet-folder') || 'cmdlets/generated',
-    customFolder: await service.GetValue('custom-cmdlet-folder') || 'cmdlets/custom',
-    runtimefolder: await service.GetValue('runtime-folder') || 'runtime',
-    apifolder: await service.GetValue('api-folder') || './',
-    moduleName: await service.GetValue('module-name') || '',
-    csproj: await service.GetValue('csproj') || '',
-    psd1: await service.GetValue('psd1') || '',
-    psm1: await service.GetValue('psm1') || '',
-  });
-}
-
-async function wait(items: Iterable<Promise<void>>) {
-  await Promise.all([...items]);
-}
 export async function processRequest(service: Host) {
   try {
     // Get the list of files
@@ -35,32 +17,25 @@ export async function processRequest(service: Host) {
       throw new Error('Inputs missing.');
     }
 
-    const cfg = await settings(service);
     const codemodel = files[0];
 
     // get the openapi document
     const codeModelText = await service.ReadFile(codemodel);
     const model = await deserialize<Model>(codeModelText, codemodel);
 
-    cfg.moduleName = cfg.moduleName || model.info.title.replace(/client/ig, '');
-    cfg.csproj = cfg.csproj || `${cfg.moduleName}.private.csproj`;
-    cfg.psd1 = cfg.psd1 || `${cfg.moduleName}.psd1`;
-    cfg.psm1 = cfg.psm1 || `${cfg.moduleName}.psm1`;
-
-    await service.ProtectFiles(cfg.csproj);
-    await service.ProtectFiles(cfg.customFolder);
-    // await service.ProtectFiles(cfg.psm1);
-    // await service.ProtectFiles(cfg.psd1);
-
     // generate some files
     const modelState = new State(service, model, codemodel);
-    const project = new Project(modelState, cfg);
+    const project = await new Project(modelState).init();
     await project.writeFiles(async (filename, content) => service.WriteFile(filename, content, undefined, 'source-file-csharp'));
 
+    await service.ProtectFiles(project.csproj);
+    await service.ProtectFiles(project.customFolder);
+
+
     // wait for all the generation to be done
-    await generateCsproj(service);
-    await copyRuntime(service);
-    await generateCsproj(service);
+    await generateCsproj(service, project);
+    await copyRuntime(service, project);
+    await generateCsproj(service, project);
     await generateModule(service, project);
     // await generateProxies(service);
 
@@ -73,8 +48,8 @@ export async function processRequest(service: Host) {
 }
 
 
-async function generateProxies(service: Host) {
-  const cfg = await settings(service);
+async function generateProxies(service: Host, project: Project) {
+
   const of = await service.GetValue('output-folder');
 
   // find the pwsh executable.
@@ -88,23 +63,23 @@ async function generateProxies(service: Host) {
 
 }
 
-async function copyRuntime(service: Host) {
-  const cfg = await settings(service);
+async function copyRuntime(service: Host, project: Project) {
+
 
   await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-csharp'));
 
-  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(cfg.runtimefolder, fname), content, undefined, 'source-file-csharp'));
-  if (cfg.azure) {
-    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(cfg.runtimefolder, fname), content, undefined, 'source-file-csharp'));
+  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
+  if (project.azure) {
+    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
   }
 }
 
-async function generateCsproj(service: Host) {
-  const cfg = await settings(service);
+async function generateCsproj(service: Host, project: Project) {
+
 
   // write out the csproj file if it's not there.
-  if (!await service.ReadFile(cfg.csproj)) {
-    service.WriteFile(cfg.csproj,
+  if (!await service.ReadFile(project.csproj)) {
+    service.WriteFile(project.csproj,
       `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -126,16 +101,16 @@ async function generateCsproj(service: Host) {
 
 async function generateModule(service: Host, project: Project) {
   // write out the psd1 file if it's not there.
-  const cfg = await settings(service);
+
   // if (!await service.ReadFile(cfg.psd1)) {
 
   // todo: change this to *update* the psd1?
 
-  service.WriteFile(cfg.psd1, `@{
+  service.WriteFile(project.psd1, `@{
     ModuleVersion="1.0"
     NestedModules = @(
-    "./bin/Debug/netstandard2.0/${cfg.moduleName}.private.dll"
-    "${cfg.psm1}"
+    "./bin/Debug/netstandard2.0/${project.moduleName}.private.dll"
+    "${project.psm1}"
     )
     # don't export any actual cmdlets by default
     CmdletsToExport = ''
@@ -148,12 +123,12 @@ async function generateModule(service: Host, project: Project) {
 
   // write out the psm1 file if it's not there.
   //if (!await service.ReadFile(cfg.psm1)) {
-  service.WriteFile(cfg.psm1, `
+  service.WriteFile(project.psm1, `
 
 #region AzureCommonInitialization
 
 # load the private module
-ipmo "$PSScriptRoot/bin/Debug/netstandard2.0/${cfg.moduleName}.private.dll"
+ipmo "$PSScriptRoot/bin/Debug/netstandard2.0/${project.moduleName}.private.dll"
 
 # export the 'exported' cmdlets 
 Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach { 

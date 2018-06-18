@@ -95,6 +95,8 @@ export const System = intersect(system, {
   EventArgs: new LibraryType(system, 'EventArgs'),
   Exception: new LibraryType(system, 'Exception'),
   TimeSpan: new LibraryType(system, 'TimeSpan'),
+  Type: new LibraryType(system, 'Type'),
+  IFormatProvider: new LibraryType(system, 'IFormatProvider'),
   Net: intersect(net, {
     Http: intersect(http, {
       HttpRequestMessage: new LibraryType(http, 'HttpRequestMessage'),
@@ -102,6 +104,7 @@ export const System = intersect(system, {
     })
   }),
   Collections: intersect(collections, {
+    Hashtable: new LibraryType(collections, "Hashtable"),
     Generic: intersect(generic, {
       Dictionary(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
         return new LibraryType(generic, `Dictionary<${keyType.declaration},${valueType.declaration}>`);
@@ -134,8 +137,12 @@ export const Float: TypeDeclaration = new LibraryType(None, 'float');
 export const Binary: TypeDeclaration = new LibraryType(None, 'byte[]');
 export const Bool: TypeDeclaration = new LibraryType(None, 'bool');
 export const Object: TypeDeclaration = new LibraryType(None, 'object');
+export const Dynamic: TypeDeclaration = new LibraryType(None, 'dynamic');
 export const ThisObject: TypeDeclaration = new LibraryType(None, 'this object');
 export const Var: TypeDeclaration = new LibraryType(None, 'var');
+
+export const True = new LiteralExpression('true');
+export const False = new LiteralExpression('false');
 
 // export const Date: TypeDeclaration = new LibraryType(System, 'DateTime');
 // export const Duration: TypeDeclaration = new LibraryType(System, 'TimeSpan');

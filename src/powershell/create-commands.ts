@@ -11,7 +11,7 @@ import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
 import { Schema, } from '#csharp/lowlevel-generator/code-model';
 import { IParameter } from '#common/code-model/components';
-import { HttpOperation, HttpOperationParameter } from '#common/code-model/http-operation';
+import { HttpOperation, HttpOperationParameter, MediaType } from '#common/code-model/http-operation';
 
 // import { getCommandName } from './name-inferrer';
 
@@ -55,11 +55,29 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-async function addVariant(vname: string, parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
-  const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-  const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
+async function addVariant(vname: string, body: MediaType | undefined, bodyParameterName: string, parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+  //const body = operation.requestBody && values(operation.requestBody.content).linq.first();
+  //const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
 
-  const op = model.commands.operations[`${length(model.commands.operations)}`] = new CommandOperation(operation.operationId, {
+  const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
+
+  // if this has a body with it, let's add that parameter
+  if (body && body.schema) {
+    op.parameters.push(new IParameter(bodyParameterName, body.schema, {
+      details: {
+        powershell: {
+          description: body.schema.details.default.description,
+          name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
+        }
+      }
+    }));
+  }
+
+  // 
+}
+
+async function addCommandOperation(vname: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host): Promise<CommandOperation> {
+  return model.commands.operations[`${length(model.commands.operations)}`] = new CommandOperation(operation.operationId, {
     ...variant,
     details: {
       ...operation.details,
@@ -78,17 +96,6 @@ async function addVariant(vname: string, parameters: HttpOperationParameter[], o
     }),
     callGraph: [operation],
   });
-
-  if (body && body.schema) {
-    op.parameters.push(new IParameter(bodyParameterName, body.schema, {
-      details: {
-        powershell: {
-          description: body.schema.details.default.description,
-          name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
-        }
-      }
-    }));
-  }
 }
 
 async function addVariants(parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
@@ -101,26 +108,34 @@ async function addVariants(parameters: HttpOperationParameter[], operation: Http
 
   const combos = combinations(optionalParameters);
 
+  // the body parameter
   const body = operation.requestBody && values(operation.requestBody.content).linq.first();
   const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
 
-  const properties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
+  // all the properties in the body parameter
+  const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
+  // console.error(`Number of Body Properties ${properties.length}`);
 
-  const bodyProperties = properties.joinWith(each => each.details.csharp.name);
+  // smash body property names together
+  const bodyPropertyNames = bodyProperties.joinWith(each => each.details.csharp.name);
 
+  // for each polymorphic body, we should do a separate variant that takes the polymorphic body type instead of the base type
   const polymorphicBodies = (body && body.schema && body.schema.details.csharp.polymorphicChildren && body.schema.details.csharp.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.csharp.polymorphicChildren).joinWith(child => child.details.csharp.name) : '';
 
-  const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyProperties, operation.operationId]));
+  // the variant name
+  const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames, operation.operationId]));
+
+  // given the body property type, expand out body properties into parameters
 
 
   // no optionals:
-  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyProperties} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
-  await addVariant(vname, [...constants, ...requiredParameters], operation, variant, model, service);
+  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
+  await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, model, service);
 
   // handle optional parameter variants
   for (const combo of combos) {
-    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyProperties, operation.operationId]));
-    await addVariant(vname, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
+    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames, operation.operationId]));
+    await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
   }
 }
 
@@ -128,15 +143,16 @@ async function detect(model: Model, service: Host): Promise<Model> {
   service.Message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
   // let count = 0;
 
+  // parameter names that are candidates to be changed to pull the value from the common module
   const commonCandidates = await commonParameters();
 
   for (const operation of values(model.http.operations)) {
     for (const variant of inferCommandNames(operation.operationId)) {
 
-      // no common parameters
+      // no common parameters (standard variations)
       await addVariants(operation.parameters, operation, variant, model, service);
 
-      // see if we have parameters that can be made common
+      // now see if we have parameters that can be made common
       const possibleCommon = values(operation.parameters).linq.where(parameter => commonCandidates.includes(parameter.name)).linq.toArray();
       if (possibleCommon.length > 0) {
         // yes! make some combos that include the common parameters
@@ -160,16 +176,12 @@ async function detect(model: Model, service: Host): Promise<Model> {
             }
             return param;
           });
-
           // and shallow copy the parameter, into a new one, and overw
           await addVariants(some, operation, variant, model, service);
         }
-
       }
 
-
       // make some variants where subscriptionId and resourceGroupName are pulled from common module
-
     }
   }
 

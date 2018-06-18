@@ -34,7 +34,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     AfterValidation: new LiteralExpression(`${events.declaration}.AfterValidation`),
     RequestCreated: new LiteralExpression(`${events.declaration}.RequestCreated`),
     ResponseCreated: new LiteralExpression(`${events.declaration}.ResponseCreated`),
-    HeaderParametersAdded: new LiteralExpression(`${events.declaration}.ResponseCreated`),
+    HeaderParametersAdded: new LiteralExpression(`${events.declaration}.HeaderParametersAdded`),
     URLCreated: new LiteralExpression(`${events.declaration}.URLCreated`),
     Finally: new LiteralExpression(`${events.declaration}.Finally`),
   }),

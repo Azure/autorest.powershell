@@ -90,10 +90,12 @@ scope-remodeler/emitter:
 
 
 ``` yaml $(powershell) 
-api-folder: api
-runtime-folder: runtime
-cmdlet-folder: cmdlets/generated
-custom-cmdlet-folder: cmdlets/custom
+api-folder: private/api
+api-extensions-folder: private/api-extensions
+runtime-folder: private/runtime
+cmdlet-folder: private/cmdlets/generated
+custom-cmdlet-folder: private/cmdlets/custom
+module-folder: private/
 use-namespace-folders: false
 
 pipeline: 

@@ -125,6 +125,9 @@ export class EventListener {
   constructor(protected expression: Expression) {
   }
 
+  signalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    return new FireEventNoCheck(this.expression, eventName.value, additionalParameters);
+  }
   signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     return new FireEvent(this.expression, eventName.value, additionalParameters);
   }
@@ -133,7 +136,7 @@ export class EventListener {
   }
 }
 
-export class FireEvent implements Statement {
+export class FireEventNoCheck implements Statement {
   constructor(protected expression: Expression, protected eventName: string, protected additionalParameters: Array<string | Expression>) {
   }
 
@@ -144,6 +147,17 @@ export class FireEvent implements Statement {
   }
 }
 
+export class FireEvent implements Statement {
+  constructor(protected expression: Expression, protected eventName: string, protected additionalParameters: Array<string | Expression>) {
+  }
+
+  get implementation(): string {
+    const additionalParameters = this.additionalParameters.length > 0 ? `, ${this.additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
+
+    return `await ${this.expression.value}.Signal(${this.eventName}${additionalParameters}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+  }
+}
+
 export class SyncFireEvent implements Statement {
   constructor(protected expression: Expression, protected eventName: string, protected additionalParameters: Array<string | Expression>) {
   }
@@ -151,7 +165,7 @@ export class SyncFireEvent implements Statement {
   get implementation(): string {
     const additionalParameters = this.additionalParameters.length > 0 ? `, ${this.additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
 
-    return `${this.expression.value}.Signal(${this.eventName}${additionalParameters}).Wait();`;
+    return `${this.expression.value}.Signal(${this.eventName}${additionalParameters}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
   }
 }
 
@@ -239,7 +253,7 @@ export class CallMethod extends Method {
 
         yield Finally(function* () {
           yield '// finally statements';
-          yield eventListener.signal(ClientRuntime.Events.Finally, 'request', '_response');
+          yield eventListener.signalNoCheck(ClientRuntime.Events.Finally, 'request', '_response');
           yield `_response?.Dispose();`;
         });
       });

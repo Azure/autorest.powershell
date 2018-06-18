@@ -17,6 +17,7 @@ export class Type extends Initializer implements TypeDeclaration {
   public interfaces = new Array<Interface>();
   public accessModifier = Access.Public;
   public attributes = new Array<Attribute>();
+  public partial: boolean = false;
 
   protected get attributeDeclaration(): string {
     return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
