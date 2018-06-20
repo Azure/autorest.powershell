@@ -26,10 +26,12 @@ import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { CmdletParameter } from './cmdlet-parameter';
-import { AsyncCommandRuntime, CmdletAttribute, ErrorCategory, ErrorRecord, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum, Events } from './powershell-declarations';
+import { AsyncCommandRuntime, CmdletAttribute, ErrorCategory, ErrorRecord, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum, Events, Alias } from './powershell-declarations';
 import { State } from './state';
 import { EventListener } from '#csharp/lowlevel-generator/operation/method';
-import { ForEachStatement } from '#csharp/code-dom/statements/for';
+import { ForEachStatement, ForEach } from '#csharp/code-dom/statements/for';
+import { Switch } from '#csharp/code-dom/statements/switch';
+import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
 
 const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
@@ -90,6 +92,13 @@ export class CmdletClass extends Class {
     const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncStep, { attributes: [] }));
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
+
+    if (this.state.project.azure) {
+      const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object));
+      defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
+      defaultProfile.add(new Attribute(ValidateNotNull));
+      defaultProfile.add(new Attribute(Alias, { parameters: ["AzureRMContext", "AzureCredential"] }));
+    }
   }
 
   private implementProcessRecord(operation: CommandOperation) {
@@ -117,11 +126,21 @@ export class CmdletClass extends Class {
         }
 
       });
+      const aggregateException = new Parameter('aggregateException', dotnet.System.AggregateException);
+      yield Catch(aggregateException, function* () {
+        yield `// unroll the inner exceptions to get the root cause`
+        yield ForEach('innerException', new LiteralExpression(`${aggregateException.use}.Flatten().InnerExceptions`), function* () {
+          yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}"`));
+          yield `// Write exception out to error channel.`;
+          yield `WriteError( new ${ErrorRecord}(innerException,string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
+        });
+      });
+
       const exception = new Parameter('exception', dotnet.System.Exception);
       yield Catch(exception, function* () {
-        yield $this.eventListener.syncSignal(Events.CmdletException);
+        yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exception.use}.GetType().Name} - {${exception.use}.Message} : {${exception.use}.StackTrace}"`));
         yield `// Write exception out to error channel.`;
-        yield `WriteError( new ${ErrorRecord}(${exception.use},string.Empty, ${ErrorCategory('CloseError')}, null) );`;
+        yield `WriteError( new ${ErrorRecord}(${exception.use},string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
       });
     });
 
@@ -311,9 +330,38 @@ export class CmdletClass extends Class {
     const token = new Parameter('token', dotnet.System.Threading.CancellationToken);
     const messageData = new Parameter('messageData', dotnet.System.Func(ClientRuntime.EventData));
     this.add(new Method('Signal', dotnet.System.Threading.Tasks.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
-      yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value});`;
-      yield If(`${token.value}.IsCancellationRequested`, `return;`);
-      yield `WriteDebug($"{id}, {messageData().Message ?? "<empty>"}");`
+      yield If(`${token.value}.IsCancellationRequested`, Return());
+
+      yield Switch(id, [
+        TerminalCase(Events.Verbose.value, function* () {
+          yield `WriteVerbose($"{messageData().Message ?? ""}");`;
+          yield Return();
+        }),
+        TerminalCase(Events.Warning.value, function* () {
+          yield `WriteWarning($"{messageData().Message ?? ""}");`;
+          yield Return();
+        }),
+        TerminalCase(Events.Information.value, function* () {
+          const data = new LocalVariable("data", dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
+          yield data.declarationStatement;
+          yield `WriteInformation(data, new[] { data.Message });`;
+          yield Return();
+        }),
+        TerminalCase(Events.Debug.value, function* () {
+          yield `WriteDebug($"{messageData().Message ?? ""}");`
+          yield Return();
+        }),
+        TerminalCase(Events.Error.value, function* () {
+          yield `WriteError(new System.Management.Automation.ErrorRecord( new System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );`
+          yield Return();
+        }),
+      ]);
+
+      yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
+      yield If(`${token.value}.IsCancellationRequested`, Return());
+
+      yield `WriteDebug($"{id}: {messageData().Message ?? ""}");`
+
       // any handling of the signal on our side...
 
     });
@@ -341,7 +389,7 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter.details.default.originalParam
           },
         }));
-        this.$<Method>("BeginProcessing").add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameterValue(${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Name, this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
+        this.$<Method>("BeginProcessing").add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
 
       } else {

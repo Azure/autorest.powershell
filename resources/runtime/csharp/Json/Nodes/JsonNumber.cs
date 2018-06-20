@@ -56,6 +56,8 @@ namespace Carbon.Json
         public static implicit operator byte(JsonNumber number)
             => byte.Parse(number.Value);
 
+        public T To<T>() where T:struct => (T)(object)this; 
+        
         public static implicit operator short(JsonNumber number)
             => short.Parse(number.Value);
 

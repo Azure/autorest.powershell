@@ -127,28 +127,19 @@ namespace Carbon.Json
 
         #region Implicit Casts
 
-        public static implicit operator DateTimeOffset(JsonDate value)
-            => value.ToDateTimeOffset();
+        public static implicit operator DateTimeOffset(JsonDate value) => value.ToDateTimeOffset();
 
-        public static implicit operator DateTime(JsonDate value)
-            => value.ToDateTime();
+        public static implicit operator DateTime(JsonDate value) => value.ToDateTime();
 
         // From Date
-        public static implicit operator JsonDate(DateTimeOffset value)
-        {
-            return new JsonDate(value);
-        }
-
-        public static implicit operator JsonDate(DateTime value)
-        {
-            return new JsonDate(value);
-        }
+        public static implicit operator JsonDate(DateTimeOffset value) => new JsonDate(value);
+        
+        public static implicit operator JsonDate(DateTime value) =>  new JsonDate(value);
+        
 
         // From String
-        public static implicit operator JsonDate(string value)
-        {
-            return Parse(value);
-        }
+        public static implicit operator JsonDate(string value) =>  Parse(value);
+        
 
         #endregion
 

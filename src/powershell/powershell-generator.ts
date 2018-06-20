@@ -138,7 +138,12 @@ Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Obj
     Export-ModuleMember -Function $_.BaseName
 }
 
-$module = ipmo -passthru -ea 0 "$PSScriptRoot/../CommonModule"
+# GS Testing
+# $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
+
+# from PSModulePath
+$module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
+
 
 if ($module) {
   Write-Host "Loaded Common Module '$($module.Name)'"

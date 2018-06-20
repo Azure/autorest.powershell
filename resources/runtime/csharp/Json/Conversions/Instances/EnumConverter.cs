@@ -20,7 +20,7 @@ namespace Carbon.Json.Converters
                 return Enum.ToObject(type, (int)node);
             }
 
-            return Enum.Parse(type, node, ignoreCase: true);
+            return Enum.Parse(type, node.ToString(), ignoreCase: true);
         }
     }
 }

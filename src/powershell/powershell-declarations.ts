@@ -16,6 +16,7 @@ export const CmdletAttribute: TypeDeclaration = new LibraryType(sma, `Cmdlet`);
 export const ParameterAttribute: TypeDeclaration = new LibraryType(sma, `Parameter`);
 export const PSTypeConverter: Class = new Class(sma, `PSTypeConverter`);
 export const ValidateNotNull: TypeDeclaration = new LibraryType(sma, `ValidateNotNull`);
+export const Alias: TypeDeclaration = new LibraryType(sma, `Alias`);
 export const AliasAttribte: TypeDeclaration = new LibraryType(sma, `Alias`);
 export const TypeConverterAttribute: TypeDeclaration = new LibraryType('System.ComponentModel', `TypeConverter`);
 export const ResourceGroupCompleter: TypeDeclaration = new LibraryType(sma, `ResourceGroupCompleter`);
@@ -39,4 +40,9 @@ export const Events = intersect(ClientRuntime.Events, {
   CmdletGetPipeline: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletGetPipeline`),
   CmdletBeforeAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletBeforeAPICall`),
   CmdletAfterAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletAfterAPICall`),
+  Verbose: new LiteralExpression(`${ClientRuntime.Events.declaration}.Verbose`),
+  Debug: new LiteralExpression(`${ClientRuntime.Events.declaration}.Debug`),
+  Information: new LiteralExpression(`${ClientRuntime.Events.declaration}.Information`),
+  Error: new LiteralExpression(`${ClientRuntime.Events.declaration}.Error`),
+  Warning: new LiteralExpression(`${ClientRuntime.Events.declaration}.Warning`),
 });

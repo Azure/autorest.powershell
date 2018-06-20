@@ -17,11 +17,9 @@ namespace Carbon.Json
 
         #region #region Implicit Casts
 
-        public static implicit operator string(JsonString data)
-            => data.Value;
+        public static implicit operator string(JsonString data) => data.Value;
 
-        public static implicit operator JsonString(string data)
-            => new JsonString(data);
+        public static implicit operator JsonString(string data) => new JsonString(data);
 
         #endregion
 

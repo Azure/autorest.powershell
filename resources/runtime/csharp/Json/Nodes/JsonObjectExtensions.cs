@@ -33,7 +33,7 @@ namespace Carbon.Json
             {
                 if (value.IsNull)
                 {
-                    return null; //gs01:???
+                    return null; 
                 }
                 if (value is T tval)
                 {
@@ -54,6 +54,11 @@ namespace Carbon.Json
         {
             if (this.TryGetValue(propertyName, out JsonNode value))
             {
+                if (value.IsNull)
+                {
+                    return null; // we're going to assume that the consumer knows what to do if null is explicity returned?
+                }
+
                 if (value is T tval)
                 {
                     return tval;
@@ -64,37 +69,37 @@ namespace Carbon.Json
             return null;
         }
 
-        public int NumberProperty(string propertyName, ref int output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public float NumberProperty(string propertyName, ref float output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public byte NumberProperty(string propertyName, ref byte output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public long NumberProperty(string propertyName, ref long output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public double NumberProperty(string propertyName, ref double output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public decimal NumberProperty(string propertyName, ref decimal output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public short NumberProperty(string propertyName, ref short output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
+        public int NumberProperty(string propertyName, ref int output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<int>() ?? output;
+        public float NumberProperty(string propertyName, ref float output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<float>() ?? output;
+        public byte NumberProperty(string propertyName, ref byte output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<byte>() ?? output;
+        public long NumberProperty(string propertyName, ref long output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<long>() ?? output;
+        public double NumberProperty(string propertyName, ref double output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<double>() ?? output;
+        public decimal NumberProperty(string propertyName, ref decimal output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<decimal>() ?? output;
+        public short NumberProperty(string propertyName, ref short output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<short>() ?? output;
+        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<DateTime>() ??  output;
 
-        public int? NumberProperty(string propertyName, ref int? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public float? NumberProperty(string propertyName, ref float? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public byte? NumberProperty(string propertyName, ref byte? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public long? NumberProperty(string propertyName, ref long? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public double? NumberProperty(string propertyName, ref double? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public decimal? NumberProperty(string propertyName, ref decimal? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-        public short? NumberProperty(string propertyName, ref short? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
+        public int? NumberProperty(string propertyName, ref int? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<int>() ?? null;
+        public float? NumberProperty(string propertyName, ref float? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<float>() ?? null;
+        public byte? NumberProperty(string propertyName, ref byte? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<byte>() ?? null;
+        public long? NumberProperty(string propertyName, ref long? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<long>() ?? null;
+        public double? NumberProperty(string propertyName, ref double? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<double>() ?? null;
+        public decimal? NumberProperty(string propertyName, ref decimal? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<decimal>() ?? null;
+        public short? NumberProperty(string propertyName, ref short? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<short>() ?? null;
 
-        public DateTime? NumberProperty(string propertyName, ref DateTime? output) => output = this.PropertyT<JsonNumber>(propertyName) ?? output;
-
-
-        public string StringProperty(string propertyName) => this.PropertyT<JsonString>(propertyName);
-        public string StringProperty(string propertyName, ref string output) => output = this.PropertyT<JsonString>(propertyName) ?? output;
-        public char StringProperty(string propertyName, ref char output) => output = this.PropertyT<JsonString>(propertyName) ?? output;
-        public char? StringProperty(string propertyName, ref char? output) => output = this.PropertyT<JsonString>(propertyName) ?? output;
-
-        public DateTime StringProperty(string propertyName, ref DateTime output) => DateTime.TryParse(this.PropertyT<JsonString>(propertyName), out output) ? output : output;
-        public DateTime? StringProperty(string propertyName, ref DateTime? output) => output = DateTime.TryParse(this.PropertyT<JsonString>(propertyName), out var o) ? o : output;
+        public DateTime? NumberProperty(string propertyName, ref DateTime? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<DateTime>() ?? null;
 
 
-        public bool BooleanProperty(string propertyName, ref bool output) => output = this.PropertyT<JsonBoolean>(propertyName) ?? output;
-        public bool? BooleanProperty(string propertyName, ref bool? output) => output = this.PropertyT<JsonBoolean>(propertyName) ?? output;
+        public string StringProperty(string propertyName) => this.PropertyT<JsonString>(propertyName)?.ToString();
+        public string StringProperty(string propertyName, ref string output) => output = this.PropertyT<JsonString>(propertyName)?.ToString() ?? output;
+        public char StringProperty(string propertyName, ref char output) => output = this.PropertyT<JsonString>(propertyName)?.ToChar() ?? output;
+        public char? StringProperty(string propertyName, ref char? output) => output = this.PropertyT<JsonString>(propertyName)?.ToChar() ?? null;
+
+        public DateTime StringProperty(string propertyName, ref DateTime output) => DateTime.TryParse(this.PropertyT<JsonString>(propertyName)?.ToString(), out output) ? output : output;
+        public DateTime? StringProperty(string propertyName, ref DateTime? output) => output = DateTime.TryParse(this.PropertyT<JsonString>(propertyName)?.ToString(), out var o) ? o : output;
+
+
+        public bool BooleanProperty(string propertyName, ref bool output) => output = this.PropertyT<JsonBoolean>(propertyName)?.ToBoolean() ?? output;
+        public bool? BooleanProperty(string propertyName, ref bool? output) => output = this.PropertyT<JsonBoolean>(propertyName)?.ToBoolean() ?? null;
 
         public T[] ArrayProperty<T>(string propertyName, ref T[] output, Func<JsonNode, T> deserializer)
         {
@@ -165,6 +170,7 @@ namespace Carbon.Json
         public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.CurrentCulture)) : null;
         public static JsonString CreateDateTimeRfc1123(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.CurrentCulture)) : null;
 
+        public char ToChar() => this.Value?.ToString()?.FirstOrDefault() ?? default(char);
         public static implicit operator char(JsonString value) => value?.ToString()?.FirstOrDefault() ?? default(char);
         public static implicit operator char? (JsonString value) => value?.ToString()?.FirstOrDefault();
 

@@ -28,6 +28,7 @@ namespace Carbon.Json
         }
 
         #region Implicit Casts
+        public bool ToBoolean() => Value;
 
         public static implicit operator bool(JsonBoolean data)
             => data.Value;

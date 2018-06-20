@@ -756,9 +756,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             }
             while (!ProcessRecordAsyncTask.IsCompleted);
             if( ProcessRecordAsyncTask.IsFaulted ) {
-                if(  ProcessRecordAsyncTask.Exception is System.AggregateException aggregate ) {
-                    throw aggregate.InnerException;
-                }
+                // don't unwrap a Aggregate Exception -- we'll lose the stack trace of the actual exception.
+                // if(  ProcessRecordAsyncTask.Exception is System.AggregateException aggregate ) {
+                //   throw aggregate.InnerException;
+                // }
                 throw ProcessRecordAsyncTask.Exception;
             }
         }

@@ -10,7 +10,7 @@ namespace Carbon.Json.Converters
         {
             switch (node.Type)
             {
-                case JsonType.String : return Convert.FromBase64String(node);    // Base64 Encoded
+                case JsonType.String : return Convert.FromBase64String(node.ToString());    // Base64 Encoded
                 case JsonType.Binary : return ((XBinary)node).Value;
             }
 

@@ -1,6 +1,7 @@
 import { indent } from '#common/text-manipulation';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 
+// gs01: fix this -- value should be an expresion.
 export function Case(value: string, body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>): CaseStatement {
   return new CaseStatement(value, body, objectInitializer);
 }

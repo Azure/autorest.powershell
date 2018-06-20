@@ -79,7 +79,7 @@ namespace Carbon.Json
 
         private object DeserializeValue(Type type, JsonNode value)
         {
-            if (type == null) throw new ArgumentNullException(value);
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             if (value.Type == JsonType.Null) return null;
 

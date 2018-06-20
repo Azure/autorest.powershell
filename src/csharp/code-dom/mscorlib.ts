@@ -94,6 +94,7 @@ export const System = intersect(system, {
   DateTime: new LibraryType(system, 'DateTime'),
   EventArgs: new LibraryType(system, 'EventArgs'),
   Exception: new LibraryType(system, 'Exception'),
+  AggregateException: new LibraryType(system, 'AggregateException'),
   TimeSpan: new LibraryType(system, 'TimeSpan'),
   Type: new LibraryType(system, 'Type'),
   IFormatProvider: new LibraryType(system, 'IFormatProvider'),
