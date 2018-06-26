@@ -1,9 +1,10 @@
 import { intersect } from '#common/intersect';
-import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { TypeDeclaration } from './type-declaration';
+import { Dictionary } from '#common/dictionary';
 
 export class LibraryType implements TypeDeclaration {
   private get fullName() {
@@ -23,7 +24,7 @@ export class LibraryType implements TypeDeclaration {
   }
 
   public newInstance(...parameters: Array<Expression>): Expression {
-    return { value: `new ${this.fullName}(${parameters.joinWith(each => each.value)})` };
+    return { value: `new ${this.fullName}(${parameters.joinWith(each => valueOf(each))})` };
   }
 }
 
@@ -68,6 +69,11 @@ export class EnumType implements TypeDeclaration {
   }
 }
 
+
+export interface Index<T> {
+  [key: number]: T;
+}
+
 export const None: Namespace = new Namespace('');
 const system: Namespace = new Namespace('System');
 const threading = new Namespace('Threading', system);
@@ -102,7 +108,52 @@ export const System = intersect(system, {
     Http: intersect(http, {
       HttpRequestMessage: new LibraryType(http, 'HttpRequestMessage'),
       HttpResponseMessage: new LibraryType(http, 'HttpResponseMessage'),
-    })
+    }),
+    HttpStatusCode: intersect(new LibraryType(net, 'HttpStatusCode'), <Dictionary<LiteralExpression> & Index<LiteralExpression>>{
+      default: new LiteralExpression(''),
+      100: new LiteralExpression('System.Net.HttpStatusCode.Continue'),
+      101: new LiteralExpression('System.Net.HttpStatusCode.SwitchingProtocols'),
+      200: new LiteralExpression('System.Net.HttpStatusCode.OK'),
+      201: new LiteralExpression('System.Net.HttpStatusCode.Created'),
+      202: new LiteralExpression('System.Net.HttpStatusCode.Accepted'),
+      203: new LiteralExpression('System.Net.HttpStatusCode.NonAuthoritativeInformation'),
+      204: new LiteralExpression('System.Net.HttpStatusCode.NoContent'),
+      205: new LiteralExpression('System.Net.HttpStatusCode.ResetContent'),
+      206: new LiteralExpression('System.Net.HttpStatusCode.PartialContent'),
+      300: new LiteralExpression('System.Net.HttpStatusCode.Ambiguous'),
+      301: new LiteralExpression('System.Net.HttpStatusCode.Moved'),
+      302: new LiteralExpression('System.Net.HttpStatusCode.Redirect'),
+      303: new LiteralExpression('System.Net.HttpStatusCode.SeeOther'),
+      304: new LiteralExpression('System.Net.HttpStatusCode.NotModified'),
+      305: new LiteralExpression('System.Net.HttpStatusCode.UseProxy'),
+      306: new LiteralExpression('System.Net.HttpStatusCode.Unused'),
+      307: new LiteralExpression('System.Net.HttpStatusCode.TemporaryRedirect'),
+      400: new LiteralExpression('System.Net.HttpStatusCode.BadRequest'),
+      401: new LiteralExpression('System.Net.HttpStatusCode.Unauthorized'),
+      402: new LiteralExpression('System.Net.HttpStatusCode.PaymentRequired'),
+      403: new LiteralExpression('System.Net.HttpStatusCode.Forbidden'),
+      404: new LiteralExpression('System.Net.HttpStatusCode.NotFound'),
+      405: new LiteralExpression('System.Net.HttpStatusCode.MethodNotAllowed'),
+      406: new LiteralExpression('System.Net.HttpStatusCode.NotAcceptable'),
+      407: new LiteralExpression('System.Net.HttpStatusCode.ProxyAuthenticationRequired'),
+      408: new LiteralExpression('System.Net.HttpStatusCode.RequestTimeout'),
+      409: new LiteralExpression('System.Net.HttpStatusCode.Conflict'),
+      410: new LiteralExpression('System.Net.HttpStatusCode.Gone'),
+      411: new LiteralExpression('System.Net.HttpStatusCode.LengthRequired'),
+      412: new LiteralExpression('System.Net.HttpStatusCode.PreconditionFailed'),
+      413: new LiteralExpression('System.Net.HttpStatusCode.RequestEntityTooLarge'),
+      414: new LiteralExpression('System.Net.HttpStatusCode.RequestUriTooLong'),
+      415: new LiteralExpression('System.Net.HttpStatusCode.UnsupportedMediaType'),
+      416: new LiteralExpression('System.Net.HttpStatusCode.RequestedRangeNotSatisfiable'),
+      417: new LiteralExpression('System.Net.HttpStatusCode.ExpectationFailed'),
+      426: new LiteralExpression('System.Net.HttpStatusCode.UpgradeRequired'),
+      500: new LiteralExpression('System.Net.HttpStatusCode.InternalServerError'),
+      501: new LiteralExpression('System.Net.HttpStatusCode.NotImplemented'),
+      502: new LiteralExpression('System.Net.HttpStatusCode.BadGateway'),
+      503: new LiteralExpression('System.Net.HttpStatusCode.ServiceUnavailable'),
+      504: new LiteralExpression('System.Net.HttpStatusCode.GatewayTimeout'),
+      505: new LiteralExpression('System.Net.HttpStatusCode.HttpVersionNotSupported')
+    }),
   }),
   Collections: intersect(collections, {
     Hashtable: new LibraryType(collections, "Hashtable"),
@@ -150,3 +201,4 @@ export const False = new LiteralExpression('false');
 
 export const Null = new LiteralExpression('null');
 export const This = new LiteralExpression('this');
+

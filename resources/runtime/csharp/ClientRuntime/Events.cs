@@ -11,10 +11,13 @@ namespace Microsoft.Rest.ClientRuntime
         public const string ResponseCreated = nameof(ResponseCreated);
         public const string URLCreated = nameof(URLCreated);
         public const string Finally = nameof(Finally);
-        public const string HeaderParametersAdded = nameof( HeaderParametersAdded);
-        public const string BodyContentSet = nameof( BodyContentSet);
-        public const string BeforeCall = nameof( BeforeCall);
-        public const string BeforeResponseDispatch = nameof( BeforeResponseDispatch);
+        public const string HeaderParametersAdded = nameof(HeaderParametersAdded);
+        public const string BodyContentSet = nameof(BodyContentSet);
+        public const string BeforeCall = nameof(BeforeCall);
+        public const string BeforeResponseDispatch = nameof(BeforeResponseDispatch);
+        public const string FollowingNextLink = nameof(FollowingNextLink);
+        public const string DelayBeforePolling = nameof(DelayBeforePolling);
+        public const string Polling = nameof(Polling);
 
     }
 }

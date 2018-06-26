@@ -5,7 +5,7 @@ import * as dotnet from './mscorlib';
 import { Parameter } from './parameter';
 import { Statements, OneOrMoreStatements } from './statements/statement';
 import { TypeDeclaration } from './type-declaration';
-import { Expression } from '#csharp/code-dom/expression';
+import { Expression, valueOf } from '#csharp/code-dom/expression';
 import { Class } from '#csharp/code-dom/class';
 
 export class Method extends Statements {
@@ -72,7 +72,7 @@ ${indent(super.implementation)}
   }
 
   public invoke(...parameters: Array<Expression>): Expression {
-    return { value: `${this.name}(${parameters.joinWith(each => each.value)})` };
+    return { value: `${this.name}(${parameters.joinWith(each => valueOf(each))})` };
   }
   public addTo(parent: Class): Method {
     parent.addMethod(this);
@@ -113,7 +113,7 @@ export class LambdaMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
-${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration}) => ${this.expression.value}
+${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration}) => ${valueOf(this.expression)}
 `.slim();
   }
 

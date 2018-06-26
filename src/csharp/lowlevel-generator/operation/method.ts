@@ -1,23 +1,25 @@
 import { NewResponse, ParameterLocation } from '#common/code-model/http-operation';
 import { items, length, values } from '#common/dictionary';
-import { EOL } from '#common/text-manipulation';
+import { camelCase, deconstruct, EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
-import { Expression } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, valueOf, ExpressionOrLiteral, StringExpression } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
 import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Case, DefaultCase, TerminalDefaultCase } from '#csharp/code-dom/statements/case';
 import { Finally } from '#csharp/code-dom/statements/finally';
-import { If } from '#csharp/code-dom/statements/if';
+import { If, While } from '#csharp/code-dom/statements/if';
 import { Statement } from '#csharp/code-dom/statements/statement';
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
+import { LocalVariable, Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { HttpOperation, Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
+import { isStringLiteral } from 'typescript';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -169,6 +171,11 @@ export class SyncFireEvent implements Statement {
   }
 }
 
+function GetHeaderValue(header: string, defaultValue?: string): string {
+  const v = `_${camelCase([...deconstruct(header), 'values'])}`;
+  return `(_response.Headers.TryGetValues("${header}", out var ${v}) ? System.Linq.Enumerable.FirstOrDefault(${v}) : "${defaultValue || ''}")`;
+}
+
 export class CallMethod extends Method {
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Call`, dotnet.System.Threading.Tasks.Task());
@@ -187,77 +194,160 @@ export class CallMethod extends Method {
     this.add(function* () {
       const eventListener = new EventListener(opMethod.listenerParameter);
 
-      // yield  Using(`var _request = new System.Net.Http.HttpRequestMessage(${ClientRuntime.fullName}.Method.${opMethod.operation.method.capitalize()}, "http://wherever/...")`, function* () {
-      yield Using(`${reqParameter.use}`, function* () {
+      const response = new LocalVariable('_response', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
+      yield response;
+      yield Try(function* () {
+        // try statements
+        yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
+        yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use},  ${opMethod.listenerParameter.value});`;
+        yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
+        const EOL = 'EOL';
+        // LRO processing (if appropriate)
+        if ($this.opMethod.operation.details.csharp.lro) {
+          yield `// this operation supports x-ms-long-running-operation`;
+          const originalUri = new LocalVariable('_originalUri', dotnet.Var, { initializer: new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`) });
+          yield originalUri;
+          yield While(new LiteralExpression(`${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+            yield EOL;
+            yield `// get the delay before polling.`;
+            yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`RetryAfter`)).value}, out int delay)`, `delay = 30;`);
 
+            yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, `$"Delaying {delay} seconds before polling."`, response.value);
 
-        yield `System.Net.Http.HttpResponseMessage _response = null;`;
-        yield Try(function* () {
-          // try statements
-          yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
-          yield `_response = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use},  ${opMethod.listenerParameter.value});`;
-          yield eventListener.signal(ClientRuntime.Events.ResponseCreated, '_response');
-          yield `var _contentType = (_response.Headers.TryGetValues("Content-Type", out var values) ? System.Linq.Enumerable.FirstOrDefault(values) : string.Empty).ToLowerInvariant();`;
+            yield EOL;
+            yield `// start the delay timer (we'll await later...)`;
+            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${dotnet.System.Threading.Tasks.Task()}.Delay(delay, listener.Token )`) });
+            yield waiting;
 
-          // add response handlers
-          yield Switch({ value: `_response.StatusCode` }, function* () {
-            const i = 0;
-            for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
-              if (responseCode !== 'default') {
-                yield Case(`(System.Net.HttpStatusCode)${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
-              } else {
-                yield DefaultCase($this.responsesEmitter($this, opMethod, responses, eventListener));
-              }
-            }
+            yield EOL;
+            yield `// while we wait, let's grab the headers and get ready to poll. `;
+            const asyncOperation = new LocalVariable('asyncOperation', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)) });
+            yield asyncOperation;
+            const location = new LocalVariable('location', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
+            yield location;
 
-            /*
-            for (const eachResponse of opMethod.responseMatrix) {
-              if (eachResponse.responseCode !== 'default') {
-                // each response
-                yield Case(`(System.Net.HttpStatusCode)${eachResponse.responseCode}`, function* () {
-                  yield `// on ${eachResponse.responseCode} ... `;
+            yield `var _uri = string.IsNullOrEmpty(${asyncOperation.value}) ? string.IsNullOrEmpty(${location.value}) ? ${originalUri.value} : ${location.value} : ${asyncOperation.value};`;
 
-                  for (const variant of eachResponse.responses) {
-                    if (eachResponse.responses.length > 1) {
-                      yield If({ value: `${variant.mimeType.joinWith(eee => `_contentType == "${eee}"`, " || ")}` }, function* () {
-                        // yield `if( ${variant.mimeType.joinWith(eee => `_contentType == "${eee}"`, " || ")} )`
-                        // yield '{'
-                        yield `${indent(variant.callResponder)}`;
-                        // yield '}'
+            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(_uri), Microsoft.Rest.ClientRuntime.Method.Get);`;
+
+            yield EOL;
+            yield `// and let's look at the current response body and see if we have some information we can give back to the listener`;
+            const content = new LocalVariable('content', dotnet.Var, { initializer: new LiteralExpression(`${response.value}.Content.ReadAsStringAsync()`) });
+            yield content;
+
+            yield `await waiting;`;
+
+            yield EOL;
+            yield `// check for cancellation`;
+            yield `if( listener.Token.IsCancellationRequested ) { return; }`;
+
+            yield eventListener.signal(ClientRuntime.Events.Polling, `$"Polling {_uri}."`, response.value);
+
+            yield EOL;
+            yield `// drop the old response`;
+            yield `${response.value}?.Dispose();`;
+
+            yield EOL;
+            yield `// make the polling call`;
+            yield `${response.value} = await sender.SendAsync(${reqParameter.value},  listener);`;
+
+            yield EOL;
+            yield '// check for terminal status code'
+            yield If(new LiteralExpression(`${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+              yield `// we're done polling, do a request on final target?`;
+              yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
+              const fsv = $this.opMethod.operation.details.csharp.lro['final-state-via'];
+
+              switch (fsv) {
+                case 'original-uri':
+                  // perform a final GET on the original URI.
+                  yield $this.finalGet(originalUri, reqParameter, response);
+                  break;
+
+                case 'location':
+                  // perform a final GET on the uri in Location header
+                  yield $this.finalGet(response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)), reqParameter, response);
+                  break;
+
+                case 'azure-asyncoperation':
+                case 'azure-async-operation':
+                  // perform a final GET on the uri in Azure-AsyncOperation header
+                  yield $this.finalGet(response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)), reqParameter, response);
+                  break;
+
+                default:
+                  // depending on the type of request, fall back to the appropriate behavior
+                  const finalLocation = new LocalVariable("finalLocation", dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
+                  switch ($this.opMethod.operation.method.toLowerCase()) {
+                    case 'post':
+                    case 'delete':
+                      // if the location header was passed in, we're going to do a get on that.
+                      yield `// final get on the the Location header, if present`
+                      yield finalLocation;
+                      If(`string.IsNullOrWhiteSpace(${finalLocation})`, function* () {
+                        yield $this.finalGet(finalLocation, reqParameter, response);
                       });
-                    } else {
-                      yield variant.callResponder;
-                    }
+                      break;
+                    case 'patch':
+                    case 'put':
+                      yield `// final get on the original URI`
+                      yield $this.finalGet(originalUri, reqParameter, response);
+                      break;
                   }
-
-                  yield EOL;
-                });
-              } else {
-                yield DefaultCase(function* () {
-                  yield "// on default ... ";
-                  yield EOL;
-                });
+                  break;
               }
-            }
-            */
-
-            // missing default response?
-            if (!opMethod.operation.responses_new.default) {
-              // if no default, we need one that handles the rest of the stuff.
-              yield TerminalDefaultCase(function* () {
-                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response.StatusCode);`;
-              });
-            }
+            });
           });
-        });
+        }
 
-        yield Finally(function* () {
-          yield '// finally statements';
-          yield eventListener.signalNoCheck(ClientRuntime.Events.Finally, 'request', '_response');
-          yield `_response?.Dispose();`;
+        const contentType = new LocalVariable("_contentType", dotnet.Var, { initializer: `${valueOf(response.invokeMethod('GetFirstHeader', new StringExpression(`Content-Type`)))}.ToLowerInvariant()` });
+        yield contentType;
+        // yield `var _contentType = (${response.value}.Headers.TryGetValues("Content-Type", out var values) ? System.Linq.Enumerable.FirstOrDefault(values) : string.Empty).ToLowerInvariant();`;
+
+        // add response handlers
+        yield Switch({ value: `${response.value}.StatusCode` }, function* () {
+          const i = 0;
+          for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
+            if (responseCode !== 'default') {
+              // will use enum when it can, fall back to casting int when it can't
+              yield Case(dotnet.System.Net.HttpStatusCode[responseCode].value || `(${dotnet.System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
+            } else {
+              yield DefaultCase($this.responsesEmitter($this, opMethod, responses, eventListener));
+            }
+          }
+
+          // missing default response?
+          if (!opMethod.operation.responses_new.default) {
+            // if no default, we need one that handles the rest of the stuff.
+            yield TerminalDefaultCase(function* () {
+              yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response.StatusCode);`;
+            });
+          }
         });
       });
+
+      yield Finally(function* () {
+        yield '// finally statements';
+        yield eventListener.signalNoCheck(ClientRuntime.Events.Finally, 'request', '_response');
+        yield `_response?.Dispose();`;
+        yield `${reqParameter.use}?.Dispose();`;
+      });
     });
+  }
+
+  private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
+    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), Microsoft.Rest.ClientRuntime.Method.Get)`);
+
+    yield EOL;
+    yield `// drop the old response`;
+    yield `${response.value}?.Dispose();`;
+
+    yield EOL;
+    yield `// make the final call`;
+    yield response.assign(`await sender.SendAsync(${valueOf(reqParameter)},  listener);`);
+
+    // make sure we're not polling anymore.
+    yield 'break;';
   }
 
   private *responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<NewResponse>, eventListener: EventListener) {

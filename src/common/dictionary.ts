@@ -1,6 +1,11 @@
 import { excludeXDash } from '#remodeler/common';
 import { Z_FILTERED } from 'zlib';
 
+
+export interface Index<T> {
+  [key: number]: T;
+}
+
 export interface Dictionary<T> {
   [key: string]: T;
 }

@@ -50,7 +50,7 @@ namespace Microsoft.Rest.ClientRuntime
         }
         public HttpClientFactory(HttpClient client) => this.client = client;
         public ISendAsync Create() => this;
-        
+
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, callback.Token);
     }
 
@@ -210,5 +210,79 @@ namespace Microsoft.Rest.ClientRuntime
 
         // you can use this as the ISendAsync Implementation
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => Pipeline.SendAsync(request, callback);
+    }
+
+    public static class HttpRequestMessageExtensions
+    {
+        /// <summary>
+        /// Returns the first header value as a string from an HttpReponseMessage. 
+        /// </summary>
+        /// <param name="response">the HttpResponseMessage to fetch a header from</param>
+        /// <param name="headerName">the header name</param>
+        /// <returns>the first header value as a string from an HttpReponseMessage. string.empty if there is no header value matching</returns>
+        public static string GetFirstHeader(this HttpResponseMessage response, string headerName) => response.Headers.TryGetValues(headerName, out var values) ? System.Linq.Enumerable.FirstOrDefault(values) : string.Empty;
+
+        public static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {
+            using( original ) {
+                return original.Clone(requestUri,method);
+            }
+        }
+
+        public static Task<HttpRequestMessage> CloneWithContentAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {
+            using( original ) {
+                return original.CloneWithContent(requestUri,method);
+            }
+        }
+
+        /// <summary>
+        /// Clones an HttpRequestMessage (without the content)
+        /// </summary>
+        /// <param name="original">Original HttpRequestMessage (Will be diposed before returning)</param>
+        /// <returns>A clone of the HttpRequestMessage</returns>
+        public static HttpRequestMessage Clone(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null )
+        {
+            var clone = new HttpRequestMessage {
+                Method = method ?? original.Method, 
+                RequestUri = requestUri ?? original.RequestUri,
+                Version = original.Version,
+            };
+
+            foreach (KeyValuePair<string, object> prop in original.Properties)
+            {
+                clone.Properties.Add(prop);
+            }
+
+            foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers)
+            {
+                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
+            return clone;
+        }
+
+        /// <summary>
+        /// Clones an HttpRequestMessage (including the content stream and content headers) 
+        /// </summary>
+        /// <param name="original">Original HttpRequestMessage (Will be diposed before returning)</param>
+        /// <returns>A clone of the HttpRequestMessage</returns>
+        public static async Task<HttpRequestMessage> CloneWithContent(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
+        {
+            var clone = original.Clone(requestUri, method);
+            var stream = new System.IO.MemoryStream();
+            if (original.Content != null)
+            {
+                await original.Content.CopyToAsync(stream).ConfigureAwait(false);
+                stream.Position = 0;
+                clone.Content = new StreamContent(stream);
+                if (original.Content.Headers != null)
+                {
+                    foreach (var h in original.Content.Headers)
+                    {
+                        clone.Content.Headers.Add(h.Key, h.Value);
+                    }
+                }
+            }
+            return clone;
+        }
     }
 }

@@ -1,7 +1,7 @@
 pushd $PSScriptRoot
 
  dotnet restore
- dotnet build
+ dotnet publish
  
 $dll = (dir bin\Debug\netstandard2.0\*.dll)[0]
 
@@ -11,7 +11,7 @@ $outputs = @{}
 
 $commands |% {
     $metadata  = New-Object System.Management.Automation.CommandMetaData($_)
-    if( $metadata.Name.IndexOf("_") ) {
+    if( $metadata.Name.IndexOf("_") -gt -1 ) {
         $targetCmdlet = $metadata.Name.split("_")[0];
         $variant = $metadata.Name.split("_")[1];
     } else {
@@ -36,6 +36,7 @@ $commands |% {
     # add the variant
     $gb = [System.Management.Automation.ProxyCommand]::GetBegin( $metadata ) 
     $ct = $metadata.Parameters.Keys.Count
+    
     $newCmdlet.variants.add( $variant, @{ method = $gb; pcount = $ct; name = $name} )
 
     # copy parameters across

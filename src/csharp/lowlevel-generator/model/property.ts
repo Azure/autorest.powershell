@@ -6,6 +6,7 @@ import { ModelClass } from './model-class';
 
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { Schema, Property } from '#csharp/lowlevel-generator/code-model';
+import { Access } from '#csharp/code-dom/access-modifier';
 
 export class ModelProperty extends BackedProperty {
   private required: boolean;
@@ -15,6 +16,9 @@ export class ModelProperty extends BackedProperty {
   constructor(parent: ModelClass, property: Property, public serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
     super(property.details.csharp.name, state.project.modelsNamespace.resolveTypeDeclaration(property.schema, property.details.csharp.required, state.path("schema")));
     this.schema = property.schema;
+    if (this.schema.readOnly) {
+      this.setAccess = Access.Internal;
+    }
     this.apply(objectInitializer);
     this.description = property.details.csharp.description;
     this.required = property.details.csharp.required;

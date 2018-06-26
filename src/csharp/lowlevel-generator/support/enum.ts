@@ -117,7 +117,7 @@ export class EnumClass extends Struct implements Serialization, Validation {
     return this.schemaWithFeatures.jsonSerializationImplementation(containerName, propertyName, serializedName);
   }
   jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.jsonSerializationImplementation(containerName, propertyName, serializedName);
+    return this.schemaWithFeatures.jsonDeserializationImplementationOnProperty(containerName, propertyName, serializedName);
   }
   jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
     return this.schemaWithFeatures.jsonDeserializationImplementationOnNode(nodeExpression);

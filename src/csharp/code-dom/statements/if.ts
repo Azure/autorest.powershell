@@ -1,12 +1,31 @@
 import { indent } from '#common/text-manipulation';
-import { Expression, LiteralExpression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+import { Expression, LiteralExpression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
 
-export function If(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+export function If(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
   return new IfStatement(conditional, statements, objectInitializer);
 }
 
 export class IfStatement extends Statements {
+  constructor(private conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
+    super(statements);
+    this.apply(objectInitializer);
+  }
+  public get implementation(): string {
+    return `
+if(${valueOf(this.conditional)})
+{
+${indent(super.implementation)}
+}`.trim();
+  }
+}
+
+
+export function While(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+  return new WhileStatement(conditional, statements, objectInitializer);
+}
+
+export class WhileStatement extends Statements {
   conditional: Expression;
   constructor(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
     super(statements);
@@ -15,7 +34,7 @@ export class IfStatement extends Statements {
   }
   public get implementation(): string {
     return `
-if(${this.conditional.value})
+while(${this.conditional.value})
 {
 ${indent(super.implementation)}
 }`.trim();

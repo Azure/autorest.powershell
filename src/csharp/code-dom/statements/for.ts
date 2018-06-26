@@ -1,5 +1,5 @@
 import { indent } from '#common/text-manipulation';
-import { Expression } from '#csharp/code-dom/expression';
+import { Expression, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 
 export function For(initialization: Expression, condition: Expression, loop: Expression, statements: OneOrMoreStatements, objectInitializer?: Partial<ForStatement>) {
@@ -13,7 +13,7 @@ export class ForStatement extends Statements {
   }
   public get implementation(): string {
     return `
-for( ${this.initialization.value} ; ${this.condition.value} ; ${this.loop.value})
+for( ${valueOf(this.initialization)} ; ${valueOf(this.condition)} ; ${valueOf(this.loop)})
 {
 ${indent(super.implementation)}
 }`.trim();
@@ -31,7 +31,7 @@ export class ForEachStatement extends Statements {
   }
   public get implementation(): string {
     return `
-foreach( var ${this.variable} in ${this.enumerable.value} )
+foreach( var ${this.variable} in ${valueOf(this.enumerable)} )
 {
 ${indent(super.implementation)}
 }`.trim();

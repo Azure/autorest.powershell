@@ -140,7 +140,14 @@ export class ModelClass extends Class implements Serialization, Validation {
       const backingField = this.addField(new InitializedField(`_${fieldName}`, td, { value: `new ${className}()` }, { access: Access.Private }));
 
       // now, create proxy properties for the members
-      iface.allProperties.map((each) => this.add(new ProxyProperty(backingField, each, this.state)));
+      iface.allProperties.map((each) => {
+        // make sure we don't over expose read-only properties.
+        const p = this.add(new ProxyProperty(backingField, each, this.state));
+        if (each.setAccess === Access.Internal) {
+          p.setterStatements = undefined;
+        }
+        return p;
+      });
 
       serializeStatements.add(`${backingField.value}?.ToJson(result, ${mode.use});`);
       deserializeStatements.add(`${backingField.value} = new ${className}(json);`);
@@ -165,7 +172,6 @@ export class ModelClass extends Class implements Serialization, Validation {
           serializeStatements.add(prop.jsonSerializationStatement);
         }
       }
-
       deserializeStatements.add(prop.jsonDeserializationStatement);
       validationStatements.add(prop.validatePresenceStatement);
       validationStatements.add(prop.validationStatement);
@@ -298,7 +304,7 @@ export class ModelClass extends Class implements Serialization, Validation {
     return this.objectFeatures.jsonSerializationImplementation(containerName, propertyName, serializedName);
   }
   jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.objectFeatures.jsonSerializationImplementation(containerName, propertyName, serializedName);
+    return this.objectFeatures.jsonDeserializationImplementationOnProperty(containerName, propertyName, serializedName);
   }
   jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
     return this.objectFeatures.jsonDeserializationImplementationOnNode(nodeExpression);

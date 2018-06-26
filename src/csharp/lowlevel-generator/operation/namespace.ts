@@ -7,5 +7,6 @@ export class ServiceNamespace extends Namespace {
     super(state.model.details.csharp.namespace || "INVALID.NAMESPACE", state.project);
     this.apply(objectInitializer);
     this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.IEventListenerExtensions"));
+    this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions"));
   }
 }

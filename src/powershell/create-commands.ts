@@ -41,7 +41,7 @@ export async function process(service: Host) {
 
 async function commonParameters(): Promise<Array<string>> {
   return [
-    'resourceGroupName',
+    // 'resourceGroupName',
     'subscriptionId'
   ];
 }
@@ -63,11 +63,13 @@ async function addVariant(vname: string, body: MediaType | undefined, bodyParame
 
   // if this has a body with it, let's add that parameter
   if (body && body.schema) {
+    op.details.powershell.hasBody = true;
     op.parameters.push(new IParameter(bodyParameterName, body.schema, {
       details: {
         powershell: {
           description: body.schema.details.default.description,
           name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
+          isBodyParameter: true,
         }
       }
     }));
@@ -135,6 +137,7 @@ async function addVariants(parameters: HttpOperationParameter[], operation: Http
   // handle optional parameter variants
   for (const combo of combos) {
     const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames, operation.operationId]));
+    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
     await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
   }
 }

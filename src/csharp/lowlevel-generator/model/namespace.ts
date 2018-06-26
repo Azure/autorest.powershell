@@ -21,6 +21,7 @@ export class ModelsNamespace extends Namespace {
     super('Models', parent);
     this.apply(objectInitializer);
     this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.IEventListenerExtensions'));
+    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions'));
 
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;

@@ -2,26 +2,35 @@ import { Initializer } from '#common/initializer';
 import { EOL } from '#common/text-manipulation';
 import { LiteralStatement } from '#csharp/code-dom/statements/literal';
 
-export type OneOrMoreStatements = string | (() => Iterable<string | Statement>) | Iterable<string | Statement> | Statement;
-export type StatementPossibilities = OneOrMoreStatements | (() => Iterable<OneOrMoreStatements>);
 
-export type StatementOrLiteral = Statement | string;
-export function toStatement(statement: StatementOrLiteral): Statement {
-  return typeof statement === 'string' ? new LiteralStatement(statement) : statement;
-}
+
+export type fIterable<T> = Iterable<T> | (() => Iterable<T>);
 
 export interface Statement {
   implementation: string;
 }
 
-export function isStatement(object: OneOrMoreStatements): object is Statement {
+export type StatementOrLiteral = Statement | string;
+export type OneOrMoreStatements = StatementOrLiteral | fIterable<StatementOrLiteral>;
+export type OneOrMoreStatements2 = OneOrMoreStatements | fIterable<OneOrMoreStatements>;
+export type OneOrMoreStatements3 = OneOrMoreStatements2 | fIterable<OneOrMoreStatements2>;
+export type OneOrMoreStatements4 = OneOrMoreStatements3 | fIterable<OneOrMoreStatements3>;
+export type OneOrMoreStatements5 = OneOrMoreStatements4 | fIterable<OneOrMoreStatements4>;
+
+export type StatementPossibilities = OneOrMoreStatements5 | Statements;
+
+export function toStatement(statement: StatementOrLiteral): Statement {
+  return typeof statement === 'string' ? new LiteralStatement(statement) : statement;
+}
+
+export function isStatement(object: StatementPossibilities): object is Statement {
   return (<any>object).implementation ? true : false;
 }
 
 export class Statements extends Initializer implements Statement {
   protected statements = new Array<Statement>();
 
-  constructor(statements?: OneOrMoreStatements, objectIntializer?: Partial<Statements>) {
+  constructor(statements?: StatementPossibilities, objectIntializer?: Partial<Statements>) {
     super();
     if (statements) {
       this.add(statements);
@@ -34,12 +43,23 @@ export class Statements extends Initializer implements Statement {
   }
 
   public add(statements: StatementPossibilities): Statements {
-    if (typeof statements !== 'function') {
-      return this.appendStatements(statements);
+    if (typeof (statements) === 'string') {
+      this.statements.push(new LiteralStatement(statements));
+      return this;
     }
-    // unroll statements
-    for (const each of statements()) {
-      this.appendStatements(each);
+    if (statements instanceof Statements) {
+      this.statements.push(statements);
+      return this;
+    }
+    if (isStatement(statements)) {
+      this.statements.push(statements);
+      return this;
+    }
+    if (typeof (statements) === 'function') {
+      return this.add(statements());
+    }
+    for (const each of statements) {
+      this.add(each);
     }
     return this;
   }

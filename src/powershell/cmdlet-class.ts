@@ -6,7 +6,7 @@ import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { IsDeclaration, LambdaExpression, LiteralExpression, StringExpression } from '#csharp/code-dom/expression';
+import { IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, Expression, valueOf } from '#csharp/code-dom/expression';
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 import * as dotnet from '#csharp/code-dom/mscorlib';
@@ -14,36 +14,40 @@ import { Var } from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, LambdaProperty, Property } from '#csharp/code-dom/property';
+import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
 import { Catch } from '#csharp/code-dom/statements/catch';
+import { ForEach, ForEachStatement } from '#csharp/code-dom/statements/for';
 import { Else, If } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
 import { Statements } from '#csharp/code-dom/statements/statement';
+import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
 import { Ternery } from '#csharp/code-dom/ternery';
 import { LocalVariable, Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { EventListener } from '#csharp/lowlevel-generator/operation/method';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { CmdletParameter } from './cmdlet-parameter';
-import { AsyncCommandRuntime, CmdletAttribute, ErrorCategory, ErrorRecord, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum, Events, Alias } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum } from './powershell-declarations';
 import { State } from './state';
-import { EventListener } from '#csharp/lowlevel-generator/operation/method';
-import { ForEachStatement, ForEach } from '#csharp/code-dom/statements/for';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
+import { addPowershellParameters } from '#powershell/model-cmdlet';
 
-const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
+export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
 export class CmdletClass extends Class {
   private cancellationToken!: Property;
-  private state: State;
+  public state: State;
   private eventListener: EventListener;
+  private dropBodyParameter: boolean;
 
-  constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
-    const variantName = `${operation.noun}_${operation.details.powershell.name}`;
+  constructor(namespace: Namespace, operation: CommandOperation, state: State, dropBodyParameter?: boolean, objectInitializer?: Partial<CmdletClass>) {
+
+    const variantName = `${operation.noun}_${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
     const name = `${operation.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
+    this.dropBodyParameter = dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.interfaces.push(ClientRuntime.IEventListener);
     this.state = state;
@@ -54,7 +58,7 @@ export class CmdletClass extends Class {
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
       access: Access.Protected,
-    }))
+    }));
 
     // construct the class
     this.addClassAttributes(operation, variantName);
@@ -78,7 +82,7 @@ export class CmdletClass extends Class {
   private addCommonStuff() {
 
     // pipeline property
-    // this.add(new LambdaProperty('Pipeline', ClientRuntime.HttpPipeline, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Pipeline`),{ access}));
+    this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private }));
 
     // client API property (todo: fill this in correctly)
     const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
@@ -97,7 +101,7 @@ export class CmdletClass extends Class {
       const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object));
       defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
       defaultProfile.add(new Attribute(ValidateNotNull));
-      defaultProfile.add(new Attribute(Alias, { parameters: ["AzureRMContext", "AzureCredential"] }));
+      defaultProfile.add(new Attribute(Alias, { parameters: ['AzureRMContext', 'AzureCredential'] }));
     }
   }
 
@@ -128,7 +132,7 @@ export class CmdletClass extends Class {
       });
       const aggregateException = new Parameter('aggregateException', dotnet.System.AggregateException);
       yield Catch(aggregateException, function* () {
-        yield `// unroll the inner exceptions to get the root cause`
+        yield `// unroll the inner exceptions to get the root cause`;
         yield ForEach('innerException', new LiteralExpression(`${aggregateException.use}.Flatten().InnerExceptions`), function* () {
           yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}"`));
           yield `// Write exception out to error channel.`;
@@ -152,8 +156,10 @@ export class CmdletClass extends Class {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-      const pipeline = new LocalVariable('pipeline', dotnet.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
-      yield pipeline.declarationStatement;
+      // const pipeline = new LocalVariable('pipeline', dotnet.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
+      const pipeline = $this.$<Property>('Pipeline');
+
+      yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`));
 
       yield pipeline.invokeMethod('Prepend', $this.$<Property>('HttpPipelinePrepend'));
       yield pipeline.invokeMethod('Append', $this.$<Property>('HttpPipelineAppend'));
@@ -162,9 +168,9 @@ export class CmdletClass extends Class {
       const apiCall = operation.callGraph[0];
 
       // find each parameter to the method, and find out where the value is going to come from.
-      const operationParameters: Array<Variable> = values(apiCall.parameters).linq.select(p => {
+      const operationParameters: Array<Expression> = values(apiCall.parameters).linq.select(p => {
         return values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition === p);
-      }).linq.selectNonNullable(each => each).linq.toArray();
+      }).linq.select(each => each ? each : new LiteralExpression('null')).linq.toArray();
 
       // is there a body parameter we should include?
       const requestBody = apiCall.requestBody;
@@ -182,60 +188,109 @@ export class CmdletClass extends Class {
       // create the response handlers
       const responses = [...values(apiCall.responses_new).linq.selectMany(each => each)];
 
-      const callbacks = responses.map(each => new LambdaExpression([new Parameter('response', Var)], function* () {
-        if (each.details.csharp.isErrorResponse) {
-          // this should write an error to the error channel.
-          yield `// Error Response : ${each.responseCode} `;
-          if (each.schema) {
-            // the schema should be the error information.
-            const props = getAllProperties(each.schema);
-            const codeProp = values(props).linq.first(p => p.details.csharp.name === 'Code');
-            const messageProp = values(props).linq.first(p => p.details.csharp.name === 'Message');
-            if (codeProp && messageProp) {
-              yield `var code = (await response.Result).${codeProp.details.csharp.name};`;
-              yield `var message = (await response.Result).${messageProp.details.csharp.name};`;
-              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
-              return;
+      const callbackMethods = values(responses).linq.toArray().map(each => new LiteralExpression(each.details.csharp.name));
+
+      // make callback methods
+      for (const each of values(responses)) {
+        const responseParameter = new Parameter('response', new dotnet.LibraryType(ClientRuntime, each.details.csharp.type));
+        const responseMethod = new Method(`${each.details.csharp.name}`, dotnet.System.Threading.Tasks.Task(), { access: Access.Private, parameters: [responseParameter], async: Modifier.Async });
+        responseMethod.add(function* () {
+          if (each.details.csharp.isErrorResponse) {
+            // this should write an error to the error channel.
+            yield `// Error Response : ${each.responseCode} `;
+            if (each.schema) {
+              // the schema should be the error information.
+              const props = getAllProperties(each.schema);
+              const codeProp = values(props).linq.first(p => p.details.csharp.name === 'Code');
+              const messageProp = values(props).linq.first(p => p.details.csharp.name === 'Message');
+              if (codeProp && messageProp) {
+                yield `var code = (await response.Result).${codeProp.details.csharp.name};`;
+                yield `var message = (await response.Result).${messageProp.details.csharp.name};`;
+                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
+                return;
+              } else {
+                yield new LocalVariable("responseMessage", dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+                // what do we do with the response object?
+                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+                return;
+              }
             } else {
-              // what do we do with the response object?
-              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {response.responseMessage.StatusCode}"), response.responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
+              yield new LocalVariable("responseMessage", dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+              // all we know is that this was an error, and we can't proceed.
+              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
               return;
             }
-          } else {
-            // all we know is that this was an error, and we can't proceed.
-            yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {response.responseMessage.StatusCode}"), response.responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
-            return;
-          }
-        }
-
-        yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${each.mimeTypes.join('/')}`;
-        if (each.schema) {
-          // we expect to get back some data from this call.
-          const schema = each.schema;
-          yield `// (await response.Result) // should be ${CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
-
-          const props = getAllProperties(schema);
-          if (props.length === 1) {
-            // let's unroll this and write out the single property
-            yield `WriteObject((await response.Result).${props[0].details.csharp.name});`;
-            return;
           }
 
-          // more than one property, let's just return the result object
-          yield `WriteObject(await response.Result);`;
-          return;
-        }
+          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${each.mimeTypes.join('/')}`;
+          if (each.schema) {
+            const schema = each.schema;
 
-        // no return type. Let's just return ... true?
-        yield `WriteObject(true);`;
-      }, { async: Modifier.Async }));
+            if (apiCall.details.csharp.pageable) {
+              const pageable = apiCall.details.csharp.pageable;
+              yield `// response should be returning an array of some kind. +Pageable`;
+              yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
+              switch (pageable.responseType) {
+                // the result is (or works like a x-ms-pageable)
+                case `pageable`:
+                case `nested-array`:
+                  const valueProperty = schema.properties[pageable.itemName];
+                  const nextLinkProperty = schema.properties[pageable.nextLinkName];
+                  if (valueProperty && nextLinkProperty) {
+                    // it's pageable!
+                    const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response.Result`) });
+                    yield result.declarationStatement;
+                    // write out the current contents
+                    yield `WriteObject(${result.value}.${valueProperty.details.csharp.name},true);`;
+                    const nextLinkName = `${result.value}.${nextLinkProperty.details.csharp.name}`;
+                    yield (If(`${nextLinkName} != null`,
+                      If(`response.RequestMessage is System.Net.Http.HttpRequestMessage req `, function* () {
+                        yield `req = req.Clone(new System.Uri( ${nextLinkName} ),Microsoft.Rest.ClientRuntime.Method.Get );`;
+                        yield $this.eventListener.signal(Events.FollowingNextLink);
+                        yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                      })
+                    ));
+                    return;
+                  } else if (valueProperty) {
+                    // it's just a nested array
+                    yield `WriteObject((await response.Result).${valueProperty.details.csharp.name}, true);`;
+                    return;
+                  }
+                  break;
 
-      // string all the api call parameters together.
-      // const p = (bodyParameter) ? [...operationParameters, bodyParameter, ...callbacks, dotnet.This, pipeline] : [...operationParameters, ...callbacks, dotnet.This, pipeline];
+                // it's just an array,
+                case `array`:
+                  // just write-object(enumerate) with the output
+                  yield `WriteObject(await response.Result, true);`;
+                  return;
+              }
+              // ok, let's see if the response type
+            }
+            // we expect to get back some data from this call.
+
+            yield `// (await response.Result) // should be ${CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
+
+            const props = getAllProperties(schema);
+            if (props.length === 1) {
+              // let's unroll this and write out the single property
+              yield `WriteObject((await response.Result).${props[0].details.csharp.name});`;
+              return;
+            }
+
+            // more than one property, let's just return the result object
+            yield `WriteObject(await response.Result);`;
+            return;
+          }
+
+          // no return type. Let's just return ... true?
+          yield `WriteObject(true);`;
+        });
+        $this.add(responseMethod);
+      }
 
       // make the call.
       yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
-      yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbacks, dotnet.This, pipeline]).implementation}`;
+      yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
       yield $this.eventListener.signal(Events.CmdletAfterAPICall);
     });
   }
@@ -312,7 +367,7 @@ export class CmdletClass extends Class {
         const td = CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
         const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
         if (!(parameter.details.default.constantValue)) {
-          // dont' serialize if it's a constant or host parameter. 
+          // dont' serialize if it's a constant or host parameter.
           yield td.jsonDeserializationImplementationOnProperty('json', bp.backingName, parameter.details.powershell.name);
         }
 
@@ -342,17 +397,17 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
-          const data = new LocalVariable("data", dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
+          const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
           yield data.declarationStatement;
           yield `WriteInformation(data, new[] { data.Message });`;
           yield Return();
         }),
         TerminalCase(Events.Debug.value, function* () {
-          yield `WriteDebug($"{messageData().Message ?? ""}");`
+          yield `WriteDebug($"{messageData().Message ?? ""}");`;
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
-          yield `WriteError(new System.Management.Automation.ErrorRecord( new System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );`
+          yield `WriteError(new System.Management.Automation.ErrorRecord( new System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );`;
           yield Return();
         }),
       ]);
@@ -360,7 +415,7 @@ export class CmdletClass extends Class {
       yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
-      yield `WriteDebug($"{id}: {messageData().Message ?? ""}");`
+      yield `WriteDebug($"{id}: {messageData().Message ?? ""}");`;
 
       // any handling of the signal on our side...
 
@@ -389,8 +444,19 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter.details.default.originalParam
           },
         }));
-        this.$<Method>("BeginProcessing").add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
+        this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
+
+      } else if (this.dropBodyParameter && parameter.details.powershell.isBodyParameter) {
+        // we're supposed to use parameters for the body parameter instead of a big object
+        const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
+          metadata: {
+            parameterDefinition: parameter
+          },
+          initializer: `new ${parameter.schema.details.csharp.fullname}()`
+        }));
+
+        addPowershellParameters(this, <Schema>parameter.schema, cmdletParameter);
 
       } else {
         // regular cmdlet parameter
@@ -425,9 +491,9 @@ export class CmdletClass extends Class {
       }
       */
 
-      for (const item of items(op.responses).linq.where(each => each.key !== 'default')) {
+      for (const item of items(op.responses_new).linq.where(each => each.key !== 'default')) {
 
-        for (const schema of values(item.value.content).linq.selectNonNullable(each => each.schema)) {
+        for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?

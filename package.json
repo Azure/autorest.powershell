@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.incubator",
-  "version": "1.0.82",
+  "version": "1.0.83",
   "description": "AutoRest incubator project",
   "main": "dist/app.js",
   "directories": {
@@ -12,7 +12,7 @@
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
     "test-dead": "&& mocha dist/func-factory/test --timeout 100000 && mocha dist/highlevel/test --timeout 10000 && mocha dist/lowlevel/test --timeout 5000",
-    "test-run": "npm run build && autorest --version=c:/work/2018/autorest/src/autorest-core --use=. --grr C:/work/2018/azure-rest-api-specs/specification/streamanalytics/resource-manager/readme.md  --output-folder=./ps-generated --verbose --debug",
+    "test-run": "cls ; npm run build ; if ($LastExitCode -eq 0 ) { autorest --use=. --powershell C:/work/2018/azure-rest-api-specs/specification/containerregistry/resource-manager/readme.md --output-folder=./generated --debug --verbose    }",
     "testci": "npm run test",
     "publish-preview": "npm test && node ./.scripts/publish",
     "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar -xvf - && erase *.tgz"

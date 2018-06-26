@@ -69,24 +69,24 @@ namespace Carbon.Json
             return null;
         }
 
-        public int NumberProperty(string propertyName, ref int output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<int>() ?? output;
-        public float NumberProperty(string propertyName, ref float output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<float>() ?? output;
-        public byte NumberProperty(string propertyName, ref byte output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<byte>() ?? output;
-        public long NumberProperty(string propertyName, ref long output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<long>() ?? output;
-        public double NumberProperty(string propertyName, ref double output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<double>() ?? output;
-        public decimal NumberProperty(string propertyName, ref decimal output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<decimal>() ?? output;
-        public short NumberProperty(string propertyName, ref short output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<short>() ?? output;
-        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName)?.To<DateTime>() ??  output;
+        public int NumberProperty(string propertyName, ref int output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToInt() ?? output;
+        public float NumberProperty(string propertyName, ref float output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToFloat() ?? output;
+        public byte NumberProperty(string propertyName, ref byte output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToByte() ?? output;
+        public long NumberProperty(string propertyName, ref long output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToLong() ?? output;
+        public double NumberProperty(string propertyName, ref double output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDouble() ?? output;
+        public decimal NumberProperty(string propertyName, ref decimal output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDecimal() ?? output;
+        public short NumberProperty(string propertyName, ref short output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToShort() ?? output;
+        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDateTime() ??  output;
 
-        public int? NumberProperty(string propertyName, ref int? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<int>() ?? null;
-        public float? NumberProperty(string propertyName, ref float? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<float>() ?? null;
-        public byte? NumberProperty(string propertyName, ref byte? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<byte>() ?? null;
-        public long? NumberProperty(string propertyName, ref long? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<long>() ?? null;
-        public double? NumberProperty(string propertyName, ref double? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<double>() ?? null;
-        public decimal? NumberProperty(string propertyName, ref decimal? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<decimal>() ?? null;
-        public short? NumberProperty(string propertyName, ref short? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<short>() ?? null;
+        public int? NumberProperty(string propertyName, ref int? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToInt() ?? null;
+        public float? NumberProperty(string propertyName, ref float? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToFloat() ?? null;
+        public byte? NumberProperty(string propertyName, ref byte? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToByte() ?? null;
+        public long? NumberProperty(string propertyName, ref long? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToLong() ?? null;
+        public double? NumberProperty(string propertyName, ref double? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToDouble() ?? null;
+        public decimal? NumberProperty(string propertyName, ref decimal? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToDecimal() ?? null;
+        public short? NumberProperty(string propertyName, ref short? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToShort() ?? null;
 
-        public DateTime? NumberProperty(string propertyName, ref DateTime? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.To<DateTime>() ?? null;
+        public DateTime? NumberProperty(string propertyName, ref DateTime? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToDateTime() ?? null;
 
 
         public string StringProperty(string propertyName) => this.PropertyT<JsonString>(propertyName)?.ToString();
@@ -203,6 +203,7 @@ namespace Carbon.Json
         public static JsonNumber Create(DateTime? value) => value is DateTime date ? new JsonNumber(ToUnixTime(date)) : null;
 
         public static implicit operator DateTime(JsonNumber number) => FromUnixTime(number);
+        public DateTime ToDateTime() => this;
 
         public JsonNumber(decimal value)
         {

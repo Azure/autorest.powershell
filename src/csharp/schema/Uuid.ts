@@ -13,7 +13,7 @@ export class Uuid implements Serialization, Validation {
     return this.required ? `await listener.AssertNotNull(${fixPropertyName(propertyName)},${propertyName});`.trim() : '';
   }
   validateValue(propertyName: string): string {
-    return `await listener.AssertRegEx(${fixPropertyName(propertyName)},${propertyName},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$")`;
+    return `await listener.AssertRegEx(${fixPropertyName(propertyName)},${propertyName},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
   }
   jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();

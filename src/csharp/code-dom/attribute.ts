@@ -1,5 +1,5 @@
 import { Initializer } from '#common/initializer';
-import { Expression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 
 /** An c# Attribute that can be placed on methods, classes, members and parameters */
@@ -12,7 +12,7 @@ export class Attribute extends Initializer {
   }
 
   get value(): string {
-    const params = this.parameters.length > 0 ? `(${this.parameters.joinWith(each => toExpression(each).value)})` : '';
+    const params = this.parameters.length > 0 ? `(${this.parameters.joinWith(each => valueOf(toExpression(each)))})` : '';
     return `[${this.type.declaration}${params}]`;
   }
 }

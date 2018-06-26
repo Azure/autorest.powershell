@@ -22,6 +22,7 @@ export const TypeConverterAttribute: TypeDeclaration = new LibraryType('System.C
 export const ResourceGroupCompleter: TypeDeclaration = new LibraryType(sma, `ResourceGroupCompleter`);
 export const OutputTypeAttribute: TypeDeclaration = new LibraryType(sma, `OutputType`);
 export const ErrorRecord: TypeDeclaration = new LibraryType(sma, `ErrorRecord`);
+export const SwitchParameter: TypeDeclaration = new LibraryType(sma, 'SwitchParameter');
 
 export const AsyncCommandRuntime = new LibraryType(ClientRuntime, `PowerShell.AsyncCommandRuntime`);
 
@@ -40,6 +41,7 @@ export const Events = intersect(ClientRuntime.Events, {
   CmdletGetPipeline: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletGetPipeline`),
   CmdletBeforeAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletBeforeAPICall`),
   CmdletAfterAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletAfterAPICall`),
+  FollowingNextLink: new LiteralExpression(`${ClientRuntime.Events.declaration}.FollowingNextLink`),
   Verbose: new LiteralExpression(`${ClientRuntime.Events.declaration}.Verbose`),
   Debug: new LiteralExpression(`${ClientRuntime.Events.declaration}.Debug`),
   Information: new LiteralExpression(`${ClientRuntime.Events.declaration}.Information`),

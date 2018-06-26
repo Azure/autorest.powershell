@@ -3,7 +3,7 @@ import { comment, docComment, docCommentPrefix, EOL, indent } from '#common/text
 import { Abstract, Access, Extern, highestAccess, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
 import { ExpressionStatement, Instance, Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
@@ -36,7 +36,7 @@ export class Property extends Initializer implements Variable, Instance {
   }
 
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, EOL)}${EOL}` : '';
   }
 
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Property>) {
@@ -75,10 +75,10 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     return this.value;
   }
 
-  public assign(expression: Expression): OneOrMoreStatements {
-    return `${this.name} = ${expression.value};`;
+  public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
+    return `${this.name} = ${valueOf(expression)};`;
   }
-  public assignPrivate(expression: Expression): OneOrMoreStatements {
+  public assignPrivate(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return this.assign(expression);
   }
   public get declarationExpression(): Expression {
@@ -88,7 +88,7 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     throw new Error(`Property can not be a declaration statement`);
   }
   public invokeMethod(methodName: string, ...parameters: Array<Expression>): ExpressionStatement {
-    const e = `${this.value}.${methodName}(${parameters.joinWith(each => each.value)})`;
+    const e = `${this.value}.${methodName}(${parameters.joinWith(each => valueOf(each))})`;
     return {
       implementation: `${e};`,
       value: e,
@@ -149,7 +149,7 @@ export class LambdaProperty extends Property {
 
     return `
 ${docComment(summary(this.description))}
-${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.type.declaration} ${this.name} => ${this.expression.value};
+${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.type.declaration} ${this.name} => ${valueOf(this.expression)};
 `.slim();
   }
 }
@@ -178,6 +178,7 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
 
 export class BackedProperty extends ImplementedProperty {
   public backingName: string;
+  public initializer?: ExpressionOrLiteral;
   constructor(name: string, type: TypeDeclaration, objectInitializer?: Partial<BackedProperty>) {
     const backingName = `_${name.uncapitalize()}`;
     super(name, type, {
@@ -192,7 +193,7 @@ export class BackedProperty extends ImplementedProperty {
   public get declaration(): string {
     return `
 ${docComment(summary(`Backing field for ${this.name} property`))}
-private ${this.type.declaration} ${this.backingName};
+private ${this.type.declaration} ${this.backingName}${this.initializer ? `= ${valueOf(this.initializer)}` : ''};
 EOL
 ${super.declaration}
 `.trim();
@@ -207,7 +208,7 @@ ${super.declaration}
   public get valuePrivate(): string {
     return `this.${this.backingName}`;
   }
-  public assignPrivate(expression: Expression): OneOrMoreStatements {
-    return `${this.backingName} = ${expression.value};`;
+  public assignPrivate(expression: ExpressionOrLiteral): OneOrMoreStatements {
+    return `${this.backingName} = ${valueOf(expression)};`;
   }
 }

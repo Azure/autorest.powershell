@@ -149,7 +149,7 @@ export class SchemaDefinitionResolver {
         break;
 
     }
-    state.error(`Schema is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
+    state.error(`Schema '${schema.details.csharp.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
     throw new Error("Unknown Model. Fatal.");
   }
 }

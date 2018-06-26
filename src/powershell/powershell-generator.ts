@@ -91,8 +91,8 @@ async function generateCsproj(service: Host, project: Project) {
 
   <ItemGroup>
     <PackageReference Include="System.Management.Automation.dll" Version="10.0.10586" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 </Project>
 `, undefined, 'source-file-csharp');
@@ -109,7 +109,7 @@ async function generateModule(service: Host, project: Project) {
   service.WriteFile(project.psd1, `@{
     ModuleVersion="1.0"
     NestedModules = @(
-    "./bin/Debug/netstandard2.0/${project.moduleName}.private.dll"
+    "./bin/Debug/netstandard2.0/publish/${project.moduleName}.private.dll"
     "${project.psm1}"
     )
     # don't export any actual cmdlets by default
@@ -128,7 +128,8 @@ async function generateModule(service: Host, project: Project) {
 #region AzureCommonInitialization
 
 # load the private module
-ipmo "$PSScriptRoot/bin/Debug/netstandard2.0/${project.moduleName}.private.dll"
+$privatemodule = ipmo -passthru "$PSScriptRoot/bin/Debug/netstandard2.0/publish/${project.moduleName}.private.dll"
+
 
 # export the 'exported' cmdlets 
 Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach { 
@@ -139,10 +140,10 @@ Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Obj
 }
 
 # GS Testing
-# $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
+$module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
 
 # from PSModulePath
-$module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
+# $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
 
 
 if ($module) {
@@ -168,7 +169,8 @@ if ($module) {
 
   # finish initialization of this module
   $instance.Init();
-  }
+}
+
 #endregion
 `, undefined, 'source-file-powershell');
 

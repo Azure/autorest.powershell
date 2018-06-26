@@ -1,17 +1,17 @@
 import { indent } from '#common/text-manipulation';
-import { Expression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 
-export function Return(expression?: Expression, objectInitializer?: Partial<ReturnStatement>) {
+export function Return(expression?: ExpressionOrLiteral, objectInitializer?: Partial<ReturnStatement>) {
   return new ReturnStatement(expression, objectInitializer);
 }
 
 export class ReturnStatement extends Statements {
-  constructor(public expression?: Expression, objectInitializer?: Partial<ReturnStatement>) {
+  constructor(public expression?: ExpressionOrLiteral, objectInitializer?: Partial<ReturnStatement>) {
     super();
     this.apply(objectInitializer);
   }
   public get implementation(): string {
-    return `return ${this.expression ? this.expression.value : ""};`;
+    return `return ${this.expression ? valueOf(this.expression) : ""};`;
   }
 }

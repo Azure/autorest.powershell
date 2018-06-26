@@ -1,5 +1,5 @@
 import { Initializer } from '#common/initializer';
-import { Expression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
@@ -15,7 +15,7 @@ export class Parameter extends Initializer implements Variable {
   public defaultInitializer?: string;
   public attributes = new Array<Attribute>();
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, " ")} ` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, " ")} ` : '';
   }
 
   public constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Parameter>) {
@@ -37,10 +37,10 @@ export class Parameter extends Initializer implements Variable {
     return `${this.name}`;
   }
 
-  public assign(expression: Expression): OneOrMoreStatements {
-    return `${this.name} = ${expression.value};`;
+  public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
+    return `${this.name} = ${valueOf(expression)};`;
   }
-  public assignPrivate(expression: Expression): OneOrMoreStatements {
+  public assignPrivate(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return this.assign(expression);
   }
   public get declarationExpression(): Expression {
