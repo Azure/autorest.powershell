@@ -5,7 +5,7 @@ export class Duration implements Serialization, Validation {
   constructor(protected required: boolean) {
   }
   get declaration(): string {
-    return `TimeSpan${this.required ? '' : '?'}`
+    return `System.TimeSpan${this.required ? '' : '?'}`
   }
   public validatePresence(propertyName: string): string {
     return ``;
@@ -23,6 +23,6 @@ export class Duration implements Serialization, Validation {
     return `/* FIXME:  timespan deserialze node */`;
   }
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return '/* FIXME : timespan serialize instance to  json */';
+    return 'Carbon.Json.XNull.Instance/* FIXME : timespan serialize instance to  json */';
   }
 }

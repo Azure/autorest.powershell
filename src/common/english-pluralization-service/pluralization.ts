@@ -257,7 +257,8 @@ export class EnglishPluralizationService {
     "diagnosis": "diagnoses", "synthesis": "syntheses",
     "paralysis": "paralyses", "prognosis": "prognoses",
     "cirrhosis": "cirrhoses", "sclerosis": "scleroses",
-    "psychosis": "psychoses", "apoptosis": "apoptoses", "symbiosis": "symbioses"
+    "psychosis": "psychoses", "apoptosis": "apoptoses", "symbiosis": "symbioses",
+    "redis": "redis"
   };
 
   private _wordsEndingWithSusDictionary: { [key: string]: string } = {

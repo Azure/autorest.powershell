@@ -84,9 +84,21 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
 
     for (const { key: propertyName, value: propertySchema } of items(schema.properties)) {
       const propertyDetails = propertySchema.details.default;
+
+      const className = schema.details.csharp.name;
+
+      let pname = pascalCase(fixLeadingNumber(deconstruct(propertyDetails.name)));
+      if (pname === className) {
+        pname = pname + "Property";
+      }
+
+      if (pname === 'default') {
+        pname = '@default';
+      }
+
       propertySchema.details.csharp = {
         ...propertyDetails,
-        name: pascalCase(fixLeadingNumber(deconstruct(propertyDetails.name))) // and so are the propertyNmaes
+        name: pname // and so are the propertyNmaes
       };
     }
 
@@ -115,9 +127,16 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
     // parameters are camelCased.
     for (const parameter of values(operation.parameters)) {
       const parameterDetails = parameter.details.default;
+
+      let propName = camelCase(fixLeadingNumber(deconstruct(parameterDetails.name)));
+
+      if (propName === 'default') {
+        propName = '@default';
+      }
+
       parameter.details.csharp = {
         ...parameterDetails,
-        name: camelCase(fixLeadingNumber(deconstruct(parameterDetails.name)))
+        name: propName
       };
     }
 

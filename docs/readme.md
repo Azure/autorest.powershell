@@ -7,13 +7,15 @@
 
 ### PowerShell
     The things I want to make sure that the Cmdlet support are:
-    1)	Wildcard support for filtering
-    2)	-Confirm,-Whatif,-Verbose for anything that changes things (especially useful when you’ve used wildcarding)
-    3)	-AsJob support 
-    4)	Pipelining of cmdlets
-    5)	Paging for large resultsets
-    6)	Progress bars
     7)	Support for non-transparent proxies: -Proxy [<Uri>] -ProxyCredential [<PSCredential>] -ProxyUseDefaultCredentials [<SwitchParameter>]
+    2)	-Confirm,-Whatif,-Verbose for anything that changes things (especially useful when you’ve used wildcarding)
+    4)	Pipelining of cmdlets
+    3)	-AsJob support 
+    6)	Progress bars
+
+    1)	Wildcard support for filtering
+    5)	Paging for large resultsets
+    
     
 ##### Notes
 - Goal is to generate PowerShell cmdlets from OpenAPI (swagger) spec

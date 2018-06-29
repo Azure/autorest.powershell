@@ -24,6 +24,7 @@ import { ModuleClass } from '#powershell/module-class';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '#powershell/powershell-declarations';
 import { CmdletClass } from './cmdlet-class';
 import { State } from './state';
+import { deconstruct, pascalCase } from '#common/text-manipulation';
 
 export class ServiceNamespace extends Namespace {
   public moduleClass: ModuleClass;
@@ -312,7 +313,7 @@ export class Project extends codeDomProject {
 
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 
-    this.moduleName = await service.GetValue('module-name') || model.info.title.replace(/client/ig, '');
+    this.moduleName = pascalCase(deconstruct(await service.GetValue('module-name') || model.info.title.replace(/client/ig, '')));
 
     this.moduleFolder = await service.GetValue('module-folder') || './private';
 

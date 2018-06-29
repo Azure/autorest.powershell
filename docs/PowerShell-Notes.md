@@ -160,6 +160,4 @@
 # Implementation Notes:
  - Split out validation into seperate method call that can be called independently before making an actual wire call.
 
- - LRO Calls should be generated so that the LRO 201/202 sets up the task to make the followup calls, while spitting out events to indicate that it's working.
-   (must be implemented as a while() call to make this work right. )
- - follow-up paging calls should be easy to make; (should the response type have a 'next page' method built in?  ) -- 
+ 

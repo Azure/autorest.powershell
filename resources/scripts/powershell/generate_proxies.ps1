@@ -1,15 +1,65 @@
+param([Switch]$isolated,[Switch]$test)
 pushd $PSScriptRoot
+$ErrorActionPreference = "Stop"
 
- dotnet restore
- dotnet publish
- 
-$dll = (dir bin\Debug\netstandard2.0\*.dll)[0]
+if( $PSVersionTable.PSVersion.Major -lt 6 ) { 
+    write-error "This script requires Core PowerShell (don't worry: generated cmdlets can work in Core PowerShell or Windows Powershell)" 
+}
+
+if( -not $isolated )  {
+    # this ensures that we can run the script repeatedly without worrying about locked files/folders
+    write-host -fore green "Spawning in isolated process." 
+    $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
+    & $pwsh -command $MyInvocation.MyCommand.Path -isolated 
+
+    if($test) {
+        $mpath = $(( dir ./*.psd1)[0].fullname)
+        $mname = $(( dir ./*.psd1)[0].basename)
+        & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-Host ('PS ' + `$(get-location) +' ['+ `$ESC +'[46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor cyan ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
+    } else {
+        write-host -fore cyan "To test this module in a new powershell process, run `n"
+        write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "        
+        write-host -fore cyan "`nor use -test with this script`n"
+    }
+    return
+}
+
+write-host -fore green "Cleaning folders..."
+@('./exported','./obj', './bin') |% { $shh = rmdir -recurse -ea 0 $_ }
+
+if( test-path ./bin ) {
+    write-error "Unable to clean binary folder. (a process may have an open handle.)"
+}
+
+write-host -fore green "Compiling private module code"
+$shh = dotnet publish --configuration Release --output bin
+if( $lastExitCode -ne 0 ) {
+    # if it fails, let's do it again so the output comes out nicely.
+    dotnet publish --configuration Release --output bin
+    write-error "Compilation failed"
+}
+
+@('./bin/Debug','./bin/Release') |% { $shh = rmdir -recurse -ea 0 $_ }
+$dll = (dir bin\*.private.dll)[0]
+
+if( -not (test-path $dll) ) {
+     write-error "Unable to find output assembly."
+}
 
 $commands = get-command -module (ipmo $dll -passthru)
 
+write-host -fore gray "Private Module loaded."
+
+
+if( $commands.length -eq 0  ) {
+     write-error "Unable get commands from private module."
+}
+
 $outputs = @{}
 
+write-host -fore green "Processing cmdlet variants"
 $commands |% {
+    
     $metadata  = New-Object System.Management.Automation.CommandMetaData($_)
     if( $metadata.Name.IndexOf("_") -gt -1 ) {
         $targetCmdlet = $metadata.Name.split("_")[0];
@@ -18,7 +68,6 @@ $commands |% {
         $targetCmdlet = $metadata.Name
         $variant = "default"
     }
-    
 
     if( -not ($outputs.ContainsKey($targetCmdlet))) {
         $newCmdlet = @{ 
@@ -54,9 +103,9 @@ $commands |% {
     }
 }
 
-rmdir -recurse exported -ea 0  
-mkdir exported -ea 0 
+$shh = mkdir "./exported" 
 
+write-host -fore green "Generating unified cmdlet proxies"
 # Now, loop thru and spit out the proxies
 $outputs.Keys |% {
     $cmdletname= $_
@@ -106,3 +155,6 @@ $outputs.Keys |% {
 }
   
   popd
+write-host -fore green "Done."
+write-host -fore green "-------------------------------"
+

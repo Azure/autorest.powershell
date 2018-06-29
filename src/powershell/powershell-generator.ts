@@ -1,13 +1,13 @@
 import { Model } from '#common/code-model/code-model';
 import { execute, resolveFullPath } from '#common/exec';
+import { Text } from '#common/file-generator';
 import { resources } from '#common/locations';
 import { copyResources } from '#common/utility';
 import { deserialize, serialize } from '#common/yaml';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
-import { State, GeneratorSettings } from './state';
-
+import { State } from './state';
 
 export async function processRequest(service: Host) {
   try {
@@ -31,7 +31,6 @@ export async function processRequest(service: Host) {
     await service.ProtectFiles(project.csproj);
     await service.ProtectFiles(project.customFolder);
 
-
     // wait for all the generation to be done
     await generateCsproj(service, project);
     await copyRuntime(service, project);
@@ -47,25 +46,20 @@ export async function processRequest(service: Host) {
   }
 }
 
-
+/*
 async function generateProxies(service: Host, project: Project) {
-
   const of = await service.GetValue('output-folder');
-
   // find the pwsh executable.
   const pwsh = await resolveFullPath('pwsh', process.platform === 'win32' ? ['c:/Program Files/PowerShell', 'c:/Program Files (x86)/PowerShell'] : []);
   if (!pwsh) {
     // no powershell core found.
-    throw new Error("PowerShell Core (pwsh) not found in path. Please ensure that pwsh is available.");
+    throw new Error('PowerShell Core (pwsh) not found in path. Please ensure that pwsh is available.');
   }
-
   console.error(`${pwsh} -command "${of}/generate_proxies.ps1"`);
-
 }
+*/
 
 async function copyRuntime(service: Host, project: Project) {
-
-
   await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-csharp'));
 
   await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
@@ -75,12 +69,9 @@ async function copyRuntime(service: Host, project: Project) {
 }
 
 async function generateCsproj(service: Host, project: Project) {
-
-
   // write out the csproj file if it's not there.
   if (!await service.ReadFile(project.csproj)) {
-    service.WriteFile(project.csproj,
-      `<Project Sdk="Microsoft.NET.Sdk">
+    service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <LangVersion>7.1</LangVersion>
@@ -106,73 +97,76 @@ async function generateModule(service: Host, project: Project) {
 
   // todo: change this to *update* the psd1?
 
-  service.WriteFile(project.psd1, `@{
-    ModuleVersion="1.0"
-    NestedModules = @(
-    "./bin/Debug/netstandard2.0/publish/${project.moduleName}.private.dll"
-    "${project.psm1}"
-    )
-    # don't export any actual cmdlets by default
-    CmdletsToExport = ''
+  service.WriteFile(project.psd1, new Text(function* () {
+    yield `@{`;
+    yield `ModuleVersion="1.0"`
+    yield `NestedModules = @(`;
+    yield `  "./bin/${project.moduleName}.private.dll"`;
+    yield `  "${project.psm1}"`;
+    yield `)`;
+    yield `# don't export any actual cmdlets by default`;
+    yield `CmdletsToExport = ''`;
 
-    # export the functions that we loaded (these are the proxy cmdlets)
-    FunctionsToExport = '*-*'
-}
-`, undefined, 'source-file-powershell');
-  //}
+    yield `# export the functions that we loaded(these are the proxy cmdlets)`;
+    yield `FunctionsToExport = '*-*'`;
+    yield `}`;
+  }).text, undefined, 'source-file-powershell');
 
   // write out the psm1 file if it's not there.
-  //if (!await service.ReadFile(cfg.psm1)) {
-  service.WriteFile(project.psm1, `
 
-#region AzureCommonInitialization
+  const psm1 = new Text(await service.ReadFile(project.psm1) || '');
 
-# load the private module
-$privatemodule = ipmo -passthru "$PSScriptRoot/bin/Debug/netstandard2.0/publish/${project.moduleName}.private.dll"
+  // clear regions first
+  psm1.removeRegion('Initialization');
+  psm1.removeRegion('AzureInitialization');
+  psm1.removeRegion('Finalization');
 
+  if (project.azure) {
+    psm1.setRegion('AzureInitialization', `
+    # GS Testing
+    $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
 
-# export the 'exported' cmdlets 
-Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach { 
-    Write-Verbose "Dot sourcing private script file: $($_.Name)"
-    . $_.FullName
-    # Explicity export the member
-    Export-ModuleMember -Function $_.BaseName
-}
+    # from PSModulePath
+    # $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
 
-# GS Testing
-$module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
+    Write-Host "Loaded Common Module '$($module.Name)'"
 
-# from PSModulePath
-# $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
+    # ask for the table of functions we can call in the common module.
+    $VTable = Register-AzureModule
 
+    # delegate responsibility to the common module for tweaking the pipeline at module load
+    $instance.OnModuleLoad = $VTable.OnModuleLoad
 
-if ($module) {
-  Write-Host "Loaded Common Module '$($module.Name)'"
+    # and a chance to tweak the pipeline when we are about to make a call.
+    $instance.OnNewRequest = $VTable.OnNewRequest
 
-  # this module instance.
-  $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
+    # Need to get parameter values back from the common module
+    $instance.GetParameterValue = $VTable.GetParameterValue
 
-  # ask for the table of functions we can call in the common module.
-  $VTable = Register-AzureModule
+    # need to let the common module listen to events from this module
+    $instance.EventListener = $VTable.EventListener
+` );
+  }
 
-  # delegate responsibility to the common module for tweaking the pipeline at module load
-  $instance.OnModuleLoad = $VTable.OnModuleLoad
+  psm1.setRegion('Initialization', `
+    # this module instance.
+    $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
-  # and a chance to tweak the pipeline when we are about to make a call.
-  $instance.OnNewRequest = $VTable.OnNewRequest
+    $privatemodule = ipmo -passthru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
+    # export the 'exported' cmdlets
+    Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach {
+        Write-Verbose "Dot sourcing private script file: $($_.Name)"
+        . $_.FullName
+        # Explicity export the member
+        Export-ModuleMember -Function $_.BaseName
+    }`);
 
-  # Need to get parameter values back from the common module
-  $instance.GetParameterValue = $VTable.GetParameterValue
+  psm1.setRegion('Finalization', `
+    # finish initialization of this module
+    $instance.Init();
+  `, false);
 
-  # need to let the common module listen to events from this module
-  $instance.EventListener = $VTable.EventListener
+  psm1.trim();
 
-  # finish initialization of this module
-  $instance.Init();
-}
-
-#endregion
-`, undefined, 'source-file-powershell');
-
-  //}
+  service.WriteFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }

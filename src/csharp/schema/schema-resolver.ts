@@ -77,7 +77,7 @@ export class SchemaDefinitionResolver {
           case StringFormat.Binary:
             // represent as a stream
             // wire format is stream of bytes
-            throw new Error('Method \'Binary\' not implemented.');
+            throw new Error('Format \'Binary\' not implemented.');
 
           case StringFormat.Char:
             // a single character

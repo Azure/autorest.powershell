@@ -103,6 +103,7 @@ export const System = intersect(system, {
   AggregateException: new LibraryType(system, 'AggregateException'),
   TimeSpan: new LibraryType(system, 'TimeSpan'),
   Type: new LibraryType(system, 'Type'),
+  Uri: new LibraryType(system, 'Uri'),
   IFormatProvider: new LibraryType(system, 'IFormatProvider'),
   Net: intersect(net, {
     Http: intersect(http, {

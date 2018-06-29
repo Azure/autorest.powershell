@@ -19,7 +19,7 @@ import { Catch } from '#csharp/code-dom/statements/catch';
 import { ForEach, ForEachStatement } from '#csharp/code-dom/statements/for';
 import { Else, If } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
-import { Statements } from '#csharp/code-dom/statements/statement';
+import { Statements, OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
@@ -97,22 +97,49 @@ export class CmdletClass extends Class {
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
 
+
+    const proxyCredential = this.add(new Property('ProxyCredential', new dotnet.LibraryType('System.Management.Automation', 'PSCredential'), { attributes: [] }));
+    proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
+    proxyCredential.add(new Attribute(ValidateNotNull));
+
+    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', new dotnet.LibraryType('System.Management.Automation', 'SwitchParameter'), { attributes: [] }));
+    useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
+
+    const proxyUri = this.add(new Property('Proxy ', dotnet.System.Uri, { attributes: [] }));
+    proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "The URI for the proxy server to use"`] }));
+
     if (this.state.project.azure) {
       const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object));
       defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
       defaultProfile.add(new Attribute(ValidateNotNull));
-      defaultProfile.add(new Attribute(Alias, { parameters: ['AzureRMContext', 'AzureCredential'] }));
+      defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
     }
+
+    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
+      yield `Cancel();`;
+      yield `base.StopProcessing();`;
+    });
+  }
+
+  private isWritableCmdlet(operation: CommandOperation): boolean {
+    switch (operation.callGraph[0].method.toLowerCase()) {
+      case "put":
+      case "post":
+      case "delete":
+      case "patch":
+        return true;
+    }
+    return false;
   }
 
   private implementProcessRecord(operation: CommandOperation) {
     const $this = this;
+    const writable = this.isWritableCmdlet(operation);
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
       yield Try(function* () {
         yield `// work`;
-
         const normal = new Statements(function* () {
           const acr = new LocalVariable('asyncCommandRuntime', dotnet.Var, { initializer: AsyncCommandRuntime.newInstance(dotnet.This, $this.cancellationToken) });
           yield Using(acr.declarationExpression, function* () {
@@ -120,6 +147,15 @@ export class CmdletClass extends Class {
           });
         });
 
+        const work: OneOrMoreStatements = operation.asjob ? function* () {
+          yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("AsJob")`, function* () {
+            yield `JobRepository.Add( new AsyncJob( this.Clone()) );`;
+          });
+          yield Else(normal);
+        } : normal;
+
+
+        /*
         if (operation.asjob) {
           yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("AsJob")`, function* () {
             yield `JobRepository.Add( new AsyncJob( this.Clone()) );`;
@@ -128,7 +164,13 @@ export class CmdletClass extends Class {
         } else {
           yield normal;
         }
+*/
 
+        if (writable) {
+          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].details.default.name}' operation")`, work);
+        } else {
+          yield work;
+        }
       });
       const aggregateException = new Parameter('aggregateException', dotnet.System.AggregateException);
       yield Catch(aggregateException, function* () {
@@ -174,7 +216,7 @@ export class CmdletClass extends Class {
 
       // is there a body parameter we should include?
       const requestBody = apiCall.requestBody;
-      if (requestBody && requestBody.content['application/json'].schema) {
+      if (requestBody && requestBody.content['application/json'] && requestBody.content['application/json'].schema) {
         // we have a body parameter.
         const bodyParameter = values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.schema === requestBody.content['application/json'].schema);
         if (bodyParameter) {
@@ -206,7 +248,7 @@ export class CmdletClass extends Class {
               if (codeProp && messageProp) {
                 yield `var code = (await response.Result).${codeProp.details.csharp.name};`;
                 yield `var message = (await response.Result).${messageProp.details.csharp.name};`;
-                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
+                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
                 return;
               } else {
                 yield new LocalVariable("responseMessage", dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
@@ -381,6 +423,7 @@ export class CmdletClass extends Class {
     this.cancellationToken = this.add(new LambdaProperty('Token', dotnet.System.Threading.CancellationToken, new LiteralExpression(`${_cts.value}.Token`)));
     this.add(new LambdaProperty('Cancel', dotnet.System.Action(), new LiteralExpression(`${_cts.value}.Cancel`)));
 
+
     const id = new Parameter('id', dotnet.String);
     const token = new Parameter('token', dotnet.System.Threading.CancellationToken);
     const messageData = new Parameter('messageData', dotnet.System.Func(ClientRuntime.EventData));
@@ -412,13 +455,12 @@ export class CmdletClass extends Class {
         }),
       ]);
 
-      yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
-      yield If(`${token.value}.IsCancellationRequested`, Return());
-
+      if ($this.state.project.azure) {
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
+        yield If(`${token.value}.IsCancellationRequested`, Return());
+      }
       yield `WriteDebug($"{id}: {messageData().Message ?? ""}");`;
-
       // any handling of the signal on our side...
-
     });
   }
 
@@ -465,15 +507,23 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter
           }
         }));
-        cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`)] }));
+        if (parameter.details.powershell.isBodyParameter) {
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`)] }));
+        } else {
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
+        }
       }
-
     }
   }
 
   private addClassAttributes(operation: CommandOperation, variantName: string) {
 
-    this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
+    if (this.isWritableCmdlet(operation)) {
+      // add should process
+      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), new LiteralExpression(`SupportsShouldProcess = true`)] }));
+    } else {
+      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
+    }
 
     const rt = new Dictionary<boolean>();
     for (const op of values(operation.callGraph)) {

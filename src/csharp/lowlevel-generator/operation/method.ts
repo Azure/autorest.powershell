@@ -77,7 +77,7 @@ export class OperationMethod extends Method {
     const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
     for (const pp of pathParams) {
-      path = path.replace(`{${pp.param.name}}`, `{System.Uri.EscapeDataString(${pp.use})}`);
+      path = path.replace(`{${pp.param.name}}`, `{System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`);
     }
     const cb = this.callbacks;
     const bp = this.bodyParameter;
@@ -89,7 +89,7 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// construct URL`;
-      yield `var _url = $"${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}${queryParams.joinWith(pp => `${pp.param.name}={System.Uri.EscapeDataString(${pp.use})}`, '&')}";`;
+      yield `var _url = $"${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}${queryParams.joinWith(pp => `${pp.param.name}={System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`, '&')}";`;
       yield eventListener.signal(ClientRuntime.Events.URLCreated, `_url`);
       yield EOL;
 
@@ -216,7 +216,7 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield `// start the delay timer (we'll await later...)`;
-            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${dotnet.System.Threading.Tasks.Task()}.Delay(delay, listener.Token )`) });
+            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${dotnet.System.Threading.Tasks.Task()}.Delay(delay * 1000, listener.Token )`) });
             yield waiting;
 
             yield EOL;
@@ -250,6 +250,26 @@ export class CallMethod extends Method {
             yield EOL;
             yield `// make the polling call`;
             yield `${response.value} = await sender.SendAsync(${reqParameter.value},  listener);`;
+
+            yield EOL;
+            yield `
+if( _response.StatusCode != System.Net.HttpStatusCode.OK && string.IsNullOrEmpty(asyncOperation))
+{
+    try {
+        // we have a 200, and a should have a provisioning state.
+        if( Carbon.Json.JsonNode.Parse(await _response.Content.ReadAsStringAsync()) is Carbon.Json.JsonObject json)
+        {
+            var state = json.Property("properties")?.PropertyT<Carbon.Json.JsonString>("provisioningState");
+            await listener.Signal(Microsoft.Rest.ClientRuntime.Events.Polling, $"Polled {_uri} provisioning state  {state}.", _response); if( listener.Token.IsCancellationRequested ) { return; }
+            if( state?.ToString() != "Succeeded")
+            {
+                _response.StatusCode = System.Net.HttpStatusCode.Created;
+            }
+        }
+    } catch {
+        // um.. whatever.
+    }
+}`;
 
             yield EOL;
             yield '// check for terminal status code'

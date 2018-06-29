@@ -1,15 +1,15 @@
 import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
 import { Expression } from '#csharp/code-dom/expression';
 import { Parameter } from '#csharp/code-dom/parameter';
 
 
-export function Try(body: OneOrMoreStatements, objectInitializer?: Partial<TryStatement>): TryStatement {
+export function Try(body: StatementPossibilities, objectInitializer?: Partial<TryStatement>): TryStatement {
   return new TryStatement(body, objectInitializer);
 }
 
 export class TryStatement extends Statements {
-  constructor(body: OneOrMoreStatements, objectInitializer?: Partial<TryStatement>) {
+  constructor(body: StatementPossibilities, objectInitializer?: Partial<TryStatement>) {
     super(body);
     this.apply(objectInitializer);
   }

@@ -39,11 +39,12 @@ export async function process(service: Host) {
   return processCodeModel(commandCreator, service);
 }
 
-async function commonParameters(): Promise<Array<string>> {
-  return [
+async function commonParameters(service: Host): Promise<Array<string>> {
+  const isAzure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+  return isAzure ? [
     // 'resourceGroupName',
     'subscriptionId'
-  ];
+  ] : [];
 }
 
 async function commandCreator(model: Model, service: Host): Promise<Model> {
@@ -147,7 +148,7 @@ async function detect(model: Model, service: Host): Promise<Model> {
   // let count = 0;
 
   // parameter names that are candidates to be changed to pull the value from the common module
-  const commonCandidates = await commonParameters();
+  const commonCandidates = await commonParameters(service);
 
   for (const operation of values(model.http.operations)) {
     for (const variant of inferCommandNames(operation.operationId)) {

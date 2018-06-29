@@ -39,6 +39,6 @@ if( ${propertyName} != null )  {
     return `${containerName}.ArrayProperty("${serializedName}", ref ${propertyName}, __each => ${this.type.jsonDeserializationImplementationOnNode("__each")} );`
   }
   jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return `/** TODO : DESERIALIZE NODE OF ARRAY **/`;
+    return `null/** TODO : DESERIALIZE NODE OF ARRAY **/`;
   }
 }

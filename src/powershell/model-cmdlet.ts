@@ -101,7 +101,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
 
     // other properties 
     if (property.schema.type === JsonType.Object) {
-      console.error(`\n\nLARGE OBJECT NOT INLINED ${property.details.csharp.name}`);
+      // console.error(`\n\nLARGE OBJECT NOT INLINED ${property.details.csharp.name}`);
     }
 
     if (!property.schema.readOnly) {
@@ -133,12 +133,6 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
 
 
         cmdletParameter = $class.add(new ImplementedProperty(pname, td, {
-          /* getterStatements: new Statements(function* () {
-             if (ensureMemberIsCreated) {
-               yield ensureMemberIsCreated;
-             }
-             yield Return(`${prop}.${property.details.csharp.name}`);
-           }), */
           setterStatements: new Statements(function* () {
             if (ensureMemberIsCreated) {
               yield ensureMemberIsCreated;
@@ -149,7 +143,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
         // statements.add(indent(`${property.details.csharp.name} = this.MyInvocation.BoundParameters.ContainsKey("${property.details.csharp.name}") ? this.${property.details.csharp.name} : default(${td.declaration}),`));
       }
 
-      const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r|\n]/gm, '');
+      const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
       cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${desc}"`)] }));
     }
   }
