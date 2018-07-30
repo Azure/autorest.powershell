@@ -1,7 +1,10 @@
+import { Model } from '#common/code-model/code-model';
 import { JsonType } from '#common/code-model/schema';
+import { ModelState } from '#common/model-state';
 import { hasProperties } from '#common/text-manipulation';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '#csharp/lowlevel-generator/generator';
+import * as message from '#csharp/lowlevel-generator/messages';
 import { ArrayOf } from '#csharp/schema/array';
 import { Boolean } from '#csharp/schema/boolean';
 import { ByteArray } from '#csharp/schema/byte-array';
@@ -17,15 +20,11 @@ import { Uuid } from '#csharp/schema/Uuid';
 import { UntypedWildcard, Wildcard } from '#csharp/schema/wildcard';
 import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
 import { Serialization, Validation } from './extended-type-declaration';
-import * as message from '#csharp/lowlevel-generator/messages';
-import { ModelState } from '#common/model-state';
-import { Model } from '#common/code-model/code-model';
-import * as u from 'util';
 
 export class SchemaDefinitionResolver {
-  private cache = new Map<Schema, Serialization & Validation>();
+  private cache = new Map<string, Serialization & Validation>();
   private add(schema: Schema, value: Serialization & Validation): Serialization & Validation {
-    this.cache.set(schema, value);
+    this.cache.set(schema.details.default.name, value);
     return value;
   }
 
@@ -35,10 +34,7 @@ export class SchemaDefinitionResolver {
     }
 
     // check for a type declaration in the this.cache first.
-    const result = this.cache.get(schema);
-    if (result) {
-      return result;
-    }
+
 
     // determine if we need a new model class for the type or just a known type object
     switch (schema.type) {
@@ -48,6 +44,11 @@ export class SchemaDefinitionResolver {
         return this.add(schema, new ArrayOf(aSchema, required, schema.minItems, schema.maxItems, schema.uniqueItems));
 
       case JsonType.Object:
+        const result = this.cache.get(schema.details.default.name);
+        if (result) {
+          return result;
+        }
+
         // can be recursive!
         // for certain, this should be a class of some sort.
         if (schema.additionalProperties && !hasProperties(schema.properties)) {
@@ -150,7 +151,7 @@ export class SchemaDefinitionResolver {
 
     }
     state.error(`Schema '${schema.details.csharp.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
-    throw new Error("Unknown Model. Fatal.");
+    throw new Error('Unknown Model. Fatal.');
   }
 }
 

@@ -9,13 +9,12 @@ import { process as tweakCodeModel } from './remodeler/tweak-model';
 import { process as tweakCodeModelAzure } from './remodeler/tweak-model-azure';
 
 import { process as llcsharp } from './csharp/lowlevel-generator/main';
-import { processRequest as powershell } from './powershell/powershell-generator';
 import { process as createcommands } from './powershell/create-commands';
+import { processRequest as powershell } from './powershell/powershell-generator';
 
-import { process as csnamer } from './csharp/namer';
 import { process as csinferrer } from './csharp/inferrer';
-
-import { CommaChar } from '#common/text-manipulation';
+import { process as csnamer } from './csharp/namer';
+import { process as psnamer } from './powershell/psnamer';
 
 require('source-map-support').install();
 
@@ -23,22 +22,19 @@ async function main() {
   const pluginHost = new AutoRestExtension();
 
   // remodeler extensions
-  pluginHost.Add("remodeler", remodeler);
+  pluginHost.Add('remodeler', remodeler);
 
-  pluginHost.Add("tweakcodemodel", tweakCodeModel);
-  pluginHost.Add("tweakcodemodelazure", tweakCodeModelAzure);
+  pluginHost.Add('tweakcodemodel', tweakCodeModel);
+  pluginHost.Add('tweakcodemodelazure', tweakCodeModelAzure);
 
-  // csharp extensions
-  // pluginHost.Add("csinferrer", csinferrer);
+  pluginHost.Add('csnamer', csnamer);
 
-  pluginHost.Add("csnamer", csnamer);
-
-  pluginHost.Add("llcsharp", llcsharp);
-  pluginHost.Add("powershell", powershell);
+  pluginHost.Add('llcsharp', llcsharp);
+  pluginHost.Add('psnamer', psnamer);
+  pluginHost.Add('powershell', powershell);
 
   // powershell extensions
-  pluginHost.Add("create-commands", createcommands);
-  // pluginHost.Add("hlnameinferrer", hlnameinferrer);
+  pluginHost.Add('create-commands', createcommands);
 
   await pluginHost.Run();
 }

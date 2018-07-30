@@ -6,6 +6,7 @@ import { Dictionary } from '#common/dictionary';
 import { EnumDetails, EnumValue } from '#common/code-model/schema';
 import { MediaType } from '#common/code-model/http-operation';
 import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
+import { escapeString } from '#common/text-manipulation';
 
 interface XMSEnum {
   modelAsString?: boolean;

@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.incubator",
-  "version": "1.0.83",
+  "version": "1.0.86",
   "description": "AutoRest incubator project",
   "main": "dist/app.js",
   "directories": {

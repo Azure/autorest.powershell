@@ -10,54 +10,7 @@ import { pascalCase } from '#common/text-manipulation';
 import { deserialize, serialize } from '#common/yaml';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
 import { ArtifactMessage, Channel, Host, Message } from '@microsoft.azure/autorest-extension-base';
-/*
-// j's original impl
-export async function process(service: Host) {
-  return processCodeModel(inferSignatures, service);
-}
 
-async function inferSignatures(model: Model, service: Host): Promise<Model> {
-  for (const operation of Object.values(model.http.operations).filter(isHttpOperation)) {
-    const names = getCommandName(operation.details.name, service.Message);
-    const name = names[0]; // TODO: pick first candidate!?
-    const parameters = new Dictionary<IParameter>();
-    const responses = new Dictionary<Dictionary<Schema>>();
-
-    for (const parameter of operation.parameters) {
-      // schema: parameter.schema || (() => { throw "no schema"; })(), // TODO: fix handle parameter.content!
-      parameters[parameter.name] = new IParameter(parameter.name, parameter.schema, {
-        extensions: new Dictionary<any>(),
-        description: '<description>',
-        allowEmptyValue: false,
-        deprecated: false,
-        details: { name: parameter.name, location: ImplementationLocation.Method },
-        required: parameter.required,
-      });
-    }
-
-    for (const [responseCode, response] of Object.entries(operation.responses)) {
-      const values = Object.values(response.content);
-      // TODO: after refactoring 'operation.responses', revisit this
-      if (values.length) {
-        responses[responseCode] = { result: values[0].schema || (() => { throw new Error("no schema"); })() }; // TODO: derive the actually desired return type!
-      }
-    }
-
-    const hlname = `<HL>${name.noun}_${name.verb}`;
-    const hlOp = new CommandOperation(hlname, {
-      deprecated: operation.deprecated,
-      description: operation.description,
-      pure: false,
-      responses,
-      summary: operation.summary,
-      // parameters: parameters, // todo:fix
-    });
-    hlOp.details.names = names;
-    model.commands.operations[hlname] = hlOp;
-  }
-  return model;
-}
-*/
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();

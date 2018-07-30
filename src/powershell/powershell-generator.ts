@@ -99,7 +99,7 @@ async function generateModule(service: Host, project: Project) {
 
   service.WriteFile(project.psd1, new Text(function* () {
     yield `@{`;
-    yield `ModuleVersion="1.0"`
+    yield `ModuleVersion="1.0"`;
     yield `NestedModules = @(`;
     yield `  "./bin/${project.moduleName}.private.dll"`;
     yield `  "${project.psm1}"`;
@@ -145,7 +145,7 @@ async function generateModule(service: Host, project: Project) {
 
     # need to let the common module listen to events from this module
     $instance.EventListener = $VTable.EventListener
-` );
+`);
   }
 
   psm1.setRegion('Initialization', `

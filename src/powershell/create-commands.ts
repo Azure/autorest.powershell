@@ -1,37 +1,35 @@
 
-import { Dictionary, values, length, items, keys } from '#common/dictionary';
-import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
-import { processCodeModel } from '#common/process-code-model';
-import { deconstruct, pascalCase, fixLeadingNumber } from '#common/text-manipulation';
-import { deserialize, serialize } from '#common/yaml';
-import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
-import { Lazy } from '@microsoft.azure/tasks';
-import { getAllProperties } from '#common/code-model/schema';
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
-import { Schema, } from '#csharp/lowlevel-generator/code-model';
 import { IParameter } from '#common/code-model/components';
 import { HttpOperation, HttpOperationParameter, MediaType } from '#common/code-model/http-operation';
-
-// import { getCommandName } from './name-inferrer';
+import { getAllProperties } from '#common/code-model/schema';
+import { Dictionary, items, keys, length, values } from '#common/dictionary';
+import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
+import { processCodeModel } from '#common/process-code-model';
+import { deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
+import { deserialize, serialize } from '#common/yaml';
+import { Schema, } from '#csharp/lowlevel-generator/code-model';
+import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
+import { Lazy } from '@microsoft.azure/tasks';
 
 export async function process(service: Host) {
 
-  const x = await service.ListInputs("");
+  const x = await service.ListInputs('');
   // console.error(x);
   const y = await service.ListInputs();
   // console.error(y);
 
-  const z = await service.GetValue("configurationFiles");
+  const z = await service.GetValue('configurationFiles');
   // console.error(z);
-  await service.ProtectFiles("obj/test.txt");
+  // await service.ProtectFiles("obj/test.txt");
   try {
 
-    const txt = await service.GetConfigurationFile("readme.powershell.md");
+    const txt = await service.GetConfigurationFile('readme.powershell.md');
     // console.error(txt);
 
-    // spit a configuration file back.  
-    service.UpdateConfigurationFile("readme.powershell.md", `${txt}\n\n and more.`);
+    // spit a configuration file back.
+    // service.UpdateConfigurationFile('readme.powershell.md', `${txt}\n\n and more.`);
   } catch (E) {
     // console.error(E);
   }
@@ -56,9 +54,9 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-async function addVariant(vname: string, body: MediaType | undefined, bodyParameterName: string, parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
-  //const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-  //const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
+async function addVariant(vname: string, body: MediaType | undefined, bodyParameterName: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+  // const body = operation.requestBody && values(operation.requestBody.content).linq.first();
+  // const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
 
   const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
 
@@ -76,11 +74,12 @@ async function addVariant(vname: string, body: MediaType | undefined, bodyParame
     }));
   }
 
-  // 
+  //
 }
 
 async function addCommandOperation(vname: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host): Promise<CommandOperation> {
   return model.commands.operations[`${length(model.commands.operations)}`] = new CommandOperation(operation.operationId, {
+    asjob: operation.details.default.asjob ? true : false,
     ...variant,
     details: {
       ...operation.details,
@@ -101,7 +100,7 @@ async function addCommandOperation(vname: string, parameters: Array<HttpOperatio
   });
 }
 
-async function addVariants(parameters: HttpOperationParameter[], operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+async function addVariants(parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
   // now synthesize parameter set variants multiplexed by the variants.
 
   const [constants, params] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
@@ -113,7 +112,7 @@ async function addVariants(parameters: HttpOperationParameter[], operation: Http
 
   // the body parameter
   const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-  const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
+  const bodyParameterName = operation.requestBody ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
 
   // all the properties in the body parameter
   const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
@@ -126,10 +125,9 @@ async function addVariants(parameters: HttpOperationParameter[], operation: Http
   const polymorphicBodies = (body && body.schema && body.schema.details.csharp.polymorphicChildren && body.schema.details.csharp.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.csharp.polymorphicChildren).joinWith(child => child.details.csharp.name) : '';
 
   // the variant name
-  const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames, operation.operationId]));
+  const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
 
   // given the body property type, expand out body properties into parameters
-
 
   // no optionals:
   service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
@@ -137,7 +135,7 @@ async function addVariants(parameters: HttpOperationParameter[], operation: Http
 
   // handle optional parameter variants
   for (const combo of combos) {
-    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames, operation.operationId]));
+    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
     service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
     await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
   }
@@ -259,7 +257,7 @@ function inferCommandNames(operationId: string): Array<CommandVariant> {
     }
     // OPERATION[SUFFIX] => OPERATION-GROUP[SUFFIX]
     return [getVariant(operation[0], [group, ...operation.slice(1)], operation.slice(1))];
-    // would generate simpler name, but I fear for collisions on things like Registries_ListCredentials => get-credentials or Registries_RegenerateCredential => new-credential 
+    // would generate simpler name, but I fear for collisions on things like Registries_ListCredentials => get-credentials or Registries_RegenerateCredential => new-credential
     // return [getVariant(operation[0], `${pascalCase(operation.slice(1))}`, operation.slice(1))];
 
   } else {
@@ -274,7 +272,7 @@ function getVariant(operation: string, group: string | Array<string>, suffix: Ar
   group = !Array.isArray(group) ? [group] : group;
 
   const v = getVerb(operation);
-  if (v === 'invoke') {
+  if (v === 'Invoke') {
     group = [operation, ...group];
   }
 

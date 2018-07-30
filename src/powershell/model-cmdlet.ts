@@ -1,6 +1,6 @@
 import { JsonType } from '#common/code-model/schema';
 import { values, items, length } from '#common/dictionary';
-import { indent, camelCase, pascalCase } from '#common/text-manipulation';
+import { indent, camelCase, pascalCase, escapeString } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
@@ -131,8 +131,15 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
         // statements.add(indent(`${property.details.csharp.name} = this.MyInvocation.BoundParameters.ContainsKey("${property.details.csharp.name}") ? this.${property.details.csharp.name}.ToBool() : default(${td.declaration}),`));
       } else {
 
+        let propname = pname;
+        let n = 1;
+        while ($class.properties.find(p => p.name === propname)) {
+          // property exists with that name
+          // let's hack this a smidgen
+          propname = `${pname}${n++}`;
+        }
 
-        cmdletParameter = $class.add(new ImplementedProperty(pname, td, {
+        cmdletParameter = $class.add(new ImplementedProperty(propname, td, {
           setterStatements: new Statements(function* () {
             if (ensureMemberIsCreated) {
               yield ensureMemberIsCreated;
@@ -144,7 +151,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       }
 
       const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
-      cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${desc}"`)] }));
+      cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
     }
   }
 

@@ -12,10 +12,14 @@ if( -not $isolated )  {
     $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
     & $pwsh -command $MyInvocation.MyCommand.Path -isolated 
 
+    if( $lastExitCode -ne 0) {
+        return;
+    }
+
     if($test) {
         $mpath = $(( dir ./*.psd1)[0].fullname)
         $mname = $(( dir ./*.psd1)[0].basename)
-        & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-Host ('PS ' + `$(get-location) +' ['+ `$ESC +'[46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor cyan ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
+        & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
     } else {
         write-host -fore cyan "To test this module in a new powershell process, run `n"
         write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "        

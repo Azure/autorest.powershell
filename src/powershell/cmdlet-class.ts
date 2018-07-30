@@ -30,9 +30,10 @@ import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { EventListener } from '#csharp/lowlevel-generator/operation/method';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { CmdletParameter } from './cmdlet-parameter';
-import { Alias, AsyncCommandRuntime, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum, SwitchParameter } from './powershell-declarations';
 import { State } from './state';
 import { addPowershellParameters } from '#powershell/model-cmdlet';
+import { escapeString } from '#common/text-manipulation';
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
@@ -97,6 +98,8 @@ export class CmdletClass extends Class {
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
 
+    const asjob = this.add(new Property('AsJob', SwitchParameter));
+    asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
 
     const proxyCredential = this.add(new Property('ProxyCredential', new dotnet.LibraryType('System.Management.Automation', 'PSCredential'), { attributes: [] }));
     proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
@@ -118,6 +121,11 @@ export class CmdletClass extends Class {
     this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
       yield `Cancel();`;
       yield `base.StopProcessing();`;
+    });
+
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
+      // todo: remember what you were doing here to make it so these can be parallelized...
+      yield '';
     });
   }
 
@@ -149,22 +157,31 @@ export class CmdletClass extends Class {
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
           yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("AsJob")`, function* () {
-            yield `JobRepository.Add( new AsyncJob( this.Clone()) );`;
+            // clone the cmdlet instance, since the instance can be reused and overwrite data.
+            const instance = new LocalVariable(`instance`, dotnet.Var, { initializer: `this.Clone()` });
+            yield instance.declarationStatement;
+
+            // create the job (which will set the CommandRuntime of the clone to the AsyncJob itself)
+            const job = new LocalVariable('job', dotnet.Var, { initializer: AsyncJob.newInstance(instance, 'this.MyInvocation.Line, this.MyInvocation.MyCommand.Name, this._cancellationTokenSource.Token', 'this._cancellationTokenSource.Cancel') });
+            yield job.declarationStatement;
+
+            // add the job to the repository
+            yield `JobRepository.Add(${job});`;
+
+            // invoke the cmdlet's PRA
+            const task = new LocalVariable(`task`, dotnet.Var, { initializer: `${instance}.ProcessRecordAsync()` });
+            yield task.declarationStatement;
+
+            // have the AsyncJob monitor the lifetime of the Task
+            yield `${job}.Monitor(${task});`;
+
+            // return the job to the user now.
+            yield `WriteObject(${job});`;
+
+
           });
           yield Else(normal);
         } : normal;
-
-
-        /*
-        if (operation.asjob) {
-          yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("AsJob")`, function* () {
-            yield `JobRepository.Add( new AsyncJob( this.Clone()) );`;
-          });
-          yield Else(normal);
-        } else {
-          yield normal;
-        }
-*/
 
         if (writable) {
           yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].details.default.name}' operation")`, work);
@@ -310,7 +327,7 @@ export class CmdletClass extends Class {
             }
             // we expect to get back some data from this call.
 
-            yield `// (await response.Result) // should be ${CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
+            yield `// (await response.Result) // should be ${$this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
 
             const props = getAllProperties(schema);
             if (props.length === 1) {
@@ -337,7 +354,7 @@ export class CmdletClass extends Class {
     });
   }
 
-  private static schemaDefinitionResolver = new SchemaDefinitionResolver();
+
 
   private implementSerialization(operation: CommandOperation) {
     const $this = this;
@@ -350,10 +367,10 @@ export class CmdletClass extends Class {
     }));
     toJsonMethod.add(function* () {
       yield `// serialization method`;
-      yield `var result = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
+      yield `container = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
 
       for (const parameter of values(operation.parameters)) {
-        const td = CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
+        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
         if (!(parameter.details.default.constantValue)) {
           yield td.jsonSerializationImplementation(container.use, parameter.details.powershell.name, parameter.details.powershell.name);
         }
@@ -365,7 +382,7 @@ export class CmdletClass extends Class {
       //      yield If({ value: `returnNow` }, `return result;`);
 
       // yield `${$this.atj.name}(ref result);`;
-      yield `return result;`;
+      yield `return container;`;
     });
 
     // create the FromJson method
@@ -406,7 +423,7 @@ export class CmdletClass extends Class {
     deserializerConstructor.add(function* () {
       yield `// deserialize the contents`;
       for (const parameter of values(operation.parameters)) {
-        const td = CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
+        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
         const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
         if (!(parameter.details.default.constantValue)) {
           // dont' serialize if it's a constant or host parameter.
@@ -469,7 +486,7 @@ export class CmdletClass extends Class {
       // these are the parameters that this command expects
       // create a single
 
-      const td = CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, this.state);
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, this.state);
 
       if (parameter.details.default.constantValue) {
         // this parameter has a constant value
@@ -507,10 +524,10 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter
           }
         }));
-        if (parameter.details.powershell.isBodyParameter) {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`)] }));
+        if (!parameter.details.powershell.isBodyParameter) {
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.powershell.description) || 'HELP MESSAGE MISSING'}"`)] }));
         } else {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${parameter.details.powershell.description || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.powershell.description) || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
         }
       }
     }
@@ -520,7 +537,7 @@ export class CmdletClass extends Class {
 
     if (this.isWritableCmdlet(operation)) {
       // add should process
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), new LiteralExpression(`SupportsShouldProcess = true`)] }));
+      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `SupportsShouldProcess = true`] }));
     } else {
       this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
     }
@@ -548,8 +565,8 @@ export class CmdletClass extends Class {
 
           // does the target type just wrap a single output?
           const td = props.length !== 1 ?
-            CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
-            CmdletClass.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
+            this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
+            this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
 
           if (td) {
             if (!rt[td.declaration]) {

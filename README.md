@@ -29,17 +29,17 @@ pipeline:
   llcsharp/tweakcodemodel:
     scope: llcsharp
     input: remodeler
-    output-artifact: code-model-v2
+#    output-artifact: code-model-v2
 
   llcsharp/csinferrer:
     scope: llcsharp
     input: tweakcodemodel
-    output-artifact: code-model-v2
+#    output-artifact: code-model-v2
 
   llcsharp/csnamer:
     scope: llcsharp
     input: csinferrer
-    output-artifact: code-model-v2
+#    output-artifact: code-model-v2
 
   llcsharp/generate:
     scope: llcsharp
@@ -56,7 +56,7 @@ scope-llcsharp/emitter:
   
 output-artifact: 
   - source-file-csharp
-  - code-model-v2.yaml
+#  - code-model-v2.yaml
 
 ```
 
@@ -67,7 +67,7 @@ output-artifact:
 pipeline: 
   remodeler:
     input: openapi-document/identity
-    output-artifact: code-model-v2
+#    output-artifact: code-model-v2
 
 
   remodeler/emitter:
@@ -120,11 +120,13 @@ pipeline:
   create-commands: 
     input: csnamer # brings the code-model-v2 with it. 
       
+  # ensures that names/descriptions are properly set for powershell 
+  psnamer:
+    input: create-commands # and the generated c# files
+
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: 
-      - create-commands # and the generated c# files
-      - csnamer  # needs both the code model after the csnamer is done
+    input: psnamer # and the generated c# files
 
   # generates c# files for http-operations
   llcsharp:
@@ -153,9 +155,9 @@ code-model-emitter-settings:
 # testing:  ask for the files we need  
 output-artifact: 
   - code-model-v2.yaml # this is filtered outby default. (remove before production)
-  - source-file-csharp
-  - source-file-other
+  - source-file-csharp  
   - source-file-csproj
   - source-file-powershell
+  - source-file-other
 
 ```

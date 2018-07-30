@@ -253,7 +253,7 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield `
-if( _response.StatusCode != System.Net.HttpStatusCode.OK && string.IsNullOrEmpty(asyncOperation))
+if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty(asyncOperation))
 {
     try {
         // we have a 200, and a should have a provisioning state.

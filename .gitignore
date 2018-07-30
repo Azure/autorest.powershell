@@ -296,3 +296,5 @@ resources/bin/*
 *.tgz
 package/*
 
+generated*/*
+petstore*/*

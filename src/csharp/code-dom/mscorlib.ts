@@ -1,5 +1,5 @@
 import { intersect } from '#common/intersect';
-import { Expression, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, valueOf, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
@@ -23,7 +23,7 @@ export class LibraryType implements TypeDeclaration {
     return this.declaration;
   }
 
-  public newInstance(...parameters: Array<Expression>): Expression {
+  public newInstance(...parameters: Array<ExpressionOrLiteral>): Expression {
     return { value: `new ${this.fullName}(${parameters.joinWith(each => valueOf(each))})` };
   }
 }

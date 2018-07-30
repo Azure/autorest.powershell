@@ -218,6 +218,14 @@ export function pascalCase(identifier: Array<string>): string {
   return identifier.map(each => each.capitalize()).join('');
 }
 
+export function escapeString(text: string | undefined): string {
+  if (text) {
+    const q = JSON.stringify(text);
+    return q.substr(1, q.length - 2);
+  }
+  return '';
+}
+
 /** emits c# to get the name of a property - uses nameof when it can, and uses a literal when it's an array value. */
 export function fixPropertyName(text: string): string {
   if (text.indexOf('[') > -1) {

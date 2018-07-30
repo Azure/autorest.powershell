@@ -38,6 +38,7 @@ export class Remodeler {
   }
 
   constructor(private modelState: ModelState<OpenAPI.Model>) {
+    console.error(JSON.stringify(this.oai.info));
     this.model = new CodeModel(this.oai.info.title, this.oai.info.version);
   }
 

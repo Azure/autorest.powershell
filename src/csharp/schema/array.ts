@@ -31,7 +31,6 @@ if( ${propertyName} != null )  {
   serializeInstanceToJson(instance: string): OneOrMoreStatements {
     return `Carbon.Json.XNodeArray.Create( ${instance}, __each=> ${this.type.serializeInstanceToJson("__each")})`;
   }
-
   jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
     return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
   }

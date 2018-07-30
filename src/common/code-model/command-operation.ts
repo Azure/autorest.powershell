@@ -5,9 +5,8 @@ import { Schema } from '#common/code-model/schema';
 import { Dictionary } from '#common/dictionary';
 import { HttpOperation } from '#common/code-model/http-operation';
 
-export interface CommandOperationDetails  extends ProgramaticOperationDetails {
+export interface CommandOperationDetails extends ProgramaticOperationDetails {
 }
-
 
 export interface CommandOperation extends ProgrammaticOperation {
   verb: string;

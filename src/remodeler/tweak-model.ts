@@ -126,9 +126,20 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
         parameter.details.default.constantValue = parameter.schema.enum[0];
       }
 
+
       if (parameter.name === 'api-version') {
-        // api-version constant parameter pulls value from the model/info/version
-        parameter.details.default.constantValue = model.info.version;
+
+        // only set it if it hasn't been set yet.
+        if (!parameter.details.default.constantValue) {
+          // api-version constant parameter pulls value from the model/info/version
+          parameter.details.default.constantValue = model.info.version;
+        }
+
+        if (!parameter.details.default.constantValue) {
+          // um... api-version didn't have an enum, and we didn't get from model.info.version.
+          // that's not cool.
+          service.Message({ Channel: Channel.Error, Text: `Parameter 'api-version' doesn't have a single enum-value, and model.info.version is '${model.info.version}' ` });
+        }
       }
     }
   }

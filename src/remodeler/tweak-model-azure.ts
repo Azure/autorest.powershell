@@ -102,6 +102,8 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
   // make sure that all operations with lro have an options block.
   for (const operation of values(model.http.operations)) {
     if (operation.extensions['x-ms-long-running-operation']) {
+      operation.details.default.asjob = true;
+
       operation.details.default.lro = operation.extensions['x-ms-long-running-operation-options'] || {
         'final-state-via': 'default'
       };

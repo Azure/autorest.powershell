@@ -297,7 +297,6 @@ export class Project extends codeDomProject {
     super();
     this.schemaDefinitionResolver = new SchemaDefinitionResolver();
     state.project = this;
-
   }
 
   public async init() {

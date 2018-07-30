@@ -25,6 +25,7 @@ export const ErrorRecord: TypeDeclaration = new LibraryType(sma, `ErrorRecord`);
 export const SwitchParameter: TypeDeclaration = new LibraryType(sma, 'SwitchParameter');
 
 export const AsyncCommandRuntime = new LibraryType(ClientRuntime, `PowerShell.AsyncCommandRuntime`);
+export const AsyncJob = new LibraryType(ClientRuntime, `PowerShell.AsyncJob`);
 
 export function ErrorCategory(category: string): Expression {
   return new LiteralExpression(`${sma}.ErrorCategory.${category}`);
