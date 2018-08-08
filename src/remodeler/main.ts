@@ -16,7 +16,8 @@ export async function process(service: Host) {
     }
 
     const original = await service.ReadFile(files[0]);
-    // writeFileSync("C:/work/2018/autorest.incubator/generated/original.yaml", serialize(JSON.parse(original)));
+
+    writeFileSync("C:/work/2018/autorest.incubator/generated/original.yaml", serialize(JSON.parse(original)));
 
     // deserialize
     const remodeler = new Remodeler(new ModelState(service, await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), files[0]));
@@ -26,6 +27,7 @@ export async function process(service: Host) {
 
     // output the model
     await service.WriteFile('code-model-v2.yaml', serialize(codeModel), undefined, 'code-model-v2');
+    await service.WriteFile('oai.txt', original, undefined, 'source-file-other');
 
   } catch (E) {
     console.error(E);

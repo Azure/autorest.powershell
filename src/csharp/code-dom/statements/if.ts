@@ -21,13 +21,13 @@ ${indent(super.implementation)}
 }
 
 
-export function While(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+export function While(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
   return new WhileStatement(conditional, statements, objectInitializer);
 }
 
 export class WhileStatement extends Statements {
   conditional: Expression;
-  constructor(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+  constructor(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
     super(statements);
     this.conditional = toExpression(conditional);
     this.apply(objectInitializer);
@@ -43,7 +43,7 @@ ${indent(super.implementation)}
 
 export class ElseIfStatement extends Statements {
   conditional: Expression;
-  constructor(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+  constructor(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
     super(statements);
     this.conditional = toExpression(conditional);
     this.apply(objectInitializer);
@@ -57,17 +57,17 @@ ${indent(super.implementation)}
   }
 }
 
-export function ElseIf(conditional: ExpressionOrLiteral, statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+export function ElseIf(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
   return new ElseIfStatement(conditional, statements, objectInitializer);
 }
 
 
-export function Else(statements: OneOrMoreStatements, objectInitializer?: Partial<ElseStatement>) {
+export function Else(statements: StatementPossibilities, objectInitializer?: Partial<ElseStatement>) {
   return new ElseStatement(statements, objectInitializer);
 }
 
 export class ElseStatement extends Statements {
-  constructor(statements: OneOrMoreStatements, objectInitializer?: Partial<IfStatement>) {
+  constructor(statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
     super(statements);
     this.apply(objectInitializer);
   }

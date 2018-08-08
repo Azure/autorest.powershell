@@ -50,6 +50,9 @@ export class IsExpression implements Expression {
   get value(): string {
     return `${valueOf(this.expression)} is ${this.isType.declaration}`;
   }
+  public toString(): string {
+    return this.value;
+  }
 }
 
 /** a c# 'is' expression that declares a local variable  */
@@ -68,6 +71,9 @@ export class IsExpressionDeclaration extends LocalVariable implements Expression
 
   get value(): string {
     return this.name;
+  }
+  public toString(): string {
+    return this.value;
   }
 }
 
@@ -90,5 +96,7 @@ ${indent(super.implementation)}
 }
 `.trim();
   }
-
+  public toString(): string {
+    return this.value;
+  }
 }

@@ -6,15 +6,18 @@ import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { ExtendedVariable } from '#csharp/lowlevel-generator/extended-variable';
-import { POINT_CONVERSION_UNCOMPRESSED } from 'constants';
-import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
+import { ExtendedVariable, EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
 import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
+import { KnownMediaType } from '#common/media-types';
+import { ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
+import { Variable } from '#csharp/code-dom/variable';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
-export class OperationParameter extends Parameter implements ExtendedVariable {
-  public typeDeclaration: Serialization & Validation;
+export class OperationParameter extends Parameter implements EnhancedVariable {
+  public typeDeclaration: EnhancedTypeDeclaration;
+
   public param: HttpOperationParameter;
 
   constructor(parent: Method, param: HttpOperationParameter, state: State, objectInitializer?: Partial<OperationParameter>) {
@@ -26,39 +29,93 @@ export class OperationParameter extends Parameter implements ExtendedVariable {
     this.description = param.details.csharp.description || '';
   }
 
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
+    // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this))
+    return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
+  }
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression {
+    return this.typeDeclaration.deserializeFromNode(mediaType, node, this);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName);
+  }
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this);
+  }
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
+  }
+
+
   public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this.name);
+    return this.typeDeclaration.validatePresence(this);
   }
   public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this.name);
-  }
-  public get jsonSerializationStatement(): OneOrMoreStatements {
-    return '/* operation parameter */';// (<TypeDeclaration>this.type).jsonserialize(this.name);
-  }
-  public get jsonDeserializationStatement(): OneOrMoreStatements {
-    return '/* operation parameter */';// (<TypeDeclaration>this.type).jsonDeserializationImplementation(this.name);
+    return this.typeDeclaration.validateValue(this);
   }
 }
 
 /** represents a method parameter for an http operation (body) */
-export class OperationBodyParameter extends Parameter implements ExtendedVariable {
-  public typeDeclaration: Serialization & Validation;
+export class OperationBodyParameter extends Parameter implements EnhancedVariable {
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
+    //return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
+    return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
+  }
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression {
+    // return this.assign(this.typeDeclaration.deserializeFromNode(mediaType, node, this));
+    return this.typeDeclaration.deserializeFromNode(mediaType, node, this);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName);
+  }
+
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this);
+  }
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
+  }
+
+
+  public get validatePresenceStatement(): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(this);
+  }
+  public get validationStatement(): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(this);
+  }
+  public mediaType: KnownMediaType;
+
+  public typeDeclaration: EnhancedTypeDeclaration;
 
   constructor(parent: Method, name: string, description: string, schema: Schema, required: boolean, state: State, objectInitializer?: Partial<OperationBodyParameter>) {
     const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(schema, required, state.path('schema'));
     super(name, typeDeclaration);
     this.typeDeclaration = typeDeclaration;
+    this.mediaType = KnownMediaType.Json;
 
     this.apply(objectInitializer);
     this.description = description || schema.details.csharp.description;
   }
-  public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this.name);
-  }
-  public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this.name);
-  }
+
   public get jsonSerializationStatement(): OneOrMoreStatements {
+    // get the body serialization from the typeDeclaration.
+
     return '/* body parameter */';//  (<TypeDeclaration>this.type).jsonserialize(this.name);
   }
   public get jsonDeserializationStatement(): OneOrMoreStatements {
@@ -67,55 +124,32 @@ export class OperationBodyParameter extends Parameter implements ExtendedVariabl
 }
 
 export class CallbackParameter extends Parameter {
-  private genParameters: string;
-  public bodyResponse: (Serialization & Validation) | null;
-  public headerResponse: (Serialization & Validation) | null;
-  public supportNamespace: Namespace;
-  public responseType: dotnet.LibraryType;
+  responseType: (EnhancedTypeDeclaration) | null;
+  headerType: (EnhancedTypeDeclaration) | null;
 
-  // constructor(parent: Method, name: string, responseParameters: Array<TypeDeclaration>, state: State, objectInitializer?: Partial<CallbackParameter>) {
-  constructor(parent: Method, name: string, bodyResponse: (Serialization & Validation) | null, headerResponse: (Serialization & Validation) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
-    let responseDelegateType: dotnet.LibraryType;
-    let responsePayloadType: dotnet.LibraryType;
-
-    const genericParameters = bodyResponse ?
-      headerResponse ?
-        `<${bodyResponse.declaration},${headerResponse.declaration}>` :
-        `<${bodyResponse.declaration}>` :
-      headerResponse ?
-        `<${headerResponse.declaration}>` :
-        ``;
-
-    super(name, new dotnet.LibraryType(ClientRuntime, `OnResponse${genericParameters}`));
-    this.genParameters = genericParameters;
-    this.bodyResponse = bodyResponse;
-    this.headerResponse = headerResponse;
-    this.supportNamespace = state.project.supportNamespace;
-    this.responseType = new dotnet.LibraryType(ClientRuntime, `Response${genericParameters}`);
-    this.apply(objectInitializer);
-  }
-
-  get bodyJsonDeserializeStatement(): string {
-    return this.bodyResponse ? `async () => ${this.bodyResponse.jsonDeserializationImplementationOnNode(`Carbon.Json.JsonNode.Parse( await _response.Content.ReadAsStringAsync() )`)} ` : ``;
-  }
-
-  get bodyXmlDeserializeStatement(): string {
-    return this.bodyResponse ? `async () => ${this.bodyResponse.declaration}.FromXml(await _response.Content.ReadAsStringAsync())` : ``;
-  }
-
-  get headerDeserializeStatement(): string {
-    return this.headerResponse ? `async () => ${this.headerResponse.declaration}.FromHeaders( _response)` : ``;
-  }
-
-  get responseConstructorForJsonBody(): string {
-    return this.bodyResponse && this.headerResponse ?
-      `new ${ClientRuntime.fullName}.Response${this.genParameters}(${this.bodyJsonDeserializeStatement},${this.headerDeserializeStatement})` :  // both
-      `new ${ClientRuntime.fullName}.Response${this.genParameters}(${this.bodyJsonDeserializeStatement}${this.headerDeserializeStatement})`; // either/neither
-  }
-
-  get responseConstructorForXmlBody(): string {
-    return this.bodyResponse && this.headerResponse ?
-      `new ${ClientRuntime.fullName}.Response${this.genParameters}(${this.bodyXmlDeserializeStatement},${this.headerDeserializeStatement})` :  // both
-      `new ${ClientRuntime.fullName}.Response${this.genParameters}(${this.bodyXmlDeserializeStatement}${this.headerDeserializeStatement})`; // either/neither
+  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
+    if (state.project.storagePipeline) {
+      if (responseType && responseType.declaration !== 'System.IO.Stream') {
+        if (headerType) {
+          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType, headerType));
+        } else {
+          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType));
+        }
+      } else {
+        if (headerType) {
+          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, headerType));
+        } else {
+          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage));
+        }
+      }
+    } else {
+      if (responseType) {
+        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, responseType, dotnet.System.Threading.Tasks.Task()));
+      } else {
+        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task()));
+      }
+    }
+    this.responseType = responseType;
+    this.headerType = headerType;
   }
 }

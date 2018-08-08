@@ -58,6 +58,7 @@ namespace Microsoft.Rest.ClientRuntime
         public static Task Signal(this IEventListener instance, string id, HttpResponseMessage response) => instance.Signal(id, instance.Token, () => new EventData { Id = id, RequestMessage = response.RequestMessage, ResponseMessage = response, Cancel = instance.Cancel });
         public static Task Signal(this IEventListener instance, string id, EventData message) => instance.Signal(id, instance.Token, () => { message.Id = id; message.Cancel = instance.Cancel; return message; });
 
+        public static Task Signal(this IEventListener instance, string id, System.Uri uri) => instance.Signal(id, instance.Token, () => new EventData { Id = id, Message = uri.ToString(), Cancel = instance.Cancel });
 
         public static async Task AssertNotNull(this IEventListener instance, string parameterName, object value)
         {

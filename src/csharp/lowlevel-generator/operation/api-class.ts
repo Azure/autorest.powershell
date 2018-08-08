@@ -10,12 +10,12 @@ import { items } from '#common/dictionary';
 
 export class ApiClass extends Class {
 
-  protected sender: Property;
+  // protected sender: Property;
   constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<ApiClass>) {
     super(namespace, state.model.details.csharp.name);
     this.apply(objectInitializer);
     // add basics
-    this.sender = this.add(new Property("Sender", ClientRuntime.ISendAsync));
+    // this.sender = this.add(new Property("Sender", ClientRuntime.ISendAsync));
 
     // add operations from code model
     for (const { key: operationName, value: operation } of items(state.model.http.operations)) {
@@ -29,10 +29,9 @@ export class ApiClass extends Class {
       const operationMethod = new OperationMethod(this, operation, state.path('components', 'operations', operationName))
       this.addMethod(operationMethod);
       this.addMethod(new CallMethod(this, operationMethod, state.path('components', 'operations', operationName)));
-      this.addMethod(new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationName)));
+      if (!this.state.project.storagePipeline) {
+        this.addMethod(new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationName)));
+      }
     }
-
   }
-
 }
-

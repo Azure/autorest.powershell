@@ -1,13 +1,34 @@
-import { Expression } from '#csharp/code-dom/expression';
+import { KnownMediaType } from '#common/media-types';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
-import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 
 export interface ExtendedVariable extends Variable {
-  typeDeclaration: Serialization & Validation;
+  typeDeclaration: EnhancedTypeDeclaration;
 
   validatePresenceStatement: OneOrMoreStatements;
   validationStatement: OneOrMoreStatements;
-  jsonSerializationStatement: OneOrMoreStatements;
-  jsonDeserializationStatement: OneOrMoreStatements;
+}
+
+
+export interface EnhancedVariable extends Variable {
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression;
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression;
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression;
+
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType): Expression;
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements;
+
+  validatePresenceStatement: OneOrMoreStatements;
+  validationStatement: OneOrMoreStatements;
+
 }

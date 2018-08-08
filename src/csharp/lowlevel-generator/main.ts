@@ -28,11 +28,22 @@ export async function process(service: Host) {
     const modelState = new State(service, model, filename);
 
     const project = new Project(modelState);
+    await project.init();
 
     await project.writeFiles(async (fname, content) => service.WriteFile(join(apifolder, fname), content, undefined, 'source-file-csharp'));
 
     // recursive copy resources
-    await copyResources(join(resources, 'runtime', 'csharp'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    if (project.defaultPipeline) {
+      await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    }
+    if (project.jsonSerialization) {
+      await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    }
+    if (project.xmlSerialization) {
+      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    }
+
     if (azure) {
       await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
     }

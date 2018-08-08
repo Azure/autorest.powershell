@@ -9,6 +9,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "sourceMap": true,
+    "declarationMap": true,
     "strict": true,
     "declaration": true,
     "stripInternal": true,
@@ -31,17 +32,11 @@
       "#remodeler/*": [
         "remodeler/*"
       ],
-      "#lowlevel-csharp/*": [
-        "lowlevel-csharp/*"
-      ],
       "#csharp/*": [
         "csharp/*"
       ],
       "#powershell/*": [
         "powershell/*"
-      ],
-      "#highlevel/*": [
-        "highlevel/*"
       ]
     },
     "plugins": [

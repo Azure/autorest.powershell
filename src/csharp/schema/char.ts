@@ -1,43 +1,32 @@
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Serialization, Validation } from './extended-type-declaration';
+import { Variable } from '#csharp/code-dom/variable';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Primitive } from '#csharp/schema/primitive';
 
-export class Char implements Serialization, Validation {
-  constructor(protected required: boolean, private choices?: Array<string>) {
+export class Char extends Primitive {
+  public isXmlAttribute: boolean = false;
+  private choices?: Array<string>;
+  jsonType = ClientRuntime.JsonString;
 
+  constructor(schema: Schema, public isRequired: boolean) {
+    super(schema);
+    this.choices = schema.enum.length > 0 ? schema.enum : undefined;
   }
 
   get declaration(): string {
-    return `char${this.required ? '' : ' ?'}`;
+    return `char${this.isRequired ? '' : ' ?'}`;
   }
 
-  public validatePresence(propertyName: string): string {
-    return ``;
-  }
-
-  validateValue(propertyName: string): string {
+  validateValue(property: Variable): string {
     return `
-${this.validateEnum(propertyName)}
+${this.validateEnum(property)}
     `.trim();
-    ;
   }
 
-  private validateEnum(propertyName: string): string {
+  private validateEnum(property: Variable): string {
     if (!this.choices) {
       return '';
     }
     return '// todo validate enum choices';
-  }
-
-  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
-  }
-  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return `${containerName}.StringProperty("${serializedName}", ref ${propertyName});`
-  }
-  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return `${nodeExpression} is Carbon.Json.JsonString s ? s : default(${this.declaration})`;
-  }
-  serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return `Carbon.Json.JsonString.Create(${instance})`;
   }
 }

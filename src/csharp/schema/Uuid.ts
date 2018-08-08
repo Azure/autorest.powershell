@@ -1,30 +1,23 @@
-import { fixPropertyName } from '#common/text-manipulation';
+import { nameof } from '#common/text-manipulation';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Serialization, Validation } from './extended-type-declaration';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { KnownMediaType } from '#common/media-types';
+import { String } from '#csharp/schema/string';
+import { Variable } from '#csharp/code-dom/variable';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 
-export class Uuid implements Serialization, Validation {
-  constructor(protected required: boolean) {
+export class Uuid extends String {
+  constructor(schema: Schema, isRequired: boolean) {
+    super(schema, isRequired);
   }
 
   get declaration(): string {
     return `string`;
   }
-  public validatePresence(propertyName: string): string {
-    return this.required ? `await listener.AssertNotNull(${fixPropertyName(propertyName)},${propertyName});`.trim() : '';
+  public validatePresence(property: Variable): string {
+    return this.isRequired ? `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim() : '';
   }
-  validateValue(propertyName: string): string {
-    return `await listener.AssertRegEx(${fixPropertyName(propertyName)},${propertyName},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
-  }
-  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): string {
-    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
-  }
-  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return `${containerName}.StringProperty("${serializedName}", ref ${propertyName});`
-  }
-  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return `${nodeExpression} is Carbon.Json.JsonString s ? s : null`;
-  }
-  serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return `Carbon.Json.JsonString.Create(${instance})`;
+  validateValue(property: Variable): string {
+    return `await listener.AssertRegEx(${nameof(property.value)},${property},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
   }
 }

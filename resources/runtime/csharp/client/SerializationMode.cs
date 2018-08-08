@@ -1,10 +1,7 @@
-
-using Carbon.Json;
-
 namespace Microsoft.Rest.ClientRuntime
 {
     [System.Flags]
-    public enum JsonMode
+    public enum SerializationMode
     {
         None = 0,
         IncludeHeaders = 1 << 0,
@@ -12,10 +9,4 @@ namespace Microsoft.Rest.ClientRuntime
 
         IncludeAll = IncludeHeaders | IncludeReadOnly
     }
-
-    public interface IJsonSerializable
-    {
-        JsonNode ToJson(JsonObject container = null, JsonMode serializationMode = JsonMode.None);
-    }
-
 }

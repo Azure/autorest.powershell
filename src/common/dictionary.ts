@@ -1,6 +1,10 @@
-import { excludeXDash } from '#remodeler/common';
-import { Z_FILTERED } from 'zlib';
 
+export function includeXDash<T>(dictionary: Dictionary<T>) {
+  return Object.keys(dictionary).filter((v, i, a) => v.startsWith('x-'));
+}
+export function excludeXDash<T>(dictionary: Dictionary<T>) {
+  return Object.keys(dictionary).filter((v, i, a) => !v.startsWith('x-'));
+}
 
 export interface Index<T> {
   [key: number]: T;
@@ -12,7 +16,6 @@ export interface Dictionary<T> {
 
 export class Dictionary<T> implements Dictionary<T> {
 }
-
 
 export function ToDictionary<T>(keys: Array<string>, each: (index: string) => T) {
   const result = new Dictionary<T>();

@@ -17,7 +17,7 @@ import { Return } from '#csharp/code-dom/statements/return';
 import { Catch, Try } from '#csharp/code-dom/statements/try';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { ObjectFeatures } from '#csharp/schema/object';
+import { ObjectImplementation } from '#csharp/schema/object';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { ModelCmdlet } from '#powershell/model-cmdlet';
 import { ModuleClass } from '#powershell/module-class';
@@ -60,7 +60,7 @@ export class ModelExtensionsNamespace extends Namespace {
         continue;
       }
       const td = this.resolver.resolveTypeDeclaration(schema, true, state);
-      if (td instanceof ObjectFeatures) {
+      if (td instanceof ObjectImplementation) {
         // it's a class object.
         const className = td.schema.details.csharp.name;
         const interfaceName = td.schema.details.csharp.interfaceName || '';
@@ -83,7 +83,7 @@ export class ModelExtensionsNamespace extends Namespace {
           parameters: [new Parameter('jsonText', dotnet.String)]
         }));
 
-        model.add(new LambdaMethod('ToJsonString', dotnet.String, new LiteralExpression(`ToJson(${dotnet.Null}, ${ClientRuntime.JsonMode.IncludeAll})?.ToString()`), {
+        model.add(new LambdaMethod('ToJsonString', dotnet.String, new LiteralExpression(`ToJson(${dotnet.Null}, ${ClientRuntime.SerializationMode.IncludeAll})?.ToString()`), {
         }));
 
         // + static <interfaceType> FromJsonString(string json);
@@ -174,7 +174,7 @@ export class ModelExtensionsNamespace extends Namespace {
             for (const member of values(td.schema.properties)) {
               // if it's a primitive field
               const memTD = $this.resolver.resolveTypeDeclaration(member.schema, true, state);
-              if (memTD instanceof ObjectFeatures) {
+              if (memTD instanceof ObjectImplementation) {
                 // it's an object, try the typeconverter
                 yield `${member.details.csharp.name} = ${member.schema.details.csharp.name}TypeConverter.ConvertFrom(sourceValue.${member.details.csharp.name}),`;
               } else {
@@ -299,7 +299,8 @@ export class Project extends codeDomProject {
     state.project = this;
   }
 
-  public async init() {
+  public async init(): Promise<this> {
+    await super.init();
     const service = this.state.service;
     const model = this.state.model;
     const state = this.state;

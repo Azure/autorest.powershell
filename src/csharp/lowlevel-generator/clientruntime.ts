@@ -7,7 +7,7 @@ import { intersect } from '#common/intersect';
 import * as dotnet from "#csharp/code-dom/mscorlib";
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
-const jsonMode = new LibraryType(clientRuntimeNamespace, "JsonMode");
+const serializationMode = new LibraryType(clientRuntimeNamespace, "SerializationMode");
 const events = new LibraryType(clientRuntimeNamespace, "Events");
 const carbon = new Namespace('Carbon.Json');
 
@@ -17,9 +17,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),
-  JsonMode: intersect(jsonMode, {
-    None: new LiteralExpression(`${jsonMode.declaration}.None`),
-    IncludeAll: new LiteralExpression(`${jsonMode.declaration}.IncludeAll`),
+  SerializationMode: intersect(serializationMode, {
+    None: new LiteralExpression(`${serializationMode.declaration}.None`),
+    IncludeAll: new LiteralExpression(`${serializationMode.declaration}.IncludeAll`),
   }),
   HttpPipeline: new LibraryType(clientRuntimeNamespace, 'HttpPipeline'),
   SendAsyncStep: new LibraryType(clientRuntimeNamespace, 'SendAsyncStep[]'),
@@ -42,5 +42,10 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   }),
   KeyValuePairs: dotnet.System.Collections.Generic.IEnumerable(dotnet.System.Collections.Generic.KeyValuePair(dotnet.String, dotnet.System.Collections.Generic.IEnumerable(dotnet.String))),
   JsonNode: new LibraryType(carbon, `JsonNode`),
-  JsonObject: new LibraryType(carbon, `JsonObject`)
+  JsonString: new LibraryType(carbon, `JsonString`),
+  JsonBoolean: new LibraryType(carbon, `JsonBoolean`),
+  JsonNumber: new LibraryType(carbon, `JsonNumber`),
+  JsonObject: new LibraryType(carbon, `JsonObject`),
+  JsonArray: new LibraryType(carbon, `JsonArray`),
+  XNodeArray: new LibraryType(carbon, `XNodeArray`)
 });

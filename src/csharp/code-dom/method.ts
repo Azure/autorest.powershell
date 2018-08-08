@@ -3,7 +3,7 @@ import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Stati
 import { summary } from '#csharp/code-dom/doc-comments';
 import * as dotnet from './mscorlib';
 import { Parameter } from './parameter';
-import { Statements, OneOrMoreStatements } from './statements/statement';
+import { Statements, OneOrMoreStatements, StatementPossibilities } from './statements/statement';
 import { TypeDeclaration } from './type-declaration';
 import { Expression, valueOf } from '#csharp/code-dom/expression';
 import { Class } from '#csharp/code-dom/class';
@@ -21,7 +21,7 @@ export class Method extends Statements {
   public async: Async = Modifier.None;
   public isPartial = false;
   public description: string = "";
-  public body?: OneOrMoreStatements;
+  public body?: StatementPossibilities;
 
   constructor(public name: string, protected returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<Method>) {
     super();

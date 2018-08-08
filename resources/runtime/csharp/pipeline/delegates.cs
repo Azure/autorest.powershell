@@ -1,7 +1,6 @@
 
 namespace Microsoft.Rest.ClientRuntime
 {
-
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -12,15 +11,9 @@ namespace Microsoft.Rest.ClientRuntime
 
     public delegate Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback);
     public delegate Task<HttpResponseMessage> SendAsyncStep(HttpRequestMessage request, IEventListener callback, ISendAsync next);
-
-    
-
     public delegate Task SignalEvent(string id, CancellationToken token, GetEventData getEventData);
-
     public delegate Task Event(EventData message);
     public delegate void SynchEvent(EventData message);
     public delegate Task OnResponse(Response message);
     public delegate Task OnResponse<T>(Response<T> message);
-    /*    public delegate Task OnResponse<T1, T2>(Response<T1, T2> message); */
-
 }

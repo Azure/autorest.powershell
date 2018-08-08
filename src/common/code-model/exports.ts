@@ -5,9 +5,6 @@ import * as schema from '#common/code-model/schema';
 import * as command from '#common/code-model/command-operation';
 
 import { Dictionary } from '#common/dictionary';
-import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
-import { ModelInterface } from '#csharp/lowlevel-generator/model/interface';
-import { TypeLiteralNode } from 'typescript';
 
 export interface SchemaT<
   TLanguageDetailsForSchema extends components.LanguageDetails<schema.SchemaDetails>,
@@ -45,13 +42,16 @@ export interface MediaTypeT<TLanguageDetailsForSchema extends components.Languag
   schema?: SchemaT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>;
 }
 
+/*
 export interface ResponseT<TLanguageDetailsForSchema extends components.LanguageDetails<schema.SchemaDetails>,
   TLanguageDetailsForProperty extends components.LanguageDetails<schema.PropertyDetails>> extends http.Response {
   content: Dictionary<MediaTypeT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>>;
 }
+*/
+
 export interface RequestBodyT<TLanguageDetailsForSchema extends components.LanguageDetails<schema.SchemaDetails>,
   TLanguageDetailsForProperty extends components.LanguageDetails<schema.PropertyDetails>> extends http.RequestBody {
-  content: Dictionary<MediaTypeT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>>;
+
 }
 
 export interface HttpOperationT<
@@ -62,7 +62,7 @@ export interface HttpOperationT<
   > extends http.HttpOperation {
   details: TLanguageDetailsForHttpOperation;
   parameters: Array<HttpOperationParameterT<TLanguageDetailsForSchema, TLanguageDetailsForProperty, TLanguageDetailsForParameter>>;
-  responses: Dictionary<ResponseT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>>;
+  // responses: Dictionary<ResponseT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>>;
   requestBody?: RequestBodyT<TLanguageDetailsForSchema, TLanguageDetailsForProperty>;
 }
 

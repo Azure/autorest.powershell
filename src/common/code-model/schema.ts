@@ -1,6 +1,7 @@
 import { ImplementationDetails, ExternalDocumentation, LanguageDetails } from '#common/code-model/components';
 import { Extensions } from '#common/code-model/extensions';
 import { Dictionary, values } from '#common/dictionary';
+import { DeepPartial } from '#common/initializer';
 
 export interface PropertyDetails extends ImplementationDetails {
   required: boolean;
@@ -40,7 +41,7 @@ export class Schema extends Extensions implements Schema {
   public properties = new Dictionary<Property>();
   public extensions = new Dictionary<any>();
 
-  constructor(name: string, initializer?: Partial<Schema>) {
+  constructor(name: string, initializer?: DeepPartial<Schema>) {
     super();
     this.details = {
       default: {

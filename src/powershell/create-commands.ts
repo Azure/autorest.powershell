@@ -2,7 +2,7 @@
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
 import { IParameter } from '#common/code-model/components';
-import { HttpOperation, HttpOperationParameter, MediaType } from '#common/code-model/http-operation';
+import { HttpOperation, HttpOperationParameter, MediaType, RequestBody } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
 import { Dictionary, items, keys, length, values } from '#common/dictionary';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
@@ -16,17 +16,12 @@ import { Lazy } from '@microsoft.azure/tasks';
 export async function process(service: Host) {
 
   const x = await service.ListInputs('');
-  // console.error(x);
   const y = await service.ListInputs();
-  // console.error(y);
 
   const z = await service.GetValue('configurationFiles');
-  // console.error(z);
-  // await service.ProtectFiles("obj/test.txt");
   try {
 
     const txt = await service.GetConfigurationFile('readme.powershell.md');
-    // console.error(txt);
 
     // spit a configuration file back.
     // service.UpdateConfigurationFile('readme.powershell.md', `${txt}\n\n and more.`);
@@ -54,7 +49,7 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
   return model;
 }
 
-async function addVariant(vname: string, body: MediaType | undefined, bodyParameterName: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
+async function addVariant(vname: string, body: RequestBody | undefined, bodyParameterName: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
   // const body = operation.requestBody && values(operation.requestBody.content).linq.first();
   // const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
 
@@ -111,7 +106,7 @@ async function addVariants(parameters: Array<HttpOperationParameter>, operation:
   const combos = combinations(optionalParameters);
 
   // the body parameter
-  const body = operation.requestBody && values(operation.requestBody.content).linq.first();
+  const body = operation.requestBody;
   const bodyParameterName = operation.requestBody ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
 
   // all the properties in the body parameter

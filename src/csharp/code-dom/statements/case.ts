@@ -1,13 +1,13 @@
 import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
 
 // gs01: fix this -- value should be an expresion.
-export function Case(value: string, body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>): CaseStatement {
+export function Case(value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): CaseStatement {
   return new CaseStatement(value, body, objectInitializer);
 }
 
 export class CaseStatement extends Statements {
-  constructor(protected value: string, body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>) {
+  constructor(protected value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>) {
     super(body);
     this.apply(objectInitializer);
   }
@@ -18,18 +18,19 @@ export class CaseStatement extends Statements {
   public get implementation(): string {
     return `
 case ${this.value}:
+{
 ${this.statementsImplementation}
 ${indent('break')};
-`.trim();
+}`.trim();
   }
 }
 
-export function DefaultCase(body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>): CaseStatement {
+export function DefaultCase(body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): CaseStatement {
   return new DefaultCaseStatement(body, objectInitializer);
 }
 
 export class DefaultCaseStatement extends CaseStatement {
-  constructor(body: OneOrMoreStatements, objectInitializer?: Partial<DefaultCaseStatement>) {
+  constructor(body: StatementPossibilities, objectInitializer?: Partial<DefaultCaseStatement>) {
     super("", body);
     this.apply(objectInitializer);
   }
@@ -37,19 +38,20 @@ export class DefaultCaseStatement extends CaseStatement {
   public get implementation(): string {
     return `
 default:
+{
 ${this.statementsImplementation}
 ${indent('break')};
-`.trim();
+}`.trim();
   }
 }
 
 
-export function TerminalDefaultCase(body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>): TerminalDefaultCaseStatement {
+export function TerminalDefaultCase(body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): TerminalDefaultCaseStatement {
   return new TerminalDefaultCaseStatement(body, objectInitializer);
 }
 
 export class TerminalDefaultCaseStatement extends CaseStatement {
-  constructor(body: OneOrMoreStatements, objectInitializer?: Partial<TerminalDefaultCaseStatement>) {
+  constructor(body: StatementPossibilities, objectInitializer?: Partial<TerminalDefaultCaseStatement>) {
     super("", body);
     this.apply(objectInitializer);
   }
@@ -57,18 +59,19 @@ export class TerminalDefaultCaseStatement extends CaseStatement {
   public get implementation(): string {
     return `
 default:
+{
 ${this.statementsImplementation}
-`.trim();
+}`.trim();
   }
 }
 
 
-export function TerminalCase(value: string, body: OneOrMoreStatements, objectInitializer?: Partial<CaseStatement>): TerminalCaseStatement {
+export function TerminalCase(value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): TerminalCaseStatement {
   return new TerminalCaseStatement(value, body, objectInitializer);
 }
 
 export class TerminalCaseStatement extends CaseStatement {
-  constructor(value: string, body: OneOrMoreStatements, objectInitializer?: Partial<TerminalCaseStatement>) {
+  constructor(value: string, body: StatementPossibilities, objectInitializer?: Partial<TerminalCaseStatement>) {
     super(value, body);
     this.apply(objectInitializer);
   }
@@ -76,7 +79,8 @@ export class TerminalCaseStatement extends CaseStatement {
   public get implementation(): string {
     return `
 case ${this.value}:
+{
 ${this.statementsImplementation}
-`.trim();
+}`.trim();
   }
 }

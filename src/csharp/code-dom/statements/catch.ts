@@ -1,16 +1,16 @@
 import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Expression } from '#csharp/code-dom/expression';
 
-export function Catch(parameter: Parameter, body: OneOrMoreStatements, objectInitializer?: Partial<CatchStatement>): CatchStatement {
+export function Catch(parameter: Parameter, body: StatementPossibilities, objectInitializer?: Partial<CatchStatement>): CatchStatement {
   return new CatchStatement(parameter, body, objectInitializer);
 }
 
 export class CatchStatement extends Statements {
   public when?: Expression;
 
-  constructor(protected parameter: Parameter, body: OneOrMoreStatements, objectInitializer?: Partial<CatchStatement>) {
+  constructor(protected parameter: Parameter, body: StatementPossibilities, objectInitializer?: Partial<CatchStatement>) {
     super(body);
     this.apply(objectInitializer);
   }

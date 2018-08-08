@@ -2,15 +2,17 @@ import { CommandOperation } from '#common/code-model/command-operation';
 import { MediaType } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
 import { Dictionary, items, values } from '#common/dictionary';
+import { KnownMediaType } from '#common/media-types';
+import { escapeString } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, Expression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, valueOf } from '#csharp/code-dom/expression';
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
+
 import * as dotnet from '#csharp/code-dom/mscorlib';
-import { Var } from '#csharp/code-dom/mscorlib';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, LambdaProperty, Property } from '#csharp/code-dom/property';
@@ -19,7 +21,7 @@ import { Catch } from '#csharp/code-dom/statements/catch';
 import { ForEach, ForEachStatement } from '#csharp/code-dom/statements/for';
 import { Else, If } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
-import { Statements, OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
@@ -29,11 +31,10 @@ import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { EventListener } from '#csharp/lowlevel-generator/operation/method';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
-import { CmdletParameter } from './cmdlet-parameter';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, ValidateNotNull, verbEnum, SwitchParameter } from './powershell-declarations';
-import { State } from './state';
 import { addPowershellParameters } from '#powershell/model-cmdlet';
-import { escapeString } from '#common/text-manipulation';
+import { CmdletParameter } from './cmdlet-parameter';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
+import { State } from './state';
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
@@ -52,7 +53,7 @@ export class CmdletClass extends Class {
     this.apply(objectInitializer);
     this.interfaces.push(ClientRuntime.IEventListener);
     this.state = state;
-    this.eventListener = new EventListener(new LiteralExpression('this'));
+    this.eventListener = new EventListener(new LiteralExpression('this'), true);
     // basic stuff
     this.addCommonStuff();
 
@@ -85,7 +86,7 @@ export class CmdletClass extends Class {
     // pipeline property
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private }));
 
-    // client API property (todo: fill this in correctly)
+    // client API property (gs01: fill this in correctly)
     const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`)));
 
@@ -124,17 +125,17 @@ export class CmdletClass extends Class {
     });
 
     this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
-      // todo: remember what you were doing here to make it so these can be parallelized...
+      // gs01: remember what you were doing here to make it so these can be parallelized...
       yield '';
     });
   }
 
   private isWritableCmdlet(operation: CommandOperation): boolean {
     switch (operation.callGraph[0].method.toLowerCase()) {
-      case "put":
-      case "post":
-      case "delete":
-      case "patch":
+      case 'put':
+      case 'post':
+      case 'delete':
+      case 'patch':
         return true;
     }
     return false;
@@ -177,7 +178,6 @@ export class CmdletClass extends Class {
 
             // return the job to the user now.
             yield `WriteObject(${job});`;
-
 
           });
           yield Else(normal);
@@ -233,9 +233,9 @@ export class CmdletClass extends Class {
 
       // is there a body parameter we should include?
       const requestBody = apiCall.requestBody;
-      if (requestBody && requestBody.content['application/json'] && requestBody.content['application/json'].schema) {
+      if (requestBody) {
         // we have a body parameter.
-        const bodyParameter = values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.schema === requestBody.content['application/json'].schema);
+        const bodyParameter = values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.schema === requestBody.schema);
         if (bodyParameter) {
           operationParameters.push(bodyParameter);
         }
@@ -268,13 +268,13 @@ export class CmdletClass extends Class {
                 yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
                 return;
               } else {
-                yield new LocalVariable("responseMessage", dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+                yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
                 // what do we do with the response object?
                 yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
                 return;
               }
             } else {
-              yield new LocalVariable("responseMessage", dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+              yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
               // all we know is that this was an error, and we can't proceed.
               yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
               return;
@@ -354,13 +354,11 @@ export class CmdletClass extends Class {
     });
   }
 
-
-
   private implementSerialization(operation: CommandOperation) {
     const $this = this;
     // set up the declaration for the toJson method.
     const container = new Parameter('container', ClientRuntime.JsonObject);
-    const mode = new Parameter('serializationMode', ClientRuntime.JsonMode);
+    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
 
     const toJsonMethod = this.add(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
@@ -372,7 +370,7 @@ export class CmdletClass extends Class {
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
         if (!(parameter.details.default.constantValue)) {
-          yield td.jsonSerializationImplementation(container.use, parameter.details.powershell.name, parameter.details.powershell.name);
+          // yield td.getSerializeStatement(KnownMediaType.Json, container.use, parameter.details.powershell.name, parameter.details.powershell.name);
         }
       }
 
@@ -400,14 +398,12 @@ export class CmdletClass extends Class {
     // clone
     const clone = this.add(new Method('Clone', this));
     clone.add(function* () {
-      const i = new LocalVariable('clone', Var, {
-        initializer: fromJson.invoke(new LiteralExpression(`this.${toJsonMethod.invoke(dotnet.Null, ClientRuntime.JsonMode.IncludeAll).value}`))
+      const i = new LocalVariable('clone', dotnet.Var, {
+        initializer: fromJson.invoke(new LiteralExpression(`this.${toJsonMethod.invoke(dotnet.Null, ClientRuntime.SerializationMode.IncludeAll).value}`))
       });
       yield i.declarationStatement;
       yield `${i.value}.HttpPipelinePrepend = this.HttpPipelinePrepend;`;
       yield `${i.value}.HttpPipelineAppend = this.HttpPipelineAppend;`;
-      // yield `i.Pipeline = this.Pipeline`; //todo: pass thru these
-      // yield `i.Client = this.Client`;
 
       yield Return(i);
     });
@@ -427,7 +423,7 @@ export class CmdletClass extends Class {
         const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
         if (!(parameter.details.default.constantValue)) {
           // dont' serialize if it's a constant or host parameter.
-          yield td.jsonDeserializationImplementationOnProperty('json', bp.backingName, parameter.details.powershell.name);
+          // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.powershell.name);
         }
 
       }
@@ -436,10 +432,9 @@ export class CmdletClass extends Class {
 
   private implementIEventListener() {
     const $this = this;
-    const _cts = this.add(new InitializedField('_cancellationTokenSource', dotnet.System.Threading.CancellationTokenSource, new LiteralExpression(`new ${dotnet.System.Threading.CancellationTokenSource.declaration}()`), { access: Access.Private }));
-    this.cancellationToken = this.add(new LambdaProperty('Token', dotnet.System.Threading.CancellationToken, new LiteralExpression(`${_cts.value}.Token`)));
-    this.add(new LambdaProperty('Cancel', dotnet.System.Action(), new LiteralExpression(`${_cts.value}.Cancel`)));
-
+    const cts = this.add(new InitializedField('_cancellationTokenSource', dotnet.System.Threading.CancellationTokenSource, new LiteralExpression(`new ${dotnet.System.Threading.CancellationTokenSource.declaration}()`), { access: Access.Private }));
+    this.cancellationToken = this.add(new LambdaProperty('Token', dotnet.System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`)));
+    this.add(new LambdaProperty('Cancel', dotnet.System.Action(), new LiteralExpression(`${cts.value}.Cancel`)));
 
     const id = new Parameter('id', dotnet.String);
     const token = new Parameter('token', dotnet.System.Threading.CancellationToken);

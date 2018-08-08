@@ -6,36 +6,60 @@ import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { State } from '../generator';
 import { ModelInterfaceProperty } from './interface-property';
+import { KnownMediaType } from '#common/media-types';
+import { Variable } from '#csharp/code-dom/variable';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 
-export class ModelInterface extends Interface implements Serialization, Validation {
-  public validatePresence(propertyName: string): OneOrMoreStatements {
-    return this.classImplementation.validatePresence(propertyName);
+export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
+  get schema(): Schema {
+    return this.implementation.schema;
   }
-  public validateValue(propertyName: string): OneOrMoreStatements {
-    return this.classImplementation.validateValue(propertyName);
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
+    return this.implementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
+  }
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral, defaultValue: Expression): Expression {
+    return this.implementation.deserializeFromNode(mediaType, node, defaultValue);
+  }
+  /** emits an expression to deserialize content from a string */
+  deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromString(mediaType, content, defaultValue);
+  }
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+    return this.implementation.serializeToContent(mediaType, value);
   }
 
-  public jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.classImplementation.jsonSerializationImplementation('result', propertyName, serializedName);
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+    return this.implementation.serializeToNode(mediaType, value, serializedName);
   }
-  public jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.classImplementation.jsonDeserializationImplementationOnProperty(containerName, propertyName, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+    return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName);
   }
-  public jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return this.classImplementation.jsonDeserializationImplementationOnNode(nodeExpression);
+
+  get isXmlAttribute(): boolean {
+    return this.implementation.isXmlAttribute;
   }
-  public serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return this.classImplementation.serializeInstanceToJson(instance);
+
+  get isRequired(): boolean {
+    return this.implementation.isRequired;
   }
+
+  public validatePresence(property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(property);
+  }
+  public validateValue(property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(property);
+  }
+
 
   get hasHeaderProperties(): boolean {
-    return this.classImplementation.hasHeaderProperties;
+    return this.implementation.hasHeaderProperties;
   }
-  constructor(parent: Namespace, schema: Schema, public classImplementation: ModelClass, state: State, objectInitializer?: Partial<ModelInterface>) {
+  constructor(parent: Namespace, schema: Schema, public implementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.csharp.name}`);
     this.partial = true;
     this.apply(objectInitializer);
@@ -47,7 +71,14 @@ export class ModelInterface extends Interface implements Serialization, Validati
     }
 
     // mark it as json serializable
-    this.interfaces.push(ClientRuntime.IJsonSerializable);
+    if (!schema.details.default.isHeaderModel) {
+      if (this.state.project.jsonSerialization) {
+        this.interfaces.push(ClientRuntime.IJsonSerializable);
+      }
+      if (this.state.project.xmlSerialization) {
+        this.interfaces.push(ClientRuntime.IXmlSerializable);
+      }
+    }
 
   }
 }

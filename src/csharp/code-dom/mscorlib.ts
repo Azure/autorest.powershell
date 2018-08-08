@@ -29,11 +29,11 @@ export class LibraryType implements TypeDeclaration {
 }
 
 export class EnumType implements TypeDeclaration {
-  constructor(private namespace: Namespace, private typeName: string) {
+  constructor(private namespace: Namespace, private name: string) {
   }
 
   public get declaration(): string {
-    return `${this.namespace}.${this.typeName}`;
+    return `${this.namespace}.${this.name}`;
   }
 
   public member(enumMember: string): Expression {
@@ -83,7 +83,13 @@ const collections = new Namespace('Collections', system);
 const generic = new Namespace('Generic', collections);
 const net = new Namespace('Net', system);
 const http = new Namespace('Http', net);
+const headers = new Namespace('Headers', http);
 const task = new LibraryType(tasks, 'Task');
+
+const xml = new Namespace('Xml', system);
+const xmllinq = new Namespace('Linq', xml);
+const stringClass = new LibraryType(system, 'String');
+
 
 export const System = intersect(system, {
   Threading: intersect(threading, {
@@ -95,7 +101,9 @@ export const System = intersect(system, {
         return taskType ? new LibraryType(tasks, `Task<${taskType.declaration}>`) : task;
       }
     })
-
+  }),
+  String: intersect(stringClass, {
+    Empty: new LiteralExpression("System.String.Empty"),
   }),
   DateTime: new LibraryType(system, 'DateTime'),
   EventArgs: new LibraryType(system, 'EventArgs'),
@@ -105,10 +113,20 @@ export const System = intersect(system, {
   Type: new LibraryType(system, 'Type'),
   Uri: new LibraryType(system, 'Uri'),
   IFormatProvider: new LibraryType(system, 'IFormatProvider'),
+  Xml: intersect(xml, {
+    Linq: intersect(xmllinq, {
+      XElement: new LibraryType(xmllinq, 'XElement'),
+      XAttribute: new LibraryType(xmllinq, 'XAttribute')
+    })
+  }),
   Net: intersect(net, {
     Http: intersect(http, {
       HttpRequestMessage: new LibraryType(http, 'HttpRequestMessage'),
       HttpResponseMessage: new LibraryType(http, 'HttpResponseMessage'),
+      Headers: intersect(headers, {
+        HttpHeaders: new LibraryType(headers, 'HttpHeaders'),
+        HttpResponseHeaders: new LibraryType(headers, 'HttpResponseHeaders'),
+      })
     }),
     HttpStatusCode: intersect(new LibraryType(net, 'HttpStatusCode'), <Dictionary<LiteralExpression> & Index<LiteralExpression>>{
       default: new LiteralExpression(''),
@@ -171,7 +189,7 @@ export const System = intersect(system, {
     })
   }),
   Action(...actionParameters: Array<TypeDeclaration>): TypeDeclaration {
-    return actionParameters.length === 0 ? action : new LibraryType(system, `Action<${actionParameters.joinWith(each => each.declaration)}>`);
+    return actionParameters.length === 0 ? action : new LibraryType(system, `Action<${actionParameters.filter(each => each.declaration).joinWith(each => each.declaration)}>`);
   },
 
   Func(...funcParameters: Array<TypeDeclaration>): TypeDeclaration {

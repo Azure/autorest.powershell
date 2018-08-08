@@ -2,8 +2,6 @@ import { Initializer } from '#common/initializer';
 import { EOL } from '#common/text-manipulation';
 import { LiteralStatement } from '#csharp/code-dom/statements/literal';
 
-
-
 export type fIterable<T> = Iterable<T> | (() => Iterable<T>);
 
 export interface Statement {
@@ -40,6 +38,28 @@ export class Statements extends Initializer implements Statement {
 
   public get count(): number {
     return this.statements.length;
+  }
+
+  public insert(statements: StatementPossibilities): Statements {
+    if (typeof (statements) === 'string') {
+      this.statements.splice(0, 0, new LiteralStatement(statements));
+      return this;
+    }
+    if (statements instanceof Statements) {
+      this.statements.splice(0, 0, statements);
+      return this;
+    }
+    if (isStatement(statements)) {
+      this.statements.splice(0, 0, statements);
+      return this;
+    }
+    if (typeof (statements) === 'function') {
+      return this.insert(statements());
+    }
+    for (const each of statements) {
+      this.insert(each);
+    }
+    return this;
   }
 
   public add(statements: StatementPossibilities): Statements {

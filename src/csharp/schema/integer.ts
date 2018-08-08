@@ -1,53 +1,42 @@
-import { fixPropertyName } from '#common/text-manipulation';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Serialization, Validation } from './extended-type-declaration';
+import { nameof } from '#common/text-manipulation';
+import { Variable } from '#csharp/code-dom/variable';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Primitive } from '#csharp/schema/primitive';
 
-export class Numeric implements Serialization, Validation {
-  constructor(protected numericType: string, protected minimum: number | undefined, protected exclusiveMinimum: boolean | undefined, protected maximum: number | undefined, protected exclusiveMaximum: boolean | undefined, protected multipleOf: number | undefined) {
+export class Numeric extends Primitive {
+  public isXmlAttribute: boolean = false;
+  public jsonType = ClientRuntime.JsonNumber;
 
+  constructor(schema: Schema, public isRequired: boolean, protected numericType: string) {
+    super(schema);
   }
-
   get declaration(): string {
     return `${this.numericType}`;
   }
-  public validatePresence(propertyName: string): string {
-    return ``;
-  }
-  validateValue(propertyName: string): string {
+  validateValue(property: Variable): string {
     return `
-${this.validateMinimum(propertyName)}
-${this.validateMaximum(propertyName)}
-${this.validateExclusiveMinimum(propertyName)}
-${this.validateExclusiveMaximum(propertyName)}
-${this.validateMultipleOf(propertyName)}
+${this.validateMinimum(property)}
+${this.validateMaximum(property)}
+${this.validateExclusiveMinimum(property)}
+${this.validateExclusiveMaximum(property)}
+${this.validateMultipleOf(property)}
 `.trim();
-    ;
   }
-  protected validateMinimum(propertyName: string): string {
-    return this.minimum && !this.exclusiveMinimum ? `await listener.AssertIsGreaterThanOrEqual(${fixPropertyName(propertyName)},${propertyName},${this.minimum});` : "";
+  protected validateMinimum(property: Variable): string {
+    return this.schema.minimum && !this.schema.exclusiveMinimum ? `await listener.AssertIsGreaterThanOrEqual(${nameof(property.value)},${property},${this.schema.minimum});` : '';
   }
-  protected validateMaximum(propertyName: string): string {
-    return this.maximum && !this.exclusiveMaximum ? `await listener.AssertIsLessThanOrEqual(${fixPropertyName(propertyName)},${propertyName},${this.maximum});` : "";
+  protected validateMaximum(property: Variable): string {
+    return this.schema.maximum && !this.schema.exclusiveMaximum ? `await listener.AssertIsLessThanOrEqual(${nameof(property.value)},${property},${this.schema.maximum});` : '';
   }
-  protected validateExclusiveMinimum(propertyName: string): string {
-    return this.minimum && this.exclusiveMinimum ? `await listener.AssertIsGreaterThan(${fixPropertyName(propertyName)},${propertyName},${this.minimum});` : "";
+  protected validateExclusiveMinimum(property: Variable): string {
+    return this.schema.minimum && this.schema.exclusiveMinimum ? `await listener.AssertIsGreaterThan(${nameof(property.value)},${property},${this.schema.minimum});` : '';
   }
-  protected validateExclusiveMaximum(propertyName: string): string {
-    return this.maximum && this.exclusiveMaximum ? `await listener.AssertIsLessThan(${fixPropertyName(propertyName)},${propertyName},${this.maximum});` : "";
+  protected validateExclusiveMaximum(property: Variable): string {
+    return this.schema.maximum && this.schema.exclusiveMaximum ? `await listener.AssertIsLessThan(${nameof(property.value)},${property},${this.schema.maximum});` : '';
   }
-  protected validateMultipleOf(propertyName: string): string {
-    return this.multipleOf ? `await listener.AssertIsMultipleOf(${fixPropertyName(propertyName)},${propertyName},${this.multipleOf});` : "";
+  protected validateMultipleOf(property: Variable): string {
+    return this.schema.multipleOf ? `await listener.AssertIsMultipleOf(${nameof(property.value)},${property},${this.schema.multipleOf});` : '';
   }
-  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return `${containerName}.SafeAdd( "${serializedName}", ${this.serializeInstanceToJson(propertyName)});`.trim();
-  }
-  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return `${containerName}.NumberProperty("${serializedName}", ref ${propertyName});`
-  }
-  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return `${nodeExpression} is Carbon.Json.JsonNumber n ? n : default(${this.declaration})`;
-  }
-  serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return `Carbon.Json.JsonNumber.Create(${instance})`;
-  }
+
 }

@@ -28,6 +28,10 @@ export class Type extends Initializer implements TypeDeclaration {
     this.apply(objectIntializer);
   }
 
+  public get fileName(): string {
+    return this.name;
+  }
+
   public get allProperties(): Array<Property> {
     const result = new Array<Property>(...this.properties);
     for (const parent of this.interfaces) {

@@ -48,8 +48,6 @@ export class MediaType extends Extensions implements MediaType {
 
 export class RequestBody extends Extensions implements RequestBody {
 
-  public content = new Dictionary<MediaType>();
-
   constructor(initializer?: Partial<RequestBody>) {
     super();
     this.apply(initializer);
@@ -122,7 +120,8 @@ export interface MediaType extends Extensions {
 
 export interface RequestBody extends Extensions {
   description?: string;
-  content: Dictionary<MediaType>;
+  contentType: string;
+  schema: Schema;
   required: boolean;
 }
 
@@ -153,7 +152,8 @@ export interface NewResponse {
   responseCode: string;
   description: string;
   headers: Dictionary<Header>;
-  mimeTypes: Array<string>; // equivalent media types for this media type (ie, text/json, application/json)
+  headerSchema?: Schema;
+  mimeTypes: Array<string>; // accepted equivalent media types for this media type (ie, text/json, application/json)
   schema?: Schema;
 }
 
@@ -179,7 +179,7 @@ export class HttpOperation extends Extensions implements HttpOperation {
   public details: LanguageDetails<HttpOperationDetails>;
   public tags = new Array<string>();
   public parameters = new Array<HttpOperationParameter>();
-  public responses = new Dictionary<Response>();
+  //public responses = new Dictionary<Response>();
   public responses_new = new Dictionary<Array<NewResponse>>();
   public callbacks = new Dictionary<Callback>();
   public security = new Array<SecurityRequirement>();
@@ -209,7 +209,7 @@ export interface HttpOperation extends IOperation<HttpOperationParameter>, Exten
 
   parameters: Array<HttpOperationParameter>;
   requestBody?: RequestBody;
-  responses: Dictionary<Response>;
+  // responses: Dictionary<Response>;
   responses_new: Dictionary<Array<NewResponse>>;
 
   callbacks: Dictionary<Callback>;

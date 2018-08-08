@@ -112,8 +112,8 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
       delete operation.responses_new['201'];
       delete operation.responses_new['202'];
 
-      delete operation.responses['201'];
-      delete operation.responses['202'];
+      // delete operation.responses['201'];
+      // delete operation.responses['202'];
     }
   }
   return model;

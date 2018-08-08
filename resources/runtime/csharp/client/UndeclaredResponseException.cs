@@ -1,7 +1,6 @@
 
 namespace Microsoft.Rest.ClientRuntime
 {
-
     using System;
 
     public class UndeclaredResponseException : Exception

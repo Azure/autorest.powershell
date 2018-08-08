@@ -101,8 +101,8 @@ export class Namespace extends Initializer {
     const children = this.namespaces.map(async namespace => namespace.writeFiles(writer));
 
     // combine class (XYZ) and interfaces (IXYZ) together in a single file
-    const classes = toMap(this.classes, c => c.name);
-    const interfaces = toMap(this.interfaces, i => i.name);
+    const classes = toMap(this.classes, c => c.fileName);
+    const interfaces = toMap(this.interfaces, i => i.fileName);
 
     for (const [key, classesWithSameName] of classes) {
       const contents = classesWithSameName.map(each => each.definition);

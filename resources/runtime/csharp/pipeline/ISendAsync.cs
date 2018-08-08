@@ -214,13 +214,6 @@ namespace Microsoft.Rest.ClientRuntime
 
     public static class HttpRequestMessageExtensions
     {
-        /// <summary>
-        /// Returns the first header value as a string from an HttpReponseMessage. 
-        /// </summary>
-        /// <param name="response">the HttpResponseMessage to fetch a header from</param>
-        /// <param name="headerName">the header name</param>
-        /// <returns>the first header value as a string from an HttpReponseMessage. string.empty if there is no header value matching</returns>
-        public static string GetFirstHeader(this HttpResponseMessage response, string headerName) => response.Headers.TryGetValues(headerName, out var values) ? System.Linq.Enumerable.FirstOrDefault(values) : string.Empty;
 
         public static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {
             using( original ) {

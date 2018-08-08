@@ -3,6 +3,8 @@ import { all } from '#common/text-manipulation';
 import { Namespace } from './namespace';
 
 export class Project extends Initializer {
+
+
   private namespaces = new Array<Namespace>();
   constructor(objectInitializer?: Partial<Project>) {
     super();
@@ -12,6 +14,10 @@ export class Project extends Initializer {
   public addNamespace(n: Namespace): Namespace {
     this.namespaces.push(n);
     return n;
+  }
+
+  public async init(): Promise<this> {
+    return this;
   }
 
   public async writeFiles(writer: (filename: string, content: string) => Promise<void>) {

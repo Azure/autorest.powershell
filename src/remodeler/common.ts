@@ -1,4 +1,4 @@
-import { Dictionary, ToDictionary } from '#common/dictionary';
+import { Dictionary, ToDictionary, includeXDash } from '#common/dictionary';
 
 export interface PathReference<T> {
   $ref: string;
@@ -61,13 +61,6 @@ export function dereference<T>(document: any, item: Refable<T>, stack = new Arra
 
 export function clone(object: any) {
   return object ? JSON.parse(JSON.stringify(object)) : undefined;
-}
-
-export function includeXDash<T>(dictionary: Dictionary<T>) {
-  return Object.keys(dictionary).filter((v, i, a) => v.startsWith('x-'));
-}
-export function excludeXDash<T>(dictionary: Dictionary<T>) {
-  return Object.keys(dictionary).filter((v, i, a) => !v.startsWith('x-'));
 }
 
 export function getExtensionProperties(dictionary: Dictionary<any>): Dictionary<any> {

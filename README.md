@@ -23,40 +23,52 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 ``` yaml $(llcsharp)
 enable-remodeler: true
+api-folder: private/api
 
 pipeline:
-
-  llcsharp/tweakcodemodel:
-    scope: llcsharp
-    input: remodeler
-#    output-artifact: code-model-v2
-
-  llcsharp/csinferrer:
-    scope: llcsharp
-    input: tweakcodemodel
-#    output-artifact: code-model-v2
-
-  llcsharp/csnamer:
-    scope: llcsharp
-    input: csinferrer
-#    output-artifact: code-model-v2
-
-  llcsharp/generate:
-    scope: llcsharp
-    plugin: llcsharp
-    input: csnamer
-    output-artifact: source-file-csharp
-
-  llcsharp/emitter:
-    input: generate
-    scope: scope-llcsharp/emitter
-
-scope-llcsharp/emitter:
-  input-artifact: source-file-csharp
+  # "Shake the tree", and normalize the model
+  remodeler:
+    input: openapi-document/identity   # the plugin where we get inputs from
   
+  # Make some interpretations about what some things in the model mean
+  tweakcodemodel:
+    input: remodeler
+
+  # Specific things for Azure 
+  tweakcodemodelazure:
+    input: tweakcodemodel
+
+  # Choose names for everything in c#
+  csnamer:
+    input: tweakcodemodelazure
+
+  # generates c# files for http-operations
+  llcsharp:
+    input: csnamer
+  # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
+  cmv2/emitter:
+    input: tweakcodemodelazure
+    scope: code-model-emitter-settings
+
+  # the default emitter will emit everything (no processing) from the inputs listed here.
+  default/emitter:
+    input: 
+     - llcsharp
+     - remodeler
+   
+# Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.  
+code-model-emitter-settings:
+  input-artifact: code-model-v2
+  is-object: true
+  output-uri-expr: | 
+    "code-model-v2"
+
+# testing:  ask for the files we need  
 output-artifact: 
-  - source-file-csharp
-#  - code-model-v2.yaml
+  - code-model-v2.yaml # this is filtered outby default. (remove before production)
+  - source-file-csharp  
+  - source-file-csproj
+  - source-file-other
 
 ```
 

@@ -9,6 +9,10 @@ export class Interface extends Type {
     parent.addInterface(this);
   }
 
+  public get fileName(): string {
+    return this.name;
+  }
+
   public get definition(): string {
     const colon = this.interfaces.length > 0 ? ' : ' : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');

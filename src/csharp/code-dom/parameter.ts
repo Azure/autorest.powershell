@@ -36,6 +36,9 @@ export class Parameter extends Initializer implements Variable {
   public get value(): string {
     return `${this.name}`;
   }
+  public toString(): string {
+    return this.value;
+  }
 
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return `${this.name} = ${valueOf(expression)};`;

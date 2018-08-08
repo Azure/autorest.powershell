@@ -227,12 +227,13 @@ export function escapeString(text: string | undefined): string {
 }
 
 /** emits c# to get the name of a property - uses nameof when it can, and uses a literal when it's an array value. */
-export function fixPropertyName(text: string): string {
+export function nameof(text: string): string {
   if (text.indexOf('[') > -1) {
     return `$"${text.replace(/\[(.*)\]/, '[{$1}]')}"`;
   }
   return `nameof(${text})`;
 }
+
 
 export function setRegion(source: string, region: string, content: TextPossibilities, prepend = true) {
   const ct = new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '');

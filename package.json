@@ -2,12 +2,12 @@
   "name": "@microsoft.azure/autorest.incubator",
   "version": "1.0.86",
   "description": "AutoRest incubator project",
-  "main": "dist/app.js",
+  "main": "dist/plugin/main.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "start": "node ./dist/main.js",
+    "start": "node ./dist/plugin/main.js",
     "build": "tsc -p . && node .scripts/fix-aliased-imports.js",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
@@ -43,7 +43,7 @@
     "tslint-language-service": "^0.9.9",
     "tslint-microsoft-contrib": "^5.0.3",
     "tspath": "^1.2.10",
-    "typescript": "^2.9.1",
+    "typescript": "^3.0.0",
     "yarn": "^1.7.0"
   },
   "dependencies": {

@@ -11,6 +11,11 @@ export interface Variable extends Expression {
   declarationExpression: Expression;
 }
 
+/** A ReferenceVariable can be passed as by 'ref' in C# */
+export interface ReferenceVariable extends Variable {
+  byref: Expression;
+}
+
 export interface Instance {
   invokeMethod(methodName: string, ...parameters: Array<Variable>): ExpressionStatement;
 }

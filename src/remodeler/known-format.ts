@@ -25,7 +25,7 @@ export enum StringFormat {
   Password = 'password',
 
   /** @description a A Date-Time as defined by date-time - RFC1123 */
-  DateTimeRfc1123 = 'date_time_rfc1123',
+  DateTimeRfc1123 = 'date-time-rfc1123',
 
   /** @description a duration of time (todo: RFC reference? ) */
   Duration = 'duration',
@@ -36,6 +36,8 @@ export enum StringFormat {
   /** @description a base64url string of characters, represented as a byte array (see RFC 4648 ) */
   Base64Url = 'base64url',
 
+  /** @description a string that should be an URL */
+  Url = 'url',
 }
 
 export enum IntegerFormat {

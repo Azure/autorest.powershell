@@ -31,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime
         public double Value;
 
         /// <summary>
-        /// Any extended data for an event should be serialized to JSON and stored here.
+        /// Any extended data for an event should be serialized and stored here.
         /// </summary>
         public string ExtendedData;
 

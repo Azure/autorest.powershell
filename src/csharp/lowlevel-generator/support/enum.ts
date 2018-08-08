@@ -1,7 +1,7 @@
-import { Schema } from '#common/code-model/schema';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { StringExpression } from '#csharp/code-dom/expression';
+import { StringExpression, ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Interface } from '#csharp/code-dom/interface';
 import { Method } from '#csharp/code-dom/method';
@@ -12,14 +12,49 @@ import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Struct } from '#csharp/code-dom/struct';
-import { EnumFeatures } from '#csharp/schema/enum';
-import { Serialization, Validation } from '#csharp/schema/extended-type-declaration';
-import { ObjectFeatures } from '#csharp/schema/object';
+import { EnumImplementation } from '#csharp/schema/enum';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
+import { KnownMediaType } from '#common/media-types';
+import { Variable } from '#csharp/code-dom/variable';
 
-export class EnumClass extends Struct implements Serialization, Validation {
-  schemaWithFeatures: EnumFeatures;
-  constructor(schemaWithFeatures: EnumFeatures, state: State, objectInitializer?: Partial<EnumClass>) {
+export class EnumClass extends Struct implements EnhancedTypeDeclaration {
+  implementation: EnumImplementation;
+  get schema(): Schema {
+    return this.implementation.schema;
+  }
+
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
+    return this.implementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
+  }
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral, defaultValue: Expression): Expression {
+    return this.implementation.deserializeFromNode(mediaType, node, defaultValue);
+  }
+  /** emits an expression to deserialize content from a string */
+  deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromString(mediaType, content, defaultValue);
+  }
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+    return this.implementation.serializeToNode(mediaType, value, serializedName);
+  }
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+    return this.implementation.serializeToContent(mediaType, value);
+  }
+
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+    return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName);
+  }
+
+  get isXmlAttribute(): boolean {
+    return this.implementation.isXmlAttribute;
+  }
+
+  get isRequired(): boolean {
+    return this.implementation.isRequired;
+  }
+
+  constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schemaWithFeatures.schema.details.csharp.enum) {
       throw new Error('ENUM AINT XMSENUM');
     }
@@ -29,7 +64,7 @@ export class EnumClass extends Struct implements Serialization, Validation {
         genericParameters: [`${schemaWithFeatures.schema.details.csharp.enum.name}`]
       })],
     });
-    this.schemaWithFeatures = schemaWithFeatures;
+    this.implementation = schemaWithFeatures;
 
     this.apply(objectInitializer);
 
@@ -107,22 +142,10 @@ export class EnumClass extends Struct implements Serialization, Validation {
     })).add(`return this.${backingField.value}.GetHashCode();`);
   }
 
-  public validateValue(propertyName: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.validateValue(propertyName);
+  public validateValue(property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(property);
   }
-  public validatePresence(propertyName: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.validatePresence(propertyName);
-  }
-  jsonSerializationImplementation(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.jsonSerializationImplementation(containerName, propertyName, serializedName);
-  }
-  jsonDeserializationImplementationOnProperty(containerName: string, propertyName: string, serializedName: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.jsonDeserializationImplementationOnProperty(containerName, propertyName, serializedName);
-  }
-  jsonDeserializationImplementationOnNode(nodeExpression: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.jsonDeserializationImplementationOnNode(nodeExpression);
-  }
-  serializeInstanceToJson(instance: string): OneOrMoreStatements {
-    return this.schemaWithFeatures.serializeInstanceToJson(instance);
+  public validatePresence(property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(property);
   }
 }

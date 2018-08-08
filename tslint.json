@@ -38,6 +38,7 @@
     "member-access": false,
     "no-this-assignment": false,
     "object-literal-sort-keys": false,
+    "completed-docs": false,
     "array-type": [
       true,
       "generic"
