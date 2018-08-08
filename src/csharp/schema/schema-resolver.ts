@@ -112,7 +112,8 @@ export class SchemaDefinitionResolver {
             return new String(schema, required);
 
           default:
-            state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
+            state.warning(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
+            return new String(schema, required);
         }
 
       case JsonType.Boolean:
