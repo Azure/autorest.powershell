@@ -92,4 +92,6 @@ async function main() {
   });
 }
 
-main();
+// main();
+
+processDirectory(`${__dirname}/../dist`)
