@@ -48,7 +48,14 @@ export class OperationMethod extends Method {
     }
 
     // add parameters
-    this.methodParameters = this.operation.parameters.map((value, index) => <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index))));
+    // const [constants, params] = values(this.operation.parameters).linq.bifurcate(each => each.details.csharp.constantValue)
+    this.methodParameters = this.operation.parameters.map((value, index) => {
+      const p = <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index)));
+      if (value.details.csharp.constantValue) {
+        p.defaultInitializer = `${value.details.csharp.constantValue}`;
+      }
+      return p;
+    });
 
     this.description = this.operation.details.csharp.description;
 
@@ -104,7 +111,7 @@ export class OperationMethod extends Method {
     const $this = this;
     this.add(function* () {
       const eventListener = new EventListener($this.contextParameter, $this.state.project.emitSignals);
-      yield `// should we call validation?`;
+      // yield `// should we call validation?`;
       yield EOL;
 
       yield `// construct URL`;
@@ -154,6 +161,17 @@ export class OperationMethod extends Method {
     } else {
       this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
     }
+
+
+    // remove constant parameters and make them locals instead.
+    this.insert(`// Constant Parameters`);
+    for (let i = this.parameters.length; i--; i < 0) {
+      const p = this.parameters[i];
+      if (p && p.defaultInitializer) {
+        this.parameters.splice(i, 1);
+        this.insert(new LocalVariable(p.name, p.type, { initializer: new StringExpression(p.defaultInitializer) }));
+      }
+    }
   }
 }
 
@@ -171,12 +189,16 @@ export class EventListener {
     if (this.emitSignals) {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+    } else {
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException();; }`;
     }
   }
   *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+    } else {
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException();; }`;
     }
 
   }

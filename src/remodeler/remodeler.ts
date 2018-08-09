@@ -525,7 +525,7 @@ export class Remodeler {
 
       for (const each of keys(original)) {
         const header = this.dereference(original[each]);
-        const propertyName = header.name || `${each}`;
+        const propertyName = Interpretations.getName(header.name || `${each}`, header.instance);
 
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>header.instance.schema);
         const newPropSchema = this.refOrAdd(`${containerName[0] == '.' ? containerName : '.' + containerName}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);

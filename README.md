@@ -23,7 +23,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 ``` yaml $(llcsharp)
 enable-remodeler: true
-api-folder: private/api
+api-folder: ""
 
 pipeline:
   # "Shake the tree", and normalize the model
@@ -65,10 +65,10 @@ code-model-emitter-settings:
 
 # testing:  ask for the files we need  
 output-artifact: 
-  - code-model-v2.yaml # this is filtered outby default. (remove before production)
+  # - code-model-v2.yaml # this is filtered outby default. (remove before production)
   - source-file-csharp  
   - source-file-csproj
-  - source-file-other
+  # - source-file-other
 
 ```
 

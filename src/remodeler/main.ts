@@ -27,7 +27,7 @@ export async function process(service: Host) {
 
     // output the model
     await service.WriteFile('code-model-v2.yaml', serialize(codeModel), undefined, 'code-model-v2');
-    await service.WriteFile('oai.txt', original, undefined, 'source-file-other');
+    await service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
 
   } catch (E) {
     console.error(E);
