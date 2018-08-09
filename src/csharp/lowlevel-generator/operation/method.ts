@@ -165,7 +165,10 @@ export class OperationMethod extends Method {
     if (this.state.project.storagePipeline) {
       if (returnFromCall) {
         this.add(`return await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
+      } else {
+        this.add(`await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
       }
+
     } else {
       this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
     }
