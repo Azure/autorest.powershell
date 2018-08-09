@@ -155,9 +155,17 @@ export class OperationMethod extends Method {
     });
   }
 
-  emitCall() {
+  emitCall(returnFromCall: boolean) {
+
+    // storage will return from the call for download, etc.
+    if (returnFromCall) {
+      this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
+    }
+
     if (this.state.project.storagePipeline) {
-      this.add(`await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
+      if (returnFromCall) {
+        this.add(`return await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
+      }
     } else {
       this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
     }
@@ -190,7 +198,7 @@ export class EventListener {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException();; }`;
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException(); }`;
     }
   }
   *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
@@ -198,7 +206,7 @@ export class EventListener {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException();; }`;
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException(); }`;
     }
 
   }
@@ -411,11 +419,11 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
       if ($this.returnNull) {
         yield Return('result');
-        $this.insert(new LocalVariable('result', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }))
+        $this.insert(new LocalVariable('result', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }));
       }
     });
 
-    this.opMethod.emitCall();
+    this.opMethod.emitCall($this.returnNull);
   }
 
   private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
