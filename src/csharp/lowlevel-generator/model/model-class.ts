@@ -4,7 +4,7 @@ import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCa
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Is, IsDeclaration, LiteralExpression, ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
+import { Is, IsDeclaration, LiteralExpression, ExpressionOrLiteral, Expression, valueOf } from '#csharp/code-dom/expression';
 import { InitializedField, Field } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
 import * as dotnet from '#csharp/code-dom/mscorlib';
@@ -192,7 +192,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     for (const { key: propertyName, value: property } of items(this.schema.properties)) {
-      const prop = new ModelProperty(this, property, propertyName, this.state.path('properties', propertyName));
+      const prop = new ModelProperty(this, property, property.serializedName || propertyName, this.state.path('properties', propertyName));
       this.add(prop);
 
       validationStatements.add(prop.validatePresenceStatement);
@@ -237,7 +237,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         *body() {
           for (const hp of headerProperties) {
             const hparam = <ModelProperty>hp;
-            yield hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, hparam.serializedName));
+            const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
+            const tmp = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}`;
+            yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.backingName} = System.Linq.Enumerable.FirstOrDefault(${values}) is string ${tmp} ? ${tmp} : (string)${hparam.name})`);
           }
           yield `return this;`;
         }

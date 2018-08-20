@@ -133,6 +133,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
 
       case KnownMediaType.Cookie:
       case KnownMediaType.QueryParameter:
+        return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
       case KnownMediaType.Header:
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:

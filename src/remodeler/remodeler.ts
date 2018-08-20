@@ -533,6 +533,7 @@ export class Remodeler {
         newPropSchema.extensions = getExtensionProperties(header.instance);
 
         newSchema.properties[propertyName] = new Property(propertyName, {
+          serializedName: header.name || `${each}`,
           description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), header.instance),
           schema: newPropSchema,
           extensions: getExtensionProperties(header.instance),

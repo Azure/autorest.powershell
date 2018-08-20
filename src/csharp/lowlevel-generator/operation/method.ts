@@ -115,11 +115,21 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// construct URL`;
+      if (queryParams.length > 0) {
+        yield `var queryParameters = new System.Collections.Generic.List<string>();`;
+      }
       // yield `var _url = new System.Uri($"${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}${queryParams.joinWith(pp => `${pp.param.name}={System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`, '&')}");`;
       if ($this.state.project.storagePipeline) {
-        yield `var _url = new System.Uri(${$this.resourceUri}.AbsolutePath+"${queryParams.length > 0 ? '?' : ''}"${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.Header, pp.param.name).value}`, '+"&"')});`;
-
+        if (queryParams.length > 0) {
+          for (const qp of queryParams) {
+            yield `${qp.serializeToNode(KnownMediaType.QueryParameter, qp.param.name)}`;
+          }
+          yield `var _tempUrl = ${$this.resourceUri}.AbsoluteUri;`;
+          yield If(`queryParameters.Count > 0`, `_tempUrl = $"{_tempUrl}{((_tempUrl.Contains("?") && !_tempUrl.EndsWith("?")) ? "&" : "?")}{string.Join("&", queryParameters)}";`);
+          yield `var _url = new System.Uri(_tempUrl);`;
+        } else {
+          yield `var _url = new System.Uri(${$this.resourceUri}.AbsoluteUri);`;
+        }
       } else {
         yield `var _url = new System.Uri("${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}"${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.Header, pp.param.name).value}`, '+"&"')});`;
@@ -135,7 +145,7 @@ export class OperationMethod extends Method {
       if (headerParams.length > 0) {
         yield `// add headers parameters`;
         for (const hp of headerParams) {
-          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.name);
+          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.name);
         }
         yield EOL;
       }
@@ -248,7 +258,8 @@ export class CallMethod extends Method {
             // set the response object in the responder.
             yield `_response = response;`;
           }
-          const contentType = new LocalVariable("_contentType", dotnet.Var, { initializer: `System.Net.Http.Headers.MediaTypeHeaderValue.Parse( ${valueOf(response.invokeMethod('GetFirstHeader', new StringExpression(`Content-Type`)))}).MediaType` });
+          // TODO: omit generating _contentType var if it will never be used
+          const contentType = new LocalVariable("_contentType", dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
           yield contentType;
 
 
