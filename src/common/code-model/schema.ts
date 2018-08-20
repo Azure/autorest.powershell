@@ -72,11 +72,13 @@ export interface Property extends Extensions {
 }
 
 export class Property extends Extensions implements Property {
+  public serializedName: string;
   public details: LanguageDetails<PropertyDetails>;
   public extensions = new Dictionary<any>();
 
   constructor(name: string, initializer?: Partial<Property>) {
     super();
+    this.serializedName = name;
     this.details = {
       default: {
         description: 'MISSING DESCRIPTION 03',

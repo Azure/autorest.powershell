@@ -13,7 +13,7 @@ export class IfStatement extends Statements {
   }
   public get implementation(): string {
     return `
-if(${valueOf(this.conditional)})
+if (${valueOf(this.conditional)})
 {
 ${indent(super.implementation)}
 }`.trim();
@@ -34,7 +34,7 @@ export class WhileStatement extends Statements {
   }
   public get implementation(): string {
     return `
-while(${this.conditional.value})
+while (${this.conditional.value})
 {
 ${indent(super.implementation)}
 }`.trim();
@@ -50,7 +50,7 @@ export class ElseIfStatement extends Statements {
   }
   public get implementation(): string {
     return `
-else if(${this.conditional.value})
+else if (${this.conditional.value})
 {
 ${indent(super.implementation)}
 }`.trim();

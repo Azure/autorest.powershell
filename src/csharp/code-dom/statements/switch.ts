@@ -15,7 +15,7 @@ export class SwitchStatement extends Initializer implements Statement {
 
   public get implementation(): string {
     return `
-switch( ${this.expression.value} )
+switch ( ${this.expression.value} )
 {
 ${indent(this.caseStatements.map(each => each.implementation).join(EOL))}
 }`;

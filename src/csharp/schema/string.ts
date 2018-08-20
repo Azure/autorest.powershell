@@ -65,6 +65,7 @@ export class String implements EnhancedTypeDeclaration {
 
       case KnownMediaType.Cookie:
       case KnownMediaType.QueryParameter:
+        return toExpression(`if (!string.IsNullOrEmpty(${value})) { queryParameters.Add($"${value}={System.Uri.EscapeDataString(${value})}"); }`);
       case KnownMediaType.Header:
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:

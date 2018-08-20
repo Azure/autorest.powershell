@@ -13,7 +13,7 @@ export class DateTime extends Primitive {
   public isXmlAttribute: boolean = false;
   public jsonType = ClientRuntime.JsonString;
   // public DateFormat = new StringExpression('yyyy-MM-dd');
-  public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.FFFFFFFK');
+  public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
 
   get declaration(): string {
@@ -29,13 +29,13 @@ export class DateTime extends Primitive {
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
-          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture))`) :
-          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)) : null`);
+          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`) :
+          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)) : null`);
 
       case KnownMediaType.Xml:
         return this.isRequired ?
-          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture))`) :
-          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)) : null`);
+          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`) :
+          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)) : null`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.QueryParameter:
@@ -43,8 +43,8 @@ export class DateTime extends Primitive {
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
         return toExpression(this.isRequired ?
-          `${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)` :
-          `null == ${value} ? ${System.String.Empty} : "${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)"`
+          `${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)` :
+          `null == ${value} ? ${System.String.Empty} : "${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)"`
         );
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
@@ -62,20 +62,20 @@ export class DateTime extends Primitive {
       case KnownMediaType.Header:
         // container : HttpRequestHeaders
         return this.isRequired ?
-          `${valueOf(container)}.Add("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture));` :
-          If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture));`);
+          `${valueOf(container)}.Add("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture));` :
+          If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture));`);
 
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}..ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)}` :
-          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)}"}`;
+          `${serializedName}={${value}..ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
 
       case KnownMediaType.UriParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)}` :
-          `{null == ${value} ? "": $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.CurrentCulture)}"}`;
+          `${serializedName}={${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? "": $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -85,9 +85,9 @@ export class DateTime extends Primitive {
   // public static string DateFormat = "yyyy-MM-dd";
   // public static string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
   // public static string DateTimeRfc1123Format = "R";
-  // public static JsonString CreateDate(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateFormat, CultureInfo.CurrentCulture)) : null;
-  // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.CurrentCulture)) : null;
-  // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.CurrentCulture)) : null;
+  // public static JsonString CreateDate(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateFormat, CultureInfo.InvariantCulture)) : null;
+  // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.InvariantCulture)) : null;
+  // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.InvariantCulture)) : null;
 
   validateValue(property: Variable): string {
     return ``;
