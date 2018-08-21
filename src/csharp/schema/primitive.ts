@@ -81,7 +81,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
       case KnownMediaType.Header: {
         // HttpResponseHeaders
         const tmp = `__${camelCase(['header', ...deconstruct(serializedName)])}`;
-        return toExpression(`System.Linq.Enumerable.FirstOrDefault(${valueOf(container)}.GetValues("${serializedName}")) is string ${tmp} ? ${this.baseType}.TryParse( ${tmp}, out ${this.baseType} ${tmp}Value ) ? ${tmp}Value :${defaultValue}:${defaultValue}`);
+        return toExpression(`System.Linq.Enumerable.FirstOrDefault(${serializedName}) is string ${tmp} ? ${this.baseType}.TryParse( ${tmp}, out ${this.baseType} ${tmp}Value ) ? ${tmp}Value : ${defaultValue} : ${defaultValue}`);
       }
     }
     return toExpression(`${defaultValue} /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename} */`);
