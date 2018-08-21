@@ -83,7 +83,7 @@ export class DateTime extends Primitive {
     super(schema);
   }
   // public static string DateFormat = "yyyy-MM-dd";
-  // public static string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
+  // public static string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
   // public static string DateTimeRfc1123Format = "R";
   // public static JsonString CreateDate(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateFormat, CultureInfo.InvariantCulture)) : null;
   // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.InvariantCulture)) : null;

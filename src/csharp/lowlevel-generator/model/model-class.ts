@@ -238,8 +238,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           for (const hp of headerProperties) {
             const hparam = <ModelProperty>hp;
             const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
-            const tmp = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}`;
-            yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.backingName} = System.Linq.Enumerable.FirstOrDefault(${values}) is string ${tmp} ? ${tmp} : (string)${hparam.name})`);
+            yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values))}`);
           }
           yield `return this;`;
         }
