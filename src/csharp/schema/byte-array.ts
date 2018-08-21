@@ -19,12 +19,12 @@ export class ByteArray implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Xml: {
         const xTmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
-        return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.ToString(), out var ${xTmp}) ? new System.Func<byte[]>( ()=> {var data=  new byte[${xTmp}.Length / 2]; for (int index = 0; index < data.Length; index++) { data[index] = byte.Parse(${xTmp}.Substring(index * 2, 2), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture); } return data; })() : ${defaultValue}`);
+        return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.Value, out var ${xTmp}) ? System.Convert.FromBase64String(${xTmp}) : ${defaultValue}`);
       }
 
       case KnownMediaType.Header: {
         const tmp = `__${camelCase(['header', ...deconstruct(serializedName)])}`;
-        return toExpression(`System.Linq.Enumerable.FirstOrDefault(${valueOf(container)}.GetValues("${serializedName}")) is string ${tmp} ? new System.Func<byte[]>( ()=> {var data=  new byte[${tmp}.Length / 2]; for (int index = 0; index < data.Length; index++) { data[index] = byte.Parse(${tmp}.Substring(index * 2, 2), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture); } return data; })() : ${defaultValue}`);
+        return toExpression(`System.Linq.Enumerable.FirstOrDefault(${serializedName}) is string ${tmp} ? System.Convert.FromBase64String(${tmp}) : ${defaultValue}`);
 
       }
     }
@@ -55,10 +55,10 @@ export class ByteArray implements EnhancedTypeDeclaration {
       const b = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Xml: {
-          return `AddIf( null != ${value} ? new System.Xml.Linq.XElement("${serializedName}", System.Linq.Enumerable.Aggregate(System.Linq.Enumerable.Select( ${value}, ${b} => ${b}.ToString( "X2" )), ( s1, s2 ) => s1 + s2 )) : null, ${container}.Add);`
+          return `AddIf( null != ${value} ? new System.Xml.Linq.XElement("${serializedName}", System.Convert.ToBase64String(${value})) : null, ${container}.Add);`
         }
         case KnownMediaType.Header: {
-          return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",System.Linq.Enumerable.Aggregate(System.Linq.Enumerable.Select( ${value}, ${b} => ${b}.ToString( "X2" )), ( s1, s2 ) => s1 + s2 ));`);
+          return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", System.Convert.ToBase64String(${value}));`);
         }
       }
 
