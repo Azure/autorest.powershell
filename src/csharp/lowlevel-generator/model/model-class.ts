@@ -237,8 +237,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         *body() {
           for (const hp of headerProperties) {
             const hparam = <ModelProperty>hp;
-            const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
-            yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values))}`);
+            if (hparam.serializedName == "x-ms-meta") {
+              yield `${hparam.backingName} = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(headers)}, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value));`
+            } else {
+              const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
+              yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values))}`);
+            }
           }
           yield `return this;`;
         }
