@@ -69,7 +69,9 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Xml: {
           // XElement should be a container of items, right?
-          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}.Elements("${this.elementType.schema.xml ? this.elementType.schema.xml.name || "???" : "?!?"}"), (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
+          // if the reference doesn't define an XML schema then use its default name
+          const defaultName = this.elementType.schema.details.default.name;
+          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}.Elements("${this.elementType.schema.xml ? this.elementType.schema.xml.name || defaultName : defaultName}"), (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
 
           return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
         }
@@ -137,7 +139,9 @@ export class ArrayOf implements EnhancedTypeDeclaration {
           return toExpression(`new System.Net.Http.StringContent( null != ${value} ? new ${ClientRuntime.XNodeArray}(${this.serializeToNode(mediaType, value, '')}).ToString() : "", System.Text.Encoding.UTF8)`);
         }
         case KnownMediaType.Xml: {
-          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || "???" : "?!?")}).ToString() : "", System.Text.Encoding.UTF8)`);
+          // if the reference doesn't define an XML schema then use its default name
+          const defaultName = this.elementType.schema.details.default.name;
+          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString() : "", System.Text.Encoding.UTF8)`);
         }
 
         case KnownMediaType.Cookie:

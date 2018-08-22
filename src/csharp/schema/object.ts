@@ -23,7 +23,8 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
       case KnownMediaType.Xml: {
         // XElement/XElement or XElement/XAttribute
         const tmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
-        return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}"), out var ${tmp}) ? ${this.classDeclaration}.FromXml(${tmp}) : ${defaultValue}`);
+        // prefer specified XML name if available
+        return toExpression(`If( ${valueOf(container)}?.Element("${this.schema.xml ? this.schema.xml.name || serializedName : serializedName}"), out var ${tmp}) ? ${this.classDeclaration}.FromXml(${tmp}) : ${defaultValue}`);
       }
     }
     return toExpression(`${defaultValue} /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename} */`);
@@ -95,7 +96,8 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
         return `AddIf( null != ${value} ? (${ClientRuntime.JsonNode}) ${value}.ToJson(null) : null, "${serializedName}" ,${container}.Add );`;
 
       case KnownMediaType.Xml:
-        return `AddIf( null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToXml()) : null, ${container}.Add );`;
+        // prefer specified XML name if available
+        return `AddIf( null != ${value} ? ${value}.ToXml(new ${System.Xml.Linq.XElement}("${this.schema.xml ? this.schema.xml.name || serializedName : serializedName}")) : null, ${container}.Add );`;
 
     }
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
