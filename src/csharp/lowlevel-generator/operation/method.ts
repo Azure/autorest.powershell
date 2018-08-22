@@ -145,6 +145,10 @@ export class OperationMethod extends Method {
       if (headerParams.length > 0) {
         yield `// add headers parameters`;
         for (const hp of headerParams) {
+          if (hp.param.name == "Content-Length") {
+            // content length is set when the request body is set
+            continue;
+          }
           yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.name);
         }
         yield EOL;

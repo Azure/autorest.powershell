@@ -15,15 +15,14 @@ export class DateTime extends Primitive {
   // public DateFormat = new StringExpression('yyyy-MM-dd');
   public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
-
   get declaration(): string {
     return `System.DateTime${this.isRequired ? '' : '?'}`;
   }
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `System.DateTime.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ?${tmpValue}Value : ${defaultValue}`;
+    return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
   protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `System.DateTime.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ?${tmpValue}Value : ${defaultValue}`;
+    return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
     switch (mediaType) {
