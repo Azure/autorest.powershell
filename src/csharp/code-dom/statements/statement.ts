@@ -84,40 +84,6 @@ export class Statements extends Initializer implements Statement {
     return this;
   }
 
-  private appendStatements(statements: OneOrMoreStatements): Statements {
-    if (!statements) {
-      return this;
-    }
-
-    if (typeof statements === 'function') {
-      statements = statements();
-    }
-
-    if (typeof statements === 'string') {
-      if (statements.trim().length > 0) {
-        this.statements.push(new LiteralStatement(statements));
-      }
-      return this;
-    }
-
-    if (typeof statements === 'object') {
-      if (isStatement(statements)) {
-        this.statements.push(statements);
-        return this;
-      }
-
-      if (statements instanceof Statements) {
-        this.statements.push(...statements.statements)
-        return this;
-      }
-
-      for (const statement of statements) {
-        this.statements.push(typeof statement === 'string' ? new LiteralStatement(statement) : statement);
-      }
-    }
-    return this;
-  }
-
   public get implementation(): string {
     return `${this.statements.joinWith(each => each.implementation, EOL)}`.trim();
   }
