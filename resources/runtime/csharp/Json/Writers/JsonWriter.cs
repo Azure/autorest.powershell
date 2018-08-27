@@ -5,8 +5,6 @@ using System.Text.Encodings.Web;
 
 namespace Carbon.Json
 {
-    // TODO: Replace with System.Text.Json when available
-
     public class JsonWriter
     {
         const string indentation = "  ";  // 2 spaces
@@ -168,18 +166,16 @@ namespace Carbon.Json
 
         public void WriteDate(JsonDate date)
         {
-            writer.Write('"');
-
             if (date.ToDateTime().Year == 1)
             {
                 WriteNull();
             }
             else
             {
+                writer.Write('"');
                 writer.Write(date.ToIsoString());
-            }
-
             writer.Write('"');
+        }
         }
 
         public void WriteNull()
@@ -220,3 +216,6 @@ namespace Carbon.Json
         #endregion
     }
 }
+
+
+    // TODO: Replace with System.Text.Json when available

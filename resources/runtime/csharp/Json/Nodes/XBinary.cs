@@ -31,7 +31,6 @@ namespace Carbon.Json
 
         public override int GetHashCode() => Value.GetHashCode();
 
-        public override string ToString()
-            => _base64 ?? Convert.ToBase64String(_value);
+        public override string ToString() => _base64 ?? Convert.ToBase64String(_value);
     }
 }

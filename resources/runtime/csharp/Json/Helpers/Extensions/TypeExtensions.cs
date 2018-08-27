@@ -17,7 +17,7 @@ namespace Carbon.Internal.Extensions
 
             // Check if it references it's own converter....
 
-            foreach (var interfaceType in candidateType.GetInterfaces())
+            foreach (Type interfaceType in candidateType.GetInterfaces())
             {
                 if (interfaceType.IsGenericType
                   && interfaceType.GetGenericTypeDefinition().Equals(openGenericInterfaceType))
@@ -43,7 +43,7 @@ namespace Carbon.Internal.Extensions
                 return true;
             }
 
-            foreach (var i in candidateType.GetInterfaces())
+            foreach (Type i in candidateType.GetInterfaces())
             {
                 if (i.IsGenericType && i.ImplementsOpenGenericInterface(openGenericInterfaceType))
                 {

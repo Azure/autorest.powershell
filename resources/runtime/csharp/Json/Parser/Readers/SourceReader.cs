@@ -6,7 +6,7 @@ namespace Carbon.Json.Parser
 {
     internal sealed class SourceReader : IDisposable
     {
-        private TextReader source;
+        private readonly TextReader source;
 
         private char current;
 
@@ -94,12 +94,10 @@ namespace Carbon.Json.Parser
             }
         }
 
+        private readonly char[] hexCode = new char[4];
+
         private char ReadUnicodeEscapeSequence()
         {
-            // TODO: stackallocate
-
-            var hexCode = new char[4];
-
             hexCode[0] = current; Next();
             hexCode[1] = current; Next();
             hexCode[2] = current; Next();

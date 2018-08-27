@@ -34,7 +34,7 @@ namespace Carbon.Json
                         {
                             map = new Dictionary<string, JsonMember>();
 
-                            foreach (var m in Members)
+                            foreach (JsonMember m in Members)
                             {
                                 map[m.Name.ToLower()] = m;
                             }

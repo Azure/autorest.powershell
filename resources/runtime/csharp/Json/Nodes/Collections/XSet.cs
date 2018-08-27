@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
-    public class XSet<T> : JsonArray, IEnumerable<JsonNode>
+    public sealed class XSet<T> : JsonArray, IEnumerable<JsonNode>
     {
         private readonly HashSet<T> values;
         private readonly JsonType elementType;
@@ -16,17 +16,7 @@ namespace Carbon.Json
 
         public XSet(HashSet<T> values)
         {
-            #region Preconditions
-
-            if (values == null)
-                throw new ArgumentNullException(nameof(values));
-
-            if (values.Count == 0)
-                throw new ArgumentException("Must not be empty", nameof(values));
-
-            #endregion
-
-            this.values = values;
+            this.values = values ?? throw new ArgumentNullException(nameof(values));
             this.elementCode = System.Type.GetTypeCode(typeof(T));
             this.elementType = XHelper.GetElementType(this.elementCode);
         }
