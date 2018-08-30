@@ -1,5 +1,5 @@
 import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, StatementPossibilities, Statements } from '#csharp/code-dom/statements/statement';
 
 // gs01: fix this -- value should be an expresion.
 export function Case(value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): CaseStatement {
@@ -31,7 +31,7 @@ export function DefaultCase(body: StatementPossibilities, objectInitializer?: Pa
 
 export class DefaultCaseStatement extends CaseStatement {
   constructor(body: StatementPossibilities, objectInitializer?: Partial<DefaultCaseStatement>) {
-    super("", body);
+    super('', body);
     this.apply(objectInitializer);
   }
 
@@ -45,14 +45,13 @@ ${indent('break')};
   }
 }
 
-
 export function TerminalDefaultCase(body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): TerminalDefaultCaseStatement {
   return new TerminalDefaultCaseStatement(body, objectInitializer);
 }
 
 export class TerminalDefaultCaseStatement extends CaseStatement {
   constructor(body: StatementPossibilities, objectInitializer?: Partial<TerminalDefaultCaseStatement>) {
-    super("", body);
+    super('', body);
     this.apply(objectInitializer);
   }
 
@@ -64,7 +63,6 @@ ${this.statementsImplementation}
 }`.trim();
   }
 }
-
 
 export function TerminalCase(value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): TerminalCaseStatement {
   return new TerminalCaseStatement(value, body, objectInitializer);

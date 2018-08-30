@@ -6,7 +6,7 @@ import { Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { System } from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
@@ -69,7 +69,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
         return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToJson(null).ToString() : "{}", System.Text.Encoding.UTF8);`);
       }
       case KnownMediaType.Xml: {
-        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToXml(null).ToString() : "", System.Text.Encoding.UTF8);`);
+        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToXml(null).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8);`);
       }
 
     }

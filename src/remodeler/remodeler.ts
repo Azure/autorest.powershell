@@ -20,7 +20,7 @@ import { SecurityScheme } from '#common/code-model/security-scheme';
 import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '#common/dictionary';
 import { isMediaTypeJson, isMediaTypeXml } from "#common/media-types"
 import { ModelState } from '#common/model-state';
-import { System } from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
 import { ArtifactMessage, Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA, dump, safeDump, safeLoad } from 'js-yaml'
 import { Model as CodeModel } from '../common/code-model/code-model';

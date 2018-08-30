@@ -12,6 +12,6 @@ export class ReturnStatement extends Statements {
     this.apply(objectInitializer);
   }
   public get implementation(): string {
-    return `return ${this.expression ? valueOf(this.expression) : ""};`;
+    return `return ${this.expression ? valueOf(this.expression) : ''};`;
   }
 }

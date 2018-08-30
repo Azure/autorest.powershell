@@ -92,6 +92,7 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     return {
       implementation: `${e};`,
       value: e,
+      toString: ()=> { return `${e};`}
     };
   }
 

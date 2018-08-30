@@ -1,22 +1,21 @@
-import * as OpenAPI from './oai3';
-import { Server } from '../common/code-model/components';
-import { getExtensionProperties, clone } from './common';
-import { Remodeler } from './remodeler';
-import { Dictionary } from '#common/dictionary';
-import { EnumDetails, EnumValue } from '#common/code-model/schema';
-import { MediaType } from '#common/code-model/http-operation';
 import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
+import { MediaType } from '#common/code-model/http-operation';
+import { EnumDetails, EnumValue } from '#common/code-model/schema';
+import { Dictionary } from '#common/dictionary';
 import { escapeString } from '#common/text-manipulation';
+import { Server } from '../common/code-model/components';
+import { clone, getExtensionProperties } from './common';
+import * as OpenAPI from './oai3';
+import { Remodeler } from './remodeler';
 
 interface XMSEnum {
   modelAsString?: boolean;
   values: [{ value: any, description?: string, name?: string }];
-  name: string
+  name: string;
 }
 
-
 export function getName(defaultValue: string, original: OpenAPI.Extensions) {
-  return typeof (original["x-ms-client-name"]) === "string" ? original["x-ms-client-name"] : defaultValue;
+  return typeof (original['x-ms-client-name']) === 'string' ? original['x-ms-client-name'] : defaultValue;
 }
 
 export function getDescription(defaultValue: string, original: OpenAPI.Extensions & { title?: string, summary?: string, description?: string }): string {
@@ -27,19 +26,19 @@ export function getDescription(defaultValue: string, original: OpenAPI.Extension
 }
 
 export function getParameterImplementationLocation(defaultValue: ImplementationLocation, original: OpenAPI.Parameter & OpenAPI.Extensions): ImplementationLocation {
-  const xloc = original["x-ms-parameter-location"];
-  if (typeof (xloc) === "string") {
+  const xloc = original['x-ms-parameter-location'];
+  if (typeof (xloc) === 'string') {
     switch (xloc.toLowerCase()) {
-      case "method":
+      case 'method':
         return ImplementationLocation.Method;
-      case "client":
+      case 'client':
         return ImplementationLocation.Client;
     }
   }
   return defaultValue;
 }
 export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undefined {
-  const xmse = <XMSEnum>original["x-ms-enum"];
+  const xmse = <XMSEnum>original['x-ms-enum'];
   if (xmse && original.enum) {
     return {
       name: xmse.name,
@@ -59,7 +58,7 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
           };
         }),
       modelAsString: xmse.modelAsString ? true : false
-    }
+    };
   }
   return undefined;
 }
@@ -77,7 +76,7 @@ export function getConstantValue() {
 
 }
 
-let counter = 1;
+const counter = 1;
 export function getOperationId(method: string, path: string, original: OpenAPI.HttpOperation): string {
   if (original.operationId) {
     return original.operationId;
@@ -121,7 +120,6 @@ export function getServers(method?: Array<OpenAPI.Server>, path?: Array<OpenAPI.
 export function getExternalDocs(externalDocs?: OpenAPI.ExternalDocumentation): ExternalDocumentation | undefined {
   return externalDocs && externalDocs.url ? new ExternalDocumentation(externalDocs.url, {
     extensions: getExtensionProperties(externalDocs),
-    description: getDescription("", externalDocs)
-  }) : undefined
+    description: getDescription('', externalDocs)
+  }) : undefined;
 }
-

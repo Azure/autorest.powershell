@@ -5,6 +5,7 @@ import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { System } from '#csharp/code-dom/dotnet';
 
 export class Binary implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -12,7 +13,7 @@ export class Binary implements EnhancedTypeDeclaration {
   }
 
   get declaration(): string {
-    return 'System.IO.Stream';
+    return System.IO.Stream.declaration;
   }
 
   /** emits an expression to deserialize a property from a member inside a container */

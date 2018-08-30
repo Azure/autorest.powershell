@@ -1,10 +1,10 @@
 import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
-import { EnumType, LibraryType } from '#csharp/code-dom/mscorlib';
+import { EnumType, LibraryType } from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { intersect } from '#common/intersect';
-import * as dotnet from "#csharp/code-dom/mscorlib";
+import * as dotnet from "#csharp/code-dom/dotnet";
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
 const serializationMode = new LibraryType(clientRuntimeNamespace, "SerializationMode");

@@ -8,7 +8,7 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { Is, IsDeclaration, LiteralExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';

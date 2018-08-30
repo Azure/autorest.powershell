@@ -3,9 +3,9 @@ import { items, length, values } from '#common/dictionary';
 import { camelCase, deconstruct, EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '#csharp/code-dom/statements/case';
 import { Finally } from '#csharp/code-dom/statements/finally';
@@ -21,7 +21,7 @@ import { HttpOperation, Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
-import { isMediaTypeJson, isMediaTypeXml, normalizeMediaType, parseMediaType, KnownMediaType, knownMediaType } from '#common/media-types';
+import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '#common/media-types';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -73,14 +73,14 @@ export class OperationMethod extends Method {
         const responseType = response.schema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.schema, true, state) : null;
         const headerType = response.headerSchema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
 
-        if (responseType || headerType) {
-          const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state);
-          this.addParameter(newCallbackParameter);
-          this.callbacks.push(newCallbackParameter);
-        } else {
-          // there isn't a response type for the this call. 
-          // stream?
-        }
+        // if (responseType || headerType) {
+        const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state);
+        this.addParameter(newCallbackParameter);
+        this.callbacks.push(newCallbackParameter);
+        // } else {
+        // there isn't a response type for the this call.
+        // stream?
+        // }
       }
     }
 
@@ -103,7 +103,9 @@ export class OperationMethod extends Method {
     const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
     for (const pp of pathParams) {
-      path = path.replace(`{${pp.param.name}}`, `{System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`);
+      path = path.replace(`{${pp.param.name}}`, `"
+        + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '')}
+        + "`);
     }
     const cb = this.callbacks;
     const bp = this.bodyParameter;
@@ -115,10 +117,12 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// construct URL`;
+      /* FIXING!
       if (queryParams.length > 0) {
         yield `var queryParameters = new System.Collections.Generic.List<string>();`;
       }
-      // yield `var _url = new System.Uri($"${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}${queryParams.joinWith(pp => `${pp.param.name}={System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`, '&')}");`;
+      */
+      let url: LocalVariable;
       if ($this.state.project.storagePipeline) {
         if (queryParams.length > 0) {
           for (const qp of queryParams) {
@@ -131,8 +135,18 @@ export class OperationMethod extends Method {
           yield `var _url = new System.Uri(${$this.resourceUri}.AbsoluteUri);`;
         }
       } else {
-        yield `var _url = new System.Uri("${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}"${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.Header, pp.param.name).value}`, '+"&"')});`;
+        url = new LocalVariable('_url', dotnet.Var, {
+          initializer: `new System.Uri(
+        "${baseUrl}${path}"
+        ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
+        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
+        + "&"`
+            )}
+        )`
+        });
+        yield url.declarationStatement;
+
+        yield EOL;
       }
       yield eventListener.signal(ClientRuntime.Events.URLCreated, `_url`);
       yield EOL;
@@ -145,7 +159,7 @@ export class OperationMethod extends Method {
       if (headerParams.length > 0) {
         yield `// add headers parameters`;
         for (const hp of headerParams) {
-          if (hp.param.name == "Content-Length") {
+          if (hp.param.name == 'Content-Length') {
             // content length is set when the request body is set
             continue;
           }
@@ -186,7 +200,6 @@ export class OperationMethod extends Method {
     } else {
       this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
     }
-
 
     // remove constant parameters and make them locals instead.
     this.insert(`// Constant Parameters`);
@@ -263,9 +276,8 @@ export class CallMethod extends Method {
             yield `_response = response;`;
           }
           // TODO: omit generating _contentType var if it will never be used
-          const contentType = new LocalVariable("_contentType", dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
+          const contentType = new LocalVariable('_contentType', dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
           yield contentType;
-
 
           // add response handlers
           yield Switch({ value: `${response.value}.StatusCode` }, function* () {
@@ -287,7 +299,7 @@ export class CallMethod extends Method {
               });
             }
           });
-        }
+        };
 
         // try statements
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
@@ -371,7 +383,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 }`;
 
             yield EOL;
-            yield '// check for terminal status code'
+            yield '// check for terminal status code';
             yield If(new LiteralExpression(`${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
               yield `// we're done polling, do a request on final target?`;
               yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
@@ -396,12 +408,12 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
                 default:
                   // depending on the type of request, fall back to the appropriate behavior
-                  const finalLocation = new LocalVariable("finalLocation", dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
+                  const finalLocation = new LocalVariable('finalLocation', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
                   switch ($this.opMethod.operation.method.toLowerCase()) {
                     case 'post':
                     case 'delete':
                       // if the location header was passed in, we're going to do a get on that.
-                      yield `// final get on the the Location header, if present`
+                      yield `// final get on the the Location header, if present`;
                       yield finalLocation;
                       If(`string.IsNullOrWhiteSpace(${finalLocation})`, function* () {
                         yield $this.finalGet(finalLocation, reqParameter, response);
@@ -409,7 +421,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
                       break;
                     case 'patch':
                     case 'put':
-                      yield `// final get on the original URI`
+                      yield `// final get on the original URI`;
                       yield $this.finalGet(originalUri, reqParameter, response);
                       break;
                   }
@@ -423,10 +435,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           yield responder();
         }
 
-
-
       });
-
 
       yield Finally(function* () {
         yield '// finally statements';
@@ -482,7 +491,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
       });
     } else {
       const response = responses[0];
-      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === response.details.csharp.name)
+      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === response.details.csharp.name);
       // all mimeTypes per for this response code.
       yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
       yield $this.responseHandler(response.mimeTypes[0], response, callbackParameter);
@@ -492,7 +501,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
   private *responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
 
     if (callbackParameter) {
-      const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : "";
+      const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : '';
       const contentDeserialize = callbackParameter.responseType ?
         callbackParameter.responseType.deserializeFromString(knownMediaType(mimetype), toExpression(`await _response.Content.ReadAsStringAsync()`), toExpression('null')) :
         null;
@@ -520,10 +529,9 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           // we're going to return the response.
 
           if (callbackParameter.headerType) {
-            yield `// call back with the deserialized header object before we give the whole response back`
+            yield `// call back with the deserialized header object before we give the whole response back`;
             yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
           }
-
 
           // switch the response type.
           this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
@@ -553,11 +561,11 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
         return;
 
       } else {
-        // oh, we don't actually have a body response at all. 
-        // header content should be deserialized into the appropriate type if possible. 
+        // oh, we don't actually have a body response at all.
+        // header content should be deserialized into the appropriate type if possible.
 
         if (callbackParameter.headerType) {
-          yield `// call back with the deserialized header object`
+          yield `// call back with the deserialized header object`;
           yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
         } else {
           yield `/* no body or header response */`;
@@ -567,7 +575,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
     }
     // hmm. not a supported serialization type.
     // do we handle this like a stream response?
-    //return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
+    // return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
   }
 }
 
@@ -581,7 +589,9 @@ export class ValidationMethod extends Method {
 
     // add the method parameters
     for (const parameter of opMethod.methodParameters) {
-      this.addParameter(parameter);
+      if (!parameter.defaultInitializer) {
+        this.addParameter(parameter);
+      }
     }
 
     if (opMethod.bodyParameter) {
@@ -593,9 +603,11 @@ export class ValidationMethod extends Method {
     // add statements to this method
     this.add(function* () {
       for (const parameter of opMethod.methodParameters) {
-        // spit out parameter validation
-        yield parameter.validatePresenceStatement;
-        yield parameter.validationStatement;
+        if (!parameter.defaultInitializer) {
+          // spit out parameter validation
+          yield parameter.validatePresenceStatement;
+          yield parameter.validationStatement;
+        }
       }
 
       // spit out body parameter validation too

@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System, Var } from '#csharp/code-dom/mscorlib';
+import { System, Var } from '#csharp/code-dom/dotnet';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { LocalVariable, Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
@@ -136,12 +136,12 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          return toExpression(`new System.Net.Http.StringContent( null != ${value} ? new ${ClientRuntime.XNodeArray}(${this.serializeToNode(mediaType, value, '')}).ToString() : "", System.Text.Encoding.UTF8)`);
+          return toExpression(`new System.Net.Http.StringContent( null != ${value} ? new ${ClientRuntime.XNodeArray}(${this.serializeToNode(mediaType, value, '')}).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8)`);
         }
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
           const defaultName = this.elementType.schema.details.default.name;
-          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString() : "", System.Text.Encoding.UTF8)`);
+          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8)`);
         }
 
         case KnownMediaType.Cookie:

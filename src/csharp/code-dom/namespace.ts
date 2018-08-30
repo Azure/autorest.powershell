@@ -1,5 +1,5 @@
 import { Initializer } from '#common/initializer';
-import { EOL, comment, dotCombine, indent, toMap } from '#common/text-manipulation';
+import { comment, dotCombine, EOL, indent, toMap } from '#common/text-manipulation';
 import { Class } from './class';
 import { Delegate } from './delegate';
 import { Import } from './import';
@@ -13,7 +13,7 @@ export class Namespace extends Initializer {
   private delegates = new Array<Delegate>();
   private namespaces = new Array<Namespace>();
   private folder: string;
-  public header: string = "";
+  public header: string = '';
 
   constructor(public name: string, protected parent?: Project | Namespace, objectInitializer?: Partial<Namespace>) {
     super();
@@ -56,7 +56,6 @@ export class Namespace extends Initializer {
     return n;
   }
 
-
   public add<T extends object>(item: T & (Class | Namespace | Interface | Import)): T {
     if (item instanceof Class) {
       this.classes.push(item);
@@ -77,11 +76,9 @@ export class Namespace extends Initializer {
     throw Error(`FATAL - UNABLE TO ADD UNKNOWN TYPE for '${JSON.stringify(item)}'`);
   }
 
-
-  public findClassByName(name: string): Class[] {
+  public findClassByName(name: string): Array<Class> {
     return this.classes.filter(each => each.name === name);
   }
-
 
   public get fullName(): string {
     if (this.parent instanceof Namespace) {
@@ -109,7 +106,7 @@ export class Namespace extends Initializer {
       const interfaceName = `I${key}`;
       const interfacesWithSameName = interfaces.get(interfaceName);
       if (interfacesWithSameName) {
-        contents.push(...interfacesWithSameName.map(each => each.definition))
+        contents.push(...interfacesWithSameName.map(each => each.definition));
         // remove from the list.
         interfaces.delete(interfaceName);
       }
@@ -151,4 +148,3 @@ ${body}
 `.trim().replace(/ *$/gm, '').replace(/\n\n/g, '\n').replace(/^\s*EOL\s*$/igm, '');
   }
 }
-

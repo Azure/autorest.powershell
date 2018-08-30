@@ -1,7 +1,7 @@
 
 
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
@@ -128,8 +128,10 @@ export class CallbackParameter extends Parameter {
   headerType: (EnhancedTypeDeclaration) | null;
 
   constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
+
     if (state.project.storagePipeline) {
-      if (responseType && responseType.declaration !== 'System.IO.Stream') {
+      // storage pipline style (callback happens inside the pipeline)
+      if (responseType && responseType.declaration !== dotnet.System.IO.Stream.declaration) {
         if (headerType) {
           super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType, headerType));
         } else {
@@ -143,10 +145,23 @@ export class CallbackParameter extends Parameter {
         }
       }
     } else {
+      // regular pipeline style. (callback happens after the pipline is called)
       if (responseType) {
-        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, responseType, dotnet.System.Threading.Tasks.Task()));
+        if (headerType) {
+          // both
+          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(responseType), dotnet.System.Threading.Tasks.Task(headerType), dotnet.System.Threading.Tasks.Task()));
+        } else {
+          // just response
+          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(responseType), dotnet.System.Threading.Tasks.Task()));
+        }
       } else {
-        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task()));
+        if (headerType) {
+          // just headers 
+          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(headerType), dotnet.System.Threading.Tasks.Task()));
+        } else {
+          // no content?
+          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task()));
+        }
       }
     }
     this.responseType = responseType;

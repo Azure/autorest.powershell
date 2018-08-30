@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System } from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
 import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
@@ -63,13 +63,23 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.Xml:
         return toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
-      case KnownMediaType.Cookie:
       case KnownMediaType.QueryParameter:
-        return toExpression(`if (!string.IsNullOrEmpty(${value})) { queryParameters.Add($"${value}={System.Uri.EscapeDataString(${value})}"); }`);
+        if (this.isRequired) {
+          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value})`);
+        } else {
+          return toExpression(`string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${valueOf(value)})`);
+        }
+
+      // return toExpression(`if (!string.IsNullOrEmpty(${value})) { queryParameters.Add($"${value}={System.Uri.EscapeDataString(${value})}"); }`);
+
+      case KnownMediaType.Cookie:
       case KnownMediaType.Header:
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
-        return toExpression(`(string.IsNullOrEmpty(${value}) ? System.Uri.EscapeDataString(${value}) : ${System.String.Empty})`);
+        if (this.isRequired) {
+          return toExpression(`System.Uri.EscapeDataString(${value})`);
+        }
+        return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : System.Uri.EscapeDataString(${value}) )`);
 
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
@@ -104,7 +114,7 @@ export class String implements EnhancedTypeDeclaration {
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
           `(${serializedName}={${value}.ToString()})` :
-          `(null == ${value} ? "": $"${serializedName}={${value}.ToString()}")`;
+          `(null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}.ToString()}")`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }

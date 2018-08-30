@@ -9,7 +9,7 @@ import { LiteralExpression } from '#csharp/code-dom/expression';
 import { Import } from '#csharp/code-dom/import';
 import { Interface } from '#csharp/code-dom/interface';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Else, ElseIf, If } from '#csharp/code-dom/statements/if';

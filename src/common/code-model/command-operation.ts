@@ -4,6 +4,7 @@ import { ProgramaticOperationDetails, ProgrammaticOperation } from '#common/code
 import { Schema } from '#common/code-model/schema';
 import { Dictionary } from '#common/dictionary';
 import { HttpOperation } from '#common/code-model/http-operation';
+import {DeepPartial} from '#common/initializer';
 
 export interface CommandOperationDetails extends ProgramaticOperationDetails {
 }
@@ -23,7 +24,7 @@ export class CommandOperation extends Extensions implements CommandOperation {
 
   public responses = new Dictionary<Dictionary<Schema>>();
 
-  constructor(name: string, initializer?: Partial<CommandOperation>) {
+  constructor(name: string, initializer?: DeepPartial<CommandOperation>) {
     super();
     this.details = {
       default: {

@@ -29,7 +29,7 @@ export async function process(service: Host) {
     // console.error(E);
   }
 
-  return processCodeModel(commandCreator, service);
+  return await processCodeModel(commandCreator, service);
 }
 
 async function commonParameters(service: Host): Promise<Array<string>> {
@@ -50,9 +50,6 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
 }
 
 async function addVariant(vname: string, body: RequestBody | undefined, bodyParameterName: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
-  // const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-  // const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
-
   const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
 
   // if this has a body with it, let's add that parameter

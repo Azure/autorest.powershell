@@ -5,7 +5,7 @@ import { StringExpression, ExpressionOrLiteral, Expression } from '#csharp/code-
 import { InitializedField } from '#csharp/code-dom/field';
 import { Interface } from '#csharp/code-dom/interface';
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Operator } from '#csharp/code-dom/operator';
 import { Parameter } from '#csharp/code-dom/parameter';
@@ -76,7 +76,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     }
 
     // add backingField
-    const backingField = this.add(new Property('value', dotnet.String, {
+    const backingField = this.add(new Property('_value', dotnet.String, {
       getAccess: Access.Private,
       setAccess: Access.Private
     }));

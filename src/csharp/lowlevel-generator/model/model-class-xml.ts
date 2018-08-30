@@ -5,7 +5,7 @@ import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
 import { IsDeclaration } from '#csharp/code-dom/expression';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { TerminalCase } from '#csharp/code-dom/statements/case';

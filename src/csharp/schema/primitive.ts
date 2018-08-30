@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { camelCase, deconstruct } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System } from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
 import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
@@ -131,9 +131,17 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
           toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value})`) :
           toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
-      case KnownMediaType.Cookie:
+
       case KnownMediaType.QueryParameter:
-        return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        if (this.isRequired) {
+          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+        } else {
+          return toExpression(`null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+        }
+
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+
+      case KnownMediaType.Cookie:
       case KnownMediaType.Header:
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
@@ -170,7 +178,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
           `${serializedName}={${value}.ToString()}` :
-          `{null == ${value} ? "": $"${serializedName}={${value}.ToString()}"}`;
+          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}.ToString()}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }

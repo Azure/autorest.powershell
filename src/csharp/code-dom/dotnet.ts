@@ -1,5 +1,5 @@
 import { intersect } from '#common/intersect';
-import { Expression, LiteralExpression, valueOf, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, valueOf, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
@@ -24,7 +24,7 @@ export class LibraryType implements TypeDeclaration {
   }
 
   public newInstance(...parameters: Array<ExpressionOrLiteral>): Expression {
-    return { value: `new ${this.fullName}(${parameters.joinWith(each => valueOf(each))})` };
+    return toExpression(`new ${this.fullName}(${parameters.joinWith(each => valueOf(each))})`);
   }
 }
 
@@ -82,6 +82,7 @@ const action = new LibraryType(system, 'Action');
 const collections = new Namespace('Collections', system);
 const generic = new Namespace('Generic', collections);
 const net = new Namespace('Net', system);
+const io = new Namespace('IO', system);
 const http = new Namespace('Http', net);
 const headers = new Namespace('Headers', http);
 const task = new LibraryType(tasks, 'Task');
@@ -118,6 +119,9 @@ export const System = intersect(system, {
       XElement: new LibraryType(xmllinq, 'XElement'),
       XAttribute: new LibraryType(xmllinq, 'XAttribute')
     })
+  }),
+  IO: intersect(io, {
+    Stream: new LibraryType(io, 'Stream')
   }),
   Net: intersect(net, {
     Http: intersect(http, {

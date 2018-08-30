@@ -5,7 +5,7 @@ import { items, length, values } from '#common/dictionary';
 import { ModelState } from '#common/model-state';
 import { processCodeModel } from '#common/process-code-model';
 import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { SchemaDetails } from '#csharp/lowlevel-generator/code-model';
 import { ArrayOf } from '#csharp/schema/array';
 import { Boolean } from '#csharp/schema/boolean';
@@ -22,7 +22,7 @@ import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-form
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export async function process(service: Host) {
-  return processCodeModel(nameStuffRight, service);
+  return await processCodeModel(nameStuffRight, service);
 }
 
 async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
@@ -143,14 +143,16 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
     for (const { key: responseCode, value: responses } of items(operation.responses_new)) {
       // per responseCode
       for (const response of values(responses)) {
-        const scTd = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
-        const genericParameters = scTd ? `<${scTd.declaration}>` : ``;
+        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
+        const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
+
 
         const code = (dotnet.System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
 
         response.details.csharp = {
           ...response.details.default,
-          type: `Response${genericParameters}`,
+          responseType: responseTypeDefinition ? responseTypeDefinition.declaration : '',
+          headerType: headerTypeDefinition ? headerTypeDefinition.declaration : '',
           name: (length(responses) <= 1) ?
             camelCase(fixLeadingNumber(deconstruct(`on ${code}`))) : // the common type (or the only one.)
             camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.mimeTypes[0]}`)))

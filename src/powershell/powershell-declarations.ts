@@ -1,6 +1,6 @@
 
 import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
-import { LibraryType } from '#csharp/code-dom/mscorlib';
+import { LibraryType } from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';

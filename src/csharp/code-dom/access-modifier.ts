@@ -1,25 +1,25 @@
 export enum Access {
-  Public = "public",
-  Internal = "internal",
-  Protected = "protected",
-  ProtectedInternal = "protected internal",
-  PrivateProtected = "private protected",
-  Private = "private",
-  Default = "",
+  Public = 'public',
+  Internal = 'internal',
+  Protected = 'protected',
+  ProtectedInternal = 'protected internal',
+  PrivateProtected = 'private protected',
+  Private = 'private',
+  Default = '',
 }
 
 export enum Modifier {
-  None = "",
-  Static = "static",
-  New = "new ",
-  ReadOnly = "readonly",
-  Volitile = "volitile",
-  Sealed = "sealed",
-  Override = "override",
-  Abstract = "abstract",
-  Extern = "extern",
-  Async = "async",
-  Virtual = "virtual",
+  None = '',
+  Static = 'static',
+  New = 'new ',
+  ReadOnly = 'readonly',
+  Volitile = 'volitile',
+  Sealed = 'sealed',
+  Override = 'override',
+  Abstract = 'abstract',
+  Extern = 'extern',
+  Async = 'async',
+  Virtual = 'virtual',
 }
 
 export type Static = Modifier.None | Modifier.Static;

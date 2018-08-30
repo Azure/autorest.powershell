@@ -5,7 +5,7 @@ import { LiteralExpression, StringExpression } from '#csharp/code-dom/expression
 import { Field } from '#csharp/code-dom/field';
 import { Alias, Import } from '#csharp/code-dom/import';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, ImplementedProperty, LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';

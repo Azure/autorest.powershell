@@ -12,9 +12,9 @@ export class InterfaceProperty extends Property {
   }
 
   public get declaration(): string {
-    const get = this.getAccess === Access.Public ? "get;" : "";
-    const set = this.setAccess === Access.Public ? "set;" : "";
+    const get = this.getAccess === Access.Public ? 'get;' : '';
+    const set = this.setAccess === Access.Public ? 'set;' : '';
 
-    return `${this.type.declaration} ${this.name} { ${get} ${set} }`
+    return `${this.type.declaration} ${this.name} { ${get} ${set} }`;
   }
 }

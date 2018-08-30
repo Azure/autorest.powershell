@@ -12,7 +12,7 @@ import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringE
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import * as dotnet from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, LambdaProperty, Property } from '#csharp/code-dom/property';
@@ -45,8 +45,10 @@ export class CmdletClass extends Class {
   private dropBodyParameter: boolean;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, dropBodyParameter?: boolean, objectInitializer?: Partial<CmdletClass>) {
+    // generate the 'variant'  part of the name
+    const operationDetails = `${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
+    const variantName = operationDetails ? `${operation.noun}_${operationDetails}` : operation.noun;
 
-    const variantName = `${operation.noun}_${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
     const name = `${operation.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
     this.dropBodyParameter = dropBodyParameter ? true : false;
@@ -251,8 +253,18 @@ export class CmdletClass extends Class {
 
       // make callback methods
       for (const each of values(responses)) {
-        const responseParameter = new Parameter('response', new dotnet.LibraryType(ClientRuntime, each.details.csharp.type));
-        const responseMethod = new Method(`${each.details.csharp.name}`, dotnet.System.Threading.Tasks.Task(), { access: Access.Private, parameters: [responseParameter], async: Modifier.Async });
+        // const responseParameter = new Parameter('response', new dotnet.LibraryType(ClientRuntime, each.details.csharp.type));
+        const parameters = new Array<Parameter>();
+        parameters.push(new Parameter('responseMessage', dotnet.System.Net.Http.HttpResponseMessage));
+
+        if (each.details.csharp.responseType) {
+          parameters.push(new Parameter('response', dotnet.System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType })));
+        }
+        if (each.details.csharp.headerType) {
+          parameters.push(new Parameter('headers', dotnet.System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType })));
+        }
+
+        const responseMethod = new Method(`${each.details.csharp.name}`, dotnet.System.Threading.Tasks.Task(), { access: Access.Private, parameters, async: Modifier.Async });
         responseMethod.add(function* () {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
@@ -371,6 +383,7 @@ export class CmdletClass extends Class {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
         if (!(parameter.details.default.constantValue)) {
           // yield td.getSerializeStatement(KnownMediaType.Json, container.use, parameter.details.powershell.name, parameter.details.powershell.name);
+          yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.powershell.name, container, parameter.details.powershell.name);
         }
       }
 
@@ -424,6 +437,8 @@ export class CmdletClass extends Class {
         if (!(parameter.details.default.constantValue)) {
           // dont' serialize if it's a constant or host parameter.
           // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.powershell.name);
+          yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.powershell.name, bp));
+
         }
 
       }
@@ -444,11 +459,11 @@ export class CmdletClass extends Class {
 
       yield Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
-          yield `WriteVerbose($"{messageData().Message ?? ""}");`;
+          yield `WriteVerbose($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Warning.value, function* () {
-          yield `WriteWarning($"{messageData().Message ?? ""}");`;
+          yield `WriteWarning($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
@@ -458,7 +473,7 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Debug.value, function* () {
-          yield `WriteDebug($"{messageData().Message ?? ""}");`;
+          yield `WriteDebug($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
@@ -471,7 +486,7 @@ export class CmdletClass extends Class {
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
-      yield `WriteDebug($"{id}: {messageData().Message ?? ""}");`;
+      yield `WriteDebug($"{id}: {messageData().Message ?? ${dotnet.System.String.Empty}}");`;
       // any handling of the signal on our side...
     });
   }

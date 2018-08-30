@@ -208,11 +208,11 @@ namespace Microsoft.Rest.ClientRuntime
                 {
                     if (calls.ContainsKey(name))
                     {
-                        calls[name ?? ""] += callback;
+                        calls[name ?? System.String.Empty] += callback;
                     }
                     else
                     {
-                        calls[name ?? ""] = callback;
+                        calls[name ?? System.String.Empty] = callback;
                     }
                 }
             }

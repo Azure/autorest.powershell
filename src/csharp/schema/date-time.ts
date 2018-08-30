@@ -5,7 +5,7 @@ import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Primitive } from '#csharp/schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { System } from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
 import { If } from '#csharp/code-dom/statements/if';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 
@@ -74,7 +74,7 @@ export class DateTime extends Primitive {
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
           `${serializedName}={${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? "": $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }

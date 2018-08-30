@@ -1,9 +1,7 @@
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { items } from '#common/dictionary';
 import { Interface } from '#csharp/code-dom/interface';
-import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
-import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';

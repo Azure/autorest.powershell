@@ -1,21 +1,21 @@
 import { Initializer } from '#common/initializer';
+import { Attribute } from '#csharp/code-dom/attribute';
 import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
-import { Attribute } from '#csharp/code-dom/attribute';
 
 /** represents a method parameter */
 export class Parameter extends Initializer implements Variable {
-  public description: string = "";
+  public description: string = '';
   public genericParameters = new Array<string>();
   public where?: string;
   public modifier: ParameterModifier = ParameterModifier.None;
   public defaultInitializer?: string;
   public attributes = new Array<Attribute>();
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, " ")} ` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, ' ')} ` : '';
   }
 
   public constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Parameter>) {

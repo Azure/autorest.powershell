@@ -17,7 +17,7 @@ export enum HeaderPropertyType {
 // tweaks the code model to adjust things so that the code will generate better.
 
 export async function process(service: Host) {
-  return processCodeModel(tweakModel, service);
+  return await processCodeModel(tweakModel, service);
 }
 
 async function tweakModel(model: Model, service: Host): Promise<Model> {
