@@ -35,7 +35,7 @@ import { addPowershellParameters } from '#powershell/model-cmdlet';
 import { CmdletParameter } from './cmdlet-parameter';
 import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum, PSCredential } from './powershell-declarations';
 import { State } from './state';
-import { dotnet, LibraryType, System } from '#csharp/code-dom/dotnet';
+import { dotnet, ClassType, System } from '#csharp/code-dom/dotnet';
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
@@ -90,7 +90,7 @@ export class CmdletClass extends Class {
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private }));
 
     // client API property (gs01: fill this in correctly)
-    const clientAPI = new LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`)));
 
     // Cmdlet Parameters for pipeline manipulations.
@@ -153,7 +153,7 @@ export class CmdletClass extends Class {
       yield Try(function* () {
         yield `// work`;
         const normal = new Statements(function* () {
-          const acr = new LocalVariable('asyncCommandRuntime', dotnet.Var, { initializer: AsyncCommandRuntime.newInstance(dotnet.This, $this.cancellationToken) });
+          const acr = new LocalVariable('asyncCommandRuntime', dotnet.Var, { initializer: AsyncCommandRuntime.new(dotnet.This, $this.cancellationToken) });
           yield Using(acr.declarationExpression, function* () {
             yield `${acr}.Wait( ProcessRecordAsync(),${$this.cancellationToken});`;
           });
@@ -166,7 +166,7 @@ export class CmdletClass extends Class {
             yield instance.declarationStatement;
 
             // create the job (which will set the CommandRuntime of the clone to the AsyncJob itself)
-            const job = new LocalVariable('job', dotnet.Var, { initializer: AsyncJob.newInstance(instance, 'this.MyInvocation.Line, this.MyInvocation.MyCommand.Name, this._cancellationTokenSource.Token', 'this._cancellationTokenSource.Cancel') });
+            const job = new LocalVariable('job', dotnet.Var, { initializer: AsyncJob.new(instance, 'this.MyInvocation.Line, this.MyInvocation.MyCommand.Name, this._cancellationTokenSource.Token', 'this._cancellationTokenSource.Cancel') });
             yield job.declarationStatement;
 
             // add the job to the repository
@@ -402,7 +402,7 @@ export class CmdletClass extends Class {
     const fromJson = this.addMethod(new Method('FromJson', this, { parameters: [node], static: Modifier.Static }));
     fromJson.add(function* () {
       const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
-      yield Return(Ternery(json.check, $this.newInstance(json), dotnet.Null));
+      yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
     });
 
     // from/to json-string

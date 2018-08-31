@@ -1,17 +1,17 @@
 import { intersect } from '#common/intersect';
-import { EnumType, LibraryType, System, dotnet } from '#csharp/code-dom/dotnet';
+import { EnumType, ClassType, System, dotnet } from '#csharp/code-dom/dotnet';
 
 import { Expression, LiteralExpression, toExpression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
 import { Namespace } from '#csharp/code-dom/namespace';
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
-const serializationMode = new LibraryType(clientRuntimeNamespace, 'SerializationMode');
-const events = new LibraryType(clientRuntimeNamespace, 'Events');
-const method = new LibraryType(clientRuntimeNamespace, 'Method');
+const serializationMode = new ClassType(clientRuntimeNamespace, 'SerializationMode');
+const events = new ClassType(clientRuntimeNamespace, 'Events');
+const method = new ClassType(clientRuntimeNamespace, 'Method');
 const carbon = new Namespace('Carbon.Json');
-const jsonNode = new LibraryType(carbon, 'JsonNode');
-const jsonObject = new LibraryType(carbon, 'JsonObject');
+const jsonNode = new ClassType(carbon, 'JsonNode');
+const jsonObject = new ClassType(carbon, 'JsonObject');
 
 export const ClientRuntime = intersect(clientRuntimeNamespace, {
   Method: intersect(method, {
@@ -24,9 +24,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Trace: new LiteralExpression(`${method.declaration}.Trace`),
     Patch: new LiteralExpression(`${method.declaration}.Patch`)
   }),
-  EventDataConverter: new LibraryType(clientRuntimeNamespace, 'EventDataConverter'),
+  EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
-  Extensions: new LibraryType(clientRuntimeNamespace, 'Extensions'),
+  Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
   IJsonSerializable: new Interface(clientRuntimeNamespace, 'IJsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
@@ -37,9 +37,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     IncludeHeaders: new LiteralExpression(`${serializationMode.declaration}.IncludeHeaders`),
     IncludeReadOnly: new LiteralExpression(`${serializationMode.declaration}.IncludeReadOnly`),
   }),
-  HttpPipeline: new LibraryType(clientRuntimeNamespace, 'HttpPipeline'),
-  SendAsyncStep: new LibraryType(clientRuntimeNamespace, 'SendAsyncStep[]'),
-  EventData: new LibraryType(clientRuntimeNamespace, 'EventData'),
+  HttpPipeline: new ClassType(clientRuntimeNamespace, 'HttpPipeline'),
+  SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
+  EventData: new ClassType(clientRuntimeNamespace, 'EventData'),
   Events: intersect(events, {
     BodyContentSet: new LiteralExpression(`${events.declaration}.BodyContentSet`),
     BeforeCall: new LiteralExpression(`${events.declaration}.BeforeCall`),
@@ -63,15 +63,15 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonObject: intersect(jsonObject, {
     Parse: (expression: Expression) => toExpression(`${jsonObject}.Parse(${expression})`)
   }),
-  JsonString: new LibraryType(carbon, `JsonString`),
-  JsonBoolean: new LibraryType(carbon, `JsonBoolean`),
-  JsonNumber: new LibraryType(carbon, `JsonNumber`),
-  JsonArray: new LibraryType(carbon, `JsonArray`),
-  XNodeArray: new LibraryType(carbon, `XNodeArray`)
+  JsonString: new ClassType(carbon, `JsonString`),
+  JsonBoolean: new ClassType(carbon, `JsonBoolean`),
+  JsonNumber: new ClassType(carbon, `JsonNumber`),
+  JsonArray: new ClassType(carbon, `JsonArray`),
+  XNodeArray: new ClassType(carbon, `XNodeArray`)
 });
 
 export const StoragePipeline = {
-  Pipeline: new LibraryType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
-  CancelContext: new LibraryType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
+  Pipeline: new ClassType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
+  CancelContext: new ClassType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
 
 }

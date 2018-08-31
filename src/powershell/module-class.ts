@@ -13,7 +13,7 @@ import { If } from '#csharp/code-dom/statements/if'
 import { Return } from '#csharp/code-dom/statements/return';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
-import { System, dotnet, LibraryType } from '#csharp/code-dom/dotnet';
+import { System, dotnet, ClassType } from '#csharp/code-dom/dotnet';
 
 export class ModuleClass extends Class {
 
@@ -34,7 +34,7 @@ export class ModuleClass extends Class {
     const TaskOfHttpResponseMessage = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     const BoundParameterDictionary = System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object);
 
-    const clientAPI = new LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
 
     const clientProperty = this.add(new Property('ClientAPI', clientAPI));
 
@@ -146,8 +146,8 @@ export class ModuleClass extends Class {
       access: Access.Private,
     })).add(function* () {
       yield `/// constructor`;
-      yield clientProperty.assignPrivate(clientAPI.newInstance());
-      yield pipelineField.assignPrivate(ClientRuntime.HttpPipeline.newInstance());
+      yield clientProperty.assignPrivate(clientAPI.new());
+      yield pipelineField.assignPrivate(ClientRuntime.HttpPipeline.new());
     });
   }
 }

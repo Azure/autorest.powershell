@@ -5,9 +5,10 @@ import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
+import { IsNull } from '#csharp/code-dom/comparisons';
 
 /** represents a method parameter */
-export class Parameter extends Initializer implements Variable {
+export class Parameter extends Variable {
   public description: string = '';
   public genericParameters = new Array<string>();
   public where?: string;
@@ -15,7 +16,7 @@ export class Parameter extends Initializer implements Variable {
   public defaultInitializer?: string;
   public attributes = new Array<Attribute>();
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, ' ')} ` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, ' ')} ` : '';
   }
 
   public constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Parameter>) {
@@ -36,9 +37,7 @@ export class Parameter extends Initializer implements Variable {
   public get value(): string {
     return `${this.name}`;
   }
-  public toString(): string {
-    return this.value;
-  }
+
 
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return `${this.name} = ${valueOf(expression)};`;

@@ -6,9 +6,10 @@ import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { EOL } from '#common/text-manipulation';
+import { IsNull } from '#csharp/code-dom/comparisons';
 
 /** represents a field in a Class */
-export class Field extends Initializer implements Variable {
+export class Field extends Variable {
   public 'new': New = Modifier.None;
   public access = Access.Public;
   public 'static': Static = Modifier.None;
@@ -16,7 +17,7 @@ export class Field extends Initializer implements Variable {
   public volitile: Volitile = Modifier.None;
   public attributes = new Array<Attribute>();
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, EOL)}${EOL}` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
   }
 
   public description: string = '';
@@ -32,10 +33,6 @@ export class Field extends Initializer implements Variable {
 
   public get value(): string {
     return `${this.name}`;
-  }
-
-  public toString(): string {
-    return this.value;
   }
 
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {

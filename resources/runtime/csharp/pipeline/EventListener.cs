@@ -173,7 +173,7 @@ namespace Microsoft.Rest.ClientRuntime
         {
         }
 
-        public Action Cancel => base.Cancel;
+        public new Action Cancel => base.Cancel;
         private Event tracer;
 
         public EventListener(params (string name, Event callback)[] initializer)

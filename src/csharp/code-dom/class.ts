@@ -78,7 +78,7 @@ ${this.fullName}
 `.trim();
   }
 
-  public newInstance(...parameters: Array<Expression>): Expression {
+  public new(...parameters: Array<Expression>): Expression {
     return toExpression(`new ${this.name}(${parameters.joinWith(each => valueOf(each))})`);
   }
 

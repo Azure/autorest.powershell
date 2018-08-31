@@ -124,15 +124,15 @@ export class XmlSerializableClass extends Class {
           yield Switch(`xml.StringProperty("${$this.schema.discriminator.propertyName}")`, function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
-                yield Return(value.newInstance(xml));
+                yield Return(value.new(xml));
               });
             }
           });
         }
-        yield Return($this.newInstance(xml));
+        yield Return($this.new(xml));
       } else {
         // just tell it to create the instance (providing that it's a XElement)
-        yield Return(Ternery(xml.check, $this.newInstance(xml), dotnet.Null));
+        yield Return(Ternery(xml.check, $this.new(xml), dotnet.Null));
       }
     });
 

@@ -138,15 +138,15 @@ export class JsonSerializableClass extends Class {
           yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.propertyName}")`), function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
-                yield Return(value.newInstance(json));
+                yield Return(value.new(json));
               });
             }
           });
         }
-        yield Return($this.newInstance(json));
+        yield Return($this.new(json));
       } else {
         // just tell it to create the instance (providing that it's a JSonObject)
-        yield Return(Ternery(json.check, $this.newInstance(json), dotnet.Null));
+        yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
       }
     });
 

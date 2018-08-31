@@ -1,9 +1,10 @@
-import { Variable, LocalVariable } from "#csharp/code-dom/variable";
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
-import { Statement, OneOrMoreStatements, Statements } from "#csharp/code-dom/statements/statement";
-import { Parameter } from "#csharp/code-dom/parameter";
-import { indent } from "#common/text-manipulation";
-import { Async, Modifier } from "#csharp/code-dom/access-modifier";
+import { indent } from '#common/text-manipulation';
+import { Async, Modifier } from '#csharp/code-dom/access-modifier';
+import { IsNull, IsNotNull, Cast } from '#csharp/code-dom/comparisons';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { LocalVariable, Variable } from '#csharp/code-dom/variable';
 
 export type ExpressionOrLiteral = Expression | string;
 export function toExpression(expression: ExpressionOrLiteral): Expression {
@@ -15,26 +16,41 @@ export function valueOf(expression: ExpressionOrLiteral): string {
 /** An expression is a combination of operands (variables, literals, method calls) and operators that can be evaluated to a single value  */
 export interface Expression {
   value: string;
+  IsNull: Expression;
+  IsNotNull: Expression;
   toString(): string;
+  Cast(toType: TypeDeclaration): Expression;
+}
+
+export abstract class BaseExpression implements Expression {
+  abstract value: string;
+  toString(): string {
+    return this.value;
+  }
+  get IsNull(): Expression {
+    return IsNull(this);
+  }
+  get IsNotNull(): Expression {
+    return IsNotNull(this);
+  }
+  Cast(toType: TypeDeclaration): Expression {
+    return Cast(this, toType);
+  }
 }
 
 /** an expression of a constant string value  */
-export class StringExpression implements Expression {
+export class StringExpression extends BaseExpression {
   public value: string;
   constructor(value: string) {
+    super();
     this.value = `@"${value.replace(/"/g, '""')}"`;
-  }
-  public toString(): string {
-    return this.value;
   }
 }
 
 /** an arbitrary user-defined expression  */
-export class LiteralExpression implements Expression {
+export class LiteralExpression extends BaseExpression {
   constructor(public value: string) {
-  }
-  public toString(): string {
-    return this.value;
+    super();
   }
 }
 
@@ -44,14 +60,12 @@ export function Is(expression: ExpressionOrLiteral, isType: TypeDeclaration): Ex
 }
 
 /** a c# 'is' expression */
-export class IsExpression implements Expression {
+export class IsExpression extends BaseExpression {
   constructor(public expression: ExpressionOrLiteral, public isType: TypeDeclaration) {
+    super();
   }
   get value(): string {
     return `${valueOf(this.expression)} is ${this.isType.declaration}`;
-  }
-  public toString(): string {
-    return this.value;
   }
 }
 
@@ -68,13 +82,22 @@ export class IsExpressionDeclaration extends LocalVariable implements Expression
   public get check(): Expression {
     return new LiteralExpression(`${valueOf(this.expression)} is ${this.isType.declaration} ${this.name}`);
   }
-
+  get IsNull(): Expression {
+    return IsNull(this);
+  }
+  get IsNotNull(): Expression {
+    return IsNotNull(this);
+  }
+  Cast(toType: TypeDeclaration): Expression {
+    return Cast(this, toType);
+  }
   get value(): string {
     return this.name;
   }
   public toString(): string {
     return this.value;
   }
+
 }
 
 export function Lambda(parameters: Array<Parameter>, body: OneOrMoreStatements, objectIntializer?: Partial<LambdaExpression>) {
@@ -99,4 +122,14 @@ ${indent(super.implementation)}
   public toString(): string {
     return this.value;
   }
+  get IsNull(): Expression {
+    return IsNull(this);
+  }
+  Cast(toType: TypeDeclaration): Expression {
+    return Cast(this, toType);
+  }
+  get IsNotNull(): Expression {
+    return IsNotNull(this);
+  }
+
 }

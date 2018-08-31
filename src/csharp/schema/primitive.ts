@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { camelCase, deconstruct } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System } from '#csharp/code-dom/dotnet';
+import { System, ClassType, dotnet } from '#csharp/code-dom/dotnet';
 import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
@@ -9,6 +9,8 @@ import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Ternery } from '#csharp/code-dom/ternery';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
 
 
 let __tmpVar: number | undefined;
@@ -39,7 +41,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   abstract isRequired: boolean;
   abstract isXmlAttribute: boolean;
   abstract declaration: string;
-  abstract jsonType: TypeDeclaration;
+  abstract jsonType: ClassType;
 
   constructor(public schema: Schema) {
   }
@@ -128,8 +130,8 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
-          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value})`) :
-          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}((${this.baseType})${value}) : null`);
+          this.jsonType.new(value).Cast(ClientRuntime.JsonNode) :
+          Ternery(IsNotNull(value), this.jsonType.new(`(${this.baseType})${value}`).Cast(ClientRuntime.JsonNode), dotnet.Null);
 
       case KnownMediaType.Xml:
         return this.isRequired ?

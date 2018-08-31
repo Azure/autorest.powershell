@@ -10,6 +10,8 @@ import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { ForEach } from '#csharp/code-dom/statements/for';
 import { If } from '#csharp/code-dom/statements/if';
+import { Ternery } from '#csharp/code-dom/ternery';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
 
 
 export class ArrayOf implements EnhancedTypeDeclaration {
@@ -140,12 +142,20 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          return toExpression(`new System.Net.Http.StringContent( null != ${value} ? new ${ClientRuntime.XNodeArray}(${this.serializeToNode(mediaType, value, '')}).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8)`);
+          System.Net.Http.StringContent.new(Ternery(
+            IsNotNull(value),
+            `${ClientRuntime.XNodeArray.new(this.serializeToNode(mediaType, value, ''))}.ToString()`,
+            System.String.Empty
+          ), System.Text.Encoding.UTF8);
         }
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
           const defaultName = this.elementType.schema.details.default.name;
-          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8)`);
+          System.Net.Http.StringContent.new(Ternery(
+            IsNotNull(value),
+            `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString()`,
+            System.String.Empty
+          ), System.Text.Encoding.UTF8);
         }
 
         case KnownMediaType.Cookie:

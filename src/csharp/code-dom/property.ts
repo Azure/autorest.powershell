@@ -3,13 +3,15 @@ import { comment, docComment, docCommentPrefix, EOL, indent } from '#common/text
 import { Abstract, Access, Extern, highestAccess, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
+import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf, toExpression } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
 import { ExpressionStatement, Instance, Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
 import { Dictionary } from '#common/dictionary';
+import { IsNull } from '#csharp/code-dom/comparisons';
+import { intersect } from '#common/intersect';
 
-export class Property extends Initializer implements Variable, Instance {
+export class Property extends Variable implements Instance {
   public 'new': New = Modifier.None;
   public getAccess = Access.Public;
   public setAccess = Access.Public;
@@ -36,7 +38,7 @@ export class Property extends Initializer implements Variable, Instance {
   }
 
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, EOL)}${EOL}` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
   }
 
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Property>) {
@@ -71,10 +73,6 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     return `${this.name}`;
   }
 
-  public toString(): string {
-    return this.value;
-  }
-
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return `${this.name} = ${valueOf(expression)};`;
   }
@@ -89,11 +87,10 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
   }
   public invokeMethod(methodName: string, ...parameters: Array<Expression>): ExpressionStatement {
     const e = `${this.value}.${methodName}(${parameters.joinWith(each => valueOf(each))})`;
-    return {
-      implementation: `${e};`,
-      value: e,
-      toString: ()=> { return `${e};`}
-    };
+    return intersect(
+      toExpression(e), {
+        implementation: `${e};`
+      });
   }
 
 }

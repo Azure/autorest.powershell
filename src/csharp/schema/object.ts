@@ -1,6 +1,6 @@
 import { KnownMediaType } from '#common/media-types';
 import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf, StringExpression } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
@@ -8,6 +8,8 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { System } from '#csharp/code-dom/dotnet';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { Ternery } from '#csharp/code-dom/ternery';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -66,10 +68,20 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToJson(null).ToString() : "{}", System.Text.Encoding.UTF8);`);
+        return System.Net.Http.StringContent.new(
+          Ternery(
+            IsNotNull(value),
+            `${value}.ToJson(null).ToString()`,
+            new StringExpression('{}')),
+          System.Text.Encoding.UTF8);
       }
       case KnownMediaType.Xml: {
-        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToXml(null).ToString() : ${System.String.Empty}, System.Text.Encoding.UTF8);`);
+        return System.Net.Http.StringContent.new(
+          Ternery(
+            IsNotNull(value),
+            `${value}.ToXml(null).ToString()`,
+            System.String.Empty),
+          System.Text.Encoding.UTF8);
       }
 
     }

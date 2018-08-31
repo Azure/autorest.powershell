@@ -22,7 +22,7 @@ import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
 import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '#common/media-types';
-import { System, LibraryType, dotnet } from '#csharp/code-dom/dotnet';
+import { System, ClassType, dotnet } from '#csharp/code-dom/dotnet';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -137,13 +137,13 @@ export class OperationMethod extends Method {
         }
       } else {
         url = new LocalVariable('_url', dotnet.Var, {
-          initializer: `new System.Uri(
+          initializer: System.Uri.new(`
         "${baseUrl}${path}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
         + "&"`
             )}
-        )`
+        `)
         });
         yield url.declarationStatement;
 
@@ -463,7 +463,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
     yield EOL;
     yield `// make the final call`;
-    yield response.assign(`await sender.SendAsync(${valueOf(reqParameter)},  listener);`);
+    yield response.assign(`await sender.SendAsync(${valueOf(reqParameter)},  listener)`);
 
     // make sure we're not polling anymore.
     yield 'break;';

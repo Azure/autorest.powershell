@@ -1,5 +1,5 @@
-import { Expression, LiteralExpression } from "#csharp/code-dom/expression";
+import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf } from "#csharp/code-dom/expression";
 
-export function Ternery(booleanExpression: Expression, trueResult: Expression, falseResult: Expression) {
-  return new LiteralExpression(`${booleanExpression.value} ? ${trueResult.value} : ${falseResult.value}`);
+export function Ternery(booleanExpression: ExpressionOrLiteral, trueResult: ExpressionOrLiteral, falseResult: ExpressionOrLiteral) {
+  return new LiteralExpression(`${valueOf(booleanExpression)} ? ${trueResult} : ${falseResult}`);
 }
