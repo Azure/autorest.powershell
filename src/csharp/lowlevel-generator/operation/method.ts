@@ -159,7 +159,7 @@ export class OperationMethod extends Method {
       if (headerParams.length > 0) {
         yield `// add headers parameters`;
         for (const hp of headerParams) {
-          if (hp.param.name == 'Content-Length') {
+          if (hp.param.name === 'Content-Length') {
             // content length is set when the request body is set
             continue;
           }
@@ -280,7 +280,7 @@ export class CallMethod extends Method {
           yield contentType;
 
           // add response handlers
-          yield Switch({ value: `${response.value}.StatusCode` }, function* () {
+          yield Switch(`${response.value}.StatusCode`, function* () {
             const i = 0;
             for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
               if (responseCode !== 'default') {
@@ -339,7 +339,7 @@ ${new Statements(responder()).implementation}
 
             yield `var _uri = string.IsNullOrEmpty(${asyncOperation.value}) ? string.IsNullOrEmpty(${location.value}) ? ${originalUri.value} : ${location.value} : ${asyncOperation.value};`;
 
-            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(_uri), Microsoft.Rest.ClientRuntime.Method.Get);`;
+            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(_uri), ${ClientRuntime.Method.Get});`;
 
             yield EOL;
             yield `// and let's look at the current response body and see if we have some information we can give back to the listener`;
@@ -368,10 +368,10 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 {
     try {
         // we have a 200, and a should have a provisioning state.
-        if( Carbon.Json.JsonNode.Parse(await _response.Content.ReadAsStringAsync()) is Carbon.Json.JsonObject json)
+        if( ${ClientRuntime.JsonNode.Parse(toExpression(`await _response.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
         {
-            var state = json.Property("properties")?.PropertyT<Carbon.Json.JsonString>("provisioningState");
-            await listener.Signal(Microsoft.Rest.ClientRuntime.Events.Polling, $"Polled {_uri} provisioning state  {state}.", _response); if( listener.Token.IsCancellationRequested ) { return; }
+            var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState");
+            await listener.Signal(${ClientRuntime.Events.Polling}, $"Polled {_uri} provisioning state  {state}.", _response); if( listener.Token.IsCancellationRequested ) { return; }
             if( state?.ToString() != "Succeeded")
             {
                 _response.StatusCode = System.Net.HttpStatusCode.Created;
@@ -454,7 +454,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
   }
 
   private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
-    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), Microsoft.Rest.ClientRuntime.Method.Get)`);
+    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), ${ClientRuntime.Method.Get})`);
 
     yield EOL;
     yield `// drop the old response`;
@@ -498,8 +498,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
     }
   }
 
-  private *responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
-
+  private *responseHandlerForStoragePipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     if (callbackParameter) {
       const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : '';
       const contentDeserialize = callbackParameter.responseType ?
@@ -516,7 +515,12 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           }
           return;
         } else {
-          yield `await ${eachResponse.details.csharp.name}( request, _response, ${contentDeserialize});`;
+
+          if (callbackParameter.headerType) {
+            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}), new ${headerClassType}().ReadHeaders(_response.Headers));`;
+          } else {
+            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}));`;
+          }
           return;
         }
       }
@@ -577,7 +581,41 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
     // do we handle this like a stream response?
     // return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
   }
+
+  private * responseHandlerForNormalPipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
+    const callbackParameters = new Array<ExpressionOrLiteral>();
+
+    if (callbackParameter.responseType) {
+      // hande the body response
+      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(`_response`), toExpression('null'));
+      if (r) {
+        callbackParameters.push(r);
+      }
+
+      //if (parseMediaType(mimetype)) {
+      // this media type isn't directly supported by deserialization
+      // we can return a stream to the consumer instead
+      //}
+    }
+
+    if (callbackParameter.headerType) {
+      // header model deserialization...
+      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression(`_response`), toExpression('null'));
+      if (r) {
+        callbackParameters.push(r);
+      }
+    }
+    // make the callback with the appropriate parameters
+    yield `await ${eachResponse.details.csharp.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(each => valueOf(each))});`;
+  }
+
+  private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
+    return this.state.project.storagePipeline ?
+      this.responseHandlerForStoragePipeline(mimetype, eachResponse, callbackParameter) :
+      this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
+  }
 }
+
 
 export class ValidationMethod extends Method {
 

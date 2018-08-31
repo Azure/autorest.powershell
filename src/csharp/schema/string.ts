@@ -90,6 +90,12 @@ export class String implements EnhancedTypeDeclaration {
     return toExpression(``);
   }
 
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:

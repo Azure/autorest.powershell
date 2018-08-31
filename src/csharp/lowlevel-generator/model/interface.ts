@@ -26,6 +26,13 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromString(mediaType, content, defaultValue);
   }
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
+  }
+
+
   /** emits an expression serialize this to a HttpContent */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     return this.implementation.serializeToContent(mediaType, value);

@@ -80,13 +80,26 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return this.deserializeFromNode(mediaType, `Carbon.Json.JsonNode.Parse(${content})`, defaultValue);
+        return this.deserializeFromNode(mediaType, ClientRuntime.JsonNode.Parse(content), defaultValue);
       }
       case KnownMediaType.Xml: {
         return this.deserializeFromNode(mediaType, `${System.Xml.Linq.XElement}.Parse(${content})`, defaultValue);
       }
     }
     return undefined;
+  }
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    switch (mediaType) {
+      case KnownMediaType.Json: {
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
+      }
+      case KnownMediaType.Xml: {
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
+      }
+    }
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
   /** emits the code required to serialize this into a container */

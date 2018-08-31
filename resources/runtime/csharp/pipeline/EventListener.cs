@@ -30,7 +30,7 @@ namespace Microsoft.Rest.ClientRuntime
         System.Action Cancel { get; }
     }
 
-    public static class IEventListenerExtensions
+    public static partial class Extensions
     {
         public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
         public static Task Signal(this IEventListener instance, string id, CancellationToken token) => instance.Signal(id, token, () => new EventData { Id = id, Cancel = instance.Cancel });

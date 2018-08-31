@@ -8,7 +8,7 @@ import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, valueOf, toExpression } from '#csharp/code-dom/expression';
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
@@ -229,7 +229,7 @@ export class CmdletClass extends Class {
       const apiCall = operation.callGraph[0];
 
       // find each parameter to the method, and find out where the value is going to come from.
-      const operationParameters: Array<Expression> = values(apiCall.parameters).linq.select(p => {
+      const operationParameters: Array<Expression> = values(apiCall.parameters).linq.where(each => !(each.details.default.constantValue)).linq.select(p => {
         return values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition === p);
       }).linq.select(each => each ? each : new LiteralExpression('null')).linq.toArray();
 
@@ -275,8 +275,8 @@ export class CmdletClass extends Class {
               const codeProp = values(props).linq.first(p => p.details.csharp.name === 'Code');
               const messageProp = values(props).linq.first(p => p.details.csharp.name === 'Message');
               if (codeProp && messageProp) {
-                yield `var code = (await response.Result).${codeProp.details.csharp.name};`;
-                yield `var message = (await response.Result).${messageProp.details.csharp.name};`;
+                yield `var code = (await response).${codeProp.details.csharp.name};`;
+                yield `var message = (await response).${messageProp.details.csharp.name};`;
                 yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
                 return;
               } else {
@@ -309,22 +309,22 @@ export class CmdletClass extends Class {
                   const nextLinkProperty = schema.properties[pageable.nextLinkName];
                   if (valueProperty && nextLinkProperty) {
                     // it's pageable!
-                    const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response.Result`) });
+                    const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response`) });
                     yield result.declarationStatement;
-                    // write out the current contents
+                    // write out the current contents 
                     yield `WriteObject(${result.value}.${valueProperty.details.csharp.name},true);`;
                     const nextLinkName = `${result.value}.${nextLinkProperty.details.csharp.name}`;
                     yield (If(`${nextLinkName} != null`,
-                      If(`response.RequestMessage is System.Net.Http.HttpRequestMessage req `, function* () {
-                        yield `req = req.Clone(new System.Uri( ${nextLinkName} ),Microsoft.Rest.ClientRuntime.Method.Get );`;
+                      If(`responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage `, function* () {
+                        yield `requestMessage = requestMessage.Clone(new System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
                         yield $this.eventListener.signal(Events.FollowingNextLink);
-                        yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                        yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
                       })
                     ));
                     return;
                   } else if (valueProperty) {
                     // it's just a nested array
-                    yield `WriteObject((await response.Result).${valueProperty.details.csharp.name}, true);`;
+                    yield `WriteObject((await response).${valueProperty.details.csharp.name}, true);`;
                     return;
                   }
                   break;
@@ -332,24 +332,24 @@ export class CmdletClass extends Class {
                 // it's just an array,
                 case `array`:
                   // just write-object(enumerate) with the output
-                  yield `WriteObject(await response.Result, true);`;
+                  yield `WriteObject(await response, true);`;
                   return;
               }
               // ok, let's see if the response type
             }
             // we expect to get back some data from this call.
 
-            yield `// (await response.Result) // should be ${$this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
+            yield `// (await response) // should be ${$this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
 
             const props = getAllProperties(schema);
             if (props.length === 1) {
               // let's unroll this and write out the single property
-              yield `WriteObject((await response.Result).${props[0].details.csharp.name});`;
+              yield `WriteObject((await response).${props[0].details.csharp.name});`;
               return;
             }
 
             // more than one property, let's just return the result object
-            yield `WriteObject(await response.Result);`;
+            yield `WriteObject(await response);`;
             return;
           }
 
@@ -390,7 +390,7 @@ export class CmdletClass extends Class {
       // yield `bool returnNow = false;`;
       // yield `${$this.btj.name}(ref result, ref returnNow);`;
 
-      //      yield If({ value: `returnNow` }, `return result;`);
+      //      yield If(`returnNow`, `return result;`);
 
       // yield `${$this.atj.name}(ref result);`;
       yield `return container;`;
@@ -406,7 +406,7 @@ export class CmdletClass extends Class {
 
     // from/to json-string
     const strJson = new Parameter('jsonText', dotnet.String);
-    this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(new LiteralExpression(`Carbon.Json.JsonObject.Parse(${strJson.value})`)).value}`), { parameters: [strJson], static: Modifier.Static }));
+    this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(ClientRuntime.JsonObject.Parse(strJson)).toString()}`), { parameters: [strJson], static: Modifier.Static }));
 
     // clone
     const clone = this.add(new Method('Clone', this));
@@ -433,8 +433,10 @@ export class CmdletClass extends Class {
       yield `// deserialize the contents`;
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
-        const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
+
         if (!(parameter.details.default.constantValue)) {
+          const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
+
           // dont' serialize if it's a constant or host parameter.
           // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.powershell.name);
           yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.powershell.name, bp));
@@ -483,7 +485,7 @@ export class CmdletClass extends Class {
       ]);
 
       if ($this.state.project.azure) {
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> Microsoft.Rest.ClientRuntime.EventDataConverter.ConvertFrom( m() ) as Microsoft.Rest.ClientRuntime.EventData ) );`;
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ) );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {messageData().Message ?? ${dotnet.System.String.Empty}}");`;
@@ -499,13 +501,15 @@ export class CmdletClass extends Class {
       const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, this.state);
 
       if (parameter.details.default.constantValue) {
-        // this parameter has a constant value
+        // this parameter has a constant value -- SKIP IT
+        /*
         // don't give it a parameter attribute
         const cmdletParameter = this.add(new LambdaProperty(parameter.details.powershell.name, td, new StringExpression(parameter.details.default.constantValue), {
           metadata: {
             parameterDefinition: parameter
           },
         }));
+        */
       } else if (parameter.details.default.fromHost) {
         // the parameter is expected to be gotten from the host.
         const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
@@ -581,7 +585,7 @@ export class CmdletClass extends Class {
           if (td) {
             if (!rt[td.declaration]) {
               rt[td.declaration] = true;
-              this.add(new Attribute(OutputTypeAttribute, { parameters: [{ value: `typeof(${td.declaration})` }] }));
+              this.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
             }
           }
         }

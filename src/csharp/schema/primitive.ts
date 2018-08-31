@@ -114,6 +114,11 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     return toExpression(``);
   }
 
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
   /** emits an expression serialize this to a HttpContent */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);

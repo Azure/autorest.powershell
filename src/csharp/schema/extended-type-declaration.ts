@@ -16,6 +16,12 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
 
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
+
   /** emits an expression serialize this to the value required by the container */
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression;
 

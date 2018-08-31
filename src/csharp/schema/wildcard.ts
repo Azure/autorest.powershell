@@ -57,6 +57,11 @@ export class Wildcard implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return toExpression(`null /* deserializeFromString (wildcard)doesn't support '${mediaType}' ${__filename}*/`);
   }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
@@ -122,6 +127,11 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
   /** emits the code required to serialize this into a container */

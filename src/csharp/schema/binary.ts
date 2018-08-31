@@ -33,6 +33,11 @@ export class Binary implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return undefined;
   }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
 
   /** emits an expression serialize this to the value required by the container */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {

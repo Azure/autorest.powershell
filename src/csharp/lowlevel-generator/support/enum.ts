@@ -34,6 +34,10 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromString(mediaType, content, defaultValue);
   }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
+  }
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
     return this.implementation.serializeToNode(mediaType, value, serializedName);
   }

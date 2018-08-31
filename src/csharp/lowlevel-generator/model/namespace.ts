@@ -12,6 +12,7 @@ import { State } from '../generator';
 import { EnumClass } from '../support/enum';
 import * as validation from '../validations';
 import { ModelClass } from './model-class';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
 export class ModelsNamespace extends Namespace {
 
@@ -20,11 +21,7 @@ export class ModelsNamespace extends Namespace {
   constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelsNamespace>) {
     super('Models', parent);
     this.apply(objectInitializer);
-    if (state.project.defaultPipeline) {
-      this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.IEventListenerExtensions'));
-      this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions'));
-    }
-    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.Extensions'));
+    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
 
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;

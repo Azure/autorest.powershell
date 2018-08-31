@@ -1,6 +1,6 @@
 namespace Microsoft.Rest.ClientRuntime
 {
-    public static class Extensions
+    public static partial class Extensions
     {
         public static bool If<T>(T input, out T output)
         {

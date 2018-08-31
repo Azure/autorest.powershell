@@ -51,7 +51,7 @@ export class ModelCmdlet extends Class {
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
   $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${schema.details.csharp.name || ''}Object`)] }));
-  $class.add(new Attribute(OutputTypeAttribute, { parameters: [{ value: `typeof(${td.declaration})` }] }));
+  $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
 }
 
 export function addPowershellParameters($class: WithState, schema: Schema, prop: Variable, ensureMemberIsCreated: Statements | undefined = undefined, expandName = false) {

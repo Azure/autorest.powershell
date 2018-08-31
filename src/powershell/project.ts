@@ -206,8 +206,7 @@ export class ModelCmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<ModelCmdletNamespace>) {
     super('ModelCmdlets', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.IEventListenerExtensions'));
-    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions'));
+    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
   }
 
   public createModelCmdlets() {
@@ -257,8 +256,7 @@ export class CmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.IEventListenerExtensions'));
-    this.addUsing(new Import('static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions'));
+    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
 
     // generate cmdlet classes on top of the SDK
     for (const { key: id, value: operation } of items(state.model.commands.operations)) {

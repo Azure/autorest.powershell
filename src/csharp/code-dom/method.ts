@@ -2,7 +2,7 @@ import { CommaChar, docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, valueOf, toExpression } from '#csharp/code-dom/expression';
 import * as dotnet from './dotnet';
 import { Parameter } from './parameter';
 import { OneOrMoreStatements, StatementPossibilities, Statements } from './statements/statement';
@@ -72,7 +72,7 @@ ${indent(super.implementation)}
   }
 
   public invoke(...parameters: Array<Expression>): Expression {
-    return { value: `${this.name}(${parameters.joinWith(valueOf)})` };
+    return toExpression(`${this.name}(${parameters.joinWith(valueOf)})`);
   }
   public addTo(parent: Class): Method {
     parent.addMethod(this);

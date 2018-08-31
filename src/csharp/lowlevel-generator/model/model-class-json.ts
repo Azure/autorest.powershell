@@ -5,7 +5,7 @@ import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCa
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Is, IsDeclaration, LiteralExpression } from '#csharp/code-dom/expression';
+import { Is, IsDeclaration, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
 import * as dotnet from '#csharp/code-dom/dotnet';
@@ -65,7 +65,7 @@ export class JsonSerializableClass extends Class {
 
 
     for (const each of values(modelClass.backingFields)) {
-      serializeStatements.add(`${each.field.value}?.ToJson(result, ${mode.use});`);
+      serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
       deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
     }
 
@@ -75,11 +75,11 @@ export class JsonSerializableClass extends Class {
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName);
 
       if (property.details.csharp[HeaderProperty] === HeaderPropertyType.Header) {
-        // it's a header only property. Don't serialize unless the mode has Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders enabled
-        serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders)` }, serializeStatement));
+        // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled
+        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeHeaders})`, serializeStatement));
       } else {
         if (property.schema.readOnly) {
-          serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeReadOnly)` }, serializeStatement));
+          serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
         } else {
           serializeStatements.add(serializeStatement);
         }
@@ -98,7 +98,7 @@ export class JsonSerializableClass extends Class {
       yield `bool returnNow = false;`;
       yield `${$this.btj.name}(ref ${container}, ref returnNow);`;
 
-      yield If({ value: `returnNow` }, `return ${container};`);
+      yield If(toExpression(`returnNow`), `return ${container};`);
 
       // get serialization statements
       yield serializeStatements;
@@ -111,7 +111,7 @@ export class JsonSerializableClass extends Class {
     deserializerConstructor.add(function* () {
       yield `bool returnNow = false;`;
       yield `${$this.bfj.name}(json, ref returnNow);`;
-      yield If({ value: `returnNow` }, `return;`);
+      yield If(toExpression(`returnNow`), `return;`);
 
       yield deserializeStatements;
       yield `${$this.afj.name}(json);`;
@@ -136,7 +136,7 @@ export class JsonSerializableClass extends Class {
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
 
         if ($this.schema.discriminator) {
-          yield Switch({ value: `json.StringProperty("${$this.schema.discriminator.propertyName}")` }, function* () {
+          yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.propertyName}")`), function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
                 yield Return(value.newInstance(json));

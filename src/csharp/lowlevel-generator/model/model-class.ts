@@ -1,13 +1,13 @@
 
 import { any, items, keys, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCase } from '#common/text-manipulation';
+import { camelCase, deconstruct, EOL, fixLeadingNumber, indent, nameof, pascalCase } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Is, IsDeclaration, LiteralExpression, ExpressionOrLiteral, Expression, valueOf } from '#csharp/code-dom/expression';
-import { InitializedField, Field } from '#csharp/code-dom/field';
-import { Method, PartialMethod } from '#csharp/code-dom/method';
 import * as dotnet from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, Is, IsDeclaration, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+import { Field, InitializedField } from '#csharp/code-dom/field';
+import { Method, PartialMethod } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
@@ -20,16 +20,15 @@ import { Switch } from '#csharp/code-dom/statements/switch';
 import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { ObjectImplementation } from '#csharp/schema/object';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { State } from '../generator';
 import { ModelInterface } from './interface';
 import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { ObjectImplementation } from '#csharp/schema/object';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
 
 import { KnownMediaType } from '#common/media-types';
 import { Variable } from '#csharp/code-dom/variable';
@@ -60,6 +59,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromString(mediaType, content, defaultValue);
+  }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
   }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName);
@@ -108,10 +111,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // mark the code-model with the class we're creating.
     this.schema.details.csharp.classImplementation = this;
 
-    // get all the header properties for this model 
+    // get all the header properties for this model
     this.hasHeaderProperties = values(this.schema.properties).linq.any(property => property.details.csharp[HeaderProperty] === HeaderPropertyType.Header || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header);
-
-
 
     const modelInterface = this.schema.details.csharp.interfaceImplementation || new ModelInterface(this.namespace, this.schema, this, this.state);
     this.modelInterface = modelInterface;
@@ -166,7 +167,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, { value: `new ${className}()` }, { access: Access.Private }));
+      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, `new ${className}()`, { access: Access.Private }));
       this.backingFields.push({
         className,
         typeDeclaration: td,
@@ -185,7 +186,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       validationStatements.add(td.validatePresence(backingField));
       validationStatements.add(td.validateValue(backingField));
     }
-
 
     // generate a protected backing field for each
     // and then expand the nested properties into this class forwarding to the member.
@@ -237,8 +237,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         *body() {
           for (const hp of headerProperties) {
             const hparam = <ModelProperty>hp;
-            if (hparam.serializedName == "x-ms-meta") {
-              yield `${hparam.backingName} = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(headers)}, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value));`
+            if (hparam.serializedName === 'x-ms-meta') {
+              yield `${hparam.backingName} = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(headers)}, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value));`;
             } else {
               const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
               yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values))}`);
@@ -251,10 +251,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     const hasNonHeaderProperties = values(this.properties).linq.any(p => !(<ModelProperty>p).IsHeaderProperty);
 
     if (hasNonHeaderProperties) {
-      if (!this.state.project.storagePipeline) {
+      if (this.state.project.xmlSerialization) {
+        this.xmlSerializer = new XmlSerializableClass(this);
+      }
+      if (this.state.project.jsonSerialization) {
         this.jsonSerializer = new JsonSerializableClass(this);
       }
-      this.xmlSerializer = new XmlSerializableClass(this);
     }
   }
 
@@ -274,5 +276,3 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
   }
 }
-
-

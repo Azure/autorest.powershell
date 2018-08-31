@@ -39,7 +39,7 @@ export class JsonSerializerClass extends Class {
       const x = state.project.modelsNamespace.resolveTypeDeclaration(schema, true, state);
     }
 
-    // when we generate DeserializeTo[..](Carbon.Json.JsonObject json) we should check if we have any children
+    // when we generate DeserializeTo[..](JsonObject json) we should check if we have any children
     // if there are, generate (switch statement) code that matches the discriminator value to the appropriate deserialize function
     // there probably should be a default that if there wasn't a match, fall back to deserializing for this model class.
 

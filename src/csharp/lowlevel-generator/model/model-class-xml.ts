@@ -61,11 +61,11 @@ export class XmlSerializableClass extends Class {
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Xml, prop, container, prop.serializedName);
 
       if (property.details.csharp[HeaderProperty] === HeaderPropertyType.Header) {
-        // it's a header only property. Don't serialize unless the mode has Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders enabled
-        serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders)` }, serializeStatement));
+        // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled
+        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeHeaders})`, serializeStatement));
       } else {
         if (property.schema.readOnly) {
-          serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeReadOnly)` }, serializeStatement));
+          serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
         } else {
           serializeStatements.add(serializeStatement);
         }
@@ -83,7 +83,7 @@ export class XmlSerializableClass extends Class {
       yield `bool returnNow = false;`;
       yield `${$this.btj.name}(ref ${container}, ref returnNow);`;
 
-      yield If({ value: `returnNow` }, `return ${container};`);
+      yield If(`returnNow`, `return ${container};`);
 
       // get serialization statements
       yield serializeStatements;
@@ -96,7 +96,7 @@ export class XmlSerializableClass extends Class {
     deserializerConstructor.add(function* () {
       yield `bool returnNow = false;`;
       yield `${$this.bfj.name}(xml, ref returnNow);`;
-      yield If({ value: `returnNow` }, `return;`);
+      yield If(`returnNow`, `return;`);
 
       yield deserializeStatements;
       yield `${$this.afj.name}(xml);`;
@@ -121,7 +121,7 @@ export class XmlSerializableClass extends Class {
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
 
         if ($this.schema.discriminator) {
-          yield Switch({ value: `xml.StringProperty("${$this.schema.discriminator.propertyName}")` }, function* () {
+          yield Switch(`xml.StringProperty("${$this.schema.discriminator.propertyName}")`, function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
                 yield Return(value.newInstance(xml));

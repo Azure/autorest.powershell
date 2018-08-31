@@ -3,7 +3,7 @@ import { Method } from '#csharp/code-dom/method';
 import { Field } from './field';
 import { Namespace } from './namespace';
 import { Type } from './type';
-import { Expression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, valueOf, toExpression } from '#csharp/code-dom/expression';
 import { Property } from '#csharp/code-dom/property';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { fail } from '#common/utility';
@@ -79,7 +79,7 @@ ${this.fullName}
   }
 
   public newInstance(...parameters: Array<Expression>): Expression {
-    return { value: `new ${this.name}(${parameters.joinWith(each => valueOf(each))})` };
+    return toExpression(`new ${this.name}(${parameters.joinWith(each => valueOf(each))})`);
   }
 
   public property(name: string): Property {
