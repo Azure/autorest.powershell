@@ -22,10 +22,14 @@ export class Parameter extends Variable {
   public constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Parameter>) {
     super();
     this.apply(objectInitializer);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Parameter ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get comment() {
-    return `<param name="${this.name}"> ${this.description} </param>`;
+    return `<param name="${this.name}">${this.description}</param>`;
   }
   public get declaration(): string {
     return `${this.attributeDeclaration}${this.modifier} ${this.type.declaration} ${this.name} ${this.defaultInitializer || ''}`.trim();

@@ -59,13 +59,13 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
     this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
   }
 
-  public get validatePresenceStatement(): OneOrMoreStatements {
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
     if (this.required) {
-      return (<EnhancedTypeDeclaration>this.type).validatePresence(this);
+      return (<EnhancedTypeDeclaration>this.type).validatePresence(eventListener, this);
     }
     return ``;
   }
-  public get validationStatement(): OneOrMoreStatements {
-    return (<EnhancedTypeDeclaration>this.type).validateValue(this);
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return (<EnhancedTypeDeclaration>this.type).validateValue(eventListener, this);
   }
 }

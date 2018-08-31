@@ -56,13 +56,13 @@ export class Binary implements EnhancedTypeDeclaration {
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 
-  public validatePresence(property: Variable): string {
+  public validatePresence(eventListener: Variable, property: Variable): string {
     if (this.isRequired) {
-      return `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim();
+      return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
     }
     return ``;
   }

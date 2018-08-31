@@ -89,6 +89,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   /* @internal */ public afj!: Method;
   /* @internal */ public backingFields = new Array<BackingField>();
   /* @internal */ public implementation: ObjectImplementation;
+  /* @internal */ public validationEventListener: Parameter;
   private jsonSerializer: JsonSerializableClass | undefined;
   private xmlSerializer: XmlSerializableClass | undefined;
 
@@ -146,9 +147,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
     }
 
-    const defaultConstructor = this.addMethod(new Constructor(this)); // default constructor for fits and giggles.
+    const defaultConstructor = this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
     const validationStatements = new Statements();
-
+    this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` })
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const eachSchema of items(this.schema.allOf)) {
@@ -183,8 +184,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         return p;
       });
 
-      validationStatements.add(td.validatePresence(backingField));
-      validationStatements.add(td.validateValue(backingField));
+      validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
+      validationStatements.add(td.validateValue(this.validationEventListener, backingField));
     }
 
     // generate a protected backing field for each
@@ -195,8 +196,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const prop = new ModelProperty(this, property, property.serializedName || propertyName, this.state.path('properties', propertyName));
       this.add(prop);
 
-      validationStatements.add(prop.validatePresenceStatement);
-      validationStatements.add(prop.validationStatement);
+      validationStatements.add(prop.validatePresenceStatement(this.validationEventListener));
+      validationStatements.add(prop.validationStatement(this.validationEventListener));
     }
 
     if (this.schema.additionalProperties) {
@@ -216,7 +217,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         this.interfaces.push(ClientRuntime.IValidates);
         this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
           async: Modifier.Async,
-          parameters: [new Parameter('listener', ClientRuntime.IEventListener)],
+          parameters: [this.validationEventListener],
         }));
         this.validateMethod.add(validationStatements);
       }
@@ -260,11 +261,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
   }
 
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return this.implementation.validateValue(property);
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(eventListener, property);
   }
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return this.implementation.validatePresence(property);
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(eventListener, property);
   }
 
   public addDiscriminator(discriminatorValue: string, modelClass: ModelClass) {

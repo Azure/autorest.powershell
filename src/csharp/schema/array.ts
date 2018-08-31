@@ -202,22 +202,22 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
     if (this.isRequired) {
-      return `await listener.AssertNotNull(${nameof(property.value)}, ${property}); `;
+      return `await ${eventListener}.AssertNotNull(${nameof(property.value)}, ${property}); `;
     }
     return ``;
   }
-  validateValue(property: Variable): OneOrMoreStatements {
+  validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
     // check if the underlyingType has validation.
-    if (!this.elementType.validateValue(new LocalVariable(`${property} [{ __i }]`, dotnet.Var))) {
+    if (!this.elementType.validateValue(eventListener, new LocalVariable(`${property} [{ __i }]`, dotnet.Var))) {
       return '';
     }
 
     return `
       if (${ property} != null ) {
         for (int __i = 0; __i < ${ property}.Length; __i++) {
-          ${ this.elementType.validateValue(new LocalVariable(`${property}[__i]`, dotnet.Var))}
+          ${ this.elementType.validateValue(eventListener, new LocalVariable(`${property}[__i]`, dotnet.Var))}
         }
       }
       `.trim();

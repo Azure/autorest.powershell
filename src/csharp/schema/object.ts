@@ -133,11 +133,11 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   constructor(public schema: Schema) {
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return `await listener.AssertNotNull(${nameof(property.value)}, ${property}); `.trim();
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return `await ${eventListener}.AssertNotNull(${nameof(property.value)}, ${property}); `.trim();
   }
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return `await listener.AssertObjectIsValid(${nameof(property.value)}, ${property}); `;
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return `await ${eventListener}.AssertObjectIsValid(${nameof(property.value)}, ${property}); `;
   }
 
   get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.interfaceName}`; }

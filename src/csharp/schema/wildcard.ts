@@ -90,10 +90,10 @@ export class Wildcard implements EnhancedTypeDeclaration {
   /** is the value of this type permitted to be NULL */
   isRequired = false;
 
-  public validatePresence(property: Variable): string {
+  public validatePresence(eventListener: Variable, property: Variable): string {
     return ``;
   }
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }
@@ -145,10 +145,10 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   get declaration(): string {
     return `System.Collections.Generic.Dictionary<string,object>`;
   }
-  public validatePresence(property: Variable): string {
-    return `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim();
+  public validatePresence(eventListener: Variable, property: Variable): string {
+    return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
   }
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return `/* untyped wildcard validate value for ${property} */`;
   }
 }

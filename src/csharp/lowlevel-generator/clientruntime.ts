@@ -40,6 +40,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   HttpPipeline: new ClassType(clientRuntimeNamespace, 'HttpPipeline'),
   SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
   EventData: new ClassType(clientRuntimeNamespace, 'EventData'),
+  EventListener: new ClassType(clientRuntimeNamespace, 'EventListener'),
   Events: intersect(events, {
     BodyContentSet: new LiteralExpression(`${events.declaration}.BodyContentSet`),
     BeforeCall: new LiteralExpression(`${events.declaration}.BeforeCall`),

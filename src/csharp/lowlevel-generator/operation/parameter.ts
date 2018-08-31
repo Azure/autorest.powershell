@@ -56,11 +56,11 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
   }
 
 
-  public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this);
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
   }
-  public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this);
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
   }
 }
 
@@ -94,11 +94,11 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
   }
 
 
-  public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this);
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
   }
-  public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this);
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
   }
   public mediaType: KnownMediaType;
 

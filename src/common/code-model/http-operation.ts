@@ -11,6 +11,7 @@ import { Schema } from '#common/code-model/schema';
 import { SecurityScheme } from '#common/code-model/security-scheme';
 import { Dictionary } from '#common/dictionary';
 import { camelCase, fixLeadingNumber, deconstruct } from '#common/text-manipulation';
+import { DeepPartial } from '#common/initializer';
 
 export interface HttpOperationDetails extends ImplementationDetails {
 }
@@ -186,7 +187,7 @@ export class HttpOperation extends Extensions implements HttpOperation {
   public servers = new Array<Server>();
   public deprecated = false;
 
-  constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
+  constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: DeepPartial<HttpOperation>) {
     super();
     this.details = {
       default: {

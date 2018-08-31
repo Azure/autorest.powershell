@@ -15,7 +15,7 @@ export class Boolean extends Primitive {
     return `bool${this.isRequired ? '' : '?'}`;
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }

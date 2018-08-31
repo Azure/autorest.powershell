@@ -46,10 +46,10 @@ export class Duration implements EnhancedTypeDeclaration {
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
-  public validatePresence(property: Variable): string {
+  public validatePresence(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }

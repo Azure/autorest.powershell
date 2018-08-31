@@ -41,8 +41,8 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   schema: Schema;
 
   /** emits the code required to validate that this is set to a value */
-  validatePresence(property: Variable): OneOrMoreStatements;
+  validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements;
 
   /** emits the code required to validate that this has a permissable value */
-  validateValue(property: Variable): OneOrMoreStatements;
+  validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements;
 }

@@ -147,10 +147,10 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     })).add(`return this.${backingField.value}.GetHashCode();`);
   }
 
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return this.implementation.validateValue(property);
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(eventListener, property);
   }
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return this.implementation.validatePresence(property);
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(eventListener, property);
   }
 }

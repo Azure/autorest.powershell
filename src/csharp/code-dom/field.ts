@@ -25,6 +25,10 @@ export class Field extends Variable {
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Field>) {
     super();
     this.apply(objectInitializer);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Field ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get declaration(): string {

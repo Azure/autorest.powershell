@@ -53,11 +53,11 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     return this.implementation.isRequired;
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return this.implementation.validatePresence(property);
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(eventListener, property);
   }
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return this.implementation.validateValue(property);
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(eventListener, property);
   }
 
 

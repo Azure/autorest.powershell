@@ -26,6 +26,10 @@ export class Class extends Type {
     super(namespace, name);
     this.apply(objectIntializer);
     namespace.addClass(this);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Class ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get signature(): string {

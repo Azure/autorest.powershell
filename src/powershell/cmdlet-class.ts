@@ -33,11 +33,10 @@ import { EventListener } from '#csharp/lowlevel-generator/operation/method';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { addPowershellParameters } from '#powershell/model-cmdlet';
 import { CmdletParameter } from './cmdlet-parameter';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum, PSCredential } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum, PSCredential, PSCmdlet } from './powershell-declarations';
 import { State } from './state';
 import { dotnet, ClassType, System } from '#csharp/code-dom/dotnet';
 
-export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
 export class CmdletClass extends Class {
   private cancellationToken!: Property;
@@ -63,6 +62,7 @@ export class CmdletClass extends Class {
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
       access: Access.Protected,
+      description: `(overrides the default BeginProcessing method in ${PSCmdlet})`
     }));
 
     // construct the class
@@ -375,6 +375,7 @@ export class CmdletClass extends Class {
 
     const toJsonMethod = this.add(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
+      description: `Serializes the state of this cmdlet to a <see cref="${ClientRuntime.JsonNode}" /> object.`
     }));
     toJsonMethod.add(function* () {
       yield `// serialization method`;
@@ -399,7 +400,11 @@ export class CmdletClass extends Class {
 
     // create the FromJson method
     const node = new Parameter('node', ClientRuntime.JsonNode);
-    const fromJson = this.addMethod(new Method('FromJson', this, { parameters: [node], static: Modifier.Static }));
+    const fromJson = this.addMethod(new Method('FromJson', this, {
+      parameters: [node],
+      static: Modifier.Static,
+      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}" /> into a new instance of this class.`
+    }));
     fromJson.add(function* () {
       const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
       yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
@@ -407,10 +412,16 @@ export class CmdletClass extends Class {
 
     // from/to json-string
     const strJson = new Parameter('jsonText', dotnet.String);
-    this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(ClientRuntime.JsonObject.Parse(strJson)).toString()}`), { parameters: [strJson], static: Modifier.Static }));
+    this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(ClientRuntime.JsonObject.Parse(strJson)).toString()}`), {
+      parameters: [strJson],
+      static: Modifier.Static,
+      description: `Creates a new instance of this cmdlet, deserializing the content from a json string.`
+    }));
 
     // clone
-    const clone = this.add(new Method('Clone', this));
+    const clone = this.add(new Method('Clone', this, {
+      description: `Creates a duplicate instance of this cmdlet (via JSON serialization).`
+    }));
     clone.add(function* () {
       const i = new LocalVariable('clone', dotnet.Var, {
         initializer: fromJson.invoke(new LiteralExpression(`this.${toJsonMethod.invoke(dotnet.Null, ClientRuntime.SerializationMode.IncludeAll).value}`))
@@ -457,7 +468,11 @@ export class CmdletClass extends Class {
     const id = new Parameter('id', dotnet.String);
     const token = new Parameter('token', System.Threading.CancellationToken);
     const messageData = new Parameter('messageData', System.Func(ClientRuntime.EventData));
-    this.add(new Method('Signal', System.Threading.Tasks.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
+    this.add(new Method('Signal', System.Threading.Tasks.Task(), {
+      async: Modifier.Async,
+      parameters: [id, token, messageData],
+      description: `Handles/Dispatches events during the call to the REST service.`
+    })).add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
       yield Switch(id, [

@@ -14,10 +14,10 @@ export class Uuid extends String {
   get declaration(): string {
     return `string`;
   }
-  public validatePresence(property: Variable): string {
-    return this.isRequired ? `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim() : '';
+  public validatePresence(eventListener: Variable, property: Variable): string {
+    return this.isRequired ? `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim() : '';
   }
-  validateValue(property: Variable): string {
-    return `await listener.AssertRegEx(${nameof(property.value)},${property},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
+  validateValue(eventListener: Variable, property: Variable): string {
+    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
   }
 }

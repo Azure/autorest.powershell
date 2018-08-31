@@ -49,16 +49,20 @@ export class JsonSerializableClass extends Class {
     this.addPartialMethods();
 
     // set up the declaration for the toJson method.
-    const container = new Parameter('container', ClientRuntime.JsonObject);
-    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
+    const container = new Parameter('container', ClientRuntime.JsonObject, { description: `The <see cref="${ClientRuntime.JsonObject}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
+    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/>.` });
 
     const toJsonMethod = this.addMethod(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
+      description: `Seserializes this instance of ${this.name} into a ${ClientRuntime.JsonNode}" />.`
     }));
 
     // setup the declaration for the json deserializer constructor
-    const jsonParameter = new Parameter('json', ClientRuntime.JsonObject);
-    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [jsonParameter], access: Access.Internal }));
+    const jsonParameter = new Parameter('json', ClientRuntime.JsonObject, { description: `A ${ClientRuntime.JsonObject} instance to deserialize from.` });
+    const deserializerConstructor = this.addMethod(new Constructor(this, {
+      parameters: [jsonParameter], access: Access.Internal,
+      description: `Deserializes a ${ClientRuntime.JsonObject} into a new instance of <see cref="${this.name}" />.`
+    }));
 
     const serializeStatements = new Statements();
     const deserializeStatements = new Statements();
@@ -123,8 +127,16 @@ export class JsonSerializableClass extends Class {
     const d = this.modelClass.discriminators;
     const isp = this.modelClass.isPolymorphic;
     // create the FromJson method
-    const node = new Parameter('node', ClientRuntime.JsonNode);
-    const fromJson = this.addMethod(new Method('FromJson', this.modelClass.modelInterface, { parameters: [node], static: Modifier.Static }));
+    const node = new Parameter('node', ClientRuntime.JsonNode, { description: `a <see cref="${ClientRuntime.JsonNode}" /> to deserialize from.` });
+    const fromJson = this.addMethod(new Method('FromJson', this.modelClass.modelInterface, {
+      parameters: [node], static: Modifier.Static,
+      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}"/> into an instance of ${this.modelClass.modelInterface}.`
+    }));
+
+    if (isp) {
+      fromJson.description = fromJson.description + `\n Note: the ${this.modelClass.modelInterface} interface is polymorphic, and the precise model class that will get deserialized is determined at runtime based on the payload.`
+    }
+
     fromJson.add(function* () {
 
       const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
@@ -165,6 +177,9 @@ export class JsonSerializableClass extends Class {
         new Parameter('container', ClientRuntime.JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
       ],
+      description: `<c>BeforeToJson</c> will be called before the json serialization has commenced, allowing complete customization of the object before it is serialized.
+      If you wish to disable the default serialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+      Implement this method in a partial class to enable this behavior.`
     }));
 
     this.atj = this.addMethod(new PartialMethod('AfterToJson', dotnet.Void, {
@@ -172,6 +187,7 @@ export class JsonSerializableClass extends Class {
       parameters: [
         new Parameter('container', ClientRuntime.JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
       ],
+      description: `<c>AfterToJson</c> will be called after the json erialization has finished, allowing customization of the <see cref="${ClientRuntime.JsonObject}" /> before it is returned. Implement this method in a partial class to enable this behavior `
     }));
 
     this.bfj = this.addMethod(new PartialMethod('BeforeFromJson', dotnet.Void, {
@@ -180,6 +196,9 @@ export class JsonSerializableClass extends Class {
         new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
+      description: `<c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of the object before it is deserialized. 
+      If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+      Implement this method in a partial class to enable this behavior.`
     }));
 
     this.afj = this.addMethod(new PartialMethod('AfterFromJson', dotnet.Void, {
@@ -187,6 +206,7 @@ export class JsonSerializableClass extends Class {
       parameters: [
         new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
       ],
+      description: `<c>AfterFromJson</c> will be called after the json deserialization has finished, allowing customization of the object before it is returned. Implement this method in a partial class to enable this behavior `
     }));
   }
 

@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
@@ -95,7 +95,6 @@ export class String implements EnhancedTypeDeclaration {
     return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
@@ -132,44 +131,42 @@ export class String implements EnhancedTypeDeclaration {
     return 'string';
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return `
-${this.validateMinLength(property)}
-${this.validateMaxLength(property)}
-${this.validateRegex(property)}
-${this.validateEnum(property)}
+${this.validateMinLength(eventListener, property)}
+${this.validateMaxLength(eventListener, property)}
+${this.validateRegex(eventListener, property)}
+${this.validateEnum(eventListener, property)}
     `.trim();
 
   }
 
-
-
-  public validatePresence(property: Variable): string {
-    return `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim();
+  public validatePresence(eventListener: Variable, property: Variable): string {
+    return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
   }
 
-  private validateMinLength(property: Variable): string {
+  private validateMinLength(eventListener: Variable, property: Variable): string {
     if (!this.schema.minLength) {
       return '';
     }
-    return `await listener.AssertMinimumLength(${nameof(property.value)},${property},${this.schema.minLength});`;
+    return `await ${eventListener}.AssertMinimumLength(${nameof(property.value)},${property},${this.schema.minLength});`;
   }
-  private validateMaxLength(property: Variable): string {
+  private validateMaxLength(eventListener: Variable, property: Variable): string {
     if (!this.schema.maxLength) {
       return '';
     }
-    return `await listener.AssertMaximumLength(${nameof(property.value)},${property},${this.schema.maxLength});`;
+    return `await ${eventListener}.AssertMaximumLength(${nameof(property.value)},${property},${this.schema.maxLength});`;
   }
-  private validateRegex(property: Variable): string {
+  private validateRegex(eventListener: Variable, property: Variable): string {
     if (!this.schema.pattern) {
       return '';
     }
-    return `await listener.AssertRegEx(${nameof(property.value)},${property},@"${this.schema.pattern}");`;
+    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${this.schema.pattern}");`;
   }
-  private validateEnum(property: Variable): string {
+  private validateEnum(eventListener: Variable, property: Variable): string {
     if (!this.schema.enum || this.schema.enum.length === 0) {
       return '';
     }
-    return `await listener.AssertEnum(${nameof(property.value)},${property},${this.schema.enum.joinWith((v) => `@"${v}"`)});`;
+    return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${this.schema.enum.joinWith((v) => `@"${v}"`)});`;
   }
 }

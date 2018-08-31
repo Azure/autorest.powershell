@@ -30,6 +30,10 @@ export class Method extends Statements {
     if (this.body) {
       this.add(this.body);
     }
+    if (!this.description.trim()) {
+      this.description = `FIXME: Method ${name} is MISSING DESCRIPTION`;
+    }
+
   }
 
   public addParameter(parameter: Parameter): Parameter {

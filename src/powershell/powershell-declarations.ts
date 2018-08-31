@@ -10,7 +10,7 @@ import { Class } from '#csharp/code-dom/class';
 const sma = new Namespace(`System.Management.Automation`);
 
 
-export const PSCmdlet: TypeDeclaration = new ClassType(sma, `PSCmdlet`);
+export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
 
 export const PSObject: TypeDeclaration = new ClassType(sma, `PSObject`);

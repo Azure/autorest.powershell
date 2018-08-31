@@ -88,7 +88,7 @@ export class DateTime extends Primitive {
   // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.InvariantCulture)) : null;
   // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.InvariantCulture)) : null;
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }
@@ -126,7 +126,7 @@ export class UnixTime extends Primitive {
     super(schema);
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 

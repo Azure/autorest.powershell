@@ -46,11 +46,11 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   constructor(public schema: Schema) {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */
-  public validatePresence(property: Variable): string {
+  public validatePresence(eventListener: Variable, property: Variable): string {
     return ``;
   }
 
-  abstract validateValue(property: Variable): string;
+  abstract validateValue(eventListener: Variable, property: Variable): string;
   private get baseType(): string {
     return this.declaration.replace('?', '');
   }

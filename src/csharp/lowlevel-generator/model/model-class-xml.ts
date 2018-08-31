@@ -37,16 +37,19 @@ export class XmlSerializableClass extends Class {
     this.addPartialMethods();
 
     // set up the declaration for the toXml method.
-    const container = new Parameter('container', System.Xml.Linq.XElement);
-    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
+    const container = new Parameter('container', System.Xml.Linq.XElement, { description: `The <see cref="${System.Xml.Linq.XElement}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
+    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/c>.` });
 
     const toXmlMethod = this.addMethod(new Method('ToXml', System.Xml.Linq.XElement, {
       parameters: [container, mode],
     }));
 
     // setup the declaration for the xml deserializer constructor
-    const xmlParameter = new Parameter('xml', System.Xml.Linq.XElement);
-    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [xmlParameter], access: Access.Internal }));
+    const xmlParameter = new Parameter('xml', System.Xml.Linq.XElement, { description: `A ${System.Xml.Linq.XElement} instance to deserialize from.` });
+    const deserializerConstructor = this.addMethod(new Constructor(this, {
+      parameters: [xmlParameter], access: Access.Internal,
+      description: `Deserializes a ${System.Xml.Linq.XElement} into a new instance of <see cref="${this.name}" />.`
+    }));
 
     const serializeStatements = new Statements();
     const deserializeStatements = new Statements();
@@ -109,7 +112,7 @@ export class XmlSerializableClass extends Class {
     const d = this.modelClass.discriminators;
     const isp = this.modelClass.isPolymorphic;
     // create the FromXml method
-    const node = new Parameter('node', System.Xml.Linq.XElement);
+    const node = new Parameter('node', System.Xml.Linq.XElement, { description: `A ${System.Xml.Linq.XElement} instance to deserialize from.` });
     const fromXml = this.addMethod(new Method('FromXml', this.modelClass.modelInterface, { parameters: [node], static: Modifier.Static }));
     fromXml.add(function* () {
 

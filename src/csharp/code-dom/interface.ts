@@ -7,6 +7,10 @@ export class Interface extends Type {
     super(parent, name);
     this.apply(objectIntializer);
     parent.addInterface(this);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Interface ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get fileName(): string {

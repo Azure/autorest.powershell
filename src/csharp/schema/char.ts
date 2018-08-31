@@ -17,7 +17,7 @@ export class Char extends Primitive {
     return `char${this.isRequired ? '' : ' ?'}`;
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return `
 ${this.validateEnum(property)}
     `.trim();

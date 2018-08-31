@@ -44,6 +44,10 @@ export class Property extends Variable implements Instance {
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Property>) {
     super();
     this.apply(objectInitializer);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Property ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   protected get getterDeclaration(): string {

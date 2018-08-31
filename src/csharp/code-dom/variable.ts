@@ -4,6 +4,7 @@ import { OneOrMoreStatements, Statement, toStatement } from '#csharp/code-dom/st
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { IsNull, IsNotNull, Cast } from '#csharp/code-dom/comparisons';
 import { intersect } from '#common/intersect';
+import { dotnet } from '#csharp/code-dom/dotnet';
 
 /** represents any declaration of a variable (may be Parameter, LocalVariable, Field or Property) */
 export interface Variable extends Expression {
@@ -39,7 +40,9 @@ export interface Instance {
 
 export type ExpressionStatement = Expression & Statement;
 
-
+export function Local(name: string, initializer: ExpressionOrLiteral = dotnet.Null, type: TypeDeclaration = dotnet.Var): LocalVariable {
+  return new LocalVariable(name, type, { initializer });
+}
 /** represents a locally declared variable */
 export class LocalVariable extends Variable implements Instance, Statement {
   public initializer?: ExpressionOrLiteral;

@@ -28,7 +28,7 @@ export interface EnhancedVariable extends Variable {
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements;
 
-  validatePresenceStatement: OneOrMoreStatements;
-  validationStatement: OneOrMoreStatements;
+  validatePresenceStatement(eventListener: Variable): OneOrMoreStatements;
+  validationStatement(eventListener: Variable): OneOrMoreStatements;
 
 }

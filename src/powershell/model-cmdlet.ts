@@ -13,8 +13,8 @@ import { Return } from "#csharp/code-dom/statements/return";
 import { Statements, OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable, MemberVariable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { CmdletClass, PSCmdlet } from '#powershell/cmdlet-class';
-import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, SwitchParameter, verbEnum } from '#powershell/powershell-declarations';
+
+import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, SwitchParameter, verbEnum, PSCmdlet } from '#powershell/powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {
