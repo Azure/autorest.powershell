@@ -1,5 +1,4 @@
 
-
 import { any, items, keys, values } from '#common/dictionary';
 import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCase } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
@@ -8,7 +7,7 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { Is, IsDeclaration, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
@@ -21,19 +20,20 @@ import { Switch } from '#csharp/code-dom/statements/switch';
 import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
+import { MediaType } from '#common/code-model/http-operation';
+import { KnownMediaType } from '#common/media-types';
+import { Property } from '#csharp/code-dom/property';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { ObjectImplementation } from '#csharp/schema/object';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { State } from '../generator';
 import { ModelInterface } from './interface';
 import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
-import { Property } from '#csharp/code-dom/property';
-import { MediaType } from '#common/code-model/http-operation';
-import { KnownMediaType } from '#common/media-types';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -62,7 +62,6 @@ export class JsonSerializableClass extends Class {
 
     const serializeStatements = new Statements();
     const deserializeStatements = new Statements();
-
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
@@ -153,7 +152,6 @@ export class JsonSerializableClass extends Class {
 
     return super.definition;
   }
-
 
   public get fileName(): string {
     return `${super.fileName}.json`;

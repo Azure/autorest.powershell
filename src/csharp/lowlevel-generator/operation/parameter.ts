@@ -1,7 +1,7 @@
 
 
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
@@ -13,6 +13,7 @@ import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-
 import { KnownMediaType } from '#common/media-types';
 import { ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
 import { Variable } from '#csharp/code-dom/variable';
+import { System } from '#csharp/code-dom/dotnet';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
 export class OperationParameter extends Parameter implements EnhancedVariable {
@@ -131,17 +132,17 @@ export class CallbackParameter extends Parameter {
 
     if (state.project.storagePipeline) {
       // storage pipline style (callback happens inside the pipeline)
-      if (responseType && responseType.declaration !== dotnet.System.IO.Stream.declaration) {
+      if (responseType && responseType.declaration !== System.IO.Stream.declaration) {
         if (headerType) {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType, headerType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType, headerType));
         } else {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType));
         }
       } else {
         if (headerType) {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, headerType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, headerType));
         } else {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage));
         }
       }
     } else {
@@ -149,18 +150,18 @@ export class CallbackParameter extends Parameter {
       if (responseType) {
         if (headerType) {
           // both
-          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(responseType), dotnet.System.Threading.Tasks.Task(headerType), dotnet.System.Threading.Tasks.Task()));
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
         } else {
           // just response
-          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(responseType), dotnet.System.Threading.Tasks.Task()));
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task()));
         }
       } else {
         if (headerType) {
           // just headers 
-          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task(headerType), dotnet.System.Threading.Tasks.Task()));
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
         } else {
           // no content?
-          super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task()));
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task()));
         }
       }
     }

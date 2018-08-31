@@ -3,10 +3,10 @@ import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Stati
 import { Class } from '#csharp/code-dom/class';
 import { summary } from '#csharp/code-dom/doc-comments';
 import { Expression, valueOf, toExpression } from '#csharp/code-dom/expression';
-import * as dotnet from './dotnet';
 import { Parameter } from './parameter';
 import { OneOrMoreStatements, StatementPossibilities, Statements } from './statements/statement';
 import { TypeDeclaration } from './type-declaration';
+import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();

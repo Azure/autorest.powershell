@@ -12,7 +12,7 @@ import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringE
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, LambdaProperty, Property } from '#csharp/code-dom/property';
@@ -33,8 +33,9 @@ import { EventListener } from '#csharp/lowlevel-generator/operation/method';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { addPowershellParameters } from '#powershell/model-cmdlet';
 import { CmdletParameter } from './cmdlet-parameter';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum, PSCredential } from './powershell-declarations';
 import { State } from './state';
+import { dotnet, LibraryType, System } from '#csharp/code-dom/dotnet';
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 
@@ -89,7 +90,7 @@ export class CmdletClass extends Class {
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private }));
 
     // client API property (gs01: fill this in correctly)
-    const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`)));
 
     // Cmdlet Parameters for pipeline manipulations.
@@ -104,14 +105,14 @@ export class CmdletClass extends Class {
     const asjob = this.add(new Property('AsJob', SwitchParameter));
     asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
 
-    const proxyCredential = this.add(new Property('ProxyCredential', new dotnet.LibraryType('System.Management.Automation', 'PSCredential'), { attributes: [] }));
+    const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [] }));
     proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
     proxyCredential.add(new Attribute(ValidateNotNull));
 
-    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', new dotnet.LibraryType('System.Management.Automation', 'SwitchParameter'), { attributes: [] }));
+    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [] }));
     useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
 
-    const proxyUri = this.add(new Property('Proxy ', dotnet.System.Uri, { attributes: [] }));
+    const proxyUri = this.add(new Property('Proxy ', System.Uri, { attributes: [] }));
     proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "The URI for the proxy server to use"`] }));
 
     if (this.state.project.azure) {
@@ -191,7 +192,7 @@ export class CmdletClass extends Class {
           yield work;
         }
       });
-      const aggregateException = new Parameter('aggregateException', dotnet.System.AggregateException);
+      const aggregateException = new Parameter('aggregateException', System.AggregateException);
       yield Catch(aggregateException, function* () {
         yield `// unroll the inner exceptions to get the root cause`;
         yield ForEach('innerException', new LiteralExpression(`${aggregateException.use}.Flatten().InnerExceptions`), function* () {
@@ -201,7 +202,7 @@ export class CmdletClass extends Class {
         });
       });
 
-      const exception = new Parameter('exception', dotnet.System.Exception);
+      const exception = new Parameter('exception', System.Exception);
       yield Catch(exception, function* () {
         yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exception.use}.GetType().Name} - {${exception.use}.Message} : {${exception.use}.StackTrace}"`));
         yield `// Write exception out to error channel.`;
@@ -213,11 +214,11 @@ export class CmdletClass extends Class {
 
   private implementProcessRecordAsync(operation: CommandOperation) {
     const $this = this;
-    this.add(new Method('ProcessRecordAsync', dotnet.System.Threading.Tasks.Task(), { access: Access.Protected, async: Modifier.Async })).add(function* () {
+    this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), { access: Access.Protected, async: Modifier.Async })).add(function* () {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-      // const pipeline = new LocalVariable('pipeline', dotnet.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
+      // const pipeline = new LocalVariable('pipeline', IL.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
       const pipeline = $this.$<Property>('Pipeline');
 
       yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`));
@@ -253,18 +254,18 @@ export class CmdletClass extends Class {
 
       // make callback methods
       for (const each of values(responses)) {
-        // const responseParameter = new Parameter('response', new dotnet.LibraryType(ClientRuntime, each.details.csharp.type));
+
         const parameters = new Array<Parameter>();
-        parameters.push(new Parameter('responseMessage', dotnet.System.Net.Http.HttpResponseMessage));
+        parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage));
 
         if (each.details.csharp.responseType) {
-          parameters.push(new Parameter('response', dotnet.System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType })));
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType })));
         }
         if (each.details.csharp.headerType) {
-          parameters.push(new Parameter('headers', dotnet.System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType })));
+          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType })));
         }
 
-        const responseMethod = new Method(`${each.details.csharp.name}`, dotnet.System.Threading.Tasks.Task(), { access: Access.Private, parameters, async: Modifier.Async });
+        const responseMethod = new Method(`${each.details.csharp.name}`, System.Threading.Tasks.Task(), { access: Access.Private, parameters, async: Modifier.Async });
         responseMethod.add(function* () {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
@@ -449,23 +450,23 @@ export class CmdletClass extends Class {
 
   private implementIEventListener() {
     const $this = this;
-    const cts = this.add(new InitializedField('_cancellationTokenSource', dotnet.System.Threading.CancellationTokenSource, new LiteralExpression(`new ${dotnet.System.Threading.CancellationTokenSource.declaration}()`), { access: Access.Private }));
-    this.cancellationToken = this.add(new LambdaProperty('Token', dotnet.System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`)));
-    this.add(new LambdaProperty('Cancel', dotnet.System.Action(), new LiteralExpression(`${cts.value}.Cancel`)));
+    const cts = this.add(new InitializedField('_cancellationTokenSource', System.Threading.CancellationTokenSource, new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`), { access: Access.Private }));
+    this.cancellationToken = this.add(new LambdaProperty('Token', System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`)));
+    this.add(new LambdaProperty('Cancel', System.Action(), new LiteralExpression(`${cts.value}.Cancel`)));
 
     const id = new Parameter('id', dotnet.String);
-    const token = new Parameter('token', dotnet.System.Threading.CancellationToken);
-    const messageData = new Parameter('messageData', dotnet.System.Func(ClientRuntime.EventData));
-    this.add(new Method('Signal', dotnet.System.Threading.Tasks.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
+    const token = new Parameter('token', System.Threading.CancellationToken);
+    const messageData = new Parameter('messageData', System.Func(ClientRuntime.EventData));
+    this.add(new Method('Signal', System.Threading.Tasks.Task(), { async: Modifier.Async, parameters: [id, token, messageData] })).add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
       yield Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
-          yield `WriteVerbose($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
+          yield `WriteVerbose($"{messageData().Message ?? ${System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Warning.value, function* () {
-          yield `WriteWarning($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
+          yield `WriteWarning($"{messageData().Message ?? ${System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
@@ -475,7 +476,7 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Debug.value, function* () {
-          yield `WriteDebug($"{messageData().Message ?? ${dotnet.System.String.Empty}}");`;
+          yield `WriteDebug($"{messageData().Message ?? ${System.String.Empty}}");`;
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
@@ -488,7 +489,7 @@ export class CmdletClass extends Class {
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ) );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
-      yield `WriteDebug($"{id}: {messageData().Message ?? ${dotnet.System.String.Empty}}");`;
+      yield `WriteDebug($"{id}: {messageData().Message ?? ${System.String.Empty}}");`;
       // any handling of the signal on our side...
     });
   }

@@ -1,12 +1,13 @@
 import { Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#csharp/lowlevel-generator/generator';
 import { items } from '#common/dictionary';
+import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class JsonSerializerClass extends Class {
 
@@ -59,15 +60,15 @@ export class JsonSerializerClass extends Class {
         clss.partial = true;
 
         // add partial methods for future customization
-        const btj = clss.addMethod(new PartialMethod("BeforeToJson", dotnet.Void, {
+        const btj = clss.addMethod(new PartialMethod("BeforeToJson", IL.Void, {
           access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),
-            new Parameter("returnNow", dotnet.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the serialization should be processed, or if the method should return instantly." }),
+            new Parameter("returnNow", IL.Bool, { modifier: ParameterModifier.Ref, description: "Determines if the rest of the serialization should be processed, or if the method should return instantly." }),
           ]
         }));
 
-        const atj = clss.addMethod(new PartialMethod("AfterToJson", dotnet.Void, {
+        const atj = clss.addMethod(new PartialMethod("AfterToJson", IL.Void, {
           access: Access.Default,
           parameters: [
             new Parameter("container", JsonObject, { modifier: ParameterModifier.Ref, description: "The JSON container that the serialization result will be placed in." }),

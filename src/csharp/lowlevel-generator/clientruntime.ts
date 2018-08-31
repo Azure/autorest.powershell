@@ -1,6 +1,6 @@
 import { intersect } from '#common/intersect';
-import { EnumType, LibraryType } from '#csharp/code-dom/dotnet';
-import * as dotnet from "#csharp/code-dom/dotnet";
+import { EnumType, LibraryType, System, dotnet } from '#csharp/code-dom/dotnet';
+
 import { Expression, LiteralExpression, toExpression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
 import { Namespace } from '#csharp/code-dom/namespace';
@@ -56,7 +56,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Polling: new LiteralExpression(`${events.declaration}.Polling`),
     DelayBeforePolling: new LiteralExpression(`${events.declaration}.DelayBeforePolling`),
   }),
-  KeyValuePairs: dotnet.System.Collections.Generic.IEnumerable(dotnet.System.Collections.Generic.KeyValuePair(dotnet.String, dotnet.System.Collections.Generic.IEnumerable(dotnet.String))),
+  KeyValuePairs: System.Collections.Generic.IEnumerable(System.Collections.Generic.KeyValuePair(dotnet.String, System.Collections.Generic.IEnumerable(dotnet.String))),
   JsonNode: intersect(jsonNode, {
     Parse: (expression: ExpressionOrLiteral) => toExpression(`${jsonNode}.Parse(${toExpression(expression)})`)
   }),
@@ -69,3 +69,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonArray: new LibraryType(carbon, `JsonArray`),
   XNodeArray: new LibraryType(carbon, `XNodeArray`)
 });
+
+export const StoragePipeline = {
+  Pipeline: new LibraryType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
+  CancelContext: new LibraryType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
+
+}

@@ -201,27 +201,24 @@ export const System = intersect(system, {
   }
 });
 
-export const Unknown: TypeDeclaration = new LibraryType(None, 'null');
-export const ToDo: TypeDeclaration = new LibraryType(None, 'null');
-export const Void: TypeDeclaration = new LibraryType(None, 'void');
-export const String: TypeDeclaration = new LibraryType(None, 'string');
-export const Int: TypeDeclaration = new LibraryType(None, 'int');
-export const Long: TypeDeclaration = new LibraryType(None, 'long');
-export const Double: TypeDeclaration = new LibraryType(None, 'double');
-export const Float: TypeDeclaration = new LibraryType(None, 'float');
-export const Binary: TypeDeclaration = new LibraryType(None, 'byte[]');
-export const Bool: TypeDeclaration = new LibraryType(None, 'bool');
-export const Object: TypeDeclaration = new LibraryType(None, 'object');
-export const Dynamic: TypeDeclaration = new LibraryType(None, 'dynamic');
-export const ThisObject: TypeDeclaration = new LibraryType(None, 'this object');
-export const Var: TypeDeclaration = new LibraryType(None, 'var');
-
-export const True = new LiteralExpression('true');
-export const False = new LiteralExpression('false');
-
-// export const Date: TypeDeclaration = new LibraryType(System, 'DateTime');
-// export const Duration: TypeDeclaration = new LibraryType(System, 'TimeSpan');
-
-export const Null = new LiteralExpression('null');
-export const This = new LiteralExpression('this');
+export const dotnet = {
+  Unknown: new LibraryType(None, 'null'),
+  ToDo: new LibraryType(None, 'null'),
+  Void: new LibraryType(None, 'void'),
+  String: new LibraryType(None, 'string'),
+  Int: new LibraryType(None, 'int'),
+  Long: new LibraryType(None, 'long'),
+  Double: new LibraryType(None, 'double'),
+  Float: new LibraryType(None, 'float'),
+  Binary: new LibraryType(None, 'byte[]'),
+  Bool: new LibraryType(None, 'bool'),
+  Object: new LibraryType(None, 'object'),
+  Dynamic: new LibraryType(None, 'dynamic'),
+  ThisObject: new LibraryType(None, 'this object'),
+  Var: new LibraryType(None, 'var'),
+  True: new LiteralExpression('true'),
+  False: new LiteralExpression('false'),
+  Null: new LiteralExpression('null'),
+  This: new LiteralExpression('this'),
+};
 

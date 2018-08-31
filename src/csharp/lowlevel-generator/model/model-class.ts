@@ -4,7 +4,6 @@ import { camelCase, deconstruct, EOL, fixLeadingNumber, indent, nameof, pascalCa
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import * as dotnet from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, Is, IsDeclaration, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
 import { Field, InitializedField } from '#csharp/code-dom/field';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
@@ -33,6 +32,7 @@ import { ProxyProperty } from './proxy-property';
 import { KnownMediaType } from '#common/media-types';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
+import { System } from '#csharp/code-dom/dotnet';
 
 export interface BackingField {
   field: Field;
@@ -214,7 +214,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         // add the IValidates implementation to this object.
         this.interfaces.push(ClientRuntime.IValidates);
-        this.validateMethod = this.addMethod(new Method('Validate', dotnet.System.Threading.Tasks.Task(), {
+        this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
           async: Modifier.Async,
           parameters: [new Parameter('listener', ClientRuntime.IEventListener)],
         }));
@@ -229,7 +229,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     if (this.hasHeaderProperties) {
       // add header deserializer method
-      const headers = new Parameter('headers', dotnet.System.Net.Http.Headers.HttpResponseHeaders);
+      const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
 
       const readHeaders = new Method('ReadHeaders', this, {
         access: Access.Internal,

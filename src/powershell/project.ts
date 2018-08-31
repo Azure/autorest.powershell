@@ -9,7 +9,7 @@ import { LiteralExpression } from '#csharp/code-dom/expression';
 import { Import } from '#csharp/code-dom/import';
 import { Interface } from '#csharp/code-dom/interface';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Else, ElseIf, If } from '#csharp/code-dom/statements/if';
@@ -25,6 +25,7 @@ import { PSObject, PSTypeConverter, TypeConverterAttribute } from '#powershell/p
 import { CmdletClass } from './cmdlet-class';
 import { State } from './state';
 import { deconstruct, pascalCase } from '#common/text-manipulation';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 
 export class ServiceNamespace extends Namespace {
   public moduleClass: ModuleClass;
@@ -95,15 +96,15 @@ export class ModelExtensionsNamespace extends Namespace {
           override: Modifier.Override,
           parameters: [
             new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', dotnet.System.Type)
+            new Parameter('destinationType', System.Type)
           ]
         }));
         typeConverter.add(new LambdaMethod('ConvertTo', dotnet.Object, dotnet.Null, {
           override: Modifier.Override,
           parameters: [
             new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', dotnet.System.Type),
-            new Parameter('formatProvider', dotnet.System.IFormatProvider),
+            new Parameter('destinationType', System.Type),
+            new Parameter('formatProvider', System.IFormatProvider),
             new Parameter('ignoreCase', dotnet.Bool),
           ]
         }));
@@ -111,15 +112,15 @@ export class ModelExtensionsNamespace extends Namespace {
           override: Modifier.Override,
           parameters: [
             new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', dotnet.System.Type)
+            new Parameter('destinationType', System.Type)
           ]
         }));
         typeConverter.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression('ConvertFrom(sourceValue)'), {
           override: Modifier.Override,
           parameters: [
             new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', dotnet.System.Type),
-            new Parameter('formatProvider', dotnet.System.IFormatProvider),
+            new Parameter('destinationType', System.Type),
+            new Parameter('formatProvider', System.IFormatProvider),
             new Parameter('ignoreCase', dotnet.Bool),
           ]
         }));
@@ -135,7 +136,7 @@ export class ModelExtensionsNamespace extends Namespace {
             yield If(`sourceValue.GetType() == typeof(${PSObject.declaration})`, function* () {
               yield `// does it have the properties we need`;
             });
-            yield ElseIf(`sourceValue.GetType() == typeof(${dotnet.System.Collections.Hashtable.declaration})`, function* () {
+            yield ElseIf(`sourceValue.GetType() == typeof(${System.Collections.Hashtable.declaration})`, function* () {
               yield `// a hashtable?`;
             });
 

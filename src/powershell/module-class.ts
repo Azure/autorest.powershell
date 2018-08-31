@@ -5,7 +5,7 @@ import { LiteralExpression, StringExpression } from '#csharp/code-dom/expression
 import { Field } from '#csharp/code-dom/field';
 import { Alias, Import } from '#csharp/code-dom/import';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, ImplementedProperty, LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';
@@ -13,6 +13,7 @@ import { If } from '#csharp/code-dom/statements/if'
 import { Return } from '#csharp/code-dom/statements/return';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
+import { System, dotnet, LibraryType } from '#csharp/code-dom/dotnet';
 
 export class ModuleClass extends Class {
 
@@ -30,42 +31,42 @@ export class ModuleClass extends Class {
     const isAzure = this.state.project.azure;
 
     // get the name of the client API class
-    const TaskOfHttpResponseMessage = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
-    const BoundParameterDictionary = dotnet.System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object);
+    const TaskOfHttpResponseMessage = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
+    const BoundParameterDictionary = System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object);
 
-    const clientAPI = new dotnet.LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new LibraryType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
 
     const clientProperty = this.add(new Property('ClientAPI', clientAPI));
 
     // lets the common code call the signal again (recursive! careful!)
-    const signalDelegateI = dotnet.System.Func(
+    const signalDelegateI = System.Func(
       dotnet.String,
-      dotnet.System.Threading.CancellationToken,
-      dotnet.System.Func(dotnet.System.EventArgs),
-      /* returns */ dotnet.System.Threading.Tasks.Task());
+      System.Threading.CancellationToken,
+      System.Func(System.EventArgs),
+      /* returns */ System.Threading.Tasks.Task());
 
-    const signalDelegate = dotnet.System.Func(
+    const signalDelegate = System.Func(
       dotnet.String,
-      dotnet.System.Threading.CancellationToken,
-      dotnet.System.Func(dotnet.System.EventArgs),
+      System.Threading.CancellationToken,
+      System.Func(System.EventArgs),
       signalDelegateI,
-      /* returns */ dotnet.System.Threading.Tasks.Task());
+      /* returns */ System.Threading.Tasks.Task());
 
     const IEventListenerExpanded = [
-      dotnet.System.Threading.CancellationToken, /* token */
-      dotnet.System.Action(),                    /* Cancel() */
+      System.Threading.CancellationToken, /* token */
+      System.Action(),                    /* Cancel() */
       signalDelegateI,
     ];
 
-    const nextStep = dotnet.System.Func(
-      dotnet.System.Net.Http.HttpRequestMessage,
+    const nextStep = System.Func(
+      System.Net.Http.HttpRequestMessage,
       ...IEventListenerExpanded,
       /* returns */ TaskOfHttpResponseMessage);
 
     const signalDelegateIAlias = namespace.add(new Alias('SignalDelegateI', signalDelegateI));
     const signalDelegateAlias = namespace.add(new Alias('SignalDelegate', signalDelegate));
 
-    const getParameterDelegate = namespace.add(new Alias('GetParameterDelegate', dotnet.System.Func(
+    const getParameterDelegate = namespace.add(new Alias('GetParameterDelegate', System.Func(
       dotnet.String,
       dotnet.String,
       BoundParameterDictionary,
@@ -73,14 +74,14 @@ export class ModuleClass extends Class {
       /* returns */ dotnet.Object)));
 
     const sendAsyncStep = namespace.add(new Alias('SendAsyncStepDelegate',
-      dotnet.System.Func(
-        dotnet.System.Net.Http.HttpRequestMessage,
+      System.Func(
+        System.Net.Http.HttpRequestMessage,
         ...IEventListenerExpanded,
         nextStep,                                  /* Next( ...) */
         /* returns */ TaskOfHttpResponseMessage)));
 
 
-    const boundParams = new Parameter('boundParameters', dotnet.System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object));
+    const boundParams = new Parameter('boundParameters', System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object));
     const pipelineField = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private }));
 
     const createPipeline = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
@@ -90,11 +91,11 @@ export class ModuleClass extends Class {
     const init = this.add(new Method('Init', dotnet.Void));
 
     if (isAzure) {
-      const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', dotnet.System.Action(sendAsyncStep.fullDefinition)));
+      const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', System.Action(sendAsyncStep.fullDefinition)));
       const nextDelegate = namespace.add(new Alias('NextDelegate', nextStep));
 
-      const moduleLoadPipelineAction = namespace.add(new Alias('ModuleLoadPipelineDelegate', dotnet.System.Action(dotnet.String, dotnet.String, pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
-      const newRequestPipelineAction = namespace.add(new Alias('NewRequestPipelineDelegate', dotnet.System.Action(dotnet.System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
+      const moduleLoadPipelineAction = namespace.add(new Alias('ModuleLoadPipelineDelegate', System.Action(dotnet.String, dotnet.String, pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
+      const newRequestPipelineAction = namespace.add(new Alias('NewRequestPipelineDelegate', System.Action(System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
 
       const OnModuleLoad = this.add(new Property('OnModuleLoad', moduleLoadPipelineAction));
       const OnNewRequest = this.add(new Property('OnNewRequest', newRequestPipelineAction));
@@ -114,10 +115,10 @@ export class ModuleClass extends Class {
       const EventListener = this.add(new Property('EventListener', signalDelegateAlias));
 
       const pId = new Parameter('id', dotnet.String);
-      const pToken = new Parameter('token', dotnet.System.Threading.CancellationToken);
-      const pGetEvent = new Parameter('getEventData', dotnet.System.Func(dotnet.System.EventArgs));
+      const pToken = new Parameter('token', System.Threading.CancellationToken);
+      const pGetEvent = new Parameter('getEventData', System.Func(System.EventArgs));
       const pSignal = new Parameter('signal', signalDelegateIAlias);
-      this.add(new Method('Signal', dotnet.System.Threading.Tasks.Task(), { parameters: [pId, pToken, pGetEvent, pSignal], async: Modifier.Async })).add(function* () {
+      this.add(new Method('Signal', System.Threading.Tasks.Task(), { parameters: [pId, pToken, pGetEvent, pSignal], async: Modifier.Async })).add(function* () {
         yield `await ${EventListener.value}?.Invoke(${pId.value},${pToken.value},${pGetEvent.value}, ${pSignal.value});`;
       });
 

@@ -5,7 +5,7 @@ import { items, length, values } from '#common/dictionary';
 import { ModelState } from '#common/model-state';
 import { processCodeModel } from '#common/process-code-model';
 import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { SchemaDetails } from '#csharp/lowlevel-generator/code-model';
 import { ArrayOf } from '#csharp/schema/array';
 import { Boolean } from '#csharp/schema/boolean';
@@ -20,6 +20,7 @@ import { String } from '#csharp/schema/string';
 import { Uuid } from '#csharp/schema/Uuid';
 import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { System } from '#csharp/code-dom/dotnet';
 
 export async function process(service: Host) {
   return await processCodeModel(nameStuffRight, service);
@@ -147,7 +148,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
         const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
 
 
-        const code = (dotnet.System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
+        const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
 
         response.details.csharp = {
           ...response.details.default,

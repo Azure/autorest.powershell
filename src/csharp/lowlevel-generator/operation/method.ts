@@ -3,7 +3,7 @@ import { items, length, values } from '#common/dictionary';
 import { camelCase, deconstruct, EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
 import { Parameter } from '#csharp/code-dom/parameter';
@@ -16,12 +16,13 @@ import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
 import { LocalVariable, Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { ClientRuntime, StoragePipeline } from '#csharp/lowlevel-generator/clientruntime';
 import { HttpOperation, Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
 import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '#common/media-types';
+import { System, LibraryType, dotnet } from '#csharp/code-dom/dotnet';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -32,19 +33,19 @@ export class OperationMethod extends Method {
   public callbacks = new Array<CallbackParameter>();
 
   constructor(protected parent: Class, public operation: HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(operation.details.csharp.name, dotnet.System.Threading.Tasks.Task());
+    super(operation.details.csharp.name, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
 
     if (this.state.project.storagePipeline) {
       // add resourceUri parameter
-      this.resourceUri = this.addParameter(new Parameter('resourceUri', dotnet.System.Uri));
+      this.resourceUri = this.addParameter(new Parameter('resourceUri', System.Uri));
 
       // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('pipeline', new dotnet.LibraryType('Microsoft.Azure.HttpPipeline', 'Pipeline')));
+      this.senderParameter = this.addParameter(new Parameter('pipeline', StoragePipeline.Pipeline));
 
       // add context parameter
-      this.contextParameter = this.addParameter(new Parameter('context', new dotnet.LibraryType('Microsoft.Azure.HttpPipeline', 'CancelContext')));
+      this.contextParameter = this.addParameter(new Parameter('context', StoragePipeline.CancelContext));
     }
 
     // add parameters
@@ -187,7 +188,7 @@ export class OperationMethod extends Method {
 
     // storage will return from the call for download, etc.
     if (returnFromCall) {
-      this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
+      this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     }
 
     if (this.state.project.storagePipeline) {
@@ -245,7 +246,7 @@ export class EventListener {
 export class CallMethod extends Method {
   public returnNull: boolean = false;
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(`${opMethod.operation.details.csharp.name}_Call`, dotnet.System.Threading.Tasks.Task());
+    super(`${opMethod.operation.details.csharp.name}_Call`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;
@@ -256,7 +257,7 @@ export class CallMethod extends Method {
       this.addParameter(opMethod.senderParameter);
       this.addParameter(opMethod.contextParameter);
     }
-    const reqParameter = this.addParameter(new Parameter('request', dotnet.System.Net.Http.HttpRequestMessage));
+    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage));
     opMethod.callbacks.map(each => this.addParameter(each));
     if (!this.state.project.storagePipeline) {
       this.addParameter(opMethod.contextParameter);
@@ -266,7 +267,7 @@ export class CallMethod extends Method {
     this.add(function* () {
       const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals);
 
-      const response = new LocalVariable('_response', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
+      const response = new LocalVariable('_response', System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
       yield response;
       yield Try(function* () {
 
@@ -285,7 +286,7 @@ export class CallMethod extends Method {
             for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
               if (responseCode !== 'default') {
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(dotnet.System.Net.HttpStatusCode[responseCode].value || `(${dotnet.System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode].value || `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
               } else {
                 yield DefaultCase($this.responsesEmitter($this, opMethod, responses, eventListener));
               }
@@ -318,7 +319,7 @@ ${new Statements(responder()).implementation}
           yield `// this operation supports x-ms-long-running-operation`;
           const originalUri = new LocalVariable('_originalUri', dotnet.Var, { initializer: new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`) });
           yield originalUri;
-          yield While(new LiteralExpression(`${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+          yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
             yield `// get the delay before polling.`;
             yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`RetryAfter`)).value}, out int delay)`, `delay = 30;`);
@@ -327,7 +328,7 @@ ${new Statements(responder()).implementation}
 
             yield EOL;
             yield `// start the delay timer (we'll await later...)`;
-            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${dotnet.System.Threading.Tasks.Task()}.Delay(delay * 1000, listener.Token )`) });
+            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${System.Threading.Tasks.Task()}.Delay(delay * 1000, listener.Token )`) });
             yield waiting;
 
             yield EOL;
@@ -384,7 +385,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
             yield EOL;
             yield '// check for terminal status code';
-            yield If(new LiteralExpression(`${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+            yield If(new LiteralExpression(`${response.value}.StatusCode != ${System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${System.Net.HttpStatusCode[202].value} `), function* () {
               yield `// we're done polling, do a request on final target?`;
               yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
               const fsv = $this.opMethod.operation.details.csharp.lro['final-state-via'];
@@ -446,7 +447,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
       if ($this.returnNull) {
         yield Return('result');
-        $this.insert(new LocalVariable('result', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }));
+        $this.insert(new LocalVariable('result', System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }));
       }
     });
 
@@ -538,8 +539,8 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           }
 
           // switch the response type.
-          this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
-          // const result = new LocalVariable('result', dotnet.Var, { initializer: '_response' });
+          this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
+          // const result = new LocalVariable('result', IL.Var, { initializer: '_response' });
           yield `result = _response;`;
           yield `_response = null; // ensure that it's not disposed in finally`;
           // yield Return(result);
@@ -620,7 +621,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 export class ValidationMethod extends Method {
 
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(`${opMethod.operation.details.csharp.name}_Validate`, dotnet.System.Threading.Tasks.Task());
+    super(`${opMethod.operation.details.csharp.name}_Validate`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;

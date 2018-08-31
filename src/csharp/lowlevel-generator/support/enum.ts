@@ -5,7 +5,7 @@ import { StringExpression, ExpressionOrLiteral, Expression } from '#csharp/code-
 import { InitializedField } from '#csharp/code-dom/field';
 import { Interface } from '#csharp/code-dom/interface';
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
+
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Operator } from '#csharp/code-dom/operator';
 import { Parameter } from '#csharp/code-dom/parameter';
@@ -17,6 +17,7 @@ import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaratio
 import { State } from '../generator';
 import { KnownMediaType } from '#common/media-types';
 import { Variable } from '#csharp/code-dom/variable';
+import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;

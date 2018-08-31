@@ -1,7 +1,7 @@
 import { KnownMediaType } from '#common/media-types';
 import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System, Var } from '#csharp/code-dom/dotnet';
+import { System, dotnet } from '#csharp/code-dom/dotnet';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { LocalVariable, Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
@@ -172,7 +172,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Json:
           const $this = this;
           return If(`null != ${value}`, function* () {
-            const t = new LocalVariable(tmp, Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
+            const t = new LocalVariable(tmp, dotnet.Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
             yield t.declarationStatement;
             yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '')} ,${tmp}.Add);`);
             yield `${container}.Add("${serializedName}",${tmp});`
@@ -200,14 +200,14 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
   validateValue(property: Variable): OneOrMoreStatements {
     // check if the underlyingType has validation.
-    if (!this.elementType.validateValue(new LocalVariable(`${property} [{ __i }]`, Var))) {
+    if (!this.elementType.validateValue(new LocalVariable(`${property} [{ __i }]`, dotnet.Var))) {
       return '';
     }
 
     return `
       if (${ property} != null ) {
         for (int __i = 0; __i < ${ property}.Length; __i++) {
-          ${ this.elementType.validateValue(new LocalVariable(`${property}[__i]`, Var))}
+          ${ this.elementType.validateValue(new LocalVariable(`${property}[__i]`, dotnet.Var))}
         }
       }
       `.trim();

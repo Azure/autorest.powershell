@@ -5,7 +5,6 @@ import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
 import { IsDeclaration } from '#csharp/code-dom/expression';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/dotnet';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { TerminalCase } from '#csharp/code-dom/statements/case';
@@ -22,6 +21,7 @@ import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaratio
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { ModelProperty } from './property';
 import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
+import { System, dotnet } from '#csharp/code-dom/dotnet';
 
 export class XmlSerializableClass extends Class {
   private btj!: Method;
@@ -37,15 +37,15 @@ export class XmlSerializableClass extends Class {
     this.addPartialMethods();
 
     // set up the declaration for the toXml method.
-    const container = new Parameter('container', dotnet.System.Xml.Linq.XElement);
+    const container = new Parameter('container', System.Xml.Linq.XElement);
     const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
 
-    const toXmlMethod = this.addMethod(new Method('ToXml', dotnet.System.Xml.Linq.XElement, {
+    const toXmlMethod = this.addMethod(new Method('ToXml', System.Xml.Linq.XElement, {
       parameters: [container, mode],
     }));
 
     // setup the declaration for the xml deserializer constructor
-    const xmlParameter = new Parameter('xml', dotnet.System.Xml.Linq.XElement);
+    const xmlParameter = new Parameter('xml', System.Xml.Linq.XElement);
     const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [xmlParameter], access: Access.Internal }));
 
     const serializeStatements = new Statements();
@@ -77,7 +77,7 @@ export class XmlSerializableClass extends Class {
 
     // generate the implementation for toXml
     toXmlMethod.add(function* () {
-      yield `${container} = ${container} ?? new ${dotnet.System.Xml.Linq.XElement.declaration}(nameof(${$this.modelClass.name}));`;
+      yield `${container} = ${container} ?? new ${System.Xml.Linq.XElement.declaration}(nameof(${$this.modelClass.name}));`;
       yield EOL;
 
       yield `bool returnNow = false;`;
@@ -109,11 +109,11 @@ export class XmlSerializableClass extends Class {
     const d = this.modelClass.discriminators;
     const isp = this.modelClass.isPolymorphic;
     // create the FromXml method
-    const node = new Parameter('node', dotnet.System.Xml.Linq.XElement);
+    const node = new Parameter('node', System.Xml.Linq.XElement);
     const fromXml = this.addMethod(new Method('FromXml', this.modelClass.modelInterface, { parameters: [node], static: Modifier.Static }));
     fromXml.add(function* () {
 
-      const xml = IsDeclaration(node, dotnet.System.Xml.Linq.XElement, 'xml');
+      const xml = IsDeclaration(node, System.Xml.Linq.XElement, 'xml');
 
       if (isp) {
         yield If(Not(xml.check), Return(dotnet.Null));
@@ -148,7 +148,7 @@ export class XmlSerializableClass extends Class {
     this.btj = this.addMethod(new PartialMethod('BeforeToXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', dotnet.System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement  that the serialization result will be placed in.' }),
+        new Parameter('container', System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement  that the serialization result will be placed in.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
       ],
     }));
@@ -156,14 +156,14 @@ export class XmlSerializableClass extends Class {
     this.atj = this.addMethod(new PartialMethod('AfterToXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', dotnet.System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement that the serialization result will be placed in.' }),
+        new Parameter('container', System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement that the serialization result will be placed in.' }),
       ],
     }));
 
     this.bfj = this.addMethod(new PartialMethod('BeforeFromXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('xml', dotnet.System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
+        new Parameter('xml', System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
     }));
@@ -171,7 +171,7 @@ export class XmlSerializableClass extends Class {
     this.afj = this.addMethod(new PartialMethod('AfterFromXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('xml', dotnet.System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
+        new Parameter('xml', System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
       ],
     }));
   }

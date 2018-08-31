@@ -11,6 +11,8 @@ const sma = new Namespace(`System.Management.Automation`);
 
 
 export const PSCmdlet: TypeDeclaration = new LibraryType(sma, `PSCmdlet`);
+export const PSCredential: TypeDeclaration = new LibraryType(sma, `PSCredential`);
+
 export const PSObject: TypeDeclaration = new LibraryType(sma, `PSObject`);
 export const CmdletAttribute: TypeDeclaration = new LibraryType(sma, `Cmdlet`);
 export const ParameterAttribute: TypeDeclaration = new LibraryType(sma, `Parameter`);
