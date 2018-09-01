@@ -1,29 +1,22 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
-import { isHttpOperation } from '#common/code-model/http-operation';
-import { JsonType, Schema } from '#common/code-model/schema';
-import { items, length, values } from '#common/dictionary';
+import { JsonType } from '#common/code-model/schema';
+import { items, length, values } from '#common/linq';
 import { ModelState } from '#common/model-state';
 import { processCodeModel } from '#common/process-code-model';
 import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
-
-import { SchemaDetails } from '#csharp/lowlevel-generator/code-model';
-import { ArrayOf } from '#csharp/schema/array';
-import { Boolean } from '#csharp/schema/boolean';
-import { ByteArray } from '#csharp/schema/byte-array';
-import { Char } from '#csharp/schema/char';
-import { Date } from '#csharp/schema/date';
-import { DateTime, DateTime1123, UnixTime } from '#csharp/schema/date-time';
-import { Duration } from '#csharp/schema/duration';
-import { Numeric } from '#csharp/schema/integer';
-import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
-import { String } from '#csharp/schema/string';
-import { Uuid } from '#csharp/schema/Uuid';
-import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
-import { Host } from '@microsoft.azure/autorest-extension-base';
 import { System } from '#csharp/code-dom/dotnet';
 
+import { SchemaDetails } from '#csharp/lowlevel-generator/code-model';
+import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
+import { Host } from '@microsoft.azure/autorest-extension-base';
+
 export async function process(service: Host) {
-  return await processCodeModel(nameStuffRight, service);
+  return processCodeModel(nameStuffRight, service);
 }
 
 async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
@@ -90,7 +83,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
 
       let pname = pascalCase(fixLeadingNumber(deconstruct(propertyDetails.name)));
       if (pname === className) {
-        pname = pname + "Property";
+        pname = `${pname}Property`;
       }
 
       if (pname === 'default') {
@@ -146,7 +139,6 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
       for (const response of values(responses)) {
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
         const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
-
 
         const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
 

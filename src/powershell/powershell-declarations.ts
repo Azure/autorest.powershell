@@ -1,14 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
+import { intersect } from '#common/intersect';
+import { Class } from '#csharp/code-dom/class';
 import { ClassType } from '#csharp/code-dom/dotnet';
+import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { intersect } from '#common/intersect';
-import { Class } from '#csharp/code-dom/class';
 
 const sma = new Namespace(`System.Management.Automation`);
-
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
@@ -36,7 +39,6 @@ export function ErrorCategory(category: string): Expression {
 export function verbEnum(category: string, verb: string): Expression {
   return new LiteralExpression(`${category}.${verb}`);
 }
-
 
 export const Events = intersect(ClientRuntime.Events, {
   CmdletProcessRecordStart: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletProcessRecordStart`),

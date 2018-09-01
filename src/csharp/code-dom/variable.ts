@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Initializer } from '#common/initializer';
-import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { intersect } from '#common/intersect';
+import { Cast, IsNotNull, IsNull } from '#csharp/code-dom/comparisons';
+import { dotnet } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, toStatement } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { IsNull, IsNotNull, Cast } from '#csharp/code-dom/comparisons';
-import { intersect } from '#common/intersect';
-import { dotnet } from '#csharp/code-dom/dotnet';
 
 /** represents any declaration of a variable (may be Parameter, LocalVariable, Field or Property) */
 export interface Variable extends Expression {
@@ -40,7 +45,7 @@ export interface Instance {
 
 export type ExpressionStatement = Expression & Statement;
 
-export function Local(name: string, initializer: ExpressionOrLiteral = dotnet.Null, type: TypeDeclaration = dotnet.Var): LocalVariable {
+export function Local(name: string, initializer: ExpressionOrLiteral = 'null', type: TypeDeclaration = { declaration: 'var' }): LocalVariable {
   return new LocalVariable(name, type, { initializer });
 }
 /** represents a locally declared variable */
@@ -81,7 +86,6 @@ export class LocalVariable extends Variable implements Instance, Statement {
     return new MemberVariable(this, memberName);
   }
 }
-
 
 export class MemberVariable extends LocalVariable {
   constructor(private variable: Variable, private memberName: string, objectIntializer?: Partial<MemberVariable>) {

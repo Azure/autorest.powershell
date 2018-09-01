@@ -1,18 +1,22 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
+import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System, dotnet } from '#csharp/code-dom/dotnet';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { LocalVariable, Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { ForEach } from '#csharp/code-dom/statements/for';
 import { If } from '#csharp/code-dom/statements/if';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Ternery } from '#csharp/code-dom/ternery';
-import { IsNotNull } from '#csharp/code-dom/comparisons';
-
+import { LocalVariable, Variable } from '#csharp/code-dom/variable';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -45,7 +49,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       }
 
       case KnownMediaType.Xml: {
-        // XElement/XElement 
+        // XElement/XElement
         const tmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
         if (this.isWrapped) {
           // wrapped xml arrays will have a container around them.
@@ -119,12 +123,12 @@ export class ArrayOf implements EnhancedTypeDeclaration {
             const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
             return toExpression(`null != ${value} ? new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name)}))`);
           } else {
-            throw new Error("Can't set an Xml Array to the document without wrapping it.");
+            throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`if (${value} != null && ${value}.Length > 0) { queryParameters.Add("${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty)))); }`)
+          return toExpression(`if (${value} != null && ${value}.Length > 0) { queryParameters.Add("${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty)))); }`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
@@ -185,12 +189,12 @@ export class ArrayOf implements EnhancedTypeDeclaration {
             const t = new LocalVariable(tmp, dotnet.Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
             yield t.declarationStatement;
             yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '')} ,${tmp}.Add);`);
-            yield `${container}.Add("${serializedName}",${tmp});`
+            yield `${container}.Add("${serializedName}",${tmp});`;
           });
 
         case KnownMediaType.Xml:
           if (this.isWrapped) {
-            return `AddIf( new System.Xml.Linq.XElement("${this.serializedName || serializedName}", ${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || "!!!" : serializedName)}):null), ${container}.Add); `;
+            return `AddIf( new System.Xml.Linq.XElement("${this.serializedName || serializedName}", ${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName)}):null), ${container}.Add); `;
           } else {
             return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName)}, ${container}.Add);`));
           }

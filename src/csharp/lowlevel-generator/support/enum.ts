@@ -1,23 +1,28 @@
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { StringExpression, ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, StringExpression } from '#csharp/code-dom/expression';
 import { InitializedField } from '#csharp/code-dom/field';
 import { Interface } from '#csharp/code-dom/interface';
 import { Method } from '#csharp/code-dom/method';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 
+import { KnownMediaType } from '#common/media-types';
+import { dotnet } from '#csharp/code-dom/dotnet';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Operator } from '#csharp/code-dom/operator';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Struct } from '#csharp/code-dom/struct';
+import { Variable } from '#csharp/code-dom/variable';
 import { EnumImplementation } from '#csharp/schema/enum';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
-import { KnownMediaType } from '#common/media-types';
-import { Variable } from '#csharp/code-dom/variable';
-import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;

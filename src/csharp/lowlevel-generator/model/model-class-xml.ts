@@ -1,4 +1,9 @@
-import { items, values } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { items, values } from '#common/linq';
 import { EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
@@ -16,12 +21,12 @@ import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
 import { KnownMediaType } from '#common/media-types';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { ModelProperty } from './property';
-import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
-import { System, dotnet } from '#csharp/code-dom/dotnet';
 
 export class XmlSerializableClass extends Class {
   private btj!: Method;

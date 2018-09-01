@@ -1,4 +1,9 @@
-import { Host, ArtifactMessage, Channel, JsonPath } from '@microsoft.azure/autorest-extension-base';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Channel, Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
 
 export class ModelState<T> {
   protected errorCount = 0;
@@ -7,7 +12,7 @@ export class ModelState<T> {
   }
 
   public path(...childPath: JsonPath): ModelState<T> {
-    return new ModelState<T>(this.service, this.model, this.documentName, [...this.currentPath, ...childPath])
+    return new ModelState<T>(this.service, this.model, this.documentName, [...this.currentPath, ...childPath]);
   }
 
   public checkpoint() {

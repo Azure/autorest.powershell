@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 // Media Type is: type "/" [tree "."] subtype ["+" suffix] * [";" parameter]
 
 const json = 'json';
@@ -19,7 +24,6 @@ export enum KnownMediaType {
 
   Header = '-header-',
   Cookie = '-cookie-',
-
 }
 
 export function knownMediaType(mediaType: string) {
@@ -31,7 +35,7 @@ export function knownMediaType(mediaType: string) {
     if ((mt.subtype === xml || mt.suffix === xml) && (mt.type === application || mt.type === text)) {
       return KnownMediaType.Xml;
     }
-    if (mt.subtype === 'audio' || mt.subtype === 'image' || mt.subtype === 'video' || mt.subtype === "octet-stream") {
+    if (mt.subtype === 'audio' || mt.subtype === 'image' || mt.subtype === 'video' || mt.subtype === 'octet-stream') {
       return KnownMediaType.Stream;
     }
   }

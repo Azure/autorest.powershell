@@ -1,13 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral, StringExpression, toExpression, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Primitive } from '#csharp/schema/primitive';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { System } from '#csharp/code-dom/dotnet';
-import { If } from '#csharp/code-dom/statements/if';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Primitive } from '#csharp/schema/primitive';
 
 export class DateTime extends Primitive {
   public isXmlAttribute: boolean = false;
@@ -103,7 +107,7 @@ export class DateTime1123 extends DateTime {
 export class UnixTime extends Primitive {
   public isXmlAttribute: boolean = false;
   public jsonType = ClientRuntime.JsonNumber;
-  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)')
+  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)');
 
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
@@ -134,4 +138,3 @@ export class UnixTime extends Primitive {
     return `System.DateTime${this.isRequired ? '' : '?'}`;
   }
 }
-

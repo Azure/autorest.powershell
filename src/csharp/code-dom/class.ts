@@ -1,12 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { comment, docCommentPrefix, EOL, indent, sortByName } from '#common/text-manipulation';
+import { fail } from '#common/utility';
+import { Attribute } from '#csharp/code-dom/attribute';
+import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
+import { Property } from '#csharp/code-dom/property';
 import { Field } from './field';
 import { Namespace } from './namespace';
 import { Type } from './type';
-import { Expression, valueOf, toExpression } from '#csharp/code-dom/expression';
-import { Property } from '#csharp/code-dom/property';
-import { Attribute } from '#csharp/code-dom/attribute';
-import { fail } from '#common/utility';
 
 export function sortByNamePartialFirst(a: Method, b: Method): number {
   if (a.isPartial !== b.isPartial) {

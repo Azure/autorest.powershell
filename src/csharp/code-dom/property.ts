@@ -1,15 +1,18 @@
-import { Initializer } from '#common/initializer';
-import { comment, docComment, docCommentPrefix, EOL, indent } from '#common/text-manipulation';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { intersect } from '#common/intersect';
+import { Dictionary } from '#common/linq';
+import { docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Extern, highestAccess, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf, toExpression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
 import { ExpressionStatement, Instance, Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
-import { Dictionary } from '#common/dictionary';
-import { IsNull } from '#csharp/code-dom/comparisons';
-import { intersect } from '#common/intersect';
 
 export class Property extends Variable implements Instance {
   public 'new': New = Modifier.None;
@@ -90,7 +93,7 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     throw new Error(`Property can not be a declaration statement`);
   }
   public invokeMethod(methodName: string, ...parameters: Array<Expression>): ExpressionStatement {
-    const e = `${this.value}.${methodName}(${parameters.joinWith(each => valueOf(each))})`;
+    const e = `${this.value}.${methodName}(${parameters.joinWith(valueOf)})`;
     return intersect(
       toExpression(e), {
         implementation: `${e};`
@@ -199,9 +202,9 @@ private ${this.type.declaration} ${this.backingName}${this.initializer ? `= ${va
 EOL
 ${super.declaration}
 `.trim();
-    //${docComment(summary(this.description))}
-    //${ this.attributeDeclaration } ${ this.new } ${ this.visibility } ${ this.static } ${ this.virtual } ${ this.sealed } ${ this.override } ${ this.abstract } ${ this.extern } ${ this.type.declaration } ${ this.name } { ${ this.getterDeclaration } { return this.${ this.backingName }; } ${ this.setterDeclaration } { this.${ this.backingName } = value; } }
-    //EOL
+    // ${docComment(summary(this.description))}
+    // ${ this.attributeDeclaration } ${ this.new } ${ this.visibility } ${ this.static } ${ this.virtual } ${ this.sealed } ${ this.override } ${ this.abstract } ${ this.extern } ${ this.type.declaration } ${ this.name } { ${ this.getterDeclaration } { return this.${ this.backingName }; } ${ this.setterDeclaration } { this.${ this.backingName } = value; } }
+    // EOL
   }
 
   public get value(): string {

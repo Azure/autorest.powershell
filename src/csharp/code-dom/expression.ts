@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { indent } from '#common/text-manipulation';
 import { Async, Modifier } from '#csharp/code-dom/access-modifier';
-import { IsNull, IsNotNull, Cast } from '#csharp/code-dom/comparisons';
+import { Cast, IsNotNull, IsNull } from '#csharp/code-dom/comparisons';
 import { Parameter } from '#csharp/code-dom/parameter';
-import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
+import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { LocalVariable, Variable } from '#csharp/code-dom/variable';
+import { LocalVariable } from '#csharp/code-dom/variable';
 
 export type ExpressionOrLiteral = Expression | string;
 export function toExpression(expression: ExpressionOrLiteral): Expression {

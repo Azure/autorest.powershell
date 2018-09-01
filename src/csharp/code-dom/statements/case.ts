@@ -1,5 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, StatementPossibilities, Statements } from '#csharp/code-dom/statements/statement';
+import { StatementPossibilities, Statements } from '#csharp/code-dom/statements/statement';
 
 // gs01: fix this -- value should be an expresion.
 export function Case(value: string, body: StatementPossibilities, objectInitializer?: Partial<CaseStatement>): CaseStatement {

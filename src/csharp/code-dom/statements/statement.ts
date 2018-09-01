@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Initializer } from '#common/initializer';
 import { EOL } from '#common/text-manipulation';
 import { LiteralStatement } from '#csharp/code-dom/statements/literal';

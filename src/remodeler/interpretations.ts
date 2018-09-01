@@ -1,16 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
-import { MediaType } from '#common/code-model/http-operation';
-import { EnumDetails, EnumValue } from '#common/code-model/schema';
-import { Dictionary } from '#common/dictionary';
-import { escapeString } from '#common/text-manipulation';
+import { EnumDetails } from '#common/code-model/schema';
 import { Server } from '../common/code-model/components';
 import { clone, getExtensionProperties } from './common';
 import * as OpenAPI from './oai3';
-import { Remodeler } from './remodeler';
 
 interface XMSEnum {
   modelAsString?: boolean;
-  values: [{ value: any, description?: string, name?: string }];
+  values: [{ value: any; description?: string; name?: string }];
   name: string;
 }
 
@@ -18,7 +19,7 @@ export function getName(defaultValue: string, original: OpenAPI.Extensions) {
   return typeof (original['x-ms-client-name']) === 'string' ? original['x-ms-client-name'] : defaultValue;
 }
 
-export function getDescription(defaultValue: string, original: OpenAPI.Extensions & { title?: string, summary?: string, description?: string }): string {
+export function getDescription(defaultValue: string, original: OpenAPI.Extensions & { title?: string; summary?: string; description?: string }): string {
   if (original) {
     return original.description || original.title || original.summary || defaultValue;
   }
@@ -46,7 +47,7 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
         xmse.values.map((each) => {
           return {
             description: each.description || '',
-            name: each.name || '${each.value}',
+            name: each.name || `${each.value}`,
             value: each.value
           };
         }) :

@@ -1,5 +1,9 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
-import { execute, resolveFullPath } from '#common/exec';
 import { Text } from '#common/file-generator';
 import { resources } from '#common/locations';
 import { copyResources } from '#common/utility';

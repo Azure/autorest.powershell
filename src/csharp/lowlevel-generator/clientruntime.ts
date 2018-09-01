@@ -1,7 +1,12 @@
-import { intersect } from '#common/intersect';
-import { EnumType, ClassType, System, dotnet } from '#csharp/code-dom/dotnet';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { Expression, LiteralExpression, toExpression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+import { intersect } from '#common/intersect';
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
+
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
 import { Namespace } from '#csharp/code-dom/namespace';
 
@@ -74,5 +79,4 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
 export const StoragePipeline = {
   Pipeline: new ClassType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
   CancelContext: new ClassType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
-
-}
+};

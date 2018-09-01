@@ -1,12 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
+import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
-import { If } from '#csharp/code-dom/statements/if';
 
 export class ByteArray implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;

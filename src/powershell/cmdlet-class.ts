@@ -1,24 +1,28 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { CommandOperation } from '#common/code-model/command-operation';
-import { MediaType } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
-import { Dictionary, items, values } from '#common/dictionary';
+import { Dictionary, items, values } from '#common/linq';
 import { KnownMediaType } from '#common/media-types';
 import { escapeString } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Expression, IsDeclaration, LambdaExpression, LiteralExpression, StringExpression, valueOf, toExpression } from '#csharp/code-dom/expression';
-import { Field, InitializedField } from '#csharp/code-dom/field';
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
+import { Expression, IsDeclaration, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { InitializedField } from '#csharp/code-dom/field';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
-
 
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { BackedProperty, LambdaProperty, Property } from '#csharp/code-dom/property';
-import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
+import { TerminalCase } from '#csharp/code-dom/statements/case';
 import { Catch } from '#csharp/code-dom/statements/catch';
-import { ForEach, ForEachStatement } from '#csharp/code-dom/statements/for';
+import { ForEach } from '#csharp/code-dom/statements/for';
 import { Else, If } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
@@ -26,17 +30,13 @@ import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
 import { Ternery } from '#csharp/code-dom/ternery';
-import { LocalVariable, Variable } from '#csharp/code-dom/variable';
+import { LocalVariable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { EventListener } from '#csharp/lowlevel-generator/operation/method';
-import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
 import { addPowershellParameters } from '#powershell/model-cmdlet';
-import { CmdletParameter } from './cmdlet-parameter';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, SwitchParameter, ValidateNotNull, verbEnum, PSCredential, PSCmdlet } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
 import { State } from './state';
-import { dotnet, ClassType, System } from '#csharp/code-dom/dotnet';
-
 
 export class CmdletClass extends Class {
   private cancellationToken!: Property;
@@ -312,7 +312,7 @@ export class CmdletClass extends Class {
                     // it's pageable!
                     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response`) });
                     yield result.declarationStatement;
-                    // write out the current contents 
+                    // write out the current contents
                     yield `WriteObject(${result.value}.${valueProperty.details.csharp.name},true);`;
                     const nextLinkName = `${result.value}.${nextLinkProperty.details.csharp.name}`;
                     yield (If(`${nextLinkName} != null`,

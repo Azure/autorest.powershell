@@ -1,4 +1,9 @@
-import { EOL, comment, docCommentPrefix, indent, sortByName } from '#common/text-manipulation';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { comment, docCommentPrefix, EOL, indent, sortByName } from '#common/text-manipulation';
 import { Namespace } from './namespace';
 import { Type } from './type';
 

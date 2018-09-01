@@ -4,7 +4,7 @@ import { processCodeModel } from '#common/process-code-model';
 import { ModelState } from '#common/model-state';
 import { Model } from '#common/code-model/code-model';
 import { pascalCase } from '#common/text-manipulation';
-import { Dictionary } from '#common/dictionary';
+import { Dictionary } from '#common/linq';
 import { IntrinsicOperation } from '#common/code-model/programatic-operation';
 import { isHttpOperation } from '#common/code-model/http-operation';
 import { JsonType, Schema } from '#common/code-model/schema';

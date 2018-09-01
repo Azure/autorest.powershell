@@ -1,19 +1,23 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
 import { LiteralExpression, StringExpression } from '#csharp/code-dom/expression';
 import { Field } from '#csharp/code-dom/field';
-import { Alias, Import } from '#csharp/code-dom/import';
+import { Alias } from '#csharp/code-dom/import';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
-import { BackedProperty, ImplementedProperty, LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';
-import { If } from '#csharp/code-dom/statements/if'
+import { LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';
 import { Return } from '#csharp/code-dom/statements/return';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
-import { System, dotnet, ClassType } from '#csharp/code-dom/dotnet';
 
 export class ModuleClass extends Class {
 
@@ -80,7 +84,6 @@ export class ModuleClass extends Class {
         nextStep,                                  /* Next( ...) */
         /* returns */ TaskOfHttpResponseMessage)));
 
-
     const boundParams = new Parameter('boundParameters', System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object));
     const pipelineField = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private }));
 
@@ -104,7 +107,7 @@ export class ModuleClass extends Class {
       const moduleResourceId = this.add(new LambdaProperty('ResourceId', dotnet.String, new StringExpression(state.project.moduleName)));
 
       init.add(function* () {
-        yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${pipelineField.value}.Prepend(step); } , (step)=> { ${pipelineField.value}.Append(step); } );`;;
+        yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${pipelineField.value}.Prepend(step); } , (step)=> { ${pipelineField.value}.Append(step); } );`;
       });
 
       const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate));
@@ -151,4 +154,3 @@ export class ModuleClass extends Class {
     });
   }
 }
-

@@ -1,4 +1,9 @@
-import { TypeDeclaration } from "#csharp/code-dom/type-declaration";
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 
 export class Import {
   constructor(protected importStatement: string) {

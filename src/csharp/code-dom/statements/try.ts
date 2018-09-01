@@ -1,8 +1,11 @@
-import { indent } from '#common/text-manipulation';
-import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
-import { Expression } from '#csharp/code-dom/expression';
-import { Parameter } from '#csharp/code-dom/parameter';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
+import { indent } from '#common/text-manipulation';
+import { Parameter } from '#csharp/code-dom/parameter';
+import { OneOrMoreStatements, StatementPossibilities, Statements } from '#csharp/code-dom/statements/statement';
 
 export function Try(body: StatementPossibilities, objectInitializer?: Partial<TryStatement>): TryStatement {
   return new TryStatement(body, objectInitializer);

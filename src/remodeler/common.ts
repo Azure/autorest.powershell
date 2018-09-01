@@ -1,4 +1,9 @@
-import { Dictionary, includeXDash, ToDictionary } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Dictionary, includeXDash, ToDictionary } from '#common/linq';
 
 export interface PathReference<T> {
   $ref: string;

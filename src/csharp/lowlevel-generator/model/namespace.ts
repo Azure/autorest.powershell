@@ -1,7 +1,13 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Header } from '#common/code-model/http-operation';
-import { Dictionary, items } from '#common/dictionary';
+import { Dictionary, items } from '#common/linq';
 import { Import } from '#csharp/code-dom/import';
 import { Namespace } from '#csharp/code-dom/namespace';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { ModelInterface } from '#csharp/lowlevel-generator/model/interface';
 import { EnumImplementation } from '#csharp/schema/enum';
@@ -12,7 +18,6 @@ import { State } from '../generator';
 import { EnumClass } from '../support/enum';
 import * as validation from '../validations';
 import { ModelClass } from './model-class';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
 export class ModelsNamespace extends Namespace {
 

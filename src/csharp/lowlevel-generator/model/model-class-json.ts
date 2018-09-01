@@ -1,39 +1,33 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { any, items, keys, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCase } from '#common/text-manipulation';
+import { items, values } from '#common/linq';
+import { EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
-import { Is, IsDeclaration, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
-import { InitializedField } from '#csharp/code-dom/field';
+import { IsDeclaration, toExpression } from '#csharp/code-dom/expression';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
 
-import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
-import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
-import { ForEach } from '#csharp/code-dom/statements/for';
+import { TerminalCase } from '#csharp/code-dom/statements/case';
 import { If, Not } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+import { Statements } from '#csharp/code-dom/statements/statement';
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
-import { MediaType } from '#common/code-model/http-operation';
 import { KnownMediaType } from '#common/media-types';
-import { Property } from '#csharp/code-dom/property';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { dotnet } from '#csharp/code-dom/dotnet';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { ObjectImplementation } from '#csharp/schema/object';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
-import { State } from '../generator';
-import { ModelInterface } from './interface';
 import { ModelProperty } from './property';
-import { ProxyProperty } from './proxy-property';
-import { dotnet } from '#csharp/code-dom/dotnet';
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -73,7 +67,7 @@ export class JsonSerializableClass extends Class {
     }
 
     pushTempVar();
-    for (const { key: propertyName, value: property } of items(modelClass.schema.properties)) {
+    for (const { value: property } of items(modelClass.schema.properties)) {
       const prop = modelClass.$<ModelProperty>(property.details.csharp.name);
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName);
 
@@ -134,7 +128,7 @@ export class JsonSerializableClass extends Class {
     }));
 
     if (isp) {
-      fromJson.description = fromJson.description + `\n Note: the ${this.modelClass.modelInterface} interface is polymorphic, and the precise model class that will get deserialized is determined at runtime based on the payload.`
+      fromJson.description = fromJson.description + `\n Note: the ${this.modelClass.modelInterface} interface is polymorphic, and the precise model class that will get deserialized is determined at runtime based on the payload.`;
     }
 
     fromJson.add(function* () {
@@ -196,7 +190,7 @@ export class JsonSerializableClass extends Class {
         new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
-      description: `<c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of the object before it is deserialized. 
+      description: `<c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of the object before it is deserialized.
       If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
       Implement this method in a partial class to enable this behavior.`
     }));

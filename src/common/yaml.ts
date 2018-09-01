@@ -1,24 +1,29 @@
-import { safeLoad, safeDump, dump, DEFAULT_FULL_SCHEMA, DEFAULT_SAFE_SCHEMA } from 'js-yaml'
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { DEFAULT_SAFE_SCHEMA, dump, safeLoad } from 'js-yaml';
 
 const propertyPriority = [
-  "schemas",
-  "name",
-  "type",
-  "format",
-  "schema",
-  "operationId",
-  "path",
-  "method",
-  "description"
+  'schemas',
+  'name',
+  'type',
+  'format',
+  'schema',
+  'operationId',
+  'path',
+  'method',
+  'description'
 ];
 
 const propertyNegativePriority = [
-  "callbacks",
-  "http",
-  "commands",
-  "operations",
-  "extensions",
-  "details"
+  'callbacks',
+  'http',
+  'commands',
+  'operations',
+  'extensions',
+  'details'
 ];
 
 function sortWithPriorty(a: any, b: any): number {
@@ -30,8 +35,8 @@ function sortWithPriorty(a: any, b: any): number {
   const na = propertyNegativePriority.indexOf(a);
   const nb = propertyNegativePriority.indexOf(b);
 
-  const dota = `${a}`.startsWith(".");
-  const dotb = `${b}`.startsWith(".");
+  const dota = `${a}`.startsWith('.');
+  const dotb = `${b}`.startsWith('.');
 
   if (dota) {
     if (!dotb) {
@@ -54,7 +59,6 @@ function sortWithPriorty(a: any, b: any): number {
     return -1;
   }
 
-
   if (ia != -1) {
     return ib != -1 ? ia - ib : -1;
   }
@@ -64,11 +68,10 @@ function sortWithPriorty(a: any, b: any): number {
 
 export async function deserialize<T>(text: string, filename: string) {
   return <T>safeLoad(await text, {
-    filename: filename,
+    filename,
   });
 }
 
 export function serialize<T>(model: T): string {
   return dump(model, { sortKeys: sortWithPriorty, schema: DEFAULT_SAFE_SCHEMA, skipInvalid: true });
 }
-

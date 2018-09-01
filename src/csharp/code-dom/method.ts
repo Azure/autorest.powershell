@@ -1,12 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { CommaChar, docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, valueOf, toExpression } from '#csharp/code-dom/expression';
-import { Parameter } from './parameter';
-import { OneOrMoreStatements, StatementPossibilities, Statements } from './statements/statement';
-import { TypeDeclaration } from './type-declaration';
 import { dotnet } from '#csharp/code-dom/dotnet';
+import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { Parameter } from './parameter';
+import { StatementPossibilities, Statements } from './statements/statement';
+import { TypeDeclaration } from './type-declaration';
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();

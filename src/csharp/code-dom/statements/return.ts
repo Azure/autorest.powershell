@@ -1,6 +1,10 @@
-import { indent } from '#common/text-manipulation';
-import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
+import { Statements } from '#csharp/code-dom/statements/statement';
 
 export function Return(expression?: ExpressionOrLiteral, objectInitializer?: Partial<ReturnStatement>) {
   return new ReturnStatement(expression, objectInitializer);

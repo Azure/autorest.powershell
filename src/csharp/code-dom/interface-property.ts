@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Access } from '#csharp/code-dom/access-modifier';
 import { Property } from './property';
 import { TypeDeclaration } from './type-declaration';

@@ -1,10 +1,14 @@
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { ExpressionOrLiteral, Expression, toExpression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class Duration implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -12,7 +16,7 @@ export class Duration implements EnhancedTypeDeclaration {
   constructor(public schema: Schema, public isRequired: boolean) {
   }
   get declaration(): string {
-    return `System.TimeSpan${this.isRequired ? '' : '?'}`
+    return `System.TimeSpan${this.isRequired ? '' : '?'}`;
   }
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {

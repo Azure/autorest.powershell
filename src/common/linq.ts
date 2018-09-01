@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 export function includeXDash<T>(dictionary: Dictionary<T>) {
   return Object.keys(dictionary).filter((v, i, a) => v.startsWith('x-'));
@@ -127,7 +131,6 @@ export function where<T>(this: Iterable<T>, predicate: (each: T) => boolean): Li
   }.bind(this)());
 }
 
-
 export function selectNonNullable<T, V>(this: Iterable<T>, selector: (each: T) => V): Linqable<NonNullable<V>> {
   return linqify(function* (this: Iterable<T>) {
     for (const each of this) {
@@ -138,7 +141,6 @@ export function selectNonNullable<T, V>(this: Iterable<T>, selector: (each: T) =
     }
   }.bind(this)());
 }
-
 
 export function nonNullable<T>(this: Iterable<T>): Linqable<NonNullable<T>> {
   return linqify(function* (this: Iterable<T>) {

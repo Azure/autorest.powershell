@@ -1,20 +1,24 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { JsonType } from '#common/code-model/schema';
-import { values, items, length } from '#common/dictionary';
-import { indent, camelCase, pascalCase, escapeString } from '#common/text-manipulation';
+import { items, length, values } from '#common/linq';
+import { escapeString, pascalCase } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { LiteralExpression, StringExpression, valueOf } from '#csharp/code-dom/expression';
-import { Field, InitializedField } from '#csharp/code-dom/field';
+import { InitializedField } from '#csharp/code-dom/field';
 import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
-import { BackedProperty, ImplementedProperty, Property } from '#csharp/code-dom/property';
-import { Return } from "#csharp/code-dom/statements/return";
-import { Statements, OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable, MemberVariable } from '#csharp/code-dom/variable';
+import { ImplementedProperty } from '#csharp/code-dom/property';
+import { Statements } from '#csharp/code-dom/statements/statement';
+import { MemberVariable, Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 
-import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, SwitchParameter, verbEnum, PSCmdlet } from '#powershell/powershell-declarations';
+import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from '#powershell/powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {
@@ -99,7 +103,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       }
     }
 
-    // other properties 
+    // other properties
     if (property.schema.type === JsonType.Object) {
       // console.error(`\n\nLARGE OBJECT NOT INLINED ${property.details.csharp.name}`);
     }
@@ -117,7 +121,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
           /* getterStatements: new Statements(function* () {
              if (ensureMemberIsCreated) {
                yield ensureMemberIsCreated;
- 
+
              }
              yield Return(`new System.Management.Automation.SwitchParameter(true == ${prop}.${property.details.csharp.name});`);
            }), */
@@ -155,5 +159,5 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
     }
   }
 
-  // if 
+  // if
 }

@@ -1,10 +1,15 @@
-import { Project as codeDomProject } from '#csharp/code-dom/project';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { JsonType } from '#common/code-model/schema';
-import { Dictionary, items, values } from '#common/dictionary';
+import { Dictionary, items, values } from '#common/linq';
+import { deconstruct, pascalCase } from '#common/text-manipulation';
 import { Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { LiteralExpression } from '#csharp/code-dom/expression';
 import { Import } from '#csharp/code-dom/import';
 import { Interface } from '#csharp/code-dom/interface';
@@ -12,6 +17,7 @@ import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
+import { Project as codeDomProject } from '#csharp/code-dom/project';
 import { Else, ElseIf, If } from '#csharp/code-dom/statements/if';
 import { Return } from '#csharp/code-dom/statements/return';
 import { Catch, Try } from '#csharp/code-dom/statements/try';
@@ -24,8 +30,6 @@ import { ModuleClass } from '#powershell/module-class';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '#powershell/powershell-declarations';
 import { CmdletClass } from './cmdlet-class';
 import { State } from './state';
-import { deconstruct, pascalCase } from '#common/text-manipulation';
-import { dotnet, System } from '#csharp/code-dom/dotnet';
 
 export class ServiceNamespace extends Namespace {
   public moduleClass: ModuleClass;
@@ -53,7 +57,6 @@ export class ModelExtensionsNamespace extends Namespace {
     super('Models', parent);
     this.apply(objectInitializer);
     const $this = this;
-
 
     // Add typeconverters to model classes (partial)
     for (const { key: schemaName, value: schema } of items(schemas)) {

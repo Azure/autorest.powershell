@@ -1,8 +1,13 @@
-import { Property, Schema } from '#csharp/lowlevel-generator/code-model';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Access } from '#csharp/code-dom/access-modifier';
 import { InterfaceProperty } from '#csharp/code-dom/interface-property';
+import { Property, Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '../generator';
 import { ModelInterface } from './interface';
-import { Access } from '#csharp/code-dom/access-modifier';
 
 export class ModelInterfaceProperty extends InterfaceProperty {
   constructor(parent: ModelInterface, property: Property, state: State, objectInitializer?: Partial<ModelInterfaceProperty>) {

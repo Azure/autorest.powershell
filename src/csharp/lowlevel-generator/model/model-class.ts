@@ -1,24 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { any, items, keys, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL, fixLeadingNumber, indent, nameof, pascalCase } from '#common/text-manipulation';
+import { items, values } from '#common/linq';
+import { camelCase, deconstruct } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { Expression, ExpressionOrLiteral, Is, IsDeclaration, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { Field, InitializedField } from '#csharp/code-dom/field';
-import { Method, PartialMethod } from '#csharp/code-dom/method';
+import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
-import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
-import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
-import { ForEach } from '#csharp/code-dom/statements/for';
-import { If, Not } from '#csharp/code-dom/statements/if';
-import { Return } from '#csharp/code-dom/statements/return';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
+import { If } from '#csharp/code-dom/statements/if';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
@@ -30,9 +27,10 @@ import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
 
 import { KnownMediaType } from '#common/media-types';
+import { System } from '#csharp/code-dom/dotnet';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
-import { System } from '#csharp/code-dom/dotnet';
+import { Constructor } from '#csharp/code-dom/constructor';
 
 export interface BackingField {
   field: Field;
@@ -150,6 +148,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     const defaultConstructor = this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
     const validationStatements = new Statements();
     this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` })
+
+    this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const eachSchema of items(this.schema.allOf)) {
@@ -208,6 +208,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         // we should generate an additionalProperties property that catches all extra properties as the type specified by
         const valueSchema = this.schema.additionalProperties;
       }
+
     }
     if (!this.state.project.storagePipeline) {
       if (validationStatements.implementation.trim()) {

@@ -1,12 +1,15 @@
-import { Initializer } from '#common/initializer';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { EOL } from '#common/text-manipulation';
 import { Access, Modifier, New, ReadOnly, Static, Volitile } from '#csharp/code-dom/access-modifier';
+import { Attribute } from '#csharp/code-dom/attribute';
 import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
-import { Attribute } from '#csharp/code-dom/attribute';
-import { EOL } from '#common/text-manipulation';
-import { IsNull } from '#csharp/code-dom/comparisons';
 
 /** represents a field in a Class */
 export class Field extends Variable {

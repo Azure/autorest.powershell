@@ -1,39 +1,42 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
 import { camelCase, deconstruct } from '#common/text-manipulation';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System, ClassType, dotnet } from '#csharp/code-dom/dotnet';
 import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { Ternery } from '#csharp/code-dom/ternery';
 import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { Ternery } from '#csharp/code-dom/ternery';
-import { IsNotNull } from '#csharp/code-dom/comparisons';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
-
-let __tmpVar: number | undefined;
-let __max: number = 0;
+let tmpVar: number | undefined;
+let max: number = 0;
 
 export function pushTempVar() {
-  if (!__tmpVar) {
-    __tmpVar = 1;
-    __max = 1;
+  if (!tmpVar) {
+    tmpVar = 1;
+    max = 1;
   } else {
-    __tmpVar++;
-    __max++;
+    tmpVar++;
+    max++;
   }
-  return `__${String.fromCharCode(123 - __max)}`;
+  return `__${String.fromCharCode(123 - max)}`;
 }
 
 export function popTempVar() {
-  if (__tmpVar) {
-    __tmpVar--;
+  if (tmpVar) {
+    tmpVar--;
   }
-  if (__tmpVar === 0) {
-    __tmpVar = undefined;
-    __max = 0;
+  if (tmpVar === 0) {
+    tmpVar = undefined;
+    max = 0;
   }
 }
 
@@ -104,8 +107,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
               `${node} is ${System.Xml.Linq.XAttribute} ${tmp} ? ${this.castXmlTypeToPrimitive(tmp, defaultValue.value)} : ${defaultValue}` :
               `${node} is ${System.Xml.Linq.XElement} ${tmp} ? ${this.castXmlTypeToPrimitive(tmp, defaultValue.value)}: ${defaultValue}`);
       }
-    }
-    finally {
+    } finally {
       popTempVar();
     }
     return toExpression(`null /* deserializeFromContainer doens't support '${mediaType}' ${__filename}*/`);
@@ -137,7 +139,6 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
         return this.isRequired ?
           toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value})`) :
           toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
-
 
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {

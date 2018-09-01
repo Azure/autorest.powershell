@@ -1,7 +1,12 @@
-import { ImplementationDetails, ExternalDocumentation, LanguageDetails } from '#common/code-model/components';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ExternalDocumentation, ImplementationDetails, LanguageDetails } from '#common/code-model/components';
 import { Extensions } from '#common/code-model/extensions';
-import { Dictionary, values } from '#common/dictionary';
 import { DeepPartial } from '#common/initializer';
+import { Dictionary, values } from '#common/linq';
 
 export interface PropertyDetails extends ImplementationDetails {
   required: boolean;

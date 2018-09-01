@@ -1,19 +1,22 @@
-
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '#csharp/code-dom/method';
 
-import { Namespace } from '#csharp/code-dom/namespace';
+import { KnownMediaType } from '#common/media-types';
+import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { ExtendedVariable, EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
+import { Variable } from '#csharp/code-dom/variable';
+
+import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
+import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
-import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
-import { KnownMediaType } from '#common/media-types';
-import { ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
-import { Variable } from '#csharp/code-dom/variable';
-import { System } from '#csharp/code-dom/dotnet';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
 export class OperationParameter extends Parameter implements EnhancedVariable {
@@ -55,7 +58,6 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
     return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
   }
 
-
   public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
     return this.typeDeclaration.validatePresence(eventListener, this);
   }
@@ -68,7 +70,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
 export class OperationBodyParameter extends Parameter implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
-    //return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
+    // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
     return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
   }
 
@@ -92,7 +94,6 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
   serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
     return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
   }
-
 
   public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
     return this.typeDeclaration.validatePresence(eventListener, this);
@@ -157,7 +158,7 @@ export class CallbackParameter extends Parameter {
         }
       } else {
         if (headerType) {
-          // just headers 
+          // just headers
           super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
         } else {
           // no content?

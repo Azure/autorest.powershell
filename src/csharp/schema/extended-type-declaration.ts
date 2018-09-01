@@ -1,5 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { Variable } from '#csharp/code-dom/variable';

@@ -1,6 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Model } from '#common/code-model/code-model';
 import { ModelState } from '#common/model-state';
 import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
-import { Model } from '#common/code-model/code-model';
 import { Project } from './project';
 
 export interface GeneratorSettings {
@@ -17,15 +22,16 @@ export interface GeneratorSettings {
 
 export class State extends ModelState<Model> {
   public get project(): Project {
-    if (this.prj)
+    if (this.prj) {
       return this.prj;
+    }
     throw new Error();
   }
 
   public set project(prj: Project) {
     this.prj = prj;
   }
-  constructor(service: Host, model: Model, documentName: string, currentPath: JsonPath = new Array<string>(), public prj?: Project) {
+  constructor(service: Host, model: Model, documentName: string, currentPath: JsonPath = new Array<string>(), private prj?: Project) {
     super(service, model, documentName, currentPath);
   }
 

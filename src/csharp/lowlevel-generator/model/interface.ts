@@ -1,16 +1,21 @@
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { items } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { items } from '#common/linq';
+import { KnownMediaType } from '#common/media-types';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
 import { ModelInterfaceProperty } from './interface-property';
-import { KnownMediaType } from '#common/media-types';
-import { Variable } from '#csharp/code-dom/variable';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {

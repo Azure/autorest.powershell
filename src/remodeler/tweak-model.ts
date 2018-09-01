@@ -1,11 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
 import { ParameterLocation } from '#common/code-model/http-operation';
-import { getPolymorphicBases, isSchemaObject, Property, Schema, JsonType } from '#common/code-model/schema';
-import { items, values } from '#common/dictionary';
-import { processCodeModel } from '#common/process-code-model';
-import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
-import { StringFormat } from '#remodeler/known-format';
+import { getPolymorphicBases, isSchemaObject, JsonType, Property, Schema } from '#common/code-model/schema';
+import { items, values } from '#common/linq';
 import { KnownMediaType } from '#common/media-types';
+import { processCodeModel } from '#common/process-code-model';
+import { StringFormat } from '#remodeler/known-format';
+import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 
 export const HeaderProperty = 'HeaderProperty';
 export enum HeaderPropertyType {
@@ -17,16 +22,16 @@ export enum HeaderPropertyType {
 // tweaks the code model to adjust things so that the code will generate better.
 
 export async function process(service: Host) {
-  return await processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service);
 }
 
 async function tweakModel(model: Model, service: Host): Promise<Model> {
-  /* REMOVE THIS -- not handled here anymore   
+  /* REMOVE THIS -- not handled here anymore
     // consolodate compatible response types.
     for (const operation of values(model.http.operations)) {
       // TODO: mimetypes might start with the mimetype and have extra stuff after
       // this should be fixed if it happens.
-  
+
       // if an operation response has a application/json and text/json, remove the text/json and add that mime type to the list of 'accepts'
       for (const response of values(operation.responses)) {
         const content = response.content;
@@ -75,9 +80,9 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
               service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
             }
 
-            // if the method response has a schema and it's an object, we're going to add our properties to the schema object. 
+            // if the method response has a schema and it's an object, we're going to add our properties to the schema object.
             // yes, this means that the reponse model may have properties that are undefined if the server doesn't send back the header
-            // and other operations might add other headers that are not the same. 
+            // and other operations might add other headers that are not the same.
 
             // if the method's response is a primitive value (string, boolean, null, number) or an array, we can't modify that type obviously
             // in which case, we're going to add a header
@@ -162,7 +167,6 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
         parameter.details.default.constantValue = parameter.schema.enum[0];
       }
 
-
       if (parameter.name === 'api-version') {
 
         // only set it if it hasn't been set yet.
@@ -192,4 +196,3 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
 
   return model;
 }
-

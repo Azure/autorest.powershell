@@ -1,6 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { NewResponse, ParameterLocation } from '#common/code-model/http-operation';
-import { items, length, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL } from '#common/text-manipulation';
+import { items, length, values } from '#common/linq';
+import { EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 

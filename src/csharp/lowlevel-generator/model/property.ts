@@ -1,16 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { KnownMediaType } from '#common/media-types';
+import { Access } from '#csharp/code-dom/access-modifier';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { BackedProperty } from '#csharp/code-dom/property';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { State } from '../generator';
+import { Variable } from '#csharp/code-dom/variable';
+import { Property, Schema } from '#csharp/lowlevel-generator/code-model';
+import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { ModelClass } from './model-class';
 
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
-import { Schema, Property } from '#csharp/lowlevel-generator/code-model';
-import { Access } from '#csharp/code-dom/access-modifier';
-import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
-import { KnownMediaType } from '#common/media-types';
-import { ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
-import { Variable } from '#csharp/code-dom/variable';
+import { State } from '../generator';
+import { ModelClass } from './model-class';
 
 export class ModelProperty extends BackedProperty implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */

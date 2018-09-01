@@ -1,5 +1,10 @@
-import { Dictionary, values } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Text, TextPossibilities } from '#common/file-generator';
+import { Dictionary, values } from '#common/linq';
 
 let indentation = '    ';
 
@@ -129,7 +134,7 @@ export function ToMap<T>(dictionary: Dictionary<T>): Map<string, T> {
   return result;
 }
 
-export function selectMany<T>(multiArray: Array<T>[]): Array<T> {
+export function selectMany<T>(multiArray: Array<Array<T>>): Array<T> {
   const result = new Array<T>();
   multiArray.map(v => result.push(...v));
   return result;
@@ -233,7 +238,6 @@ export function nameof(text: string): string {
   }
   return `nameof(${text})`;
 }
-
 
 export function setRegion(source: string, region: string, content: TextPossibilities, prepend = true) {
   const ct = new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '');

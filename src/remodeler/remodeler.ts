@@ -1,20 +1,13 @@
-import {
-  Example,
-  ImplementationLocation,
-  Link,
-  Tag
-} from '#common/code-model/components';
-import {
-  Callback, Encoding,
-  EncodingStyle,
-  Header,
-  HttpMethod,
-  HttpOperation,
-  HttpOperationParameter, MediaType, NewResponse, RequestBody /*, Response*/
-} from '#common/code-model/http-operation';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Example, ImplementationLocation, Link, Tag } from '#common/code-model/components';
+import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '#common/code-model/http-operation';
 import { Discriminator, JsonType, Property, Schema, XML } from '#common/code-model/schema';
-import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '#common/dictionary';
-import { isMediaTypeJson, isMediaTypeXml } from '#common/media-types'
+import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '#common/linq';
+import { isMediaTypeJson, isMediaTypeXml } from '#common/media-types';
 import { ModelState } from '#common/model-state';
 import { System } from '#csharp/code-dom/dotnet';
 import { Model as CodeModel } from '../common/code-model/code-model';
@@ -236,7 +229,7 @@ export class Remodeler {
     if (original.properties) {
       for (const { key: propertyName, value: property } of items(original.properties)) {
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
-        const newPropSchema = this.refOrAdd(`${name[0] == '.' ? name : '.' + name}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
+        const newPropSchema = this.refOrAdd(`${name[0] === '.' ? name : `.${name}`}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
         newSchema.properties[propertyName] = new Property(propertyName, {
           description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), property),
           schema: newPropSchema,
@@ -368,7 +361,7 @@ export class Remodeler {
     }
   }
 
-  copyOperation = (name: string, original: { method: HttpMethod, path: string, operation: OpenAPI.HttpOperation, pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<HttpOperation>): HttpOperation => {
+  copyOperation = (name: string, original: { method: HttpMethod; path: string; operation: OpenAPI.HttpOperation; pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<HttpOperation>): HttpOperation => {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
@@ -527,7 +520,7 @@ export class Remodeler {
         const propertyName = Interpretations.getName(header.name || `${each}`, header.instance);
 
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>header.instance.schema);
-        const newPropSchema = this.refOrAdd(`${containerName[0] == '.' ? containerName : '.' + containerName}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
+        const newPropSchema = this.refOrAdd(`${containerName[0] === '.' ? containerName : `.${containerName}`}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
 
         newPropSchema.extensions = getExtensionProperties(header.instance);
 

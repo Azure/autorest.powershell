@@ -1,7 +1,12 @@
-import { resources } from "#common/locations"
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { resources } from '#common/locations';
 import { copyResources } from '#common/utility';
 import { deserialize, serialize } from '#common/yaml';
-import { Model } from "#csharp/lowlevel-generator/code-model"
+import { Model } from '#csharp/lowlevel-generator/code-model';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { State } from './generator';
