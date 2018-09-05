@@ -25,11 +25,13 @@ export class ModuleClass extends Class {
     super(namespace, 'Module');
     this.apply(objectInitializer);
     this.partial = true;
+    this.description = `A class that contains the module-common code and data.`;
 
     // static instance property
     this.add(new LazyProperty('Instance', this, new LiteralExpression(`new ${this.declaration}()`), {
       instanceAccess: this.declaration,
       static: Modifier.Static,
+      description: `the singleton of this module class`
     }));
 
     const isAzure = this.state.project.azure;
@@ -40,7 +42,7 @@ export class ModuleClass extends Class {
 
     const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
 
-    const clientProperty = this.add(new Property('ClientAPI', clientAPI));
+    const clientProperty = this.add(new Property('ClientAPI', clientAPI, { description: `The instance of the Client API` }));
 
     // lets the common code call the signal again (recursive! careful!)
     const signalDelegateI = System.Func(
@@ -84,14 +86,17 @@ export class ModuleClass extends Class {
         nextStep,                                  /* Next( ...) */
         /* returns */ TaskOfHttpResponseMessage)));
 
-    const boundParams = new Parameter('boundParameters', System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object));
-    const pipelineField = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private }));
+    const boundParams = new Parameter('boundParameters', System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), { description: `The bound parameters from the cmdlet call.` });
+    const pipelineField = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private, description: `the ISendAsync pipeline instance` }));
 
     const createPipeline = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
-      parameters: [boundParams]
+      parameters: [boundParams],
+      description: `Creates an instance of the HttpPipeline for each call.`,
+      returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the remote call.`
+
     }));
 
-    const init = this.add(new Method('Init', dotnet.Void));
+    const init = this.add(new Method('Init', dotnet.Void, { description: `Initialization steps performed after the module is loaded.` }));
 
     if (isAzure) {
       const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', System.Action(sendAsyncStep.fullDefinition)));
@@ -100,28 +105,36 @@ export class ModuleClass extends Class {
       const moduleLoadPipelineAction = namespace.add(new Alias('ModuleLoadPipelineDelegate', System.Action(dotnet.String, dotnet.String, pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
       const newRequestPipelineAction = namespace.add(new Alias('NewRequestPipelineDelegate', System.Action(System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), pipelineChangeDelegate.fullDefinition, pipelineChangeDelegate.fullDefinition)));
 
-      const OnModuleLoad = this.add(new Property('OnModuleLoad', moduleLoadPipelineAction));
-      const OnNewRequest = this.add(new Property('OnNewRequest', newRequestPipelineAction));
+      const OnModuleLoad = this.add(new Property('OnModuleLoad', moduleLoadPipelineAction, { description: `The delegate to call when this module is loaded (supporting a commmon module).` }));
+      const OnNewRequest = this.add(new Property('OnNewRequest', newRequestPipelineAction, { description: `The delegate to call before each new request (supporting a commmon module).` }));
 
-      const moduleIdentity = this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(state.project.moduleName)));
-      const moduleResourceId = this.add(new LambdaProperty('ResourceId', dotnet.String, new StringExpression(state.project.moduleName)));
+      const moduleIdentity = this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(state.project.moduleName), { description: `The Name of this module ` }));
+      const moduleResourceId = this.add(new LambdaProperty('ResourceId', dotnet.String, new StringExpression(state.project.moduleName), { description: `The ResourceID for this module (azure arm).` }));
 
       init.add(function* () {
         yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${pipelineField.value}.Prepend(step); } , (step)=> { ${pipelineField.value}.Append(step); } );`;
       });
 
-      const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate));
-      const pBoundParameters = new Parameter('boundParameters', BoundParameterDictionary);
-      const pKey = new Parameter('parameterName', dotnet.String);
-      const GetParameter = this.add(new LambdaMethod('GetParameter', dotnet.Object, new LiteralExpression(`${GetParameterValue.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value}, ${pBoundParameters.value}, ${pKey.value} )`), { parameters: [pBoundParameters, pKey] }));
+      const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: `The delegate to call to get parameter data from a common module.` }));
+      const pBoundParameters = new Parameter('boundParameters', BoundParameterDictionary, { description: `The bound parameters from the cmdlet call.` });
+      const pKey = new Parameter('parameterName', dotnet.String, { description: `The name of the parameter to get the value for.` });
+      const GetParameter = this.add(new LambdaMethod('GetParameter', dotnet.Object, new LiteralExpression(`${GetParameterValue.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value}, ${pBoundParameters.value}, ${pKey.value} )`), {
+        parameters: [pBoundParameters, pKey],
+        description: `Gets parameters from a common module.`,
+        returnsDescription: `The parameter value from the common module. (Note: this should be type converted on the way back)`
+      }));
 
-      const EventListener = this.add(new Property('EventListener', signalDelegateAlias));
+      const EventListener = this.add(new Property('EventListener', signalDelegateAlias, { description: `A delegate that gets called for each signalled event` }));
 
-      const pId = new Parameter('id', dotnet.String);
-      const pToken = new Parameter('token', System.Threading.CancellationToken);
-      const pGetEvent = new Parameter('getEventData', System.Func(System.EventArgs));
-      const pSignal = new Parameter('signal', signalDelegateIAlias);
-      this.add(new Method('Signal', System.Threading.Tasks.Task(), { parameters: [pId, pToken, pGetEvent, pSignal], async: Modifier.Async })).add(function* () {
+      const pId = new Parameter('id', dotnet.String, { description: `The ID of the event ` });
+      const pToken = new Parameter('token', System.Threading.CancellationToken, { description: `The cancellation token for the event ` });
+      const pGetEvent = new Parameter('getEventData', System.Func(System.EventArgs), { description: `A delegate to get the detailed event data` });
+      const pSignal = new Parameter('signal', signalDelegateIAlias, { description: `The callback for the event dispatcher ` });
+      this.add(new Method('Signal', System.Threading.Tasks.Task(), {
+        parameters: [pId, pToken, pGetEvent, pSignal], async: Modifier.Async,
+        description: `Called to dispatch events to the common module listener`,
+        returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the event is completed.`
+      })).add(function* () {
         yield `await ${EventListener.value}?.Invoke(${pId.value},${pToken.value},${pGetEvent.value}, ${pSignal.value});`;
       });
 
@@ -147,6 +160,7 @@ export class ModuleClass extends Class {
 
     this.add(new Constructor(this, {
       access: Access.Private,
+      description: `Creates the module instance.`
     })).add(function* () {
       yield `/// constructor`;
       yield clientProperty.assignPrivate(clientAPI.new());

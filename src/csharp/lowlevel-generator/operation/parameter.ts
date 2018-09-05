@@ -168,5 +168,6 @@ export class CallbackParameter extends Parameter {
     }
     this.responseType = responseType;
     this.headerType = headerType;
+    this.apply(objectInitializer);
   }
 }

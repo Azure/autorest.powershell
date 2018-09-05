@@ -53,7 +53,7 @@ export class ModelsNamespace extends Namespace {
     if (td instanceof ObjectImplementation) {
       // it's a class object.
       // create it if necessary
-      const mc = schema.details.csharp.classImplementation || new ModelClass(this, td, this.state);
+      const mc = schema.details.csharp.classImplementation || new ModelClass(this, td, this.state, { description: schema.details.csharp.description });
 
       // this gets implicity created during class creation:
       return <ModelInterface>schema.details.csharp.interfaceImplementation;

@@ -74,8 +74,8 @@ async function start() {
     try {
       // fix weird issue with namespace class and importing stuff
       let namespc = await readFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, "utf8");
-      const orig = namespc;
-      const c = namespc.indexOf('const interface_1 = require("./interface");');
+      let orig = namespc;
+      let c = namespc.indexOf('const interface_1 = require("./interface");');
       if (c > 0) {
         namespc = namespc.replace('const interface_1 = require("./interface");', '');
         namespc = namespc.replace(/interface_1\./gi, 'require("./interface").');
@@ -83,6 +83,17 @@ async function start() {
           await writeFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);
         }
       }
+      orig = namespc;
+      c = namespc.indexOf('const class_1 = require("./class");');
+      if (c > 0) {
+        namespc = namespc.replace('const class_1 = require("./class");', '');
+        namespc = namespc.replace(/class_1\./gi, 'require("./class").');
+        if (orig !== namespc) {
+          await writeFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);
+        }
+      }
+
+
     } catch (e) {
 
     }

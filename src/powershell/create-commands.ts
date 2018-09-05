@@ -6,7 +6,7 @@
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
 import { IParameter } from '#common/code-model/components';
-import { HttpOperation, HttpOperationParameter, RequestBody } from '#common/code-model/http-operation';
+import { HttpOperation, HttpOperationParameter, RequestBody, HttpMethod } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
 import { items, length, values } from '#common/linq';
@@ -123,6 +123,12 @@ async function addVariants(parameters: Array<HttpOperationParameter>, operation:
   const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
 
   // given the body property type, expand out body properties into parameters
+
+  // wait! "update" should be "set" if it's a POST
+  if (variant.verb === 'Update' && operation.method === HttpMethod.Put) {
+    variant.verb = `Set`;
+    variant.category = getCategory(`Set`);
+  }
 
   // no optionals:
   service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });

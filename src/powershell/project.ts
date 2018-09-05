@@ -74,65 +74,82 @@ export class ModelExtensionsNamespace extends Namespace {
         // 2. A partial interface with the type converter attribute
         const modelInterface = new Interface(this, interfaceName, {
           partial: true,
+          description: td.schema.details.csharp.description
         });
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
 
         // 1. A partial class with the type converter attribute
         const model = new Class(this, className, undefined, {
           partial: true,
+          description: td.schema.details.csharp.description
         });
         model.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
         model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
           static: Modifier.Static,
-          parameters: [new Parameter('jsonText', dotnet.String)]
+          parameters: [new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this model.' })],
+          description: `Creates a new instance of <see cref="${td.schema.details.csharp.name}" />, deserializing the content from a json string.`,
+          returnsDescription: `an instance of the <see cref="className" /> model class.`
         }));
 
         model.add(new LambdaMethod('ToJsonString', dotnet.String, new LiteralExpression(`ToJson(${dotnet.Null}, ${ClientRuntime.SerializationMode.IncludeAll})?.ToString()`), {
+          description: `Serializes this instance to a json string.`,
+          returnsDescription: `a <see cref="System.String" /> containing this model serialized to JSON text.`
         }));
 
         // + static <interfaceType> FromJsonString(string json);
         // + string ToJsonString()
 
         // 3. A TypeConverter class
-        const typeConverter = new Class(this, converterClass, PSTypeConverter);
+        const typeConverter = new Class(this, converterClass, PSTypeConverter, {
+          description: `A PowerShell PSTypeConverter to support converting to an instance of <see cref="${className}" />`,
+        });
         typeConverter.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', System.Type)
-          ]
+            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
+            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` })
+          ],
+          description: `Determines if the <see cref="sourceValue" /> parameter can be converted to the <see cref="destinationType" /> parameter`,
+          returnsDescription: `<c>true</c> if the converter can convert the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>`,
         }));
         typeConverter.add(new LambdaMethod('ConvertTo', dotnet.Object, dotnet.Null, {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', System.Type),
-            new Parameter('formatProvider', System.IFormatProvider),
-            new Parameter('ignoreCase', dotnet.Bool),
-          ]
+            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
+            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` }),
+            new Parameter('formatProvider', System.IFormatProvider, { description: `not used by this TypeConverter.` }),
+            new Parameter('ignoreCase', dotnet.Bool, { description: `when set to <c>true</c>, will ignore the case when converting.` }),
+          ], description: `NotImplemented -- this will return <c>null</c>`,
+          returnsDescription: `will always return <c>null</c>.`
         }));
         typeConverter.add(new LambdaMethod('CanConvertFrom', dotnet.Bool, new LiteralExpression(`CanConvertFrom(sourceValue)`), {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', System.Type)
-          ]
+            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
+            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` })
+          ],
+          description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.`,
+          returnsDescription: `<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.`,
         }));
         typeConverter.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression('ConvertFrom(sourceValue)'), {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object),
-            new Parameter('destinationType', System.Type),
-            new Parameter('formatProvider', System.IFormatProvider),
-            new Parameter('ignoreCase', dotnet.Bool),
-          ]
+            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
+            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` }),
+            new Parameter('formatProvider', System.IFormatProvider, { description: `not used by this TypeConverter.` }),
+            new Parameter('ignoreCase', dotnet.Bool, { description: `when set to <c>true</c>, will ignore the case when converting.` }),
+          ],
+          description: `Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> `,
+          returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
         }));
 
         typeConverter.add(new Method('CanConvertFrom', dotnet.Bool, {
           static: Modifier.Static,
           parameters: [
-            new Parameter('sourceValue', dotnet.Dynamic),
-          ]
+            new Parameter('sourceValue', dotnet.Dynamic, { description: `the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="${className}" /> type.` }),
+          ],
+          description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.`,
+          returnsDescription: `<c>true</c> if the instance could be converted to a <see cref="${className}" /> type, otherwise <c>false</c> `
         })).add(function* () {
           yield If(`null == sourceValue`, Return(dotnet.True));
           yield Try(function* () {
@@ -161,8 +178,12 @@ export class ModelExtensionsNamespace extends Namespace {
         typeConverter.add(new Method('ConvertFrom', dotnet.Object, {
           static: Modifier.Static,
           parameters: [
-            new Parameter('sourceValue', dotnet.Dynamic),
-          ]
+            new Parameter('sourceValue', dotnet.Dynamic, {
+              description: `the value to convert into an instance of <see cref="${className}" />.`
+            }),
+          ],
+          description: `Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" />`,
+          returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
         })).add(function* () {
           // null begets null
           yield If(`null == sourceValue`, Return(dotnet.Null));
@@ -294,6 +315,7 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
   public skipModelCmdlets!: boolean;
+  public nounPrefix!: string;
 
   constructor(protected state: State) {
     super();
@@ -331,6 +353,8 @@ export class Project extends codeDomProject {
     this.csproj = await service.GetValue('csproj') || `${this.moduleName}.private.csproj`;
     this.psd1 = await service.GetValue('psd1') || `${this.moduleName}.psd1`;
     this.psm1 = await service.GetValue('psm1') || `${this.moduleName}.psm1`;
+
+    this.nounPrefix = await service.GetValue('noun-prefix') || this.azure ? 'Az' : ``;
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));

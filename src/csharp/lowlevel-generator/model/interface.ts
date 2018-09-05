@@ -75,6 +75,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     this.apply(objectInitializer);
     const implData = (schema.details.csharp = schema.details.csharp || {});
     implData.interfaceImplementation = this;
+    this.description = `${schema.details.default.description}`;
 
     for (const { key: propertyName, value: property } of items(schema.properties)) {
       this.add(new ModelInterfaceProperty(this, property, state.path('properties', propertyName)));

@@ -60,7 +60,8 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
           values: schema.details.default.enum.values.map(each => {
             return {
               ...each,
-              name: pascalCase(fixLeadingNumber(deconstruct(each.name)))
+              name: pascalCase(fixLeadingNumber(deconstruct(each.name))),
+              description: each.description
             };
           })
         }
@@ -141,14 +142,21 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
         const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
 
         const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
-
+        let rawValue = code.replace(/\./, '');
+        if (rawValue === 'default') {
+          rawValue = `any response code not handled elsewhere`
+        }
         response.details.csharp = {
           ...response.details.default,
           responseType: responseTypeDefinition ? responseTypeDefinition.declaration : '',
           headerType: headerTypeDefinition ? headerTypeDefinition.declaration : '',
           name: (length(responses) <= 1) ?
             camelCase(fixLeadingNumber(deconstruct(`on ${code}`))) : // the common type (or the only one.)
-            camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.mimeTypes[0]}`)))
+            camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.mimeTypes[0]}`))),
+          description: (length(responses) <= 1) ?
+            `a delegate that is called when the remote service returns ${response.responseCode} (${rawValue}).` :
+            `a delegate that is called when the remote service returns ${response.responseCode} (${rawValue}) with a Content-Type matching ${response.mimeTypes.join(',')}.`
+
         };
       }
     }

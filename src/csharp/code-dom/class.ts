@@ -12,6 +12,7 @@ import { Property } from '#csharp/code-dom/property';
 import { Field } from './field';
 import { Namespace } from './namespace';
 import { Type } from './type';
+import { xmlize } from '#csharp/code-dom/doc-comments';
 
 export function sortByNamePartialFirst(a: Method, b: Method): number {
   if (a.isPartial !== b.isPartial) {
@@ -25,7 +26,6 @@ export class Class extends Type {
   public isStatic: boolean = false;
 
   protected fields = new Array<Field>();
-
 
   constructor(namespace: Namespace, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
     super(namespace, name);
@@ -43,10 +43,9 @@ export class Class extends Type {
 
     const extendsClass = this.parent ? this.parent.fullName : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
-    const description = comment(this.description, docCommentPrefix);
+    const description = comment(xmlize('summary', this.description), docCommentPrefix);
     const partial = this.partial ? 'partial ' : '';
     const stat = this.isStatic ? 'static ' : '';
-
 
     return `
 ${description}

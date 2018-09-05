@@ -39,7 +39,7 @@ export class JsonSerializableClass extends Class {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
-
+    this.description = modelClass.description;
     this.addPartialMethods();
 
     // set up the declaration for the toJson method.
@@ -48,7 +48,8 @@ export class JsonSerializableClass extends Class {
 
     const toJsonMethod = this.addMethod(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
-      description: `Seserializes this instance of ${this.name} into a ${ClientRuntime.JsonNode}" />.`
+      description: `Serializes this instance of <see cref="${this.name}" /> into a <see cref="${ClientRuntime.JsonNode}" />.`,
+      returnsDescription: `a serialized instance of <see cref="${this.name}" /> as a <see cref="${ClientRuntime.JsonNode}" />.`
     }));
 
     // setup the declaration for the json deserializer constructor
@@ -124,7 +125,8 @@ export class JsonSerializableClass extends Class {
     const node = new Parameter('node', ClientRuntime.JsonNode, { description: `a <see cref="${ClientRuntime.JsonNode}" /> to deserialize from.` });
     const fromJson = this.addMethod(new Method('FromJson', this.modelClass.modelInterface, {
       parameters: [node], static: Modifier.Static,
-      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}"/> into an instance of ${this.modelClass.modelInterface}.`
+      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}"/> into an instance of ${this.modelClass.modelInterface}.`,
+      returnsDescription: `an instance of ${this.modelClass.modelInterface}.`
     }));
 
     if (isp) {

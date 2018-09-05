@@ -58,5 +58,6 @@ export async function process(service: Host) {
 
   } catch (E) {
     console.error(E);
+    throw E;
   }
 }

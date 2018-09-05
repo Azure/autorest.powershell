@@ -3,13 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL } from '#common/text-manipulation';
+import { EOL, docComment } from '#common/text-manipulation';
 import { Access, Modifier, New, ReadOnly, Static, Volitile } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
+import { xmlize } from '#csharp/code-dom/doc-comments';
 
 /** represents a field in a Class */
 export class Field extends Variable {
@@ -35,7 +36,8 @@ export class Field extends Variable {
   }
 
   public get declaration(): string {
-    return `${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name};`.slim();
+    return `${docComment(xmlize('summary', this.description))}
+    ${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name};`.slim();
   }
 
   public get value(): string {
@@ -70,7 +72,8 @@ export class InitializedField extends Field {
   }
 
   public get declaration(): string {
-    return `${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name} = ${valueOf(this.valueExpression)};`.slim();
+    return `${docComment(xmlize('summary', this.description))}
+${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name} = ${valueOf(this.valueExpression)};`.slim();
   }
 }
 

@@ -50,7 +50,7 @@ export class Schema extends Extensions implements Schema {
     super();
     this.details = {
       default: {
-        description: 'MISSING DESCRIPTION 04',
+        description: '',
         name
       }
     };

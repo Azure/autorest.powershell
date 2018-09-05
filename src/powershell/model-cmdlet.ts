@@ -30,31 +30,28 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `New${schema.details.csharp.name}Object`;
+    const name = `${state.project.nounPrefix}New${schema.details.csharp.name}Object`;
 
     super(namespace, name, PSCmdlet);
     this.state = state;
-
+    this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`
     this.apply(objectInitializer);
     addClassAttributes(this, schema, name);
 
     const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, this.state);
-    const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private }));
+    const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
 
-    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override })).add(`WriteObject(${prop});`);
-    // this.processRecord.add(`WriteObject(new ${schema.details.csharp.namespace}.${schema.details.csharp.name} {`);
+    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(`WriteObject(${prop});`);
 
     // adds the parameters to the cmdlet and adds to the method to set the value from the parameter.
     addPowershellParameters(this, schema, prop);
-
-    // this.processRecord.add(`});`);
   }
 
 }
 
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${schema.details.csharp.name || ''}Object`)] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
 }
 
@@ -118,6 +115,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       if (property.schema.type === JsonType.Boolean) {
         // use a switch instead
         cmdletParameter = $class.add(new ImplementedProperty(pname, SwitchParameter, {
+
           /* getterStatements: new Statements(function* () {
              if (ensureMemberIsCreated) {
                yield ensureMemberIsCreated;
@@ -156,6 +154,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
 
       const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
       cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+      cmdletParameter.description = desc;
     }
   }
 

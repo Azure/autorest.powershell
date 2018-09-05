@@ -39,7 +39,7 @@ import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, E
 import { State } from './state';
 
 export class CmdletClass extends Class {
-  private cancellationToken!: Property;
+  private cancellationToken!: Expression;
   public state: State;
   private eventListener: EventListener;
   private dropBodyParameter: boolean;
@@ -47,7 +47,7 @@ export class CmdletClass extends Class {
   constructor(namespace: Namespace, operation: CommandOperation, state: State, dropBodyParameter?: boolean, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
     const operationDetails = `${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
-    const variantName = operationDetails ? `${operation.noun}_${operationDetails}` : operation.noun;
+    const variantName = `${state.project.nounPrefix}${operationDetails ? `${operation.noun}_${operationDetails}` : operation.noun}`;
 
     const name = `${operation.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
@@ -55,9 +55,11 @@ export class CmdletClass extends Class {
     this.apply(objectInitializer);
     this.interfaces.push(ClientRuntime.IEventListener);
     this.state = state;
-    this.eventListener = new EventListener(new LiteralExpression('this'), true);
+    this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
     // basic stuff
     this.addCommonStuff();
+
+    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
@@ -87,47 +89,48 @@ export class CmdletClass extends Class {
   private addCommonStuff() {
 
     // pipeline property
-    this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private }));
+    this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
 
     // client API property (gs01: fill this in correctly)
     const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
-    this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`)));
+    this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`), { description: `The reference to the client API class.` }));
 
     // Cmdlet Parameters for pipeline manipulations.
-    const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncStep, { attributes: [] }));
+    const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be prepended to the front of the pipeline` }));
     prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"`] }));
     prepend.add(new Attribute(ValidateNotNull));
 
-    const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncStep, { attributes: [] }));
+    const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be appended to the front of the pipeline` }));
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
 
-    const asjob = this.add(new Property('AsJob', SwitchParameter));
+    const asjob = this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
+
     asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
 
-    const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [] }));
+    const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [], description: `Credentials for a proxy server to use for the remote call` }));
     proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
     proxyCredential.add(new Attribute(ValidateNotNull));
 
-    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [] }));
+    const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [], description: `Use the default credentials for the proxy` }));
     useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
 
-    const proxyUri = this.add(new Property('Proxy ', System.Uri, { attributes: [] }));
+    const proxyUri = this.add(new Property('Proxy ', System.Uri, { attributes: [], description: `The URI for the proxy server to use` }));
     proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "The URI for the proxy server to use"`] }));
 
     if (this.state.project.azure) {
-      const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object));
+      const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
       defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
       defaultProfile.add(new Attribute(ValidateNotNull));
       defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
     }
 
-    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
-      yield `Cancel();`;
+    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Interrupts currently running code within the command.` })).add(function* () {
+      yield `((${ClientRuntime.IEventListener})this).Cancel();`;
       yield `base.StopProcessing();`;
     });
 
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override })).add(function* () {
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Performs clean-up after the command execution` })).add(function* () {
       // gs01: remember what you were doing here to make it so these can be parallelized...
       yield '';
     });
@@ -148,7 +151,7 @@ export class CmdletClass extends Class {
     const $this = this;
     const writable = this.isWritableCmdlet(operation);
 
-    this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override })).add(function* () {
+    this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
       yield Try(function* () {
         yield `// work`;
@@ -214,7 +217,11 @@ export class CmdletClass extends Class {
 
   private implementProcessRecordAsync(operation: CommandOperation) {
     const $this = this;
-    this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), { access: Access.Protected, async: Modifier.Async })).add(function* () {
+    this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
+      access: Access.Protected, async: Modifier.Async,
+      description: `Performs execution of the command, working asynchronously if required.`,
+      returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+    })).add(function* () {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
@@ -256,16 +263,22 @@ export class CmdletClass extends Class {
       for (const each of values(responses)) {
 
         const parameters = new Array<Parameter>();
-        parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage));
+        parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
 
         if (each.details.csharp.responseType) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType })));
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType }), { description: `the body result as a <see cref="${each.details.csharp.responseType}" /> from the remote call` }));
         }
         if (each.details.csharp.headerType) {
-          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType })));
+          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType }), { description: `the header result as a <see cref="${each.details.csharp.headerType}" /> from the remote call` }));
         }
 
-        const responseMethod = new Method(`${each.details.csharp.name}`, System.Threading.Tasks.Task(), { access: Access.Private, parameters, async: Modifier.Async });
+        const responseMethod = new Method(`${each.details.csharp.name}`, System.Threading.Tasks.Task(), {
+          access: Access.Private,
+          parameters,
+          async: Modifier.Async,
+          description: each.details.csharp.description,
+          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+        });
         responseMethod.add(function* () {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
@@ -281,13 +294,13 @@ export class CmdletClass extends Class {
                 yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
                 return;
               } else {
-                yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+                // yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
                 // what do we do with the response object?
                 yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
                 return;
               }
             } else {
-              yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
+              // yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
               // all we know is that this was an error, and we can't proceed.
               yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
               return;
@@ -370,12 +383,13 @@ export class CmdletClass extends Class {
   private implementSerialization(operation: CommandOperation) {
     const $this = this;
     // set up the declaration for the toJson method.
-    const container = new Parameter('container', ClientRuntime.JsonObject);
-    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
+    const container = new Parameter('container', ClientRuntime.JsonObject, { description: `The <see cref="${ClientRuntime.JsonObject}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
+    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/>.` });
 
     const toJsonMethod = this.add(new Method('ToJson', ClientRuntime.JsonNode, {
       parameters: [container, mode],
-      description: `Serializes the state of this cmdlet to a <see cref="${ClientRuntime.JsonNode}" /> object.`
+      description: `Serializes the state of this cmdlet to a <see cref="${ClientRuntime.JsonNode}" /> object.`,
+      returnsDescription: `a serialized instance of <see cref="${this.name}" /> as a <see cref="${ClientRuntime.JsonNode}" />.`
     }));
     toJsonMethod.add(function* () {
       yield `// serialization method`;
@@ -399,11 +413,12 @@ export class CmdletClass extends Class {
     });
 
     // create the FromJson method
-    const node = new Parameter('node', ClientRuntime.JsonNode);
+    const node = new Parameter('node', ClientRuntime.JsonNode, { description: `a <see cref="${ClientRuntime.JsonNode}" /> to deserialize from.` });
     const fromJson = this.addMethod(new Method('FromJson', this, {
       parameters: [node],
       static: Modifier.Static,
-      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}" /> into a new instance of this class.`
+      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}" /> into a new instance of this class.`,
+      returnsDescription: `an instance of ${this.name}.`
     }));
     fromJson.add(function* () {
       const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
@@ -411,16 +426,18 @@ export class CmdletClass extends Class {
     });
 
     // from/to json-string
-    const strJson = new Parameter('jsonText', dotnet.String);
+    const strJson = new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this cmdlet.' });
     this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(ClientRuntime.JsonObject.Parse(strJson)).toString()}`), {
       parameters: [strJson],
       static: Modifier.Static,
-      description: `Creates a new instance of this cmdlet, deserializing the content from a json string.`
+      description: `Creates a new instance of this cmdlet, deserializing the content from a json string.`,
+      returnsDescription: `returns a new instance of the <see cref="${this.name}" /> cmdlet`
     }));
 
     // clone
     const clone = this.add(new Method('Clone', this, {
-      description: `Creates a duplicate instance of this cmdlet (via JSON serialization).`
+      description: `Creates a duplicate instance of this cmdlet (via JSON serialization).`,
+      returnsDescription: `a duplicate instance of ${this.name}`,
     }));
     clone.add(function* () {
       const i = new LocalVariable('clone', dotnet.Var, {
@@ -437,10 +454,15 @@ export class CmdletClass extends Class {
   private implementConstructors(operation: CommandOperation) {
     const $this = this;
     // default constructor
-    this.add(new Constructor(this));
+    this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
 
     // deserialization constructor
-    const deserializerConstructor = this.add(new Constructor(this, { parameters: [new Parameter('json', ClientRuntime.JsonObject)], access: Access.Internal }));
+    const deserializerConstructor = this.add(new Constructor(this, {
+      parameters: [new Parameter('json', ClientRuntime.JsonObject, { description: `a <see cref="${ClientRuntime.JsonObject}" /> to deserialize from.` })],
+      access: Access.Internal,
+      description: `Constructor for deserialization.`
+
+    }));
     deserializerConstructor.add(function* () {
       yield `// deserialize the contents`;
       for (const parameter of values(operation.parameters)) {
@@ -461,17 +483,23 @@ export class CmdletClass extends Class {
 
   private implementIEventListener() {
     const $this = this;
-    const cts = this.add(new InitializedField('_cancellationTokenSource', System.Threading.CancellationTokenSource, new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`), { access: Access.Private }));
-    this.cancellationToken = this.add(new LambdaProperty('Token', System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`)));
-    this.add(new LambdaProperty('Cancel', System.Action(), new LiteralExpression(`${cts.value}.Cancel`)));
+    const cts = this.add(new InitializedField('_cancellationTokenSource', System.Threading.CancellationTokenSource, new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`), {
+      access: Access.Private,
+      description: `The <see cref="${System.Threading.CancellationTokenSource}" /> for this operation.`
+    }));
+    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Token`, System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="IEventListener" /> cancellation token.` }));
+    this.cancellationToken = toExpression(`((${ClientRuntime.IEventListener})this).Token`);
+    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Cancel`, System.Action(), new LiteralExpression(`${cts.value}.Cancel`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="IEventListener" /> cancellation delegate. Stops the cmdlet when called.` }));
 
-    const id = new Parameter('id', dotnet.String);
-    const token = new Parameter('token', System.Threading.CancellationToken);
-    const messageData = new Parameter('messageData', System.Func(ClientRuntime.EventData));
-    this.add(new Method('Signal', System.Threading.Tasks.Task(), {
+    const id = new Parameter('id', dotnet.String, { description: `The message id` });
+    const token = new Parameter('token', System.Threading.CancellationToken, { description: `The message cancellation token. When this call is cancelled, this should be <c>true</c>` });
+    const messageData = new Parameter('messageData', System.Func(ClientRuntime.EventData), { description: `Detailed message data for the message event.` });
+    this.add(new Method(`${ClientRuntime.IEventListener}.Signal`, System.Threading.Tasks.Task(), {
       async: Modifier.Async,
       parameters: [id, token, messageData],
-      description: `Handles/Dispatches events during the call to the REST service.`
+      access: Access.Default,
+      description: `Handles/Dispatches events during the call to the REST service.`,
+      returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the message is completed.`
     })).add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
@@ -501,7 +529,7 @@ export class CmdletClass extends Class {
       ]);
 
       if ($this.state.project.azure) {
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m)=> Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ) );`;
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ) );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {messageData().Message ?? ${System.String.Empty}}");`;
@@ -532,6 +560,7 @@ export class CmdletClass extends Class {
           metadata: {
             parameterDefinition: parameter.details.default.originalParam
           },
+          description: parameter.details.powershell.description,
         }));
         this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
@@ -542,6 +571,7 @@ export class CmdletClass extends Class {
           metadata: {
             parameterDefinition: parameter
           },
+          description: parameter.details.powershell.description,
           initializer: `new ${parameter.schema.details.csharp.fullname}()`
         }));
 
@@ -552,7 +582,8 @@ export class CmdletClass extends Class {
         const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
           metadata: {
             parameterDefinition: parameter
-          }
+          },
+          description: parameter.details.powershell.description
         }));
         if (!parameter.details.powershell.isBodyParameter) {
           cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.powershell.description) || 'HELP MESSAGE MISSING'}"`)] }));

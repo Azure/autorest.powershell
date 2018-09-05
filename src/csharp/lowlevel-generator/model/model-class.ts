@@ -27,10 +27,10 @@ import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
 
 import { KnownMediaType } from '#common/media-types';
+import { Constructor } from '#csharp/code-dom/constructor';
 import { System } from '#csharp/code-dom/dotnet';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
-import { Constructor } from '#csharp/code-dom/constructor';
 
 export interface BackingField {
   field: Field;
@@ -105,6 +105,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.apply(objectInitializer);
     this.partial = true;
 
+
     // create an interface for this model class
 
     // mark the code-model with the class we're creating.
@@ -147,9 +148,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     const defaultConstructor = this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
     const validationStatements = new Statements();
-    this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` })
-
     this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
+
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const eachSchema of items(this.schema.allOf)) {
@@ -168,7 +168,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, `new ${className}()`, { access: Access.Private }));
+      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, `new ${className}()`, { access: Access.Private, description: `Backing field for <see cref="${this.fileName}" />` }));
       this.backingFields.push({
         className,
         typeDeclaration: td,
@@ -177,7 +177,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       // now, create proxy properties for the members
       iface.allProperties.map((each) => {
         // make sure we don't over expose read-only properties.
-        const p = this.add(new ProxyProperty(backingField, each, this.state));
+        const p = this.add(new ProxyProperty(backingField, each, this.state, { description: `Inherited model <see cref="${iface.name}" /> - ${eachSchema.value.details.csharp.description}` }));
         if (each.setAccess === Access.Internal) {
           p.setterStatements = undefined;
         }
@@ -219,6 +219,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
           async: Modifier.Async,
           parameters: [this.validationEventListener],
+          description: `Validates that this object meets the validation criteria.`,
+          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
         }));
         this.validateMethod.add(validationStatements);
       }

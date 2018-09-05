@@ -38,7 +38,7 @@ export type Override = Modifier.None | Modifier.Override;
 export type Extern = Modifier.None | Modifier.Extern;
 export type Virtual = Modifier.None | Modifier.Virtual;
 
-const order = [Access.Public, Access.Internal, Access.Protected, Access.ProtectedInternal, Access.PrivateProtected, Access.Private];
+const order = [Access.Public, Access.Internal, Access.Protected, Access.ProtectedInternal, Access.PrivateProtected, Access.Private, Access.Default];
 
 export function highestAccess(first: Access, second: Access): Access {
   const f = order.indexOf(first);

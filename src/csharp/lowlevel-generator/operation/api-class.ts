@@ -15,6 +15,7 @@ export class ApiClass extends Class {
   constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<ApiClass>) {
     super(namespace, state.model.details.csharp.name);
     this.apply(objectInitializer);
+
     // add basics
     // this.sender = this.add(new Property("Sender", ClientRuntime.ISendAsync));
 

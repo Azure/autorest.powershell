@@ -18,6 +18,7 @@ export class Operator extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.name}(${parameterDeclaration})
 `.slim();
   }

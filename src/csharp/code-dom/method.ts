@@ -6,7 +6,7 @@
 import { CommaChar, docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
-import { summary } from '#csharp/code-dom/doc-comments';
+import { summary, xmlize } from '#csharp/code-dom/doc-comments';
 import { dotnet } from '#csharp/code-dom/dotnet';
 import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Parameter } from './parameter';
@@ -26,6 +26,7 @@ export class Method extends Statements {
   public async: Async = Modifier.None;
   public isPartial = false;
   public description: string = '';
+  public returnsDescription: string = '';
   public body?: StatementPossibilities;
 
   constructor(public name: string, protected returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<Method>) {
@@ -38,7 +39,9 @@ export class Method extends Statements {
     if (!this.description.trim()) {
       this.description = `FIXME: Method ${name} is MISSING DESCRIPTION`;
     }
-
+    if (!this.returnsDescription.trim()) {
+      this.returnsDescription = `FIXME: Method ${name} <returns> is MISSING DESCRIPTION`;
+    }
   }
 
   public addParameter(parameter: Parameter): Parameter {
@@ -54,11 +57,20 @@ export class Method extends Statements {
     return docComment(this.parameters.joinWith(p => p.comment, EOL));
   }
 
+  protected get returnsDocumentation(): string {
+    if (this.returnType.declaration !== 'void') {
+      return docComment(xmlize('returns', this.returnsDescription));
+    }
+    return '';
+  }
+
+
   public get declaration(): string {
     const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration})
 `.slim();
   }
@@ -68,6 +80,7 @@ ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.o
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.returnType.declaration} ${this.name}(${parameterDeclaration});
 `.slim();
   }
@@ -101,6 +114,7 @@ export class PartialMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration})
 `.slim();
   }
@@ -121,6 +135,7 @@ export class LambdaMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration}) => ${valueOf(this.expression)}
 `.slim();
   }

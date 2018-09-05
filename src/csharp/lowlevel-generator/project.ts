@@ -47,12 +47,12 @@ export class Project extends codeDomProject {
     this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas')));
 
     // create API class
-    new ApiClass(this.serviceNamespace, this.state);
+    new ApiClass(this.serviceNamespace, this.state, { description: `Low-level API implementation for the ${this.state.model.info.title} service. \n${this.state.model.info.description || ''}` });
 
-    if (this.jsonSerialization) {
-      // create serialization support
-      new JsonSerializerClass(this.supportNamespace, this.state);
-    }
+    // if (this.jsonSerialization) {
+    // create serialization support
+    // new JsonSerializerClass(this.supportNamespace, this.state);
+    //}
     this.modelsNamespace.addUsing(new Import(this.supportNamespace.fullName));
 
     // abort now if we have any errors.

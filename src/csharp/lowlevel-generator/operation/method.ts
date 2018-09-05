@@ -42,6 +42,7 @@ export class OperationMethod extends Method {
     super(operation.details.csharp.name, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
+    this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
 
     if (this.state.project.storagePipeline) {
       // add resourceUri parameter
@@ -81,7 +82,7 @@ export class OperationMethod extends Method {
         const headerType = response.headerSchema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
 
         // if (responseType || headerType) {
-        const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state);
+        const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state, { description: response.details.csharp.description });
         this.addParameter(newCallbackParameter);
         this.callbacks.push(newCallbackParameter);
         // } else {
@@ -96,7 +97,7 @@ export class OperationMethod extends Method {
       this.contextParameter = this.addParameter(new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive events.` }));
 
       // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync));
+      this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
     }
     // todo: parameterized uris
     let baseUrl = `${this.operation.servers[0].url}`;
@@ -184,9 +185,6 @@ export class OperationMethod extends Method {
       }
 
       yield `// make the call `;
-
-      // yield `await this.${$this.name}_Call(request,${cb.joinWith(each => each.use, ',')},${$this.listenerParameter.use},${$this.senderParameter.use});`;
-
     });
   }
 
@@ -253,6 +251,9 @@ export class CallMethod extends Method {
   public returnNull: boolean = false;
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Call`, System.Threading.Tasks.Task());
+    this.description = `Actual wire call for <see cref="${opMethod.operation.details.csharp.name}" /> method.`;
+    this.returnsDescription = opMethod.returnsDescription;
+
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;
@@ -263,7 +264,7 @@ export class CallMethod extends Method {
       this.addParameter(opMethod.senderParameter);
       this.addParameter(opMethod.contextParameter);
     }
-    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage));
+    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: `the prepared HttpRequestMessage to send.` }));
     opMethod.callbacks.map(each => this.addParameter(each));
     if (!this.state.project.storagePipeline) {
       this.addParameter(opMethod.contextParameter);
@@ -637,6 +638,8 @@ export class ValidationMethod extends Method {
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Validate`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
+    this.description = `Validation method for <see cref="${opMethod.operation.details.csharp.name}" /> method. Call this like the actual call, but you will get validation events back.`;
+    this.returnsDescription = opMethod.returnsDescription;
     this.access = Access.Internal;
     this.async = Modifier.Async;
 
