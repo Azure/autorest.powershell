@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
-    public class XList<T> : JsonArray, IEnumerable<JsonNode>
+    public sealed class XList<T> : JsonArray, IEnumerable<JsonNode>
     {
         private readonly IList<T> values;
         private readonly JsonType elementType;
@@ -12,17 +12,7 @@ namespace Carbon.Json
 
         public XList(IList<T> values)
         {
-            #region Preconditions
-
-            if (values == null)
-                throw new ArgumentNullException(nameof(values));
-
-            if (values.Count == 0)
-                throw new ArgumentException("Must not be empty", nameof(values));
-
-            #endregion
-
-            this.values = values;
+            this.values = values ?? throw new ArgumentNullException(nameof(values));
             this.elementCode = System.Type.GetTypeCode(typeof(T));
             this.elementType = XHelper.GetElementType(this.elementCode);
         }
@@ -43,8 +33,7 @@ namespace Carbon.Json
             values.Add(value);
         }
 
-        public bool Contains(T value)
-            => values.Contains(value);
+        public bool Contains(T value) => values.Contains(value);
 
         #endregion
 

@@ -17,12 +17,13 @@ namespace Carbon.Json.Converters
         public object FromJson(JsonNode node) => 
             parseMethod.Invoke(null, new[] { node.ToString() });
 
-        public JsonNode ToJson(object value) =>
-            new JsonString(value.ToString());        
+        public JsonNode ToJson(object value) => new JsonString(value.ToString());        
     }
 
     internal static class StringLikeHelper
     {
+        private static readonly Type[] parseMethodParamaterTypes = new[] { typeof(string) };
+
         public static bool IsStringLike(Type type)
         {
             return GetParseMethod(type) != null;
@@ -30,7 +31,7 @@ namespace Carbon.Json.Converters
 
         public static MethodInfo GetParseMethod(Type type)
         {
-            var method = type.GetMethod("Parse", new[] { typeof(string) });
+            MethodInfo method = type.GetMethod("Parse", parseMethodParamaterTypes);
 
             if (method?.IsPublic != true) return null;
 

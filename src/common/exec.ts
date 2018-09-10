@@ -1,5 +1,10 @@
-import { exists, isDirectory, isFile, mkdir, readdir, readFile, release, rmdir } from '@microsoft.azure/async-io';
-import { ChildProcess, spawn } from 'child_process'
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { isDirectory, isFile, readdir } from '@microsoft.azure/async-io';
+import { spawn } from 'child_process';
 import * as path from 'path';
 
 function cmdlineToArray(text: string, result: Array<string> = [], matcher = /[^\s"]+|"([^"]*)"/gi, count = 0): Array<string> {
@@ -22,7 +27,7 @@ function getPathVariableName() {
   return 'PATH';
 }
 async function realPathWithExtension(command: string): Promise<string | undefined> {
-  const pathExt = (process.env['pathext'] || '.EXE').split(';');
+  const pathExt = (process.env.pathext || '.EXE').split(';');
   for (const each of pathExt) {
     const filename = `${command}${each}`;
     if (await isFile(filename)) {

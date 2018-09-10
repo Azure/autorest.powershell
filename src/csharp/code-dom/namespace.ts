@@ -1,19 +1,24 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Initializer } from '#common/initializer';
-import { EOL, comment, dotCombine, indent, toMap } from '#common/text-manipulation';
+import { comment, dotCombine, EOL, indent, toMap } from '#common/text-manipulation';
 import { Class } from './class';
 import { Delegate } from './delegate';
-import { Import } from './import';
+import { ImportDirective } from './import';
 import { Interface } from './interface';
 import { Project } from './project';
 
 export class Namespace extends Initializer {
-  private usings = new Array<Import>();
+  private usings = new Array<ImportDirective>();
   private classes = new Array<Class>();
   private interfaces = new Array<Interface>();
   private delegates = new Array<Delegate>();
   private namespaces = new Array<Namespace>();
   private folder: string;
-  public header: string = "";
+  public header: string = '';
 
   constructor(public name: string, protected parent?: Project | Namespace, objectInitializer?: Partial<Namespace>) {
     super();
@@ -25,7 +30,7 @@ export class Namespace extends Initializer {
     return this.folder;
   }
 
-  public addUsing(using: Import): Import {
+  private addImport(using: ImportDirective): ImportDirective {
     if (this.usings.indexOf(using) === -1) {
       this.usings.push(using);
     }
@@ -33,6 +38,10 @@ export class Namespace extends Initializer {
   }
   public addClass(c: Class): Class {
     if (this.classes.indexOf(c) === -1) {
+      if (this.classes.find(each => each.name === c.name && each.fileName === c.fileName)) {
+        console.error(`Class ${c.name} already exists in namespace${this.name}`);
+        throw new Error(`Class ${c.name} already exists in namespace${this.name}`);
+      }
       this.classes.push(c);
     }
     return c;
@@ -56,32 +65,29 @@ export class Namespace extends Initializer {
     return n;
   }
 
-
-  public add<T extends object>(item: T & (Class | Namespace | Interface | Import)): T {
+  public add<T extends object>(item: T & (Class | Namespace | Interface | ImportDirective)): T {
     if (item instanceof Class) {
-      this.classes.push(item);
+      this.addClass(item);
       return item;
     }
     if (item instanceof Namespace) {
-      this.namespaces.push(item);
+      this.addNamespace(item);
       return item;
     }
     if (item instanceof Interface) {
-      this.interfaces.push(item);
+      this.addInterface(item);
       return item;
     }
-    if (item instanceof Import) {
-      this.addUsing(item);
+    if (item instanceof ImportDirective) {
+      this.addImport(item);
       return item;
     }
     throw Error(`FATAL - UNABLE TO ADD UNKNOWN TYPE for '${JSON.stringify(item)}'`);
   }
 
-
-  public findClassByName(name: string): Class[] {
+  public findClassByName(name: string): Array<Class> {
     return this.classes.filter(each => each.name === name);
   }
-
 
   public get fullName(): string {
     if (this.parent instanceof Namespace) {
@@ -109,7 +115,7 @@ export class Namespace extends Initializer {
       const interfaceName = `I${key}`;
       const interfacesWithSameName = interfaces.get(interfaceName);
       if (interfacesWithSameName) {
-        contents.push(...interfacesWithSameName.map(each => each.definition))
+        contents.push(...interfacesWithSameName.map(each => each.definition));
         // remove from the list.
         interfaces.delete(interfaceName);
       }
@@ -151,4 +157,3 @@ ${body}
 `.trim().replace(/ *$/gm, '').replace(/\n\n/g, '\n').replace(/^\s*EOL\s*$/igm, '');
   }
 }
-

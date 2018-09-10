@@ -1,18 +1,21 @@
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { items } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { items } from '#common/linq';
+import { KnownMediaType } from '#common/media-types';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { Interface } from '#csharp/code-dom/interface';
-import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
-import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
 import { ModelInterfaceProperty } from './interface-property';
-import { KnownMediaType } from '#common/media-types';
-import { Variable } from '#csharp/code-dom/variable';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {
@@ -28,6 +31,13 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromString(mediaType, content, defaultValue);
   }
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
+  }
+
+
   /** emits an expression serialize this to a HttpContent */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     return this.implementation.serializeToContent(mediaType, value);
@@ -48,11 +58,11 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     return this.implementation.isRequired;
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return this.implementation.validatePresence(property);
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(eventListener, property);
   }
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return this.implementation.validateValue(property);
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(eventListener, property);
   }
 
 
@@ -65,6 +75,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     this.apply(objectInitializer);
     const implData = (schema.details.csharp = schema.details.csharp || {});
     implData.interfaceImplementation = this;
+    this.description = `${schema.details.default.description}`;
 
     for (const { key: propertyName, value: property } of items(schema.properties)) {
       this.add(new ModelInterfaceProperty(this, property, state.path('properties', propertyName)));

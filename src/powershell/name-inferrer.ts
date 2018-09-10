@@ -1,16 +1,11 @@
-import { Model } from '#common/code-model/code-model';
-import { CommandOperation } from '#common/code-model/command-operation';
-import { ImplementationLocation, IParameter } from '#common/code-model/components';
-import { isHttpOperation } from '#common/code-model/http-operation';
-import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/dictionary';
-import { ModelState } from '#common/model-state';
-import { processCodeModel } from '#common/process-code-model';
-import { pascalCase } from '#common/text-manipulation';
-import { deserialize, serialize } from '#common/yaml';
-import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
-import { ArtifactMessage, Channel, Host, Message } from '@microsoft.azure/autorest-extension-base';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
+import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
+import { pascalCase } from '#common/text-manipulation';
+import { Channel, Message } from '@microsoft.azure/autorest-extension-base';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -27,7 +22,7 @@ function getSingularizedValue(name: string): string {
   return pascalCase([singularize(name)]);
 }
 
-const cmdVerbMap_GetVerb: { [verb: string]: string | Array<string> } = {
+const cmdVerbMapGetVerb: { [verb: string]: string | Array<string> } = {
   'Add': 'Common',
   'Clear': 'Common',
   'Close': 'Common',
@@ -128,7 +123,7 @@ const cmdVerbMap_GetVerb: { [verb: string]: string | Array<string> } = {
   'Use': 'Other',
 };
 
-const cmdVerbMap_Custom: { [verb: string]: string | Array<string> } = {
+const cmdVerbMapCustom: { [verb: string]: string | Array<string> } = {
   'Access': 'Get',
   'List': 'Get',
   'Cat': 'Get',
@@ -233,7 +228,7 @@ const cmdVerbMap_Custom: { [verb: string]: string | Array<string> } = {
   'Authorize': 'Grant'
 };
 
-const cmdVerbMap = { ...cmdVerbMap_GetVerb, ...cmdVerbMap_Custom };
+const cmdVerbMap = { ...cmdVerbMapGetVerb, ...cmdVerbMapCustom };
 
 function mapVerb(verb: string): Array<string> {
   verb = verb.toLowerCase();
@@ -248,7 +243,7 @@ function existsVerb(verb: string) {
   return mapVerb(verb).length > 0;
 }
 
-export function getCommandName(operationId: string, onMessage: (message: Message) => void): Array<{ noun?: string, verb: string, variant: string }> {
+export function getCommandName(operationId: string, onMessage: (message: Message) => void): Array<{ noun?: string; verb: string; variant: string }> {
   const opIdValues = operationId.split('_', 2);
 
   // OperationId can be specified without '_' (Underscore), Verb will retrieved by the below logic for non-approved verbs.
@@ -258,7 +253,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
   const variant = operationId;
 
   if (!Object
-    .keys(cmdVerbMap_GetVerb)
+    .keys(cmdVerbMapGetVerb)
     .map(v => v.toLowerCase())
     .includes(cmdVerb.toLowerCase())) {
 
@@ -266,7 +261,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
     onMessage({ Channel: Channel.Information, Text: `Operation '${operationId}': Verb '${unapprovedVerb}' not an approved verb.` });
 
     if (Object
-      .keys(cmdVerbMap_Custom)
+      .keys(cmdVerbMapCustom)
       .map(v => v.toLowerCase())
       .includes(cmdVerb.toLowerCase())) {
       // This condition happens when there aren't any suffixes
@@ -310,7 +305,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
       cmdVerb = longestVerbMatch ? longestVerbMatch : firstWord;
 
       if (Object
-        .keys(cmdVerbMap_Custom)
+        .keys(cmdVerbMapCustom)
         .map(v => v.toLowerCase())
         .includes(cmdVerb.toLowerCase())) {
         cmdVerbs = mapVerb(cmdVerb);

@@ -1,5 +1,10 @@
-import { Dictionary, values } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Text, TextPossibilities } from '#common/file-generator';
+import { Dictionary, values } from '#common/linq';
 
 let indentation = '    ';
 
@@ -11,6 +16,7 @@ export const CommaChar = ', ';
 declare global {
   interface Array<T> {
     joinWith(selector: (t: T) => string, separator?: string): string;
+    last: T;
   }
 
   interface String {
@@ -24,6 +30,14 @@ declare global {
 Array.prototype.joinWith = function <T>(selector: (t: T) => string, separator?: string): string {
   return (<Array<T>>this).map(selector).filter(v => v ? true : false).join(separator || CommaChar);
 };
+
+if (Array.prototype.last === undefined) {
+  Object.defineProperty(Array.prototype, 'last', {
+    get() {
+      return this[this.length - 1];
+    }
+  });
+}
 
 String.prototype.capitalize = function (): string {
   const result = <string>this;
@@ -129,7 +143,7 @@ export function ToMap<T>(dictionary: Dictionary<T>): Map<string, T> {
   return result;
 }
 
-export function selectMany<T>(multiArray: Array<T>[]): Array<T> {
+export function selectMany<T>(multiArray: Array<Array<T>>): Array<T> {
   const result = new Array<T>();
   multiArray.map(v => result.push(...v));
   return result;
@@ -233,7 +247,6 @@ export function nameof(text: string): string {
   }
   return `nameof(${text})`;
 }
-
 
 export function setRegion(source: string, region: string, content: TextPossibilities, prepend = true) {
   const ct = new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '');

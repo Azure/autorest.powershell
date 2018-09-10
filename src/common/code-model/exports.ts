@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as codemodel from '#common/code-model/code-model';
+import * as command from '#common/code-model/command-operation';
 import * as components from '#common/code-model/components';
 import * as http from '#common/code-model/http-operation';
 import * as schema from '#common/code-model/schema';
-import * as command from '#common/code-model/command-operation';
 
-import { Dictionary } from '#common/dictionary';
+import { Dictionary } from '#common/linq';
 
 export interface SchemaT<
   TLanguageDetailsForSchema extends components.LanguageDetails<schema.SchemaDetails>,

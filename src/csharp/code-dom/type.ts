@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Initializer } from '#common/initializer';
 import { EOL } from '#common/text-manipulation';
 import { Access } from '#csharp/code-dom/access-modifier';
@@ -31,7 +36,9 @@ export class Type extends Initializer implements TypeDeclaration {
   public get fileName(): string {
     return this.name;
   }
-
+  toString(): string {
+    return this.fullName;
+  }
   public get allProperties(): Array<Property> {
     const result = new Array<Property>(...this.properties);
     for (const parent of this.interfaces) {

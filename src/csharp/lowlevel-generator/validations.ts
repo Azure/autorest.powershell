@@ -1,8 +1,11 @@
-import { JsonType} from '#common/code-model/schema';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { JsonType, Schema } from '#common/code-model/schema';
 import { State } from './generator';
 import * as message from './messages';
-import {Schema} from '#common/code-model/schema';
-
 
 export function objectWithFormat(schema: Schema, state: State): boolean {
   if (schema.type === JsonType.Object && schema.format) {
@@ -22,7 +25,7 @@ export function schemaHasEnum(schema: Schema, state: State): boolean {
 
 export function hasXmsEnum(schema: Schema, state: State): boolean {
   if (schema.enum.length > 0) {
-    if (schema.extensions["x-ms-enum"]) {
+    if (schema.extensions['x-ms-enum']) {
       state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' does not support 'x-ms-enum' generation `, message.SchemaDoeNotSupportXMSEnum);
       return true;
     }

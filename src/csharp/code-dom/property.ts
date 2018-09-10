@@ -1,15 +1,20 @@
-import { Initializer } from '#common/initializer';
-import { comment, docComment, docCommentPrefix, EOL, indent } from '#common/text-manipulation';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { intersect } from '#common/intersect';
+import { Dictionary } from '#common/linq';
+import { docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Extern, highestAccess, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { summary } from '#csharp/code-dom/doc-comments';
-import { Expression, LiteralExpression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
 import { ExpressionStatement, Instance, Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
-import { Dictionary } from '#common/dictionary';
 
-export class Property extends Initializer implements Variable, Instance {
+export class Property extends Variable implements Instance {
   public 'new': New = Modifier.None;
   public getAccess = Access.Public;
   public setAccess = Access.Public;
@@ -36,12 +41,16 @@ export class Property extends Initializer implements Variable, Instance {
   }
 
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, EOL)}${EOL}` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
   }
 
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Property>) {
     super();
     this.apply(objectInitializer);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Property ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   protected get getterDeclaration(): string {
@@ -71,10 +80,6 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     return `${this.name}`;
   }
 
-  public toString(): string {
-    return this.value;
-  }
-
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
     return `${this.name} = ${valueOf(expression)};`;
   }
@@ -88,11 +93,11 @@ ${this.attributeDeclaration}${this.new}${this.visibility} ${this.static} ${this.
     throw new Error(`Property can not be a declaration statement`);
   }
   public invokeMethod(methodName: string, ...parameters: Array<Expression>): ExpressionStatement {
-    const e = `${this.value}.${methodName}(${parameters.joinWith(each => valueOf(each))})`;
-    return {
-      implementation: `${e};`,
-      value: e,
-    };
+    const e = `${this.value}.${methodName}(${parameters.joinWith(valueOf)})`;
+    return intersect(
+      toExpression(e), {
+        implementation: `${e};`
+      });
   }
 
 }
@@ -197,9 +202,9 @@ private ${this.type.declaration} ${this.backingName}${this.initializer ? `= ${va
 EOL
 ${super.declaration}
 `.trim();
-    //${docComment(summary(this.description))}
-    //${ this.attributeDeclaration } ${ this.new } ${ this.visibility } ${ this.static } ${ this.virtual } ${ this.sealed } ${ this.override } ${ this.abstract } ${ this.extern } ${ this.type.declaration } ${ this.name } { ${ this.getterDeclaration } { return this.${ this.backingName }; } ${ this.setterDeclaration } { this.${ this.backingName } = value; } }
-    //EOL
+    // ${docComment(summary(this.description))}
+    // ${ this.attributeDeclaration } ${ this.new } ${ this.visibility } ${ this.static } ${ this.virtual } ${ this.sealed } ${ this.override } ${ this.abstract } ${ this.extern } ${ this.type.declaration } ${ this.name } { ${ this.getterDeclaration } { return this.${ this.backingName }; } ${ this.setterDeclaration } { this.${ this.backingName } = value; } }
+    // EOL
   }
 
   public get value(): string {

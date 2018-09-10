@@ -10,6 +10,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Threading;
     using System.Threading.Tasks;
     using GetEventData = System.Func<EventData>;
+    using static Microsoft.Rest.ClientRuntime.Extensions;
 
     public interface IValidates
     {
@@ -30,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime
         System.Action Cancel { get; }
     }
 
-    public static class IEventListenerExtensions
+    public static partial class Extensions
     {
         public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
         public static Task Signal(this IEventListener instance, string id, CancellationToken token) => instance.Signal(id, token, () => new EventData { Id = id, Cancel = instance.Cancel });
@@ -173,7 +174,7 @@ namespace Microsoft.Rest.ClientRuntime
         {
         }
 
-        public Action Cancel => base.Cancel;
+        public new Action Cancel => base.Cancel;
         private Event tracer;
 
         public EventListener(params (string name, Event callback)[] initializer)
@@ -208,11 +209,11 @@ namespace Microsoft.Rest.ClientRuntime
                 {
                     if (calls.ContainsKey(name))
                     {
-                        calls[name ?? ""] += callback;
+                        calls[name ?? System.String.Empty] += callback;
                     }
                     else
                     {
-                        calls[name ?? ""] = callback;
+                        calls[name ?? System.String.Empty] = callback;
                     }
                 }
             }
@@ -221,17 +222,19 @@ namespace Microsoft.Rest.ClientRuntime
 
         public async Task Signal(string id, CancellationToken token, GetEventData createMessage)
         {
-            if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
-            {
-                var message = createMessage();
-                message.Id = id;
-
-                await listener?.Invoke(message);
-                await tracer?.Invoke(message);
-
-                if (token.IsCancellationRequested)
+            using(NoSynchronizationContext) {
+                if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
                 {
-                    throw new OperationCanceledException($"Canceled by event {id} ", this.Token);
+                    var message = createMessage();
+                    message.Id = id;
+
+                    await listener?.Invoke(message);
+                    await tracer?.Invoke(message);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException($"Canceled by event {id} ", this.Token);
+                    }
                 }
             }
         }

@@ -1,12 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Extensions } from '#common/code-model/extensions';
 import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/dictionary';
 import { DeepPartial } from '#common/initializer';
+import { Dictionary } from '#common/linq';
 
 export interface IOperationBase {
 
 }
-
 
 export interface IParameter extends Extensions {
   name: string;
@@ -30,7 +34,7 @@ export class IParameter extends Extensions {
         description: this.description,
         name,
       }
-    }
+    };
     this.allowEmptyValue = false;
     this.apply(initializer);
   }
@@ -72,7 +76,6 @@ export interface ParameterDetails extends ImplementationDetails {
 
 }
 
-
 export interface ResponseDetails extends ImplementationDetails {
   isErrorResponse: boolean;
 }
@@ -95,8 +98,8 @@ export interface ImplementationDetails extends Dictionary<any> {
 }
 
 export enum ImplementationLocation {
-  Method = "Method",
-  Client = "Client",
+  Method = 'Method',
+  Client = 'Client',
 }
 
 export class Example extends Extensions implements Example {
@@ -161,7 +164,6 @@ export class Tag extends Extensions implements Tag {
  * @description common ways of serializing simple parameters
  * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#style-values
  */
-
 
 export interface SecurityRequirement extends Dictionary<string> {
 }

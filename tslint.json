@@ -6,6 +6,9 @@
   ],
   "jsRules": {},
   "rules": {
+    "switch-final-break": false,
+    "no-empty-interface": false,
+    "no-object-literal-type-assertion": false,
     "no-implicit-dependencies": false,
     "no-submodule-imports": false,
     "missing-jsdoc": false,

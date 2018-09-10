@@ -14,18 +14,13 @@ namespace Carbon.Json
             items = new Dictionary<string, JsonNode>();
         }
 
-        public JsonObject(IEnumerable<KeyValuePair<string, JsonNode>> fields)
+        public JsonObject(IEnumerable<KeyValuePair<string, JsonNode>> properties)
         {
-            #region Preconditions
-
-            if (fields == null)
-                throw new ArgumentNullException(nameof(fields));
-
-            #endregion
+            if (properties == null) throw new ArgumentNullException(nameof(properties));
 
             items = new Dictionary<string, JsonNode>();
 
-            foreach (var field in fields)
+            foreach (var field in properties)
             {
                 items.Add(field.Key, field.Value);
             }
@@ -117,20 +112,16 @@ namespace Carbon.Json
 
         #region IDictionary<string,JsonNode> Members
 
-        public bool ContainsKey(string key) =>
-            items.ContainsKey(key);
+        public bool ContainsKey(string key) => items.ContainsKey(key);
 
-        public ICollection<string> Keys =>
-            items.Keys;
+        public ICollection<string> Keys => items.Keys;
 
-        public bool Remove(string key) =>
-            items.Remove(key);
+        public bool Remove(string key) => items.Remove(key);
 
         public bool TryGetValue(string key, out JsonNode value) =>
             items.TryGetValue(key, out value);
 
-        public ICollection<JsonNode> Values =>
-            items.Values;
+        public ICollection<JsonNode> Values => items.Values;
 
         public override JsonNode this[string key]
         {

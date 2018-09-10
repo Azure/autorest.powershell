@@ -1,24 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
-import { isHttpOperation } from '#common/code-model/http-operation';
-import { JsonType, Schema } from '#common/code-model/schema';
-import { items, length, values } from '#common/dictionary';
+import { JsonType } from '#common/code-model/schema';
+import { items, length, values } from '#common/linq';
 import { ModelState } from '#common/model-state';
 import { processCodeModel } from '#common/process-code-model';
 import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import { System } from '#csharp/code-dom/dotnet';
+
 import { SchemaDetails } from '#csharp/lowlevel-generator/code-model';
-import { ArrayOf } from '#csharp/schema/array';
-import { Boolean } from '#csharp/schema/boolean';
-import { ByteArray } from '#csharp/schema/byte-array';
-import { Char } from '#csharp/schema/char';
-import { Date } from '#csharp/schema/date';
-import { DateTime, DateTime1123, UnixTime } from '#csharp/schema/date-time';
-import { Duration } from '#csharp/schema/duration';
-import { Numeric } from '#csharp/schema/integer';
 import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
-import { String } from '#csharp/schema/string';
-import { Uuid } from '#csharp/schema/Uuid';
-import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export async function process(service: Host) {
@@ -66,7 +60,8 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
           values: schema.details.default.enum.values.map(each => {
             return {
               ...each,
-              name: pascalCase(fixLeadingNumber(deconstruct(each.name)))
+              name: pascalCase(fixLeadingNumber(deconstruct(each.name))),
+              description: each.description
             };
           })
         }
@@ -89,7 +84,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
 
       let pname = pascalCase(fixLeadingNumber(deconstruct(propertyDetails.name)));
       if (pname === className) {
-        pname = pname + "Property";
+        pname = `${pname}Property`;
       }
 
       if (pname === 'default') {
@@ -143,17 +138,25 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
     for (const { key: responseCode, value: responses } of items(operation.responses_new)) {
       // per responseCode
       for (const response of values(responses)) {
-        const scTd = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
-        const genericParameters = scTd ? `<${scTd.declaration}>` : ``;
+        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
+        const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
 
-        const code = (dotnet.System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
-
+        const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
+        let rawValue = code.replace(/\./, '');
+        if (rawValue === 'default') {
+          rawValue = `any response code not handled elsewhere`
+        }
         response.details.csharp = {
           ...response.details.default,
-          type: `Response${genericParameters}`,
+          responseType: responseTypeDefinition ? responseTypeDefinition.declaration : '',
+          headerType: headerTypeDefinition ? headerTypeDefinition.declaration : '',
           name: (length(responses) <= 1) ?
             camelCase(fixLeadingNumber(deconstruct(`on ${code}`))) : // the common type (or the only one.)
-            camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.mimeTypes[0]}`)))
+            camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.mimeTypes[0]}`))),
+          description: (length(responses) <= 1) ?
+            `a delegate that is called when the remote service returns ${response.responseCode} (${rawValue}).` :
+            `a delegate that is called when the remote service returns ${response.responseCode} (${rawValue}) with a Content-Type matching ${response.mimeTypes.join(',')}.`
+
         };
       }
     }

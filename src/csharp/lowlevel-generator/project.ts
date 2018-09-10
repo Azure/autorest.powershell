@@ -1,16 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ImportDirective } from '#csharp/code-dom/import';
 import { Project as codeDomProject } from '#csharp/code-dom/project';
-import { Model } from '#common/code-model/code-model';
-import { ApiClass } from './operation/api-class';
-import { Namespace } from '#csharp/code-dom/namespace';
-import * as message from './messages';
+import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
 import { State } from './generator';
-import { ModelClass } from './model/model-class';
 import { ModelsNamespace } from './model/namespace';
+import { ApiClass } from './operation/api-class';
 import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './support/namespace';
-import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
-import { Import } from '#csharp/code-dom/import';
-import { JsonType } from '#common/code-model/schema';
 
 export class Project extends codeDomProject {
   public storagePipeline: boolean = false;
@@ -38,7 +38,6 @@ export class Project extends codeDomProject {
       this.defaultPipeline = false;
     }
 
-
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
 
     // add support namespace
@@ -48,13 +47,13 @@ export class Project extends codeDomProject {
     this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas')));
 
     // create API class
-    new ApiClass(this.serviceNamespace, this.state);
+    new ApiClass(this.serviceNamespace, this.state, { description: `Low-level API implementation for the ${this.state.model.info.title} service. \n${this.state.model.info.description || ''}` });
 
-    if (this.jsonSerialization) {
-      // create serialization support
-      new JsonSerializerClass(this.supportNamespace, this.state)
-    }
-    this.modelsNamespace.addUsing(new Import(this.supportNamespace.fullName));
+    // if (this.jsonSerialization) {
+    // create serialization support
+    // new JsonSerializerClass(this.supportNamespace, this.state);
+    //}
+    this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
 
     // abort now if we have any errors.
     this.state.checkpoint();

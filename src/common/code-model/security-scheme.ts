@@ -1,16 +1,20 @@
-import { Dictionary } from '#common/dictionary';
-import { ParameterLocation } from '#common/code-model/http-operation';
-import { Extensions } from '#common/code-model/extensions';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
+import { Extensions } from '#common/code-model/extensions';
+import { ParameterLocation } from '#common/code-model/http-operation';
+import { Dictionary } from '#common/linq';
 
 export enum Scheme {
-  Bearer = "bearer"
+  Bearer = 'bearer'
 }
 export enum SecurityType {
-  ApiKey = "apiKey",
-  Http = "http",
-  OAuth2 = "oauth2",
-  OpenIDConnect = "openIdConnect"
+  ApiKey = 'apiKey',
+  Http = 'http',
+  OAuth2 = 'oauth2',
+  OpenIDConnect = 'openIdConnect'
 }
 
 export class APIKeySecurityScheme extends Extensions implements APIKeySecurityScheme {
@@ -75,7 +79,6 @@ export class OAuthFlows extends Extensions implements OAuthFlows {
   }
 }
 
-
 export interface OpenIdConnectSecurityScheme extends Extensions {
 
   type: SecurityType.OpenIDConnect;
@@ -92,7 +95,6 @@ export class OpenIdConnectSecurityScheme extends Extensions implements OpenIdCon
     this.apply(initializer);
   }
 }
-
 
 export interface PasswordOAuthFlow extends Extensions {
 
@@ -125,7 +127,6 @@ export interface APIKeySecurityScheme extends Extensions {
   in: ParameterLocation;
   description?: string;
 }
-
 
 export class AuthorizationCodeOAuthFlow extends Extensions implements AuthorizationCodeOAuthFlow {
   extensions = new Dictionary<any>();
@@ -167,7 +168,7 @@ export interface ClientCredentialsFlow extends Extensions {
 export interface ImplicitOAuthFlow extends Extensions {
   authorizationUrl: string; // uriref
   refreshUrl?: string; // uriref
-  scopes: Dictionary<string>
+  scopes: Dictionary<string>;
 }
 
 export interface NonBearerHTTPSecurityScheme extends Extensions {

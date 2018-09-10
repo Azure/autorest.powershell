@@ -1,13 +1,20 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
+import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
+import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Ternery } from '#csharp/code-dom/ternery';
 import { Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { System } from '#csharp/code-dom/mscorlib';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -66,10 +73,20 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToJson(null).ToString() : "{}", System.Text.Encoding.UTF8);`);
+        return System.Net.Http.StringContent.new(
+          Ternery(
+            IsNotNull(value),
+            `${value}.ToJson(null).ToString()`,
+            new StringExpression('{}')),
+          System.Text.Encoding.UTF8);
       }
       case KnownMediaType.Xml: {
-        return toExpression(`new System.Net.Http.StringContent( null != ${value} ? ${value}.ToXml(null).ToString() : "", System.Text.Encoding.UTF8);`);
+        return System.Net.Http.StringContent.new(
+          Ternery(
+            IsNotNull(value),
+            `${value}.ToXml(null).ToString()`,
+            System.String.Empty),
+          System.Text.Encoding.UTF8);
       }
 
     }
@@ -80,13 +97,26 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return this.deserializeFromNode(mediaType, `Carbon.Json.JsonNode.Parse(${content})`, defaultValue);
+        return this.deserializeFromNode(mediaType, ClientRuntime.JsonNode.Parse(content), defaultValue);
       }
       case KnownMediaType.Xml: {
         return this.deserializeFromNode(mediaType, `${System.Xml.Linq.XElement}.Parse(${content})`, defaultValue);
       }
     }
     return undefined;
+  }
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    switch (mediaType) {
+      case KnownMediaType.Json: {
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
+      }
+      case KnownMediaType.Xml: {
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
+      }
+    }
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
   /** emits the code required to serialize this into a container */
@@ -108,11 +138,11 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   constructor(public schema: Schema) {
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return `await listener.AssertNotNull(${nameof(property.value)}, ${property}); `.trim();
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return `await ${eventListener}.AssertNotNull(${nameof(property.value)}, ${property}); `.trim();
   }
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return `await listener.AssertObjectIsValid(${nameof(property.value)}, ${property}); `;
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return `await ${eventListener}.AssertObjectIsValid(${nameof(property.value)}, ${property}); `;
   }
 
   get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.interfaceName}`; }

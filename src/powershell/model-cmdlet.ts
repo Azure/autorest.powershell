@@ -1,20 +1,24 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { JsonType } from '#common/code-model/schema';
-import { values, items, length } from '#common/dictionary';
-import { indent, camelCase, pascalCase, escapeString } from '#common/text-manipulation';
+import { items, length, values } from '#common/linq';
+import { escapeString, pascalCase } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { LiteralExpression, StringExpression, valueOf } from '#csharp/code-dom/expression';
-import { Field, InitializedField } from '#csharp/code-dom/field';
+import { InitializedField } from '#csharp/code-dom/field';
 import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
-import { BackedProperty, ImplementedProperty, Property } from '#csharp/code-dom/property';
-import { Return } from "#csharp/code-dom/statements/return";
-import { Statements, OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable, MemberVariable } from '#csharp/code-dom/variable';
+import { ImplementedProperty } from '#csharp/code-dom/property';
+import { Statements } from '#csharp/code-dom/statements/statement';
+import { MemberVariable, Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { CmdletClass, PSCmdlet } from '#powershell/cmdlet-class';
-import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, SwitchParameter, verbEnum } from '#powershell/powershell-declarations';
+
+import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from '#powershell/powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {
@@ -26,32 +30,29 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `New${schema.details.csharp.name}Object`;
+    const name = `${state.project.nounPrefix}New${schema.details.csharp.name}Object`;
 
     super(namespace, name, PSCmdlet);
     this.state = state;
-
+    this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`
     this.apply(objectInitializer);
     addClassAttributes(this, schema, name);
 
     const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, this.state);
-    const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private }));
+    const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
 
-    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override })).add(`WriteObject(${prop});`);
-    // this.processRecord.add(`WriteObject(new ${schema.details.csharp.namespace}.${schema.details.csharp.name} {`);
+    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(`WriteObject(${prop});`);
 
     // adds the parameters to the cmdlet and adds to the method to set the value from the parameter.
     addPowershellParameters(this, schema, prop);
-
-    // this.processRecord.add(`});`);
   }
 
 }
 
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${schema.details.csharp.name || ''}Object`)] }));
-  $class.add(new Attribute(OutputTypeAttribute, { parameters: [{ value: `typeof(${td.declaration})` }] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`)] }));
+  $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
 }
 
 export function addPowershellParameters($class: WithState, schema: Schema, prop: Variable, ensureMemberIsCreated: Statements | undefined = undefined, expandName = false) {
@@ -99,7 +100,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       }
     }
 
-    // other properties 
+    // other properties
     if (property.schema.type === JsonType.Object) {
       // console.error(`\n\nLARGE OBJECT NOT INLINED ${property.details.csharp.name}`);
     }
@@ -114,10 +115,11 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       if (property.schema.type === JsonType.Boolean) {
         // use a switch instead
         cmdletParameter = $class.add(new ImplementedProperty(pname, SwitchParameter, {
+
           /* getterStatements: new Statements(function* () {
              if (ensureMemberIsCreated) {
                yield ensureMemberIsCreated;
- 
+
              }
              yield Return(`new System.Management.Automation.SwitchParameter(true == ${prop}.${property.details.csharp.name});`);
            }), */
@@ -152,8 +154,9 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
 
       const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
       cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+      cmdletParameter.description = desc;
     }
   }
 
-  // if 
+  // if
 }

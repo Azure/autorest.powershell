@@ -1,7 +1,12 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { CommaChar } from '#common/text-manipulation';
+import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Class } from './class';
 import { Method } from './method';
-import { Expression, valueOf } from '#csharp/code-dom/expression';
 
 export class Constructor extends Method {
   constructor(protected containingClass: Class, objectIntializer?: Partial<Method>) {
@@ -20,6 +25,6 @@ ${this.access} ${this.static} ${this.abstract} ${this.name}(${parameterDeclarati
   }
 
   public invoke(...parameters: Array<Expression>): Expression {
-    return { value: `new ${this.containingClass.name}(${parameters.joinWith(each => valueOf(each))})` };
+    return toExpression(`new ${this.containingClass.name}(${parameters.joinWith(each => valueOf(each))})`);
   }
 }

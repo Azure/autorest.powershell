@@ -1,5 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 import { Variable } from '#csharp/code-dom/variable';
@@ -15,6 +20,12 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
 
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
+
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
 
   /** emits an expression serialize this to the value required by the container */
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression;
@@ -35,8 +46,8 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   schema: Schema;
 
   /** emits the code required to validate that this is set to a value */
-  validatePresence(property: Variable): OneOrMoreStatements;
+  validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements;
 
   /** emits the code required to validate that this has a permissable value */
-  validateValue(property: Variable): OneOrMoreStatements;
+  validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements;
 }

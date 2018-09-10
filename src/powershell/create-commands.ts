@@ -1,14 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
 import { IParameter } from '#common/code-model/components';
-import { HttpOperation, HttpOperationParameter, MediaType, RequestBody } from '#common/code-model/http-operation';
+import { HttpOperation, HttpOperationParameter, RequestBody, HttpMethod } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
-import { Dictionary, items, keys, length, values } from '#common/dictionary';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
+import { items, length, values } from '#common/linq';
 import { processCodeModel } from '#common/process-code-model';
 import { deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
-import { deserialize, serialize } from '#common/yaml';
 import { Schema, } from '#csharp/lowlevel-generator/code-model';
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
@@ -50,9 +53,6 @@ async function commandCreator(model: Model, service: Host): Promise<Model> {
 }
 
 async function addVariant(vname: string, body: RequestBody | undefined, bodyParameterName: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host) {
-  // const body = operation.requestBody && values(operation.requestBody.content).linq.first();
-  // const bodyParameterName = operation.requestBody ? operation.requestBody.extensions["x-ms-requestBody-name"] || "bodyParameter" : "";
-
   const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
 
   // if this has a body with it, let's add that parameter
@@ -124,14 +124,20 @@ async function addVariants(parameters: Array<HttpOperationParameter>, operation:
 
   // given the body property type, expand out body properties into parameters
 
+  // wait! "update" should be "set" if it's a POST
+  if (variant.verb === 'Update' && operation.method === HttpMethod.Put) {
+    variant.verb = `Set`;
+    variant.category = getCategory(`Set`);
+  }
+
   // no optionals:
-  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
+  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
   await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, model, service);
 
   // handle optional parameter variants
   for (const combo of combos) {
     const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
-    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? '; Polymorphic bodies: ${polymorphicBodies} ' : ''}` });
+    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
   }
 }
@@ -514,4 +520,3 @@ const verbs: { [verb: string]: string } = {
   'Notify': 'Send',
   'Authorize': 'Grant'
 };
-

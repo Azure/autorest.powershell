@@ -1,16 +1,22 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
+import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
+import { IsNotNull } from '#csharp/code-dom/comparisons';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { System, Var } from '#csharp/code-dom/mscorlib';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { LocalVariable, Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { ForEach } from '#csharp/code-dom/statements/for';
 import { If } from '#csharp/code-dom/statements/if';
-
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Ternery } from '#csharp/code-dom/ternery';
+import { LocalVariable, Variable } from '#csharp/code-dom/variable';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -43,7 +49,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       }
 
       case KnownMediaType.Xml: {
-        // XElement/XElement 
+        // XElement/XElement
         const tmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
         if (this.isWrapped) {
           // wrapped xml arrays will have a container around them.
@@ -87,13 +93,17 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return this.deserializeFromNode(mediaType, `Carbon.Json.JsonNode.Parse(${content})`, defaultValue);
+        return this.deserializeFromNode(mediaType, ClientRuntime.JsonNode.Parse(content), defaultValue);
       }
       case KnownMediaType.Xml: {
         return this.deserializeFromNode(mediaType, `${System.Xml.Linq.XElement}.Parse(${content})`, defaultValue);
       }
     }
     return undefined;
+  }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
   /** emits an expression serialize this to a HttpContent */
@@ -113,12 +123,12 @@ export class ArrayOf implements EnhancedTypeDeclaration {
             const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
             return toExpression(`null != ${value} ? new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name)}))`);
           } else {
-            throw new Error("Can't set an Xml Array to the document without wrapping it.");
+            throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`if (${value} != null && ${value}.Length > 0) { queryParameters.Add("${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty)))); }`)
+          return toExpression(`if (${value} != null && ${value}.Length > 0) { queryParameters.Add("${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty)))); }`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
@@ -136,12 +146,20 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          return toExpression(`new System.Net.Http.StringContent( null != ${value} ? new ${ClientRuntime.XNodeArray}(${this.serializeToNode(mediaType, value, '')}).ToString() : "", System.Text.Encoding.UTF8)`);
+          System.Net.Http.StringContent.new(Ternery(
+            IsNotNull(value),
+            `${ClientRuntime.XNodeArray.new(this.serializeToNode(mediaType, value, ''))}.ToString()`,
+            System.String.Empty
+          ), System.Text.Encoding.UTF8);
         }
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
           const defaultName = this.elementType.schema.details.default.name;
-          return toExpression(`new System.Net.Http.StringContent( ${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString() : "", System.Text.Encoding.UTF8)`);
+          System.Net.Http.StringContent.new(Ternery(
+            IsNotNull(value),
+            `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString()`,
+            System.String.Empty
+          ), System.Text.Encoding.UTF8);
         }
 
         case KnownMediaType.Cookie:
@@ -168,15 +186,15 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Json:
           const $this = this;
           return If(`null != ${value}`, function* () {
-            const t = new LocalVariable(tmp, Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
+            const t = new LocalVariable(tmp, dotnet.Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
             yield t.declarationStatement;
             yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '')} ,${tmp}.Add);`);
-            yield `${container}.Add("${serializedName}",${tmp});`
+            yield `${container}.Add("${serializedName}",${tmp});`;
           });
 
         case KnownMediaType.Xml:
           if (this.isWrapped) {
-            return `AddIf( new System.Xml.Linq.XElement("${this.serializedName || serializedName}", ${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || "!!!" : serializedName)}):null), ${container}.Add); `;
+            return `AddIf( new System.Xml.Linq.XElement("${this.serializedName || serializedName}", ${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName)}):null), ${container}.Add); `;
           } else {
             return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName)}, ${container}.Add);`));
           }
@@ -188,22 +206,22 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  public validatePresence(property: Variable): OneOrMoreStatements {
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
     if (this.isRequired) {
-      return `await listener.AssertNotNull(${nameof(property.value)}, ${property}); `;
+      return `await ${eventListener}.AssertNotNull(${nameof(property.value)}, ${property}); `;
     }
     return ``;
   }
-  validateValue(property: Variable): OneOrMoreStatements {
+  validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
     // check if the underlyingType has validation.
-    if (!this.elementType.validateValue(new LocalVariable(`${property} [{ __i }]`, Var))) {
+    if (!this.elementType.validateValue(eventListener, new LocalVariable(`${property} [{ __i }]`, dotnet.Var))) {
       return '';
     }
 
     return `
       if (${ property} != null ) {
         for (int __i = 0; __i < ${ property}.Length; __i++) {
-          ${ this.elementType.validateValue(new LocalVariable(`${property}[__i]`, Var))}
+          ${ this.elementType.validateValue(eventListener, new LocalVariable(`${property}[__i]`, dotnet.Var))}
         }
       }
       `.trim();

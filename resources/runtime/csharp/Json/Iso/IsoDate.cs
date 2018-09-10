@@ -73,13 +73,13 @@ namespace Carbon.Data
 
             if (Offset.Ticks == 0)
             {
-                sb.Append("Z"); // UTC
+                sb.Append('Z'); // UTC
             }
             else
             {
                 if (Offset.Ticks >= 0)
                 {
-                    sb.Append("+");
+                    sb.Append('+');
                 }
 
                 sb.Append($"{Offset.Hours:00}:{Offset.Minutes:00}");
@@ -154,7 +154,7 @@ namespace Carbon.Data
 
             if (timeIndex > -1)
             {
-                var timeParts = dateTime.Substring(timeIndex + 1).Split(timeSeperators);
+                string[] timeParts = dateTime.Substring(timeIndex + 1).Split(timeSeperators);
 
                 for (int i = 0; i < timeParts.Length; i++)
                 {

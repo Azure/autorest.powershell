@@ -1,12 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { comment, docCommentPrefix, EOL, indent, sortByName } from '#common/text-manipulation';
+import { fail } from '#common/utility';
+import { Attribute } from '#csharp/code-dom/attribute';
+import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
+import { Property } from '#csharp/code-dom/property';
 import { Field } from './field';
 import { Namespace } from './namespace';
 import { Type } from './type';
-import { Expression, valueOf } from '#csharp/code-dom/expression';
-import { Property } from '#csharp/code-dom/property';
-import { Attribute } from '#csharp/code-dom/attribute';
-import { fail } from '#common/utility';
+import { xmlize } from '#csharp/code-dom/doc-comments';
 
 export function sortByNamePartialFirst(a: Method, b: Method): number {
   if (a.isPartial !== b.isPartial) {
@@ -21,11 +27,14 @@ export class Class extends Type {
 
   protected fields = new Array<Field>();
 
-
   constructor(namespace: Namespace, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
     super(namespace, name);
     this.apply(objectIntializer);
     namespace.addClass(this);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Class ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get signature(): string {
@@ -34,10 +43,9 @@ export class Class extends Type {
 
     const extendsClass = this.parent ? this.parent.fullName : '';
     const implementsInterfaces = this.interfaces.map(v => v.fullName).join(', ');
-    const description = comment(this.description, docCommentPrefix);
+    const description = comment(xmlize('summary', this.description), docCommentPrefix);
     const partial = this.partial ? 'partial ' : '';
     const stat = this.isStatic ? 'static ' : '';
-
 
     return `
 ${description}
@@ -78,8 +86,8 @@ ${this.fullName}
 `.trim();
   }
 
-  public newInstance(...parameters: Array<Expression>): Expression {
-    return { value: `new ${this.name}(${parameters.joinWith(each => valueOf(each))})` };
+  public new(...parameters: Array<Expression>): Expression {
+    return toExpression(`new ${this.name}(${parameters.joinWith(each => valueOf(each))})`);
   }
 
   public property(name: string): Property {

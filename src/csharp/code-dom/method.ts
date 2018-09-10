@@ -1,18 +1,23 @@
-import { CommaChar, EOL, docComment, indent } from '#common/text-manipulation';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { CommaChar, docComment, EOL, indent } from '#common/text-manipulation';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from '#csharp/code-dom/access-modifier';
-import { summary } from '#csharp/code-dom/doc-comments';
-import * as dotnet from './mscorlib';
-import { Parameter } from './parameter';
-import { Statements, OneOrMoreStatements, StatementPossibilities } from './statements/statement';
-import { TypeDeclaration } from './type-declaration';
-import { Expression, valueOf } from '#csharp/code-dom/expression';
 import { Class } from '#csharp/code-dom/class';
+import { summary, xmlize } from '#csharp/code-dom/doc-comments';
+import { dotnet } from '#csharp/code-dom/dotnet';
+import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { Parameter } from './parameter';
+import { StatementPossibilities, Statements } from './statements/statement';
+import { TypeDeclaration } from './type-declaration';
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();
-  public "new": New = Modifier.None;
+  public 'new': New = Modifier.None;
   public access = Access.Public;
-  public "static": Static = Modifier.None;
+  public 'static': Static = Modifier.None;
   public virtual: Virtual = Modifier.None;
   public sealed: Sealed = Modifier.None;
   public override: Override = Modifier.None;
@@ -20,7 +25,8 @@ export class Method extends Statements {
   public extern: Extern = Modifier.None;
   public async: Async = Modifier.None;
   public isPartial = false;
-  public description: string = "";
+  public description: string = '';
+  public returnsDescription: string = '';
   public body?: StatementPossibilities;
 
   constructor(public name: string, protected returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<Method>) {
@@ -29,6 +35,12 @@ export class Method extends Statements {
     // easy access to allow statements in the initalizer.
     if (this.body) {
       this.add(this.body);
+    }
+    if (!this.description.trim()) {
+      this.description = `FIXME: Method ${name} is MISSING DESCRIPTION`;
+    }
+    if (!this.returnsDescription.trim()) {
+      this.returnsDescription = `FIXME: Method ${name} <returns> is MISSING DESCRIPTION`;
     }
   }
 
@@ -45,11 +57,19 @@ export class Method extends Statements {
     return docComment(this.parameters.joinWith(p => p.comment, EOL));
   }
 
+  protected get returnsDocumentation(): string {
+    if (this.returnType.declaration !== 'void') {
+      return docComment(xmlize('returns', this.returnsDescription));
+    }
+    return '';
+  }
+
   public get declaration(): string {
     const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration})
 `.slim();
   }
@@ -59,6 +79,7 @@ ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.o
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.returnType.declaration} ${this.name}(${parameterDeclaration});
 `.slim();
   }
@@ -72,14 +93,13 @@ ${indent(super.implementation)}
   }
 
   public invoke(...parameters: Array<Expression>): Expression {
-    return { value: `${this.name}(${parameters.joinWith(each => valueOf(each))})` };
+    return toExpression(`${this.name}(${parameters.joinWith(valueOf)})`);
   }
   public addTo(parent: Class): Method {
     parent.addMethod(this);
     return this;
   }
 }
-
 
 export class PartialMethod extends Method {
   public isPartial = true;
@@ -93,6 +113,7 @@ export class PartialMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration})
 `.slim();
   }
@@ -113,6 +134,7 @@ export class LambdaMethod extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.returnType.declaration} ${this.name}(${parameterDeclaration}) => ${valueOf(this.expression)}
 `.slim();
   }

@@ -1,11 +1,15 @@
-import { items, values } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { items, values } from '#common/linq';
 import { EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
 import { IsDeclaration } from '#csharp/code-dom/expression';
 import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { TerminalCase } from '#csharp/code-dom/statements/case';
@@ -17,11 +21,12 @@ import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
 import { KnownMediaType } from '#common/media-types';
+import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { ModelProperty } from './property';
-import { pushTempVar, popTempVar } from '#csharp/schema/primitive';
 
 export class XmlSerializableClass extends Class {
   private btj!: Method;
@@ -37,16 +42,19 @@ export class XmlSerializableClass extends Class {
     this.addPartialMethods();
 
     // set up the declaration for the toXml method.
-    const container = new Parameter('container', dotnet.System.Xml.Linq.XElement);
-    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode);
+    const container = new Parameter('container', System.Xml.Linq.XElement, { description: `The <see cref="${System.Xml.Linq.XElement}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
+    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/c>.` });
 
-    const toXmlMethod = this.addMethod(new Method('ToXml', dotnet.System.Xml.Linq.XElement, {
+    const toXmlMethod = this.addMethod(new Method('ToXml', System.Xml.Linq.XElement, {
       parameters: [container, mode],
     }));
 
     // setup the declaration for the xml deserializer constructor
-    const xmlParameter = new Parameter('xml', dotnet.System.Xml.Linq.XElement);
-    const deserializerConstructor = this.addMethod(new Constructor(this, { parameters: [xmlParameter], access: Access.Internal }));
+    const xmlParameter = new Parameter('xml', System.Xml.Linq.XElement, { description: `A ${System.Xml.Linq.XElement} instance to deserialize from.` });
+    const deserializerConstructor = this.addMethod(new Constructor(this, {
+      parameters: [xmlParameter], access: Access.Internal,
+      description: `Deserializes a ${System.Xml.Linq.XElement} into a new instance of <see cref="${this.name}" />.`
+    }));
 
     const serializeStatements = new Statements();
     const deserializeStatements = new Statements();
@@ -61,11 +69,11 @@ export class XmlSerializableClass extends Class {
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Xml, prop, container, prop.serializedName);
 
       if (property.details.csharp[HeaderProperty] === HeaderPropertyType.Header) {
-        // it's a header only property. Don't serialize unless the mode has Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders enabled
-        serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeHeaders)` }, serializeStatement));
+        // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled
+        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeHeaders})`, serializeStatement));
       } else {
         if (property.schema.readOnly) {
-          serializeStatements.add(If({ value: `${mode.use}.HasFlag(Microsoft.Rest.ClientRuntime.SerializationMode.IncludeReadOnly)` }, serializeStatement));
+          serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
         } else {
           serializeStatements.add(serializeStatement);
         }
@@ -77,13 +85,13 @@ export class XmlSerializableClass extends Class {
 
     // generate the implementation for toXml
     toXmlMethod.add(function* () {
-      yield `${container} = ${container} ?? new ${dotnet.System.Xml.Linq.XElement.declaration}(nameof(${$this.modelClass.name}));`;
+      yield `${container} = ${container} ?? new ${System.Xml.Linq.XElement.declaration}(nameof(${$this.modelClass.name}));`;
       yield EOL;
 
       yield `bool returnNow = false;`;
       yield `${$this.btj.name}(ref ${container}, ref returnNow);`;
 
-      yield If({ value: `returnNow` }, `return ${container};`);
+      yield If(`returnNow`, `return ${container};`);
 
       // get serialization statements
       yield serializeStatements;
@@ -96,7 +104,7 @@ export class XmlSerializableClass extends Class {
     deserializerConstructor.add(function* () {
       yield `bool returnNow = false;`;
       yield `${$this.bfj.name}(xml, ref returnNow);`;
-      yield If({ value: `returnNow` }, `return;`);
+      yield If(`returnNow`, `return;`);
 
       yield deserializeStatements;
       yield `${$this.afj.name}(xml);`;
@@ -109,11 +117,11 @@ export class XmlSerializableClass extends Class {
     const d = this.modelClass.discriminators;
     const isp = this.modelClass.isPolymorphic;
     // create the FromXml method
-    const node = new Parameter('node', dotnet.System.Xml.Linq.XElement);
+    const node = new Parameter('node', System.Xml.Linq.XElement, { description: `A ${System.Xml.Linq.XElement} instance to deserialize from.` });
     const fromXml = this.addMethod(new Method('FromXml', this.modelClass.modelInterface, { parameters: [node], static: Modifier.Static }));
     fromXml.add(function* () {
 
-      const xml = IsDeclaration(node, dotnet.System.Xml.Linq.XElement, 'xml');
+      const xml = IsDeclaration(node, System.Xml.Linq.XElement, 'xml');
 
       if (isp) {
         yield If(Not(xml.check), Return(dotnet.Null));
@@ -121,18 +129,18 @@ export class XmlSerializableClass extends Class {
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
 
         if ($this.schema.discriminator) {
-          yield Switch({ value: `xml.StringProperty("${$this.schema.discriminator.propertyName}")` }, function* () {
+          yield Switch(`xml.StringProperty("${$this.schema.discriminator.propertyName}")`, function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
-                yield Return(value.newInstance(xml));
+                yield Return(value.new(xml));
               });
             }
           });
         }
-        yield Return($this.newInstance(xml));
+        yield Return($this.new(xml));
       } else {
         // just tell it to create the instance (providing that it's a XElement)
-        yield Return(Ternery(xml.check, $this.newInstance(xml), dotnet.Null));
+        yield Return(Ternery(xml.check, $this.new(xml), dotnet.Null));
       }
     });
 
@@ -148,7 +156,7 @@ export class XmlSerializableClass extends Class {
     this.btj = this.addMethod(new PartialMethod('BeforeToXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', dotnet.System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement  that the serialization result will be placed in.' }),
+        new Parameter('container', System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement  that the serialization result will be placed in.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
       ],
     }));
@@ -156,14 +164,14 @@ export class XmlSerializableClass extends Class {
     this.atj = this.addMethod(new PartialMethod('AfterToXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('container', dotnet.System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement that the serialization result will be placed in.' }),
+        new Parameter('container', System.Xml.Linq.XElement, { modifier: ParameterModifier.Ref, description: 'The XElement that the serialization result will be placed in.' }),
       ],
     }));
 
     this.bfj = this.addMethod(new PartialMethod('BeforeFromXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('xml', dotnet.System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
+        new Parameter('xml', System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
     }));
@@ -171,7 +179,7 @@ export class XmlSerializableClass extends Class {
     this.afj = this.addMethod(new PartialMethod('AfterFromXml', dotnet.Void, {
       access: Access.Default,
       parameters: [
-        new Parameter('xml', dotnet.System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
+        new Parameter('xml', System.Xml.Linq.XElement, { description: 'The XmlNode that should be deserialized into this object.' }),
       ],
     }));
   }

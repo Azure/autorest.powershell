@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { CommandComponents } from '#common/code-model/command-operation';
 import { Extensions } from '#common/code-model/extensions';
 import { HttpComponents } from '#common/code-model/http-operation';
 import { Info } from '#common/code-model/info';
 import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/dictionary';
-import { ImplementationDetails, ExternalDocumentation, LanguageDetails, SecurityRequirement, Server, Tag } from './components';
+import { Dictionary } from '#common/linq';
+import { ExternalDocumentation, ImplementationDetails, LanguageDetails, SecurityRequirement, Server, Tag } from './components';
 
 // ------------------------------------------------------------------------------------------------------------------
 // Constructors for Code Model classes
@@ -47,4 +52,3 @@ export class Model extends Extensions implements Model {
 export interface ClientDetails extends ImplementationDetails {
 
 }
-

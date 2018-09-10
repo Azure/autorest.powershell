@@ -212,7 +212,7 @@ namespace Microsoft.Rest.ClientRuntime
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => Pipeline.SendAsync(request, callback);
     }
 
-    public static class HttpRequestMessageExtensions
+    public static partial class Extensions
     {
 
         public static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {

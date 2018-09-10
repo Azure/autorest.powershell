@@ -1,37 +1,34 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { any, items, keys, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL, fixLeadingNumber, nameof, indent, pascalCase } from '#common/text-manipulation';
+import { items, values } from '#common/linq';
+import { camelCase, deconstruct } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { Is, IsDeclaration, LiteralExpression, ExpressionOrLiteral, Expression, valueOf } from '#csharp/code-dom/expression';
-import { InitializedField, Field } from '#csharp/code-dom/field';
-import { Method, PartialMethod } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
+import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
+import { Field, InitializedField } from '#csharp/code-dom/field';
+import { Method } from '#csharp/code-dom/method';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
-import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
-import { Case, TerminalCase } from '#csharp/code-dom/statements/case';
-import { ForEach } from '#csharp/code-dom/statements/for';
-import { If, Not } from '#csharp/code-dom/statements/if';
-import { Return } from '#csharp/code-dom/statements/return';
 import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Ternery } from '#csharp/code-dom/ternery';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 
+import { If } from '#csharp/code-dom/statements/if';
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
+import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { ObjectImplementation } from '#csharp/schema/object';
 import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { State } from '../generator';
 import { ModelInterface } from './interface';
 import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { ObjectImplementation } from '#csharp/schema/object';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
 
 import { KnownMediaType } from '#common/media-types';
+import { Constructor } from '#csharp/code-dom/constructor';
+import { System } from '#csharp/code-dom/dotnet';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
 
@@ -61,6 +58,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromString(mediaType, content, defaultValue);
   }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
+  }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName);
   }
@@ -86,6 +87,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   /* @internal */ public afj!: Method;
   /* @internal */ public backingFields = new Array<BackingField>();
   /* @internal */ public implementation: ObjectImplementation;
+  /* @internal */ public validationEventListener: Parameter;
   private jsonSerializer: JsonSerializableClass | undefined;
   private xmlSerializer: XmlSerializableClass | undefined;
 
@@ -103,15 +105,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.apply(objectInitializer);
     this.partial = true;
 
+
     // create an interface for this model class
 
     // mark the code-model with the class we're creating.
     this.schema.details.csharp.classImplementation = this;
 
-    // get all the header properties for this model 
+    // get all the header properties for this model
     this.hasHeaderProperties = values(this.schema.properties).linq.any(property => property.details.csharp[HeaderProperty] === HeaderPropertyType.Header || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header);
-
-
 
     const modelInterface = this.schema.details.csharp.interfaceImplementation || new ModelInterface(this.namespace, this.schema, this, this.state);
     this.modelInterface = modelInterface;
@@ -145,8 +146,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
     }
 
-    const defaultConstructor = this.addMethod(new Constructor(this)); // default constructor for fits and giggles.
+    const defaultConstructor = this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
     const validationStatements = new Statements();
+    this.validationEventListener = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
 
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
@@ -166,7 +168,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, { value: `new ${className}()` }, { access: Access.Private }));
+      const backingField = this.addField(new InitializedField(`_${fieldName}`, td, `new ${className}()`, { access: Access.Private, description: `Backing field for <see cref="${this.fileName}" />` }));
       this.backingFields.push({
         className,
         typeDeclaration: td,
@@ -175,17 +177,16 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       // now, create proxy properties for the members
       iface.allProperties.map((each) => {
         // make sure we don't over expose read-only properties.
-        const p = this.add(new ProxyProperty(backingField, each, this.state));
+        const p = this.add(new ProxyProperty(backingField, each, this.state, { description: `Inherited model <see cref="${iface.name}" /> - ${eachSchema.value.details.csharp.description}` }));
         if (each.setAccess === Access.Internal) {
           p.setterStatements = undefined;
         }
         return p;
       });
 
-      validationStatements.add(td.validatePresence(backingField));
-      validationStatements.add(td.validateValue(backingField));
+      validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
+      validationStatements.add(td.validateValue(this.validationEventListener, backingField));
     }
-
 
     // generate a protected backing field for each
     // and then expand the nested properties into this class forwarding to the member.
@@ -195,8 +196,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const prop = new ModelProperty(this, property, property.serializedName || propertyName, this.state.path('properties', propertyName));
       this.add(prop);
 
-      validationStatements.add(prop.validatePresenceStatement);
-      validationStatements.add(prop.validationStatement);
+      validationStatements.add(prop.validatePresenceStatement(this.validationEventListener));
+      validationStatements.add(prop.validationStatement(this.validationEventListener));
     }
 
     if (this.schema.additionalProperties) {
@@ -207,6 +208,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         // we should generate an additionalProperties property that catches all extra properties as the type specified by
         const valueSchema = this.schema.additionalProperties;
       }
+
     }
     if (!this.state.project.storagePipeline) {
       if (validationStatements.implementation.trim()) {
@@ -214,9 +216,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         // add the IValidates implementation to this object.
         this.interfaces.push(ClientRuntime.IValidates);
-        this.validateMethod = this.addMethod(new Method('Validate', dotnet.System.Threading.Tasks.Task(), {
+        this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
           async: Modifier.Async,
-          parameters: [new Parameter('listener', ClientRuntime.IEventListener)],
+          parameters: [this.validationEventListener],
+          description: `Validates that this object meets the validation criteria.`,
+          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
         }));
         this.validateMethod.add(validationStatements);
       }
@@ -229,7 +233,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     if (this.hasHeaderProperties) {
       // add header deserializer method
-      const headers = new Parameter('headers', dotnet.System.Net.Http.Headers.HttpResponseHeaders);
+      const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
 
       const readHeaders = new Method('ReadHeaders', this, {
         access: Access.Internal,
@@ -237,8 +241,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         *body() {
           for (const hp of headerProperties) {
             const hparam = <ModelProperty>hp;
-            if (hparam.serializedName == "x-ms-meta") {
-              yield `${hparam.backingName} = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(headers)}, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value));`
+            if (hparam.serializedName === 'x-ms-meta') {
+              yield `${hparam.backingName} = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(headers)}, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value));`;
             } else {
               const values = `__${camelCase(['header', ...deconstruct(hparam.serializedName)])}Values`;
               yield If(`${valueOf(headers)}.TryGetValues("${hparam.serializedName}", out var ${values})`, `${hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values))}`);
@@ -251,18 +255,20 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     const hasNonHeaderProperties = values(this.properties).linq.any(p => !(<ModelProperty>p).IsHeaderProperty);
 
     if (hasNonHeaderProperties) {
-      if (!this.state.project.storagePipeline) {
+      if (this.state.project.xmlSerialization) {
+        this.xmlSerializer = new XmlSerializableClass(this);
+      }
+      if (this.state.project.jsonSerialization) {
         this.jsonSerializer = new JsonSerializableClass(this);
       }
-      this.xmlSerializer = new XmlSerializableClass(this);
     }
   }
 
-  public validateValue(property: Variable): OneOrMoreStatements {
-    return this.implementation.validateValue(property);
+  public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validateValue(eventListener, property);
   }
-  public validatePresence(property: Variable): OneOrMoreStatements {
-    return this.implementation.validatePresence(property);
+  public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
+    return this.implementation.validatePresence(eventListener, property);
   }
 
   public addDiscriminator(discriminatorValue: string, modelClass: ModelClass) {
@@ -274,5 +280,3 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
   }
 }
-
-

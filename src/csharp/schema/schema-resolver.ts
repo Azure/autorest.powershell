@@ -1,9 +1,13 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
 import { JsonType } from '#common/code-model/schema';
 import { ModelState } from '#common/model-state';
 import { hasProperties } from '#common/text-manipulation';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { State } from '#csharp/lowlevel-generator/generator';
 import * as message from '#csharp/lowlevel-generator/messages';
 import { ArrayOf } from '#csharp/schema/array';
 import { Binary } from '#csharp/schema/binary';
@@ -155,4 +159,3 @@ export class SchemaDefinitionResolver {
     throw new Error('Unknown Model. Fatal.');
   }
 }
-

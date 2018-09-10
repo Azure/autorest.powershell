@@ -33,7 +33,7 @@ namespace Carbon.Json
             {
                 if (value.IsNull)
                 {
-                    return null; 
+                    return null;
                 }
                 if (value is T tval)
                 {
@@ -76,7 +76,7 @@ namespace Carbon.Json
         public double NumberProperty(string propertyName, ref double output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDouble() ?? output;
         public decimal NumberProperty(string propertyName, ref decimal output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDecimal() ?? output;
         public short NumberProperty(string propertyName, ref short output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToShort() ?? output;
-        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDateTime() ??  output;
+        public DateTime NumberProperty(string propertyName, ref DateTime output) => output = this.PropertyT<JsonNumber>(propertyName)?.ToDateTime() ?? output;
 
         public int? NumberProperty(string propertyName, ref int? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToInt() ?? null;
         public float? NumberProperty(string propertyName, ref float? output) => output = this.NullableProperty<JsonNumber>(propertyName)?.ToFloat() ?? null;
@@ -181,6 +181,7 @@ namespace Carbon.Json
     public partial class JsonBoolean
     {
         public static JsonBoolean Create(bool? value) => value is bool b ? new JsonBoolean(b) : null;
+        public bool ToBoolean() => Value;
 
     }
     public partial class JsonNumber
@@ -194,6 +195,16 @@ namespace Carbon.Json
         {
             return EpochDate.AddSeconds(totalSeconds);
         }
+        public byte ToByte() => this;
+        public int ToInt() => this;
+        public long ToLong() => this;
+        public short ToShort() => this;
+        public UInt16 ToUInt16() => this;
+        public UInt32 ToUInt32() => this;
+        public UInt64 ToUInt64() => this;
+        public decimal ToDecimal() => this;
+        public double ToDouble() => this;
+        public float ToFloat() => this;
 
         public static JsonNumber Create(int? value) => value is int n ? new JsonNumber(n) : null;
         public static JsonNumber Create(long? value) => value is long n ? new JsonNumber(n) : null;

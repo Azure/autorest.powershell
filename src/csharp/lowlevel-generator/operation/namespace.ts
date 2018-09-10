@@ -1,15 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ImportDirective } from '#csharp/code-dom/import';
 import { Namespace } from '#csharp/code-dom/namespace';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '../generator';
-import { Import } from '#csharp/code-dom/import';
 
 export class ServiceNamespace extends Namespace {
   constructor(public state: State, objectInitializer?: Partial<ServiceNamespace>) {
-    super(state.model.details.csharp.namespace || "INVALID.NAMESPACE", state.project);
+    super(state.model.details.csharp.namespace || 'INVALID.NAMESPACE', state.project);
     this.apply(objectInitializer);
-    if (this.state.project.defaultPipeline) {
-      this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.IEventListenerExtensions"));
-      this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.HttpRequestMessageExtensions"));
-    }
-    this.addUsing(new Import("static Microsoft.Rest.ClientRuntime.Extensions"));
+    this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
   }
 }

@@ -1,18 +1,22 @@
-
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
-import { Namespace } from '#csharp/code-dom/namespace';
+
+import { KnownMediaType } from '#common/media-types';
+import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+
 import { Parameter } from '#csharp/code-dom/parameter';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { ExtendedVariable, EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
+import { Variable } from '#csharp/code-dom/variable';
+
+import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
+import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
 import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
 import { State } from '../generator';
-import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
-import { KnownMediaType } from '#common/media-types';
-import { ExpressionOrLiteral, Expression } from '#csharp/code-dom/expression';
-import { Variable } from '#csharp/code-dom/variable';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
 export class OperationParameter extends Parameter implements EnhancedVariable {
@@ -54,12 +58,11 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
     return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
   }
 
-
-  public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this);
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
   }
-  public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this);
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
   }
 }
 
@@ -67,7 +70,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
 export class OperationBodyParameter extends Parameter implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
-    //return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
+    // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
     return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
   }
 
@@ -92,12 +95,11 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
     return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
   }
 
-
-  public get validatePresenceStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validatePresence(this);
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
   }
-  public get validationStatement(): OneOrMoreStatements {
-    return this.typeDeclaration.validateValue(this);
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
   }
   public mediaType: KnownMediaType;
 
@@ -128,28 +130,44 @@ export class CallbackParameter extends Parameter {
   headerType: (EnhancedTypeDeclaration) | null;
 
   constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
+
     if (state.project.storagePipeline) {
-      if (responseType && responseType.declaration !== 'System.IO.Stream') {
+      // storage pipline style (callback happens inside the pipeline)
+      if (responseType && responseType.declaration !== System.IO.Stream.declaration) {
         if (headerType) {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType, headerType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType, headerType));
         } else {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, responseType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType));
         }
       } else {
         if (headerType) {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage, headerType));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage, headerType));
         } else {
-          super(name, dotnet.System.Action(dotnet.System.Net.Http.HttpResponseMessage));
+          super(name, System.Action(System.Net.Http.HttpResponseMessage));
         }
       }
     } else {
+      // regular pipeline style. (callback happens after the pipline is called)
       if (responseType) {
-        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, responseType, dotnet.System.Threading.Tasks.Task()));
+        if (headerType) {
+          // both
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
+        } else {
+          // just response
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task()));
+        }
       } else {
-        super(name, dotnet.System.Func(dotnet.System.Net.Http.HttpRequestMessage, dotnet.System.Net.Http.HttpResponseMessage, dotnet.System.Threading.Tasks.Task()));
+        if (headerType) {
+          // just headers
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
+        } else {
+          // no content?
+          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task()));
+        }
       }
     }
     this.responseType = responseType;
     this.headerType = headerType;
+    this.apply(objectInitializer);
   }
 }

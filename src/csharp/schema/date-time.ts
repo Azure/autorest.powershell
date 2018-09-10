@@ -1,13 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral, StringExpression, toExpression, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+import { System } from '#csharp/code-dom/dotnet';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { If } from '#csharp/code-dom/statements/if';
 import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Primitive } from '#csharp/schema/primitive';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { System } from '#csharp/code-dom/mscorlib';
-import { If } from '#csharp/code-dom/statements/if';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Primitive } from '#csharp/schema/primitive';
 
 export class DateTime extends Primitive {
   public isXmlAttribute: boolean = false;
@@ -74,7 +78,7 @@ export class DateTime extends Primitive {
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
           `${serializedName}={${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? "": $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -88,7 +92,7 @@ export class DateTime extends Primitive {
   // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.InvariantCulture)) : null;
   // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.InvariantCulture)) : null;
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }
@@ -103,7 +107,7 @@ export class DateTime1123 extends DateTime {
 export class UnixTime extends Primitive {
   public isXmlAttribute: boolean = false;
   public jsonType = ClientRuntime.JsonNumber;
-  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)')
+  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)');
 
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
@@ -126,7 +130,7 @@ export class UnixTime extends Primitive {
     super(schema);
   }
 
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 
@@ -134,4 +138,3 @@ export class UnixTime extends Primitive {
     return `System.DateTime${this.isRequired ? '' : '?'}`;
   }
 }
-

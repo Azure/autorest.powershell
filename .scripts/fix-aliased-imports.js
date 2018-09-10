@@ -11,6 +11,7 @@ const stat = util.promisify(fsa.stat);
 const tsconfig = require("../tsconfig.json");
 const importOptions = tsconfig.compilerOptions;
 const tscpaths = Object.keys(importOptions.paths)
+let count =0;
 
 async function fixImports(filePath) {
   let code = await readFile(filePath, 'utf8');
@@ -29,12 +30,14 @@ async function fixImports(filePath) {
       return `require("./${relativePath}/`.replace(`"./..`, `"..`).replace("../src/", "../"); // fix messy parent referential path. 
     });
   }
-  if (write && orig.trim() != code.trim()) {
-    console.log(`Fixing '${filePath}'`);
-    await writeFile(filePath, code);
+  if (write && orig.trim() !== code.trim()) {
+    // console.log(`Fixing '${filePath}'`);
+    count ++ ;
+    tasks.push(writeFile(filePath, code));
   }
 }
 let busy = false;
+let tasks = [];
 
 async function processDirectory(dir) {
   const items = await readdir(dir);
@@ -45,7 +48,7 @@ async function processDirectory(dir) {
       continue;
     }
     if (filePath.endsWith('.js')) {
-      fixImports(filePath);
+      tasks.push(fixImports(filePath));
     }
   }
 }
@@ -54,28 +57,47 @@ async function delay(delayMS) {
   return new Promise(res => setTimeout(res, delayMS));
 }
 
-
 async function start() {
   if (!busy) {
     busy = true;
-    while (Date.now() < tm + 300) {
-      await delay(50);
+    tasks = [];
+    count = 0;
+    const timer = Date.now();
+    // console.log('debouncing...');
+    while (Date.now() < tm + 200) {
+      await delay(15);
     }
-
+    console.log("Fixing files...");
     await processDirectory(`${__dirname}/../dist`);
+    await Promise.all(tasks);
 
-    // fix weird issue with namespace class and importing stuff
-    let namespc = await readFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, "utf8");
-    const orig = namespc;
-    const c = namespc.indexOf('const interface_1 = require("./interface");');
-    if (c > 0) {
-      namespc = namespc.replace('const interface_1 = require("./interface");', '');
-      namespc = namespc.replace(/interface_1\./gi, 'require("./interface").');
-      if (orig !== namespc) {
-        await writeFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);
+    try {
+      // fix weird issue with namespace class and importing stuff
+      let namespc = await readFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, "utf8");
+      let orig = namespc;
+      let c = namespc.indexOf('const interface_1 = require("./interface");');
+      if (c > 0) {
+        namespc = namespc.replace('const interface_1 = require("./interface");', '');
+        namespc = namespc.replace(/interface_1\./gi, 'require("./interface").');
+        if (orig !== namespc) {
+          await writeFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);
+        }
       }
+      orig = namespc;
+      c = namespc.indexOf('const class_1 = require("./class");');
+      if (c > 0) {
+        namespc = namespc.replace('const class_1 = require("./class");', '');
+        namespc = namespc.replace(/class_1\./gi, 'require("./class").');
+        if (orig !== namespc) {
+          await writeFile(`${__dirname}/../dist/csharp/code-dom/namespace.js`, namespc);
+        }
+      }
+
+
+    } catch (e) {
+
     }
-    console.log("done");
+    console.log(`Fixed ${count} files in ${Date.now() - timer} msec`);
     busy = false;
   }
 }
@@ -88,10 +110,14 @@ async function main() {
     tm = Date.now();
     if (filePath && filePath.endsWith('.js')) {
       start();
+      // fixImports(`${__dirname}/../dist/${filePath`);
     }
   });
 }
+process.chdir(path.resolve(`${__dirname}/..`));
 
-// main();
-
-processDirectory(`${__dirname}/../dist`)
+if (process.argv.indexOf('--watch') > -1) {
+  main();
+} else {
+  processDirectory(`${__dirname}/../dist`)
+}

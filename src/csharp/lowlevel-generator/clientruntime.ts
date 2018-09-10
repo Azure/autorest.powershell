@@ -1,18 +1,37 @@
-import { Expression, LiteralExpression } from '#csharp/code-dom/expression';
-import { Interface } from '#csharp/code-dom/interface';
-import { EnumType, LibraryType } from '#csharp/code-dom/mscorlib';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { intersect } from '#common/intersect';
-import * as dotnet from "#csharp/code-dom/mscorlib";
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
+
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
+import { Interface } from '#csharp/code-dom/interface';
+import { Namespace } from '#csharp/code-dom/namespace';
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
-const serializationMode = new LibraryType(clientRuntimeNamespace, "SerializationMode");
-const events = new LibraryType(clientRuntimeNamespace, "Events");
+const serializationMode = new ClassType(clientRuntimeNamespace, 'SerializationMode');
+const events = new ClassType(clientRuntimeNamespace, 'Events');
+const method = new ClassType(clientRuntimeNamespace, 'Method');
 const carbon = new Namespace('Carbon.Json');
+const jsonNode = new ClassType(carbon, 'JsonNode');
+const jsonObject = new ClassType(carbon, 'JsonObject');
 
 export const ClientRuntime = intersect(clientRuntimeNamespace, {
+  Method: intersect(method, {
+    Get: new LiteralExpression(`${method.declaration}.Get`),
+    Put: new LiteralExpression(`${method.declaration}.Put`),
+    Post: new LiteralExpression(`${method.declaration}.Post`),
+    Delete: new LiteralExpression(`${method.declaration}.Delete`),
+    Options: new LiteralExpression(`${method.declaration}.Options`),
+    Head: new LiteralExpression(`${method.declaration}.Head`),
+    Trace: new LiteralExpression(`${method.declaration}.Trace`),
+    Patch: new LiteralExpression(`${method.declaration}.Patch`)
+  }),
+  EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
+  Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
   IJsonSerializable: new Interface(clientRuntimeNamespace, 'IJsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
@@ -20,10 +39,13 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   SerializationMode: intersect(serializationMode, {
     None: new LiteralExpression(`${serializationMode.declaration}.None`),
     IncludeAll: new LiteralExpression(`${serializationMode.declaration}.IncludeAll`),
+    IncludeHeaders: new LiteralExpression(`${serializationMode.declaration}.IncludeHeaders`),
+    IncludeReadOnly: new LiteralExpression(`${serializationMode.declaration}.IncludeReadOnly`),
   }),
-  HttpPipeline: new LibraryType(clientRuntimeNamespace, 'HttpPipeline'),
-  SendAsyncStep: new LibraryType(clientRuntimeNamespace, 'SendAsyncStep[]'),
-  EventData: new LibraryType(clientRuntimeNamespace, 'EventData'),
+  HttpPipeline: new ClassType(clientRuntimeNamespace, 'HttpPipeline'),
+  SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
+  EventData: new ClassType(clientRuntimeNamespace, 'EventData'),
+  EventListener: new ClassType(clientRuntimeNamespace, 'EventListener'),
   Events: intersect(events, {
     BodyContentSet: new LiteralExpression(`${events.declaration}.BodyContentSet`),
     BeforeCall: new LiteralExpression(`${events.declaration}.BeforeCall`),
@@ -40,12 +62,21 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Polling: new LiteralExpression(`${events.declaration}.Polling`),
     DelayBeforePolling: new LiteralExpression(`${events.declaration}.DelayBeforePolling`),
   }),
-  KeyValuePairs: dotnet.System.Collections.Generic.IEnumerable(dotnet.System.Collections.Generic.KeyValuePair(dotnet.String, dotnet.System.Collections.Generic.IEnumerable(dotnet.String))),
-  JsonNode: new LibraryType(carbon, `JsonNode`),
-  JsonString: new LibraryType(carbon, `JsonString`),
-  JsonBoolean: new LibraryType(carbon, `JsonBoolean`),
-  JsonNumber: new LibraryType(carbon, `JsonNumber`),
-  JsonObject: new LibraryType(carbon, `JsonObject`),
-  JsonArray: new LibraryType(carbon, `JsonArray`),
-  XNodeArray: new LibraryType(carbon, `XNodeArray`)
+  KeyValuePairs: System.Collections.Generic.IEnumerable(System.Collections.Generic.KeyValuePair(dotnet.String, System.Collections.Generic.IEnumerable(dotnet.String))),
+  JsonNode: intersect(jsonNode, {
+    Parse: (expression: ExpressionOrLiteral) => toExpression(`${jsonNode}.Parse(${toExpression(expression)})`)
+  }),
+  JsonObject: intersect(jsonObject, {
+    Parse: (expression: Expression) => toExpression(`${jsonObject}.Parse(${expression})`)
+  }),
+  JsonString: new ClassType(carbon, `JsonString`),
+  JsonBoolean: new ClassType(carbon, `JsonBoolean`),
+  JsonNumber: new ClassType(carbon, `JsonNumber`),
+  JsonArray: new ClassType(carbon, `JsonArray`),
+  XNodeArray: new ClassType(carbon, `XNodeArray`)
 });
+
+export const StoragePipeline = {
+  Pipeline: new ClassType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
+  CancelContext: new ClassType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
+};

@@ -1,5 +1,10 @@
-import { Expression, LiteralExpression } from "#csharp/code-dom/expression";
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-export function Ternery(booleanExpression: Expression, trueResult: Expression, falseResult: Expression) {
-  return new LiteralExpression(`${booleanExpression.value} ? ${trueResult.value} : ${falseResult.value}`);
+import { ExpressionOrLiteral, LiteralExpression, valueOf } from '#csharp/code-dom/expression';
+
+export function Ternery(booleanExpression: ExpressionOrLiteral, trueResult: ExpressionOrLiteral, falseResult: ExpressionOrLiteral) {
+  return new LiteralExpression(`${valueOf(booleanExpression)} ? ${trueResult} : ${falseResult}`);
 }

@@ -44,10 +44,7 @@ namespace Carbon.Json
             return value.DateTime;
         }
 
-        public DateTime ToUtcDateTime()
-        {
-            return value.UtcDateTime;
-        }
+        public DateTime ToUtcDateTime() => value.UtcDateTime;
 
         public int ToUnixTimeSeconds()
         {
@@ -71,17 +68,9 @@ namespace Carbon.Json
             return ToIsoString();
         }
 
-
         public static new JsonDate Parse(string text)
         {
-            #region Preconditions
-
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-
-            #endregion
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             // TODO support: unixtimeseconds.partialseconds
 
@@ -127,19 +116,28 @@ namespace Carbon.Json
 
         #region Implicit Casts
 
-        public static implicit operator DateTimeOffset(JsonDate value) => value.ToDateTimeOffset();
+        public static implicit operator DateTimeOffset(JsonDate value)
+            => value.ToDateTimeOffset();
 
-        public static implicit operator DateTime(JsonDate value) => value.ToDateTime();
+        public static implicit operator DateTime(JsonDate value)
+            => value.ToDateTime();
 
         // From Date
-        public static implicit operator JsonDate(DateTimeOffset value) => new JsonDate(value);
+        public static implicit operator JsonDate(DateTimeOffset value)
+        {
+            return new JsonDate(value);
+        }
         
-        public static implicit operator JsonDate(DateTime value) =>  new JsonDate(value);
-        
+        public static implicit operator JsonDate(DateTime value)
+        {
+            return new JsonDate(value);
+        }
 
         // From String
-        public static implicit operator JsonDate(string value) =>  Parse(value);
-        
+        public static implicit operator JsonDate(string value)
+        {
+            return Parse(value);
+        }
 
         #endregion
 

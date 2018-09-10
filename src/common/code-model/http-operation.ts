@@ -1,20 +1,17 @@
-import {
-  Components,
-  ImplementationDetails, Example, ExternalDocumentation, ImplementationLocation,
-  IOperation,
-  IOperationBase,
-  IParameter, Link,
-  ParameterDetails, SecurityRequirement, Server, LanguageDetails, ResponseDetails
-} from '#common/code-model/components';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Components, Example, ExternalDocumentation, ImplementationDetails, ImplementationLocation, IOperation, IOperationBase, IParameter, LanguageDetails, Link, ParameterDetails, ResponseDetails, SecurityRequirement, Server } from '#common/code-model/components';
 import { Extensions } from '#common/code-model/extensions';
 import { Schema } from '#common/code-model/schema';
 import { SecurityScheme } from '#common/code-model/security-scheme';
-import { Dictionary } from '#common/dictionary';
-import { camelCase, fixLeadingNumber, deconstruct } from '#common/text-manipulation';
+import { DeepPartial } from '#common/initializer';
+import { Dictionary } from '#common/linq';
 
 export interface HttpOperationDetails extends ImplementationDetails {
 }
-
 
 export class Encoding extends Extensions implements Encoding {
   public headers = new Dictionary<Header>();
@@ -157,7 +154,6 @@ export interface NewResponse {
   schema?: Schema;
 }
 
-
 export class NewResponse extends Extensions implements NewResponse {
   public details: LanguageDetails<ResponseDetails>;
 
@@ -179,14 +175,14 @@ export class HttpOperation extends Extensions implements HttpOperation {
   public details: LanguageDetails<HttpOperationDetails>;
   public tags = new Array<string>();
   public parameters = new Array<HttpOperationParameter>();
-  //public responses = new Dictionary<Response>();
+  // public responses = new Dictionary<Response>();
   public responses_new = new Dictionary<Array<NewResponse>>();
   public callbacks = new Dictionary<Callback>();
   public security = new Array<SecurityRequirement>();
   public servers = new Array<Server>();
   public deprecated = false;
 
-  constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: Partial<HttpOperation>) {
+  constructor(operationId: string, public path: string, public method: HttpMethod, initializer?: DeepPartial<HttpOperation>) {
     super();
     this.details = {
       default: {
@@ -295,7 +291,7 @@ export class HttpComponents extends Components<HttpOperation, HttpOperationParam
 
   public callbacks = new Dictionary<Callback>();
 
-  //operations = new Dictionary<HttpOperation>();
+  // operations = new Dictionary<HttpOperation>();
   //
   // parameters = new Dictionary<HttpOperationParameter>();
 

@@ -1,6 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { values } from '#common/linq';
 import * as aio from '@microsoft.azure/async-io';
 import { join } from 'path';
-import { values } from '#common/dictionary';
 
 function getAllPropertyNames(obj: any) {
   const props = new Array<string>();
@@ -16,8 +21,6 @@ function getAllPropertyNames(obj: any) {
   return props;
 }
 
-
-
 export function fail(text: string): never {
   throw new Error(text);
 }
@@ -26,7 +29,6 @@ export async function copyResources(sourceFolder: string, fileWriter: (filename:
   const done = new Array<Promise<void>>();
   try {
     const files = await aio.readdir(sourceFolder);
-
 
     for (const file of values(files)) {
       const fullPath = join(sourceFolder, file);

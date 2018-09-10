@@ -1,7 +1,12 @@
-import { ImplementationDetails, IOperation, IOperationBase, IParameter, LanguageDetails } from '#common/code-model/components';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { ImplementationDetails, IOperation, IParameter, LanguageDetails } from '#common/code-model/components';
 import { Extensions } from '#common/code-model/extensions';
 import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/dictionary';
+import { Dictionary } from '#common/linq';
 
 export interface ProgrammaticOperation extends IOperation<IParameter> {
   responses: Dictionary<Dictionary<Schema>>;

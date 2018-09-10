@@ -1,12 +1,17 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { intersect } from '#common/intersect';
-import { Expression, LiteralExpression, valueOf, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+import { Dictionary } from '#common/linq';
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { TypeDeclaration } from './type-declaration';
-import { Dictionary } from '#common/dictionary';
 
-export class LibraryType implements TypeDeclaration {
+export class ClassType implements TypeDeclaration {
   private get fullName() {
     return this.namespace.fullName ? `${this.namespace.fullName}.${this.name}` : this.name;
   }
@@ -23,8 +28,12 @@ export class LibraryType implements TypeDeclaration {
     return this.declaration;
   }
 
-  public newInstance(...parameters: Array<ExpressionOrLiteral>): Expression {
-    return { value: `new ${this.fullName}(${parameters.joinWith(each => valueOf(each))})` };
+  public new(...parameters: Array<ExpressionOrLiteral>): Expression {
+    return toExpression(`new ${this.fullName}(${parameters.joinWith(valueOf)})`);
+  }
+
+  public Cast(expression: ExpressionOrLiteral) {
+    return toExpression(`(${this.declaration})${expression}`);
   }
 }
 
@@ -69,7 +78,6 @@ export class EnumType implements TypeDeclaration {
   }
 }
 
-
 export interface Index<T> {
   [key: number]: T;
 }
@@ -77,58 +85,71 @@ export interface Index<T> {
 export const None: Namespace = new Namespace('');
 const system: Namespace = new Namespace('System');
 const threading = new Namespace('Threading', system);
+const text = new Namespace('Text', system);
 const tasks = new Namespace('Tasks', threading);
-const action = new LibraryType(system, 'Action');
+const action = new ClassType(system, 'Action');
 const collections = new Namespace('Collections', system);
 const generic = new Namespace('Generic', collections);
 const net = new Namespace('Net', system);
+const io = new Namespace('IO', system);
 const http = new Namespace('Http', net);
 const headers = new Namespace('Headers', http);
-const task = new LibraryType(tasks, 'Task');
+const task = new ClassType(tasks, 'Task');
+const encoding = new ClassType(text, 'Encoding');
 
 const xml = new Namespace('Xml', system);
 const xmllinq = new Namespace('Linq', xml);
-const stringClass = new LibraryType(system, 'String');
-
+const stringClass = new ClassType(system, 'String');
 
 export const System = intersect(system, {
   Threading: intersect(threading, {
-    CancellationToken: new LibraryType(threading, 'CancellationToken'),
-    CancellationTokenSource: new LibraryType(threading, 'CancellationTokenSource'),
+    CancellationToken: new ClassType(threading, 'CancellationToken'),
+    CancellationTokenSource: new ClassType(threading, 'CancellationTokenSource'),
 
     Tasks: intersect(tasks, {
       Task(taskType?: TypeDeclaration): TypeDeclaration {
-        return taskType ? new LibraryType(tasks, `Task<${taskType.declaration}>`) : task;
+        return taskType ? new ClassType(tasks, `Task<${taskType.declaration}>`) : task;
       }
     })
   }),
   String: intersect(stringClass, {
-    Empty: new LiteralExpression("System.String.Empty"),
+    Empty: new LiteralExpression('System.String.Empty'),
+    IsNullOrEmpty: (expression: ExpressionOrLiteral) => toExpression(`${System.String}.IsNullOrEmpty(${toExpression(expression)})`),
+    IsNullOrWhitespace: (expression: ExpressionOrLiteral) => toExpression(`${System.String}.IsNullOrWhitespace(${toExpression(expression)})`),
   }),
-  DateTime: new LibraryType(system, 'DateTime'),
-  EventArgs: new LibraryType(system, 'EventArgs'),
-  Exception: new LibraryType(system, 'Exception'),
-  AggregateException: new LibraryType(system, 'AggregateException'),
-  TimeSpan: new LibraryType(system, 'TimeSpan'),
-  Type: new LibraryType(system, 'Type'),
-  Uri: new LibraryType(system, 'Uri'),
-  IFormatProvider: new LibraryType(system, 'IFormatProvider'),
+  DateTime: new ClassType(system, 'DateTime'),
+  EventArgs: new ClassType(system, 'EventArgs'),
+  Exception: new ClassType(system, 'Exception'),
+  AggregateException: new ClassType(system, 'AggregateException'),
+  TimeSpan: new ClassType(system, 'TimeSpan'),
+  Type: new ClassType(system, 'Type'),
+  Uri: new ClassType(system, 'Uri'),
+  IFormatProvider: new ClassType(system, 'IFormatProvider'),
   Xml: intersect(xml, {
     Linq: intersect(xmllinq, {
-      XElement: new LibraryType(xmllinq, 'XElement'),
-      XAttribute: new LibraryType(xmllinq, 'XAttribute')
+      XElement: new ClassType(xmllinq, 'XElement'),
+      XAttribute: new ClassType(xmllinq, 'XAttribute')
+    })
+  }),
+  IO: intersect(io, {
+    Stream: new ClassType(io, 'Stream')
+  }),
+  Text: intersect(text, {
+    Encoding: intersect(encoding, {
+      UTF8: new LiteralExpression(`${encoding.declaration}.UTF8`)
     })
   }),
   Net: intersect(net, {
     Http: intersect(http, {
-      HttpRequestMessage: new LibraryType(http, 'HttpRequestMessage'),
-      HttpResponseMessage: new LibraryType(http, 'HttpResponseMessage'),
+      HttpRequestMessage: new ClassType(http, 'HttpRequestMessage'),
+      HttpResponseMessage: new ClassType(http, 'HttpResponseMessage'),
       Headers: intersect(headers, {
-        HttpHeaders: new LibraryType(headers, 'HttpHeaders'),
-        HttpResponseHeaders: new LibraryType(headers, 'HttpResponseHeaders'),
-      })
+        HttpHeaders: new ClassType(headers, 'HttpHeaders'),
+        HttpResponseHeaders: new ClassType(headers, 'HttpResponseHeaders'),
+      }),
+      StringContent: new ClassType(http, 'StringContent'),
     }),
-    HttpStatusCode: intersect(new LibraryType(net, 'HttpStatusCode'), <Dictionary<LiteralExpression> & Index<LiteralExpression>>{
+    HttpStatusCode: intersect(new ClassType(net, 'HttpStatusCode'), <Dictionary<LiteralExpression> & Index<LiteralExpression>>{
       default: new LiteralExpression(''),
       100: new LiteralExpression('System.Net.HttpStatusCode.Continue'),
       101: new LiteralExpression('System.Net.HttpStatusCode.SwitchingProtocols'),
@@ -175,49 +196,45 @@ export const System = intersect(system, {
     }),
   }),
   Collections: intersect(collections, {
-    Hashtable: new LibraryType(collections, "Hashtable"),
+    Hashtable: new ClassType(collections, 'Hashtable'),
     Generic: intersect(generic, {
       Dictionary(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
-        return new LibraryType(generic, `Dictionary<${keyType.declaration},${valueType.declaration}>`);
+        return new ClassType(generic, `Dictionary<${keyType.declaration},${valueType.declaration}>`);
       },
       KeyValuePair(keyType: TypeDeclaration, valueType: TypeDeclaration): TypeDeclaration {
-        return new LibraryType(generic, `KeyValuePair<${keyType.declaration},${valueType.declaration}>`);
+        return new ClassType(generic, `KeyValuePair<${keyType.declaration},${valueType.declaration}>`);
       },
       IEnumerable(type: TypeDeclaration): TypeDeclaration {
-        return new LibraryType(generic, `IEnumerable<${type.declaration}>`);
+        return new ClassType(generic, `IEnumerable<${type.declaration}>`);
       }
     })
   }),
   Action(...actionParameters: Array<TypeDeclaration>): TypeDeclaration {
-    return actionParameters.length === 0 ? action : new LibraryType(system, `Action<${actionParameters.filter(each => each.declaration).joinWith(each => each.declaration)}>`);
+    return actionParameters.length === 0 ? action : new ClassType(system, `Action<${actionParameters.filter(each => each.declaration).joinWith(each => each.declaration)}>`);
   },
 
   Func(...funcParameters: Array<TypeDeclaration>): TypeDeclaration {
-    return new LibraryType(system, `Func<${funcParameters.joinWith(each => each.declaration)}>`);
+    return new ClassType(system, `Func<${funcParameters.joinWith(each => each.declaration)}>`);
   }
 });
 
-export const Unknown: TypeDeclaration = new LibraryType(None, 'null');
-export const ToDo: TypeDeclaration = new LibraryType(None, 'null');
-export const Void: TypeDeclaration = new LibraryType(None, 'void');
-export const String: TypeDeclaration = new LibraryType(None, 'string');
-export const Int: TypeDeclaration = new LibraryType(None, 'int');
-export const Long: TypeDeclaration = new LibraryType(None, 'long');
-export const Double: TypeDeclaration = new LibraryType(None, 'double');
-export const Float: TypeDeclaration = new LibraryType(None, 'float');
-export const Binary: TypeDeclaration = new LibraryType(None, 'byte[]');
-export const Bool: TypeDeclaration = new LibraryType(None, 'bool');
-export const Object: TypeDeclaration = new LibraryType(None, 'object');
-export const Dynamic: TypeDeclaration = new LibraryType(None, 'dynamic');
-export const ThisObject: TypeDeclaration = new LibraryType(None, 'this object');
-export const Var: TypeDeclaration = new LibraryType(None, 'var');
-
-export const True = new LiteralExpression('true');
-export const False = new LiteralExpression('false');
-
-// export const Date: TypeDeclaration = new LibraryType(System, 'DateTime');
-// export const Duration: TypeDeclaration = new LibraryType(System, 'TimeSpan');
-
-export const Null = new LiteralExpression('null');
-export const This = new LiteralExpression('this');
-
+export const dotnet = {
+  Unknown: new ClassType(None, 'null'),
+  ToDo: new ClassType(None, 'null'),
+  Void: new ClassType(None, 'void'),
+  String: new ClassType(None, 'string'),
+  Int: new ClassType(None, 'int'),
+  Long: new ClassType(None, 'long'),
+  Double: new ClassType(None, 'double'),
+  Float: new ClassType(None, 'float'),
+  Binary: new ClassType(None, 'byte[]'),
+  Bool: new ClassType(None, 'bool'),
+  Object: new ClassType(None, 'object'),
+  Dynamic: new ClassType(None, 'dynamic'),
+  ThisObject: new ClassType(None, 'this object'),
+  Var: new ClassType(None, 'var'),
+  True: new LiteralExpression('true'),
+  False: new LiteralExpression('false'),
+  Null: new LiteralExpression('null'),
+  This: new LiteralExpression('this'),
+};

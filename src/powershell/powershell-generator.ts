@@ -1,5 +1,9 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
-import { execute, resolveFullPath } from '#common/exec';
 import { Text } from '#common/file-generator';
 import { resources } from '#common/locations';
 import { copyResources } from '#common/utility';
@@ -43,6 +47,7 @@ export async function processRequest(service: Host) {
 
   } catch (E) {
     console.error(E);
+    throw E;
   }
 }
 
@@ -151,6 +156,11 @@ async function generateModule(service: Host, project: Project) {
   psm1.setRegion('Initialization', `
     # this module instance.
     $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
+
+    # load nested script module if it exists
+    if( test-path "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1" )  {
+        ipmo "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1"
+    }
 
     $privatemodule = ipmo -passthru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
     # export the 'exported' cmdlets

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
-    public partial class XNodeArray : JsonArray, ICollection<JsonNode>
+    public sealed partial class XNodeArray : JsonArray, ICollection<JsonNode>
     {
         private readonly List<JsonNode> items;
 

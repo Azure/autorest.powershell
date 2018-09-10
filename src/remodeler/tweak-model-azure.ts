@@ -1,12 +1,13 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Model } from '#common/code-model/code-model';
-import { isHttpOperation } from '#common/code-model/http-operation';
-import { isSchemaObject, JsonType, Property } from '#common/code-model/schema';
-import { items, keys, length, values } from '#common/dictionary';
-import { ModelState } from '#common/model-state';
+import { JsonType } from '#common/code-model/schema';
+import { keys, length, values } from '#common/linq';
 import { processCodeModel } from '#common/process-code-model';
-import { map } from '#common/text-manipulation';
-import { deserialize, serialize } from '#common/yaml';
-import { ArtifactMessage, Channel, Host } from '@microsoft.azure/autorest-extension-base';
+import { Host } from '@microsoft.azure/autorest-extension-base';
 
 // Azure version -
 // Additional tweaks the code model to adjust things so that the code will generate better.

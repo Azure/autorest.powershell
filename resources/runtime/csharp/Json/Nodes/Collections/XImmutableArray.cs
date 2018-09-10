@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
-    public class XImmutableArray<T> : JsonArray, IEnumerable<JsonNode>
+    public sealed class XImmutableArray<T> : JsonArray, IEnumerable<JsonNode>
     {
         private readonly T[] values;
         private readonly JsonType elementType;
@@ -17,8 +17,8 @@ namespace Carbon.Json
             this.elementType = XHelper.GetElementType(this.elementCode);
         }
 
-        public override JsonNode this[int index]
-            => XHelper.Create(elementType, elementCode, values[index]);
+        public override JsonNode this[int index] => 
+            XHelper.Create(elementType, elementCode, values[index]);
 
         public override JsonType? ElementType => elementType;
 
@@ -30,7 +30,7 @@ namespace Carbon.Json
 
         IEnumerator<JsonNode> IEnumerable<JsonNode>.GetEnumerator()
         {
-            foreach (var value in values)
+            foreach (T value in values)
             {
                 yield return XHelper.Create(elementType, elementCode, value);
             }
@@ -38,7 +38,7 @@ namespace Carbon.Json
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var value in values)
+            foreach (T value in values)
             {
                 yield return XHelper.Create(elementType, elementCode, value);
             }

@@ -143,13 +143,9 @@ namespace Carbon.Json
 
         public IList DeserializeList(Type type, JsonArray jsonArray)
         {
-            #region Preconditions
-
             // TODO: Handle non-generic types
             if (!type.IsGenericType)
                 throw new ArgumentException("Must be a generic type", nameof(type));
-
-            #endregion
 
             var elementType = type.GetGenericArguments()[0];
 
@@ -339,11 +335,9 @@ namespace Carbon.Json
             }
         }
 
-        private XList<T> CreateList<T>(object value) =>
-            new XList<T>((IList<T>)value);
+        private XList<T> CreateList<T>(object value) => new XList<T>((IList<T>)value);
 
-        private XImmutableArray<T> CreateArray<T>(T[] array) =>
-            new XImmutableArray<T>(array);
+        private XImmutableArray<T> CreateArray<T>(T[] array) =>  new XImmutableArray<T>(array);
 
         #endregion
 

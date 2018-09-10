@@ -1,5 +1,10 @@
-import { Refable as Reference, Optional } from './common';
-import { Dictionary } from '#common/dictionary';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { Dictionary } from '#common/linq';
+import { Optional, Refable as Reference } from './common';
 
 // OAI3 variants for the basic model definitions.
 
@@ -54,24 +59,22 @@ export function isQueryParameter(parameter: Parameter): parameter is InQuery & P
   return parameter.in === ParameterLocation.Query ? true : false;
 }
 
-
 /** Properties have additional data when referencing them */
 export type PropertyReference<T> = PropertyDetails & (Reference<T>);
 
 // ===================================================================================================================
-// code below this point should be identical between oai3.ts and code-model.ts 
-
+// code below this point should be identical between oai3.ts and code-model.ts
 
 /**
  * @description The location of the parameter.
- * 
+ *
  * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#user-content-parameterIn
  */
 export enum ParameterLocation {
-  Query = "query",
-  Header = "header",
-  Cookie = "cookie",
-  Path = "path",
+  Query = 'query',
+  Header = 'header',
+  Cookie = 'cookie',
+  Path = 'path',
 }
 
 /**
@@ -79,31 +82,31 @@ export enum ParameterLocation {
  * @see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#style-values
  */
 export enum EncodingStyle {
-  Matrix = "matrix",
-  Label = "label",
-  Simple = "simple",
-  Form = "form",
-  SpaceDelimited = "spaceDelimited",
-  PipeDelimited = "pipeDelimited",
-  DeepObject = "deepObject"
+  Matrix = 'matrix',
+  Label = 'label',
+  Simple = 'simple',
+  Form = 'form',
+  SpaceDelimited = 'spaceDelimited',
+  PipeDelimited = 'pipeDelimited',
+  DeepObject = 'deepObject'
 }
 
 export enum JsonType {
-  Array = "array",
-  Boolean = "boolean",
-  Integer = "integer",
-  Number = "number",
-  Object = "object",
-  String = "string"
+  Array = 'array',
+  Boolean = 'boolean',
+  Integer = 'integer',
+  Number = 'number',
+  Object = 'object',
+  String = 'string'
 }
 export enum Scheme {
-  Bearer = "bearer"
+  Bearer = 'bearer'
 }
 export enum SecurityType {
-  ApiKey = "apiKey",
-  Http = "http",
-  OAuth2 = "oauth2",
-  OpenIDConnect = "openIdConnect"
+  ApiKey = 'apiKey',
+  Http = 'http',
+  OAuth2 = 'oauth2',
+  OpenIDConnect = 'openIdConnect'
 }
 
 export interface Callback extends Dictionary<PathItem> {
@@ -130,7 +133,7 @@ export interface Model extends Extensions {
 
 export interface Components extends Extensions {
   schemas: Optional<Dictionary<Reference<Schema>>>;
-  responses: Optional<Dictionary<Reference<Response>>>
+  responses: Optional<Dictionary<Reference<Response>>>;
   parameters: Optional<Dictionary<Reference<Parameter>>>;
   examples: Optional<Dictionary<Reference<Example>>>;
   requestBodies: Optional<Dictionary<Reference<RequestBody>>>;
@@ -171,7 +174,7 @@ export interface Contact extends Extensions {
 }
 export interface Discriminator extends Extensions {
   propertyName: string;
-  mapping: Optional<Dictionary<string>>
+  mapping: Optional<Dictionary<string>>;
 }
 export interface Encoding extends Extensions {
   contentType?: string;
@@ -202,7 +205,7 @@ export interface Header extends Extensions, Partial<HasContent>, Partial<HasSche
 export interface ImplicitOAuthFlow extends Extensions {
   authorizationUrl: string; // uriref
   refreshUrl?: string; // uriref
-  scopes: Dictionary<string>
+  scopes: Dictionary<string>;
 }
 export interface Info extends Extensions {
   title: string;

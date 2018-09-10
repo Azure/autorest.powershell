@@ -1,14 +1,19 @@
-import { Initializer } from '#common/initializer';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { EOL, docComment } from '#common/text-manipulation';
 import { Access, Modifier, New, ReadOnly, Static, Volitile } from '#csharp/code-dom/access-modifier';
+import { Attribute } from '#csharp/code-dom/attribute';
 import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
 import { OneOrMoreStatements, Statement } from '#csharp/code-dom/statements/statement';
 import { Variable } from '#csharp/code-dom/variable';
 import { TypeDeclaration } from './type-declaration';
-import { Attribute } from '#csharp/code-dom/attribute';
-import { EOL } from '#common/text-manipulation';
+import { xmlize } from '#csharp/code-dom/doc-comments';
 
 /** represents a field in a Class */
-export class Field extends Initializer implements Variable {
+export class Field extends Variable {
   public 'new': New = Modifier.None;
   public access = Access.Public;
   public 'static': Static = Modifier.None;
@@ -16,7 +21,7 @@ export class Field extends Initializer implements Variable {
   public volitile: Volitile = Modifier.None;
   public attributes = new Array<Attribute>();
   protected get attributeDeclaration(): string {
-    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${valueOf(each)}`, EOL)}${EOL}` : '';
+    return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
   }
 
   public description: string = '';
@@ -24,18 +29,19 @@ export class Field extends Initializer implements Variable {
   constructor(public name: string, public type: TypeDeclaration, objectInitializer?: Partial<Field>) {
     super();
     this.apply(objectInitializer);
+
+    if (!this.description.trim()) {
+      this.description = `FIXME: Field ${name} is MISSING DESCRIPTION`;
+    }
   }
 
   public get declaration(): string {
-    return `${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name};`.slim();
+    return `${docComment(xmlize('summary', this.description))}
+    ${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name};`.slim();
   }
 
   public get value(): string {
     return `${this.name}`;
-  }
-
-  public toString(): string {
-    return this.value;
   }
 
   public assign(expression: ExpressionOrLiteral): OneOrMoreStatements {
@@ -66,7 +72,8 @@ export class InitializedField extends Field {
   }
 
   public get declaration(): string {
-    return `${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name} = ${valueOf(this.valueExpression)};`.slim();
+    return `${docComment(xmlize('summary', this.description))}
+${this.attributeDeclaration}${this.new}${this.access} ${this.static} ${this.readonly} ${this.volitile} ${this.type.declaration} ${this.name} = ${valueOf(this.valueExpression)};`.slim();
   }
 }
 

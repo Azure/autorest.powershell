@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { CommaChar } from '#common/text-manipulation';
 import { Method } from './method';
 
@@ -13,6 +18,7 @@ export class Operator extends Method {
     return `
 ${this.summaryDocumentation}
 ${this.parameterDocumentation}
+${this.returnsDocumentation}
 ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} ${this.override} ${this.abstract} ${this.extern} ${this.async} ${this.name}(${parameterDeclaration})
 `.slim();
   }

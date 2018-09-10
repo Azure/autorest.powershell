@@ -13,12 +13,8 @@ namespace Carbon.Json.Parser
 
         internal JsonParser(SourceReader sourceReader)
         {
-            #region Preconditions
-
             if (sourceReader == null)
                 throw new ArgumentNullException(nameof(sourceReader));
-
-            #endregion
 
             this.reader = new TokenReader(new JsonTokenizer(sourceReader));
 

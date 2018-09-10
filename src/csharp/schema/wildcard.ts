@@ -1,13 +1,18 @@
-import { nameof } from '#common/text-manipulation';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { KnownMediaType } from '#common/media-types';
-import { Variable } from '#csharp/code-dom/variable';
-import { ExpressionOrLiteral, Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { nameof } from '#common/text-manipulation';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { ForEach } from '#csharp/code-dom/statements/for';
 import { If } from '#csharp/code-dom/statements/if';
-import { ForEach } from '#csharp/code-dom/statements/for'
+import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
+import { Variable } from '#csharp/code-dom/variable';
+import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class Wildcard implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -57,6 +62,10 @@ export class Wildcard implements EnhancedTypeDeclaration {
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return toExpression(`null /* deserializeFromString (wildcard)doesn't support '${mediaType}' ${__filename}*/`);
   }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
@@ -85,14 +94,13 @@ export class Wildcard implements EnhancedTypeDeclaration {
   /** is the value of this type permitted to be NULL */
   isRequired = false;
 
-  public validatePresence(property: Variable): string {
+  public validatePresence(eventListener: Variable, property: Variable): string {
     return ``;
   }
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return ``;
   }
 }
-
 
 export class UntypedWildcard implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -124,6 +132,11 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
     return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}*/`);
   }
 
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
@@ -135,10 +148,10 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   get declaration(): string {
     return `System.Collections.Generic.Dictionary<string,object>`;
   }
-  public validatePresence(property: Variable): string {
-    return `await listener.AssertNotNull(${nameof(property.value)},${property});`.trim();
+  public validatePresence(eventListener: Variable, property: Variable): string {
+    return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
   }
-  validateValue(property: Variable): string {
+  validateValue(eventListener: Variable, property: Variable): string {
     return `/* untyped wildcard validate value for ${property} */`;
   }
 }

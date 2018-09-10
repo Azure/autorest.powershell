@@ -1,6 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { indent } from '#common/text-manipulation';
-import { Expression, LiteralExpression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements, Statements, StatementPossibilities } from '#csharp/code-dom/statements/statement';
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
+import { StatementPossibilities, Statements } from '#csharp/code-dom/statements/statement';
 
 export function If(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
   return new IfStatement(conditional, statements, objectInitializer);
@@ -19,7 +24,6 @@ ${indent(super.implementation)}
 }`.trim();
   }
 }
-
 
 export function While(conditional: ExpressionOrLiteral, statements: StatementPossibilities, objectInitializer?: Partial<IfStatement>) {
   return new WhileStatement(conditional, statements, objectInitializer);

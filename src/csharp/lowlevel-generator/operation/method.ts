@@ -1,11 +1,16 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { NewResponse, ParameterLocation } from '#common/code-model/http-operation';
-import { items, length, values } from '#common/dictionary';
-import { camelCase, deconstruct, EOL } from '#common/text-manipulation';
+import { items, length, values } from '#common/linq';
+import { EOL } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';
 import { Class } from '#csharp/code-dom/class';
+
 import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
-import * as dotnet from '#csharp/code-dom/mscorlib';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '#csharp/code-dom/statements/case';
 import { Finally } from '#csharp/code-dom/statements/finally';
@@ -15,13 +20,15 @@ import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/sta
 import { Switch } from '#csharp/code-dom/statements/switch';
 import { Try } from '#csharp/code-dom/statements/try';
 import { Using } from '#csharp/code-dom/statements/using';
-import { LocalVariable, Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Local, LocalVariable, Variable } from '#csharp/code-dom/variable';
+import { ClientRuntime, StoragePipeline } from '#csharp/lowlevel-generator/clientruntime';
 import { HttpOperation, Schema } from '#csharp/lowlevel-generator/code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
-import { isMediaTypeJson, isMediaTypeXml, normalizeMediaType, parseMediaType, KnownMediaType, knownMediaType } from '#common/media-types';
+import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '#common/media-types';
+import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
+import { Ternery } from '#csharp/code-dom/ternery';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -32,19 +39,22 @@ export class OperationMethod extends Method {
   public callbacks = new Array<CallbackParameter>();
 
   constructor(protected parent: Class, public operation: HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(operation.details.csharp.name, dotnet.System.Threading.Tasks.Task());
+    super(operation.details.csharp.name, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
+    this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
+
+    this.push(Using(`NoSynchronizationContext`, ``));
 
     if (this.state.project.storagePipeline) {
       // add resourceUri parameter
-      this.resourceUri = this.addParameter(new Parameter('resourceUri', dotnet.System.Uri));
+      this.resourceUri = this.addParameter(new Parameter('resourceUri', System.Uri));
 
       // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('pipeline', new dotnet.LibraryType('Microsoft.Azure.HttpPipeline', 'Pipeline')));
+      this.senderParameter = this.addParameter(new Parameter('pipeline', StoragePipeline.Pipeline));
 
       // add context parameter
-      this.contextParameter = this.addParameter(new Parameter('context', new dotnet.LibraryType('Microsoft.Azure.HttpPipeline', 'CancelContext')));
+      this.contextParameter = this.addParameter(new Parameter('context', StoragePipeline.CancelContext));
     }
 
     // add parameters
@@ -73,23 +83,23 @@ export class OperationMethod extends Method {
         const responseType = response.schema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.schema, true, state) : null;
         const headerType = response.headerSchema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
 
-        if (responseType || headerType) {
-          const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state);
-          this.addParameter(newCallbackParameter);
-          this.callbacks.push(newCallbackParameter);
-        } else {
-          // there isn't a response type for the this call. 
-          // stream?
-        }
+        // if (responseType || headerType) {
+        const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state, { description: response.details.csharp.description });
+        this.addParameter(newCallbackParameter);
+        this.callbacks.push(newCallbackParameter);
+        // } else {
+        // there isn't a response type for the this call.
+        // stream?
+        // }
       }
     }
 
     if (!this.state.project.storagePipeline) {
       // add eventhandler parameter
-      this.contextParameter = this.addParameter(new Parameter('listener', ClientRuntime.IEventListener));
+      this.contextParameter = this.addParameter(new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive events.` }));
 
       // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync));
+      this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
     }
     // todo: parameterized uris
     let baseUrl = `${this.operation.servers[0].url}`;
@@ -103,7 +113,9 @@ export class OperationMethod extends Method {
     const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
     for (const pp of pathParams) {
-      path = path.replace(`{${pp.param.name}}`, `{System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`);
+      path = path.replace(`{${pp.param.name}}`, `"
+        + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '')}
+        + "`);
     }
     const cb = this.callbacks;
     const bp = this.bodyParameter;
@@ -115,10 +127,12 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// construct URL`;
+      /* FIXING!
       if (queryParams.length > 0) {
         yield `var queryParameters = new System.Collections.Generic.List<string>();`;
       }
-      // yield `var _url = new System.Uri($"${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}${queryParams.joinWith(pp => `${pp.param.name}={System.Uri.EscapeDataString(null == ${pp.use} ? "" : ${pp.use}.ToString() )}`, '&')}");`;
+      */
+      let url: LocalVariable;
       if ($this.state.project.storagePipeline) {
         if (queryParams.length > 0) {
           for (const qp of queryParams) {
@@ -131,8 +145,18 @@ export class OperationMethod extends Method {
           yield `var _url = new System.Uri(${$this.resourceUri}.AbsoluteUri);`;
         }
       } else {
-        yield `var _url = new System.Uri("${baseUrl}${path}${queryParams.length > 0 ? '?' : ''}"${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.Header, pp.param.name).value}`, '+"&"')});`;
+        url = new LocalVariable('_url', dotnet.Var, {
+          initializer: System.Uri.new(`
+        "${baseUrl}${path}"
+        ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
+        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
+        + "&"`
+            )}
+        `)
+        });
+        yield url.declarationStatement;
+
+        yield EOL;
       }
       yield eventListener.signal(ClientRuntime.Events.URLCreated, `_url`);
       yield EOL;
@@ -145,7 +169,7 @@ export class OperationMethod extends Method {
       if (headerParams.length > 0) {
         yield `// add headers parameters`;
         for (const hp of headerParams) {
-          if (hp.param.name == "Content-Length") {
+          if (hp.param.name === 'Content-Length') {
             // content length is set when the request body is set
             continue;
           }
@@ -163,9 +187,6 @@ export class OperationMethod extends Method {
       }
 
       yield `// make the call `;
-
-      // yield `await this.${$this.name}_Call(request,${cb.joinWith(each => each.use, ',')},${$this.listenerParameter.use},${$this.senderParameter.use});`;
-
     });
   }
 
@@ -173,7 +194,7 @@ export class OperationMethod extends Method {
 
     // storage will return from the call for download, etc.
     if (returnFromCall) {
-      this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
+      this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     }
 
     if (this.state.project.storagePipeline) {
@@ -186,7 +207,6 @@ export class OperationMethod extends Method {
     } else {
       this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
     }
-
 
     // remove constant parameters and make them locals instead.
     this.insert(`// Constant Parameters`);
@@ -232,10 +252,15 @@ export class EventListener {
 export class CallMethod extends Method {
   public returnNull: boolean = false;
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(`${opMethod.operation.details.csharp.name}_Call`, dotnet.System.Threading.Tasks.Task());
+    super(`${opMethod.operation.details.csharp.name}_Call`, System.Threading.Tasks.Task());
+    this.description = `Actual wire call for <see cref="${opMethod.operation.details.csharp.name}" /> method.`;
+    this.returnsDescription = opMethod.returnsDescription;
+
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;
+    this.push(Using(`NoSynchronizationContext`, ``));
+
     const $this = this;
     // add parameters
     // request, listener, sender
@@ -243,7 +268,7 @@ export class CallMethod extends Method {
       this.addParameter(opMethod.senderParameter);
       this.addParameter(opMethod.contextParameter);
     }
-    const reqParameter = this.addParameter(new Parameter('request', dotnet.System.Net.Http.HttpRequestMessage));
+    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: `the prepared HttpRequestMessage to send.` }));
     opMethod.callbacks.map(each => this.addParameter(each));
     if (!this.state.project.storagePipeline) {
       this.addParameter(opMethod.contextParameter);
@@ -253,27 +278,29 @@ export class CallMethod extends Method {
     this.add(function* () {
       const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals);
 
-      const response = new LocalVariable('_response', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
+      // const response = new LocalVariable('_response', System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
+      const response = Local('_response', dotnet.Null, System.Net.Http.HttpResponseMessage);
       yield response;
       yield Try(function* () {
 
         const responder = function* () {
           if ($this.state.project.storagePipeline) {
             // set the response object in the responder.
-            yield `_response = response;`;
+            yield response.assign(`response`);
           }
           // TODO: omit generating _contentType var if it will never be used
-          const contentType = new LocalVariable("_contentType", dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
+          // const contentType = new LocalVariable('_contentType', dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
+          const contentType = Local('_contentType', `${response}.Content.Headers.ContentType?.MediaType`);
+
           yield contentType;
 
-
           // add response handlers
-          yield Switch({ value: `${response.value}.StatusCode` }, function* () {
+          yield Switch(`${response}.StatusCode`, function* () {
             const i = 0;
             for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
               if (responseCode !== 'default') {
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(dotnet.System.Net.HttpStatusCode[responseCode].value || `(${dotnet.System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode].value || `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
               } else {
                 yield DefaultCase($this.responsesEmitter($this, opMethod, responses, eventListener));
               }
@@ -287,7 +314,7 @@ export class CallMethod extends Method {
               });
             }
           });
-        }
+        };
 
         // try statements
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
@@ -296,7 +323,7 @@ export class CallMethod extends Method {
 ${new Statements(responder()).implementation}
 }));`;
         } else {
-          yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use},  ${opMethod.contextParameter.value});`;
+          yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value});`;
         }
 
         yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
@@ -304,9 +331,9 @@ ${new Statements(responder()).implementation}
         // LRO processing (if appropriate)
         if ($this.opMethod.operation.details.csharp.lro) {
           yield `// this operation supports x-ms-long-running-operation`;
-          const originalUri = new LocalVariable('_originalUri', dotnet.Var, { initializer: new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`) });
+          const originalUri = Local('_originalUri', new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`));
           yield originalUri;
-          yield While(new LiteralExpression(`${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+          yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
             yield `// get the delay before polling.`;
             yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`RetryAfter`)).value}, out int delay)`, `delay = 30;`);
@@ -315,32 +342,38 @@ ${new Statements(responder()).implementation}
 
             yield EOL;
             yield `// start the delay timer (we'll await later...)`;
-            const waiting = new LocalVariable('waiting', dotnet.Var, { initializer: new LiteralExpression(`${dotnet.System.Threading.Tasks.Task()}.Delay(delay * 1000, listener.Token )`) });
+            const waiting = Local('waiting', new LiteralExpression(`${System.Threading.Tasks.Task()}.Delay(delay * 1000, ${$this.opMethod.contextParameter}.Token )`));
             yield waiting;
 
             yield EOL;
             yield `// while we wait, let's grab the headers and get ready to poll. `;
-            const asyncOperation = new LocalVariable('asyncOperation', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)) });
+            const asyncOperation = Local('asyncOperation', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
             yield asyncOperation;
-            const location = new LocalVariable('location', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
+            const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
             yield location;
 
-            yield `var _uri = string.IsNullOrEmpty(${asyncOperation.value}) ? string.IsNullOrEmpty(${location.value}) ? ${originalUri.value} : ${location.value} : ${asyncOperation.value};`;
+            const uriLocal = Local('_uri', Ternery(
+              System.String.IsNullOrEmpty(asyncOperation),
+              Ternery(System.String.IsNullOrEmpty(location),
+                originalUri,
+                location),
+              asyncOperation));
+            yield uriLocal;
 
-            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(_uri), Microsoft.Rest.ClientRuntime.Method.Get);`;
+            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(${uriLocal}), ${ClientRuntime.Method.Get});`;
 
             yield EOL;
             yield `// and let's look at the current response body and see if we have some information we can give back to the listener`;
-            const content = new LocalVariable('content', dotnet.Var, { initializer: new LiteralExpression(`${response.value}.Content.ReadAsStringAsync()`) });
+            const content = Local('content', new LiteralExpression(`${response.value}.Content.ReadAsStringAsync()`));
             yield content;
 
             yield `await waiting;`;
 
             yield EOL;
             yield `// check for cancellation`;
-            yield `if( listener.Token.IsCancellationRequested ) { return; }`;
+            yield `if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }`;
 
-            yield eventListener.signal(ClientRuntime.Events.Polling, `$"Polling {_uri}."`, response.value);
+            yield eventListener.signal(ClientRuntime.Events.Polling, `$"Polling {${uriLocal}}."`, response.value);
 
             yield EOL;
             yield `// drop the old response`;
@@ -348,7 +381,7 @@ ${new Statements(responder()).implementation}
 
             yield EOL;
             yield `// make the polling call`;
-            yield `${response.value} = await sender.SendAsync(${reqParameter.value},  listener);`;
+            yield `${response.value} = await ${opMethod.senderParameter}.SendAsync(${reqParameter.value}, ${opMethod.contextParameter});`;
 
             yield EOL;
             yield `
@@ -356,10 +389,10 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 {
     try {
         // we have a 200, and a should have a provisioning state.
-        if( Carbon.Json.JsonNode.Parse(await _response.Content.ReadAsStringAsync()) is Carbon.Json.JsonObject json)
+        if( ${ClientRuntime.JsonNode.Parse(toExpression(`await _response.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
         {
-            var state = json.Property("properties")?.PropertyT<Carbon.Json.JsonString>("provisioningState");
-            await listener.Signal(Microsoft.Rest.ClientRuntime.Events.Polling, $"Polled {_uri} provisioning state  {state}.", _response); if( listener.Token.IsCancellationRequested ) { return; }
+            var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState");
+            await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", _response); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
             if( state?.ToString() != "Succeeded")
             {
                 _response.StatusCode = System.Net.HttpStatusCode.Created;
@@ -371,8 +404,8 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 }`;
 
             yield EOL;
-            yield '// check for terminal status code'
-            yield If(new LiteralExpression(`${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${dotnet.System.Net.HttpStatusCode[202].value} `), function* () {
+            yield '// check for terminal status code';
+            yield If(new LiteralExpression(`${response.value}.StatusCode != ${System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${System.Net.HttpStatusCode[202].value} `), function* () {
               yield `// we're done polling, do a request on final target?`;
               yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
               const fsv = $this.opMethod.operation.details.csharp.lro['final-state-via'];
@@ -396,12 +429,12 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
                 default:
                   // depending on the type of request, fall back to the appropriate behavior
-                  const finalLocation = new LocalVariable("finalLocation", dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
+                  const finalLocation = new LocalVariable('finalLocation', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
                   switch ($this.opMethod.operation.method.toLowerCase()) {
                     case 'post':
                     case 'delete':
                       // if the location header was passed in, we're going to do a get on that.
-                      yield `// final get on the the Location header, if present`
+                      yield `// final get on the the Location header, if present`;
                       yield finalLocation;
                       If(`string.IsNullOrWhiteSpace(${finalLocation})`, function* () {
                         yield $this.finalGet(finalLocation, reqParameter, response);
@@ -409,7 +442,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
                       break;
                     case 'patch':
                     case 'put':
-                      yield `// final get on the original URI`
+                      yield `// final get on the original URI`;
                       yield $this.finalGet(originalUri, reqParameter, response);
                       break;
                   }
@@ -423,10 +456,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           yield responder();
         }
 
-
-
       });
-
 
       yield Finally(function* () {
         yield '// finally statements';
@@ -437,7 +467,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
       if ($this.returnNull) {
         yield Return('result');
-        $this.insert(new LocalVariable('result', dotnet.System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }));
+        $this.insert(new LocalVariable('result', System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null }));
       }
     });
 
@@ -445,7 +475,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
   }
 
   private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
-    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), Microsoft.Rest.ClientRuntime.Method.Get)`);
+    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), ${ClientRuntime.Method.Get})`);
 
     yield EOL;
     yield `// drop the old response`;
@@ -453,7 +483,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
     yield EOL;
     yield `// make the final call`;
-    yield response.assign(`await sender.SendAsync(${valueOf(reqParameter)},  listener);`);
+    yield response.assign(`await ${this.opMethod.senderParameter}.SendAsync(${valueOf(reqParameter)},  ${this.opMethod.contextParameter})`);
 
     // make sure we're not polling anymore.
     yield 'break;';
@@ -482,17 +512,16 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
       });
     } else {
       const response = responses[0];
-      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === response.details.csharp.name)
+      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === response.details.csharp.name);
       // all mimeTypes per for this response code.
       yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
       yield $this.responseHandler(response.mimeTypes[0], response, callbackParameter);
     }
   }
 
-  private *responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
-
+  private *responseHandlerForStoragePipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     if (callbackParameter) {
-      const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : "";
+      const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : '';
       const contentDeserialize = callbackParameter.responseType ?
         callbackParameter.responseType.deserializeFromString(knownMediaType(mimetype), toExpression(`await _response.Content.ReadAsStringAsync()`), toExpression('null')) :
         null;
@@ -507,7 +536,12 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           }
           return;
         } else {
-          yield `await ${eachResponse.details.csharp.name}( request, _response, ${contentDeserialize});`;
+
+          if (callbackParameter.headerType) {
+            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}), new ${headerClassType}().ReadHeaders(_response.Headers));`;
+          } else {
+            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}));`;
+          }
           return;
         }
       }
@@ -520,14 +554,13 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
           // we're going to return the response.
 
           if (callbackParameter.headerType) {
-            yield `// call back with the deserialized header object before we give the whole response back`
+            yield `// call back with the deserialized header object before we give the whole response back`;
             yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
           }
 
-
           // switch the response type.
-          this.returnType = dotnet.System.Threading.Tasks.Task(dotnet.System.Net.Http.HttpResponseMessage);
-          // const result = new LocalVariable('result', dotnet.Var, { initializer: '_response' });
+          this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
+          // const result = new LocalVariable('result', IL.Var, { initializer: '_response' });
           yield `result = _response;`;
           yield `_response = null; // ensure that it's not disposed in finally`;
           // yield Return(result);
@@ -553,11 +586,11 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
         return;
 
       } else {
-        // oh, we don't actually have a body response at all. 
-        // header content should be deserialized into the appropriate type if possible. 
+        // oh, we don't actually have a body response at all.
+        // header content should be deserialized into the appropriate type if possible.
 
         if (callbackParameter.headerType) {
-          yield `// call back with the deserialized header object`
+          yield `// call back with the deserialized header object`;
           yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
         } else {
           yield `/* no body or header response */`;
@@ -567,21 +600,59 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
     }
     // hmm. not a supported serialization type.
     // do we handle this like a stream response?
-    //return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
+    // return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
+  }
+
+  private * responseHandlerForNormalPipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
+    const callbackParameters = new Array<ExpressionOrLiteral>();
+
+    if (callbackParameter.responseType) {
+      // hande the body response
+      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(`_response`), toExpression('null'));
+      if (r) {
+        callbackParameters.push(r);
+      }
+
+      // if (parseMediaType(mimetype)) {
+      // this media type isn't directly supported by deserialization
+      // we can return a stream to the consumer instead
+      // }
+    }
+
+    if (callbackParameter.headerType) {
+      // header model deserialization...
+      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression(`_response`), toExpression('null'));
+      if (r) {
+        callbackParameters.push(r);
+      }
+    }
+    // make the callback with the appropriate parameters
+    yield `await ${eachResponse.details.csharp.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(valueOf)});`;
+  }
+
+  private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
+    return this.state.project.storagePipeline ?
+      this.responseHandlerForStoragePipeline(mimetype, eachResponse, callbackParameter) :
+      this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
   }
 }
 
 export class ValidationMethod extends Method {
 
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(`${opMethod.operation.details.csharp.name}_Validate`, dotnet.System.Threading.Tasks.Task());
+    super(`${opMethod.operation.details.csharp.name}_Validate`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
+    this.description = `Validation method for <see cref="${opMethod.operation.details.csharp.name}" /> method. Call this like the actual call, but you will get validation events back.`;
+    this.returnsDescription = opMethod.returnsDescription;
     this.access = Access.Internal;
     this.async = Modifier.Async;
+    this.push(Using(`NoSynchronizationContext`, ``));
 
     // add the method parameters
     for (const parameter of opMethod.methodParameters) {
-      this.addParameter(parameter);
+      if (!parameter.defaultInitializer) {
+        this.addParameter(parameter);
+      }
     }
 
     if (opMethod.bodyParameter) {
@@ -593,15 +664,17 @@ export class ValidationMethod extends Method {
     // add statements to this method
     this.add(function* () {
       for (const parameter of opMethod.methodParameters) {
-        // spit out parameter validation
-        yield parameter.validatePresenceStatement;
-        yield parameter.validationStatement;
+        if (!parameter.defaultInitializer) {
+          // spit out parameter validation
+          yield parameter.validatePresenceStatement(opMethod.contextParameter);
+          yield parameter.validationStatement(opMethod.contextParameter);
+        }
       }
 
       // spit out body parameter validation too
       if (opMethod.bodyParameter) {
-        yield opMethod.bodyParameter.validatePresenceStatement;
-        yield opMethod.bodyParameter.validationStatement;
+        yield opMethod.bodyParameter.validatePresenceStatement(opMethod.contextParameter);
+        yield opMethod.bodyParameter.validationStatement(opMethod.contextParameter);
       }
     });
   }
