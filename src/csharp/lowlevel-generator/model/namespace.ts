@@ -5,7 +5,7 @@
 
 import { Header } from '#common/code-model/http-operation';
 import { Dictionary, items } from '#common/linq';
-import { Import } from '#csharp/code-dom/import';
+import { ImportDirective } from '#csharp/code-dom/import';
 import { Namespace } from '#csharp/code-dom/namespace';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
@@ -26,7 +26,7 @@ export class ModelsNamespace extends Namespace {
   constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelsNamespace>) {
     super('Models', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
+    this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;

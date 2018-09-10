@@ -44,6 +44,8 @@ export class OperationMethod extends Method {
     this.async = Modifier.Async;
     this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
 
+    this.push(Using(`NoSynchronizationContext`, ``));
+
     if (this.state.project.storagePipeline) {
       // add resourceUri parameter
       this.resourceUri = this.addParameter(new Parameter('resourceUri', System.Uri));
@@ -257,6 +259,8 @@ export class CallMethod extends Method {
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;
+    this.push(Using(`NoSynchronizationContext`, ``));
+
     const $this = this;
     // add parameters
     // request, listener, sender
@@ -642,6 +646,7 @@ export class ValidationMethod extends Method {
     this.returnsDescription = opMethod.returnsDescription;
     this.access = Access.Internal;
     this.async = Modifier.Async;
+    this.push(Using(`NoSynchronizationContext`, ``));
 
     // add the method parameters
     for (const parameter of opMethod.methodParameters) {

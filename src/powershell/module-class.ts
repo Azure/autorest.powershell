@@ -18,6 +18,7 @@ import { LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/propert
 import { Return } from '#csharp/code-dom/statements/return';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { State } from '#powershell/state';
+import { Using } from '#csharp/code-dom/statements/using';
 
 export class ModuleClass extends Class {
 
@@ -130,11 +131,13 @@ export class ModuleClass extends Class {
       const pToken = new Parameter('token', System.Threading.CancellationToken, { description: `The cancellation token for the event ` });
       const pGetEvent = new Parameter('getEventData', System.Func(System.EventArgs), { description: `A delegate to get the detailed event data` });
       const pSignal = new Parameter('signal', signalDelegateIAlias, { description: `The callback for the event dispatcher ` });
-      this.add(new Method('Signal', System.Threading.Tasks.Task(), {
+      const signalImpl = this.add(new Method('Signal', System.Threading.Tasks.Task(), {
         parameters: [pId, pToken, pGetEvent, pSignal], async: Modifier.Async,
         description: `Called to dispatch events to the common module listener`,
         returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the event is completed.`
-      })).add(function* () {
+      }));
+      signalImpl.push(Using(`NoSynchronizationContext`, ``));
+      signalImpl.add(function* () {
         yield `await ${EventListener.value}?.Invoke(${pId.value},${pToken.value},${pGetEvent.value}, ${pSignal.value});`;
       });
 

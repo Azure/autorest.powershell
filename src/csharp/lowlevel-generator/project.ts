@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Import } from '#csharp/code-dom/import';
+import { ImportDirective } from '#csharp/code-dom/import';
 import { Project as codeDomProject } from '#csharp/code-dom/project';
 import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
 import { State } from './generator';
@@ -53,7 +53,7 @@ export class Project extends codeDomProject {
     // create serialization support
     // new JsonSerializerClass(this.supportNamespace, this.state);
     //}
-    this.modelsNamespace.addUsing(new Import(this.supportNamespace.fullName));
+    this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
 
     // abort now if we have any errors.
     this.state.checkpoint();

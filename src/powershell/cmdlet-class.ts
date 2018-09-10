@@ -217,11 +217,16 @@ export class CmdletClass extends Class {
 
   private implementProcessRecordAsync(operation: CommandOperation) {
     const $this = this;
-    this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
+    const PAR = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
       description: `Performs execution of the command, working asynchronously if required.`,
       returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
-    })).add(function* () {
+    }));
+
+    // we don't want to use SynchContext here.
+    PAR.push(Using(`NoSynchronizationContext`, ``));
+
+    PAR.add(function* () {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
@@ -279,6 +284,8 @@ export class CmdletClass extends Class {
           description: each.details.csharp.description,
           returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
         });
+        responseMethod.push(Using(`NoSynchronizationContext`, ``));
+
         responseMethod.add(function* () {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
@@ -494,13 +501,16 @@ export class CmdletClass extends Class {
     const id = new Parameter('id', dotnet.String, { description: `The message id` });
     const token = new Parameter('token', System.Threading.CancellationToken, { description: `The message cancellation token. When this call is cancelled, this should be <c>true</c>` });
     const messageData = new Parameter('messageData', System.Func(ClientRuntime.EventData), { description: `Detailed message data for the message event.` });
-    this.add(new Method(`${ClientRuntime.IEventListener}.Signal`, System.Threading.Tasks.Task(), {
+    const signalMethod = this.add(new Method(`${ClientRuntime.IEventListener}.Signal`, System.Threading.Tasks.Task(), {
       async: Modifier.Async,
       parameters: [id, token, messageData],
       access: Access.Default,
       description: `Handles/Dispatches events during the call to the REST service.`,
       returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the message is completed.`
-    })).add(function* () {
+    }));
+    signalMethod.push(Using(`NoSynchronizationContext`, ``));
+
+    signalMethod.add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
       yield Switch(id, [

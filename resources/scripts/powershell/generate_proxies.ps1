@@ -51,10 +51,20 @@ if( -not (test-path $dll) ) {
 }
 
 $commands = get-command -module (ipmo $dll -passthru)
+write-host -fore gray "Private Module loaded ($dll)."
 
-write-host -fore gray "Private Module loaded."
+# merge scripts into one file
+$modulename = (dir *.psd1)[0].Name -replace ".psd1",""
+$scriptmodule = $dll -replace ".private.",".scripts." -replace ".dll",".psm1"
+$scriptfile = ""; 
+dir -recurse private\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(resolve-path -relative $_)`n" + (get-content -raw $_) } ; 
+Set-Content $scriptmodule -Value $scriptfile
+if( $scriptfile -ne '' ) {
+    $commands = $commands + (get-command -module (ipmo $scriptmodule -passthru))
+    write-host -fore gray "Private Scripts Module loaded ($scriptmodule)."
+}
 
-
+# No commands?
 if( $commands.length -eq 0  ) {
      write-error "Unable get commands from private module."
 }
@@ -72,6 +82,7 @@ $commands |% {
         $targetCmdlet = $metadata.Name
         $variant = "default"
     }
+    
 
     if( -not ($outputs.ContainsKey($targetCmdlet))) {
         $newCmdlet = @{ 
@@ -82,7 +93,7 @@ $commands |% {
         # create the new target cmdlet 
         $newCmdlet.cmdlet.Parameters.Clear();
         $outputs[$targetCmdlet] = $newCmdlet;
-    }
+    } 
 
     $cmdlet = $outputs[$targetCmdlet]
     
@@ -90,20 +101,24 @@ $commands |% {
     $gb = [System.Management.Automation.ProxyCommand]::GetBegin( $metadata ) 
     $ct = $metadata.Parameters.Keys.Count
     
-    $newCmdlet.variants.add( $variant, @{ method = $gb; pcount = $ct; name = $name} )
-
+    
+    $cmdlet.variants.add( $variant, @{ method = $gb; pcount = $ct; name = $variant} )
+    
     # copy parameters across
     $metadata.Parameters.Keys |% {
         $name = $_;
+
         $p = $metadata.Parameters[$name]
         if( -not ($cmdlet.cmdlet.parameters.ContainsKey($name) ) ) {
             # add the parameter to the target
             $newParam = New-Object System.Management.Automation.ParameterMetadata($p);
             $newParam.ParameterSets.Clear()
-            $newCmdlet.cmdlet.Parameters.add($name, $newParam)
+            $cmdlet.cmdlet.Parameters.add($name, $newParam)
         }
-        $param = $newCmdlet.cmdlet.Parameters[$name];
-        $param.ParameterSets.Add( $variant, $p.ParameterSets["__AllParameterSets"]);
+        $param = $cmdlet.cmdlet.Parameters[$name];
+        if( $p.ParameterSets["__AllParameterSets"] ) {
+            $param.ParameterSets.Add( $variant, $p.ParameterSets["__AllParameterSets"]);
+        }
     }
 }
 
@@ -111,12 +126,18 @@ $shh = mkdir "./exported"
 
 write-host -fore green "Generating unified cmdlet proxies"
 # Now, loop thru and spit out the proxies
+
 $outputs.Keys |% {
+    
     $cmdletname= $_
     $each = $outputs[$cmdletname]
     $cmd = [System.Management.Automation.ProxyCommand]::create($each.cmdlet)
 
     if( $each.variants.Count -eq 1 ) {
+        if($cmd -match "GetCommand[^\\]*$" ) {
+           $cmd = $cmd -replace ".InvokeCommand.GetCommand\('",".InvokeCommand.GetCommand('$modulename.scripts\"
+        }
+
         $text = $cmd
     } else {
         $b = [System.Management.Automation.ProxyCommand]::GetBegin($each.cmdlet)
@@ -130,13 +151,16 @@ $outputs.Keys |% {
             $name = $_;
 
             if ( $each.variants[$name].pcount -lt $pc ) {
-                # write-host "$name => $pc $($each.variants[$name].pcount)"
                 $pc = $each.variants[$name].pcount
                 $defaultImpl = $each.variants[$name].method
                 $defaultName = $name
             }
             
             $variant = $each.variants[$name].method;
+            if($variant -match "GetCommand[^\\]*$" ) {
+                $variant = $variant -replace ".InvokeCommand.GetCommand\('",".InvokeCommand.GetCommand('$modulename.scripts\"
+            }
+
             $t =  "`n  '$_' {`n"
             $t = $t + $variant
             $t = $t + "`n}`n"
@@ -154,8 +178,10 @@ $outputs.Keys |% {
         $text = $cmd.replace( $b, $newBegin ) 
         $text = $text.replace( "[CmdletBinding()]", "[CmdletBinding(DefaultParameterSetName='$defaultName')]")
     }
-    $text = "function ${cmdletname} {`n$text`n}`n"
-    set-content "exported/${cmdletname}.ps1" -value $text
+    $text = "function ${cmdletname} {`n$text`n}`n"  
+    $filename = $cmdletname -replace ".*[\\|/]","" -replace  '\.ps1$',''
+
+    set-content "exported/${filename}.ps1" -value $text
 }
   
   popd

@@ -7,12 +7,12 @@ import { Initializer } from '#common/initializer';
 import { comment, dotCombine, EOL, indent, toMap } from '#common/text-manipulation';
 import { Class } from './class';
 import { Delegate } from './delegate';
-import { Import } from './import';
+import { ImportDirective } from './import';
 import { Interface } from './interface';
 import { Project } from './project';
 
 export class Namespace extends Initializer {
-  private usings = new Array<Import>();
+  private usings = new Array<ImportDirective>();
   private classes = new Array<Class>();
   private interfaces = new Array<Interface>();
   private delegates = new Array<Delegate>();
@@ -30,7 +30,7 @@ export class Namespace extends Initializer {
     return this.folder;
   }
 
-  public addUsing(using: Import): Import {
+  private addImport(using: ImportDirective): ImportDirective {
     if (this.usings.indexOf(using) === -1) {
       this.usings.push(using);
     }
@@ -65,21 +65,21 @@ export class Namespace extends Initializer {
     return n;
   }
 
-  public add<T extends object>(item: T & (Class | Namespace | Interface | Import)): T {
+  public add<T extends object>(item: T & (Class | Namespace | Interface | ImportDirective)): T {
     if (item instanceof Class) {
-      this.classes.push(item);
+      this.addClass(item);
       return item;
     }
     if (item instanceof Namespace) {
-      this.namespaces.push(item);
+      this.addNamespace(item);
       return item;
     }
     if (item instanceof Interface) {
-      this.interfaces.push(item);
+      this.addInterface(item);
       return item;
     }
-    if (item instanceof Import) {
-      this.addUsing(item);
+    if (item instanceof ImportDirective) {
+      this.addImport(item);
       return item;
     }
     throw Error(`FATAL - UNABLE TO ADD UNKNOWN TYPE for '${JSON.stringify(item)}'`);

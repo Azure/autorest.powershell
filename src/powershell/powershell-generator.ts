@@ -157,6 +157,11 @@ async function generateModule(service: Host, project: Project) {
     # this module instance.
     $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
+    # load nested script module if it exists
+    if( test-path "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1" )  {
+        ipmo "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1"
+    }
+
     $privatemodule = ipmo -passthru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
     # export the 'exported' cmdlets
     Get-ChildItem "$PSScriptRoot/exported" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach {

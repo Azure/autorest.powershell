@@ -10,6 +10,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Threading;
     using System.Threading.Tasks;
     using GetEventData = System.Func<EventData>;
+    using static Microsoft.Rest.ClientRuntime.Extensions;
 
     public interface IValidates
     {
@@ -221,17 +222,19 @@ namespace Microsoft.Rest.ClientRuntime
 
         public async Task Signal(string id, CancellationToken token, GetEventData createMessage)
         {
-            if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
-            {
-                var message = createMessage();
-                message.Id = id;
-
-                await listener?.Invoke(message);
-                await tracer?.Invoke(message);
-
-                if (token.IsCancellationRequested)
+            using(NoSynchronizationContext) {
+                if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
                 {
-                    throw new OperationCanceledException($"Canceled by event {id} ", this.Token);
+                    var message = createMessage();
+                    message.Id = id;
+
+                    await listener?.Invoke(message);
+                    await tracer?.Invoke(message);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException($"Canceled by event {id} ", this.Token);
+                    }
                 }
             }
         }

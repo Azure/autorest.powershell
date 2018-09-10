@@ -16,6 +16,7 @@ export const CommaChar = ', ';
 declare global {
   interface Array<T> {
     joinWith(selector: (t: T) => string, separator?: string): string;
+    last: T;
   }
 
   interface String {
@@ -29,6 +30,14 @@ declare global {
 Array.prototype.joinWith = function <T>(selector: (t: T) => string, separator?: string): string {
   return (<Array<T>>this).map(selector).filter(v => v ? true : false).join(separator || CommaChar);
 };
+
+if (Array.prototype.last === undefined) {
+  Object.defineProperty(Array.prototype, 'last', {
+    get() {
+      return this[this.length - 1];
+    }
+  });
+}
 
 String.prototype.capitalize = function (): string {
   const result = <string>this;

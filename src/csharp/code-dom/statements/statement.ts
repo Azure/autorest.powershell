@@ -32,13 +32,29 @@ export function isStatement(object: StatementPossibilities): object is Statement
 
 export class Statements extends Initializer implements Statement {
   protected statements = new Array<Statement>();
+  private scope = new Array<Statements>();
 
   constructor(statements?: StatementPossibilities, objectIntializer?: Partial<Statements>) {
     super();
+    this.scope.push(this);
     if (statements) {
       this.add(statements);
     }
     this.apply(objectIntializer);
+  }
+
+  push(innerScope: Statements) {
+    this.add(innerScope);
+    this.scope.push(innerScope);
+    return this.scope.last;
+  }
+
+  pop() {
+    if (this.scope.last === this) {
+      throw new Error(`Can not pop past base of statement collection.`);
+    }
+    this.scope.pop();
+    return this.scope.last;
   }
 
   public get count(): number {
@@ -68,6 +84,10 @@ export class Statements extends Initializer implements Statement {
   }
 
   public add(statements: StatementPossibilities): Statements {
+    if (this.scope.last !== this) {
+      this.scope.last.add(statements);
+      return this;
+    }
     if (typeof (statements) === 'string') {
       this.statements.push(new LiteralStatement(statements));
       return this;

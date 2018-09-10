@@ -9,6 +9,7 @@
  
   <ItemGroup>
      <PackageReference Include="System.Management.Automation.dll" Version="10.0.10586" />   
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
+     <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
+     <PackageReference Include="Microsoft.CSharp" Version="*"/>
   </ItemGroup>
 </Project>

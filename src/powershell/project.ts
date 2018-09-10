@@ -11,7 +11,7 @@ import { Attribute } from '#csharp/code-dom/attribute';
 import { Class } from '#csharp/code-dom/class';
 import { dotnet, System } from '#csharp/code-dom/dotnet';
 import { LiteralExpression } from '#csharp/code-dom/expression';
-import { Import } from '#csharp/code-dom/import';
+import { ImportDirective, ImportStatic } from '#csharp/code-dom/import';
 import { Interface } from '#csharp/code-dom/interface';
 import { LambdaMethod, Method } from '#csharp/code-dom/method';
 
@@ -41,6 +41,7 @@ export class ServiceNamespace extends Namespace {
   constructor(public state: State, objectInitializer?: Partial<ServiceNamespace>) {
     super(state.model.details.csharp.namespace || 'INVALID.NAMESPACE', state.project);
     this.apply(objectInitializer);
+    this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
     // module class
     this.moduleClass = new ModuleClass(this, state);
@@ -231,7 +232,7 @@ export class ModelCmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<ModelCmdletNamespace>) {
     super('ModelCmdlets', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
+    this.add(ImportStatic(ClientRuntime.Extensions));
   }
 
   public createModelCmdlets() {
@@ -281,7 +282,7 @@ export class CmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
-    this.addUsing(new Import(`static ${ClientRuntime.Extensions}`));
+    this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
     // generate cmdlet classes on top of the SDK
     for (const { key: id, value: operation } of items(state.model.commands.operations)) {

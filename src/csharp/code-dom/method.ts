@@ -64,7 +64,6 @@ export class Method extends Statements {
     return '';
   }
 
-
   public get declaration(): string {
     const parameterDeclaration = this.parameters.joinWith(p => p.declaration, CommaChar);
     return `
