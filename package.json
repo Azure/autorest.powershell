@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@microsoft.azure/async-io": "2.0.19",
-    "@microsoft.azure/autorest-extension-base": "1.0.19",
+    "@microsoft.azure/autorest-extension-base": "1.0.21",
     "@microsoft.azure/tasks": "^2.0.12",
     "js-yaml": "^3.10.0",
     "source-map-support": "0.5.3",

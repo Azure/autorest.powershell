@@ -305,6 +305,7 @@ export class Project extends codeDomProject {
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public customFolder!: string;
+  public testFolder!: string;
   public runtimefolder!: string;
   public moduleName!: string;
   public csproj!: string;
@@ -345,6 +346,7 @@ export class Project extends codeDomProject {
     this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets/generated`;
     this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/cmdlets/models`;
     this.customFolder = await service.GetValue('custom-cmdlet-folder') || `${this.moduleFolder}/cmdlets/custom`;
+    this.testFolder = await service.GetValue('test-folder') || `${this.moduleFolder}/Tests`;
 
     this.runtimefolder = await service.GetValue('runtime-folder') || `${this.moduleFolder}/runtime`;
 
