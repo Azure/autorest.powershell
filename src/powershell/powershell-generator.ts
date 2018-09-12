@@ -34,6 +34,7 @@ export async function processRequest(service: Host) {
 
     await service.ProtectFiles(project.csproj);
     await service.ProtectFiles(project.customFolder);
+    await service.ProtectFiles(project.testFolder);
 
     // wait for all the generation to be done
     await generateCsproj(service, project);
@@ -65,8 +66,10 @@ async function generateProxies(service: Host, project: Project) {
 */
 
 async function copyRuntime(service: Host, project: Project) {
+  // PowerShell Scripts
   await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-csharp'));
 
+  // c# files
   await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
   if (project.azure) {
     await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
