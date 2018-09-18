@@ -14,7 +14,7 @@ function mock-http(
     
     # DESCRIPTION+OPERATION+URI + COUNT:RESULT
     $rqkey = "$script:description+$script:operation+$($request.RequestUri)+$script:count"
-    
+
     switch( $TestMode ) {
         'live' {
             return $next.SendAsync($request,$callback);
@@ -144,7 +144,6 @@ function serialize-response($response) {
         Headers = (serialize-headers $response.Headers )
         ContentHeaders = (serialize-headers $response.Content.Headers )
         StatusCode = $response.StatusCode
-        
     }    
     return (convertto-json $obj)
 }
@@ -205,7 +204,7 @@ function It {
     }
 }
 
-if( $global:TestMode-eq $null )   {
+if( $global:TestMode -eq $null )   {
     $TestMode= 'live'
 } else {
     $TestMode= $global:TestMode

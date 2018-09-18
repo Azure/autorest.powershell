@@ -1,9 +1,18 @@
 # Pull In Mocking Support 
-. ./HttpPipelineMocking.ps1 
+. "$PSScriptRoot/HttpPipelineMocking.ps1"
 
 # Run Some tests
+# example:
+
+<#
+
 Describe 'Get-Operation Tests' {
     It "Make a call to get-operation" {
-        # (get-azoperation -HttpPipelineAppend $mock).length | Should -be 11 
+        
+        # MAKE SUIRE YOU USE  -HttpPipelineAppend $mock with the cmdlet!
+        (get-operation -HttpPipelineAppend $mock).length | Should -be 11 
+        
     }
 }
+
+#>

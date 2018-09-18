@@ -298,3 +298,5 @@ package/*
 
 generated*/*
 petstore*/*
+
+**/generated*/*
