@@ -43,7 +43,7 @@ export async function process(service: Host) {
       await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
     }
     if (project.jsonSerialization) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
+      await copyResources(join(resources, 'runtime', 'csharp', 'Json'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
     }
     if (project.xmlSerialization) {
       await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'));
