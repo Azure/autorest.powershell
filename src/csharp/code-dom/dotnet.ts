@@ -140,8 +140,12 @@ export const System = intersect(system, {
     })
   }),
   Net: intersect(net, {
+    WebProxy: new ClassType(net, 'WebProxy'),
     Http: intersect(http, {
       HttpRequestMessage: new ClassType(http, 'HttpRequestMessage'),
+      HttpClient: new ClassType(http, 'HttpClient'),
+
+      HttpClientHandler: new ClassType(http, 'HttpClientHandler'),
       HttpResponseMessage: new ClassType(http, 'HttpResponseMessage'),
       Headers: intersect(headers, {
         HttpHeaders: new ClassType(headers, 'HttpHeaders'),

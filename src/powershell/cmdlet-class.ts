@@ -64,7 +64,8 @@ export class CmdletClass extends Class {
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
       access: Access.Protected,
-      description: `(overrides the default BeginProcessing method in ${PSCmdlet})`
+      description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
+      body: `Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);`
     }));
 
     // construct the class
@@ -104,10 +105,6 @@ export class CmdletClass extends Class {
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
 
-    const asjob = this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
-
-    asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
-
     const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [], description: `Credentials for a proxy server to use for the remote call` }));
     proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
     proxyCredential.add(new Attribute(ValidateNotNull));
@@ -115,7 +112,7 @@ export class CmdletClass extends Class {
     const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [], description: `Use the default credentials for the proxy` }));
     useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
 
-    const proxyUri = this.add(new Property('Proxy ', System.Uri, { attributes: [], description: `The URI for the proxy server to use` }));
+    const proxyUri = this.add(new Property('Proxy', System.Uri, { attributes: [], description: `The URI for the proxy server to use` }));
     proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "The URI for the proxy server to use"`] }));
 
     if (this.state.project.azure) {
@@ -161,6 +158,11 @@ export class CmdletClass extends Class {
             yield `${acr}.Wait( ProcessRecordAsync(),${$this.cancellationToken});`;
           });
         });
+
+        if (operation.asjob) {
+          const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
+          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
+        }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
           yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("AsJob")`, function* () {
@@ -403,7 +405,7 @@ export class CmdletClass extends Class {
       yield `container = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
 
       for (const parameter of values(operation.parameters)) {
-        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
+        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
         if (!(parameter.details.default.constantValue)) {
           // yield td.getSerializeStatement(KnownMediaType.Json, container.use, parameter.details.powershell.name, parameter.details.powershell.name);
           yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.powershell.name, container, parameter.details.powershell.name);
@@ -473,7 +475,7 @@ export class CmdletClass extends Class {
     deserializerConstructor.add(function* () {
       yield `// deserialize the contents`;
       for (const parameter of values(operation.parameters)) {
-        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, $this.state);
+        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
 
         if (!(parameter.details.default.constantValue)) {
           const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
@@ -552,7 +554,7 @@ export class CmdletClass extends Class {
       // these are the parameters that this command expects
       // create a single
 
-      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, parameter.required, this.state);
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
 
       if (parameter.details.default.constantValue) {
         // this parameter has a constant value -- SKIP IT

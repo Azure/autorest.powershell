@@ -8,17 +8,20 @@ import { Class } from '#csharp/code-dom/class';
 import { Constructor } from '#csharp/code-dom/constructor';
 import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
 import { LiteralExpression, StringExpression } from '#csharp/code-dom/expression';
-import { Field } from '#csharp/code-dom/field';
+import { Field, InitializedField } from '#csharp/code-dom/field';
 import { Alias } from '#csharp/code-dom/import';
-import { LambdaMethod, Method } from '#csharp/code-dom/method';
+import { LambdaMethod, Method, PartialMethod } from '#csharp/code-dom/method';
 
 import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
+import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
 import { LambdaProperty, LazyProperty, Property } from '#csharp/code-dom/property';
 import { Return } from '#csharp/code-dom/statements/return';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { State } from '#powershell/state';
 import { Using } from '#csharp/code-dom/statements/using';
+import { LocalVariable } from '#csharp/code-dom/variable';
+import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { PSCredential } from '#powershell/powershell-declarations';
+import { State } from '#powershell/state';
 
 export class ModuleClass extends Class {
 
@@ -89,6 +92,11 @@ export class ModuleClass extends Class {
 
     const boundParams = new Parameter('boundParameters', System.Collections.Generic.Dictionary(dotnet.String, dotnet.Object), { description: `The bound parameters from the cmdlet call.` });
     const pipelineField = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private, description: `the ISendAsync pipeline instance` }));
+    const pipelineWithProxyField = this.add(new Field('_pipelineWithProxy', ClientRuntime.HttpPipeline, { access: Access.Private, description: `the ISendAsync pipeline instance (when proxy is enabled)` }));
+    const webProxyField = this.add(new InitializedField('_webProxy', System.Net.WebProxy, System.Net.WebProxy.new()));
+
+    const handlerField = new InitializedField('_handler', System.Net.Http.HttpClientHandler, System.Net.Http.HttpClientHandler.new());
+    this.add(handlerField);
 
     const createPipeline = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
       parameters: [boundParams],
@@ -114,6 +122,8 @@ export class ModuleClass extends Class {
 
       init.add(function* () {
         yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${pipelineField.value}.Prepend(step); } , (step)=> { ${pipelineField.value}.Append(step); } );`;
+        yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${pipelineWithProxyField.value}.Prepend(step); } , (step)=> { ${pipelineWithProxyField.value}.Append(step); } );`;
+        yield `CustomInit();`;
       });
 
       const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: `The delegate to call to get parameter data from a common module.` }));
@@ -142,22 +152,30 @@ export class ModuleClass extends Class {
       });
 
       createPipeline.add(function* () {
-        yield `var result = this._pipeline.Clone();`;
-        if (isAzure) {
-          yield `    ${OnNewRequest.value}?.Invoke( ${boundParams.use}, (step)=> { result.Prepend(step); } , (step)=> { result.Append(step); } );`;
-        }
-        yield Return(new LiteralExpression(`result`));
+        const pip = new LocalVariable('pipeline', ClientRuntime.HttpPipeline, { initializer: 'null' });
+        yield pip.declarationStatement;
+        yield `BeforeCreatePipeline(boundParameters, ref ${pip});`;
+        yield pip.assign(`(${pip} ?? (${handlerField}.UseProxy ? ${pipelineWithProxyField} : ${pipelineField})).Clone()`);
+        yield `AfterCreatePipeline(boundParameters, ref ${pip});`;
+        yield `    ${OnNewRequest.value}?.Invoke( ${boundParams.use}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
+        yield Return(pip);
       });
 
     } else {
       // non-azure init method
       init.add(function* () {
         yield `// called at module init time...`;
+        yield `CustomInit();`;
       });
 
       // non-azure createPipeline method
       createPipeline.add(function* () {
-        yield Return(new LiteralExpression(`this._pipeline.Clone()`));
+        const pip = new LocalVariable('pipeline', ClientRuntime.HttpPipeline, { initializer: 'null' });
+        yield pip.declarationStatement;
+        yield `BeforeCreatePipeline(boundParameters, ref ${pip});`;
+        yield pip.assign(`(${pip} ?? (${handlerField}.UseProxy ? ${pipelineWithProxyField} : ${pipelineField})).Clone()`);
+        yield `AfterCreatePipeline(boundParameters, ref ${pip});`;
+        yield Return(pip);
       });
     }
 
@@ -167,7 +185,33 @@ export class ModuleClass extends Class {
     })).add(function* () {
       yield `/// constructor`;
       yield clientProperty.assignPrivate(clientAPI.new());
-      yield pipelineField.assignPrivate(ClientRuntime.HttpPipeline.new());
+      yield `${handlerField}.Proxy = ${webProxyField};`;
+
+      yield pipelineField.assignPrivate(ClientRuntime.HttpPipeline.new(ClientRuntime.HttpClientFactory.new(System.Net.Http.HttpClient.new())));
+      yield pipelineWithProxyField.assignPrivate(ClientRuntime.HttpPipeline.new(ClientRuntime.HttpClientFactory.new(System.Net.Http.HttpClient.new(handlerField))));
     });
+
+    this.add(new PartialMethod('BeforeCreatePipeline', dotnet.Void, {
+      parameters: [new Parameter('boundParams', BoundParameterDictionary), new Parameter('pipeline', ClientRuntime.HttpPipeline, { modifier: ParameterModifier.Ref })]
+    }));
+    this.add(new PartialMethod('AfterCreatePipeline', dotnet.Void, {
+      parameters: [new Parameter('boundParams', BoundParameterDictionary), new Parameter('pipeline', ClientRuntime.HttpPipeline, { modifier: ParameterModifier.Ref })]
+    }));
+    this.add(new PartialMethod('CustomInit', dotnet.Void));
+
+    const pProxy = new Parameter('proxy', System.Uri);
+    const pProxyCredential = new Parameter('proxyCredential', PSCredential);
+    const pUseDefaultCredentials = new Parameter('proxyUseDefaultCredentials', dotnet.Bool);
+
+    const spc = new Method('SetProxyConfiguration', dotnet.Void, { parameters: [pProxy, pProxyCredential, pUseDefaultCredentials] });
+    spc.add(function* () {
+      yield '// set the proxy configuration';
+      yield `${webProxyField}.Address = proxy;`;
+      yield `${webProxyField}.BypassProxyOnLocal = false;`;
+      yield `${webProxyField}.Credentials = proxyCredential ?.GetNetworkCredential();`;
+      yield `${webProxyField}.UseDefaultCredentials = proxyUseDefaultCredentials;`;
+      yield `${handlerField}.UseProxy = proxy != null;`;
+    });
+    this.add(spc);
   }
 }

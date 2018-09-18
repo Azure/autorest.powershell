@@ -61,7 +61,7 @@ async function generateProxies(service: Host, project: Project) {
     // no powershell core found.
     throw new Error('PowerShell Core (pwsh) not found in path. Please ensure that pwsh is available.');
   }
-  console.error(`${pwsh} -command "${of}/generate_proxies.ps1"`);
+  console.error(`${pwsh} -command "${of}/build-module.ps1"`);
 }
 */
 

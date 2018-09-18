@@ -105,6 +105,7 @@ export class PartialMethod extends Method {
   public isPartial = true;
   constructor(name: string, returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
+    this.access = Access.Default;
     this.apply(objectIntializer);
   }
 

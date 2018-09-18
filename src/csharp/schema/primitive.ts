@@ -144,7 +144,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
         if (this.isRequired) {
           return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
         } else {
-          return toExpression(`null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString()))`);
         }
 
       // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);

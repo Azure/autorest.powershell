@@ -10,7 +10,7 @@ export function Import(namespace: string) {
 }
 
 export function ImportStatic(namespace: TypeDeclaration) {
-  return new ImportDirective(namespace.declaration);
+  return new ImportStaticDirective(namespace.declaration);
 }
 
 export class ImportDirective {

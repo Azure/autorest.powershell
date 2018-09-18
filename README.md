@@ -106,7 +106,7 @@ api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
 cmdlet-folder: private/cmdlets/generated
-custom-cmdlet-folder: private/cmdlets/custom
+custom-cmdlet-folder: private/custom
 module-folder: private/
 use-namespace-folders: false
 

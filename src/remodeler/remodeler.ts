@@ -585,7 +585,7 @@ export class Remodeler {
         for (const method of [HttpMethod.Delete, HttpMethod.Get, HttpMethod.Head, HttpMethod.Options, HttpMethod.Patch, HttpMethod.Post, HttpMethod.Put, HttpMethod.Trace]) {
           const op = <OpenAPI.HttpOperation>pathItem.instance[method];
           if (op) {
-            this.add(Interpretations.getOperationId(method, path, op), { instance: { method, path, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
+            this.add(Interpretations.getOperationId(method, path, op, this.oai.info.title, this.modelState), { instance: { method, path, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }
         }
       }

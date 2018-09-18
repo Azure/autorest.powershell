@@ -53,7 +53,7 @@ export class Project extends codeDomProject {
     // create serialization support
     // new JsonSerializerClass(this.supportNamespace, this.state);
     //}
-    this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
+    // this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
 
     // abort now if we have any errors.
     this.state.checkpoint();

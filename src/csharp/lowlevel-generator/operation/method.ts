@@ -146,13 +146,13 @@ export class OperationMethod extends Method {
         }
       } else {
         url = new LocalVariable('_url', dotnet.Var, {
-          initializer: System.Uri.new(`
+          initializer: System.Uri.new(`(
         "${baseUrl}${path}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
         + "&"`
             )}
-        `)
+        ).TrimEnd('?','&')`)
         });
         yield url.declarationStatement;
 

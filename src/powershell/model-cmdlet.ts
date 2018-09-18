@@ -30,7 +30,7 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `${state.project.nounPrefix}New${schema.details.csharp.name}Object`;
+    const name = `New${state.project.nounPrefix}${schema.details.csharp.name}Object`;
 
     super(namespace, name, PSCmdlet);
     this.state = state;
