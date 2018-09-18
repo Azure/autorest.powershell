@@ -43,6 +43,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     IncludeReadOnly: new LiteralExpression(`${serializationMode.declaration}.IncludeReadOnly`),
   }),
   HttpPipeline: new ClassType(clientRuntimeNamespace, 'HttpPipeline'),
+  HttpClientFactory: new ClassType(clientRuntimeNamespace, 'HttpClientFactory'),
   SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
   EventData: new ClassType(clientRuntimeNamespace, 'EventData'),
   EventListener: new ClassType(clientRuntimeNamespace, 'EventListener'),

@@ -3,8 +3,10 @@ pushd $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
 if( $PSVersionTable.PSVersion.Major -lt 6 ) { 
+    popd
     write-error "This script requires Core PowerShell (don't worry: generated cmdlets can work in Core PowerShell or Windows Powershell)" 
 }
+
 
 if( -not $isolated )  {
     # this ensures that we can run the script repeatedly without worrying about locked files/folders
@@ -13,6 +15,7 @@ if( -not $isolated )  {
     & $pwsh -command $MyInvocation.MyCommand.Path -isolated 
 
     if( $lastExitCode -ne 0) {
+        popd
         return;
     }
 
@@ -25,6 +28,7 @@ if( -not $isolated )  {
         write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "        
         write-host -fore cyan "`nor use -test with this script`n"
     }
+    popd
     return
 }
 
@@ -32,6 +36,7 @@ write-host -fore green "Cleaning folders..."
 @('./exported','./obj', './bin') |% { $shh = rmdir -recurse -ea 0 $_ }
 
 if( test-path ./bin ) {
+    popd
     write-error "Unable to clean binary folder. (a process may have an open handle.)"
 }
 
@@ -40,6 +45,7 @@ $shh = dotnet publish --configuration Release --output bin
 if( $lastExitCode -ne 0 ) {
     # if it fails, let's do it again so the output comes out nicely.
     dotnet publish --configuration Release --output bin
+    popd
     write-error "Compilation failed"
 }
 
@@ -47,7 +53,8 @@ if( $lastExitCode -ne 0 ) {
 $dll = (dir bin\*.private.dll)[0]
 
 if( -not (test-path $dll) ) {
-     write-error "Unable to find output assembly."
+    popd
+    write-error "Unable to find output assembly."
 }
 
 $commands = get-command -module (ipmo $dll -passthru)
@@ -66,7 +73,8 @@ if( $scriptfile -ne '' ) {
 
 # No commands?
 if( $commands.length -eq 0  ) {
-     write-error "Unable get commands from private module."
+    popd
+    write-error "Unable get commands from private module."
 }
 
 $outputs = @{}
@@ -183,8 +191,7 @@ $outputs.Keys |% {
 
     set-content "exported/${filename}.ps1" -value $text
 }
-  
-  popd
+popd
 write-host -fore green "Done."
 write-host -fore green "-------------------------------"
 

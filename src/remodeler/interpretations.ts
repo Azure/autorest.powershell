@@ -8,6 +8,8 @@ import { EnumDetails } from '#common/code-model/schema';
 import { Server } from '../common/code-model/components';
 import { clone, getExtensionProperties } from './common';
 import * as OpenAPI from './oai3';
+import { pascalCase, deconstruct } from '#common/text-manipulation';
+import { ModelState } from '#common/model-state';
 
 interface XMSEnum {
   modelAsString?: boolean;
@@ -77,24 +79,29 @@ export function getConstantValue() {
 
 }
 
-const counter = 1;
-export function getOperationId(method: string, path: string, original: OpenAPI.HttpOperation): string {
+let counter = 0;
+export function getOperationId(method: string, path: string, original: OpenAPI.HttpOperation, serviceTitle: string, state: ModelState<OpenAPI.Model>): string {
   if (original.operationId) {
     return original.operationId;
   }
 
+
   // synthesize from tags.
   if (original.tags && original.tags.length > 0) {
+
     switch (original.tags.length) {
       case 0:
         break;
       case 1:
+        state.path('components', 'paths', path, method).warning(`Generating 'operationId' for '${method}' operation on path '${path}' `, ['Interpretations']);
         return `${original.tags[0]}`;
     }
-    return `${original.tags[0]}_${original.tags[2]}`;
+    state.path('components', 'paths', path, method).warning(`Generating 'operationId' for '${method}' operation on path '${path}' `, ['Interpretations']);
+    return `${original.tags[0]}_${original.tags[1]}`;
   }
+  state.path('components', 'paths', path, method).error(`NEED 'operationId' for '${method}' operation on path '${path}' `, ['Interpretations']);
 
-  return `${method}_method${counter}`;
+  return ``;
 }
 
 export function copyServer(server: OpenAPI.Server): Server {

@@ -72,7 +72,7 @@ export class String implements EnhancedTypeDeclaration {
         if (this.isRequired) {
           return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value})`);
         } else {
-          return toExpression(`string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${valueOf(value)})`);
+          return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${valueOf(value)}))`);
         }
 
       // return toExpression(`if (!string.IsNullOrEmpty(${value})) { queryParameters.Add($"${value}={System.Uri.EscapeDataString(${value})}"); }`);

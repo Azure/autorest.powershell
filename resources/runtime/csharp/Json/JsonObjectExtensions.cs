@@ -40,7 +40,7 @@ namespace Carbon.Json
                     return tval;
                 }
                 /* it's present, but not the correct type...  */
-                throw new Exception($"Property {propertyName} in object expected type {typeof(T).Name} but value of type {value.Type.ToString()} was found.");
+                //throw new Exception($"Property {propertyName} in object expected type {typeof(T).Name} but value of type {value.Type.ToString()} was found.");
             }
             return null;
         }
@@ -64,7 +64,7 @@ namespace Carbon.Json
                     return tval;
                 }
                 /* it's present, but not the correct type...  */
-                throw new Exception($"Property {propertyName} in object expected type {typeof(T).Name} but value of type {value.Type.ToString()} was found.");
+                // throw new Exception($"Property {propertyName} in object expected type {typeof(T).Name} but value of type {value.Type.ToString()} was found.");
             }
             return null;
         }
