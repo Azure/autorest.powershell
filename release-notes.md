@@ -48,6 +48,7 @@ _use this to install and/or update to the latest version as updates come_
 - Http testing/mocking support works, see the second example below, however, it has primitive scrubbing, so be careful with storing API keys, etc.
 - Documentation/Deep Knowledge is coming as soon as I can get around to it. 
 
+- Feel Free to poke around, and help out!
 
 # Usage
 
