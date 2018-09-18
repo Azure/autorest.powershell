@@ -103,21 +103,23 @@ async function start() {
 }
 let tm = Date.now();
 
-async function main() {
+async function main(watch) {
   await start();
 
-  fsa.watch(`${__dirname}/../dist`, { recursive: true }, (e, filePath) => {
-    tm = Date.now();
-    if (filePath && filePath.endsWith('.js')) {
-      start();
-      // fixImports(`${__dirname}/../dist/${filePath`);
-    }
-  });
+  if( watch ) {
+    fsa.watch(`${__dirname}/../dist`, { recursive: true }, (e, filePath) => {
+      tm = Date.now();
+      if (filePath && filePath.endsWith('.js')) {
+        start();
+        // fixImports(`${__dirname}/../dist/${filePath`);
+      }
+    });
+  }
 }
 process.chdir(path.resolve(`${__dirname}/..`));
 
 if (process.argv.indexOf('--watch') > -1) {
-  main();
+  main(true);
 } else {
-  processDirectory(`${__dirname}/../dist`)
+  main(false);
 }
