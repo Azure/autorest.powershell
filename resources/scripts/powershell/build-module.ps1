@@ -33,7 +33,7 @@ if( -not $isolated )  {
 }
 
 write-host -fore green "Cleaning folders..."
-@('./exported','./obj', './bin') |% { $shh = rmdir -recurse -ea 0 $_ }
+@('./exported','./obj', './bin') |% { $shh = remove-item -recurse -ea 0 $_ }
 
 if( test-path ./bin ) {
     popd
@@ -49,7 +49,7 @@ if( $lastExitCode -ne 0 ) {
     write-error "Compilation failed"
 }
 
-@('./bin/Debug','./bin/Release') |% { $shh = rmdir -recurse -ea 0 $_ }
+@('./bin/Debug','./bin/Release') |% { $shh = remove-item -recurse -ea 0 $_ }
 $dll = (dir bin\*.private.dll)[0]
 
 if( -not (test-path $dll) ) {
