@@ -132,10 +132,11 @@ async function generateModule(service: Host, project: Project) {
   if (project.azure) {
     psm1.setRegion('AzureInitialization', `
     # GS Testing
-    $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
+    # $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
 
     # from PSModulePath
-    # $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
+    # (this must be the modified version of AzureRM.Profile.Netcore)
+    $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
 
     Write-Host "Loaded Common Module '$($module.Name)'"
 
