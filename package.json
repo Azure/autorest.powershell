@@ -15,6 +15,7 @@
     "test-run": "cls ; npm run build ; if ($LastExitCode -eq 0 ) { autorest --use=. --powershell C:/work/2018/azure-rest-api-specs/specification/containerregistry/resource-manager/readme.md --output-folder=./generated --debug --verbose    }",
     "testci": "npm run test",
     "publish-preview": "npm test && node ./.scripts/publish",
+    "watch": "cmd /c start tsc -p . -watch && cmd /c start node .\\.scripts\\fix-aliased-imports.js --watch",
     "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar -xvf - && erase *.tgz"
   },
   "repository": {
