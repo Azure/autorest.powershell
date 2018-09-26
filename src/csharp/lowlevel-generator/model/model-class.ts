@@ -31,7 +31,7 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { System } from '#csharp/code-dom/dotnet';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
-import { implementIDictionary } from './IDictionary';
+import { implementIDictionary } from './idictionary';
 
 export interface BackingField {
   field: Field;

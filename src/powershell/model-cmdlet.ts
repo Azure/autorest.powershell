@@ -88,7 +88,16 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       }
 
       if (!property.schema.additionalProperties) {
-
+        // first check if there are multiple instances of the same nested type. (ie, BodyColor and HoodColor would both be color.)
+        // if so, we really can't inline properties of identical members.
+        /*
+                const subProps = values(property.schema.properties).linq.toArray();
+                const uniq = values(subProps).linq.distinct(subProperty => subProperty.schema).linq.toArray();
+                if( uniq.length == subProps.length ) {
+                  // all types are unique.
+        
+                }
+          */
         if (length(property.schema.properties) <= $class.state.project.maxInlinedParameters) {
           // inline these properties instead.
           const ensure = new Statements(ensureMemberIsCreated);
@@ -159,4 +168,8 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
   }
 
   // if
+}
+
+function getUniquePropertyNames(schema: Schema) {
+
 }
