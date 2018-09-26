@@ -33,6 +33,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
   IJsonSerializable: new Interface(clientRuntimeNamespace, 'IJsonSerializable'),
+  JsonSerializable: new Interface(clientRuntimeNamespace, 'JsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),

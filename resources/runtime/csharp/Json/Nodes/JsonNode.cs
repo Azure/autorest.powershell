@@ -6,7 +6,7 @@ namespace Carbon.Json
 {
     using Parser;
 
-    public abstract class JsonNode
+    public abstract partial class JsonNode
     {
         public abstract JsonType Type { get; }
 

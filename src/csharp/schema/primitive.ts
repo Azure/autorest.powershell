@@ -19,6 +19,13 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 let tmpVar: number | undefined;
 let max: number = 0;
 
+function numToChars(ch: number): string {
+  if (ch < 26) {
+    return String.fromCharCode(122 - ch);
+  }
+  return `_${numToChars(ch - 26)}`;
+}
+
 export function pushTempVar() {
   if (!tmpVar) {
     tmpVar = 1;
@@ -27,7 +34,8 @@ export function pushTempVar() {
     tmpVar++;
     max++;
   }
-  return `__${String.fromCharCode(123 - max)}`;
+
+  return `__${numToChars(max)}`;
 }
 
 export function popTempVar() {

@@ -159,10 +159,6 @@ export function all<T, U>(array: Array<T>, callbackfn: (value: T, index: number,
   return Promise.all(array.map(callbackfn));
 }
 
-export function hasProperties(obj: any) {
-  return Object.getOwnPropertyNames(obj).length > 0 ? true : false;
-}
-
 export function deconstruct(identifier: string | Array<string>): Array<string> {
   if (Array.isArray(identifier)) {
     return [...values(identifier).linq.selectMany(deconstruct)];

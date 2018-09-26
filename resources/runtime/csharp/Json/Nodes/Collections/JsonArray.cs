@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
-    public abstract class JsonArray : JsonNode, IEnumerable<JsonNode>
+    public abstract partial class JsonArray : JsonNode, IEnumerable<JsonNode>
     {
         public override JsonType Type => JsonType.Array;
 

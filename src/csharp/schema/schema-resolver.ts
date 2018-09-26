@@ -5,8 +5,8 @@
 
 import { Model } from '#common/code-model/code-model';
 import { JsonType } from '#common/code-model/schema';
+import { length } from '#common/linq';
 import { ModelState } from '#common/model-state';
-import { hasProperties } from '#common/text-manipulation';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import * as message from '#csharp/lowlevel-generator/messages';
 import { ArrayOf } from '#csharp/schema/array';
@@ -51,21 +51,65 @@ export class SchemaDefinitionResolver {
           return result;
         }
 
-        // can be recursive!
-        // for certain, this should be a class of some sort.
-        if (schema.additionalProperties && !hasProperties(schema.properties)) {
-          if (schema.additionalProperties === true) {
-            // the object is a wildcard for all key/object-value pairs
-            return new UntypedWildcard(schema);
-          } else {
-            // the object is a wildcard for all key/<specific-type>-value pairs
-            const wcSchema = this.resolveTypeDeclaration(schema.additionalProperties, false, state.path('additionalProperties'));
-            return new Wildcard(schema, wcSchema);
+        const propertyCount = length(schema.properties);
+
+        if (propertyCount === 0) {
+          // *this* object has no properties. 
+          // so, if it has additionalProperties set, we should return some kind of a wildcard/dictionary.
+
+          switch (typeof (schema.additionalProperties)) {
+            case 'boolean':
+              if (schema.additionalProperties === true) {
+                // this should be a dictionary<string, any>
+                return new UntypedWildcard(schema);
+              }
+              // additionalProperties = false. No action necessary.
+              break;
+            case 'object':
+              const addlSchema = <Schema>schema.additionalProperties;
+              switch (addlSchema.type) {
+                case JsonType.Object:
+                  // it's some kind of object.
+                  if (length(addlSchema.properties) === 0) {
+                    // it's an untyped wildcard again.
+
+                    // we should not create a class for the nested object type
+                    addlSchema.details.csharp.skip = true;
+                    return new UntypedWildcard(schema);
+                  }
+                  // it has properties.
+                  // it's a specific kind of dictionary<string, addlSchema>
+                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, false, state.path('additionalProperties')));
+
+                case JsonType.String:
+                case JsonType.Boolean:
+                case JsonType.Number:
+                  // it's a primitive type (string/boolean/number)
+                  // it should be a simple dictionary<string, t>
+                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, false, state.path('additionalProperties')));
+
+                default:
+                  // what? What kind of a monster are you?
+                  console.error(`NOT SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.default.name}`);
+                  throw new Error('Not Supported Yet. ');
+              }
+            case 'undefined':
+              break;
+
+            default:
+              console.error(`NOT SUPPORTED: Object with additionalProperties: '${schema.additionalProperties}' --  ${schema.details.default.name}`);
+              throw new Error('What does that even mean?');
           }
+          // object with no properties?
         }
-        // otherwise, if it has additionalProperties
-        // it's a regular object, that has a catch-all for unspecified properties.
-        // (handled in ModelClass itself)
+
+        if (schema.additionalProperties) {
+          // this object *does* have properties.
+          // *AND* additionalProperties is set.
+          // Which means that this object should implement a dictionary too.
+          // (handled in model-class itself...)
+          console.error(`FYI : Has ADDITIONALPROPERTIES ${schema.details.default.name} : ${length(schema.properties)}`);
+        }
 
         return this.add(schema, new ObjectImplementation(schema));
 

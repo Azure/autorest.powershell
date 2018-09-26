@@ -112,6 +112,7 @@ export const System = intersect(system, {
       }
     })
   }),
+  Object: new ClassType(system, 'Object'),
   String: intersect(stringClass, {
     Empty: new LiteralExpression('System.String.Empty'),
     IsNullOrEmpty: (expression: ExpressionOrLiteral) => toExpression(`${System.String}.IsNullOrEmpty(${toExpression(expression)})`),

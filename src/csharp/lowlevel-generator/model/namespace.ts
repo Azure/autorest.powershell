@@ -42,34 +42,33 @@ export class ModelsNamespace extends Namespace {
     }
   }
 
-  private static INVALID = <any>null;
-
   public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
 
     const td = this.resolver.resolveTypeDeclaration(schema, required, state);
-    if (td instanceof ObjectImplementation) {
-      // it's a class object.
-      // create it if necessary
-      const mc = schema.details.csharp.classImplementation || new ModelClass(this, td, this.state, { description: schema.details.csharp.description });
+    if (!schema.details.csharp.skip) {
+      if (td instanceof ObjectImplementation) {
+        // it's a class object.
+        // create it if necessary
+        const mc = schema.details.csharp.classImplementation || new ModelClass(this, td, this.state, { description: schema.details.csharp.description });
 
-      // this gets implicity created during class creation:
-      return <ModelInterface>schema.details.csharp.interfaceImplementation;
-    }
-
-    if (td instanceof EnumImplementation) {
-      if (schema.details.csharp.enum) {
-        const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
-        if (ec.length > 0) {
-          return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
-        }
+        // this gets implicity created during class creation:
+        return <ModelInterface>schema.details.csharp.interfaceImplementation;
       }
 
-      return schema.details.csharp.typeDeclaration = new EnumClass(td, state);
-    }
+      if (td instanceof EnumImplementation) {
+        if (schema.details.csharp.enum) {
+          const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
+          if (ec.length > 0) {
+            return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
+          }
+        }
 
+        return schema.details.csharp.typeDeclaration = new EnumClass(td, state);
+      }
+    }
     return td;
   }
 }

@@ -76,13 +76,16 @@ export function items<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)>
 }
 
 export function length<T, K>(source?: Dictionary<T> | Array<T> | Map<K, T>): number {
-  if (Array.isArray(source)) {
-    return source.length;
+  if (source) {
+    if (Array.isArray(source)) {
+      return source.length;
+    }
+    if (source instanceof Map) {
+      return source.size;
+    }
+    return source ? Object.getOwnPropertyNames(source).length : 0;
   }
-  if (source instanceof Map) {
-    return source.size;
-  }
-  return source ? Object.getOwnPropertyNames(source).length : 0;
+  return 0;
 }
 
 export function any<T>(this: Iterable<T>, predicate: (each: T) => boolean): boolean {

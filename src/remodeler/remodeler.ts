@@ -222,7 +222,8 @@ export class Remodeler {
       if (original.additionalProperties === true || original.additionalProperties === false) {
         newSchema.additionalProperties = original.additionalProperties;
       } else {
-        newSchema.additionalProperties = this.refOrAdd(`${name}.additionalItemType`, this.dereference(original.additionalProperties), this.model.schemas, this.copySchema);
+        const nested = this.refOrAdd(`${name}.Items`, this.dereference(original.additionalProperties), this.model.schemas, this.copySchema);
+        newSchema.additionalProperties = nested;
       }
     }
 

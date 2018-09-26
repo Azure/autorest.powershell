@@ -61,7 +61,7 @@ export class ModelExtensionsNamespace extends Namespace {
 
     // Add typeconverters to model classes (partial)
     for (const { key: schemaName, value: schema } of items(schemas)) {
-      if (!schema) {
+      if (!schema || schema.details.csharp.skip) {
         continue;
       }
       const td = this.resolver.resolveTypeDeclaration(schema, true, state);

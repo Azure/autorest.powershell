@@ -2,11 +2,11 @@ namespace Carbon.Json
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
 
     public partial class JsonObject
     {
+        internal override object ToValue() =>  Microsoft.Rest.ClientRuntime.JsonSerializable.FromJson(this,new System.Collections.Generic.Dictionary<string,object>());
+        
         public void SafeAdd(string name, Func<JsonNode> valueFn)
         {
             if (valueFn != null)
@@ -149,111 +149,6 @@ namespace Carbon.Json
                 result.SafeAdd(key, selector(source[key]));
             }
             return result;
-        }
-    }
-
-    public class foo<T> where T : new()
-    {
-
-    }
-
-    public partial class JsonString
-    {
-        public static string DateFormat = "yyyy-MM-dd";
-        public static string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
-        public static string DateTimeRfc1123Format = "R";
-
-        public static JsonString Create(string value) => value == null ? null : new JsonString(value);
-        public static JsonString Create(char? value) => value is char c ? new JsonString(c.ToString()) : null;
-
-        public static JsonString CreateDate(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateFormat, CultureInfo.CurrentCulture)) : null;
-        public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.CurrentCulture)) : null;
-        public static JsonString CreateDateTimeRfc1123(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.CurrentCulture)) : null;
-
-        public char ToChar() => this.Value?.ToString()?.FirstOrDefault() ?? default(char);
-        public static implicit operator char(JsonString value) => value?.ToString()?.FirstOrDefault() ?? default(char);
-        public static implicit operator char? (JsonString value) => value?.ToString()?.FirstOrDefault();
-
-        public static implicit operator DateTime(JsonString value) => DateTime.TryParse(value, out var output) ? output : default(DateTime);
-        public static implicit operator DateTime? (JsonString value) => DateTime.TryParse(value, out var output) ? output : default(DateTime?);
-
-    }
-    public partial class JsonBoolean
-    {
-        public static JsonBoolean Create(bool? value) => value is bool b ? new JsonBoolean(b) : null;
-        public bool ToBoolean() => Value;
-
-    }
-    public partial class JsonNumber
-    {
-        public static readonly DateTime EpochDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private static long ToUnixTime(DateTime dateTime)
-        {
-            return (long)dateTime.Subtract(EpochDate).TotalSeconds;
-        }
-        private static DateTime FromUnixTime(long totalSeconds)
-        {
-            return EpochDate.AddSeconds(totalSeconds);
-        }
-        public byte ToByte() => this;
-        public int ToInt() => this;
-        public long ToLong() => this;
-        public short ToShort() => this;
-        public UInt16 ToUInt16() => this;
-        public UInt32 ToUInt32() => this;
-        public UInt64 ToUInt64() => this;
-        public decimal ToDecimal() => this;
-        public double ToDouble() => this;
-        public float ToFloat() => this;
-
-        public static JsonNumber Create(int? value) => value is int n ? new JsonNumber(n) : null;
-        public static JsonNumber Create(long? value) => value is long n ? new JsonNumber(n) : null;
-        public static JsonNumber Create(float? value) => value is float n ? new JsonNumber(n) : null;
-        public static JsonNumber Create(double? value) => value is double n ? new JsonNumber(n) : null;
-        public static JsonNumber Create(decimal? value) => value is decimal n ? new JsonNumber(n) : null;
-        public static JsonNumber Create(DateTime? value) => value is DateTime date ? new JsonNumber(ToUnixTime(date)) : null;
-
-        public static implicit operator DateTime(JsonNumber number) => FromUnixTime(number);
-        public DateTime ToDateTime() => this;
-
-        public JsonNumber(decimal value)
-        {
-            this.value = value.ToString();
-        }
-    }
-
-    public partial class XNodeArray
-    {
-        public static XNodeArray Create<T>(T[] source, Func<T, JsonNode> selector)
-        {
-            if (source == null || selector == null)
-            {
-                return null;
-            }
-            var result = new XNodeArray();
-            foreach (var item in source.Select(selector))
-            {
-                result.SafeAdd(item);
-            }
-            return result;
-        }
-        public void SafeAdd(JsonNode item)
-        {
-            if (item != null)
-            {
-                items.Add(item);
-            }
-        }
-        public void SafeAdd(Func<JsonNode> itemFn)
-        {
-            if (itemFn != null)
-            {
-                var item = itemFn();
-                if (item != null)
-                {
-                    items.Add(item);
-                }
-            }
         }
     }
 

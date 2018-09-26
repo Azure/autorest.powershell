@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType } from '#common/media-types';
-import { nameof } from '#common/text-manipulation';
+import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { ForEach } from '#csharp/code-dom/statements/for';
 import { If } from '#csharp/code-dom/statements/if';
@@ -15,6 +15,7 @@ import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { System } from '#csharp/code-dom/dotnet';
+import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 
 export class Wildcard implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -129,10 +130,22 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   constructor(public schema: Schema) {
   }
 
+  static deserializeFromContainerMemberToType(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression, typeDeclaration: TypeDeclaration): Expression {
+    try {
+      switch (mediaType) {
+        case KnownMediaType.Json:
+          const tmp = `__${camelCase(['json', ...deconstruct(serializedName)])}`;
+          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonObject}>("${serializedName}"), out var ${tmp}) ? ${ClientRuntime.JsonSerializable}.FromJson(${tmp}, ${defaultValue} ?? new ${typeDeclaration.declaration}()) : ${defaultValue}`);
+      }
+    } finally {
+    }
+
+    return toExpression(`null /* deserializeFromContainerMemberToType doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
-
-    return toExpression(`null /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename}*/`);
+    return UntypedWildcard.deserializeFromContainerMemberToType(mediaType, container, serializedName, defaultValue, System.Collections.Generic.Dictionary(System.String, System.Object));
   }
 
   /** emits an expression to deserialze a container as the value itself. */
@@ -160,6 +173,21 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+    try {
+      //const each = pushTempVar();
+      //return ForEach(each, toExpression(value), ``);
+
+      switch (mediaType) {
+        case KnownMediaType.Json:
+          return If(`${value}.Count > 0`, function* () {
+            yield `${container}.Add("${serializedName}", ${ClientRuntime.JsonSerializable}.ToJsonValue(${value}));`;
+          });
+
+      }
+    } finally {
+      //popTempVar();
+    }
+
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
 

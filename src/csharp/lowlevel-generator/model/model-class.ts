@@ -31,6 +31,7 @@ import { Constructor } from '#csharp/code-dom/constructor';
 import { System } from '#csharp/code-dom/dotnet';
 import { Variable } from '#csharp/code-dom/variable';
 import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
+import { implementIDictionary } from './IDictionary';
 
 export interface BackingField {
   field: Field;
@@ -202,11 +203,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     if (this.schema.additionalProperties) {
       if (this.schema.additionalProperties === true) {
-        // we should generate an additionalProperties property that catches all extra properties as object
-        const valueSchema = {};
+        // we're going to implement IDictionary<string, object>
+        implementIDictionary(System.String, System.Object, this);
+
+
+
       } else {
-        // we should generate an additionalProperties property that catches all extra properties as the type specified by
-        const valueSchema = this.schema.additionalProperties;
+        // we're going to implement IDictionary<string, schema.additionalProperties>
+
       }
 
     }
