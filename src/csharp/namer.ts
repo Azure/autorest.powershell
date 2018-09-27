@@ -66,14 +66,13 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
           })
         }
       };
-
     } else {
       schema.details.csharp = <SchemaDetails>{
         ...details,
-        interfaceName: '<INVALID>',
+        interfaceName: '<INVALID_INTERFACE>',
         name: schemaName,
-        namespace: '<INVALID>',
-        fullname: '<INVALID>'
+        namespace: '<INVALID_NAMESPACE>',
+        fullname: '<INVALID_FULLNAME>'
       };
     }
 

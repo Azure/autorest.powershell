@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CommandOperation } from '#common/code-model/command-operation';
-import { getAllProperties } from '#common/code-model/schema';
+import { getAllProperties, JsonType } from '#common/code-model/schema';
 import { Dictionary, items, values } from '#common/linq';
 import { KnownMediaType } from '#common/media-types';
 import { escapeString } from '#common/text-manipulation';
@@ -584,7 +584,7 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter
           },
           description: parameter.details.powershell.description,
-          initializer: `new ${parameter.schema.details.csharp.fullname}()`
+          initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`
         }));
 
         addPowershellParameters(this, <Schema>parameter.schema, cmdletParameter);

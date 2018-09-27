@@ -146,7 +146,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          System.Net.Http.StringContent.new(Ternery(
+          return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
             `${ClientRuntime.XNodeArray.new(this.serializeToNode(mediaType, value, ''))}.ToString()`,
             System.String.Empty
@@ -155,7 +155,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
           const defaultName = this.elementType.schema.details.default.name;
-          System.Net.Http.StringContent.new(Ternery(
+          return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
             `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString()`,
             System.String.Empty
