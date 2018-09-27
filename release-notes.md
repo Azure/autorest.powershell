@@ -1,10 +1,43 @@
-# Incubator Release Notes [9/27/2018]
+# Incubator Release Notes [9/27/2018] (incubator version `1.0.123`)
 
 ## What's New
 - All runtime code is now generated in the same namespace as the project itself (no more `Carbon.Json` and `Microsoft.Rest.ClientRuntime` namespaces) -- this will make it so you can have multiple generated code sets in the same project if necessary. 
 - runtime code is a marked lot more `internal` than it was; `public` is  only used where it must.
 - `additionalProperties` in models should generate far better code that it was. (still one outstanding case where it's not good.)
 -  you can use npm to install powershell cross platform: `npm install -g get-powershell`, then you can just run `pwsh` !
+
+## Upgrading 
+
+- If you've been using the `PowerShell` Generator, you can upgrade pretty easily:
+
+``` powershell
+    # force npm to remove old stuff
+    > npm cache clean --force
+
+    # remove old autorest extensions
+    > autorest --reset 
+
+    # install the lates version of hte incubator (you still have to 
+    # say --use=@microsoft.azure/autorest.incubator@preview when you use it! )
+    > autorest --use=@microsoft.azure/autorest.incubator@preview --help
+    
+    # verify the version you have
+    > autorest --info 
+```
+
+You should see something like:
+``` text
+AutoRest code generation utility [version: 2.0.4283; node: v8.12.0]
+(C) 2018 Microsoft Corporation.
+https://aka.ms/autorest
+
+
+Showing All Installed Extensions
+
+ Type       Extension Name                           Version      Location
+ core       @microsoft.azure/autorest-core           2.0.4289     C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@2.0.4289
+ extension  @microsoft.azure/autorest.incubator      1.0.123      C:\Users\garretts\.autorest\@microsoft.azure_autorest.incubator@1.0.123
+```
 
 # Prerequisites
 
