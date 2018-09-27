@@ -67,10 +67,10 @@ export function items<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)>
     return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (let i = 0; i < source.length; i++) { yield { key: i, value: source[i] }; } }());
   }
   if (source instanceof Map) {
-    return <Linqable<{ key: IndexOf<TSrc>; value: T }>><any>linqify(function* () { for (const [key, value] of source.entries()) { yield { key, value }; } }());
+    return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (const [key, value] of source.entries()) { yield { key, value }; } }());
   }
   if (source) {
-    return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (const key of keys(source)) { const value = source[key]; if (typeof value !== 'function') { yield { key, value: source[key] }; } } }());
+    return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (const key of keys(source)) { const value = source[<string>key]; if (typeof value !== 'function') { yield { key, value: source[<string>key] }; } } }());
   }
   return linqify([]);
 }

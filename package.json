@@ -44,7 +44,7 @@
     "tslint-language-service": "^0.9.9",
     "tslint-microsoft-contrib": "^5.0.3",
     "tspath": "^1.2.10",
-    "typescript": "^3.0.0",
+    "typescript": "^3.1.1",
     "yarn": "^1.7.0"
   },
   "dependencies": {
