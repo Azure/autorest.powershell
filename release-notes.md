@@ -1,4 +1,10 @@
-# Incubator Release Notes [9/16/2018]
+# Incubator Release Notes [9/27/2018]
+
+## What's New
+- All runtime code is now generated in the same namespace as the project itself (no more `Carbon.Json` and `Microsoft.Rest.ClientRuntime` namespaces) -- this will make it so you can have multiple generated code sets in the same project if necessary. 
+- runtime code is a marked lot more `internal` than it was; `public` is  only used where it must.
+- `additionalProperties` in models should generate far better code that it was. (still one outstanding case where it's not good.)
+-  you can use npm to install powershell cross platform: `npm install -g get-powershell`, then you can just run `pwsh` !
 
 # Prerequisites
 
@@ -7,8 +13,8 @@
 
 - powershell-core
     - required for building (don't worry -- the cmdlets should run on both powershell and powershell-core)
-    - see https://github.com/powershell/powershell#get-powershell 
-    
+    - NEW! you can use npm to install powershell cross platform: `npm install -g get-powershell`, then you can just run `pwsh` !
+    - or, see https://github.com/powershell/powershell#get-powershell to do it the hard way.
 
 - .NET Core SDK (2.0+) :
     - is required to build cmdlets 
