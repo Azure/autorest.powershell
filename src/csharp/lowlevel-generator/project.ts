@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Dictionary } from '#common/linq';
 import { ImportDirective } from '#csharp/code-dom/import';
 import { Project as codeDomProject } from '#csharp/code-dom/project';
 import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
@@ -18,11 +19,28 @@ export class Project extends codeDomProject {
   public xmlSerialization: boolean = false;
   public defaultPipeline: boolean = true;
   public emitSignals: boolean = true;
+  public projectNamespace: string;
+  public overrides: Dictionary<string>;
 
   constructor(protected state: State) {
     super();
     state.project = this;
     // add project namespace
+    this.projectNamespace = state.model.details.csharp.namespace;
+    this.overrides = {
+      'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal.Extensions': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Json.Parser': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Data': `${this.projectNamespace}.Runtime.Json`,
+      'using Converters;': '',
+      'using Internal.Extensions;': '',
+      'using Data;': '',
+      'using Parser;': '',
+
+      'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
+      'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+    };
 
   }
 
@@ -52,7 +70,7 @@ export class Project extends codeDomProject {
     // if (this.jsonSerialization) {
     // create serialization support
     // new JsonSerializerClass(this.supportNamespace, this.state);
-    //}
+    // }
     // this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
 
     // abort now if we have any errors.

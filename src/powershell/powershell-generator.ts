@@ -6,7 +6,7 @@
 import { Model } from '#common/code-model/code-model';
 import { Text } from '#common/file-generator';
 import { resources } from '#common/locations';
-import { copyResources } from '#common/utility';
+import { copyResources, applyOverrides } from '#common/utility';
 import { deserialize, serialize } from '#common/yaml';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
@@ -30,7 +30,8 @@ export async function processRequest(service: Host) {
     // generate some files
     const modelState = new State(service, model, codemodel);
     const project = await new Project(modelState).init();
-    await project.writeFiles(async (filename, content) => service.WriteFile(filename, content, undefined, 'source-file-csharp'));
+
+    await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 
     await service.ProtectFiles(project.csproj);
     await service.ProtectFiles(project.customFolder);
@@ -70,9 +71,9 @@ async function copyRuntime(service: Host, project: Project) {
   await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-csharp'));
 
   // c# files
-  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
+  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
   if (project.azure) {
-    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'));
+    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
   }
 }
 

@@ -318,11 +318,29 @@ export class Project extends codeDomProject {
   public maxInlinedParameters!: number;
   public skipModelCmdlets!: boolean;
   public nounPrefix!: string;
+  public projectNamespace: string;
+  public overrides: Dictionary<string>;
 
   constructor(protected state: State) {
     super();
     this.schemaDefinitionResolver = new SchemaDefinitionResolver();
     state.project = this;
+    this.projectNamespace = state.model.details.csharp.namespace;
+
+    this.overrides = {
+      'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal.Extensions': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Data': `${this.projectNamespace}.Runtime.Json`,
+      'using Data;': '',
+      'using Parser;': '',
+      'using Converters;': '',
+      'using Internal.Extensions;': '',
+
+      'Carbon.Json.Parser': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
+      'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+    };
   }
 
   public async init(): Promise<this> {

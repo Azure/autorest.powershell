@@ -49,7 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private readonly System.Action Cancel;
         private readonly CancellationToken CancellationToken;
 
-        public AsyncJob(PSCmdlet cmdlet,string line,string name, CancellationToken cancellationToken, System.Action cancelMethod) : base(line, name)
+        internal AsyncJob(PSCmdlet cmdlet,string line,string name, CancellationToken cancellationToken, System.Action cancelMethod) : base(line, name)
         {
             SetJobState(JobState.NotStarted);
             // know how to cancel/check for cancelation

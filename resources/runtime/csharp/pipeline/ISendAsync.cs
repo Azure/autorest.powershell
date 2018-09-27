@@ -212,18 +212,21 @@ namespace Microsoft.Rest.ClientRuntime
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => Pipeline.SendAsync(request, callback);
     }
 
-    public static partial class Extensions
+    internal static partial class Extensions
     {
-
-        public static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {
-            using( original ) {
-                return original.Clone(requestUri,method);
+        internal static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
+        {
+            using (original)
+            {
+                return original.Clone(requestUri, method);
             }
         }
 
-        public static Task<HttpRequestMessage> CloneWithContentAndDispose(this HttpRequestMessage original,System.Uri requestUri = null, System.Net.Http.HttpMethod method = null ) {
-            using( original ) {
-                return original.CloneWithContent(requestUri,method);
+        internal static Task<HttpRequestMessage> CloneWithContentAndDispose(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
+        {
+            using (original)
+            {
+                return original.CloneWithContent(requestUri, method);
             }
         }
 
@@ -232,10 +235,11 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         /// <param name="original">Original HttpRequestMessage (Will be diposed before returning)</param>
         /// <returns>A clone of the HttpRequestMessage</returns>
-        public static HttpRequestMessage Clone(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null )
+        internal static HttpRequestMessage Clone(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
         {
-            var clone = new HttpRequestMessage {
-                Method = method ?? original.Method, 
+            var clone = new HttpRequestMessage
+            {
+                Method = method ?? original.Method,
                 RequestUri = requestUri ?? original.RequestUri,
                 Version = original.Version,
             };
@@ -258,7 +262,7 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         /// <param name="original">Original HttpRequestMessage (Will be diposed before returning)</param>
         /// <returns>A clone of the HttpRequestMessage</returns>
-        public static async Task<HttpRequestMessage> CloneWithContent(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
+        internal static async Task<HttpRequestMessage> CloneWithContent(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)
         {
             var clone = original.Clone(requestUri, method);
             var stream = new System.IO.MemoryStream();

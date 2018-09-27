@@ -3,10 +3,10 @@ import { Method } from '#csharp/code-dom/method';
 import { Class } from '#csharp/code-dom/class';
 import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
 
-export function implementIDictionary(keyType:TypeDeclaration, valueType: TypeDeclaration, targetClass: Class)  {
+export function implementIDictionary(keyType: TypeDeclaration, valueType: TypeDeclaration, targetClass: Class) {
 
 
-// add a container for the dictionary
+  // add a container for the dictionary
   // targetClass.Add(new InitializedField)
 
   // hook up all the methods to the container

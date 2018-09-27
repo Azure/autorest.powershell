@@ -1,6 +1,6 @@
 namespace Microsoft.Rest.ClientRuntime
 {
-    public static partial class Extensions
+    internal static partial class Extensions
     {
         internal static bool If<T>(T input, out T output)
         {
@@ -69,8 +69,10 @@ namespace Microsoft.Rest.ClientRuntime
         /// <summary>
         /// An IDisposable that does absolutely nothing. 
         /// </summary>
-        internal class DummyDisposable : System.IDisposable {
-            public void Dispose() {
+        internal class DummyDisposable : System.IDisposable
+        {
+            public void Dispose()
+            {
             }
         }
         /// <summary>
@@ -84,7 +86,8 @@ namespace Microsoft.Rest.ClientRuntime
         internal class NoSyncContext : System.IDisposable
         {
             private System.Threading.SynchronizationContext original = System.Threading.SynchronizationContext.Current;
-            internal NoSyncContext() {
+            internal NoSyncContext()
+            {
                 System.Threading.SynchronizationContext.SetSynchronizationContext(null);
             }
             public void Dispose() => System.Threading.SynchronizationContext.SetSynchronizationContext(original);

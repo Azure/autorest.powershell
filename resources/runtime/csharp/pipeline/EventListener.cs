@@ -31,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime
         System.Action Cancel { get; }
     }
 
-    public static partial class Extensions
+    internal static partial class Extensions
     {
         public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
         public static Task Signal(this IEventListener instance, string id, CancellationToken token) => instance.Signal(id, token, () => new EventData { Id = id, Cancel = instance.Cancel });
@@ -222,7 +222,8 @@ namespace Microsoft.Rest.ClientRuntime
 
         public async Task Signal(string id, CancellationToken token, GetEventData createMessage)
         {
-            using(NoSynchronizationContext) {
+            using (NoSynchronizationContext)
+            {
                 if (!string.IsNullOrEmpty(id) && (calls.TryGetValue(id, out Event listener) || tracer != null))
                 {
                     var message = createMessage();

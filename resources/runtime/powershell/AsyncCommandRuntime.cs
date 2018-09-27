@@ -19,7 +19,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private System.Management.Automation.PSCmdlet cmdlet;
 
-        public AsyncCommandRuntime(System.Management.Automation.PSCmdlet cmdlet, CancellationToken cancellationToken)
+        internal AsyncCommandRuntime(System.Management.Automation.PSCmdlet cmdlet, CancellationToken cancellationToken)
         {
             this.originalCommandRuntime = cmdlet.CommandRuntime as ICommandRuntime2;
             this.originalThread = System.Threading.Thread.CurrentThread;
