@@ -102,6 +102,7 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
     return this.typeDeclaration.validateValue(eventListener, this);
   }
   public mediaType: KnownMediaType;
+  public contentType: string;
 
   public typeDeclaration: EnhancedTypeDeclaration;
 
@@ -110,6 +111,7 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
     super(name, typeDeclaration);
     this.typeDeclaration = typeDeclaration;
     this.mediaType = KnownMediaType.Json;
+    this.contentType = KnownMediaType.Json;
 
     this.apply(objectInitializer);
     this.description = description || schema.details.csharp.description;

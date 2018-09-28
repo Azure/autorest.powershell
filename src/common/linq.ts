@@ -31,15 +31,15 @@ export function CopyDictionary<TSource, TDestination>(dictionary: Dictionary<TSo
   return ToDictionary(excludeXDash(dictionary), each);
 }
 
-export type IndexOf<T> = T extends Map<T, infer V> ? V : T extends Array<infer V> ? number : string;
+export type IndexOf<T> = T extends Map<T, infer V> ? T : T extends Array<infer V> ? number : string;
 
 /** returns an Linqable<> for keys in the collection */
-export function keys<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)>(source: (Array<T> | Dictionary<T> | Map<K, T>)): Linqable<IndexOf<TSrc>> {
+export function keys<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)>(source: TSrc & (Array<T> | Dictionary<T> | Map<K, T>)): Linqable<IndexOf<TSrc>> {
   if (Array.isArray(source)) {
-    return <Linqable<IndexOf<TSrc>>>linqify(source.keys());
+    return <Linqable<IndexOf<TSrc>>>linqify((<Array<T>>source).keys());
   }
   if (source instanceof Map) {
-    return <Linqable<IndexOf<TSrc>>><any>linqify(source.keys());
+    return <Linqable<IndexOf<TSrc>>><unknown>linqify((<Map<K, T>>source).keys());
   }
   if (source) {
     return <Linqable<IndexOf<TSrc>>>linqify((Object.getOwnPropertyNames(source)));
@@ -56,7 +56,14 @@ export function values<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)
     return linqify(source.values());
   }
   if (source) {
-    return linqify(function* () { for (const key of keys(source)) { const value = source[key]; if (typeof value !== 'function') { yield value; } } }());
+    return linqify(function* () {
+      for (const key of keys(source)) {
+        const value = source[key];
+        if (typeof value !== 'function') {
+          yield value;
+        }
+      }
+    }());
   }
   return linqify([]);
 }
@@ -70,7 +77,16 @@ export function items<K, T, TSrc extends (Array<T> | Dictionary<T> | Map<K, T>)>
     return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (const [key, value] of source.entries()) { yield { key, value }; } }());
   }
   if (source) {
-    return <Linqable<{ key: IndexOf<TSrc>; value: T }>>linqify(function* () { for (const key of keys(source)) { const value = source[<string>key]; if (typeof value !== 'function') { yield { key, value: source[<string>key] }; } } }());
+    return <Linqable<{ key: IndexOf<TSrc>; value: T }>><unknown>linqify(function* () {
+      for (const key of keys(source)) {
+        const value = source[<string>key];
+        if (typeof value !== 'function') {
+          yield {
+            key, value: source[<string>key]
+          };
+        }
+      }
+    }());
   }
   return linqify([]);
 }

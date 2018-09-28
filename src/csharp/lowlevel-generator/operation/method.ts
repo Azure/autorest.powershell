@@ -73,24 +73,21 @@ export class OperationMethod extends Method {
     if (this.operation.requestBody) {
       // this request does have a request body.
       this.bodyParameter = new OperationBodyParameter(this, 'body', this.operation.requestBody.description || '', <Schema>this.operation.requestBody.schema, this.operation.requestBody.required, this.state.path('requestBody'), {
-        mediaType: knownMediaType(this.operation.requestBody.contentType)
+        mediaType: knownMediaType(this.operation.requestBody.contentType),
+        contentType: this.operation.requestBody.contentType
       });
       this.addParameter(this.bodyParameter);
     }
 
-    for (const { key: responseCode, value: responses } of items(this.operation.responses_new)) {
+    for (const { key: responseCode, value: responses } of items(this.operation.responses)) {
       for (const response of values(responses)) {
         const responseType = response.schema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.schema, true, state) : null;
         const headerType = response.headerSchema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
 
-        // if (responseType || headerType) {
         const newCallbackParameter = new CallbackParameter(response.details.csharp.name, responseType, headerType, this.state, { description: response.details.csharp.description });
         this.addParameter(newCallbackParameter);
         this.callbacks.push(newCallbackParameter);
-        // } else {
-        // there isn't a response type for the this call.
-        // stream?
-        // }
+
       }
     }
 
@@ -117,13 +114,13 @@ export class OperationMethod extends Method {
         + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '')}
         + "`);
     }
-    const cb = this.callbacks;
+
     const bp = this.bodyParameter;
     // add method implementation...
     const $this = this;
     this.add(function* () {
       const eventListener = new EventListener($this.contextParameter, $this.state.project.emitSignals);
-      // yield `// should we call validation?`;
+
       yield EOL;
 
       yield `// construct URL`;
@@ -182,7 +179,7 @@ export class OperationMethod extends Method {
       if (bp) {
         yield `// set body content`;
         yield `request.Content = ${bp.serializeToContent(bp.mediaType)};`;
-        yield `request.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("${bp.mediaType}");`;
+        yield `request.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("${bp.contentType}");`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet, `_url`);
       }
 
@@ -269,7 +266,7 @@ export class CallMethod extends Method {
       this.addParameter(opMethod.contextParameter);
     }
     const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: `the prepared HttpRequestMessage to send.` }));
-    opMethod.callbacks.map(each => this.addParameter(each));
+    opMethod.callbacks.forEach(each => this.addParameter(each));
     if (!this.state.project.storagePipeline) {
       this.addParameter(opMethod.contextParameter);
       this.addParameter(opMethod.senderParameter);
@@ -278,7 +275,6 @@ export class CallMethod extends Method {
     this.add(function* () {
       const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals);
 
-      // const response = new LocalVariable('_response', System.Net.Http.HttpResponseMessage, { initializer: dotnet.Null });
       const response = Local('_response', dotnet.Null, System.Net.Http.HttpResponseMessage);
       yield response;
       yield Try(function* () {
@@ -297,7 +293,7 @@ export class CallMethod extends Method {
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
             const i = 0;
-            for (const { key: responseCode, value: responses } of items(opMethod.operation.responses_new)) {
+            for (const { key: responseCode, value: responses } of items(opMethod.operation.responses)) {
               if (responseCode !== 'default') {
                 // will use enum when it can, fall back to casting int when it can't
                 yield Case(System.Net.HttpStatusCode[responseCode].value || `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
@@ -307,7 +303,7 @@ export class CallMethod extends Method {
             }
 
             // missing default response?
-            if (!opMethod.operation.responses_new.default) {
+            if (!opMethod.operation.responses.default) {
               // if no default, we need one that handles the rest of the stuff.
               yield TerminalDefaultCase(function* () {
                 yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response.StatusCode);`;
@@ -560,10 +556,9 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
 
           // switch the response type.
           this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
-          // const result = new LocalVariable('result', IL.Var, { initializer: '_response' });
+
           yield `result = _response;`;
           yield `_response = null; // ensure that it's not disposed in finally`;
-          // yield Return(result);
 
           // make sure this method returns null at the end
           this.returnNull = true;

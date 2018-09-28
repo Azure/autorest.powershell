@@ -5,8 +5,7 @@
 
 import { EOL } from '#common/text-manipulation';
 
-export const summary = (text: string): string => xmlize("summary", text);
-
+export const summary = (text: string): string => xmlize('summary', text);
 
 export function xmlize(element: string, text: string): string {
   if (text) {

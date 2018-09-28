@@ -29,6 +29,13 @@
       "problemMatcher": [
         "$tsc-watch"
       ]
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": [
+        "$msCompile"
+      ]
     }
   ]
 }

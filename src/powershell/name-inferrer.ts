@@ -9,13 +9,13 @@ import { Channel, Message } from '@microsoft.azure/autorest-extension-base';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
-  result.AddWord('Database', 'Databases');
-  result.AddWord('database', 'databases');
+  result.addWord('Database', 'Databases');
+  result.addWord('database', 'databases');
   return result;
 }
 
 function singularize(word: string): string {
-  return getPluralizationService().Singularize(word);
+  return getPluralizationService().singularize(word);
 }
 
 function getSingularizedValue(name: string): string {
@@ -336,11 +336,10 @@ export function getCommandName(operationId: string, onMessage: (message: Message
     cmdNoun = getSingularizedValue(cmdNoun);
   }
 
-  const nameInfos = cmdVerbs.map(v => {
+  return cmdVerbs.map(v => {
     let verb = pascalCase([v]);
     if (!cmdNoun) { verb = getSingularizedValue(verb); }
     onMessage({ Channel: Channel.Verbose, Text: `Operation '${operationId}': Using noun '${cmdNoun}' and verb '${verb}'.` });
     return { noun: cmdNoun, verb, variant };
   });
-  return nameInfos;
 }

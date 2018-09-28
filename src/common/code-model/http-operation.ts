@@ -175,8 +175,7 @@ export class HttpOperation extends Extensions implements HttpOperation {
   public details: LanguageDetails<HttpOperationDetails>;
   public tags = new Array<string>();
   public parameters = new Array<HttpOperationParameter>();
-  // public responses = new Dictionary<Response>();
-  public responses_new = new Dictionary<Array<NewResponse>>();
+  public responses = new Dictionary<Array<NewResponse>>();
   public callbacks = new Dictionary<Callback>();
   public security = new Array<SecurityRequirement>();
   public servers = new Array<Server>();
@@ -206,7 +205,7 @@ export interface HttpOperation extends IOperation<HttpOperationParameter>, Exten
   parameters: Array<HttpOperationParameter>;
   requestBody?: RequestBody;
   // responses: Dictionary<Response>;
-  responses_new: Dictionary<Array<NewResponse>>;
+  responses: Dictionary<Array<NewResponse>>;
 
   callbacks: Dictionary<Callback>;
   deprecated: boolean;
@@ -263,6 +262,7 @@ export function isHttpOperation(operation: IOperationBase): operation is HttpOpe
 
 export class Callback implements Callback {
   constructor() {
+    // unimplemented.
   }
 }
 
@@ -290,10 +290,6 @@ export class HttpComponents extends Components<HttpOperation, HttpOperationParam
   public links = new Dictionary<Link>();
 
   public callbacks = new Dictionary<Callback>();
-
-  // operations = new Dictionary<HttpOperation>();
-  //
-  // parameters = new Dictionary<HttpOperationParameter>();
 
   constructor(initializer?: Partial<HttpComponents>) {
     super();

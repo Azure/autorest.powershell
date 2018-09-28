@@ -15,6 +15,7 @@ import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { values } from '#common/linq';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -88,7 +89,15 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
             System.String.Empty),
           System.Text.Encoding.UTF8);
       }
+      case KnownMediaType.Multipart:
+        // add a
+        for (const p of values(this.schema.properties)) {
 
+        }
+        return toExpression(`${System.Net.Http.StringContent.new()}
+        {
+
+        }`);
     }
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }

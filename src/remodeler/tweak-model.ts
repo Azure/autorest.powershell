@@ -7,7 +7,7 @@ import { Model } from '#common/code-model/code-model';
 import { ParameterLocation } from '#common/code-model/http-operation';
 import { getPolymorphicBases, isSchemaObject, JsonType, Property, Schema } from '#common/code-model/schema';
 import { items, values } from '#common/linq';
-import { KnownMediaType } from '#common/media-types';
+import { KnownMediaType, knownMediaType } from '#common/media-types';
 import { processCodeModel } from '#common/process-code-model';
 import { StringFormat } from '#remodeler/known-format';
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
@@ -49,7 +49,7 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
 
   // if an operation has a response that has a schema with string/binary we should make the response  application/octet-stream
   for (const operation of values(model.http.operations)) {
-    for (const { key: responseCode, value: responses } of items(operation.responses_new)) {
+    for (const { key: responseCode, value: responses } of items(operation.responses)) {
       for (const response of responses) {
         if (response.schema) {
           if (response.schema.type === JsonType.String && response.schema.format === StringFormat.Binary) {
@@ -70,7 +70,7 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
     // === Header Schemas ===
     // go thru the operations, find responses that have header values, and add a property to the schemas that are returned with those values
     for (const operation of values(model.http.operations)) {
-      for (const { key: mediaType, value: responses } of items(operation.responses_new)) {
+      for (const { key: mediaType, value: responses } of items(operation.responses)) {
         for (const response of responses) {
           // for a given response, find the possible models that can be returned from the service
           for (const header of items(response.headers)) {
@@ -107,7 +107,7 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
                 // was this previously declared as a header only property?
                 if (!property.details[HeaderProperty]) {
 
-                  service.Message({ Channel: Channel.Debug, Text: `Property ${header.key} in model ${response.schema.details.name} can also come from the header.` });
+                  service.Message({ Channel: Channel.Debug, Text: `Property ${header.key} in model ${response.schema.details.default.name} can also come from the header.` });
                   // no.. There is duplication between header and body property. Probably because of etags.
                   // tell it to be a header-and-body property.
                   property.details.default[HeaderProperty] = HeaderPropertyType.HeaderAndBody;
@@ -123,6 +123,17 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
   // remove well-known header parameters from operations and add mark the operation has supporting that feature
 
   for (const operation of values(model.http.operations)) {
+    // if we have an operation with a body, and content-type is a multipart/formdata
+    // then we should go thru the parameters of the body and look for a string/binary parameters
+    // and remember to add another parameter for the filename of the string/binary
+    if (operation.requestBody && knownMediaType(operation.requestBody.contentType) === KnownMediaType.Multipart) {
+      for (const prop of values(operation.requestBody.schema.properties)) {
+        if (prop.schema.type === JsonType.String && prop.schema.format === 'binary') {
+          prop.details.default.isNamedStream = true;
+        }
+      }
+    }
+
     // move well-known hearder parameters into details, and we can process them in the generator how we please.
     operation.details.default.headerparameters = values(operation.parameters).linq.where(p => p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name)).linq.toArray();
 
@@ -133,7 +144,7 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
         for (const parameter of values(operation.parameters).linq.where(p => p.in === ParameterLocation.Header && p.name === 'if-match')) {
           switch (parameter.name) {
             case 'if-match':
-              operation.details.ifmatch = parameter;
+              operation.details.default.ifmatch = parameter;
               remove.push(parameter.name);
               break;
 
@@ -185,7 +196,7 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
   }
 
   for (const operation of values(model.http.operations)) {
-    for (const { key: responseCode, value: responses } of items(operation.responses_new)) {
+    for (const { key: responseCode, value: responses } of items(operation.responses)) {
       for (const response of values(responses)) {
         if (responseCode === 'default' || response.extensions['x-ms-error-response'] === true) {
           response.details.default.isErrorResponse = true;

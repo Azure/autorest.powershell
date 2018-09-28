@@ -16,6 +16,7 @@ export enum KnownMediaType {
   Json = 'application/json',
   Xml = 'application/xml',
   Stream = 'application/octet-stream',
+  Multipart = 'multipart/form-data',
   Text = 'text/plain',
 
   None = '-none-',
@@ -37,6 +38,9 @@ export function knownMediaType(mediaType: string) {
     }
     if (mt.subtype === 'audio' || mt.subtype === 'image' || mt.subtype === 'video' || mt.subtype === 'octet-stream') {
       return KnownMediaType.Stream;
+    }
+    if (mt.type === 'multipart' && mt.subtype === 'form-data') {
+      return KnownMediaType.Multipart;
     }
   }
 

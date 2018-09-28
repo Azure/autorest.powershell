@@ -32,6 +32,13 @@ export abstract class Variable extends Initializer implements Variable {
   Cast(toType: TypeDeclaration): Expression {
     return Cast(this, toType);
   }
+  /**
+   * Binds instance methods to this variable so they can be used as {@link Statement}
+   * @param toType The ClassType definition to bind to
+   */
+  As<T>(toType: { $BindTo(instance: Variable): T }) {
+    return toType.$BindTo(this);
+  }
 }
 
 /** A ReferenceVariable can be passed as by 'ref' in C# */

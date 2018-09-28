@@ -59,7 +59,7 @@ export class CmdletClass extends Class {
     // basic stuff
     this.addCommonStuff();
 
-    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`
+    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
@@ -232,7 +232,7 @@ export class CmdletClass extends Class {
       // construct the call to the operation
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-      // const pipeline = new LocalVariable('pipeline', IL.Var, { initializer: new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`) });
+
       const pipeline = $this.$<Property>('Pipeline');
 
       yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`));
@@ -258,11 +258,8 @@ export class CmdletClass extends Class {
         }
       }
 
-      // how many inputs is the api expecting
-      const inputParameters = operationParameters.length;
-
       // create the response handlers
-      const responses = [...values(apiCall.responses_new).linq.selectMany(each => each)];
+      const responses = [...values(apiCall.responses).linq.selectMany(each => each)];
 
       const callbackMethods = values(responses).linq.toArray().map(each => new LiteralExpression(each.details.csharp.name));
 
@@ -407,17 +404,10 @@ export class CmdletClass extends Class {
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
         if (!(parameter.details.default.constantValue)) {
-          // yield td.getSerializeStatement(KnownMediaType.Json, container.use, parameter.details.powershell.name, parameter.details.powershell.name);
           yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.powershell.name, container, parameter.details.powershell.name);
         }
       }
 
-      // yield `bool returnNow = false;`;
-      // yield `${$this.btj.name}(ref result, ref returnNow);`;
-
-      //      yield If(`returnNow`, `return result;`);
-
-      // yield `${$this.atj.name}(ref result);`;
       yield `return container;`;
     });
 
@@ -631,7 +621,7 @@ export class CmdletClass extends Class {
       }
       */
 
-      for (const item of items(op.responses_new).linq.where(each => each.key !== 'default')) {
+      for (const item of items(op.responses).linq.where(each => each.key !== 'default')) {
 
         for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);

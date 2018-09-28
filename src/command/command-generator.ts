@@ -14,8 +14,7 @@ export async function process(service: Host): Promise<void> {
 /** attempts to create command operations for each http operation */
 async function createCommandOperations(model: Model, service: Host): Promise<Model> {
   for (const operation of Object.values(model.http.operations)) {
-    // const names = getCommandName(operation.details.name, service.Message);
-
+    // not implemented here.
   }
   return model;
 }

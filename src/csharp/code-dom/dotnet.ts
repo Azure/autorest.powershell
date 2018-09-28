@@ -10,6 +10,7 @@ import { Namespace } from '#csharp/code-dom/namespace';
 import { Parameter } from '#csharp/code-dom/parameter';
 import { Property } from '#csharp/code-dom/property';
 import { TypeDeclaration } from './type-declaration';
+import { Local, Variable } from './variable';
 
 export class ClassType implements TypeDeclaration {
   private get fullName() {
@@ -117,6 +118,14 @@ export const System = intersect(system, {
     Empty: new LiteralExpression('System.String.Empty'),
     IsNullOrEmpty: (expression: ExpressionOrLiteral) => toExpression(`${System.String}.IsNullOrEmpty(${toExpression(expression)})`),
     IsNullOrWhitespace: (expression: ExpressionOrLiteral) => toExpression(`${System.String}.IsNullOrWhitespace(${toExpression(expression)})`),
+    /** @description Binds a Variable to the known instance methods of this type */
+    $BindTo: ($instance: Variable) => {
+      return intersect($instance, {
+        Substring: (start: ExpressionOrLiteral, end?: ExpressionOrLiteral) => {
+          return end ? `${$instance}.Substring(${start},${end})` : `${$instance}.Substring(${start})`;
+        }
+      });
+    },
   }),
   DateTime: new ClassType(system, 'DateTime'),
   EventArgs: new ClassType(system, 'EventArgs'),
@@ -153,6 +162,8 @@ export const System = intersect(system, {
         HttpResponseHeaders: new ClassType(headers, 'HttpResponseHeaders'),
       }),
       StringContent: new ClassType(http, 'StringContent'),
+      StreamContent: new ClassType(http, 'StreamContent'),
+      MultipartFormDataContent: new ClassType(http, 'MultipartFormDataContent'),
     }),
     HttpStatusCode: intersect(new ClassType(net, 'HttpStatusCode'), <Dictionary<LiteralExpression> & Index<LiteralExpression>>{
       default: new LiteralExpression(''),
@@ -243,3 +254,12 @@ export const dotnet = {
   Null: new LiteralExpression('null'),
   This: new LiteralExpression('this'),
 };
+
+/*
+
+const q = System.String.$BindTo(Local('text', '"helloworld"'));
+const f = Local('text', `"helloworld"`).As(System.String);
+
+f.Substring('10');
+
+*/

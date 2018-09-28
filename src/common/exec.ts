@@ -10,7 +10,7 @@ import * as path from 'path';
 function cmdlineToArray(text: string, result: Array<string> = [], matcher = /[^\s"]+|"([^"]*)"/gi, count = 0): Array<string> {
   text = text.replace(/\\"/g, '\ufffe');
   const match = matcher.exec(text);
-  return match ? cmdlineToArray(text, result, matcher, result.push(match[1] ? match[1].replace(/\ufffe/g, '\\"', ) : match[0].replace(/\ufffe/g, '\\"', ))) : result;
+  return match ? cmdlineToArray(text, result, matcher, result.push(match[1] ? match[1].replace(/\ufffe/g, '\\"') : match[0].replace(/\ufffe/g, '\\"'))) : result;
 }
 
 function getPathVariableName() {
@@ -89,7 +89,7 @@ async function getFullPath(command: string, recursive: boolean = false, searchPa
 }
 
 function quoteIfNecessary(text: string): string {
-  if (text && text.indexOf(' ') > -1 && text.charAt(0) != '"') {
+  if (text && text.indexOf(' ') > -1 && text.charAt(0) !== '"') {
     return `"${text}"`;
   }
   return text;

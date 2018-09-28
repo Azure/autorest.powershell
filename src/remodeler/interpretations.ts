@@ -5,11 +5,10 @@
 
 import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
 import { EnumDetails } from '#common/code-model/schema';
+import { ModelState } from '#common/model-state';
 import { Server } from '../common/code-model/components';
 import { clone, getExtensionProperties } from './common';
 import * as OpenAPI from './oai3';
-import { pascalCase, deconstruct } from '#common/text-manipulation';
-import { ModelState } from '#common/model-state';
 
 interface XMSEnum {
   modelAsString?: boolean;

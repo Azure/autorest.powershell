@@ -94,6 +94,10 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
         ...propertyDetails,
         name: pname // and so are the propertyNmaes
       };
+
+      if (propertyDetails.default.isNamedStream) {
+        propertySchema.details.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
+      }
     }
 
     // fix enum names
@@ -134,7 +138,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
       };
     }
 
-    for (const { key: responseCode, value: responses } of items(operation.responses_new)) {
+    for (const { key: responseCode, value: responses } of items(operation.responses)) {
       // per responseCode
       for (const response of values(responses)) {
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
@@ -143,7 +147,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
         const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
         let rawValue = code.replace(/\./, '');
         if (rawValue === 'default') {
-          rawValue = `any response code not handled elsewhere`
+          rawValue = `any response code not handled elsewhere`;
         }
         response.details.csharp = {
           ...response.details.default,

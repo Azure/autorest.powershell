@@ -2,7 +2,8 @@
   "defaultSeverity": "warn",
   "extends": [
     "tslint-microsoft-contrib",
-    "tslint:recommended"
+    "tslint:recommended",
+    "tslint-sonarts"
   ],
   "jsRules": {},
   "rules": {
@@ -42,6 +43,13 @@
     "no-this-assignment": false,
     "object-literal-sort-keys": false,
     "completed-docs": false,
+    "no-nested-template-literals": false,
+    "no-suspicious-comment": false,
+    "no-redundant-boolean": false,
+    "cognitive-complexity": false,
+    "no-for-in": {
+      "severity": "error"
+    },
     "array-type": [
       true,
       "generic"

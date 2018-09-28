@@ -6,74 +6,56 @@
 import { Model } from '#common/code-model/code-model';
 import { Text } from '#common/file-generator';
 import { resources } from '#common/locations';
-import { copyResources, applyOverrides } from '#common/utility';
+import { applyOverrides, copyResources } from '#common/utility';
 import { deserialize, serialize } from '#common/yaml';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State } from './state';
-
+const sourceFileCSharp = 'source-file-csharp';
 export async function processRequest(service: Host) {
-  try {
-    // Get the list of files
-    const files = await service.ListInputs('code-model-v2');
-    if (files.length === 0) {
-      throw new Error('Inputs missing.');
-    }
 
-    const codemodel = files[0];
-
-    // get the openapi document
-    const codeModelText = await service.ReadFile(codemodel);
-    const model = await deserialize<Model>(codeModelText, codemodel);
-
-    // generate some files
-    const modelState = new State(service, model, codemodel);
-    const project = await new Project(modelState).init();
-
-    await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
-
-    await service.ProtectFiles(project.csproj);
-    await service.ProtectFiles(project.customFolder);
-    await service.ProtectFiles(project.testFolder);
-
-    // wait for all the generation to be done
-    await generateCsproj(service, project);
-    await copyRuntime(service, project);
-    await generateCsproj(service, project);
-    await generateModule(service, project);
-    // await generateProxies(service);
-
-    // debug data
-    service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
-
-  } catch (E) {
-    console.error(E);
-    throw E;
+  // Get the list of files
+  const files = await service.ListInputs('code-model-v2');
+  if (files.length === 0) {
+    throw new Error('Inputs missing.');
   }
-}
 
-/*
-async function generateProxies(service: Host, project: Project) {
-  const of = await service.GetValue('output-folder');
-  // find the pwsh executable.
-  const pwsh = await resolveFullPath('pwsh', process.platform === 'win32' ? ['c:/Program Files/PowerShell', 'c:/Program Files (x86)/PowerShell'] : []);
-  if (!pwsh) {
-    // no powershell core found.
-    throw new Error('PowerShell Core (pwsh) not found in path. Please ensure that pwsh is available.');
-  }
-  console.error(`${pwsh} -command "${of}/build-module.ps1"`);
+  const codemodel = files[0];
+
+  // get the openapi document
+  const codeModelText = await service.ReadFile(codemodel);
+  const model = await deserialize<Model>(codeModelText, codemodel);
+
+  // generate some files
+  const modelState = new State(service, model, codemodel);
+  const project = await new Project(modelState).init();
+
+  await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
+
+  await service.ProtectFiles(project.csproj);
+  await service.ProtectFiles(project.customFolder);
+  await service.ProtectFiles(project.testFolder);
+
+  // wait for all the generation to be done
+  await generateCsproj(service, project);
+  await copyRuntime(service, project);
+  await generateCsproj(service, project);
+  await generateModule(service, project);
+
+  // debug data
+  service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
+
 }
-*/
 
 async function copyRuntime(service: Host, project: Project) {
   // PowerShell Scripts
-  await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-csharp'));
+  await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, sourceFileCSharp));
 
   // c# files
-  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
   if (project.azure) {
-    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
   }
 }
 
@@ -95,14 +77,12 @@ async function generateCsproj(service: Host, project: Project) {
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 </Project>
-`, undefined, 'source-file-csharp');
+`, undefined, sourceFileCSharp);
   }
 }
 
 async function generateModule(service: Host, project: Project) {
   // write out the psd1 file if it's not there.
-
-  // if (!await service.ReadFile(cfg.psd1)) {
 
   // todo: change this to *update* the psd1?
 

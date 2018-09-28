@@ -6,7 +6,7 @@
 import { Model } from '#common/code-model/code-model';
 import { CommandOperation } from '#common/code-model/command-operation';
 import { IParameter } from '#common/code-model/components';
-import { HttpOperation, HttpOperationParameter, RequestBody, HttpMethod } from '#common/code-model/http-operation';
+import { HttpMethod, HttpOperation, HttpOperationParameter, RequestBody } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
 import { items, length, values } from '#common/linq';
@@ -72,7 +72,35 @@ async function addVariant(vname: string, body: RequestBody | undefined, bodyPara
   //
 }
 
+function isNameConflict(model: Model, vname: string) {
+  for (const each of values(model.commands.operations)) {
+    if (each.details.powershell.name === vname) {
+      return true;
+    }
+  }
+  return false;
+}
+
 async function addCommandOperation(vname: string, parameters: Array<HttpOperationParameter>, operation: HttpOperation, variant: CommandVariant, model: Model, service: Host): Promise<CommandOperation> {
+  // if vname is > 64 characters, let's trim it
+  // after trimming it, make sure there aren't any other operation with a name that's exactly the same
+  if (vname.length > 64) {
+    const names = deconstruct(vname);
+    let newVName = '';
+    for (const each of names) {
+      newVName = newVName + each;
+      if (newVName.length > 60) {
+        break;
+      }
+    }
+    vname = `${newVName}Etc`;
+  }
+
+  // if we have an identical vname, let's add 'etc'
+  while (isNameConflict(model, vname)) {
+    vname = `${vname}Etc`;
+  }
+
   return model.commands.operations[`${length(model.commands.operations)}`] = new CommandOperation(operation.operationId, {
     asjob: operation.details.default.asjob ? true : false,
     ...variant,
@@ -144,7 +172,6 @@ async function addVariants(parameters: Array<HttpOperationParameter>, operation:
 
 async function detect(model: Model, service: Host): Promise<Model> {
   service.Message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
-  // let count = 0;
 
   // parameter names that are candidates to be changed to pull the value from the common module
   const commonCandidates = await commonParameters(service);
@@ -208,8 +235,8 @@ function combinations<T>(elements: Array<T>) {
 
 const pluralizationService = new Lazy(() => {
   const result = new EnglishPluralizationService();
-  result.AddWord('Database', 'Databases');
-  result.AddWord('database', 'databases');
+  result.addWord('Database', 'Databases');
+  result.addWord('database', 'databases');
   return result;
 });
 
@@ -227,12 +254,12 @@ function inferCommandNames(operationId: string): Array<CommandVariant> {
   if (!method) {
     // no group given.
     method = group;
-    group = 'service';
+    group = '';
 
     // todo:  with no group, figure out a strategy for verb/nouning the method..
   }
 
-  group = pluralization.Singularize(group);
+  group = pluralization.singularize(group);
   const operation = deconstruct(method);
 
   if (operation.length > 1) {
@@ -274,10 +301,14 @@ function getVariant(operation: string, group: string | Array<string>, suffix: Ar
 
   const v = getVerb(operation);
   if (v === 'Invoke') {
-    group = [operation, ...group];
+    // if the 'operation' name was  "post" -- it's kindof redundant.
+    // so, only include the operation name in the group name if it's anything else
+    if (operation !== 'post') {
+      group = [operation, ...group];
+    }
   }
 
-  group = group.map(each => pluralization.Singularize(each));
+  group = group.map(each => pluralization.singularize(each));
   const noun = pascalCase(group);
 
   return {
@@ -314,106 +345,115 @@ function getCategory(verb: string): string {
 
   return fail(`Verb '${verb}' has no matching category.`);
 }
+const Verbs = {
+  Common: 'System.Management.Automation.Verbs.Common',
+  Data: 'System.Management.Automation.VerbsData',
+  Lifecycle: 'System.Management.Automation.VerbsLifecycle',
+  Diagnostic: 'System.Management.Automation.VerbsDiagnostic',
+  Communications: 'System.Management.Automation.VerbsCommunications',
+  Security: 'System.Management.Automation.VerbsSecurity',
+  Other: 'System.Management.Automation.VerbsOther'
+};
 
 const category: { [verb: string]: string } = {
-  'Add': 'System.Management.Automation.VerbsCommon',
-  'Clear': 'System.Management.Automation.VerbsCommon',
-  'Close': 'System.Management.Automation.VerbsCommon',
-  'Copy': 'System.Management.Automation.VerbsCommon',
-  'Enter': 'System.Management.Automation.VerbsCommon',
-  'Exit': 'System.Management.Automation.VerbsCommon',
-  'Find': 'System.Management.Automation.VerbsCommon',
-  'Format': 'System.Management.Automation.VerbsCommon',
-  'Get': 'System.Management.Automation.VerbsCommon',
-  'Hide': 'System.Management.Automation.VerbsCommon',
-  'Join': 'System.Management.Automation.VerbsCommon',
-  'Lock': 'System.Management.Automation.VerbsCommon',
-  'Move': 'System.Management.Automation.VerbsCommon',
-  'New': 'System.Management.Automation.VerbsCommon',
-  'Open': 'System.Management.Automation.VerbsCommon',
-  'Optimize': 'System.Management.Automation.VerbsCommon',
-  'Pop': 'System.Management.Automation.VerbsCommon',
-  'Push': 'System.Management.Automation.VerbsCommon',
-  'Redo': 'System.Management.Automation.VerbsCommon',
-  'Remove': 'System.Management.Automation.VerbsCommon',
-  'Rename': 'System.Management.Automation.VerbsCommon',
-  'Reset': 'System.Management.Automation.VerbsCommon',
-  'Resize': 'System.Management.Automation.VerbsCommon',
-  'Search': 'System.Management.Automation.VerbsCommon',
-  'Select': 'System.Management.Automation.VerbsCommon',
-  'Set': 'System.Management.Automation.VerbsCommon',
-  'Show': 'System.Management.Automation.VerbsCommon',
-  'Skip': 'System.Management.Automation.VerbsCommon',
-  'Split': 'System.Management.Automation.VerbsCommon',
-  'Step': 'System.Management.Automation.VerbsCommon',
-  'Switch': 'System.Management.Automation.VerbsCommon',
-  'Undo': 'System.Management.Automation.VerbsCommon',
-  'Unlock': 'System.Management.Automation.VerbsCommon',
-  'Watch': 'System.Management.Automation.VerbsCommon',
-  'Backup': 'System.Management.Automation.VerbsData',
-  'Checkpoint': 'System.Management.Automation.VerbsData',
-  'Compare': 'System.Management.Automation.VerbsData',
-  'Compress': 'System.Management.Automation.VerbsData',
-  'Convert': 'System.Management.Automation.VerbsData',
-  'ConvertFrom': 'System.Management.Automation.VerbsData',
-  'ConvertTo': 'System.Management.Automation.VerbsData',
-  'Dismount': 'System.Management.Automation.VerbsData',
-  'Edit': 'System.Management.Automation.VerbsData',
-  'Expand': 'System.Management.Automation.VerbsData',
-  'Export': 'System.Management.Automation.VerbsData',
-  'Group': 'System.Management.Automation.VerbsData',
-  'Import': 'System.Management.Automation.VerbsData',
-  'Initialize': 'System.Management.Automation.VerbsData',
-  'Limit': 'System.Management.Automation.VerbsData',
-  'Merge': 'System.Management.Automation.VerbsData',
-  'Mount': 'System.Management.Automation.VerbsData',
-  'Out': 'System.Management.Automation.VerbsData',
-  'Publish': 'System.Management.Automation.VerbsData',
-  'Restore': 'System.Management.Automation.VerbsData',
-  'Save': 'System.Management.Automation.VerbsData',
-  'Sync': 'System.Management.Automation.VerbsData',
-  'Unpublish': 'System.Management.Automation.VerbsData',
-  'Update': 'System.Management.Automation.VerbsData',
-  'Approve': 'System.Management.Automation.VerbsLifecycle',
-  'Assert': 'System.Management.Automation.VerbsLifecycle',
-  'Complete': 'System.Management.Automation.VerbsLifecycle',
-  'Confirm': 'System.Management.Automation.VerbsLifecycle',
-  'Deny': 'System.Management.Automation.VerbsLifecycle',
-  'Disable': 'System.Management.Automation.VerbsLifecycle',
-  'Enable': 'System.Management.Automation.VerbsLifecycle',
-  'Install': 'System.Management.Automation.VerbsLifecycle',
-  'Invoke': 'System.Management.Automation.VerbsLifecycle',
-  'Register': 'System.Management.Automation.VerbsLifecycle',
-  'Request': 'System.Management.Automation.VerbsLifecycle',
-  'Restart': 'System.Management.Automation.VerbsLifecycle',
-  'Resume': 'System.Management.Automation.VerbsLifecycle',
-  'Start': 'System.Management.Automation.VerbsLifecycle',
-  'Stop': 'System.Management.Automation.VerbsLifecycle',
-  'Submit': 'System.Management.Automation.VerbsLifecycle',
-  'Suspend': 'System.Management.Automation.VerbsLifecycle',
-  'Uninstall': 'System.Management.Automation.VerbsLifecycle',
-  'Unregister': 'System.Management.Automation.VerbsLifecycle',
-  'Wait': 'System.Management.Automation.VerbsLifecycle',
-  'Debug': 'System.Management.Automation.VerbsDiagnostic',
-  'Measure': 'System.Management.Automation.VerbsDiagnostic',
-  'Ping': 'System.Management.Automation.VerbsDiagnostic',
-  'Repair': 'System.Management.Automation.VerbsDiagnostic',
-  'Resolve': 'System.Management.Automation.VerbsDiagnostic',
-  'Test': 'System.Management.Automation.VerbsDiagnostic',
-  'Trace': 'System.Management.Automation.VerbsDiagnostic',
-  'Connect': 'System.Management.Automation.VerbsCommunications',
-  'Disconnect': 'System.Management.Automation.VerbsCommunications',
-  'Read': 'System.Management.Automation.VerbsCommunications',
-  'Receive': 'System.Management.Automation.VerbsCommunications',
-  'Send': 'System.Management.Automation.VerbsCommunications',
-  'Write': 'System.Management.Automation.VerbsCommunications',
-  'Block': 'System.Management.Automation.VerbsSecurity',
-  'Grant': 'System.Management.Automation.VerbsSecurity',
-  'Protect': 'System.Management.Automation.VerbsSecurity',
-  'Revoke': 'System.Management.Automation.VerbsSecurity',
-  'Unblock': 'System.Management.Automation.VerbsSecurity',
-  'Unprotect': 'System.Management.Automation.VerbsSecurity',
-  'Use': 'System.Management.Automation.VerbsOther',
+  'Add': Verbs.Common,
+  'Clear': Verbs.Common,
+  'Close': Verbs.Common,
+  'Copy': Verbs.Common,
+  'Enter': Verbs.Common,
+  'Exit': Verbs.Common,
+  'Find': Verbs.Common,
+  'Format': Verbs.Common,
+  'Get': Verbs.Common,
+  'Hide': Verbs.Common,
+  'Join': Verbs.Common,
+  'Lock': Verbs.Common,
+  'Move': Verbs.Common,
+  'New': Verbs.Common,
+  'Open': Verbs.Common,
+  'Optimize': Verbs.Common,
+  'Pop': Verbs.Common,
+  'Push': Verbs.Common,
+  'Redo': Verbs.Common,
+  'Remove': Verbs.Common,
+  'Rename': Verbs.Common,
+  'Reset': Verbs.Common,
+  'Resize': Verbs.Common,
+  'Search': Verbs.Common,
+  'Select': Verbs.Common,
+  'Set': Verbs.Common,
+  'Show': Verbs.Common,
+  'Skip': Verbs.Common,
+  'Split': Verbs.Common,
+  'Step': Verbs.Common,
+  'Switch': Verbs.Common,
+  'Undo': Verbs.Common,
+  'Unlock': Verbs.Common,
+  'Watch': Verbs.Common,
+  'Backup': Verbs.Data,
+  'Checkpoint': Verbs.Data,
+  'Compare': Verbs.Data,
+  'Compress': Verbs.Data,
+  'Convert': Verbs.Data,
+  'ConvertFrom': Verbs.Data,
+  'ConvertTo': Verbs.Data,
+  'Dismount': Verbs.Data,
+  'Edit': Verbs.Data,
+  'Expand': Verbs.Data,
+  'Export': Verbs.Data,
+  'Group': Verbs.Data,
+  'Import': Verbs.Data,
+  'Initialize': Verbs.Data,
+  'Limit': Verbs.Data,
+  'Merge': Verbs.Data,
+  'Mount': Verbs.Data,
+  'Out': Verbs.Data,
+  'Publish': Verbs.Data,
+  'Restore': Verbs.Data,
+  'Save': Verbs.Data,
+  'Sync': Verbs.Data,
+  'Unpublish': Verbs.Data,
+  'Update': Verbs.Data,
+  'Approve': Verbs.Lifecycle,
+  'Assert': Verbs.Lifecycle,
+  'Complete': Verbs.Lifecycle,
+  'Confirm': Verbs.Lifecycle,
+  'Deny': Verbs.Lifecycle,
+  'Disable': Verbs.Lifecycle,
+  'Enable': Verbs.Lifecycle,
+  'Install': Verbs.Lifecycle,
+  'Invoke': Verbs.Lifecycle,
+  'Register': Verbs.Lifecycle,
+  'Request': Verbs.Lifecycle,
+  'Restart': Verbs.Lifecycle,
+  'Resume': Verbs.Lifecycle,
+  'Start': Verbs.Lifecycle,
+  'Stop': Verbs.Lifecycle,
+  'Submit': Verbs.Lifecycle,
+  'Suspend': Verbs.Lifecycle,
+  'Uninstall': Verbs.Lifecycle,
+  'Unregister': Verbs.Lifecycle,
+  'Wait': Verbs.Lifecycle,
+  'Debug': Verbs.Diagnostic,
+  'Measure': Verbs.Diagnostic,
+  'Ping': Verbs.Diagnostic,
+  'Repair': Verbs.Diagnostic,
+  'Resolve': Verbs.Diagnostic,
+  'Test': Verbs.Diagnostic,
+  'Trace': Verbs.Diagnostic,
+  'Connect': Verbs.Communications,
+  'Disconnect': Verbs.Communications,
+  'Read': Verbs.Communications,
+  'Receive': Verbs.Communications,
+  'Send': Verbs.Communications,
+  'Write': Verbs.Communications,
+  'Block': Verbs.Security,
+  'Grant': Verbs.Security,
+  'Protect': Verbs.Security,
+  'Revoke': Verbs.Security,
+  'Unblock': Verbs.Security,
+  'Unprotect': Verbs.Security,
+  'Use': Verbs.Other,
 };
 
 const verbs: { [verb: string]: string } = {
@@ -422,6 +462,10 @@ const verbs: { [verb: string]: string } = {
   'Cat': 'Get',
   'Type': 'Get',
   'Dir': 'Get',
+  'Put': 'Set',
+  'Post': 'Invoke',
+  'Get': 'Get',
+  'Delete': 'Remove',
   'Obtain': 'Get',
   'Dump': 'Get',
   'Acquire': 'Get',
@@ -447,7 +491,6 @@ const verbs: { [verb: string]: string } = {
   'Attach': 'Add',
   'Concatenate': 'Add',
   'Insert': 'Add',
-  'Delete': 'Remove',
   'Cut': 'Remove',
   'Dispose': 'Remove',
   'Discard': 'Remove',

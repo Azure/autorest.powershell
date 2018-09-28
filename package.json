@@ -8,15 +8,20 @@
   },
   "scripts": {
     "start": "node ./dist/plugin/main.js",
-    "build": "tsc -p . && node .scripts/fix-aliased-imports.js",
+    "build": "npm run lint && tsc -p . && node .scripts/fix-aliased-imports.js",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
     "test-dead": "&& mocha dist/func-factory/test --timeout 100000 && mocha dist/highlevel/test --timeout 10000 && mocha dist/lowlevel/test --timeout 5000",
     "test-run": "cls ; npm run build ; if ($LastExitCode -eq 0 ) { autorest --use=. --powershell C:/work/2018/azure-rest-api-specs/specification/containerregistry/resource-manager/readme.md --output-folder=./generated --debug --verbose    }",
     "testci": "npm run test",
     "publish-preview": "npm test && node ./.scripts/publish",
-    "watch": "cmd /c start tsc -p . -watch && cmd /c start node .\\.scripts\\fix-aliased-imports.js --watch",
-    "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar -xvf - && erase *.tgz"
+    "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar -xvf - && erase *.tgz",
+    "run-pwsh": "pwsh -command \"& {param($script) pwsh -command ((convertfrom-json (get-content -raw ./package.json)).'pwsh-scripts'.$script) }\"",
+    "lint": "tslint -c ./tslint.json  --project .",
+    "watch": "npm run run-pwsh watch"
+  },
+  "pwsh-scripts": {
+    "watch": "Start-Process -FilePath (get-command node) -ArgumentList @('./.scripts/fix-aliased-imports.js' , '--watch') ; Start-Process -FilePath (get-command tsc)  @('-p','.','--watch')"
   },
   "repository": {
     "type": "git",
@@ -40,19 +45,19 @@
     "mocha-typescript": "latest",
     "semver": "^5.4.1",
     "shx": "^0.2.2",
-    "tslint": "^5.9.1",
-    "tslint-language-service": "^0.9.9",
-    "tslint-microsoft-contrib": "^5.0.3",
+    "tslint": "^5.11.0",
+    "tslint-language-service-ts3": "1.0.0",
+    "tslint-microsoft-contrib": "^5.2.1",
     "tspath": "^1.2.10",
     "typescript": "^3.1.1",
-    "yarn": "^1.7.0"
+    "yarn": "^1.7.0",
+    "tslint-sonarts": "^1.8.0",
+    "source-map-support": "0.5.3"
   },
   "dependencies": {
     "@microsoft.azure/async-io": "2.0.19",
     "@microsoft.azure/autorest-extension-base": "1.0.23",
     "@microsoft.azure/tasks": "^2.0.12",
-    "js-yaml": "^3.10.0",
-    "source-map-support": "0.5.3",
-    "typescript-simple": "8.0.6"
+    "js-yaml": "^3.10.0"
   }
 }

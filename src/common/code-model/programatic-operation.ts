@@ -13,7 +13,6 @@ export interface ProgrammaticOperation extends IOperation<IParameter> {
   pure: boolean; // side-effect free? May be helpful for deciding how to generate code.
 }
 
-
 export interface IntrinsicOperation extends ProgrammaticOperation {
 
 }

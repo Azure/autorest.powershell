@@ -173,21 +173,13 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    try {
-      //const each = pushTempVar();
-      //return ForEach(each, toExpression(value), ``);
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        return If(`${value}.Count > 0`, function* () {
+          yield `${container}.Add("${serializedName}", ${ClientRuntime.JsonSerializable}.ToJsonValue(${value}));`;
+        });
 
-      switch (mediaType) {
-        case KnownMediaType.Json:
-          return If(`${value}.Count > 0`, function* () {
-            yield `${container}.Add("${serializedName}", ${ClientRuntime.JsonSerializable}.ToJsonValue(${value}));`;
-          });
-
-      }
-    } finally {
-      //popTempVar();
     }
-
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
 

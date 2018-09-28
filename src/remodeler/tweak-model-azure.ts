@@ -9,6 +9,7 @@ import { keys, length, values } from '#common/linq';
 import { processCodeModel } from '#common/process-code-model';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
+const xmsPageable = 'x-ms-pageable';
 // Azure version -
 // Additional tweaks the code model to adjust things so that the code will generate better.
 
@@ -28,19 +29,19 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
   // identify the next link (null means just get the results as an array)
   // if nextLinkName is null, then it won't actually page, but we'd like to unroll the contents anyway.
   for (const operation of values(model.http.operations)) {
-    if (operation.extensions['x-ms-pageable']) {
+    if (operation.extensions[xmsPageable]) {
       // it's marked pagable.
       operation.details.default.pageable = {
         responseType: `pageable`,
-        nextLinkName: operation.extensions['x-ms-pageable'].nextLinkName || undefined,
-        itemName: operation.extensions['x-ms-pageable'].itemName || 'value',
-        operationName: operation.extensions['x-ms-pageable'].operationName || `${operation.operationId}Next`,
+        nextLinkName: operation.extensions[xmsPageable].nextLinkName || undefined,
+        itemName: operation.extensions[xmsPageable].itemName || 'value',
+        operationName: operation.extensions[xmsPageable].operationName || `${operation.operationId}Next`,
       };
       continue;
     }
 
     // let's just check to see if it looks like it's supposed to be a collection
-    for (const responses of values(operation.responses_new)) {
+    for (const responses of values(operation.responses)) {
       for (const response of values(responses)) {
         // does the response have a schema?
         if (response.schema) {
@@ -110,11 +111,8 @@ async function tweakModel(model: Model, service: Host): Promise<Model> {
       };
 
       // LRO 201 and 202 responses are handled internally, so remove any 201/202 responses in the operation
-      delete operation.responses_new['201'];
-      delete operation.responses_new['202'];
-
-      // delete operation.responses['201'];
-      // delete operation.responses['202'];
+      delete operation.responses['201'];
+      delete operation.responses['202'];
     }
   }
   return model;

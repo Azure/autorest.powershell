@@ -14,28 +14,28 @@ class StringBidirectionalDictionary {
   constructor(dict: { [key: string]: string } = {}) {
     for (const key of Object.keys(dict)) {
       const value = dict[key];
-      this.AddValue(key, value);
+      this.addValue(key, value);
     }
   }
 
-  public AddValue(first: string, second: string): void {
+  public addValue(first: string, second: string): void {
     this.dictForward.set(first, second);
     this.dictBackward.set(second, first);
   }
 
-  public ExistsInFirst(s: string): boolean {
+  public existsInFirst(s: string): boolean {
     return this.dictForward.has(s);
   }
 
-  public ExistsInSecond(s: string): boolean {
+  public existsInSecond(s: string): boolean {
     return this.dictBackward.has(s);
   }
 
-  public GetFirstValue(s: string): string {
+  public getFirstValue(s: string): string {
     return this.dictBackward.get(s) || (() => { throw new Error('Cannot find key.'); })();
   }
 
-  public GetSecondValue(s: string): string {
+  public getSecondValue(s: string): string {
     return this.dictForward.get(s) || (() => { throw new Error('Cannot find key.'); })();
   }
 }
@@ -59,23 +59,23 @@ class PluralizationServiceUtil {
 }
 
 export class EnglishPluralizationService {
-  private _userDictionary: StringBidirectionalDictionary;
-  private _irregularPluralsPluralizationService: StringBidirectionalDictionary;
-  private _assimilatedClassicalInflectionPluralizationService: StringBidirectionalDictionary;
-  private _oSuffixPluralizationService: StringBidirectionalDictionary;
-  private _classicalInflectionPluralizationService: StringBidirectionalDictionary;
-  private _irregularVerbPluralizationService: StringBidirectionalDictionary;
-  private _wordsEndingWithSePluralizationService: StringBidirectionalDictionary;
-  private _wordsEndingWithSisPluralizationService: StringBidirectionalDictionary;
-  private _wordsEndingWithSusPluralizationService: StringBidirectionalDictionary;
-  private _wordsEndingWithInxAnxYnxPluralizationService: StringBidirectionalDictionary;
+  private userDictionary: StringBidirectionalDictionary;
+  private irregularPluralsPluralizationService: StringBidirectionalDictionary;
+  private assimilatedClassicalInflectionPluralizationService: StringBidirectionalDictionary;
+  private oSuffixPluralizationService: StringBidirectionalDictionary;
+  private classicalInflectionPluralizationService: StringBidirectionalDictionary;
+  private irregularVerbPluralizationService: StringBidirectionalDictionary;
+  private wordsEndingWithSePluralizationService: StringBidirectionalDictionary;
+  private wordsEndingWithSisPluralizationService: StringBidirectionalDictionary;
+  private wordsEndingWithSusPluralizationService: StringBidirectionalDictionary;
+  private wordsEndingWithInxAnxYnxPluralizationService: StringBidirectionalDictionary;
 
-  private _knownSingluarWords: Array<string>;
-  private _knownPluralWords: Array<string>;
+  private knownSingluarWords: Array<string>;
+  private knownPluralWords: Array<string>;
 
-  private _uninflectiveSuffixList: Array<string> = ['fish', 'ois', 'sheep', 'deer', 'pos', 'itis', 'ism'];
+  private uninflectiveSuffixList: Array<string> = ['fish', 'ois', 'sheep', 'deer', 'pos', 'itis', 'ism'];
 
-  private _uninflectiveWordList: Array<string> = [
+  private uninflectiveWordList: Array<string> = [
     'bison', 'flounder', 'pliers', 'bream', 'gallows', 'proceedings',
     'breeches', 'graffiti', 'rabies', 'britches', 'headquarters', 'salmon',
     'carp', '----', 'scissors', 'ch----is', 'high-jinks', 'sea-bass',
@@ -90,9 +90,9 @@ export class EnglishPluralizationService {
     'molasses', 'shambles', 'shingles'
   ];
 
-  private _irregularVerbList: { [key: string]: string } = { 'am': 'are', 'are': 'are', 'is': 'are', 'was': 'were', 'were': 'were', 'has': 'have', 'have': 'have' };
+  private irregularVerbList: { [key: string]: string } = { 'am': 'are', 'are': 'are', 'is': 'are', 'was': 'were', 'were': 'were', 'has': 'have', 'have': 'have' };
 
-  private _pronounList: Array<string> = [
+  private pronounList: Array<string> = [
     'I', 'we', 'you', 'he', 'she', 'they', 'it',
     'me', 'us', 'him', 'her', 'them',
     'myself', 'ourselves', 'yourself', 'himself', 'herself', 'itself',
@@ -105,7 +105,7 @@ export class EnglishPluralizationService {
     'what', 'whatever', 'which', 'whichever', 'who', 'whoever', 'whom', 'whomever',
     'whose'];
 
-  private _irregularPluralsDictionary: { [key: string]: string } = {
+  private irregularPluralsDictionary: { [key: string]: string } = {
     'brother': 'brothers', 'child': 'children',
     'cow': 'cows', 'ephemeris': 'ephemerides', 'genie': 'genies',
     'money': 'moneys', 'mongoose': 'mongooses', 'mythos': 'mythoi',
@@ -125,7 +125,7 @@ export class EnglishPluralizationService {
     'movie': 'movies', 'bonus': 'bonuses', 'specimen': 'specimens'
   };
 
-  private _assimilatedClassicalInflectionDictionary: { [key: string]: string } = {
+  private assimilatedClassicalInflectionDictionary: { [key: string]: string } = {
     'alumna': 'alumnae', 'alga': 'algae', 'vertebra': 'vertebrae',
     'codex': 'codices',
     'murex': 'murices', 'silex': 'silices', 'aphelion': 'aphelia',
@@ -139,7 +139,7 @@ export class EnglishPluralizationService {
     'automaton': 'automata', 'polyhedron': 'polyhedra',
   };
 
-  private _oSuffixDictionary: { [key: string]: string } = {
+  private oSuffixDictionary: { [key: string]: string } = {
     'albino': 'albinos', 'generalissimo': 'generalissimos',
     'manifesto': 'manifestos', 'archipelago': 'archipelagos',
     'ghetto': 'ghettos', 'medico': 'medicos', 'armadillo': 'armadillos',
@@ -151,7 +151,7 @@ export class EnglishPluralizationService {
     'magneto': 'magnetos', 'stylo': 'stylos'
   };
 
-  private _classicalInflectionDictionary: { [key: string]: string } = {
+  private classicalInflectionDictionary: { [key: string]: string } = {
     'stamen': 'stamina', 'foramen': 'foramina', 'lumen': 'lumina',
     'anathema': 'anathemata', '----': '----ta', 'oedema': 'oedemata',
     'bema': 'bemata', 'enigma': 'enigmata', 'sarcoma': 'sarcomata',
@@ -193,11 +193,11 @@ export class EnglishPluralizationService {
   };
 
   // this list contains all the plural words that being treated as singluar form, for example, "they" -> "they"
-  private _knownConflictingPluralList: Array<string> = ['they', 'them', 'their', 'have', 'were', 'yourself', 'are'];
+  private knownConflictingPluralList: Array<string> = ['they', 'them', 'their', 'have', 'were', 'yourself', 'are'];
 
   // this list contains the words ending with "se" and we special case these words since
   // we need to add a rule for "ses" singularize to "s"
-  private _wordsEndingWithSeDictionary: { [key: string]: string } = {
+  private wordsEndingWithSeDictionary: { [key: string]: string } = {
     'house': 'houses', 'case': 'cases', 'enterprise': 'enterprises',
     'purchase': 'purchases', 'surprise': 'surprises', 'release': 'releases',
     'disease': 'diseases', 'promise': 'promises', 'refuse': 'refuses',
@@ -241,7 +241,7 @@ export class EnglishPluralizationService {
     'universe': 'universes', 'workhorse': 'workhorses'
   };
 
-  private _wordsEndingWithSisDictionary: { [key: string]: string } = {
+  private wordsEndingWithSisDictionary: { [key: string]: string } = {
     'analysis': 'analyses', 'crisis': 'crises', 'basis': 'bases',
     'atherosclerosis': 'atheroscleroses', 'electrophoresis': 'electrophoreses',
     'psychoanalysis': 'psychoanalyses', 'photosynthesis': 'photosyntheses',
@@ -259,98 +259,98 @@ export class EnglishPluralizationService {
     'redis': 'redis'
   };
 
-  private _wordsEndingWithSusDictionary: { [key: string]: string } = {
+  private wordsEndingWithSusDictionary: { [key: string]: string } = {
     'consensus': 'consensuses', 'census': 'censuses'
   };
 
-  private _wordsEndingWithInxAnxYnxDictionary: { [key: string]: string } = {
+  private wordsEndingWithInxAnxYnxDictionary: { [key: string]: string } = {
     'sphinx': 'sphinxes',
     'larynx': 'larynges', 'lynx': 'lynxes', 'pharynx': 'pharynxes',
     'phalanx': 'phalanxes'
   };
 
   constructor() {
-    const flatten = <T>(l: Array<T[]>): Array<T> => [].concat.apply([], l);
+    const flatten = <T>(l: Array<Array<T>>): Array<T> => [].concat.apply([], l);
 
-    this._userDictionary = new StringBidirectionalDictionary();
+    this.userDictionary = new StringBidirectionalDictionary();
 
-    this._irregularPluralsPluralizationService =
-      new StringBidirectionalDictionary(this._irregularPluralsDictionary);
-    this._assimilatedClassicalInflectionPluralizationService =
-      new StringBidirectionalDictionary(this._assimilatedClassicalInflectionDictionary);
-    this._oSuffixPluralizationService =
-      new StringBidirectionalDictionary(this._oSuffixDictionary);
-    this._classicalInflectionPluralizationService =
-      new StringBidirectionalDictionary(this._classicalInflectionDictionary);
-    this._wordsEndingWithSePluralizationService =
-      new StringBidirectionalDictionary(this._wordsEndingWithSeDictionary);
-    this._wordsEndingWithSisPluralizationService =
-      new StringBidirectionalDictionary(this._wordsEndingWithSisDictionary);
-    this._wordsEndingWithSusPluralizationService =
-      new StringBidirectionalDictionary(this._wordsEndingWithSusDictionary);
-    this._wordsEndingWithInxAnxYnxPluralizationService =
-      new StringBidirectionalDictionary(this._wordsEndingWithInxAnxYnxDictionary);
+    this.irregularPluralsPluralizationService =
+      new StringBidirectionalDictionary(this.irregularPluralsDictionary);
+    this.assimilatedClassicalInflectionPluralizationService =
+      new StringBidirectionalDictionary(this.assimilatedClassicalInflectionDictionary);
+    this.oSuffixPluralizationService =
+      new StringBidirectionalDictionary(this.oSuffixDictionary);
+    this.classicalInflectionPluralizationService =
+      new StringBidirectionalDictionary(this.classicalInflectionDictionary);
+    this.wordsEndingWithSePluralizationService =
+      new StringBidirectionalDictionary(this.wordsEndingWithSeDictionary);
+    this.wordsEndingWithSisPluralizationService =
+      new StringBidirectionalDictionary(this.wordsEndingWithSisDictionary);
+    this.wordsEndingWithSusPluralizationService =
+      new StringBidirectionalDictionary(this.wordsEndingWithSusDictionary);
+    this.wordsEndingWithInxAnxYnxPluralizationService =
+      new StringBidirectionalDictionary(this.wordsEndingWithInxAnxYnxDictionary);
 
     // verb
-    this._irregularVerbPluralizationService =
-      new StringBidirectionalDictionary(this._irregularVerbList);
+    this.irregularVerbPluralizationService =
+      new StringBidirectionalDictionary(this.irregularVerbList);
 
-    this._knownSingluarWords = flatten([
-      Object.keys(this._irregularPluralsDictionary),
-      Object.keys(this._assimilatedClassicalInflectionDictionary),
-      Object.keys(this._oSuffixDictionary),
-      Object.keys(this._classicalInflectionDictionary),
-      Object.keys(this._irregularVerbList),
-      Object.keys(this._irregularPluralsDictionary),
-      Object.keys(this._wordsEndingWithSeDictionary),
-      Object.keys(this._wordsEndingWithSisDictionary),
-      Object.keys(this._wordsEndingWithSusDictionary),
-      Object.keys(this._wordsEndingWithInxAnxYnxDictionary),
-      Object.keys(this._uninflectiveWordList)
-    ]).filter(x => !this._knownConflictingPluralList.includes(x)); // see the _knowConflictingPluralList comment above
+    this.knownSingluarWords = flatten([
+      Object.keys(this.irregularPluralsDictionary),
+      Object.keys(this.assimilatedClassicalInflectionDictionary),
+      Object.keys(this.oSuffixDictionary),
+      Object.keys(this.classicalInflectionDictionary),
+      Object.keys(this.irregularVerbList),
+      Object.keys(this.irregularPluralsDictionary),
+      Object.keys(this.wordsEndingWithSeDictionary),
+      Object.keys(this.wordsEndingWithSisDictionary),
+      Object.keys(this.wordsEndingWithSusDictionary),
+      Object.keys(this.wordsEndingWithInxAnxYnxDictionary),
+      Object.keys(this.uninflectiveWordList)
+    ]).filter(x => !this.knownConflictingPluralList.includes(x)); // see the _knowConflictingPluralList comment above
 
-    this._knownPluralWords = flatten([
-      Object.values(this._irregularPluralsDictionary),
-      Object.values(this._assimilatedClassicalInflectionDictionary),
-      Object.values(this._oSuffixDictionary),
-      Object.values(this._classicalInflectionDictionary),
-      Object.values(this._irregularVerbList),
-      Object.values(this._irregularPluralsDictionary),
-      Object.values(this._wordsEndingWithSeDictionary),
-      Object.values(this._wordsEndingWithSisDictionary),
-      Object.values(this._wordsEndingWithSusDictionary),
-      Object.values(this._wordsEndingWithInxAnxYnxDictionary),
-      Object.values(this._uninflectiveWordList)]);
+    this.knownPluralWords = flatten([
+      Object.values(this.irregularPluralsDictionary),
+      Object.values(this.assimilatedClassicalInflectionDictionary),
+      Object.values(this.oSuffixDictionary),
+      Object.values(this.classicalInflectionDictionary),
+      Object.values(this.irregularVerbList),
+      Object.values(this.irregularPluralsDictionary),
+      Object.values(this.wordsEndingWithSeDictionary),
+      Object.values(this.wordsEndingWithSisDictionary),
+      Object.values(this.wordsEndingWithSusDictionary),
+      Object.values(this.wordsEndingWithInxAnxYnxDictionary),
+      Object.values(this.uninflectiveWordList)]);
   }
 
-  public IsPlural(word: string): boolean {
-    if (this._userDictionary.ExistsInSecond(word)) {
+  public isPlural(word: string): boolean {
+    if (this.userDictionary.existsInSecond(word)) {
       return true;
     }
-    if (this._userDictionary.ExistsInFirst(word)) {
+    if (this.userDictionary.existsInFirst(word)) {
       return false;
     }
 
-    if (this.IsUninflective(word) || this._knownPluralWords.includes(word.toLowerCase())) {
+    if (this.isUninflective(word) || this.knownPluralWords.includes(word.toLowerCase())) {
       return true;
-    } else if (this.Singularize(word) === word) {
+    } else if (this.singularize(word) === word) {
       return false;
     } else {
       return true;
     }
   }
 
-  public IsSingular(word: string): boolean {
-    if (this._userDictionary.ExistsInFirst(word)) {
+  public isSingular(word: string): boolean {
+    if (this.userDictionary.existsInFirst(word)) {
       return true;
     }
-    if (this._userDictionary.ExistsInSecond(word)) {
+    if (this.userDictionary.existsInSecond(word)) {
       return false;
     }
 
-    if (this.IsUninflective(word) || this._knownSingluarWords.includes(word.toLowerCase())) {
+    if (this.isUninflective(word) || this.knownSingluarWords.includes(word.toLowerCase())) {
       return true;
-    } else if (!this.IsNoOpWord(word) && this.Singularize(word) === word) {
+    } else if (!this.isNoOpWord(word) && this.singularize(word) === word) {
       return true;
     } else {
       return false;
@@ -358,99 +358,99 @@ export class EnglishPluralizationService {
   }
 
   //
-  public Pluralize(word: string): string {
-    return this.Capitalize(word, w => this.InternalPluralize(w));
+  public pluralize(word: string): string {
+    return this.capitalize(word, w => this.internalPluralize(w));
   }
 
-  private InternalPluralize(word: string): string {
+  private internalPluralize(word: string): string {
     // words that we know of
-    if (this._userDictionary.ExistsInFirst(word)) {
-      return this._userDictionary.GetSecondValue(word);
+    if (this.userDictionary.existsInFirst(word)) {
+      return this.userDictionary.getSecondValue(word);
     }
 
-    if (this.IsNoOpWord(word)) {
+    if (this.isNoOpWord(word)) {
       return word;
     }
 
-    const { prefixWord, suffixWord } = this.GetSuffixWord(word);
+    const { prefixWord, suffixWord } = this.getSuffixWord(word);
 
     // by me -> by me
-    if (this.IsNoOpWord(suffixWord)) {
+    if (this.isNoOpWord(suffixWord)) {
       return prefixWord + suffixWord;
     }
 
     // handle the word that do not inflect in the plural form
-    if (this.IsUninflective(suffixWord)) {
+    if (this.isUninflective(suffixWord)) {
       return prefixWord + suffixWord;
     }
 
     // if word is one of the known plural forms, then just return
-    if (this._knownPluralWords.includes(suffixWord.toLowerCase()) || this.IsPlural(suffixWord)) {
+    if (this.knownPluralWords.includes(suffixWord.toLowerCase()) || this.isPlural(suffixWord)) {
       return prefixWord + suffixWord;
     }
 
     // handle irregular plurals, e.g. "ox" -> "oxen"
-    if (this._irregularPluralsPluralizationService.ExistsInFirst(suffixWord)) {
-      return prefixWord + this._irregularPluralsPluralizationService.GetSecondValue(suffixWord);
+    if (this.irregularPluralsPluralizationService.existsInFirst(suffixWord)) {
+      return prefixWord + this.irregularPluralsPluralizationService.getSecondValue(suffixWord);
     }
 
     let newSuffixWord: string | null;
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['man'], s => s.slice(0, -2) + 'en');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['man'], s => `${s.slice(0, -2)}en`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // handle irregular inflections for common suffixes, e.g. "mouse" -> "mice"
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['louse', 'mouse'], s => s.slice(0, -4) + 'ice');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['louse', 'mouse'], s => `${s.slice(0, -4)}ice`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['tooth'], s => s.slice(0, -4) + 'eeth');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['tooth'], s => `${s.slice(0, -4)}eeth`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['goose'], s => s.slice(0, -4) + 'eese');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['goose'], s => `${s.slice(0, -4)}eese`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['foot'], s => s.slice(0, -3) + 'eet');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['foot'], s => `${s.slice(0, -3)}eet`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['zoon'], s => s.slice(0, -3) + 'oa');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['zoon'], s => `${s.slice(0, -3)}oa`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['cis', 'sis', 'xis'], s => s.slice(0, -2) + 'es');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['cis', 'sis', 'xis'], s => `${s.slice(0, -2)}es`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // handle assimilated classical inflections, e.g. vertebra -> vertebrae
-    if (this._assimilatedClassicalInflectionPluralizationService.ExistsInFirst(suffixWord)) {
-      return prefixWord + this._assimilatedClassicalInflectionPluralizationService.GetSecondValue(suffixWord);
+    if (this.assimilatedClassicalInflectionPluralizationService.existsInFirst(suffixWord)) {
+      return prefixWord + this.assimilatedClassicalInflectionPluralizationService.getSecondValue(suffixWord);
     }
 
     // Handle the classical variants of modern inflections
     //
-    if (this._classicalInflectionPluralizationService.ExistsInFirst(suffixWord)) {
-      return prefixWord + this._classicalInflectionPluralizationService.GetSecondValue(suffixWord);
+    if (this.classicalInflectionPluralizationService.existsInFirst(suffixWord)) {
+      return prefixWord + this.classicalInflectionPluralizationService.getSecondValue(suffixWord);
     }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['trix'], s => s.slice(0, -1) + 'ces');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['trix'], s => `${s.slice(0, -1)}ces`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['eau', 'ieu'], s => s + 'x');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['eau', 'ieu'], s => `${s}x`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    if (this._wordsEndingWithInxAnxYnxPluralizationService.ExistsInFirst(suffixWord)) {
-      return prefixWord + this._wordsEndingWithInxAnxYnxPluralizationService.GetSecondValue(suffixWord);
+    if (this.wordsEndingWithInxAnxYnxPluralizationService.existsInFirst(suffixWord)) {
+      return prefixWord + this.wordsEndingWithInxAnxYnxPluralizationService.getSecondValue(suffixWord);
     }
 
     // [cs]h and ss that take es as plural form
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ch', 'sh', 'ss'], s => s + 'es');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ch', 'sh', 'ss'], s => `${s}es`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // f, fe that take ves as plural form
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['alf', 'elf', 'olf', 'eaf', 'arf'], s => endsWithIgnoreCase(s, 'deaf') ? s : s.slice(0, -1) + 'ves');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['alf', 'elf', 'olf', 'eaf', 'arf'], s => endsWithIgnoreCase(s, 'deaf') ? s : `${s.slice(0, -1)}ves`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['nife', 'life', 'wife'], s => s.slice(0, -2) + 'ves');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['nife', 'life', 'wife'], s => `${s.slice(0, -2)}ves`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ay', 'ey', 'iy', 'oy', 'uy'], s => s + 's');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ay', 'ey', 'iy', 'oy', 'uy'], s => `${s}s`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     //
@@ -459,100 +459,100 @@ export class EnglishPluralizationService {
     }
 
     // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-    if (this._oSuffixPluralizationService.ExistsInFirst(suffixWord)) {
-      return prefixWord + this._oSuffixPluralizationService.GetSecondValue(suffixWord);
+    if (this.oSuffixPluralizationService.existsInFirst(suffixWord)) {
+      return prefixWord + this.oSuffixPluralizationService.getSecondValue(suffixWord);
     }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ao', 'eo', 'io', 'oo', 'uo'], s => s + 's');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['ao', 'eo', 'io', 'oo', 'uo'], s => `${s}s`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     if (endsWithIgnoreCase(suffixWord, 'o') || endsWithIgnoreCase(suffixWord, 's')) {
-      return prefixWord + suffixWord + 'es';
+      return `${prefixWord}${suffixWord}es`;
     }
 
     if (endsWithIgnoreCase(suffixWord, 'x')) {
-      return prefixWord + suffixWord + 'es';
+      return `${prefixWord}${suffixWord}es`;
     }
 
     // cats, bags, hats, speakers
-    return prefixWord + suffixWord + 's';
+    return `${prefixWord}${suffixWord}s`;
   }
 
-  public Singularize(word: string): string {
-    return this.Capitalize(word, w => this.InternalSingularize(w));
+  public singularize(word: string): string {
+    return this.capitalize(word, w => this.internalSingularize(w));
   }
 
-  private InternalSingularize(word: string): string {
+  private internalSingularize(word: string): string {
     // words that we know of
-    if (this._userDictionary.ExistsInSecond(word)) {
-      return this._userDictionary.GetFirstValue(word);
+    if (this.userDictionary.existsInSecond(word)) {
+      return this.userDictionary.getFirstValue(word);
     }
 
-    if (this.IsNoOpWord(word)) {
+    if (this.isNoOpWord(word)) {
       return word;
     }
 
-    const { prefixWord, suffixWord } = this.GetSuffixWord(word);
+    const { prefixWord, suffixWord } = this.getSuffixWord(word);
 
-    if (this.IsNoOpWord(suffixWord)) {
+    if (this.isNoOpWord(suffixWord)) {
       return prefixWord + suffixWord;
     }
 
     // handle the word that is the same as the plural form
-    if (this.IsUninflective(suffixWord)) {
+    if (this.isUninflective(suffixWord)) {
       return prefixWord + suffixWord;
     }
 
     // if word is one of the known singular words, then just return
 
-    if (this._knownSingluarWords.includes(suffixWord.toLowerCase())) {
+    if (this.knownSingluarWords.includes(suffixWord.toLowerCase())) {
       return prefixWord + suffixWord;
     }
 
     // handle simple irregular verbs, e.g. was -> were
-    if (this._irregularVerbPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._irregularVerbPluralizationService.GetFirstValue(suffixWord);
+    if (this.irregularVerbPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.irregularVerbPluralizationService.getFirstValue(suffixWord);
     }
 
     // handle irregular plurals, e.g. "ox" -> "oxen"
-    if (this._irregularPluralsPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._irregularPluralsPluralizationService.GetFirstValue(suffixWord);
+    if (this.irregularPluralsPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.irregularPluralsPluralizationService.getFirstValue(suffixWord);
     }
 
     // handle singluarization for words ending with sis and pluralized to ses,
     // e.g. "ses" -> "sis"
-    if (this._wordsEndingWithSisPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._wordsEndingWithSisPluralizationService.GetFirstValue(suffixWord);
+    if (this.wordsEndingWithSisPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.wordsEndingWithSisPluralizationService.getFirstValue(suffixWord);
     }
 
     // handle words ending with se, e.g. "ses" -> "se"
-    if (this._wordsEndingWithSePluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._wordsEndingWithSePluralizationService.GetFirstValue(suffixWord);
+    if (this.wordsEndingWithSePluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.wordsEndingWithSePluralizationService.getFirstValue(suffixWord);
     }
 
     // handle words ending with sus, e.g. "suses" -> "sus"
-    if (this._wordsEndingWithSusPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._wordsEndingWithSusPluralizationService.GetFirstValue(suffixWord);
+    if (this.wordsEndingWithSusPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.wordsEndingWithSusPluralizationService.getFirstValue(suffixWord);
     }
 
     let newSuffixWord: string | null;
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['men'], s => s.slice(0, -2) + 'an');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['men'], s => `${s.slice(0, -2)}an`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // handle irregular inflections for common suffixes, e.g. "mouse" -> "mice"
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['lice', 'mice'], s => s.slice(0, -3) + 'ouse');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['lice', 'mice'], s => `${s.slice(0, -3)}ouse`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['teeth'], s => s.slice(0, -4) + 'ooth');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['teeth'], s => `${s.slice(0, -4)}ooth`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['geese'], s => s.slice(0, -4) + 'oose');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['geese'], s => `${s.slice(0, -4)}oose`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['feet'], s => s.slice(0, -3) + 'oot');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['feet'], s => `${s.slice(0, -3)}oot`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['zoa'], s => s.slice(0, -2) + 'oon');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['zoa'], s => `${s.slice(0, -2)}oon`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // [cs]h and ss that take es as plural form, this is being moved up since the sses will be override by the ses
@@ -560,31 +560,31 @@ export class EnglishPluralizationService {
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // handle assimilated classical inflections, e.g. vertebra -> vertebrae
-    if (this._assimilatedClassicalInflectionPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._assimilatedClassicalInflectionPluralizationService.GetFirstValue(suffixWord);
+    if (this.assimilatedClassicalInflectionPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.assimilatedClassicalInflectionPluralizationService.getFirstValue(suffixWord);
     }
 
     // Handle the classical variants of modern inflections
     //
-    if (this._classicalInflectionPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._classicalInflectionPluralizationService.GetFirstValue(suffixWord);
+    if (this.classicalInflectionPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.classicalInflectionPluralizationService.getFirstValue(suffixWord);
     }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['trices'], s => s.slice(0, -3) + 'x');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['trices'], s => `${s.slice(0, -3)}x`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['eaux', 'ieux'], s => s.slice(0, -1));
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    if (this._wordsEndingWithInxAnxYnxPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._wordsEndingWithInxAnxYnxPluralizationService.GetFirstValue(suffixWord);
+    if (this.wordsEndingWithInxAnxYnxPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.wordsEndingWithInxAnxYnxPluralizationService.getFirstValue(suffixWord);
     }
 
     // f, fe that take ves as plural form
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['alves', 'elves', 'olves', 'eaves', 'arves'], s => s.slice(0, -3) + 'f');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['alves', 'elves', 'olves', 'eaves', 'arves'], s => `${s.slice(0, -3)}f`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
-    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['nives', 'lives', 'wives'], s => s.slice(0, -3) + 'fe');
+    newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['nives', 'lives', 'wives'], s => `${s.slice(0, -3)}fe`);
     if (newSuffixWord !== null) { return prefixWord + newSuffixWord; }
 
     // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
@@ -598,8 +598,8 @@ export class EnglishPluralizationService {
     }
 
     // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-    if (this._oSuffixPluralizationService.ExistsInSecond(suffixWord)) {
-      return prefixWord + this._oSuffixPluralizationService.GetFirstValue(suffixWord);
+    if (this.oSuffixPluralizationService.existsInSecond(suffixWord)) {
+      return prefixWord + this.oSuffixPluralizationService.getFirstValue(suffixWord);
     }
 
     newSuffixWord = PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, ['aos', 'eos', 'ios', 'oos', 'uos'], s => s.slice(0, -1));
@@ -636,11 +636,11 @@ export class EnglishPluralizationService {
   /// <param name="word"></param>
   /// <param name="action"></param>
   /// <returns></returns>
-  private Capitalize(word: string, action: (s: string) => string) {
+  private capitalize(word: string, action: (s: string) => string) {
     const result = action(word);
 
-    if (this.IsCapitalized(word)) {
-      if (result.length == 0) {
+    if (this.isCapitalized(word)) {
+      if (result.length === 0) {
         return result;
       }
       return result.charAt(0).toUpperCase() + result.substr(1);
@@ -655,7 +655,7 @@ export class EnglishPluralizationService {
   /// <param name="word"></param>
   /// <param name="prefixWord"></param>
   /// <returns></returns>
-  private GetSuffixWord(word: string): { prefixWord: string, suffixWord: string } {
+  private getSuffixWord(word: string): { prefixWord: string; suffixWord: string } {
     // use the last space to separate the words
     const lastSpaceIndex = word.lastIndexOf(' ');
     return {
@@ -665,13 +665,13 @@ export class EnglishPluralizationService {
     //
   }
 
-  private IsCapitalized(word: string): boolean {
+  private isCapitalized(word: string): boolean {
     if (word === '') { return false; }
     word = word.charAt(0);
     return word.toUpperCase() === word;
   }
 
-  private IsAlphabets(word: string): boolean {
+  private isAlphabets(word: string): boolean {
     // return false when the word is "[\s]*" or leading or tailing with spaces
     // or contains non alphabetical characters
     if (word === '' || word !== word.trim() || /[^a-zA-Z\\s]/.test(word)) {
@@ -681,10 +681,10 @@ export class EnglishPluralizationService {
     }
   }
 
-  private IsUninflective(word: string): boolean {
-    if (PluralizationServiceUtil.DoesWordContainSuffix(word, this._uninflectiveSuffixList)
+  private isUninflective(word: string): boolean {
+    if (PluralizationServiceUtil.DoesWordContainSuffix(word, this.uninflectiveSuffixList)
       || (word.toLowerCase() !== word && word.endsWith('ese'))
-      || this._uninflectiveWordList.includes(word.toLowerCase())) {
+      || this.uninflectiveWordList.includes(word.toLowerCase())) {
       return true;
     } else {
       return false;
@@ -697,10 +697,10 @@ export class EnglishPluralizationService {
   /// </summary>
   /// <param name="word"></param>
   /// <returns></returns>
-  private IsNoOpWord(word: string): boolean {
-    if (!this.IsAlphabets(word) ||
+  private isNoOpWord(word: string): boolean {
+    if (!this.isAlphabets(word) ||
       word.length <= 1 ||
-      this._pronounList.includes(word.toLowerCase())) {
+      this.pronounList.includes(word.toLowerCase())) {
       return true;
     } else {
       return false;
@@ -713,13 +713,13 @@ export class EnglishPluralizationService {
   /// </summary>
   /// <param name="singular"></param>
   /// <param name="plural"></param>
-  public AddWord(singular: string, plural: string): void {
-    if (this._userDictionary.ExistsInSecond(plural)) {
+  public addWord(singular: string, plural: string): void {
+    if (this.userDictionary.existsInSecond(plural)) {
       throw new Error(`The plural value '${plural}' already exists in the user-defined dictionary.`);
-    } else if (this._userDictionary.ExistsInFirst(singular)) {
+    } else if (this.userDictionary.existsInFirst(singular)) {
       throw new Error(`The singular value '${singular}' already exists in the user-defined dictionary.`);
     } else {
-      this._userDictionary.AddValue(singular, plural);
+      this.userDictionary.addValue(singular, plural);
     }
   }
 }
