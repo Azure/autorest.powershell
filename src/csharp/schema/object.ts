@@ -3,8 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { values } from '#common/linq';
 import { KnownMediaType } from '#common/media-types';
-import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
+import { camelCase, deconstruct, EOL, nameof } from '#common/text-manipulation';
 import { IsNotNull } from '#csharp/code-dom/comparisons';
 import { System } from '#csharp/code-dom/dotnet';
 import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
@@ -15,7 +16,6 @@ import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { values } from '#common/linq';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
@@ -90,14 +90,19 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
           System.Text.Encoding.UTF8);
       }
       case KnownMediaType.Multipart:
-        // add a
+        let contents = '';
         for (const p of values(this.schema.properties)) {
-
+          // to do -- add in a potential support for the filename too.
+          contents = `${contents}${EOL}    bodyContent.Add( ${System.Net.Http.StreamContent.new(`${value}.${p.details.csharp.name}`)},"${p.serializedName}");`;
         }
-        return toExpression(`${System.Net.Http.StringContent.new()}
-        {
+        // bodyContent.Add(new System.Net.Http.StreamContent(body.AudioFile), "audioFile");
+        return toExpression(`new ${System.Func(System.Net.Http.MultipartFormDataContent)}(() =>
+{
+    var bodyContent = ${System.Net.Http.MultipartFormDataContent.new()};
+    ${contents}
+    return bodyContent;
+})()`);
 
-        }`);
     }
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }

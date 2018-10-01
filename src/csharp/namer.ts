@@ -95,7 +95,7 @@ async function nameStuffRight(codeModel: Model, service: Host): Promise<Model> {
         name: pname // and so are the propertyNmaes
       };
 
-      if (propertyDetails.default.isNamedStream) {
+      if (propertyDetails.isNamedStream) {
         propertySchema.details.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
       }
     }

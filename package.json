@@ -15,12 +15,13 @@
     "test-run": "cls ; npm run build ; if ($LastExitCode -eq 0 ) { autorest --use=. --powershell C:/work/2018/azure-rest-api-specs/specification/containerregistry/resource-manager/readme.md --output-folder=./generated --debug --verbose    }",
     "testci": "npm run test",
     "publish-preview": "npm test && node ./.scripts/publish",
-    "unpack": "shx rm -rf ./package && yarn pack && gzip -cd *.tgz | tar -xvf - && erase *.tgz",
+    "unpack": "npm run run-pwsh unpack",
     "run-pwsh": "pwsh -command \"& {param($script) pwsh -command ((convertfrom-json (get-content -raw ./package.json)).'pwsh-scripts'.$script) }\"",
     "lint": "tslint -c ./tslint.json  --project .",
     "watch": "npm run run-pwsh watch"
   },
   "pwsh-scripts": {
+    "unpack": "remove-item -recurse ./package -ea 0 ; yarn pack ; gzip -cd *.tgz | tar -xvf - ; erase *.tgz",
     "watch": "Start-Process -FilePath (get-command node) -ArgumentList @('./.scripts/fix-aliased-imports.js' , '--watch') ; Start-Process -FilePath (get-command tsc)  @('-p','.','--watch')"
   },
   "repository": {
@@ -44,7 +45,6 @@
     "mocha": "latest",
     "mocha-typescript": "latest",
     "semver": "^5.4.1",
-    "shx": "^0.2.2",
     "tslint": "^5.11.0",
     "tslint-language-service-ts3": "1.0.0",
     "tslint-microsoft-contrib": "^5.2.1",

@@ -346,7 +346,7 @@ function getCategory(verb: string): string {
   return fail(`Verb '${verb}' has no matching category.`);
 }
 const Verbs = {
-  Common: 'System.Management.Automation.Verbs.Common',
+  Common: 'System.Management.Automation.VerbsCommon',
   Data: 'System.Management.Automation.VerbsData',
   Lifecycle: 'System.Management.Automation.VerbsLifecycle',
   Diagnostic: 'System.Management.Automation.VerbsDiagnostic',

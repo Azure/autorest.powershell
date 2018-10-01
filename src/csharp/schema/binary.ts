@@ -25,6 +25,9 @@ export class Binary implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     if (mediaType === KnownMediaType.Stream) {
       // dunno.
+    };
+    if (mediaType === KnownMediaType.Json) {
+      return toExpression(`null /* no need to deserialize a stream here */ `);
     }
     return toExpression(`null /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -57,6 +60,9 @@ export class Binary implements EnhancedTypeDeclaration {
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+    if (mediaType === KnownMediaType.Json) {
+      return `/* shouldn't need to serialize binary for a ${mediaType} */`;
+    }
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
 
