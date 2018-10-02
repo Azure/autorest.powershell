@@ -172,7 +172,7 @@ export class LazyProperty extends Property {
   public get declaration(): string {
 
     return `
-${ docComment(summary(`Backing field for ${this.name} property`))}
+${ docComment(summary(`Backing field for <see cref="${this.name}" /> property.`))}
 private ${this.static} ${this.type.declaration} ${this.backingName};
 EOL
 ${docComment(summary(this.description))}
@@ -197,7 +197,7 @@ export class BackedProperty extends ImplementedProperty {
 
   public get declaration(): string {
     return `
-${docComment(summary(`Backing field for ${this.name} property`))}
+${docComment(summary(`Backing field for <see cref="${this.name}" /> property.`))}
 private ${this.type.declaration} ${this.backingName}${this.initializer ? `= ${valueOf(this.initializer)}` : ''};
 EOL
 ${super.declaration}

@@ -20,6 +20,8 @@ import { Schema } from '#csharp/lowlevel-generator/code-model';
 
 import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from '#powershell/powershell-declarations';
 import { State } from './state';
+import { Binary } from '#csharp/schema/binary';
+import { System } from '#csharp/code-dom/dotnet';
 
 export interface WithState extends Class {
   state: State;
@@ -74,6 +76,8 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
 
     const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(property.schema, true, $class.state);
 
+
+
     if (property.schema.type === JsonType.Object) {
       // properties property get inlining without hassle
       const member = new MemberVariable(prop, property.details.csharp.name);
@@ -95,7 +99,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
                 const uniq = values(subProps).linq.distinct(subProperty => subProperty.schema).linq.toArray();
                 if( uniq.length == subProps.length ) {
                   // all types are unique.
-        
+
                 }
           */
         if (length(property.schema.properties) <= $class.state.project.maxInlinedParameters) {
@@ -150,14 +154,39 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
           propname = `${pname}${n++}`;
         }
 
-        cmdletParameter = $class.add(new ImplementedProperty(propname, td, {
-          setterStatements: new Statements(function* () {
-            if (ensureMemberIsCreated) {
-              yield ensureMemberIsCreated;
-            }
-            yield `${prop}.${property.details.csharp.name} = value;`;
-          }),
-        }));
+        if (td instanceof Binary) {
+          // if the parameter is a binary; this is going to try and make a stream parameter
+          // which in powershell, kinda sucks.
+
+          // so instead, let's substitute a parameter that takes a filename and sets the stream
+          cmdletParameter = $class.add(new ImplementedProperty(propname, System.String, {
+            setterStatements: new Statements(function* () {
+              if (ensureMemberIsCreated) {
+                yield ensureMemberIsCreated;
+              }
+              yield `var matches = this.SessionState.Path.GetResolvedProviderPathFromPSPath(value,out var provider);`
+              yield `switch (matches.Count) {
+case 0:
+  throw new System.IO.FileNotFoundException($"Unable to locate file '{value}'", value);
+case 1:
+  ${prop}.${property.details.csharp.name} =  System.IO.File.OpenRead(matches[0]);
+  break;
+default:
+  throw new System.Exception($"'{value}' matches more than one file: {System.Linq.Enumerable.Aggregate(matches, (c,e) => $"{ c }, { e }") }");
+}`;
+            }),
+          }));
+        } else {
+
+          cmdletParameter = $class.add(new ImplementedProperty(propname, td, {
+            setterStatements: new Statements(function* () {
+              if (ensureMemberIsCreated) {
+                yield ensureMemberIsCreated;
+              }
+              yield `${prop}.${property.details.csharp.name} = value;`;
+            }),
+          }));
+        }
         // statements.add(indent(`${property.details.csharp.name} = this.MyInvocation.BoundParameters.ContainsKey("${property.details.csharp.name}") ? this.${property.details.csharp.name} : default(${td.declaration}),`));
       }
 

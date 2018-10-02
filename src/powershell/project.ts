@@ -288,10 +288,10 @@ export class CmdletNamespace extends Namespace {
     for (const { key: id, value: operation } of items(state.model.commands.operations)) {
       this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', id)));
 
-      if (operation.details.powershell.hasBody) {
+      /* if (operation.details.powershell.hasBody) {
         // make a copy that doesn't use the body parameter
         this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', id), true));
-      }
+      } */
 
       for (const p of operation.parameters) {
         state.project.modelCmdlets.addInputSchema(<Schema>p.schema);

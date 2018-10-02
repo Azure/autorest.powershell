@@ -67,6 +67,19 @@ async function addVariant(vname: string, body: RequestBody | undefined, bodyPara
         }
       }
     }));
+
+    // let's add a variant where it's expanded out.
+    const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
+    opExpanded.details.powershell.dropBodyParameter = true;
+    opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
+      details: {
+        powershell: {
+          description: body.schema.details.default.description,
+          name: pascalCase(fixLeadingNumber(deconstruct(`${bodyParameterName}Body`))),
+          isBodyParameter: true,
+        }
+      }
+    }));
   }
 
   //

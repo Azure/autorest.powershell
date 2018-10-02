@@ -44,14 +44,14 @@ export class CmdletClass extends Class {
   private eventListener: EventListener;
   private dropBodyParameter: boolean;
 
-  constructor(namespace: Namespace, operation: CommandOperation, state: State, dropBodyParameter?: boolean, objectInitializer?: Partial<CmdletClass>) {
+  constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
-    const operationDetails = `${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
+    const operationDetails = operation.details.powershell.name; // `${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
     const variantName = `${state.project.nounPrefix}${operationDetails ? `${operation.noun}_${operationDetails}` : operation.noun}`;
 
     const name = `${operation.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
-    this.dropBodyParameter = dropBodyParameter ? true : false;
+    this.dropBodyParameter = operation.details.powershell.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.interfaces.push(ClientRuntime.IEventListener);
     this.state = state;
@@ -574,7 +574,10 @@ export class CmdletClass extends Class {
             parameterDefinition: parameter
           },
           description: parameter.details.powershell.description,
-          initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`
+          initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`,
+          setAccess: Access.Private,
+          getAccess: Access.Private,
+
         }));
 
         addPowershellParameters(this, <Schema>parameter.schema, cmdletParameter);

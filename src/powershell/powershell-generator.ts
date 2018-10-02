@@ -15,37 +15,41 @@ import { State } from './state';
 const sourceFileCSharp = 'source-file-csharp';
 export async function processRequest(service: Host) {
 
-  // Get the list of files
-  const files = await service.ListInputs('code-model-v2');
-  if (files.length === 0) {
-    throw new Error('Inputs missing.');
+  try {
+    // Get the list of files
+    const files = await service.ListInputs('code-model-v2');
+    if (files.length === 0) {
+      throw new Error('Inputs missing.');
+    }
+
+    const codemodel = files[0];
+
+    // get the openapi document
+    const codeModelText = await service.ReadFile(codemodel);
+    const model = await deserialize<Model>(codeModelText, codemodel);
+
+    // generate some files
+    const modelState = new State(service, model, codemodel);
+    const project = await new Project(modelState).init();
+
+    await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
+
+    await service.ProtectFiles(project.csproj);
+    await service.ProtectFiles(project.customFolder);
+    await service.ProtectFiles(project.testFolder);
+
+    // wait for all the generation to be done
+    await generateCsproj(service, project);
+    await copyRuntime(service, project);
+    await generateCsproj(service, project);
+    await generateModule(service, project);
+
+    // debug data
+    service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
+  } catch (E) {
+    console.error(E);
+    console.error((<Error>E).stack);
   }
-
-  const codemodel = files[0];
-
-  // get the openapi document
-  const codeModelText = await service.ReadFile(codemodel);
-  const model = await deserialize<Model>(codeModelText, codemodel);
-
-  // generate some files
-  const modelState = new State(service, model, codemodel);
-  const project = await new Project(modelState).init();
-
-  await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
-
-  await service.ProtectFiles(project.csproj);
-  await service.ProtectFiles(project.customFolder);
-  await service.ProtectFiles(project.testFolder);
-
-  // wait for all the generation to be done
-  await generateCsproj(service, project);
-  await copyRuntime(service, project);
-  await generateCsproj(service, project);
-  await generateModule(service, project);
-
-  // debug data
-  service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
-
 }
 
 async function copyRuntime(service: Host, project: Project) {
