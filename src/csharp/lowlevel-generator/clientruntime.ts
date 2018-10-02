@@ -16,6 +16,7 @@ const events = new ClassType(clientRuntimeNamespace, 'Events');
 const method = new ClassType(clientRuntimeNamespace, 'Method');
 const carbon = new Namespace('Carbon.Json');
 const jsonNode = new ClassType(carbon, 'JsonNode');
+const jsonArray = new ClassType(carbon, 'JsonArray');
 const jsonObject = new ClassType(carbon, 'JsonObject');
 
 export const ClientRuntime = intersect(clientRuntimeNamespace, {
@@ -74,7 +75,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonString: new ClassType(carbon, `JsonString`),
   JsonBoolean: new ClassType(carbon, `JsonBoolean`),
   JsonNumber: new ClassType(carbon, `JsonNumber`),
-  JsonArray: new ClassType(carbon, `JsonArray`),
+  JsonArray: intersect(jsonArray, {
+    Parse: (expression: ExpressionOrLiteral) => toExpression(`${jsonArray}.Parse(${toExpression(expression)})`)
+  }),
   XNodeArray: new ClassType(carbon, `XNodeArray`)
 });
 
