@@ -1,0 +1,11 @@
+!dist/**/*
+test/
+dist/test/
+package/
+.npmignore
+tsconfig.json
+*.ts
+!*.d.ts
+*.tgz
+.vscode
+.scripts

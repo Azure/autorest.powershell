@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": false,
+    "module": "commonjs",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "sourceMap": true,
+    "strict": true,
+    "declaration": true,
+    "stripInternal": true,
+    "noEmitHelpers": false,
+    "target": "es2017",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "es2017"
+    ],
+    "experimentalDecorators": true,
+    "newLine": "LF"
+  },
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.d.ts"
+  ]
+}
