@@ -1,6 +1,6 @@
 namespace Times.Wire.Search
 {
-    using Microsoft.Rest.ClientRuntime;
+    using Runtime;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
