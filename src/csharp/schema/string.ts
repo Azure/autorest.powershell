@@ -75,8 +75,6 @@ export class String implements EnhancedTypeDeclaration {
           return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${valueOf(value)}))`);
         }
 
-      // return toExpression(`if (!string.IsNullOrEmpty(${value})) { queryParameters.Add($"${value}={System.Uri.EscapeDataString(${value})}"); }`);
-
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
       case KnownMediaType.Text:

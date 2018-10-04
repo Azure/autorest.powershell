@@ -6,13 +6,13 @@
 import { comment, docCommentPrefix, EOL, indent, sortByName } from '#common/text-manipulation';
 import { fail } from '#common/utility';
 import { Attribute } from '#csharp/code-dom/attribute';
+import { xmlize } from '#csharp/code-dom/doc-comments';
 import { Expression, toExpression, valueOf } from '#csharp/code-dom/expression';
 import { Method } from '#csharp/code-dom/method';
 import { Property } from '#csharp/code-dom/property';
 import { Field } from './field';
 import { Namespace } from './namespace';
 import { Type } from './type';
-import { xmlize } from '#csharp/code-dom/doc-comments';
 
 export function sortByNamePartialFirst(a: Method, b: Method): number {
   if (a.isPartial !== b.isPartial) {

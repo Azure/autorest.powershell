@@ -18,10 +18,10 @@ import { Statements } from '#csharp/code-dom/statements/statement';
 import { MemberVariable, Variable } from '#csharp/code-dom/variable';
 import { Schema } from '#csharp/lowlevel-generator/code-model';
 
+import { System } from '#csharp/code-dom/dotnet';
+import { Binary } from '#csharp/schema/binary';
 import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from '#powershell/powershell-declarations';
 import { State } from './state';
-import { Binary } from '#csharp/schema/binary';
-import { System } from '#csharp/code-dom/dotnet';
 
 export interface WithState extends Class {
   state: State;
@@ -36,7 +36,7 @@ export class ModelCmdlet extends Class {
 
     super(namespace, name, PSCmdlet);
     this.state = state;
-    this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`
+    this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`;
     this.apply(objectInitializer);
     addClassAttributes(this, schema, name);
 
@@ -75,8 +75,6 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
   for (const { key: name, value: property } of items(schema.properties)) {
 
     const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(property.schema, true, $class.state);
-
-
 
     if (property.schema.type === JsonType.Object) {
       // properties property get inlining without hassle
@@ -164,7 +162,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
               if (ensureMemberIsCreated) {
                 yield ensureMemberIsCreated;
               }
-              yield `var matches = this.SessionState.Path.GetResolvedProviderPathFromPSPath(value,out var provider);`
+              yield `var matches = this.SessionState.Path.GetResolvedProviderPathFromPSPath(value,out var provider);`;
               yield `switch (matches.Count) {
 case 0:
   throw new System.IO.FileNotFoundException($"Unable to locate file '{value}'", value);
@@ -197,8 +195,4 @@ default:
   }
 
   // if
-}
-
-function getUniquePropertyNames(schema: Schema) {
-
 }
