@@ -27,7 +27,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.tabSize": 2,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
   },
   "[json]": {
     "editor.formatOnSave": true,
