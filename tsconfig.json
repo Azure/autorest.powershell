@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
     "alwaysStrict": true,
     "forceConsistentCasingInFileNames": false,
     "module": "commonjs",
@@ -16,8 +15,7 @@
     "noEmitHelpers": false,
     "target": "es2017",
     "types": [
-      "node",
-      "mocha"
+      "node"
     ],
     "lib": [
       "es2017"

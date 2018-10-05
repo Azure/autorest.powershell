@@ -24,23 +24,7 @@
    * Specify one of: "pnpmVersion", "npmVersion", or "yarnVersion".  See the Rush documentation
    * for details about these alternatives.
    */
-  "pnpmVersion": "2.15.1",
-  /**
-   * Options that are only used when the PNPM package manager is selected
-   */
-  "pnpmOptions": {
-    /**
-     * If true, then Rush will add the "--strict-peer-dependencies" option when invoking PNPM.
-     * This causes "rush install" to fail if there are unsatisfied peer dependencies, which is
-     * an invalid state that can cause build failures or incompatible dependency versions.
-     * (For historical reasons, JavaScript package managers generally do not treat this invalid
-     * state as an error.)
-     *
-     * The default value is false to avoid legacy compatibility issues.
-     * It is strongly recommended to set strictPeerDependencies=true.
-     */
-    "strictPeerDependencies": true
-  },
+  "yarnVersion": "1.10.1",
   /**
    * Older releases of the NodeJS engine may be missing features required by your system.
    * Other releases may have bugs.  In particular, the "latest" version will not be a

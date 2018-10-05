@@ -24,7 +24,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.11.4",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.1",
+    "get-powershell": "0.1.1"
   },
   "dependencies": {
     "vscode-jsonrpc": "^3.5.0"
