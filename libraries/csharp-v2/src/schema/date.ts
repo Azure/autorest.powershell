@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StringExpression } from '#csharp/code-dom/expression';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { DateTime } from '#csharp/schema/date-time';
+import { StringExpression } from '@microsoft.azure/autorest.codegen-csharp';
+import { Schema } from '../code-model';
+import { DateTime } from './date-time';
 
 export class Date extends DateTime {
   public DateTimeFormat = new StringExpression('yyyy-MM-dd');

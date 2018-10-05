@@ -3,20 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Header } from '#common/code-model/http-operation';
-import { Dictionary, items } from '#common/linq';
-import { ImportDirective } from '#csharp/code-dom/import';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { ModelInterface } from '#csharp/lowlevel-generator/model/interface';
-import { EnumImplementation } from '#csharp/schema/enum';
-import { ObjectImplementation } from '#csharp/schema/object';
-import { SchemaDefinitionResolver } from '#csharp/schema/schema-resolver';
-import { EnhancedTypeDeclaration } from '../../schema/extended-type-declaration';
+import { Header, Dictionary, items } from '@microsoft.azure/autorest.codegen';
+import { ImportDirective, Namespace } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
 import { State } from '../generator';
+import { EnumImplementation } from '../schema/enum';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ObjectImplementation } from '../schema/object';
+import { SchemaDefinitionResolver } from '../schema/schema-resolver';
 import { EnumClass } from '../support/enum';
 import * as validation from '../validations';
+import { ModelInterface } from './interface';
 import { ModelClass } from './model-class';
 
 export class ModelsNamespace extends Namespace {

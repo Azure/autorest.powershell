@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nameof } from '#common/text-manipulation';
-import { Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { Primitive } from '#csharp/schema/primitive';
+import { nameof } from '@microsoft.azure/autorest.codegen';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
+import { Primitive } from './primitive';
 
 export class Numeric extends Primitive {
   public isXmlAttribute: boolean = false;

@@ -1,7 +1,7 @@
-import { InitializedField } from '#csharp/code-dom/field';
-import { Method } from '#csharp/code-dom/method';
-import { Class } from '#csharp/code-dom/class';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { InitializedField } from '@microsoft.azure/autorest.codegen-csharp';
+import { Method } from '@microsoft.azure/autorest.codegen-csharp';
+import { Class } from '@microsoft.azure/autorest.codegen-csharp';
+import { TypeDeclaration } from '@microsoft.azure/autorest.codegen-csharp';
 
 export function implementIDictionary(keyType: TypeDeclaration, valueType: TypeDeclaration, targetClass: Class) {
 

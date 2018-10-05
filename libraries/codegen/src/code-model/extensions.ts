@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Initializer } from '#common/initializer';
-import { Dictionary } from '#common/linq';
+import { Initializer } from '../initializer';
+import { Dictionary } from '../linq';
 
 export class Extensions extends Initializer implements Extensions {
   extensions = new Dictionary<any>();

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ImportDirective } from '#csharp/code-dom/import';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { ImportDirective } from '@microsoft.azure/autorest.codegen-csharp';
+import { Namespace } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 
 export class ServiceNamespace extends Namespace {

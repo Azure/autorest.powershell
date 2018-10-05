@@ -3,32 +3,32 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NewResponse, ParameterLocation } from '#common/code-model/http-operation';
-import { items, length, values } from '#common/linq';
-import { EOL } from '#common/text-manipulation';
-import { Access, Modifier } from '#csharp/code-dom/access-modifier';
-import { Class } from '#csharp/code-dom/class';
+import { NewResponse, ParameterLocation } from '@microsoft.azure/autorest.codegen';
+import { items, length, values } from '@microsoft.azure/autorest.codegen';
+import { EOL } from '@microsoft.azure/autorest.codegen';
+import { Access, Modifier } from '@microsoft.azure/autorest.codegen-csharp';
+import { Class } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { Method } from '#csharp/code-dom/method';
-import { Parameter } from '#csharp/code-dom/parameter';
-import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '#csharp/code-dom/statements/case';
-import { Finally } from '#csharp/code-dom/statements/finally';
-import { If, While } from '#csharp/code-dom/statements/if';
-import { Return } from '#csharp/code-dom/statements/return';
-import { OneOrMoreStatements, Statement, Statements } from '#csharp/code-dom/statements/statement';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Try } from '#csharp/code-dom/statements/try';
-import { Using } from '#csharp/code-dom/statements/using';
-import { Local, LocalVariable, Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime, StoragePipeline } from '#csharp/lowlevel-generator/clientruntime';
-import { HttpOperation, Schema } from '#csharp/lowlevel-generator/code-model';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@microsoft.azure/autorest.codegen-csharp';
+import { Method } from '@microsoft.azure/autorest.codegen-csharp';
+import { Parameter } from '@microsoft.azure/autorest.codegen-csharp';
+import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '@microsoft.azure/autorest.codegen-csharp';
+import { Finally } from '@microsoft.azure/autorest.codegen-csharp';
+import { If, While } from '@microsoft.azure/autorest.codegen-csharp';
+import { Return } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements, Statement, Statements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Switch } from '@microsoft.azure/autorest.codegen-csharp';
+import { Try } from '@microsoft.azure/autorest.codegen-csharp';
+import { Using } from '@microsoft.azure/autorest.codegen-csharp';
+import { Local, LocalVariable, Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime, StoragePipeline } from '../clientruntime';
+import { HttpOperation, Schema } from '../code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
-import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '#common/media-types';
-import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
-import { Ternery } from '#csharp/code-dom/ternery';
+import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@microsoft.azure/autorest.codegen';
+import { ClassType, dotnet, System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Ternery } from '@microsoft.azure/autorest.codegen-csharp';
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;

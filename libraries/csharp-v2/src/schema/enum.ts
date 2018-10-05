@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { String } from '#csharp/schema/string';
+import { Schema } from '../code-model';
+import { String } from './string';
 
 export class EnumImplementation extends String {
   public isXmlAttribute: boolean = false;

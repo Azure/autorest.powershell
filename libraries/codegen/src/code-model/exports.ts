@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as codemodel from '#common/code-model/code-model';
-import * as command from '#common/code-model/command-operation';
-import * as components from '#common/code-model/components';
-import * as http from '#common/code-model/http-operation';
-import * as schema from '#common/code-model/schema';
+import * as codemodel from './code-model';
+import * as command from './command-operation';
+import * as components from './components';
+import * as http from './http-operation';
+import * as schema from './schema';
 
-import { Dictionary } from '#common/linq';
+import { Dictionary } from '../linq';
 
 export interface SchemaT<
   TLanguageDetailsForSchema extends components.LanguageDetails<schema.SchemaDetails>,

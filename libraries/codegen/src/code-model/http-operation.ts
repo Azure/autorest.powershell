@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Components, Example, ExternalDocumentation, ImplementationDetails, ImplementationLocation, IOperation, IOperationBase, IParameter, LanguageDetails, Link, ParameterDetails, ResponseDetails, SecurityRequirement, Server } from '#common/code-model/components';
-import { Extensions } from '#common/code-model/extensions';
-import { Schema } from '#common/code-model/schema';
-import { SecurityScheme } from '#common/code-model/security-scheme';
-import { DeepPartial } from '#common/initializer';
-import { Dictionary } from '#common/linq';
+import { Components, Example, ExternalDocumentation, ImplementationDetails, ImplementationLocation, IOperation, IOperationBase, IParameter, LanguageDetails, Link, ParameterDetails, ResponseDetails, SecurityRequirement, Server } from './components';
+import { Extensions } from './extensions';
+import { Schema } from './schema';
+import { SecurityScheme } from './security-scheme';
+import { DeepPartial } from '../initializer';
+import { Dictionary } from '../linq';
 
 export interface HttpOperationDetails extends ImplementationDetails {
 }

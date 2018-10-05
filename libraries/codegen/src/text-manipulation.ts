@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Text, TextPossibilities } from '#common/file-generator';
-import { Dictionary, values } from '#common/linq';
+import { Text, TextPossibilities } from './file-generator';
+import { Dictionary, values } from './linq';
 
 let indentation = '    ';
 
@@ -143,7 +143,7 @@ export function ToMap<T>(dictionary: Dictionary<T>): Map<string, T> {
   return result;
 }
 
-export function selectMany<T>(multiArray: Array<Array<T>>): Array<T> {
+export function __selectMany<T>(multiArray: Array<Array<T>>): Array<T> {
   const result = new Array<T>();
   multiArray.map(v => result.push(...v));
   return result;
@@ -155,7 +155,7 @@ export function indent(content: string, factor: number = 1): string {
   return content.split(/\n/g).join(`${EOL}${i}`);
 }
 
-export function all<T, U>(array: Array<T>, callbackfn: (value: T, index: number, array: Array<T>) => Promise<U>, thisArg?: any): Promise<Array<U>> {
+export function pall<T, U>(array: Array<T>, callbackfn: (value: T, index: number, array: Array<T>) => Promise<U>, thisArg?: any): Promise<Array<U>> {
   return Promise.all(array.map(callbackfn));
 }
 

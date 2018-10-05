@@ -24,34 +24,11 @@
     ],
     "experimentalDecorators": true,
     "newLine": "LF",
-    "baseUrl": "src",
-    "paths": {
-      "#common/*": [
-        "common/*"
-      ],
-      "#remodeler/*": [
-        "remodeler/*"
-      ],
-      "#csharp/*": [
-        "csharp/*"
-      ],
-      "#powershell/*": [
-        "powershell/*"
-      ]
-    },
     "plugins": [
       {
         "name": "tslint-language-service-ts3",
         "configFile": "./tslint.json"
       }
     ]
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "**/*.d.ts"
-  ]
+  }
 }

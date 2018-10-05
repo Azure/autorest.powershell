@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { intersect } from '#common/intersect';
-import { ClassType, dotnet, System } from '#csharp/code-dom/dotnet';
+import { intersect } from '@microsoft.azure/autorest.codegen';
+import { ClassType, dotnet, System } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '#csharp/code-dom/expression';
-import { Interface } from '#csharp/code-dom/interface';
-import { Namespace } from '#csharp/code-dom/namespace';
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '@microsoft.azure/autorest.codegen-csharp';
+import { Interface } from '@microsoft.azure/autorest.codegen-csharp';
+import { Namespace } from '@microsoft.azure/autorest.codegen-csharp';
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
 const serializationMode = new ClassType(clientRuntimeNamespace, 'SerializationMode');

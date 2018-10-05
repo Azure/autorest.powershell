@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Extensions } from '#common/code-model/extensions';
-import { ParameterLocation } from '#common/code-model/http-operation';
-import { Dictionary } from '#common/linq';
+import { Extensions } from './extensions';
+import { ParameterLocation } from './http-operation';
+import { Dictionary } from '../linq';
 
 export enum Scheme {
   Bearer = 'bearer'

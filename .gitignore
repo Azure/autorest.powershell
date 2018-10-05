@@ -287,7 +287,7 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-dist/*
+**/dist/*
 node_modules/*
 package-lock.json
 generated/*

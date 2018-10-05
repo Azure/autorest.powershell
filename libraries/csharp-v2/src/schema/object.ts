@@ -3,18 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { values } from '#common/linq';
-import { KnownMediaType } from '#common/media-types';
-import { camelCase, deconstruct, EOL, nameof } from '#common/text-manipulation';
-import { IsNotNull } from '#csharp/code-dom/comparisons';
-import { System } from '#csharp/code-dom/dotnet';
-import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Ternery } from '#csharp/code-dom/ternery';
-import { Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { values } from '@microsoft.azure/autorest.codegen';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { camelCase, deconstruct, EOL, nameof } from '@microsoft.azure/autorest.codegen';
+import { IsNotNull } from '@microsoft.azure/autorest.codegen-csharp';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Ternery } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
+import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {

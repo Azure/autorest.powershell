@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { Access } from '#csharp/code-dom/access-modifier';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
-import { BackedProperty } from '#csharp/code-dom/property';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { Property, Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codegen';
+import { Access } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral } from '@microsoft.azure/autorest.codegen-csharp';
+import { BackedProperty } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { Property, Schema } from '../code-model';
+import { EnhancedVariable } from '../extended-variable';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
-import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
+
 import { State } from '../generator';
 import { ModelClass } from './model-class';
 

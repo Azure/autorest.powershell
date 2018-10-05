@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Model } from '#common/code-model/code-model';
-import { JsonType } from '#common/code-model/schema';
-import { keys, length, values } from '#common/linq';
-import { processCodeModel } from '#common/process-code-model';
+
+import { codemodel, JsonType, processCodeModel } from '@microsoft.azure/autorest.codegen';
+import { keys, length, values } from '@microsoft.azure/autorest.codegen';
+
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
 const xmsPageable = 'x-ms-pageable';
@@ -17,7 +17,7 @@ export async function process(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: Model, service: Host): Promise<Model> {
+async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
 
   // service.Message({ Channel: Channel.Debug, Text: "THIS IS THE AZURE TWEAKER" });
 

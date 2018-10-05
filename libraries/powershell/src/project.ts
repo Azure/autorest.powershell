@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JsonType } from '#common/code-model/schema';
-import { Dictionary, items, values } from '#common/linq';
+import { Dictionary, items, values } from '@microsoft.azure/autorest.codegen';
 import { deconstruct, pascalCase } from '#common/text-manipulation';
 import { Modifier } from '#csharp/code-dom/access-modifier';
 import { Attribute } from '#csharp/code-dom/attribute';

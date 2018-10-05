@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { keys } from '#common/linq';
+import { keys } from './linq';
 
 export type DeepPartial<T> = {
   [P in keyof T]?:

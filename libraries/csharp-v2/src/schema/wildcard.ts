@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { nameof, camelCase, deconstruct } from '#common/text-manipulation';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { ForEach } from '#csharp/code-dom/statements/for';
-import { If } from '#csharp/code-dom/statements/if';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { nameof, camelCase, deconstruct } from '@microsoft.azure/autorest.codegen';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/autorest.codegen-csharp';
+import { ForEach } from '@microsoft.azure/autorest.codegen-csharp';
+import { If } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { Schema } from '../code-model';
+import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { System } from '#csharp/code-dom/dotnet';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
+import { ClientRuntime } from '../clientruntime';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { TypeDeclaration } from '@microsoft.azure/autorest.codegen-csharp';
 
 export class Wildcard implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;

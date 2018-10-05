@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { nameof } from '#common/text-manipulation';
-import { System } from '#csharp/code-dom/dotnet';
-import { Expression, ExpressionOrLiteral, toExpression } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { nameof } from '@microsoft.azure/autorest.codegen';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { Schema } from '../code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class Binary implements EnhancedTypeDeclaration {

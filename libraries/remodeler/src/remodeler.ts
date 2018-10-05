@@ -3,31 +3,31 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Example, ImplementationLocation, Link, Tag } from '#common/code-model/components';
-import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '#common/code-model/http-operation';
-import { Discriminator, JsonType, Property, Schema, XML } from '#common/code-model/schema';
-import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '#common/linq';
-import { isMediaTypeJson, isMediaTypeXml } from '#common/media-types';
-import { ModelState } from '#common/model-state';
-import { System } from '#csharp/code-dom/dotnet';
-import { Model as CodeModel } from '../common/code-model/code-model';
+
+import { components } from '@microsoft.azure/autorest.codegen';
+import { Discriminator, JsonType, Property, Schema, XML, StatusCodes } from '@microsoft.azure/autorest.codegen';
+import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '@microsoft.azure/autorest.codegen';
+import { isMediaTypeJson, isMediaTypeXml } from '@microsoft.azure/autorest.codegen';
+import { ModelState } from '@microsoft.azure/autorest.codegen';
+import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@microsoft.azure/autorest.codegen';
+import { codemodel } from '@microsoft.azure/autorest.codegen';
+import { StringFormat } from '@microsoft.azure/autorest.codegen';
 import { dereference, Dereferenced, getExtensionProperties, Refable } from './common';
 import * as Interpretations from './interpretations';
-import { StringFormat } from './known-format';
 import * as OpenAPI from './oai3';
 
 const TODO_UNIMPLEMENTED = undefined;
 
 export class Remodeler {
 
-  private model: CodeModel;
+  private model: codemodel.Model;
 
   private get oai(): OpenAPI.Model {
     return this.modelState.model;
   }
 
   constructor(private modelState: ModelState<OpenAPI.Model>) {
-    this.model = new CodeModel(this.oai.info.title, this.oai.info.version);
+    this.model = new codemodel.Model(this.oai.info.title, this.oai.info.version);
   }
 
   private dereference<T>(item: Refable<T>): Dereferenced<T> {
@@ -315,7 +315,7 @@ export class Remodeler {
     return this.add(ref.name, ref, dictionary, copyFunc);
   }
 
-  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: ImplementationLocation = ImplementationLocation.Client, targetDictionary: Dictionary<HttpOperationParameter>): HttpOperationParameter {
+  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: components.ImplementationLocation = components.ImplementationLocation.Client, targetDictionary: Dictionary<HttpOperationParameter>): HttpOperationParameter {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
@@ -364,7 +364,7 @@ export class Remodeler {
 
   remodelParameters(source: Dictionary<Refable<OpenAPI.Parameter>>) {
     for (const parameterName of keys(source)) {
-      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.http.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Client, this.model.http.parameters));
+      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Client, this.model.http.parameters));
     }
   }
 
@@ -405,13 +405,13 @@ export class Remodeler {
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method, this.model.http.parameters)));
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Method, this.model.http.parameters)));
       }
     }
     if (original.pathItem.parameters) {
       for (const parameterName of original.pathItem.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, ImplementationLocation.Method, this.model.http.parameters)));
+        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Method, this.model.http.parameters)));
       }
     }
 
@@ -510,7 +510,7 @@ export class Remodeler {
 
   createHeaderSchema = (containerName: string, responseCode: string, original?: Dictionary<Refable<OpenAPI.Header>>): Schema | undefined => {
     if (original) {
-      const code = (System.Net.HttpStatusCode[responseCode].value || '').replace('System.Net.HttpStatusCode', '') || responseCode;
+      const code = ((<any>StatusCodes)[responseCode]  || '') || responseCode;
 
       const schemaName = `${containerName} ${code} ResponseHeaders`;
       const newSchema = this.model.schemas[schemaName] || new Schema(schemaName, {
@@ -558,8 +558,8 @@ export class Remodeler {
     return original ? ToDictionary(Object.keys(original), (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.http.headers, this.copyHeader)) : new Dictionary<Header>();
   }
 
-  copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<Link> => {
-    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.http.links, this.copyLink)) : new Dictionary<Link>();
+  copyLinks = (containerName: string, original?: Dictionary<Refable<OpenAPI.Link>>): Dictionary<components.Link> => {
+    return original ? CopyDictionary(original, (v) => this.refOrAdd(`.${containerName}.${v}`, this.dereference(original[v]), this.model.http.links, this.copyLink)) : new Dictionary<components.Link>();
   }
 
   copyEncoding = (encodingName: string, original: OpenAPI.Encoding): Encoding => {
@@ -675,21 +675,21 @@ export class Remodeler {
     this.addOrThrow(targetDictionary, name, callback);
     return callback;
   }
-  copyExample = (name: string, targetDictionary: Dictionary<Example>): Example => {
+  copyExample = (name: string, targetDictionary: Dictionary<components.Example>): components.Example => {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
 
-    const example = new Example();
+    const example = new components.Example();
     this.addOrThrow(targetDictionary, name, example);
     return example;
   }
-  copyLink = (name: string, original: OpenAPI.Link, targetDictionary: Dictionary<Link>): Link => {
+  copyLink = (name: string, original: OpenAPI.Link, targetDictionary: Dictionary<components.Link>): components.Link => {
     if (targetDictionary && targetDictionary[name]) {
       return targetDictionary[name];
     }
 
-    const link = new Link({
+    const link = new components.Link({
       description: original.description,
       extensions: getExtensionProperties(original),
       operationId: original.operationId,
@@ -722,7 +722,7 @@ export class Remodeler {
 
   remodelTags(source: Array<OpenAPI.Tag>) {
     for (const each of source) {
-      this.model.tags.push(new Tag(each.name, {
+      this.model.tags.push(new components.Tag(each.name, {
         description: each.description,
         extensions: getExtensionProperties(each),
         externalDocs: Interpretations.getExternalDocs(each.externalDocs),
@@ -741,7 +741,7 @@ export class Remodeler {
     }
   }
 
-  remodel(): CodeModel {
+  remodel(): codemodel.Model {
     if (this.oai.components) {
       if (this.oai.components.schemas) {
         this.remodelT(this.oai.components.schemas, this.model.schemas, this.copySchema);

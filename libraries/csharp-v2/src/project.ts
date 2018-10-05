@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Dictionary } from '#common/linq';
-import { ImportDirective } from '#csharp/code-dom/import';
-import { Project as codeDomProject } from '#csharp/code-dom/project';
-import { JsonSerializerClass } from '#csharp/lowlevel-generator/support/json-serializer';
+import { Dictionary } from '@microsoft.azure/autorest.codegen';
+
+import { Project as codeDomProject } from '@microsoft.azure/autorest.codegen-csharp';
+
 import { State } from './generator';
 import { ModelsNamespace } from './model/namespace';
 import { ApiClass } from './operation/api-class';

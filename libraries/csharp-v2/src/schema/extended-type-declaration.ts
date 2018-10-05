@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { Variable } from '#csharp/code-dom/variable';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { Expression, ExpressionOrLiteral } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { TypeDeclaration } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { Schema } from '../code-model';
 
 /** A TypeDeclaration that can assist in generating code for a variety of serialization, validation and other common use cases */
 export interface EnhancedTypeDeclaration extends TypeDeclaration {

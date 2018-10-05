@@ -2,15 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import { resources } from '#common/locations';
-import { copyResources, applyOverrides } from '#common/utility';
-import { deserialize, serialize } from '#common/yaml';
-import { Model } from '#csharp/lowlevel-generator/code-model';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { applyOverrides, copyResources, deserialize, serialize, } from '@microsoft.azure/autorest.codegen';
 import { join } from 'path';
+import { Model } from './code-model';
 import { State } from './generator';
 import { Project } from './project';
+
+const root = `${__dirname}/../..`;
+const resources = `${root}/resources`;
 
 export async function process(service: Host) {
   try {
@@ -75,7 +75,7 @@ export async function process(service: Host) {
         'internal bool IsReadOnly': 'public bool IsReadOnly',
         'internal (.*) int Count': 'public $1 int Count',
         'internal bool Contains\\(': 'public bool Contains(',
-        //'internal (.*) JsonType': 'public $1 JsonType',
+        // 'internal (.*) JsonType': 'public $1 JsonType',
         'internal(.*) bool Equals': 'public$1 bool Equals',
         'internal (.*) int GetHashCode': 'public $1 int GetHashCode',
         'internal void Dispose': 'public void Dispose',
@@ -83,9 +83,9 @@ export async function process(service: Host) {
         'internal object FromJson\\(': 'public object FromJson(',
         'internal JsonNode ToJson\\(': 'public JsonNode ToJson(',
 
-        //'internal partial class JsonNumber': 'public partial class JsonNumber'
-        //'internal partial class JsonNumber': 'public partial class JsonNumber'
-        //'internal partial class JsonNumber': 'public partial class JsonNumber'
+        // 'internal partial class JsonNumber': 'public partial class JsonNumber'
+        // 'internal partial class JsonNumber': 'public partial class JsonNumber'
+        // 'internal partial class JsonNumber': 'public partial class JsonNumber'
       });
     }
     if (project.xmlSerialization) {

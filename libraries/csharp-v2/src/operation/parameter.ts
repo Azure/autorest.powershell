@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Method } from '#csharp/code-dom/method';
+import { Method } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { KnownMediaType } from '#common/media-types';
-import { System } from '#csharp/code-dom/dotnet';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { Parameter } from '#csharp/code-dom/parameter';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
+import { Parameter } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { HttpOperationParameter, Schema } from '#csharp/lowlevel-generator/code-model';
-import { EnhancedVariable } from '#csharp/lowlevel-generator/extended-variable';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { HttpOperationParameter, Schema } from '../code-model';
+import { EnhancedVariable } from '../extended-variable';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */

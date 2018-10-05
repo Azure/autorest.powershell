@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Namespace } from '#csharp/code-dom/namespace';
+import { Namespace } from '@microsoft.azure/autorest.codegen-csharp';
 import { State } from '../generator';
 
 export class SupportNamespace extends Namespace {

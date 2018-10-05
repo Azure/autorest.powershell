@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items } from '#common/linq';
-import { Class } from '#csharp/code-dom/class';
-import { Namespace } from '#csharp/code-dom/namespace';
+import { items } from '@microsoft.azure/autorest.codegen';
+import { Class, Namespace } from '@microsoft.azure/autorest.codegen-csharp';
+
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
 

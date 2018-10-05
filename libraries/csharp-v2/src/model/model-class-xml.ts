@@ -3,29 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items, values } from '#common/linq';
-import { EOL } from '#common/text-manipulation';
-import { Access, Modifier } from '#csharp/code-dom/access-modifier';
-import { Class } from '#csharp/code-dom/class';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { IsDeclaration } from '#csharp/code-dom/expression';
-import { Method, PartialMethod } from '#csharp/code-dom/method';
-import { Parameter } from '#csharp/code-dom/parameter';
-import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
-import { TerminalCase } from '#csharp/code-dom/statements/case';
-import { If, Not } from '#csharp/code-dom/statements/if';
-import { Return } from '#csharp/code-dom/statements/return';
-import { Statements } from '#csharp/code-dom/statements/statement';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Ternery } from '#csharp/code-dom/ternery';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { EOL, HeaderProperty, HeaderPropertyType, items, KnownMediaType, values } from '@microsoft.azure/autorest.codegen';
+import { Access, Class, Constructor, dotnet, Expression, ExpressionOrLiteral, Field, If, InitializedField, IsDeclaration, Method, Modifier, Namespace, Not, OneOrMoreStatements, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery, TypeDeclaration, valueOf, Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { popTempVar, pushTempVar } from '../schema/primitive';
+import { ModelClass } from './model-class';
 
-import { KnownMediaType } from '#common/media-types';
-import { dotnet, System } from '#csharp/code-dom/dotnet';
-import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
-import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
 import { ModelProperty } from './property';
 
 export class XmlSerializableClass extends Class {

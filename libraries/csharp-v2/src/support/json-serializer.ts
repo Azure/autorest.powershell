@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Modifier } from '#csharp/code-dom/access-modifier';
-import { Class } from '#csharp/code-dom/class';
-import { Method } from '#csharp/code-dom/method';
+import { Modifier } from '@microsoft.azure/autorest.codegen-csharp';
+import { Class } from '@microsoft.azure/autorest.codegen-csharp';
+import { Method } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { items } from '#common/linq';
-import { dotnet } from '#csharp/code-dom/dotnet';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { Parameter } from '#csharp/code-dom/parameter';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { State } from '#csharp/lowlevel-generator/generator';
+import { items } from '@microsoft.azure/autorest.codegen';
+import { dotnet } from '@microsoft.azure/autorest.codegen-csharp';
+import { Namespace } from '@microsoft.azure/autorest.codegen-csharp';
+import { Parameter } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { State } from '../generator';
 
 export class JsonSerializerClass extends Class {
 

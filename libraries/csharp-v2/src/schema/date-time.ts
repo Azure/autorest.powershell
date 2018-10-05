@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { System } from '#csharp/code-dom/dotnet';
-import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { If } from '#csharp/code-dom/statements/if';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { Primitive } from '#csharp/schema/primitive';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@microsoft.azure/autorest.codegen-csharp';
+import { If } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
+import { Primitive } from './primitive';
 
 export class DateTime extends Primitive {
   public isXmlAttribute: boolean = false;

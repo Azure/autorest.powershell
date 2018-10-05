@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, Schema } from '#common/code-model/schema';
+import { JsonType, Schema } from '@microsoft.azure/autorest.codegen';
 import { State } from './generator';
 import * as message from './messages';
 

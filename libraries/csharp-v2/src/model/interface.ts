@@ -3,19 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items } from '#common/linq';
-import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
-import { Interface } from '#csharp/code-dom/interface';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { items, KnownMediaType } from '@microsoft.azure/autorest.codegen';
+
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
 import { State } from '../generator';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelInterfaceProperty } from './interface-property';
+import { ModelClass } from './model-class';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {
@@ -36,7 +32,6 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
   }
-
 
   /** emits an expression serialize this to a HttpContent */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
@@ -64,7 +59,6 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
     return this.implementation.validateValue(eventListener, property);
   }
-
 
   get hasHeaderProperties(): boolean {
     return this.implementation.hasHeaderProperties;

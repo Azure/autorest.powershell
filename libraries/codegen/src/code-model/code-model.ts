@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommandComponents } from '#common/code-model/command-operation';
-import { Extensions } from '#common/code-model/extensions';
-import { HttpComponents } from '#common/code-model/http-operation';
-import { Info } from '#common/code-model/info';
-import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/linq';
+import { CommandComponents } from './command-operation';
+import { Extensions } from './extensions';
+import { HttpComponents } from './http-operation';
+import { Info } from './info';
+import { Schema } from './schema';
+import { Dictionary } from '../linq';
 import { ExternalDocumentation, ImplementationDetails, LanguageDetails, SecurityRequirement, Server, Tag } from './components';
 
 // ------------------------------------------------------------------------------------------------------------------

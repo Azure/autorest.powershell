@@ -3,28 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Model } from '#common/code-model/code-model';
-import { JsonType } from '#common/code-model/schema';
-import { length } from '#common/linq';
-import { ModelState } from '#common/model-state';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import * as message from '#csharp/lowlevel-generator/messages';
-import { ArrayOf } from '#csharp/schema/array';
-import { Binary } from '#csharp/schema/binary';
-import { Boolean } from '#csharp/schema/boolean';
-import { ByteArray } from '#csharp/schema/byte-array';
-import { Char } from '#csharp/schema/char';
-import { Date } from '#csharp/schema/date';
-import { DateTime, DateTime1123, UnixTime } from '#csharp/schema/date-time';
-import { Duration } from '#csharp/schema/duration';
-import { EnumImplementation } from '#csharp/schema/enum';
-import { Numeric } from '#csharp/schema/integer';
-import { ObjectImplementation } from '#csharp/schema/object';
-import { String } from '#csharp/schema/string';
-import { Uuid } from '#csharp/schema/Uuid';
-import { UntypedWildcard, Wildcard } from '#csharp/schema/wildcard';
-import { IntegerFormat, NumberFormat, StringFormat } from '#remodeler/known-format';
+
+import { length } from '@microsoft.azure/autorest.codegen';
+import { ModelState, codemodel } from '@microsoft.azure/autorest.codegen';
+import { Schema } from '../code-model';
+import * as message from '../messages';
+import { ArrayOf } from './array';
+import { Binary } from './binary';
+import { Boolean } from './boolean';
+import { ByteArray } from './byte-array';
+import { Char } from './char';
+import { Date } from './date';
+import { DateTime, DateTime1123, UnixTime } from './date-time';
+import { Duration } from './duration';
+import { EnumImplementation } from './enum';
+import { Numeric } from './integer';
+import { ObjectImplementation } from './object';
+import { String } from './string';
+import { Uuid } from './Uuid';
+import { UntypedWildcard, Wildcard } from './wildcard';
+import { IntegerFormat, NumberFormat, StringFormat } from '@microsoft.azure/autorest.codegen';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { JsonType } from '@microsoft.azure/autorest.codegen';
 
 export class SchemaDefinitionResolver {
   private cache = new Map<string, EnhancedTypeDeclaration>();
@@ -33,7 +33,7 @@ export class SchemaDefinitionResolver {
     return value;
   }
 
-  resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<Model>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -54,7 +54,7 @@ export class SchemaDefinitionResolver {
         const propertyCount = length(schema.properties);
 
         if (propertyCount === 0) {
-          // *this* object has no properties. 
+          // *this* object has no properties.
           // so, if it has additionalProperties set, we should return some kind of a wildcard/dictionary.
 
           switch (typeof (schema.additionalProperties)) {

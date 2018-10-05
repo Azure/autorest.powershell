@@ -3,10 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExternalDocumentation, ImplementationLocation } from '#common/code-model/components';
-import { EnumDetails } from '#common/code-model/schema';
-import { ModelState } from '#common/model-state';
-import { Server } from '../common/code-model/components';
+import { EnumDetails, ModelState, components } from '@microsoft.azure/autorest.codegen';
+
 import { clone, getExtensionProperties } from './common';
 import * as OpenAPI from './oai3';
 
@@ -27,14 +25,14 @@ export function getDescription(defaultValue: string, original: OpenAPI.Extension
   return defaultValue;
 }
 
-export function getParameterImplementationLocation(defaultValue: ImplementationLocation, original: OpenAPI.Parameter & OpenAPI.Extensions): ImplementationLocation {
+export function getParameterImplementationLocation(defaultValue: components.ImplementationLocation, original: OpenAPI.Parameter & OpenAPI.Extensions): components.ImplementationLocation {
   const xloc = original['x-ms-parameter-location'];
   if (typeof (xloc) === 'string') {
     switch (xloc.toLowerCase()) {
       case 'method':
-        return ImplementationLocation.Method;
+        return components.ImplementationLocation.Method;
       case 'client':
-        return ImplementationLocation.Client;
+        return components.ImplementationLocation.Client;
     }
   }
   return defaultValue;
@@ -103,15 +101,15 @@ export function getOperationId(method: string, path: string, original: OpenAPI.H
   return ``;
 }
 
-export function copyServer(server: OpenAPI.Server): Server {
-  return new Server(server.url, {
+export function copyServer(server: OpenAPI.Server): components.Server {
+  return new components.Server(server.url, {
     description: server.description,
     extensions: getExtensionProperties(server),
     variables: clone(server.variables)
   });
 }
 
-export function getServers(method?: Array<OpenAPI.Server>, path?: Array<OpenAPI.Server>, model?: Array<OpenAPI.Server>): Array<Server> {
+export function getServers(method?: Array<OpenAPI.Server>, path?: Array<OpenAPI.Server>, model?: Array<OpenAPI.Server>): Array<components.Server> {
   if (method && method.length > 0) {
     return method.map(copyServer);
   }
@@ -124,8 +122,8 @@ export function getServers(method?: Array<OpenAPI.Server>, path?: Array<OpenAPI.
   return [];
 }
 
-export function getExternalDocs(externalDocs?: OpenAPI.ExternalDocumentation): ExternalDocumentation | undefined {
-  return externalDocs && externalDocs.url ? new ExternalDocumentation(externalDocs.url, {
+export function getExternalDocs(externalDocs?: OpenAPI.ExternalDocumentation): components.ExternalDocumentation | undefined {
+  return externalDocs && externalDocs.url ? new components.ExternalDocumentation(externalDocs.url, {
     extensions: getExtensionProperties(externalDocs),
     description: getDescription('', externalDocs)
   }) : undefined;

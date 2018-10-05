@@ -3,9 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access } from '#csharp/code-dom/access-modifier';
-import { InterfaceProperty } from '#csharp/code-dom/interface-property';
-import { Property, Schema } from '#csharp/lowlevel-generator/code-model';
+import { Access, InterfaceProperty } from '@microsoft.azure/autorest.codegen-csharp';
+import { Property, Schema } from '../code-model';
 import { State } from '../generator';
 import { ModelInterface } from './interface';
 

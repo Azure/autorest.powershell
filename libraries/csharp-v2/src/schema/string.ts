@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { camelCase, deconstruct, nameof } from '#common/text-manipulation';
-import { System } from '#csharp/code-dom/dotnet';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '#csharp/code-dom/expression';
-import { If } from '#csharp/code-dom/statements/if';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { camelCase, deconstruct, nameof } from '@microsoft.azure/autorest.codegen';
+import { System } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/autorest.codegen-csharp';
+import { If } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
+import { Schema } from '../code-model';
+import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 /** A ETD for the c# string type. */

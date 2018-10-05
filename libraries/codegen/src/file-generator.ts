@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Initializer } from '#common/initializer';
-import { EOL, setRegion } from '#common/text-manipulation';
+import { Initializer } from './initializer';
+import { EOL, setRegion } from './text-manipulation';
 
 export type fIterable<T> = Iterable<T> | (() => Iterable<T>);
 

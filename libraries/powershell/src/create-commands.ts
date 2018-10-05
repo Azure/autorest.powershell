@@ -9,7 +9,7 @@ import { IParameter } from '#common/code-model/components';
 import { HttpMethod, HttpOperation, HttpOperationParameter, RequestBody } from '#common/code-model/http-operation';
 import { getAllProperties } from '#common/code-model/schema';
 import { EnglishPluralizationService } from '#common/english-pluralization-service/pluralization';
-import { items, length, values } from '#common/linq';
+import { items, length, values } from '@microsoft.azure/autorest.codegen';
 import { processCodeModel } from '#common/process-code-model';
 import { deconstruct, fixLeadingNumber, pascalCase } from '#common/text-manipulation';
 import { Schema, } from '#csharp/lowlevel-generator/code-model';

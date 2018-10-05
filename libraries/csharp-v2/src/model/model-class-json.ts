@@ -3,30 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items, values } from '#common/linq';
-import { EOL } from '#common/text-manipulation';
-import { Access, Modifier } from '#csharp/code-dom/access-modifier';
-import { Class } from '#csharp/code-dom/class';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { IsDeclaration, toExpression } from '#csharp/code-dom/expression';
-import { Method, PartialMethod } from '#csharp/code-dom/method';
+import { items, values, EOL, KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codegen';
+import { Access, Modifier } from '@microsoft.azure/autorest.codegen-csharp';
+import { Class } from '@microsoft.azure/autorest.codegen-csharp';
+import { Constructor } from '@microsoft.azure/autorest.codegen-csharp';
+import { IsDeclaration, toExpression } from '@microsoft.azure/autorest.codegen-csharp';
+import { Method, PartialMethod } from '@microsoft.azure/autorest.codegen-csharp';
 
-import { Parameter } from '#csharp/code-dom/parameter';
-import { ParameterModifier } from '#csharp/code-dom/parameter-modifier';
-import { TerminalCase } from '#csharp/code-dom/statements/case';
-import { If, Not } from '#csharp/code-dom/statements/if';
-import { Return } from '#csharp/code-dom/statements/return';
-import { Statements } from '#csharp/code-dom/statements/statement';
-import { Switch } from '#csharp/code-dom/statements/switch';
-import { Ternery } from '#csharp/code-dom/ternery';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
+import { Parameter } from '@microsoft.azure/autorest.codegen-csharp';
+import { ParameterModifier } from '@microsoft.azure/autorest.codegen-csharp';
+import { TerminalCase } from '@microsoft.azure/autorest.codegen-csharp';
+import { If, Not } from '@microsoft.azure/autorest.codegen-csharp';
+import { Return } from '@microsoft.azure/autorest.codegen-csharp';
+import { Statements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Switch } from '@microsoft.azure/autorest.codegen-csharp';
+import { Ternery } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
 
-import { KnownMediaType } from '#common/media-types';
-import { dotnet } from '#csharp/code-dom/dotnet';
-import { ModelClass } from '#csharp/lowlevel-generator/model/model-class';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { popTempVar, pushTempVar } from '#csharp/schema/primitive';
-import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
+import { dotnet } from '@microsoft.azure/autorest.codegen-csharp';
+import { ModelClass } from './model-class';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { popTempVar, pushTempVar } from '../schema/primitive';
+
 import { ModelProperty } from './property';
 
 export class JsonSerializableClass extends Class {

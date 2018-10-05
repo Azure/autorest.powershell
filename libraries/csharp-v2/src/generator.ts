@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState } from '#common/model-state';
-import { Model } from '#csharp/lowlevel-generator/code-model';
+import { ModelState } from '@microsoft.azure/autorest.codegen';
+import { Model } from './code-model';
 import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
 
 import { Project } from './project';

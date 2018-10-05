@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExternalDocumentation, ImplementationDetails, LanguageDetails } from '#common/code-model/components';
-import { Extensions } from '#common/code-model/extensions';
-import { DeepPartial } from '#common/initializer';
-import { Dictionary, values } from '#common/linq';
+import { ExternalDocumentation, ImplementationDetails, LanguageDetails } from './components';
+import { Extensions } from './extensions';
+import { DeepPartial } from '../initializer';
+import { Dictionary, values } from '../linq';
 
 export interface PropertyDetails extends ImplementationDetails {
   required: boolean;

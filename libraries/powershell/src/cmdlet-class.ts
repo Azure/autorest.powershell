@@ -5,7 +5,7 @@
 
 import { CommandOperation } from '#common/code-model/command-operation';
 import { getAllProperties, JsonType } from '#common/code-model/schema';
-import { Dictionary, items, values } from '#common/linq';
+import { Dictionary, items, values } from '@microsoft.azure/autorest.codegen';
 import { KnownMediaType } from '#common/media-types';
 import { escapeString } from '#common/text-manipulation';
 import { Access, Modifier } from '#csharp/code-dom/access-modifier';

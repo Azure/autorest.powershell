@@ -3,25 +3,25 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Modifier } from '#csharp/code-dom/access-modifier';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { Expression, ExpressionOrLiteral, StringExpression } from '#csharp/code-dom/expression';
-import { InitializedField } from '#csharp/code-dom/field';
-import { Interface } from '#csharp/code-dom/interface';
-import { Method } from '#csharp/code-dom/method';
-import { Schema } from '#csharp/lowlevel-generator/code-model';
+import { Access, Modifier } from '@microsoft.azure/autorest.codegen-csharp';
+import { Constructor } from '@microsoft.azure/autorest.codegen-csharp';
+import { Expression, ExpressionOrLiteral, StringExpression } from '@microsoft.azure/autorest.codegen-csharp';
+import { InitializedField } from '@microsoft.azure/autorest.codegen-csharp';
+import { Interface } from '@microsoft.azure/autorest.codegen-csharp';
+import { Method } from '@microsoft.azure/autorest.codegen-csharp';
+import { Schema } from '../code-model';
 
-import { KnownMediaType } from '#common/media-types';
-import { dotnet } from '#csharp/code-dom/dotnet';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { Operator } from '#csharp/code-dom/operator';
-import { Parameter } from '#csharp/code-dom/parameter';
-import { Property } from '#csharp/code-dom/property';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Struct } from '#csharp/code-dom/struct';
-import { Variable } from '#csharp/code-dom/variable';
-import { EnumImplementation } from '#csharp/schema/enum';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { dotnet } from '@microsoft.azure/autorest.codegen-csharp';
+import { Namespace } from '@microsoft.azure/autorest.codegen-csharp';
+import { Operator } from '@microsoft.azure/autorest.codegen-csharp';
+import { Parameter } from '@microsoft.azure/autorest.codegen-csharp';
+import { Property } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Struct } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { EnumImplementation } from '../schema/enum';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {

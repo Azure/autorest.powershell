@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Model } from '#common/code-model/code-model';
-import { ParameterLocation } from '#common/code-model/http-operation';
-import { getPolymorphicBases, isSchemaObject, JsonType, Property, Schema } from '#common/code-model/schema';
-import { items, values } from '#common/linq';
-import { KnownMediaType, knownMediaType } from '#common/media-types';
-import { processCodeModel } from '#common/process-code-model';
-import { StringFormat } from '#remodeler/known-format';
+
+import { ParameterLocation } from '@microsoft.azure/autorest.codegen';
+import { getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel } from '@microsoft.azure/autorest.codegen';
+import { items, values } from '@microsoft.azure/autorest.codegen';
+import { KnownMediaType, knownMediaType } from '@microsoft.azure/autorest.codegen';
+
+
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 
 export const HeaderProperty = 'HeaderProperty';
@@ -25,7 +25,7 @@ export async function process(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: Model, service: Host): Promise<Model> {
+async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
   /* REMOVE THIS -- not handled here anymore
     // consolodate compatible response types.
     for (const operation of values(model.http.operations)) {

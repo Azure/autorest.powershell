@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { values, Dictionary, items } from '#common/linq';
+import { values, Dictionary, items } from './linq';
 import * as aio from '@microsoft.azure/async-io';
 import { join } from 'path';
 

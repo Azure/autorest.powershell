@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Model } from '#common/code-model/code-model';
-import { deserialize, serialize } from '#common/yaml';
+import { Model } from './code-model/code-model';
+import { deserialize, serialize } from './yaml';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export async function processCodeModel(processExtension: (input: Model, service: Host) => Promise<Model>, service: Host) {

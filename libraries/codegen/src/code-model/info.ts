@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Extensions } from '#common/code-model/extensions';
-import { Dictionary } from '#common/linq';
+import { Extensions } from './extensions';
+import { Dictionary } from '../linq';
 
 export class Contact extends Extensions implements Contact {
   extensions = new Dictionary<any>();

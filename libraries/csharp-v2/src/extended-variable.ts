@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '#common/media-types';
-import { Expression, ExpressionOrLiteral } from '#csharp/code-dom/expression';
-import { OneOrMoreStatements } from '#csharp/code-dom/statements/statement';
-import { Variable } from '#csharp/code-dom/variable';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
+import { KnownMediaType } from '@microsoft.azure/autorest.codegen';
+import { Expression, ExpressionOrLiteral } from '@microsoft.azure/autorest.codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/autorest.codegen-csharp';
+import { Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { EnhancedTypeDeclaration } from './schema/extended-type-declaration';
 
 export interface ExtendedVariable extends Variable {
   typeDeclaration: EnhancedTypeDeclaration;

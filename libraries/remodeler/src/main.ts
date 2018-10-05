@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState } from '#common/model-state';
-import { deserialize, serialize } from '#common/yaml';
+import { ModelState } from '@microsoft.azure/autorest.codegen';
+import { deserialize, serialize } from '@microsoft.azure/autorest.codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import * as OpenAPI from './oai3';
 import { Remodeler } from './remodeler';

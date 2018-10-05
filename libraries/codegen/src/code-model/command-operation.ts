@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Components, IParameter, LanguageDetails } from '#common/code-model/components';
-import { Extensions } from '#common/code-model/extensions';
-import { HttpOperation } from '#common/code-model/http-operation';
-import { ProgramaticOperationDetails, ProgrammaticOperation } from '#common/code-model/programatic-operation';
-import { Schema } from '#common/code-model/schema';
-import { DeepPartial } from '#common/initializer';
-import { Dictionary } from '#common/linq';
+import { Components, IParameter, LanguageDetails } from './components';
+import { Extensions } from './extensions';
+import { HttpOperation } from './http-operation';
+import { ProgramaticOperationDetails, ProgrammaticOperation } from './programatic-operation';
+import { Schema } from './schema';
+import { DeepPartial } from '../initializer';
+import { Dictionary } from '../linq';
 
 export interface CommandOperationDetails extends ProgramaticOperationDetails {
 }

@@ -3,35 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items, values } from '#common/linq';
-import { camelCase, deconstruct } from '#common/text-manipulation';
-import { Access, Modifier } from '#csharp/code-dom/access-modifier';
-import { Class } from '#csharp/code-dom/class';
-import { Expression, ExpressionOrLiteral, valueOf } from '#csharp/code-dom/expression';
-import { Field, InitializedField } from '#csharp/code-dom/field';
-import { Method } from '#csharp/code-dom/method';
-import { Namespace } from '#csharp/code-dom/namespace';
-import { Parameter } from '#csharp/code-dom/parameter';
-import { OneOrMoreStatements, Statements } from '#csharp/code-dom/statements/statement';
-import { ClientRuntime } from '#csharp/lowlevel-generator/clientruntime';
-
-import { If } from '#csharp/code-dom/statements/if';
-import { TypeDeclaration } from '#csharp/code-dom/type-declaration';
-import { JsonSerializableClass } from '#csharp/lowlevel-generator/model/model-class-json';
-import { EnhancedTypeDeclaration } from '#csharp/schema/extended-type-declaration';
-import { ObjectImplementation } from '#csharp/schema/object';
-import { HeaderProperty, HeaderPropertyType } from '#remodeler/tweak-model';
+import { camelCase, deconstruct, HeaderProperty, HeaderPropertyType, items, KnownMediaType, values } from '@microsoft.azure/autorest.codegen';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable } from '@microsoft.azure/autorest.codegen-csharp';
+import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ObjectImplementation } from '../schema/object';
+import { implementIDictionary } from './idictionary';
 import { ModelInterface } from './interface';
+import { JsonSerializableClass } from './model-class-json';
+import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
-
-import { KnownMediaType } from '#common/media-types';
-import { Constructor } from '#csharp/code-dom/constructor';
-import { System } from '#csharp/code-dom/dotnet';
-import { Variable } from '#csharp/code-dom/variable';
-import { XmlSerializableClass } from '#csharp/lowlevel-generator/model/model-class-xml';
-import { implementIDictionary } from './idictionary';
 
 export interface BackingField {
   field: Field;
@@ -105,7 +88,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     this.apply(objectInitializer);
     this.partial = true;
-
 
     // create an interface for this model class
 
@@ -206,8 +188,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         // we're going to implement IDictionary<string, object>
         implementIDictionary(System.String, System.Object, this);
 
-
-
       } else {
         // we're going to implement IDictionary<string, schema.additionalProperties>
 
@@ -268,7 +248,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
       // if (this.state.project.jsonSerialization) {
       // this.jsonSerializer = new JsonSerializableClass(this);
-      //}
+      // }
     }
   }
 

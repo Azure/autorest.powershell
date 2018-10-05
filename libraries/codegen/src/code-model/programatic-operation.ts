@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ImplementationDetails, IOperation, IParameter, LanguageDetails } from '#common/code-model/components';
-import { Extensions } from '#common/code-model/extensions';
-import { Schema } from '#common/code-model/schema';
-import { Dictionary } from '#common/linq';
+import { ImplementationDetails, IOperation, IParameter, LanguageDetails } from './components';
+import { Extensions } from './extensions';
+import { Schema } from './schema';
+import { Dictionary } from '../linq';
 
 export interface ProgrammaticOperation extends IOperation<IParameter> {
   responses: Dictionary<Dictionary<Schema>>;
