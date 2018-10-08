@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommaChar, docComment, EOL, indent } from '@microsoft.azure/autorest.codegen';
+import { CommaChar, docComment, EOL, indent } from '@microsoft.azure/codegen';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from './access-modifier';
 import { Class } from './class';
 import { summary, xmlize } from './doc-comments';

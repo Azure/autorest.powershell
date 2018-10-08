@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Initializer, intersect } from '@microsoft.azure/autorest.codegen';
+import { Initializer, intersect } from '@microsoft.azure/codegen';
 
 import { Cast, IsNotNull, IsNull } from './comparisons';
 import { dotnet } from './dotnet';

@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
+import { Expression, ExpressionOrLiteral, toExpression } from '@microsoft.azure/codegen-csharp';
+import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
+import { Variable } from '@microsoft.azure/codegen-csharp';
+import { Schema } from '../code-model';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
+
+export class Duration implements EnhancedTypeDeclaration {
+  public isXmlAttribute: boolean = false;
+
+  constructor(public schema: Schema, public isRequired: boolean) {
+  }
+  get declaration(): string {
+    return `System.TimeSpan${this.isRequired ? '' : '?'}`;
+  }
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
+    return toExpression(`null /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral, defaultValue: Expression): Expression {
+    return toExpression(`null /* deserializeFromNode doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+    return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+    return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
+  }
+  /** emits an expression to deserialize content from a string */
+  deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(``);
+  }
+  /** emits an expression to deserialize content from a content/response */
+  deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+  }
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+    return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
+  }
+  validateValue(eventListener: Variable, property: Variable): string {
+    return ``;
+  }
+  public validatePresence(eventListener: Variable, property: Variable): string {
+    return ``;
+  }
+}

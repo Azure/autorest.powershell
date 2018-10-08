@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Initializer } from '@microsoft.azure/autorest.codegen';
-import { pall } from '@microsoft.azure/autorest.codegen';
+import { Initializer } from '@microsoft.azure/codegen';
+import { pall } from '@microsoft.azure/codegen';
 import { Namespace } from './namespace';
 
 export class Project extends Initializer {

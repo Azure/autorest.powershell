@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { docComment, EOL } from '@microsoft.azure/autorest.codegen';
+import { docComment, EOL } from '@microsoft.azure/codegen';
 import { Access, Modifier, New, ReadOnly, Static, Volitile } from './access-modifier';
 import { Attribute } from './attribute';
 import { xmlize } from './doc-comments';

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { indent } from '@microsoft.azure/autorest.codegen';
+import { indent } from '@microsoft.azure/codegen';
 import { Parameter } from '../parameter';
 import { OneOrMoreStatements, StatementPossibilities, Statements } from './statement';
 

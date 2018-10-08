@@ -1,11 +1,12 @@
 {
-  "name": "@microsoft.azure/autorest.codegen",
+  "name": "@microsoft.azure/codegen",
   "version": "1.0.27",
-  "description": "AutoRest code generator base classes",
+  "description": "Code generator common and base classes",
   "directories": {
     "doc": "docs"
   },
-  "main": "./dist/main.js",
+  "main": "dist/exports.js",
+  "typings": "dist/exports.d.ts",
   "scripts": {
     "build": "tsc -p .",
     "watch": "tsc -p . --watch",
@@ -41,9 +42,6 @@
   },
   "dependencies": {
     "@microsoft.azure/async-io": "2.0.19",
-    "@microsoft.azure/autorest-extension-base": "^1.0.27",
-    "@microsoft.azure/tasks": "^2.0.12",
-    "js-yaml": "^3.10.0",
-    "source-map-support": "0.5.3"
+    "js-yaml": "^3.10.0"
   }
 }

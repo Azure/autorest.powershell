@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommaChar } from '@microsoft.azure/autorest.codegen';
+import { CommaChar } from '@microsoft.azure/codegen';
 import { Method } from './method';
 
 export class Operator extends Method {

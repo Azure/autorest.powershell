@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Initializer } from '@microsoft.azure/autorest.codegen';
+import { Initializer } from '@microsoft.azure/codegen';
 import { ExpressionOrLiteral, toExpression, valueOf } from './expression';
 import { TypeDeclaration } from './type-declaration';
 

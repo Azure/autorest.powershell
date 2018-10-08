@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Dictionary, intersect } from '@microsoft.azure/autorest.codegen';
+import { Dictionary, intersect } from '@microsoft.azure/codegen';
 
-import { docComment, EOL, indent } from '@microsoft.azure/autorest.codegen';
+import { docComment, EOL, indent } from '@microsoft.azure/codegen';
 import { Abstract, Access, Extern, highestAccess, Modifier, New, Override, Sealed, Static, Virtual } from './access-modifier';
 import { Attribute } from './attribute';
 import { summary } from './doc-comments';

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL, Initializer } from '@microsoft.azure/autorest.codegen';
+import { EOL, Initializer } from '@microsoft.azure/codegen';
 import { Access } from './access-modifier';
 import { Attribute } from './attribute';
 import { Interface } from './interface';

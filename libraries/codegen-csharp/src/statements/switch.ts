@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL, indent, Initializer } from '@microsoft.azure/autorest.codegen';
+import { EOL, indent, Initializer } from '@microsoft.azure/codegen';
 import { Expression, ExpressionOrLiteral, toExpression } from '../expression';
 import { CaseStatement } from './case';
 import { Statement } from './statement';

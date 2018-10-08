@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL, Initializer } from '@microsoft.azure/autorest.codegen';
+import { EOL, Initializer } from '@microsoft.azure/codegen';
 import { LiteralStatement } from './literal';
 
 export type fIterable<T> = Iterable<T> | (() => Iterable<T>);
