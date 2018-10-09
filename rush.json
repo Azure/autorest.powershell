@@ -97,42 +97,50 @@
     {
       "packageName": "@microsoft.azure/autorest-extension-base",
       "projectFolder": "libraries/autorest-extension-base",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/autorest.codemodel-v3",
       "projectFolder": "libraries/codemodel-v3",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/codegen",
       "projectFolder": "libraries/codegen",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/codegen-csharp",
       "projectFolder": "libraries/codegen-csharp",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/autorest.csharp-v2",
       "projectFolder": "extensions/csharp-v2",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/autorest.remodeler",
       "projectFolder": "extensions/remodeler",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/autorest.powershell",
       "projectFolder": "extensions/powershell",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": true
     },
     {
       "packageName": "@microsoft.azure/autorest.incubator",
       "projectFolder": "extensions/incubator",
-      "reviewCategory": "production"
+      "reviewCategory": "production",
+      "shouldPublish": false
     }
   ]
 }

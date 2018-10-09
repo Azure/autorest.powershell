@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.codemodel-v3",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "AutoRest code model classes",
   "directories": {
     "doc": "docs"
