@@ -2,12 +2,12 @@ dependencies:
   '@microsoft.azure/async-io': 2.0.19
   '@microsoft.azure/tasks': 2.0.27
   '@rush-temp/autorest-extension-base': 'file:projects/autorest-extension-base.tgz'
-  '@rush-temp/codegen': 'file:projects/codegen.tgz'
-  '@rush-temp/codegen-csharp': 'file:projects/codegen-csharp.tgz'
   '@rush-temp/autorest.codemodel-v3': 'file:projects/autorest.codemodel-v3.tgz'
   '@rush-temp/autorest.csharp-v2': 'file:projects/autorest.csharp-v2.tgz'
   '@rush-temp/autorest.powershell': 'file:projects/autorest.powershell.tgz'
   '@rush-temp/autorest.remodeler': 'file:projects/autorest.remodeler.tgz'
+  '@rush-temp/codegen': 'file:projects/codegen.tgz'
+  '@rush-temp/codegen-csharp': 'file:projects/codegen-csharp.tgz'
   '@types/js-yaml': 3.10.1
   '@types/mocha': 5.2.5
   '@types/node': 10.11.4
@@ -15,7 +15,7 @@ dependencies:
   mocha: 5.2.0
   mocha-typescript: 1.1.17
   semver: 5.5.1
-  source-map-support: 0.5.3
+  source-map-support: 0.5.9
   tslint: 5.11.0
   tslint-language-service-ts3: 1.0.0
   tslint-microsoft-contrib: 5.2.1
@@ -111,6 +111,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-qhAVI1+Av2X7qelOfAIYwXONood6XlZE/fXaBSmW/T5SzLAmCgzi+eiWE7fUvbHaeNBQH13UftjpXxsfLkMpgw==
+  /buffer-from/1.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
   /builtin-modules/1.1.1:
     dev: false
     engines:
@@ -738,6 +742,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-eKkTgWYeBOQqFGXRfKabMFdnWepo51vWqEdoeikaEPFiJC7MCU5j2h4+6Q8npkZTeLGbSyecZvRxiSoWl3rh+w==
+  /source-map-support/0.5.9:
+    dependencies:
+      buffer-from: 1.1.1
+      source-map: 0.6.1
+    dev: false
+    resolution:
+      integrity: sha512-gR6Rw4MvUlYy83vP0vxoVNzM6t8MUXqNuRsuBmBHQDu1Fh6X015FrLdgoDKcNdkwGubozq0P4N0Q37UyFVr1EA==
   /source-map/0.6.1:
     dev: false
     engines:
@@ -1080,6 +1091,84 @@ packages:
       integrity: sha512-XYRTTMFRSTq/l7QUr/mwrQOIvNR/oPmQrVMie1Bo456THYo26EhUlsquQ6PvLqR/ePR1wNgKm3ENn8yo1BIRxw==
       tarball: 'file:projects/autorest-extension-base.tgz'
     version: 0.0.0
+  'file:projects/autorest.codemodel-v3.tgz':
+    dependencies:
+      '@types/js-yaml': 3.10.1
+      '@types/mocha': 5.2.5
+      '@types/node': 10.11.4
+      mocha: 5.2.0
+      mocha-typescript: 1.1.17
+      tslint: /tslint/5.11.0/typescript@3.1.1
+      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
+      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
+      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
+      typescript: 3.1.1
+    dev: false
+    name: '@rush-temp/autorest.codemodel-v3'
+    resolution:
+      integrity: sha512-4Rxcjy7TdmDi6CChP0FmR0LF1x9xMNa79mVuhuC/AXslSZ9aFkAnFGchLHes/j9tD8WzCSVYGbk06O2+TiJgCA==
+      tarball: 'file:projects/autorest.codemodel-v3.tgz'
+    version: 0.0.0
+  'file:projects/autorest.csharp-v2.tgz':
+    dependencies:
+      '@types/js-yaml': 3.10.1
+      '@types/mocha': 5.2.5
+      '@types/node': 10.11.4
+      mocha: 5.2.0
+      mocha-typescript: 1.1.17
+      source-map-support: 0.5.9
+      tslint: /tslint/5.11.0/typescript@3.1.1
+      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
+      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
+      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
+      typescript: 3.1.1
+    dev: false
+    name: '@rush-temp/autorest.csharp-v2'
+    resolution:
+      integrity: sha512-2Dm3kVUjdQDpd/4yC4Vg1BW9qb1TviG8pdHJRTxqz5gv8X/fXByXMsjQWtSztiSo624Xw/cTmYyJzJbfjzBtQg==
+      tarball: 'file:projects/autorest.csharp-v2.tgz'
+    version: 0.0.0
+  'file:projects/autorest.powershell.tgz':
+    dependencies:
+      '@microsoft.azure/tasks': 2.0.27
+      '@types/js-yaml': 3.10.1
+      '@types/mocha': 5.2.5
+      '@types/node': 10.11.4
+      mocha: 5.2.0
+      mocha-typescript: 1.1.17
+      source-map-support: 0.5.9
+      tslint: /tslint/5.11.0/typescript@3.1.1
+      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
+      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
+      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
+      typescript: 3.1.1
+    dev: false
+    name: '@rush-temp/autorest.powershell'
+    resolution:
+      integrity: sha512-cfytKw/eesTP/2uhnN5GewjG75S+y0flZlnJlYQM3wxgf7E/OLzClV/wP5qgfgudcQlCVOZJGhES7klFgjQtMw==
+      tarball: 'file:projects/autorest.powershell.tgz'
+    version: 0.0.0
+  'file:projects/autorest.remodeler.tgz':
+    dependencies:
+      '@microsoft.azure/tasks': 2.0.27
+      '@types/js-yaml': 3.10.1
+      '@types/mocha': 5.2.5
+      '@types/node': 10.11.4
+      mocha: 5.2.0
+      mocha-typescript: 1.1.17
+      semver: 5.5.1
+      source-map-support: 0.5.9
+      tslint: /tslint/5.11.0/typescript@3.1.1
+      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
+      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
+      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
+      typescript: 3.1.1
+    dev: false
+    name: '@rush-temp/autorest.remodeler'
+    resolution:
+      integrity: sha512-fp+rjZOXQxj2ZmMkAxIRgDMmGXBwLhHrwoaQIZgEE0QFkngCwia4Sn5aRjkMDRtg2Ov+NDfGv1ZN4MGY2nz0CQ==
+      tarball: 'file:projects/autorest.remodeler.tgz'
+    version: 0.0.0
   'file:projects/codegen-csharp.tgz':
     dependencies:
       '@types/js-yaml': 3.10.1
@@ -1095,7 +1184,7 @@ packages:
     dev: false
     name: '@rush-temp/codegen-csharp'
     resolution:
-      integrity: sha512-8dPkV7+kBPrbnLlFn9Zy7dBKvqx04lnbopyQLUKEKeEsfTKI6FURG3J00iElXUPbxsmgM+oMazeu8fEJeCBhAg==
+      integrity: sha512-PRErACyRDuuSapYs66fF8G9iybR++OO0ui7ie1HmXiQ+MFM9Vaxq23N1NX46yVEc5mnECsgXZ1cnB/QQ2ct7MQ==
       tarball: 'file:projects/codegen-csharp.tgz'
     version: 0.0.0
   'file:projects/codegen.tgz':
@@ -1117,83 +1206,8 @@ packages:
     dev: false
     name: '@rush-temp/codegen'
     resolution:
-      integrity: sha512-39XA5FpAJzDDlTik7C6R64HsDM+mEPbhXN21wYPd3PWZFPyGRuyUuoQKAnpfviR59TNAQK2rz4D7VzxT/X914g==
+      integrity: sha512-GtP68SKneqqJEEtvfB5VU+D/9F8WC9MlpGKl+4BslWAx4+Pxh5GSPKY6zy3ebaOQwLNikQMPEvqLJu/beorlYA==
       tarball: 'file:projects/codegen.tgz'
-    version: 0.0.0
-  'file:projects/autorest.codemodel-v3.tgz':
-    dependencies:
-      '@types/js-yaml': 3.10.1
-      '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
-      mocha: 5.2.0
-      mocha-typescript: 1.1.17
-      tslint: /tslint/5.11.0/typescript@3.1.1
-      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
-      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
-      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
-      typescript: 3.1.1
-    dev: false
-    name: '@rush-temp/autorest.codemodel-v3'
-    resolution:
-      integrity: sha512-gzrdVLUzJdfx4Pe2E4E5mtvLtzRlCqknO/2+UKL4ArS/UhbAbtuPZUYEN2+PUXuqNFUfJvvu6YTxumaNhJ37NA==
-      tarball: 'file:projects/autorest.codemodel-v3.tgz'
-    version: 0.0.0
-  'file:projects/autorest.csharp-v2.tgz':
-    dependencies:
-      '@types/js-yaml': 3.10.1
-      '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
-      mocha: 5.2.0
-      mocha-typescript: 1.1.17
-      tslint: /tslint/5.11.0/typescript@3.1.1
-      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
-      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
-      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
-      typescript: 3.1.1
-    dev: false
-    name: '@rush-temp/autorest.csharp-v2'
-    resolution:
-      integrity: sha512-iwtrv5N8ayxdJ/zm/fNV9mk7fdBT4f5X/wMUQc6GDUh4o4w+/IfKSxV7tIL/v8d20OTCHVFbbq4aQjYDnJN0hQ==
-      tarball: 'file:projects/autorest.csharp-v2.tgz'
-    version: 0.0.0
-  'file:projects/autorest.powershell.tgz':
-    dependencies:
-      '@microsoft.azure/tasks': 2.0.27
-      '@types/js-yaml': 3.10.1
-      '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
-      mocha: 5.2.0
-      mocha-typescript: 1.1.17
-      tslint: /tslint/5.11.0/typescript@3.1.1
-      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
-      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
-      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
-      typescript: 3.1.1
-    dev: false
-    name: '@rush-temp/autorest.powershell'
-    resolution:
-      integrity: sha512-DXck/VT4DI9mp/gstuDP4Zcsumlod3E9UTf2t4dT22MRqPEq3VEYFKtZExxhR8KpaVMfc3nXAuuWFZcxlgYsAQ==
-      tarball: 'file:projects/autorest.powershell.tgz'
-    version: 0.0.0
-  'file:projects/autorest.remodeler.tgz':
-    dependencies:
-      '@microsoft.azure/tasks': 2.0.27
-      '@types/js-yaml': 3.10.1
-      '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
-      mocha: 5.2.0
-      mocha-typescript: 1.1.17
-      semver: 5.5.1
-      tslint: /tslint/5.11.0/typescript@3.1.1
-      tslint-language-service-ts3: /tslint-language-service-ts3/1.0.0/tslint@5.11.0+typescript@3.1.1
-      tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.1.1
-      tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.1.1
-      typescript: 3.1.1
-    dev: false
-    name: '@rush-temp/autorest.remodeler'
-    resolution:
-      integrity: sha512-3Me8xsmpsPs1px/oZwS0JkpavwELkxHCAk2QlMIjwJqsotS8jBoatiAZ1GX7qP5kakfsJsIgqSxE8dAPuAxgbw==
-      tarball: 'file:projects/autorest.remodeler.tgz'
     version: 0.0.0
 registry: 'https://registry.npmjs.org/'
 shrinkwrapMinorVersion: 9
@@ -1202,12 +1216,12 @@ specifiers:
   '@microsoft.azure/async-io': 2.0.19
   '@microsoft.azure/tasks': ^2.0.12
   '@rush-temp/autorest-extension-base': 'file:./projects/autorest-extension-base.tgz'
-  '@rush-temp/codegen': 'file:./projects/codegen.tgz'
-  '@rush-temp/codegen-csharp': 'file:./projects/codegen-csharp.tgz'
   '@rush-temp/autorest.codemodel-v3': 'file:./projects/autorest.codemodel-v3.tgz'
   '@rush-temp/autorest.csharp-v2': 'file:./projects/autorest.csharp-v2.tgz'
   '@rush-temp/autorest.powershell': 'file:./projects/autorest.powershell.tgz'
   '@rush-temp/autorest.remodeler': 'file:./projects/autorest.remodeler.tgz'
+  '@rush-temp/codegen': 'file:./projects/codegen.tgz'
+  '@rush-temp/codegen-csharp': 'file:./projects/codegen-csharp.tgz'
   '@types/js-yaml': 3.10.1
   '@types/mocha': latest
   '@types/node': ^10.11.4
@@ -1215,7 +1229,7 @@ specifiers:
   mocha: latest
   mocha-typescript: latest
   semver: ^5.5.1
-  source-map-support: 0.5.3
+  source-map-support: 0.5.9
   tslint: ^5.11.0
   tslint-language-service-ts3: 1.0.0
   tslint-microsoft-contrib: ^5.2.1

@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { comment, docCommentPrefix, EOL, indent, sortByName } from '@microsoft.azure/codegen';
-import { Namespace } from './namespace';
 import { Type } from './type';
+import { TypeContainer } from './type-container';
 
 export class Interface extends Type {
-  constructor(parent: Namespace, name: string, objectIntializer?: Partial<Interface>) {
+  constructor(parent: TypeContainer, name: string, objectIntializer?: Partial<Interface>) {
     super(parent, name);
     this.apply(objectIntializer);
     parent.addInterface(this);

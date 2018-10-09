@@ -7,11 +7,15 @@ import { CommaChar, docComment, EOL, indent } from '@microsoft.azure/codegen';
 import { Abstract, Access, Async, Extern, Modifier, New, Override, Sealed, Static, Virtual } from './access-modifier';
 import { Class } from './class';
 import { summary, xmlize } from './doc-comments';
-import { dotnet } from './dotnet';
+
 import { Expression, toExpression, valueOf } from './expression';
 import { Parameter } from './parameter';
 import { StatementPossibilities, Statements } from './statements/statement';
 import { TypeDeclaration } from './type-declaration';
+
+const Void = {
+  declaration: "void"
+}
 
 export class Method extends Statements {
   public parameters = new Array<Parameter>();
@@ -29,7 +33,7 @@ export class Method extends Statements {
   public returnsDescription: string = '';
   public body?: StatementPossibilities;
 
-  constructor(public name: string, protected returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<Method>) {
+  constructor(public name: string, protected returnType: TypeDeclaration = Void, objectIntializer?: Partial<Method>) {
     super();
     this.apply(objectIntializer);
     // easy access to allow statements in the initalizer.
@@ -103,7 +107,7 @@ ${indent(super.implementation)}
 
 export class PartialMethod extends Method {
   public isPartial = true;
-  constructor(name: string, returnType: TypeDeclaration = dotnet.Void, objectIntializer?: Partial<PartialMethod>) {
+  constructor(name: string, returnType: TypeDeclaration = Void, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
     this.access = Access.Default;
     this.apply(objectIntializer);
@@ -125,7 +129,7 @@ partial ${this.new}${this.access} ${this.static} ${this.virtual} ${this.sealed} 
 }
 
 export class LambdaMethod extends Method {
-  constructor(name: string, returnType: TypeDeclaration = dotnet.Void, protected expression: Expression, objectIntializer?: Partial<PartialMethod>) {
+  constructor(name: string, returnType: TypeDeclaration = Void, protected expression: Expression, objectIntializer?: Partial<PartialMethod>) {
     super(name, returnType);
     this.apply(objectIntializer);
   }

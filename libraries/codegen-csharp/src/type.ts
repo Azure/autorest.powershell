@@ -6,9 +6,9 @@
 import { EOL, Initializer } from '@microsoft.azure/codegen';
 import { Access } from './access-modifier';
 import { Attribute } from './attribute';
-import { Interface } from './interface';
+
 import { Method } from './method';
-import { Namespace } from './namespace';
+import { TypeContainer, IInterface } from './type-container';
 import { Property } from './property';
 import { TypeDeclaration } from './type-declaration';
 
@@ -18,7 +18,7 @@ export class Type extends Initializer implements TypeDeclaration {
   public properties = new Array<Property>();
   public genericParameters = new Array<string>();
   public where?: string;
-  public interfaces = new Array<Interface>();
+  public interfaces = new Array<IInterface>();
   public accessModifier = Access.Public;
   public attributes = new Array<Attribute>();
   public partial: boolean = false;
@@ -27,7 +27,7 @@ export class Type extends Initializer implements TypeDeclaration {
     return this.attributes.length > 0 ? `${this.attributes.joinWith(each => `${each.value}`, EOL)}${EOL}` : '';
   }
 
-  constructor(public namespace: Namespace, public name: string, objectIntializer?: Partial<Type>) {
+  constructor(public namespace: TypeContainer, public name: string, objectIntializer?: Partial<Type>) {
     super();
     this.apply(objectIntializer);
   }

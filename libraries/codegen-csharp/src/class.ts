@@ -9,7 +9,7 @@ import { xmlize } from './doc-comments';
 import { Expression, toExpression, valueOf } from './expression';
 import { Field } from './field';
 import { Method } from './method';
-import { Namespace } from './namespace';
+import { TypeContainer } from './type-container';
 import { Property } from './property';
 import { Type } from './type';
 
@@ -26,7 +26,7 @@ export class Class extends Type {
 
   protected fields = new Array<Field>();
 
-  constructor(namespace: Namespace, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
+  constructor(namespace: TypeContainer, name: string, public parent?: Class, objectIntializer?: Partial<Class>) {
     super(namespace, name);
     this.apply(objectIntializer);
     namespace.addClass(this);

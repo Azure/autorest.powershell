@@ -13,6 +13,7 @@ import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelInterfaceProperty } from './interface-property';
 import { ModelClass } from './model-class';
+import { TypeContainer } from '@microsoft.azure/codegen-csharp/dist/type-container';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {
@@ -64,7 +65,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   get hasHeaderProperties(): boolean {
     return this.implementation.hasHeaderProperties;
   }
-  constructor(parent: Namespace, schema: Schema, public implementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
+  constructor(parent: TypeContainer, schema: Schema, public implementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.csharp.name}`);
     this.partial = true;
     this.apply(objectInitializer);
