@@ -41,7 +41,7 @@
     "tslint-sonarts": "^1.8.0"
   },
   "dependencies": {
-    "@microsoft.azure/autorest-extension-base": "^1.0.27",
-    "@microsoft.azure/codegen": "^1.0.27"
+    "@microsoft.azure/autorest-extension-base": "^1.0.32",
+    "@microsoft.azure/codegen": "^1.0.30"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/codegen-csharp",
-  "version": "1.0.27",
+  "version": "1.0.31",
   "description": "AutoRest code generator base classes for c#",
   "directories": {
     "doc": "docs"
@@ -41,6 +41,6 @@
     "tslint-sonarts": "^1.8.0"
   },
   "dependencies": {
-    "@microsoft.azure/codegen": "^1.0.27"
+    "@microsoft.azure/codegen": "^1.0.30"
   }
 }
