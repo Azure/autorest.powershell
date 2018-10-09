@@ -9,3 +9,8 @@ tsconfig.json
 *.tgz
 .vscode
 .scripts
+Examples/
+samples/
+*.log
+package-deps.json
+tslint.json

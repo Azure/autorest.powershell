@@ -13,3 +13,7 @@ attic/
 generated/
 notes.md
 Examples/
+samples/
+*.log
+package-deps.json
+tslint.json
