@@ -21,13 +21,11 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 #### Remodeler
 
-``` yaml  $(enable-remodeler)
+``` yaml $(enable-remodeler)
 
 pipeline:
   remodeler:
     input: openapi-document/identity
-#    output-artifact: code-model-v2
-
 
   remodeler/emitter:
     input: remodeler
@@ -40,5 +38,4 @@ scope-remodeler/emitter:
   output-uri-expr: |
     "code-model-v2"
 
-# output-artifact: code-model-v2.yaml
-
+```
