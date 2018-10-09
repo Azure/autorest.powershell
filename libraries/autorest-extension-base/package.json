@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest-extension-base",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "description": "Library for easily creating AutoRest extensions",
   "main": "dist/exports.js",
   "scripts": {

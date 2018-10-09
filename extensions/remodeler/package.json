@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.remodeler",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "AutoRest remodeler",
   "directories": {
     "doc": "docs"
@@ -43,9 +43,9 @@
     "tslint-sonarts": "^1.8.0"
   },
   "dependencies": {
-    "@microsoft.azure/codegen": "^1.0.31",
-    "@microsoft.azure/autorest-extension-base": "^1.0.34",
-    "@microsoft.azure/autorest.codemodel-v3": "^1.0.28",
+    "@microsoft.azure/codegen": "^1.0.35",
+    "@microsoft.azure/autorest-extension-base": "^1.0.38",
+    "@microsoft.azure/autorest.codemodel-v3": "^1.0.32",
     "@microsoft.azure/tasks": "^2.0.12",
     "source-map-support": "0.5.9"
   }
