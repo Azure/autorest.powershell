@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "autorest.incubator",
+  "scripts": {
+    "start": "node ./extensions/incubator/dist/autorest-extension",
+    "install": "node ./common/scripts/install-run-rush.js update"
+  }
+}
