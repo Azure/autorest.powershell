@@ -7,7 +7,6 @@
     "build": "tsc -p .",
     "watch": "tsc -p . --watch",
     "set-version": "node -e \"let pkg = require('./package.json'); require('child_process').exec('git rev-list --parents HEAD --count --full-history .', (o,stdout) => { const v = pkg.version.split('.'); v[v.length-1] = parseInt(stdout.trim()); const orig=JSON.stringify(pkg,null,2);  pkg.version = v.join('.'); const delta = JSON.stringify(pkg,null,2 ); if( orig !== delta) require('fs').writeFileSync('./package.json',delta)})\"",
-    "test": "",
     "run-pwsh": "pwsh -command \"& {param($script) pwsh -command ((convertfrom-json (get-content -raw ./package.json)).'pwsh-scripts'.$script) }\"",
     "_watch": "npm run run-pwsh watch",
     "clean": "npm run run-pwsh clean"
