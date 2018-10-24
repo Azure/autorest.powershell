@@ -26,8 +26,8 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 ``` yaml
 
 use-extension:
-  "@microsoft.azure/autorest.remodeler": "^1.0.0"
-  "@microsoft.azure/autorest.csharp-v2": "^1.0.0"
+  "@microsoft.azure/autorest.remodeler": "^1.0.36"
+  "@microsoft.azure/autorest.csharp-v2": "^1.0.35"
 ```
 
 
