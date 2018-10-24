@@ -70,7 +70,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}, (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
+          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}, (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))}) ) )`;
           return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
         }
         case KnownMediaType.Xml: {

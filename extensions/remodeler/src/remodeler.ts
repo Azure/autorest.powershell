@@ -462,14 +462,16 @@ export class Remodeler {
           }));
         }
 
-        for (const { key: mediaType, value: responseType } of rest) {
-          const schema = responseType.schema;
-          newOperation.responses[responseCode].push(new NewResponse(responseCode, responseObject.description, xmls.map(v => v.key), {
-            extensions: getExtensionProperties(responseObject),
-            headers: this.copyHeaders(name, responseObject.headers),
-            headerSchema: this.createHeaderSchema(name, responseCode, responseObject.headers),
-            schema: schema ? this.refOrAdd(`.${name}.${responseCode}.${mediaType}`, this.dereference(schema), this.model.schemas, this.copySchema) : undefined
-          }));
+        if (rest.length > 0) {
+          for (const { key: mediaType, value: responseType } of rest) {
+            const schema = responseType.schema;
+            newOperation.responses[responseCode].push(new NewResponse(responseCode, responseObject.description, rest.map(v => v.key), {
+              extensions: getExtensionProperties(responseObject),
+              headers: this.copyHeaders(name, responseObject.headers),
+              headerSchema: this.createHeaderSchema(name, responseCode, responseObject.headers),
+              schema: schema ? this.refOrAdd(`.${name}.${responseCode}.${mediaType}`, this.dereference(schema), this.model.schemas, this.copySchema) : undefined
+            }));
+          }
         }
       }
     }
