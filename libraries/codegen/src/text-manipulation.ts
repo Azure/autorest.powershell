@@ -244,7 +244,75 @@ export function nameof(text: string): string {
   return `nameof(${text})`;
 }
 
+
+export function* getRegions(source: string) {
+  source = source.replace(/[\r?\n]/g, '«');
+
+  const rx = new RegExp(`(.*?)«?(\\s*#\\s*region\\s*(.*?))\\s*«(.*?)«(\\s*#\\s*endregion)\\s*?«`, 'g');
+  let match;
+  let finalPosition = 0;
+  while (match = rx.exec(source)) {
+    if (match[1]) {
+      // we have text before this region.
+      yield {
+        name: '',
+        start: '',
+        content: match[1].replace(/«/g, '\n'),
+        end: ''
+      }
+    }
+
+    // this region
+    yield {
+      name: match[3],
+      start: match[2],
+      content: match[4].replace(/«/g, '\n'),
+      end: match[5]
+    }
+    finalPosition = rx.lastIndex;
+  }
+
+  if (finalPosition < source.length) {
+    // we have text after the last region.
+    yield {
+      name: '',
+      start: '',
+      content: source.substring(finalPosition).replace(/«/g, '\n'),
+      end: '',
+    }
+  }
+}
+
 export function setRegion(source: string, region: string, content: TextPossibilities, prepend = true) {
+  const result = new Array<string>();
+  const ct = new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '');
+  let found = false;
+  for (const each of getRegions(source)) {
+    if (each.name === region) {
+      // found the region, replace it.
+      // (this also makes sure that we only have one region by that name when replacing/deleting)
+      if (!found && ct) {
+        // well, only if it has content, otherwise, we're deleting it.
+        result.push(each.start, ct, each.end, '«');
+        found = true;
+      }
+    }
+    else {
+      result.push(each.start, each.content, each.end, '«');
+    }
+  }
+  if (!found) {
+    if (prepend) {
+      result.splice(0, 0, `# region ${region}`, ct, '# endregion«');
+    } else {
+      result.push(`# region ${region}`, ct, '# endregion«');
+    }
+  }
+  return result.join('«').replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '').replace(/«««*/g, '««').replace(/«/g, '\n');
+}
+
+
+export function _setRegion(source: string, region: string, content: TextPossibilities, prepend = true) {
   const ct = new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '');
 
   source = source.replace(/[\r?\n]/g, '«');

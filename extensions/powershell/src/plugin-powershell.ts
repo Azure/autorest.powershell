@@ -5,11 +5,13 @@
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 
-import { Text, deserialize, serialize, applyOverrides, copyResources } from '@microsoft.azure/codegen';
+import { PsdFile } from './file-formats/psd-file'
+import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State } from './state';
+import { PSScriptFile } from './file-formats/psscript-file';
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
 
@@ -75,7 +77,7 @@ async function generateCsproj(service: Host, project: Project) {
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management.Automation.dll" Version="10.0.10586" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-RC1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
@@ -85,39 +87,115 @@ async function generateCsproj(service: Host, project: Project) {
 }
 
 async function generateModule(service: Host, project: Project) {
+  setIndentation(2);
   // write out the psd1 file if it's not there.
 
-  // todo: change this to *update* the psd1?
+  const psd1 = new PsdFile(await service.ReadFile(project.psd1));
 
-  service.WriteFile(project.psd1, new Text(function* () {
-    yield `@{`;
-    yield `ModuleVersion="1.0"`;
-    yield `NestedModules = @(`;
-    yield `  "./bin/${project.moduleName}.private.dll"`;
-    yield `  "${project.psm1}"`;
-    yield `)`;
-    yield `# don't export any actual cmdlets by default`;
-    yield `CmdletsToExport = ''`;
+  // don't overwrite this section if it exists.
+  if (!psd1.has('identity')) {
+    psd1.append('identity', function* () {
+      yield indent(`ModuleVersion="1.0"`);
+      yield indent(`Description=""`);
+      yield indent(`PowerShellVersion="3.0"`);
+      if (project.azure) {
+        yield indent(`Author="Microsoft Corporation"`);
+        yield indent(`CompanyName="Microsoft Corporation"`);
+        yield indent(`Copyright="Microsoft Corporation. All rights reserved."`);
+      }
+    });
+  }
 
-    yield `# export the functions that we loaded(these are the proxy cmdlets)`;
-    yield `FunctionsToExport = '*-*'`;
-    yield `}`;
-  }).text, undefined, 'source-file-powershell');
+  if (!psd1.has('private data')) {
+    psd1.append('private data', function* () {
+      yield ``;
+      yield indent(`PrivateData = @{`);
+      yield indent(`# Package Metadata for PowerShellGet`, 2)
+      yield indent(`PSData = @{`, 2);
+
+      if (project.azure) {
+        yield indent(`# Tags applied to this module.These help with module discovery in online galleries.`, 3);
+        yield indent(`Tags = 'Azure', 'ServiceManagement'`, 3)
+        yield ``;
+        yield indent(`# A URL to the license for this module.`, 3)
+        yield indent(`LicenseUri = 'https://aka.ms/azps-license'`, 3)
+        yield ``;
+        yield indent(`# A URL to the main website for this project.`, 3)
+        yield indent(`ProjectUri = 'https://github.com/Azure/azure-powershell'`, 3)
+        yield ``;
+        yield indent(`# A URL to an icon representing this module.`, 3)
+        yield indent(`# IconUri = ''`, 3)
+        yield ``;
+        yield indent(`# ReleaseNotes of this module`, 3)
+        yield indent(`ReleaseNotes = ''`, 3)
+        yield ``;
+        yield indent(`# External dependent modules of this module`, 3)
+        yield indent(`# ExternalModuleDependencies = ''`, 3)
+        yield ``;
+      } else {
+        // non-azure cmdlets
+        yield indent(`# Tags applied to this module.These help with module discovery in online galleries.`, 3);
+        yield indent(`Tags = ''`, 3)
+        yield ``;
+        yield indent(`# A URL to the license for this module.`, 3)
+        yield indent(`LicenseUri = ''`, 3)
+        yield ``;
+        yield indent(`# A URL to the main website for this project.`, 3)
+        yield indent(`ProjectUri = ''`, 3)
+        yield ``;
+        yield indent(`# A URL to an icon representing this module.`, 3)
+        yield indent(`# IconUri = ''`, 3)
+        yield ``;
+        yield indent(`# ReleaseNotes of this module`, 3)
+        yield indent(`ReleaseNotes = ''`, 3)
+        yield ``;
+        yield indent(`# External dependent modules of this module`, 3)
+        yield indent(`# ExternalModuleDependencies = ''`, 3)
+      }
+      yield indent(`} # End of PSData hashtable`, 2)
+
+      yield indent(`} # End of PrivateData hashtable`)
+      yield ``;
+    });
+  }
+
+  // don't overwrite this section if it exists.
+  if (!psd1.has('exports')) {
+    psd1.append('exports', function* () {
+      yield indent(`# don't export any actual cmdlets by default`);
+      yield indent(`CmdletsToExport = ''`);
+      yield ``;
+      yield indent(`# export the functions that we loaded(these are the proxy cmdlets)`);
+      yield indent(`FunctionsToExport = '*-*'`);
+    });
+  }
+
+  // always overwrite this section
+  psd1.append('modules', function* () {
+    yield ``
+    yield indent(`# Warning: This region is code-generated and will get replaced upon regeneration.`);
+    yield ``
+    yield indent(`NestedModules = @(`);
+    yield indent(`"./bin/${project.moduleName}.private.dll"`, 2);
+    yield indent(`"${project.psm1}"`, 2);
+    yield indent(`)`);
+    yield ``;
+    if (project.azure) {
+      yield indent(`RequiredModules = @(`);
+      // add in reference to the profile module here.
+      yield indent(`# @({ModuleName="Az.Profile", ModuleVersion="2.0",Guid="00000000-0000-0000-0000-000000000000"})`, 2);
+      yield indent(`)`);
+    }
+  })
+
+  service.WriteFile(project.psd1, psd1.text, undefined, 'source-file-powershell');
 
   // write out the psm1 file if it's not there.
 
-  const psm1 = new Text(await service.ReadFile(project.psm1) || '');
-
-  // clear regions first
-  psm1.removeRegion('Initialization');
-  psm1.removeRegion('AzureInitialization');
-  psm1.removeRegion('Finalization');
+  const psm1 = new PSScriptFile(await service.ReadFile(project.psm1) || '');
 
   if (project.azure) {
-    psm1.setRegion('AzureInitialization', `
-    # GS Testing
-    # $module = ipmo -passthru -ea 0 "C:\\work\\2018\\mark-powershell\\src\\Package\\Debug\\ResourceManager\\AzureResourceManager\\AzureRM.Profile.Netcore\\AzureRM.Profile.Netcore.psd1"
-
+    psm1.prepend('AzureInitialization', `
     # from PSModulePath
     # (this must be the modified version of AzureRM.Profile.Netcore)
     $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
@@ -141,7 +219,7 @@ async function generateModule(service: Host, project: Project) {
 `);
   }
 
-  psm1.setRegion('Initialization', `
+  psm1.prepend('Initialization', `
     # this module instance.
     $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
@@ -159,10 +237,10 @@ async function generateModule(service: Host, project: Project) {
         Export-ModuleMember -Function $_.BaseName
     }`);
 
-  psm1.setRegion('Finalization', `
+  psm1.append('Finalization', `
     # finish initialization of this module
     $instance.Init();
-  `, false);
+  `);
 
   psm1.trim();
 

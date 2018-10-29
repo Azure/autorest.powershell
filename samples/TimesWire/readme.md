@@ -24,28 +24,36 @@ These are the global settings for the  API.
 
 
 
-``` yaml 
+``` yaml
 
 input-file: timeswire.yaml
 namespace: Times.Wire.Search
 
-powershell: 
+powershell:
   clear-output-folder: true
   output-folder: generated
+
+  operations:
+    Articles_ListBySourceAndRange:
+      verb: Get
+      noun: MyArticle
+      description: Gets an article for me.
+      parameters:
+        TimePeriod:
+          type: integer
+          description: The *time* period. Get it ? "TIME"
+        Source: null # delete this parameter entirely.
+
+
+
 
 ```
 
 
-``` yaml !$(local)
+``` yaml
 
-use: 
+use:
 - "@microsoft.azure/autorest.incubator@preview"
 
 ```
 
-``` yaml $(local)
-use: 
-  - C:/work/2018/autorest.incubator/extensions/csharp-v2 
-  - C:/work/2018/autorest.incubator/extensions/powershell 
-  - C:/work/2018/autorest.incubator/extensions/remodeler 
-```

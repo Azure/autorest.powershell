@@ -3,6 +3,7 @@
   "name": "autorest.incubator",
   "scripts": {
     "start": "node ./extensions/incubator/dist/autorest-extension",
-    "install": "node ./common/scripts/install-run-rush.js update"
+    "install": "node ./common/scripts/install-run-rush.js update",
+    "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
   }
 }

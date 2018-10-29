@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Initializer } from './initializer';
-import { EOL, setRegion } from './text-manipulation';
+import { EOL, setRegion, getRegions } from './text-manipulation';
 
 export type fIterable<T> = Iterable<T> | (() => Iterable<T>);
 
@@ -89,6 +89,17 @@ export class Text extends Initializer implements IText {
     return this.text;
   }
 
+  trim() {
+    this.add({ edit: (s: string) => s.trim() });
+  }
+}
+
+export class TextWithRegions extends Text {
+  constructor(content?: TextPossibilities, objectIntializer?: Partial<TextWithRegions>) {
+    super(content);
+    this.apply(objectIntializer);
+  }
+
   removeRegion(region: string) {
     this.add({ edit: (s: string) => setRegion(s, region, '') });
   }
@@ -97,7 +108,26 @@ export class Text extends Initializer implements IText {
     this.add({ edit: (s: string) => setRegion(s, region, content, prepend) });
   }
 
-  trim() {
-    this.add({ edit: (s: string) => s.trim() });
+  has(name: string) {
+    for (const each of getRegions(this.text)) {
+      if (each.name === name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  append(name: string, content: TextPossibilities) {
+    this.add({ edit: (s: string) => setRegion(s, name, content, false) });
+  }
+  prepend(name: string, content: TextPossibilities) {
+    this.add({ edit: (s: string) => setRegion(s, name, content, true) });
+  }
+
+  get regions() {
+    if (!this.text.trim()) {
+      return [];
+    }
+    return [...getRegions(this.text)];
   }
 }
