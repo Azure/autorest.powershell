@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.remodeler",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "AutoRest remodeler",
   "directories": {
     "doc": "docs"
@@ -30,23 +30,23 @@
   },
   "homepage": "https://github.com/Azure/autorest.incubator#readme",
   "devDependencies": {
-    "@types/js-yaml": "3.10.1",
-    "@types/mocha": "latest",
+    "@types/js-yaml": "3.11.2",
+    "@types/mocha": "5.2.5",
     "@types/node": "^10.11.4",
-    "mocha": "latest",
-    "mocha-typescript": "latest",
+    "mocha": "5.2.0",
+    "mocha-typescript": "1.1.17",
     "semver": "^5.5.1",
     "tslint": "^5.11.0",
     "tslint-language-service-ts3": "1.0.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "^3.1.1",
+    "typescript": "^3.1.3",
     "tslint-sonarts": "^1.8.0"
   },
   "dependencies": {
-    "@microsoft.azure/codegen": "^1.0.36",
-    "@microsoft.azure/autorest-extension-base": "^1.0.39",
-    "@microsoft.azure/autorest.codemodel-v3": "^1.0.33",
-    "@microsoft.azure/tasks": "^2.0.12",
+    "@microsoft.azure/codegen": "^1.0.29",
+    "@microsoft.azure/autorest-extension-base": "^1.0.29",
+    "@microsoft.azure/autorest.codemodel-v3": "^1.0.29",
+    "@microsoft.azure/tasks": "^2.1.39",
     "source-map-support": "0.5.9"
   }
 }
