@@ -39,11 +39,11 @@ pipeline:
     scope: scope-remodeler/emitter
 
 scope-remodeler/emitter:
-  input-artifact: code-model-v2
+  input-artifact: code-model-v3
   is-object: true
 
   output-uri-expr: |
-    "code-model-v2"
+    "code-model-v3"
 
 ```
 
@@ -77,7 +77,7 @@ pipeline:
 
   # creates high-level commands
   create-commands:
-    input: csnamer # brings the code-model-v2 with it.
+    input: csnamer # brings the code-model-v3 with it.
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:
@@ -106,14 +106,14 @@ pipeline:
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
-  input-artifact: code-model-v2
+  input-artifact: code-model-v3
   is-object: true
   output-uri-expr: |
-    "code-model-v2"
+    "code-model-v3"
 
 # testing:  ask for the files we need
 output-artifact:
-  - code-model-v2.yaml # this is filtered outby default. (remove before production)
+  - code-model-v3.yaml # this is filtered outby default. (remove before production)
   - source-file-csharp
   - source-file-csproj
   - source-file-powershell
@@ -159,14 +159,14 @@ pipeline:
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
-  input-artifact: code-model-v2
+  input-artifact: code-model-v3
   is-object: true
   output-uri-expr: |
-    "code-model-v2"
+    "code-model-v3"
 
 # testing:  ask for the files we need
 output-artifact:
-  # - code-model-v2.yaml # this is filtered outby default. (remove before production)
+  # - code-model-v3.yaml # this is filtered outby default. (remove before production)
   - source-file-csharp
   - source-file-csproj
   # - source-file-other

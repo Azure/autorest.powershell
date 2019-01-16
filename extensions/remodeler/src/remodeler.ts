@@ -14,7 +14,7 @@ import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
 import { StringFormat } from '@microsoft.azure/autorest.codemodel-v3';
 import { dereference, Dereferenced, getExtensionProperties, Refable } from './common';
 import * as Interpretations from './interpretations';
-import * as OpenAPI from './oai3';
+import * as OpenAPI from '@microsoft.azure/openapi';
 
 const TODO_UNIMPLEMENTED = undefined;
 

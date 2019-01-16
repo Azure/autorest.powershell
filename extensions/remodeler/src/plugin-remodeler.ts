@@ -6,7 +6,7 @@
 import { ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { deserialize, serialize } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
-import * as OpenAPI from './oai3';
+import * as OpenAPI from '@microsoft.azure/openapi';
 import { Remodeler } from './remodeler';
 
 export async function processRequest(service: Host) {
@@ -31,7 +31,7 @@ export async function processRequest(service: Host) {
     const codeModel = remodeler.remodel();
 
     // output the model
-    service.WriteFile('code-model-v2.yaml', serialize(codeModel), undefined, 'code-model-v2');
+    service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
     service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
 
   } catch (E) {

@@ -6,7 +6,7 @@
 import { EnumDetails, ModelState, components } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { clone, getExtensionProperties } from './common';
-import * as OpenAPI from './oai3';
+import * as OpenAPI from '@microsoft.azure/openapi';
 
 interface XMSEnum {
   modelAsString?: boolean;

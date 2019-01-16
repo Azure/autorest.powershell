@@ -32,10 +32,10 @@ pipeline:
     scope: scope-remodeler/emitter
 
 scope-remodeler/emitter:
-  input-artifact: code-model-v2
+  input-artifact: code-model-v3
   is-object: true
 
   output-uri-expr: |
-    "code-model-v2"
+    "code-model-v3"
 
 ```

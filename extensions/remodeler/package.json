@@ -47,6 +47,9 @@
     "@microsoft.azure/autorest-extension-base": "^1.0.29",
     "@microsoft.azure/autorest.codemodel-v3": "^1.0.29",
     "@microsoft.azure/tasks": "^2.1.39",
+    "@microsoft.azure/openapi": "^2.1.35",
+    "@microsoft.azure/datastore": "^2.1.61",
+    "@microsoft.azure/linq": "^2.1.37",
     "source-map-support": "0.5.9"
   }
 }

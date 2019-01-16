@@ -18,7 +18,7 @@ const resources = `${__dirname}/../resources`;
 export async function powershell(service: Host) {
   try {
     // Get the list of files
-    const files = await service.ListInputs('code-model-v2');
+    const files = await service.ListInputs('code-model-v3');
     if (files.length === 0) {
       throw new Error('Inputs missing.');
     }
@@ -46,7 +46,7 @@ export async function powershell(service: Host) {
     await generateModule(service, project);
 
     // debug data
-    service.WriteFile('code-model-v2.powershell.yaml', serialize(model), undefined, 'source-file-other');
+    service.WriteFile('code-model-v3.powershell.yaml', serialize(model), undefined, 'source-file-other');
   } catch (E) {
     console.error(E);
     console.error((<Error>E).stack);
