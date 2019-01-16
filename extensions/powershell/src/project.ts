@@ -50,12 +50,18 @@ export class ModelExtensionsNamespace extends Namespace {
       if (!schema || schema.details.csharp.skip) {
         continue;
       }
+
       const td = this.resolver.resolveTypeDeclaration(schema, true, state);
       if (td instanceof ObjectImplementation) {
+
         // it's a class object.
         const className = td.schema.details.csharp.name;
         const interfaceName = td.schema.details.csharp.interfaceName || '';
         const converterClass = `${className}TypeConverter`;
+
+        if (this.findClassByName(className).length > 0) {
+          continue;
+        }
 
         // create the model extensions for each object model
         // 2. A partial interface with the type converter attribute

@@ -71,6 +71,10 @@ export class Remodeler {
   }
 
   copySchema = (name: string, original: OpenAPI.Schema, targetDictionary: Dictionary<Schema>): Schema => {
+    // Nelson; hack -- this gets the name back from xmsmetadata
+    if (original['x-ms-metadata'] && original['x-ms-metadata'].name) {
+      name = original['x-ms-metadata'].name;
+    }
     // normalize/warn about incorrect usage of binary/stream combinations
     // OAI (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#data-types)
     // indicates that format: string, type: binary is "any sequence of octets" (ie, the body should be treated as a stream of bytes)
@@ -594,7 +598,11 @@ export class Remodeler {
         for (const method of [HttpMethod.Delete, HttpMethod.Get, HttpMethod.Head, HttpMethod.Options, HttpMethod.Patch, HttpMethod.Post, HttpMethod.Put, HttpMethod.Trace]) {
           const op = <OpenAPI.HttpOperation>pathItem.instance[method];
           if (op) {
-            this.add(Interpretations.getOperationId(method, path, op, this.oai.info.title, this.modelState), { instance: { method, path, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
+            // Nelson; hack -- this gets the path back from xmsmetadata
+            const actualPath: string = pathItem.instance['x-ms-metadata'] && pathItem.instance['x-ms-metadata'].path ? pathItem.instance['x-ms-metadata'].path : path;
+            console.error(`Actual Path : ${actualPath}`);
+
+            this.add(Interpretations.getOperationId(method, actualPath, op, this.oai.info.title, this.modelState), { instance: { method, path: actualPath, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }
         }
       }

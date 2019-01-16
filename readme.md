@@ -1,4 +1,4 @@
-# AutoRest Incubator.
+/multi-api# AutoRest Incubator.
 
 # Contributing
 
@@ -61,7 +61,7 @@ pipeline:
 
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/identity   # the plugin where we get inputs from
+    input: openapi-document/multi-api/identity   # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
