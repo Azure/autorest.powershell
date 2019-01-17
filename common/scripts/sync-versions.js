@@ -45,15 +45,6 @@ function setPeerDependencies(dependencies) {
   }
 }
 
-// verify that peer dependencies are the same version as they are building.
-for( const pj of Object.getOwnPropertyNames(pjs) ){
-  const each = pjs[pj];
-  setPeerDependencies(each.dependencies );
-  setPeerDependencies(each.devDependencies );
-  if( each['static-link']) {
-    setPeerDependencies(each['static-link'].devDependencies );
-  }
-}
 
 function recordDeps(dependencies) {
   for( const packageName in dependencies ) {
@@ -111,11 +102,23 @@ for( const pj of Object.getOwnPropertyNames(pjs) ){
   }
 }
 
+
+// verify that peer dependencies are the same version as they are building.
+for( const pj of Object.getOwnPropertyNames(pjs) ){
+  const each = pjs[pj];
+  setPeerDependencies(each.dependencies );
+  setPeerDependencies(each.devDependencies );
+  if( each['static-link']) {
+    setPeerDependencies(each['static-link'].dependencies );
+  }
+}
+
 // write out the results.
 for( const each of rush.projects ) {
   const packageName = each.packageName;
   const projectFolder = each.projectFolder;
   fs.writeFileSync(`${__dirname}/../../${projectFolder}/package.json`, JSON.stringify(pjs[packageName], null, 2 ));
 }
+
 
 console.log("project.json files updated");

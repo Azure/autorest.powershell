@@ -43,7 +43,7 @@
     "tslint-sonarts": "^1.8.0"
   },
   "dependencies": {
-    "@microsoft.azure/codegen": "^1.0.29",
+    "@microsoft.azure/codegen": "^1.0.36",
     "@microsoft.azure/autorest-extension-base": "^1.0.29",
     "@microsoft.azure/autorest.codemodel-v3": "^1.0.29",
     "@microsoft.azure/tasks": "^2.1.39",
