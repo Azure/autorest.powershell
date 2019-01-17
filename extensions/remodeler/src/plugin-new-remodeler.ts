@@ -11,8 +11,6 @@ import { Transformer, visit, Node } from "@microsoft.azure/datastore";
 import { clone } from '@microsoft.azure/linq';
 
 class Remodeler extends Transformer<OpenAPI.Model, codemodel.Model> {
-  protected currentInputFilename: string;
-
   protected async runProcess(): Promise<void> {
     if (!this.final) {
       await this.init();
@@ -22,16 +20,19 @@ class Remodeler extends Transformer<OpenAPI.Model, codemodel.Model> {
     this.final = clone(this.generated);  // should we be freezing this?
   }
 
-  constructor(inputFilename: string, inputModel: OpenAPI.Model) {
-    super();
-    this.currentInputFilename = inputFilename;
-    this.current = inputModel;
-  }
-
   async process(target: codemodel.Model, nodes: Iterable<Node>) {
 
   }
 
+}
+
+export class Source {
+  constructor(public key: string, private content: string) {
+
+  }
+  ReadObject<T>() {
+    return deserialize<T>(this.key, this.content);
+  }
 }
 
 export async function processRequest(service: Host) {
@@ -45,8 +46,10 @@ export async function processRequest(service: Host) {
     }
     const original = await service.ReadFile(files[0]);
 
+    const source = new Source(files[0], original);
+
     // deserialize
-    const remodeler = new Remodeler(files[0], await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]));
+    const remodeler = new Remodeler(source);
 
     // output the model
     service.WriteFile('code-model-v3.yaml', serialize(await remodeler.getOutput()), undefined /* await remodeler.getSourceMappings() */, 'code-model-v3');

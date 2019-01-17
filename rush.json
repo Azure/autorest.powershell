@@ -184,6 +184,7 @@
       "reviewCategory": "production",
       "shouldPublish": true
     },
+    /* --- project packages --- */ 
     {
       "packageName": "@microsoft.azure/autorest.csharp-v2",
       "projectFolder": "extensions/csharp-v2",
