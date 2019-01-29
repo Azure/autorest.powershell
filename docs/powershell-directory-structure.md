@@ -71,7 +71,7 @@ Used to package the module.
 
 Used to re-run AutoRest using the configuration provided inside 'readme.<span></span>md' file.
 
-###/ generated 
+### /generated 
 
 Contains the generated low-level c# files and script cmdlets. 
 
