@@ -1,28 +1,29 @@
 # PowerShell Directory Structure
 
-During the first run of AutoRest to generate PowerShell code, a set of files are generated, and they are placed within the directory structure below:
+During the first run of AutoRest to generate PowerShell code, a set of files are generated, and they are placed within the directory structure below. Note: directories are noted by a '/' preceding the name.
 
-- [.gitignore](#.gitignore ) 
-- [readme.md](#readme.md)
-- [license.txt](#license.txt)
-- [\<manifest\>.psd1](#\<manifest\>.psd1)
-- [\<module\>.psm1](#\<module\>.psm1)
-- [build-module.ps1](#build-module.ps1)
-- [test-module.ps1](#test-module.ps1)
-- [pack-module.ps1](#pack-module.ps1)
-- [regen-module.ps1](#regen-module.ps1)
-- [format.ps1xml](#format.ps1xml)
-- [types.ps1xml](#types.ps1xml)
-- [all-help.ps1xml](#all-help.ps1xml)
-- [/generated](#/generated)
-- [/examples](#/examples) 
-- [/test](#/test)
-- [/custom](#/custom)
-- [/docs](#/docs)
-- [/node-modules](#/node-modules) 
-- [/bin](#/bin)
-- [/obj](#/obj)
-- [/exports](#/exports)
+
+- [.gitignore](#gitignore ) 
+- [readme.md](#readmemd)
+- [license.txt](#licensetxt)
+- [\<manifest\>.psd1](#manifestpsd1)
+- [\<module\>.psm1](#modulepsm1)
+- [build-module.ps1](#build-moduleps1)
+- [test-module.ps1](#test-moduleps1)
+- [pack-module.ps1](#pack-moduleps1)
+- [regen-module.ps1](#regen-moduleps1)
+- [format.ps1xml](#formatps1xml)
+- [types.ps1xml](#typesps1xml)
+- [all-help.ps1xml](#all-helpps1xml)
+- [/generated](#generated)
+- [/examples](#examples) 
+- [/test](#test)
+- [/custom](#custom)
+- [/docs](#docs)
+- [/node-modules](#node-modules) 
+- [/bin](#bin)
+- [/obj](#obj)
+- [/exports](#exports)
 
 
 During subsequent runs of AutoRest, the only directory that will be overwritten is the **/generated** directory; other directories will only have incremental changes (i.e. files deleted being generated again).
