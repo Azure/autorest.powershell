@@ -11,24 +11,13 @@ import { Transformer, visit, Node } from "@microsoft.azure/datastore";
 import { clone } from '@microsoft.azure/linq';
 
 class Remodeler extends Transformer<OpenAPI.Model, codemodel.Model> {
-  protected async runProcess(): Promise<void> {
-    if (!this.final) {
-      await this.init();
-      await this.process(this.generated, visit(this.current));
-      await this.finish();
-    }
-    this.final = clone(this.generated);  // should we be freezing this?
-  }
-
   async process(target: codemodel.Model, nodes: Iterable<Node>) {
 
   }
-
 }
 
 export class Source {
   constructor(public key: string, private content: string) {
-
   }
   ReadObject<T>() {
     return deserialize<T>(this.key, this.content);

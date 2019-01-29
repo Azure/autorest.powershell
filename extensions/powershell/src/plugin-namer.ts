@@ -16,6 +16,9 @@ export async function namer(service: Host) {
 
 async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
 
+  // rewrite things so the names are what we want.
+
+
   /* I'm not so sure we should be doing this here.
 
   // make sure descriptions are properly escaped.

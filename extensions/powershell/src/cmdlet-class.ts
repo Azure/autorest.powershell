@@ -274,7 +274,7 @@ export class CmdletClass extends Class {
               if (codeProp && messageProp) {
                 yield `var code = (await response).${codeProp.details.csharp.name};`;
                 yield `var message = (await response).${messageProp.details.csharp.name};`;
-                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.join(',')}}));`;
+                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
                 return;
               } else {
                 // yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
