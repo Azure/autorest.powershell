@@ -32,7 +32,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 pipeline:
   remodeler:
-    input: openapi-document/identity
+    input: openapi-document/multi-api/identity  
 
   remodeler/emitter:
     input: remodeler
@@ -133,7 +133,7 @@ api-folder: ""
 pipeline:
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/identity   # the plugin where we get inputs from
+    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:

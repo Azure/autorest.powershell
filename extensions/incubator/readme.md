@@ -20,12 +20,14 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 
 #### Remodeler
+enable-multi-api: true
+load-priority: 1000
 
 ``` yaml $(enable-remodeler)
 
 pipeline:
   remodeler:
-    input: openapi-document/identity
+    input: openapi-document/multi-api/identity  
 
   remodeler/emitter:
     input: remodeler
@@ -42,6 +44,9 @@ scope-remodeler/emitter:
 
 
 ``` yaml $(powershell)
+enable-multi-api: true
+load-priority: 1000
+
 api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
@@ -54,7 +59,7 @@ pipeline:
 
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/identity   # the plugin where we get inputs from
+    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
@@ -116,13 +121,16 @@ output-artifact:
 
 
 ``` yaml $(llcsharp)
+enable-multi-api: true
+load-priority: 1000
+
 enable-remodeler: true
 api-folder: ""
 
 pipeline:
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/identity   # the plugin where we get inputs from
+    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:

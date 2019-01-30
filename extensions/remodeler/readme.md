@@ -22,10 +22,13 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 #### Remodeler
 
 ``` yaml $(enable-remodeler)
+enable-multi-api: true
+load-priority: 1000
+
 
 pipeline:
   remodeler:
-    input: openapi-document/identity
+    input: openapi-document/multi-api/identity  
 
   remodeler/emitter:
     input: remodeler

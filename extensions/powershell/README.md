@@ -33,6 +33,9 @@ use-extension:
 
 ``` yaml $(powershell)
 enable-multi-api: true
+load-priority: 1000
+
+enable-multi-api: true
 api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
@@ -45,7 +48,7 @@ pipeline:
 
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/identity   # the plugin where we get inputs from
+    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
