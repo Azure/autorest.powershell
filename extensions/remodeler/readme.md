@@ -21,8 +21,9 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 #### Remodeler
 
-``` yaml $(enable-remodeler)
+``` yaml 
 enable-multi-api: true
+load-priority: 1001
 
 
 pipeline:
