@@ -183,7 +183,7 @@ async function generateModule(service: Host, project: Project) {
     if (project.azure) {
       yield indent(`RequiredModules = @(`);
       // add in reference to the profile module here.
-      yield indent(`# @({ModuleName="Az.Profile", ModuleVersion="2.0",Guid="00000000-0000-0000-0000-000000000000"})`, 2);
+      yield indent(`# @({ModuleName="Az.Accounts", ModuleVersion="2.0",Guid="00000000-0000-0000-0000-000000000000"})`, 2);
       yield indent(`)`);
     }
   })
@@ -197,8 +197,17 @@ async function generateModule(service: Host, project: Project) {
   if (project.azure) {
     psm1.prepend('AzureInitialization', `
     # from PSModulePath
-    # (this must be the modified version of AzureRM.Profile.Netcore)
-    $module = ipmo -passthru -ea 0 "AzureRM.Profile.Netcore"
+    # (this must be the modified version of Az.Accounts)
+
+    $module = Get-Module Az.Accounts 
+    if ($module -ne $null -and $module.Version.ToString().CompareTo("0.4.0") -lt 0) 
+    { 
+        Write-Error "This module requires Az.Accounts version 0.4.0. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information." -ErrorAction Stop 
+    } 
+    elseif ($module -eq $null) 
+    { 
+        $module = Import-Module Az.Accounts -MinimumVersion 0.4.0 -Scope Global -passthru
+    }
 
     Write-Host "Loaded Common Module '$($module.Name)'"
 
