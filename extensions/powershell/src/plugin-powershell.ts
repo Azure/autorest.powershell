@@ -212,7 +212,7 @@ async function generateModule(service: Host, project: Project) {
     Write-Host "Loaded Common Module '$($module.Name)'"
 
     # ask for the table of functions we can call in the common module.
-    $VTable = Register-AzureModule
+    $VTable = Register-AzModule
 
     # delegate responsibility to the common module for tweaking the pipeline at module load
     $instance.OnModuleLoad = $VTable.OnModuleLoad
