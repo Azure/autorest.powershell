@@ -48,7 +48,11 @@ scope-remodeler/emitter:
 ```
 
 
-``` yaml $(powershell)
+``` yaml 
+powershellincubator: true
+enable-multi-api: true
+load-priority: 1000
+
 api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
