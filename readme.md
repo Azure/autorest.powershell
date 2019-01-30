@@ -51,7 +51,6 @@ scope-remodeler/emitter:
 ``` yaml 
 powershellincubator: true
 enable-multi-api: true
-load-priority: 1000
 
 api-folder: private/api
 api-extensions-folder: private/api-extensions

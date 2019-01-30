@@ -20,8 +20,6 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 
 #### Remodeler
-enable-multi-api: true
-load-priority: 1000
 
 ``` yaml $(enable-remodeler)
 
@@ -45,7 +43,6 @@ scope-remodeler/emitter:
 
 ``` yaml $(powershell)
 enable-multi-api: true
-load-priority: 1000
 
 api-folder: private/api
 api-extensions-folder: private/api-extensions
@@ -122,7 +119,6 @@ output-artifact:
 
 ``` yaml $(llcsharp)
 enable-multi-api: true
-load-priority: 1000
 
 enable-remodeler: true
 api-folder: ""

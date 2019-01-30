@@ -33,9 +33,7 @@ use-extension:
 
 ``` yaml $(powershell)
 enable-multi-api: true
-load-priority: 1000
 
-enable-multi-api: true
 api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
