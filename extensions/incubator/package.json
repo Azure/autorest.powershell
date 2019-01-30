@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.incubator",
-  "version": "1.0.33",
+  "version": "1.0.0",
   "description": "AutoRest Incubator Testing Module",
   "directories": {
     "doc": "docs"

@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.csharp-v2",
-  "version": "1.0.36",
+  "version": "1.0.0",
   "description": "AutoRest V2 Code Generator",
   "directories": {
     "doc": "docs"
