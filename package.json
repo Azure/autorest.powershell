@@ -6,5 +6,8 @@
     "debug": "node --inspect-brk ./extensions/incubator/dist/autorest-extension",
     "install": "node ./common/scripts/install-run-rush.js update",
     "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
+  },
+  "devDependencies": {
+    "pwsh": "0.2.0"
   }
 }
