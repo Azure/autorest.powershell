@@ -6,6 +6,7 @@
 import { AutoRestExtension, } from '@microsoft.azure/autorest-extension-base';
 import { processRequest as remodelerProcessRequest } from './plugin-remodeler';
 import { tweakModelPlugin } from './plugin-tweak-model'
+import { addApiVersionConstant } from './plugin-add-apiversion-constant'
 import { tweakModelAzurePlugin } from './plugin-tweak-model-azure'
 
 require('source-map-support').install();
@@ -15,6 +16,7 @@ async function main() {
 
   // add remodeler plugin
   pluginHost.Add('remodeler', remodelerProcessRequest);
+  pluginHost.Add('add-apiversion-constant', addApiVersionConstant);
   pluginHost.Add('tweakcodemodel', tweakModelPlugin);
   pluginHost.Add('tweakcodemodelazure', tweakModelAzurePlugin);
 

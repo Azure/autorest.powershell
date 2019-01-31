@@ -28,6 +28,12 @@ and used instead -- even in beta-testing.
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
+``` yaml 
+enable-multi-api: true
+load-priority: 1001
+
+```
+
 ``` yaml $(enable-remodeler)
 
 pipeline:
@@ -74,9 +80,12 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
+  add-apiversion-constant:
+    input: tweakcodemodelazure
+
   # Choose names for everything in c#
   csnamer:
-    input: tweakcodemodelazure
+    input: add-apiversion-constant
 
   # creates high-level commands
   create-commands:
@@ -93,11 +102,6 @@ pipeline:
   # generates c# files for http-operations
   llcsharp:
     input: csnamer
-
-  # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
-  cmv2/emitter:
-    input: tweakcodemodelazure
-    scope: code-model-emitter-settings
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
@@ -142,17 +146,17 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
+  add-apiversion-constant:
+    input: tweakcodemodelazure
+
   # Choose names for everything in c#
   csnamer:
-    input: tweakcodemodelazure
+    input: add-apiversion-constant
 
   # generates c# files for http-operations
   llcsharp:
     input: csnamer
-  # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
-  cmv2/emitter:
-    input: tweakcodemodelazure
-    scope: code-model-emitter-settings
+
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:

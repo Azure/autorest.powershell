@@ -16,6 +16,9 @@ import { processRequest as remodelerProcessRequest } from '@microsoft.azure/auto
 import { tweakModelPlugin } from '@microsoft.azure/autorest.remodeler/dist/plugin-tweak-model'
 import { tweakModelAzurePlugin } from '@microsoft.azure/autorest.remodeler/dist/plugin-tweak-model-azure'
 
+import { addApiVersionConstant } from '@microsoft.azure/autorest.remodeler/dist/plugin-add-apiversion-constant'
+
+
 require('source-map-support').install();
 
 async function main() {
@@ -25,6 +28,8 @@ async function main() {
   pluginHost.Add('remodeler', remodelerProcessRequest);
   pluginHost.Add('tweakcodemodel', tweakModelPlugin);
   pluginHost.Add('tweakcodemodelazure', tweakModelAzurePlugin);
+
+  pluginHost.Add('add-apiversion-constant', addApiVersionConstant);
 
   pluginHost.Add('csnamer', csnamer);
   pluginHost.Add('llcsharp', llcsharp);
