@@ -13,7 +13,7 @@ function getPluralizationService(): EnglishPluralizationService {
   return result;
 }
 
-function singularize(word: string): string {
+export function singularize(word: string): string {
   return getPluralizationService().singularize(word);
 }
 
