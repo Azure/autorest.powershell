@@ -32,7 +32,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 pipeline:
   remodeler:
-    input: openapi-document/multi-api/identity  
+    input: openapi-document/identity
 
   remodeler/emitter:
     input: remodeler
@@ -48,10 +48,7 @@ scope-remodeler/emitter:
 ```
 
 
-``` yaml 
-powershellincubator: true
-enable-multi-api: true
-
+``` yaml $(powershell)
 api-folder: private/api
 api-extensions-folder: private/api-extensions
 runtime-folder: private/runtime
@@ -76,15 +73,15 @@ pipeline:
 
   # Choose names for everything in c#
   csnamer:
-    input: tweakcodemodelazure
-
-  # creates high-level commands
-  create-commands:
-    input: csnamer # brings the code-model-v3 with it.
+    input: create-commands
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:
-    input: create-commands # and the generated c# files
+    input: csnamer # and the generated c# files
+
+ # creates high-level commands
+  create-commands:
+    input: tweakcodemodelazure # brings the code-model-v3 with it.
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
@@ -92,7 +89,7 @@ pipeline:
 
   # generates c# files for http-operations
   llcsharp:
-    input: csnamer
+    input: psnamer
 
   # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
   cmv2/emitter:
@@ -104,7 +101,7 @@ pipeline:
     input:
      - llcsharp
      - powershell
-     - create-commands
+     - psnamer
 
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
@@ -132,7 +129,7 @@ api-folder: ""
 pipeline:
   # "Shake the tree", and normalize the model
   remodeler:
-    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
+    input: openapi-document/identity   # the plugin where we get inputs from
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
@@ -148,7 +145,8 @@ pipeline:
 
   # generates c# files for http-operations
   llcsharp:
-    input: csnamer
+    input: psnamer
+
   # explicitly declare writing out the code model -- we want to be able to emit some files from this one (temporary)
   cmv2/emitter:
     input: tweakcodemodelazure
