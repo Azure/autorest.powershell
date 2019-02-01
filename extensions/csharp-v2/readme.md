@@ -22,7 +22,6 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 #### LLC#
 
 ``` yaml $(llcsharp)
-enable-remodeler: true
 api-folder: ""
 
 pipeline:
