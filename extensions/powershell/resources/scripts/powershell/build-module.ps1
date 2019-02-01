@@ -186,14 +186,21 @@ $outputs.Keys |% {
         $newBegin = $newBegin + "`n}`n";
 
         $text = $cmd.replace( $b, $newBegin )
-        $text = $text.replace( "[CmdletBinding()]", "[CmdletBinding(DefaultParameterSetName='$defaultName')]")
+        $commaSpace = ''
+        if($text -match '(.*CmdletBinding\()(.*)') {
+          $textPart = $matches.2
+          if(-not $textPart.StartsWith(')]')) {
+            $commaSpace = ', '
+          }
+        }
+        $text = $text.replace("[CmdletBinding(", "[CmdletBinding(DefaultParameterSetName='$defaultName'$commaSpace")
     }
     $outputType = ($each.variants.GetEnumerator() | Select-Object -First 1).Value.outputType
     $outputTypeAttribute = ''
     if($outputType) {
       $outputTypeAttribute = "[OutputType('$outputType')]`n"
     }
-    $text = "${outputTypeAttribute}function ${cmdletname} {`n$text`n}`n"
+    $text = "function ${cmdletname} {`n$outputTypeAttribute$text`n}`n"
     $filename = $cmdletname -replace ".*[\\|/]","" -replace '\.ps1$',''
 
     set-content "exported/${filename}.ps1" -value $text
