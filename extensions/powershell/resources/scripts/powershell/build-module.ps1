@@ -2,13 +2,12 @@ param([Switch]$isolated,[Switch]$test)
 pushd $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
-if( $PSVersionTable.PSVersion.Major -lt 6 ) { 
+if($PSVersionTable.PSVersion.Major -lt 6) { 
     popd
-    write-error "This script requires Core PowerShell (don't worry: generated cmdlets can work in Core PowerShell or Windows Powershell)" 
+    write-error "This script requires PowerShell Core (don't worry: generated cmdlets can work in PowerShell Core or Windows Powershell)" 
 }
 
-
-if( -not $isolated )  {
+if(-not $isolated) {
     # this ensures that we can run the script repeatedly without worrying about locked files/folders
     write-host -fore green "Spawning in isolated process." 
     $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
@@ -25,7 +24,7 @@ if( -not $isolated )  {
         & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
     } else {
         write-host -fore cyan "To test this module in a new powershell process, run `n"
-        write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "        
+        write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "
         write-host -fore cyan "`nor use -test with this script`n"
     }
     popd
@@ -49,25 +48,25 @@ if( $lastExitCode -ne 0 ) {
     write-error "Compilation failed"
 }
 
-@('./bin/Debug','./bin/Release') |% { $shh = remove-item -recurse -ea 0 $_ }
-$dll = (dir bin\*.private.dll)[0]
+@('./bin/Debug','./bin/Release') |% { $shh = Remove-Item -recurse -ea 0 $_ }
+$dll = (Get-ChildItem bin\*.private.dll)[0]
 
 if( -not (test-path $dll) ) {
     popd
     write-error "Unable to find output assembly."
 }
 
-$commands = get-command -module (ipmo $dll -passthru)
+$commands = Get-Command -module (Import-Module $dll -passthru)
 write-host -fore gray "Private Module loaded ($dll)."
 
 # merge scripts into one file
-$modulename = (dir *.psd1)[0].Name -replace ".psd1",""
+$modulename = (Get-ChildItem *.psd1)[0].Name -replace ".psd1",""
 $scriptmodule = $dll -replace ".private.",".scripts." -replace ".dll",".psm1"
 $scriptfile = ""; 
-dir -recurse private\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(resolve-path -relative $_)`n" + (get-content -raw $_) } ; 
+Get-ChildItem -Recurse private\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(resolve-path -relative $_)`n" + (get-content -raw $_) } ; 
 Set-Content $scriptmodule -Value $scriptfile
 if( $scriptfile -ne '' ) {
-    $commands = $commands + (get-command -module (ipmo $scriptmodule -passthru))
+    $commands = $commands + (Get-Command -module (Import-Module $scriptmodule -PassThru))
     write-host -fore gray "Private Scripts Module loaded ($scriptmodule)."
 }
 
@@ -81,8 +80,8 @@ $outputs = @{}
 
 write-host -fore green "Processing cmdlet variants"
 $commands |% {
-    
-    $metadata  = New-Object System.Management.Automation.CommandMetaData($_)
+
+    $metadata = New-Object System.Management.Automation.CommandMetaData($_)
     if( $metadata.Name.IndexOf("_") -gt -1 ) {
         $targetCmdlet = $metadata.Name.split("_")[0];
         $variant = $metadata.Name.split("_")[1];
@@ -90,28 +89,31 @@ $commands |% {
         $targetCmdlet = $metadata.Name
         $variant = "default"
     }
-    
 
-    if( -not ($outputs.ContainsKey($targetCmdlet))) {
-        $newCmdlet = @{ 
-             cmdlet = New-Object System.Management.Automation.CommandMetaData($metadata)
-             name = $targetCmdlet
-             variants = @{}
+    if(-not ($outputs.ContainsKey($targetCmdlet))) {
+        $newCmdlet = @{
+            cmdlet = New-Object System.Management.Automation.CommandMetaData($metadata)
+            name = $targetCmdlet
+            variants = @{}
         }
         # create the new target cmdlet 
         $newCmdlet.cmdlet.Parameters.Clear();
         $outputs[$targetCmdlet] = $newCmdlet;
-    } 
+    }
 
     $cmdlet = $outputs[$targetCmdlet]
-    
+
     # add the variant
-    $gb = [System.Management.Automation.ProxyCommand]::GetBegin( $metadata ) 
+    $gb = [System.Management.Automation.ProxyCommand]::GetBegin($metadata)
     $ct = $metadata.Parameters.Keys.Count
-    
-    
-    $cmdlet.variants.add( $variant, @{ method = $gb; pcount = $ct; name = $variant} )
-    
+
+    $outputType = ''
+    if($_.OutputType) {
+      $outputType = $_.OutputType.Type.ToString()
+    }
+
+    $cmdlet.variants.add($variant, @{method = $gb; pcount = $ct; name = $variant; outputType = $outputType} )
+
     # copy parameters across
     $metadata.Parameters.Keys |% {
         $name = $_;
@@ -130,16 +132,16 @@ $commands |% {
     }
 }
 
-$shh = mkdir "./exported" 
+$shh = mkdir "./exported"
 
 write-host -fore green "Generating unified cmdlet proxies"
 # Now, loop thru and spit out the proxies
 
 $outputs.Keys |% {
-    
+
     $cmdletname= $_
     $each = $outputs[$cmdletname]
-    $cmd = [System.Management.Automation.ProxyCommand]::create($each.cmdlet)
+    $cmd = [System.Management.Automation.ProxyCommand]::Create($each.cmdlet)
 
     if( $each.variants.Count -eq 1 ) {
         if($cmd -match "GetCommand[^\\]*$" ) {
@@ -163,7 +165,7 @@ $outputs.Keys |% {
                 $defaultImpl = $each.variants[$name].method
                 $defaultName = $name
             }
-            
+
             $variant = $each.variants[$name].method;
             if($variant -match "GetCommand[^\\]*$" ) {
                 $variant = $variant -replace ".InvokeCommand.GetCommand\('",".InvokeCommand.GetCommand('$modulename.scripts\"
@@ -172,7 +174,7 @@ $outputs.Keys |% {
             $t =  "`n  '$_' {`n"
             $t = $t + $variant
             $t = $t + "`n}`n"
-            $newBegin = $newBegin  + $t;
+            $newBegin = $newBegin + $t;
         }
 
         # add a default case (choose the first?)
@@ -182,12 +184,17 @@ $outputs.Keys |% {
         $newBegin = $newBegin  + $t;
 
         $newBegin = $newBegin + "`n}`n";
-            
-        $text = $cmd.replace( $b, $newBegin ) 
+
+        $text = $cmd.replace( $b, $newBegin )
         $text = $text.replace( "[CmdletBinding()]", "[CmdletBinding(DefaultParameterSetName='$defaultName')]")
     }
-    $text = "function ${cmdletname} {`n$text`n}`n"  
-    $filename = $cmdletname -replace ".*[\\|/]","" -replace  '\.ps1$',''
+    $outputType = ($each.variants.GetEnumerator() | Select-Object -First 1).Value.outputType
+    $outputTypeAttribute = ''
+    if($outputType) {
+      $outputTypeAttribute = "[OutputType('$outputType')]`n"
+    }
+    $text = "${outputTypeAttribute}function ${cmdletname} {`n$text`n}`n"
+    $filename = $cmdletname -replace ".*[\\|/]","" -replace '\.ps1$',''
 
     set-content "exported/${filename}.ps1" -value $text
 }
