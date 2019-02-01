@@ -16,41 +16,62 @@ export async function addApiVersionConstant(service: Host) {
 }
 
 async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-
-  let n = 0;
-
-  // loop thru the operations
-  // add an apiversion constant paramter for each api
-  for (const operation of values(model.http.operations)) {
-    const metadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] : {};
-    const apiversions = metadata.apiVersions;
-    const apiversion = apiversions[0];
-
-    const schema = new Schema("apiversionstring", {
-      type: JsonType.String,
-      enum: [apiversion],
-      details: {
-        default: {
-          skip: false,
-        }
+  /*
+    let n = 0;
+  
+    const versions = new Map<string, Schema>();
+    const parameters = new Map<string, HttpOperationParameter>();
+  
+    // loop thru the operations
+    // add an apiversion constant paramter for each api
+    for (const operation of values(model.http.operations)) {
+      const metadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] : {};
+      const apiversions = metadata.apiVersions;
+      const apiversion = apiversions[0];
+  
+      let vSchema = versions.get(apiversion);
+      const name = `ApiVersion${apiversion}`
+  
+      if (!vSchema) {
+  
+        vSchema = new Schema(name, {
+          type: JsonType.String,
+          / * enum: [apiversion],
+           extensions: {
+             "x-ms-enum": {
+               name,
+               modelAsString: true
+             }
+           },
+           * /
+          details: {
+            default: {
+              skip: false,
+            }
+          }
+        });
+        model.schemas[name] = vSchema;
       }
-    });
-    model.schemas[`apv${n++}`] = schema;
-
-    const param = new HttpOperationParameter("api-version", ParameterLocation.Query, ImplementationLocation.Method, {
-      details: {
-        default: {
-          description: "The API version for the call",
-          name: 'api-version',
-          location: ImplementationLocation.Method,
-          constantValue: apiversion
-        }
-      },
-      schema
-    });
-
-
-    operation.parameters.push(param);
-  }
+  
+      let vParameter = parameters.get(apiversion);
+      if (!vParameter) {
+        vParameter = new HttpOperationParameter("api-version", ParameterLocation.Query, ImplementationLocation.Method, {
+          details: {
+            default: {
+              description: "The API version for the call",
+              name: 'api-version',
+              location: ImplementationLocation.Method,
+              constantValue: apiversion
+            }
+          },
+          schema: vSchema
+        });
+  
+        model.http.parameters[name] = vParameter;
+      }
+  
+      operation.parameters.push(vParameter);
+    }
+    */
   return model;
 }
