@@ -53,12 +53,12 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
   // if this has a body with it, let's add that parameter
   if (body && body.schema) {
-    op.details.powershell.hasBody = true;
+    op.details.csharp.hasBody = true;
     op.parameters.push(new components.IParameter(bodyParameterName, body.schema, {
       details: {
-        powershell: {
+        csharp: {
           description: body.schema.details.default.description,
-          name: pascalCase(fixLeadingNumber(deconstruct(bodyParameterName))),
+          name: getPascalName(bodyParameterName),
           isBodyParameter: true,
         }
       }
@@ -66,12 +66,12 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
     // let's add a variant where it's expanded out.
     const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
-    opExpanded.details.powershell.dropBodyParameter = true;
+    opExpanded.details.csharp.dropBodyParameter = true;
     opExpanded.parameters.push(new components.IParameter(`${bodyParameterName}Body`, body.schema, {
       details: {
-        powershell: {
+        csharp: {
           description: body.schema.details.default.description,
-          name: pascalCase(fixLeadingNumber(deconstruct(`${bodyParameterName}Body`))),
+          name: getPascalName(`${bodyParameterName}Body`),
           isBodyParameter: true,
         }
       }
@@ -83,7 +83,7 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
 function isNameConflict(model: codemodel.Model, vname: string) {
   for (const each of values(model.commands.operations)) {
-    if (each.details.powershell.name === vname) {
+    if (each.details.csharp.name === vname) {
       return true;
     }
   }
@@ -115,16 +115,16 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     ...variant,
     details: {
       ...operation.details,
-      powershell: {
-        ...operation.details.csharp,
+      csharp: {
+        ...operation.details.default,
         name: vname
       }
     },
     operationId: operation.operationId,
     parameters: parameters.map(each => {
-      each.details.powershell = {
-        ...each.details.csharp,
-        name: pascalCase(fixLeadingNumber(deconstruct(each.details.csharp.name)))
+      each.details.csharp = {
+        ...each.details.default,
+        name: getPascalName(each.details.default.name)
       };
       return each;
     }),
@@ -151,10 +151,10 @@ async function addVariants(parameters: Array<http.HttpOperationParameter>, opera
   // console.error(`Number of Body Properties ${properties.length}`);
 
   // smash body property names together
-  const bodyPropertyNames = bodyProperties.joinWith(each => each.details.csharp.name);
+  const bodyPropertyNames = bodyProperties.joinWith(each => each.details.default.name);
 
   // for each polymorphic body, we should do a separate variant that takes the polymorphic body type instead of the base type
-  const polymorphicBodies = (body && body.schema && body.schema.details.csharp.polymorphicChildren && body.schema.details.csharp.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.csharp.polymorphicChildren).joinWith(child => child.details.csharp.name) : '';
+  const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && body.schema.details.default.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
 
   // the variant name
   const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
@@ -363,6 +363,10 @@ const Verbs = {
   Security: 'System.Management.Automation.VerbsSecurity',
   Other: 'System.Management.Automation.VerbsOther'
 };
+
+function getPascalName(name: string): string {
+  return pascalCase(fixLeadingNumber(deconstruct(name)));
+}
 
 const category: { [verb: string]: string } = {
   'Add': Verbs.Common,

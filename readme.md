@@ -83,17 +83,17 @@ pipeline:
   add-apiversion-constant:
     input: tweakcodemodelazure
 
+# creates high-level commands
+  create-commands:
+    input: add-apiversion-constant # brings the code-model-v3 with it.
+
   # Choose names for everything in c#
   csnamer:
-    input: add-apiversion-constant
-
-  # creates high-level commands
-  create-commands:
-    input: csnamer # brings the code-model-v3 with it.
-
+    input: create-commands # and the generated c# files
+  
   # ensures that names/descriptions are properly set for powershell
   psnamer:
-    input: create-commands # and the generated c# files
+    input: csnamer 
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
@@ -101,7 +101,7 @@ pipeline:
 
   # generates c# files for http-operations
   llcsharp:
-    input: csnamer
+    input: psnamer
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:

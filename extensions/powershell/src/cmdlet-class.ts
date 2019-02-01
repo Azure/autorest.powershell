@@ -23,12 +23,12 @@ export class CmdletClass extends Class {
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
-    const operationDetails = operation.details.powershell.name; // `${operation.details.powershell.name}${dropBodyParameter ? 'Expanded' : ''}`;
+    const operationDetails = operation.details.csharp.name; // `${operation.details.csharp.name}${dropBodyParameter ? 'Expanded' : ''}`;
     const variantName = `${state.project.nounPrefix}${operationDetails ? `${operation.noun}_${operationDetails}` : operation.noun}`;
 
     const name = `${operation.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
-    this.dropBodyParameter = operation.details.powershell.dropBodyParameter ? true : false;
+    this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.interfaces.push(ClientRuntime.IEventListener);
     this.state = state;
@@ -381,7 +381,7 @@ export class CmdletClass extends Class {
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
         if (!(parameter.details.default.constantValue)) {
-          yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.powershell.name, container, parameter.details.powershell.name);
+          yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.csharp.name, container, parameter.details.csharp.name);
         }
       }
 
@@ -445,11 +445,11 @@ export class CmdletClass extends Class {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
 
         if (!(parameter.details.default.constantValue)) {
-          const bp = <BackedProperty>$this.$<Property>(parameter.details.powershell.name);
+          const bp = <BackedProperty>$this.$<Property>(parameter.details.csharp.name);
 
           // dont' serialize if it's a constant or host parameter.
-          // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.powershell.name);
-          yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.powershell.name, bp));
+          // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.csharp.name);
+          yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
 
         }
 
@@ -527,7 +527,7 @@ export class CmdletClass extends Class {
         // this parameter has a constant value -- SKIP IT
         /*
         // don't give it a parameter attribute
-        const cmdletParameter = this.add(new LambdaProperty(parameter.details.powershell.name, td, new StringExpression(parameter.details.default.constantValue), {
+        const cmdletParameter = this.add(new LambdaProperty(parameter.details.csharp.name, td, new StringExpression(parameter.details.default.constantValue), {
           metadata: {
             parameterDefinition: parameter
           },
@@ -535,22 +535,22 @@ export class CmdletClass extends Class {
         */
       } else if (parameter.details.default.fromHost) {
         // the parameter is expected to be gotten from the host.
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
+        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           metadata: {
             parameterDefinition: parameter.details.default.originalParam
           },
-          description: parameter.details.powershell.description,
+          description: parameter.details.csharp.description,
         }));
         this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
 
-      } else if (this.dropBodyParameter && parameter.details.powershell.isBodyParameter) {
+      } else if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
         // we're supposed to use parameters for the body parameter instead of a big object
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
+        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           metadata: {
             parameterDefinition: parameter
           },
-          description: parameter.details.powershell.description,
+          description: parameter.details.csharp.description,
           initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`,
           setAccess: Access.Private,
           getAccess: Access.Private,
@@ -561,16 +561,16 @@ export class CmdletClass extends Class {
 
       } else {
         // regular cmdlet parameter
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.powershell.name, td, {
+        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           metadata: {
             parameterDefinition: parameter
           },
-          description: parameter.details.powershell.description
+          description: parameter.details.csharp.description
         }));
-        if (!parameter.details.powershell.isBodyParameter) {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.powershell.description) || 'HELP MESSAGE MISSING'}"`)] }));
+        if (!parameter.details.csharp.isBodyParameter) {
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)] }));
         } else {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.powershell.description) || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
         }
       }
     }
