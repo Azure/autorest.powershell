@@ -47,6 +47,7 @@
     "@microsoft.azure/codegen-csharp": "^1.0.0",
     "@microsoft.azure/autorest.codemodel-v3": "^1.0.0",
     "@microsoft.azure/autorest-extension-base": "^1.0.0",
+    "@microsoft.azure/linq": "^2.1.0",
     "@microsoft.azure/autorest.csharp-v2": "^1.0.0",
     "@microsoft.azure/tasks": "^2.1.0",
     "source-map-support": "0.5.9"
