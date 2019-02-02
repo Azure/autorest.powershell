@@ -31,26 +31,6 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 ``` yaml 
 enable-multi-api: true
 load-priority: 1001
-
-```
-
-``` yaml $(enable-remodeler)
-
-pipeline:
-  remodeler:
-    input: openapi-document/multi-api/identity  
-
-  remodeler/emitter:
-    input: remodeler
-    scope: scope-remodeler/emitter
-
-scope-remodeler/emitter:
-  input-artifact: code-model-v3
-  is-object: true
-
-  output-uri-expr: |
-    "code-model-v3"
-
 ```
 
 
@@ -67,6 +47,7 @@ module-folder: private/
 use-namespace-folders: false
 
 pipeline:
+# --- extension remodeler --- 
 
   # "Shake the tree", and normalize the model
   remodeler:
@@ -83,25 +64,28 @@ pipeline:
   add-apiversion-constant:
     input: tweakcodemodelazure
 
+# --- extension powershell --- 
+
+# creates high-level commands
+  create-commands:
+    input: add-apiversion-constant # brings the code-model-v3 with it.
+
   # Choose names for everything in c#
   csnamer:
-    input: add-apiversion-constant
-
-  # creates high-level commands
-  create-commands:
-    input: csnamer # brings the code-model-v3 with it.
-
+    input: create-commands # and the generated c# files
+  
   # ensures that names/descriptions are properly set for powershell
   psnamer:
-    input: create-commands # and the generated c# files
+    input: csnamer 
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
     input: psnamer # and the generated c# files
 
+# --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: csnamer
+    input: psnamer
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
@@ -130,7 +114,6 @@ output-artifact:
 
 
 ``` yaml $(llcsharp)
-enable-remodeler: true
 api-folder: ""
 
 pipeline:

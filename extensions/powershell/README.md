@@ -20,9 +20,6 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 
 #### PowerShell
-
-
-
 ``` yaml
 
 use-extension:
@@ -43,6 +40,7 @@ module-folder: private/
 use-namespace-folders: false
 
 pipeline:
+# --- extension remodeler --- 
 
   # "Shake the tree", and normalize the model
   remodeler:
@@ -59,25 +57,28 @@ pipeline:
   add-apiversion-constant:
     input: tweakcodemodelazure
 
-  # Choose names for everything in c#
-  csnamer:
-    input: add-apiversion-constant
+# --- extension powershell --- 
 
   # creates high-level commands
   create-commands:
-    input: csnamer # brings the code-model-v3 with it.
+    input: add-apiversion-constant # brings the code-model-v3 with it.
+
+  # Choose names for everything in c#
+  csnamer:
+    input: create-commands # and the generated c# files
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:
-    input: create-commands # and the generated c# files
+    input: csnamer 
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
     input: psnamer # and the generated c# files
 
+# --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: csnamer
+    input: psnamer
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
@@ -101,5 +102,4 @@ output-artifact:
   - source-file-csproj
   - source-file-powershell
   - source-file-other
-
 ```
