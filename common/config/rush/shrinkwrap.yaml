@@ -24,6 +24,7 @@ dependencies:
   '@types/node': 10.11.4
   '@types/semver': 5.5.0
   '@types/source-map': 0.5.0
+  '@types/xmlbuilder': 0.0.34
   compare-versions: 3.4.0
   file-url: 2.0.2
   get-uri: 2.0.2
@@ -45,6 +46,7 @@ dependencies:
   typescript: 3.2.2
   urijs: 1.19.1
   vscode-jsonrpc: 3.6.2
+  xmlbuilder: 10.1.1
   yaml-ast-parser: 0.0.40
 packages:
   /@microsoft.azure/async-io/2.0.19:
@@ -100,6 +102,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-3TS72OMv5OdPLj2KwH+KpbRaR6w=
+  /@types/xmlbuilder/0.0.34:
+    dev: false
+    resolution:
+      integrity: sha512-yVsHfYqJblSEg3DvUhGndpCZBZz2GiGVmqMa04fbGro2xzxRj85Q7MQ4os+MaXmKcpCDD42MXuxUWfoUKTuVdQ==
   /JSONSelect/0.4.0:
     dev: false
     engines:
@@ -1913,6 +1919,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+  /xmlbuilder/10.1.1:
+    dev: false
+    engines:
+      node: '>=4.0'
+    resolution:
+      integrity: sha512-OyzrcFLL/nb6fMGHbiRDuPup9ljBycsdCypwuyg5AAHvyWzGfChJpCXMG88AGTIMFhGZ9RccFN1e6lhg3hkwKg==
   /xregexp/2.0.0:
     dev: false
     resolution:
@@ -1977,7 +1989,7 @@ packages:
     dev: false
     name: '@rush-temp/async-io'
     resolution:
-      integrity: sha512-2mWeE/dCYUOBnmuaS9McROL3cl40heO5B3QWXddA8tLlnQkePYyLzhBDd5AvRKvUWehQOhn9krLtGem7cwSqaA==
+      integrity: sha512-9SVpE9t2jslFWiVgPdmaik020n/SMGmy1g+xfp98LNlaGTnYieEzqffZTWZeesxIMWgOCYApAFaPr6+I16jGJQ==
       tarball: 'file:projects/async-io.tgz'
     version: 0.0.0
   'file:projects/autorest-extension-base.tgz':
@@ -2006,7 +2018,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.codemodel-v3'
     resolution:
-      integrity: sha512-4uZwD8PZkp3Lg6mpaTJPX0QY2clxPzoDY9AycbPJy6ZP+6C+0dl8TCne+VY176QiBqJ/h9CFFuDySJUTQk3rRw==
+      integrity: sha512-KF1qMBlLkZB2f4vh7lgH2Z+RsTw8T9Lk0nMIWeHjNakg+0vcl/layV+1tN1cNL/jszDs49HXi6c9qVjveOOdBA==
       tarball: 'file:projects/autorest.codemodel-v3.tgz'
     version: 0.0.0
   'file:projects/autorest.csharp-v2.tgz':
@@ -2025,7 +2037,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.csharp-v2'
     resolution:
-      integrity: sha512-d87vK8mYMSRYBrujFHGKkWPSIbfb58mY0HY6/bScto0d7e5sd6tftdF49oUCUNyMBASnxVzaarkQFRcuIj+PgA==
+      integrity: sha512-Hhl1zP/Uwnoqv6vsrsbidtVzwlyrPrM735wP5Ut3Runmf8eBY0i9MFX1BtQbm/6bC8x1CmDI+Bj1HOIYnVUr+Q==
       tarball: 'file:projects/autorest.csharp-v2.tgz'
     version: 0.0.0
   'file:projects/autorest.incubator.tgz':
@@ -2045,7 +2057,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.incubator'
     resolution:
-      integrity: sha512-rj8WJkt5WyG0riydoAU+IepFMoSZHv9uAPHer2PYFR03mVdr7/oYgMLLiPKkkDghOxD8ecKl7v9h1C/LBlIepQ==
+      integrity: sha512-pmtyY/ooFMV0Bgs1v1Hdwgle6A3GigjFPLOL9X57pBmHFTDTc7lphYiNJq7uG9uu7bVpoUxQOkgcuZHvS/hKMQ==
       tarball: 'file:projects/autorest.incubator.tgz'
     version: 0.0.0
   'file:projects/autorest.powershell.tgz':
@@ -2054,6 +2066,7 @@ packages:
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
       '@types/node': 10.11.4
+      '@types/xmlbuilder': 0.0.34
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       source-map-support: 0.5.9
@@ -2062,10 +2075,11 @@ packages:
       tslint-microsoft-contrib: /tslint-microsoft-contrib/5.2.1/tslint@5.11.0+typescript@3.2.2
       tslint-sonarts: /tslint-sonarts/1.8.0/tslint@5.11.0+typescript@3.2.2
       typescript: 3.2.2
+      xmlbuilder: 10.1.1
     dev: false
     name: '@rush-temp/autorest.powershell'
     resolution:
-      integrity: sha512-zHAsljNfkgdQCLJgWPqg1Ycdt+TUoDuynnlV0qT01CVfsQsiWsG5P/Z6BWiY7a1PF/qWu16T6+SdqxpbkfSDdQ==
+      integrity: sha512-g6ZQMhF6qQg5owjMPkEqKtssL5oKHN/e20O7LtRIQmoeo1DSALII6agskUlHEPgZXeo0HQpByk6P30tF8HrHaw==
       tarball: 'file:projects/autorest.powershell.tgz'
     version: 0.0.0
   'file:projects/autorest.remodeler.tgz':
@@ -2086,7 +2100,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.remodeler'
     resolution:
-      integrity: sha512-ju4iJtkuxb14KaT0npH4xJcAvyqxDZcVP18VhvjYWwFQp3h5M/LLzz9KTpKb58N/eT695R49g21jQMDXC7/sEA==
+      integrity: sha512-9nfbyd3YlN3igBsl8ySdOFmY+GjLfvMzmWL0Fe8dYUKRIu8XMFJ01Z7HjVCjod/N5eAJ99qbDWky23ObXNZCnw==
       tarball: 'file:projects/autorest.remodeler.tgz'
     version: 0.0.0
   'file:projects/codegen-csharp.tgz':
@@ -2104,7 +2118,7 @@ packages:
     dev: false
     name: '@rush-temp/codegen-csharp'
     resolution:
-      integrity: sha512-BSdC/rjQ+Mrw886SCQjo2voLasH2nmKTFHKztOWwX+3G9wX2oLh87xFGq+LGlx3E7xY8SFTGQQ4zLVIIXUifLA==
+      integrity: sha512-qbnnmMk5WMfCsv9RRszqtZyYiD4KogGsX1UlmGajYChvZCwVlBLnG12yvpRBrLR+NtbqYFKlept2ticnIjnwmQ==
       tarball: 'file:projects/codegen-csharp.tgz'
     version: 0.0.0
   'file:projects/codegen.tgz':
@@ -2126,7 +2140,7 @@ packages:
     dev: false
     name: '@rush-temp/codegen'
     resolution:
-      integrity: sha512-+hw9DqEscNqjz3q8BZY9yy3Z55imGZMxPWIzHx7Oqh41Zcknz6z2AFA6JoePSS1pbbCPdJ6AZuSNlbBik2ZMbg==
+      integrity: sha512-o1RTQVehS6tugIEDJBNmDcZBgOBzFDMQf7ccZdt86EutZE8cvOd4o5IWR0ex7sDfCO2JUVNbxPB6dhr4ZxN46w==
       tarball: 'file:projects/codegen.tgz'
     version: 0.0.0
   'file:projects/datastore.tgz':
@@ -2146,7 +2160,7 @@ packages:
     dev: false
     name: '@rush-temp/datastore'
     resolution:
-      integrity: sha512-XNuADGPNMogxyZEGo/N6iuM/0lE59HlMbXtT3cjSwNGGSB2zQYZI8pRkGsXBE+vgt1KcENKVjHVz+Hdo5acAjA==
+      integrity: sha512-FvyF6H2MHHQvbBfm32fqUI0XTYqu/FmvAC21kPnur6lxO+EvotRvx2YOgBtfMhqsw/AyllTN6GytyGhNSlZDtQ==
       tarball: 'file:projects/datastore.tgz'
     version: 0.0.0
   'file:projects/deduplication.tgz':
@@ -2160,7 +2174,7 @@ packages:
     dev: false
     name: '@rush-temp/deduplication'
     resolution:
-      integrity: sha512-ntC8gHsx047Wn1DTeH2YnDm7NM7IrICUuPDNZZ8koETc8YX9e7yjPIE6e2V5+gHYmB3vGyAln6/EtzB40fn2AQ==
+      integrity: sha512-+Opn5P39wnIpyUgqhU1e+KSgjwYChtjpIqph8Yb0OMww7lR1nY9iRP5klmr2/Qkj6eF3ewqxIkdgtHdSa8cI2A==
       tarball: 'file:projects/deduplication.tgz'
     version: 0.0.0
   'file:projects/eventing.tgz':
@@ -2173,7 +2187,7 @@ packages:
     dev: false
     name: '@rush-temp/eventing'
     resolution:
-      integrity: sha512-uJqqZk5k9aKYWAnEjaaIK1Ewl5Ki3yJeH5iANtrRxk8VQeRmwgNocWyulSxp5SZHHhtJwSIq8zZ2oJ0ONdmv8w==
+      integrity: sha512-kSp8/bOjwAFfK2TUeYt1FOZgzZCyn1ARD9nj+xbhi4ym553BFvOPA3/guO9GD/LLiJkeWOJl9QmwQKsT0K5FmA==
       tarball: 'file:projects/eventing.tgz'
     version: 0.0.0
   'file:projects/extension.tgz':
@@ -2190,7 +2204,7 @@ packages:
     dev: false
     name: '@rush-temp/extension'
     resolution:
-      integrity: sha512-ZS9umpFcwX+Z03hUFs5/QcUx00Odu4YtzMEwkAD0iUNStoZY5UR3hX/thYqs4RP1iHT/kLVvdP1udj4a9Hpn7Q==
+      integrity: sha512-Fj+5Gg4A4ClAuG/OhKIE4D7NKvdLeT3OXqnGujYgsRH5N08L85vRBKHkEHOGhtvDGsmv8ZdDUDIbVmfZI2BALw==
       tarball: 'file:projects/extension.tgz'
     version: 0.0.0
   'file:projects/linq.tgz':
@@ -2220,7 +2234,7 @@ packages:
     dev: false
     name: '@rush-temp/oai2-to-oai3'
     resolution:
-      integrity: sha512-XGumPV08fW66YvV9ZwvJQJYGC/3koa1uSful5plPu9FaWyw8QvkBAvC4MOC4/KuVtsVS+Ye0nSbzQ2IsPvvBHw==
+      integrity: sha512-FWKlY6R1oWHNLpxwaD0jqz7ZYBHLxa+/LrjQlIVAtvwqqMP1aNg5fw/shcHi6m3TBdNx31OrqFwpv0dgKITFaA==
       tarball: 'file:projects/oai2-to-oai3.tgz'
     version: 0.0.0
   'file:projects/object-comparison.tgz':
@@ -2246,7 +2260,7 @@ packages:
     dev: false
     name: '@rush-temp/openapi'
     resolution:
-      integrity: sha512-O21lIW0py8D9xsMx7TfokGoTaRY0K7nSyhhUKL0hlhXWz8TyspmYPuALB1OVnEcU+FPzY/Dzg/DS4IIh/hI5Zg==
+      integrity: sha512-NZBWFzXxhqA86FeKkWOfO+8cD10g9xZ89bOXB6niNr7Fz88I5iPQMVccsfUdKqy2VF5zvqyZou3p0pqYEmpi8w==
       tarball: 'file:projects/openapi.tgz'
     version: 0.0.0
   'file:projects/tasks.tgz':
@@ -2276,7 +2290,7 @@ packages:
     dev: false
     name: '@rush-temp/uri'
     resolution:
-      integrity: sha512-+MwV6YIgsWTL/z4/1UJpV5t3D6QODF9hKLkjQsaTh0epTs4TShqs8u0EfbYqyNyXiwlDkUn498o0nTV/IIR3Xw==
+      integrity: sha512-Vg99EYlNAOLlVjwUUpVNwF8yJ1XJOZfMjwQClYPHfWIHca7sIQyYpKZTGpu4gCGzyAix/ecHDAlZZaLFEQGi5g==
       tarball: 'file:projects/uri.tgz'
     version: 0.0.0
 registry: 'https://registry.npmjs.org/'
@@ -2308,6 +2322,7 @@ specifiers:
   '@types/node': ^10.11.4
   '@types/semver': 5.5.0
   '@types/source-map': 0.5.0
+  '@types/xmlbuilder': 0.0.34
   compare-versions: ^3.4.0
   file-url: 2.0.2
   get-uri: ^2.0.2
@@ -2329,4 +2344,5 @@ specifiers:
   typescript: ^3.1.3
   urijs: ^1.19.1
   vscode-jsonrpc: ^3.5.0
+  xmlbuilder: 10.1.1
   yaml-ast-parser: 0.0.40
