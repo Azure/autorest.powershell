@@ -21,7 +21,7 @@ dependencies:
   '@types/js-yaml': 3.11.2
   '@types/jsonpath': 0.2.0
   '@types/mocha': 5.2.5
-  '@types/node': 10.11.4
+  '@types/node': 10.12.19
   '@types/semver': 5.5.0
   '@types/source-map': 0.5.0
   '@types/xmlbuilder': 0.0.34
@@ -82,18 +82,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-lAVp+Kj54ui/vLUFxsJTMtWvZraZxum3w3Nwkble2dNuV5VnPA+Mi2oGX9XYJAaIvZi3tn3cbjS/qcJXRb6Bww==
-  /@types/node/10.11.4:
+  /@types/node/10.12.19:
     dev: false
     resolution:
-      integrity: sha512-ojnbBiKkZFYRfQpmtnnWTMw+rzGp/JiystjluW9jgN3VzRwilXddJ6aGQ9V/7iuDG06SBgn7ozW9k3zcAnYjYQ==
-  /@types/node/10.11.6:
-    dev: false
-    resolution:
-      integrity: sha512-fnA7yvqg3oKQDb3skBif9w5RRKVKAaeKeNuLzZL37XcSiWL4IoSXQnnbchR3UnBu2EMLHBip7ZVEkqoIVBP8QQ==
-  /@types/node/10.12.18:
-    dev: false
-    resolution:
-      integrity: sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==
+      integrity: sha512-2NVovndCjJQj6fUUn9jCgpP4WSqr+u1SoUZMZyJkhGeBFsm6dE46l31S7lPUYt9uQ28XI+ibrJA1f5XyH5HNtA==
   /@types/semver/5.5.0:
     dev: false
     resolution:
@@ -1981,7 +1973,7 @@ packages:
   'file:projects/async-io.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       proper-lockfile: 2.0.1
@@ -1989,25 +1981,25 @@ packages:
     dev: false
     name: '@rush-temp/async-io'
     resolution:
-      integrity: sha512-9SVpE9t2jslFWiVgPdmaik020n/SMGmy1g+xfp98LNlaGTnYieEzqffZTWZeesxIMWgOCYApAFaPr6+I16jGJQ==
+      integrity: sha512-Yk6kGJQrxSkEp1e4ywxQz73iYutPzrUjpDDOsQND9kVz6uw37FW1I7GPwYl1mKwNmckdwDjRcOZNjy+mxxguXA==
       tarball: 'file:projects/async-io.tgz'
     version: 0.0.0
   'file:projects/autorest-extension-base.tgz':
     dependencies:
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       typescript: 3.2.2
       vscode-jsonrpc: 3.6.2
     dev: false
     name: '@rush-temp/autorest-extension-base'
     resolution:
-      integrity: sha512-8bMBTQwwPYgzwjku5CwCs/aoNhoJfmIWtfXudx4KVOLGX00xifK/UnUFL3d/oZLgv/ypwrX4Bc1HHOwITBzqww==
+      integrity: sha512-KD7aUWa1dF6Osyk00WN3tnJigX9qw6HeFvqxxbHmDBBO64NWSaKrj0yU0RBaOf6lYSDxFyiJc/VCL20OmeQIjA==
       tarball: 'file:projects/autorest-extension-base.tgz'
     version: 0.0.0
   'file:projects/autorest.codemodel-v3.tgz':
     dependencies:
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       tslint: /tslint/5.11.0/typescript@3.2.2
@@ -2018,14 +2010,14 @@ packages:
     dev: false
     name: '@rush-temp/autorest.codemodel-v3'
     resolution:
-      integrity: sha512-KF1qMBlLkZB2f4vh7lgH2Z+RsTw8T9Lk0nMIWeHjNakg+0vcl/layV+1tN1cNL/jszDs49HXi6c9qVjveOOdBA==
+      integrity: sha512-ElHdYBGErGmKfoJkVRef4c9CvJtUzM9Gw0nhI2oSUrxb3dSko0Zsa+ezJRUerRA3axU9ZeZ6hiF6pmjQ67AkAw==
       tarball: 'file:projects/autorest.codemodel-v3.tgz'
     version: 0.0.0
   'file:projects/autorest.csharp-v2.tgz':
     dependencies:
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       source-map-support: 0.5.9
@@ -2037,7 +2029,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.csharp-v2'
     resolution:
-      integrity: sha512-Hhl1zP/Uwnoqv6vsrsbidtVzwlyrPrM735wP5Ut3Runmf8eBY0i9MFX1BtQbm/6bC8x1CmDI+Bj1HOIYnVUr+Q==
+      integrity: sha512-c5KeeK5fqFNnIbiM9Nr+0m6C87cub5FZ/B8K5TU42FH3wQujY6hWwknSPSvDP7qfPKZp4vKAJcBQAf5V0HQVkw==
       tarball: 'file:projects/autorest.csharp-v2.tgz'
     version: 0.0.0
   'file:projects/autorest.incubator.tgz':
@@ -2045,7 +2037,7 @@ packages:
       '@microsoft.azure/tasks': 2.0.27
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.6
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       source-map-support: 0.5.9
@@ -2057,7 +2049,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.incubator'
     resolution:
-      integrity: sha512-pmtyY/ooFMV0Bgs1v1Hdwgle6A3GigjFPLOL9X57pBmHFTDTc7lphYiNJq7uG9uu7bVpoUxQOkgcuZHvS/hKMQ==
+      integrity: sha512-G7dtZ4RlAs+8BhU0OjH+hNXNqIlHjVW/DtdIeS8eAPdvl76Wh2uvSt49Mw6IqFITqVwR/wIPUoNUb64zBD/pVw==
       tarball: 'file:projects/autorest.incubator.tgz'
     version: 0.0.0
   'file:projects/autorest.powershell.tgz':
@@ -2065,7 +2057,7 @@ packages:
       '@microsoft.azure/tasks': 2.0.27
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       '@types/xmlbuilder': 0.0.34
       mocha: 5.2.0
       mocha-typescript: 1.1.17
@@ -2079,7 +2071,7 @@ packages:
     dev: false
     name: '@rush-temp/autorest.powershell'
     resolution:
-      integrity: sha512-g6ZQMhF6qQg5owjMPkEqKtssL5oKHN/e20O7LtRIQmoeo1DSALII6agskUlHEPgZXeo0HQpByk6P30tF8HrHaw==
+      integrity: sha512-+FmpGRzTqw7yxMTJaO/odZsV2W6f4XTGpQclDHR0ZdXjx0OdwW3STNMZiADcIwWA/XabM7h9AcdNgfnp1jIg+A==
       tarball: 'file:projects/autorest.powershell.tgz'
     version: 0.0.0
   'file:projects/autorest.remodeler.tgz':
@@ -2087,7 +2079,7 @@ packages:
       '@microsoft.azure/tasks': 2.0.27
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       semver: 5.5.1
@@ -2100,14 +2092,14 @@ packages:
     dev: false
     name: '@rush-temp/autorest.remodeler'
     resolution:
-      integrity: sha512-9nfbyd3YlN3igBsl8ySdOFmY+GjLfvMzmWL0Fe8dYUKRIu8XMFJ01Z7HjVCjod/N5eAJ99qbDWky23ObXNZCnw==
+      integrity: sha512-N+wIawni8JCUNPEUvC4pzVYPx005ZtMQJIphTd7bMVXJKzg2p0DNoY47yFoAyJPzIZeENEkhXg8DK3AmG/+KXQ==
       tarball: 'file:projects/autorest.remodeler.tgz'
     version: 0.0.0
   'file:projects/codegen-csharp.tgz':
     dependencies:
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       tslint: /tslint/5.11.0/typescript@3.2.2
@@ -2118,7 +2110,7 @@ packages:
     dev: false
     name: '@rush-temp/codegen-csharp'
     resolution:
-      integrity: sha512-qbnnmMk5WMfCsv9RRszqtZyYiD4KogGsX1UlmGajYChvZCwVlBLnG12yvpRBrLR+NtbqYFKlept2ticnIjnwmQ==
+      integrity: sha512-7psQ78OiCZVHn6URt+Ylze1yoULZ9FvwZ2Y+FFibrJAQ3boc9j1h8p8phZ6vtrQ8Tb7DoJyMSPAf1NahSmZ12A==
       tarball: 'file:projects/codegen-csharp.tgz'
     version: 0.0.0
   'file:projects/codegen.tgz':
@@ -2127,7 +2119,7 @@ packages:
       '@microsoft.azure/tasks': 2.0.27
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.11.4
+      '@types/node': 10.12.19
       js-yaml: 3.12.0
       mocha: 5.2.0
       mocha-typescript: 1.1.17
@@ -2140,14 +2132,14 @@ packages:
     dev: false
     name: '@rush-temp/codegen'
     resolution:
-      integrity: sha512-o1RTQVehS6tugIEDJBNmDcZBgOBzFDMQf7ccZdt86EutZE8cvOd4o5IWR0ex7sDfCO2JUVNbxPB6dhr4ZxN46w==
+      integrity: sha512-5fAYjbdIYlYErzlju86kObZTRMbvc093G76ysDk208yEaSKOcj2elw/jWuDuLtotK14KXPJ/qCEJ9EF/jLeA3w==
       tarball: 'file:projects/codegen.tgz'
     version: 0.0.0
   'file:projects/datastore.tgz':
     dependencies:
       '@types/jsonpath': 0.2.0
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       '@types/source-map': 0.5.0
       js-yaml: 3.12.0
       jsonpath: 1.0.0
@@ -2160,13 +2152,13 @@ packages:
     dev: false
     name: '@rush-temp/datastore'
     resolution:
-      integrity: sha512-FvyF6H2MHHQvbBfm32fqUI0XTYqu/FmvAC21kPnur6lxO+EvotRvx2YOgBtfMhqsw/AyllTN6GytyGhNSlZDtQ==
+      integrity: sha512-QXyn2mJo6sz2snqDYS9ubqaPZdP8TCMbX0Du1ND9VT89R6TKiJSzbWjEjvWEAW43T3QIUygqH8lhjGf/0R9nbg==
       tarball: 'file:projects/datastore.tgz'
     version: 0.0.0
   'file:projects/deduplication.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       compare-versions: 3.4.0
       mocha: 5.2.0
       mocha-typescript: 1.1.17
@@ -2174,26 +2166,26 @@ packages:
     dev: false
     name: '@rush-temp/deduplication'
     resolution:
-      integrity: sha512-+Opn5P39wnIpyUgqhU1e+KSgjwYChtjpIqph8Yb0OMww7lR1nY9iRP5klmr2/Qkj6eF3ewqxIkdgtHdSa8cI2A==
+      integrity: sha512-2Omc8gBe7lixjyqbGE86QLdjCp1mSE+NYTYYFaWi03Oub3vxL5cdlXvCtE09+tMQ32MXNSpZ25ZQTmQzwqNUYg==
       tarball: 'file:projects/deduplication.tgz'
     version: 0.0.0
   'file:projects/eventing.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       typescript: 3.2.2
     dev: false
     name: '@rush-temp/eventing'
     resolution:
-      integrity: sha512-kSp8/bOjwAFfK2TUeYt1FOZgzZCyn1ARD9nj+xbhi4ym553BFvOPA3/guO9GD/LLiJkeWOJl9QmwQKsT0K5FmA==
+      integrity: sha512-tpR6G7MFLwbUQKz/Gs+GUJLbpXQYsiPysDZVeD6EopEH1au9kSZD8tfYsQITWx9620FdUxtoqOGc0Sn89WVW/g==
       tarball: 'file:projects/eventing.tgz'
     version: 0.0.0
   'file:projects/extension.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       '@types/semver': 5.5.0
       mocha: 5.2.0
       mocha-typescript: 1.1.17
@@ -2204,27 +2196,27 @@ packages:
     dev: false
     name: '@rush-temp/extension'
     resolution:
-      integrity: sha512-Fj+5Gg4A4ClAuG/OhKIE4D7NKvdLeT3OXqnGujYgsRH5N08L85vRBKHkEHOGhtvDGsmv8ZdDUDIbVmfZI2BALw==
+      integrity: sha512-08KIvrojO9TwCg/YzIeb3KHlahBDJ/0jd7ClZqMmGrukNacoI3p4EdpznV9m6Alx33PBruv/ubqheH20uAPSiw==
       tarball: 'file:projects/extension.tgz'
     version: 0.0.0
   'file:projects/linq.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       typescript: 3.2.2
     dev: false
     name: '@rush-temp/linq'
     resolution:
-      integrity: sha512-mGP0QbxSIqUctrw9FMLkrEocuWyFSfD954B//bnPwk7PGhQRbEgsrRXRkrGQUgbrJwlAuGDQ+9LpXrGItGFW+Q==
+      integrity: sha512-Qu5/Tz+uyq7dYA5/UEBKFQh6XDspBfxxUMFtlKiAvAk3qe6uVA3oxEayTgfGOY/TTtlDshCVFKvNd4jXUQOc7A==
       tarball: 'file:projects/linq.tgz'
     version: 0.0.0
   'file:projects/oai2-to-oai3.tgz':
     dependencies:
       '@types/js-yaml': 3.11.2
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       '@types/source-map': 0.5.0
       mocha: 5.2.0
       mocha-typescript: 1.1.17
@@ -2234,39 +2226,39 @@ packages:
     dev: false
     name: '@rush-temp/oai2-to-oai3'
     resolution:
-      integrity: sha512-FWKlY6R1oWHNLpxwaD0jqz7ZYBHLxa+/LrjQlIVAtvwqqMP1aNg5fw/shcHi6m3TBdNx31OrqFwpv0dgKITFaA==
+      integrity: sha512-3chzfafnIofrSAhXPYGIsngZPTd9CMbcDBoZq+sqJZkCVr8YlU6l9nQfXiDMpm/JeN4W4hwdyQ1JRHWaNgonew==
       tarball: 'file:projects/oai2-to-oai3.tgz'
     version: 0.0.0
   'file:projects/object-comparison.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       typescript: 3.2.2
     dev: false
     name: '@rush-temp/object-comparison'
     resolution:
-      integrity: sha512-lbh73o31ESmzkTdoPuGojouTg3bR6FweSSk/L0OYNmkjxgXeK6WXeHeL9p6l1oCfRXpi+WRrcKC83jA8QuOhbg==
+      integrity: sha512-1gQgtvOUC3q9tkooicgHIe7yI6syfHazK+nIrzkMUKtRMHfTFn9JzTFHsyEqXrD90Mxi07hAok5tIRK/FzNyMg==
       tarball: 'file:projects/object-comparison.tgz'
     version: 0.0.0
   'file:projects/openapi.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       typescript: 3.2.2
     dev: false
     name: '@rush-temp/openapi'
     resolution:
-      integrity: sha512-NZBWFzXxhqA86FeKkWOfO+8cD10g9xZ89bOXB6niNr7Fz88I5iPQMVccsfUdKqy2VF5zvqyZou3p0pqYEmpi8w==
+      integrity: sha512-myqP3zNP19WLlfHZmjUYkKTAa3e/SadYtb2xsWBs6chvFfIVOSvS7//5p8HZnueqeA3CVIbIDhlbsSI4le4OcA==
       tarball: 'file:projects/openapi.tgz'
     version: 0.0.0
   'file:projects/tasks.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       source-map-support: 0.5.9
@@ -2274,13 +2266,13 @@ packages:
     dev: false
     name: '@rush-temp/tasks'
     resolution:
-      integrity: sha512-9yypEjd+DA9Ogu0hoX+EyVjFhB7t2aPsQBQoQaq20kPlV68dXMMKinZpR/L0xC58LZiTf4EAdY5butzpS4wDug==
+      integrity: sha512-Ch5/ra2pxA4tKuXpzDtbgWTgWKd8TFsD9Ho8a5ks8mkezM2A3xL3YK3foPynZDmgF8JgTzwJSmkN6A1/P/c+Kg==
       tarball: 'file:projects/tasks.tgz'
     version: 0.0.0
   'file:projects/uri.tgz':
     dependencies:
       '@types/mocha': 5.2.5
-      '@types/node': 10.12.18
+      '@types/node': 10.12.19
       file-url: 2.0.2
       get-uri: 2.0.2
       mocha: 5.2.0
@@ -2290,7 +2282,7 @@ packages:
     dev: false
     name: '@rush-temp/uri'
     resolution:
-      integrity: sha512-Vg99EYlNAOLlVjwUUpVNwF8yJ1XJOZfMjwQClYPHfWIHca7sIQyYpKZTGpu4gCGzyAix/ecHDAlZZaLFEQGi5g==
+      integrity: sha512-a8FVynpAAxpRya3n3fi+zXhtqwzqWfNQcR3jEBAiFiV+3bgVatde6A5JlHH7HaoeSnoWV5+SxhmHisVwAFavkQ==
       tarball: 'file:projects/uri.tgz'
     version: 0.0.0
 registry: 'https://registry.npmjs.org/'
@@ -2319,7 +2311,7 @@ specifiers:
   '@types/js-yaml': 3.11.2
   '@types/jsonpath': ^0.2.0
   '@types/mocha': 5.2.5
-  '@types/node': ^10.11.4
+  '@types/node': 10.12.19
   '@types/semver': 5.5.0
   '@types/source-map': 0.5.0
   '@types/xmlbuilder': 0.0.34

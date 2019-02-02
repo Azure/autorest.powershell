@@ -44,7 +44,7 @@ export async function powershell(service: Host) {
     await copyRuntime(service, project);
     await generateCsproj(service, project);
     await generateModule(service, project);
-    // await generateFormatPs1xml(service, model, project);
+    await generateFormatPs1xml(service, model, project);
 
     // debug data
     service.WriteFile('code-model-v3.powershell.yaml', serialize(model), undefined, 'source-file-other');
