@@ -4,31 +4,49 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from './project';
 import { deconstruct, pascalCase, items, length, values, Dictionary } from '@microsoft.azure/codegen';
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
-import { State } from './state';
 
 export function generateFormatPs1xml(service: Host, model: codemodel.Model, project: Project) {
-
-  const ps1xmlModel = {
-    Configuration: {
-      ViewDefinitions: [] as object[]
-    }
-  };
-
-  const entries = items(model.http.operations)
-    .linq.selectMany(o => items(o.value.responses))
+  const viewModels = values(model.http.operations)
+    .linq.selectMany(o => items(o.responses))
     .linq.where(rd => rd.key === '200')
     .linq.selectMany(ra => ra.value)
-    .linq.where(r => r.schema !== undefined && r.schema.details.csharp.fullname)
-    .linq.select(r => <string>(<Schema>r.schema).details.csharp.fullname)
-    .linq.distinct()
-    .linq.select(c => createViewModel(c));
+    .linq.where(r => r.schema && r.schema.details.csharp.fullname)
+    .linq.select(r => {
+      const schema = <Schema>r.schema;
+      return { schema: schema, className: <string>schema.details.csharp.fullname };
+    })
+    .linq.distinct(x => x.className)
+    .linq.select(x => createViewModel(x.schema, x.className));
 
-  ps1xmlModel.Configuration.ViewDefinitions.push(...entries);
-  const ps1xml = XmlBuilder.create(ps1xmlModel);
+  const ps1xml = XmlBuilder.create({
+    Configuration: {
+      ViewDefinitions: viewModels.linq.toArray()
+    }
+  });
   service.WriteFile(`${project.moduleName}.format.ps1xml`, ps1xml.end({ pretty: true }), undefined, 'source-file-other');
 }
 
-function createViewModel(className: string): object {
+function createViewModel(schema: Schema, className: string): object {
+  const allOfProperties = values(schema.allOf).linq.selectMany(a => values(a.properties));
+  const topLevelProperties = values(schema.properties);
+
+  const entries = values([...allOfProperties, ...topLevelProperties])
+    .linq.select(p => {
+      const propName = p.details.csharp.name;
+      return {
+        HeaderEntry: {
+          TableColumnHeader: {
+            Label: propName
+          }
+        },
+        ItemEntry: {
+          TableColumnItem: {
+            PropertyName: propName
+          }
+        }
+      }
+    }).linq.toArray();
+
   return {
     View: {
       Name: className,
@@ -36,10 +54,10 @@ function createViewModel(className: string): object {
         TypeName: className
       }],
       TableControl: {
-        TableHeaders: [],
+        TableHeaders: values(entries).linq.select(e => e.HeaderEntry).linq.toArray(),
         TableRowEntries: {
           TableRowEntry: {
-            TableColumnItems: []
+            TableColumnItems: values(entries).linq.select(e => e.ItemEntry).linq.toArray()
           }
         }
       }
