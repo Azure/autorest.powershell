@@ -13,60 +13,13 @@ export function generateFormatPs1xml(service: Host, model: codemodel.Model, proj
       ViewDefinitions: [] as object[]
     }
   };
-  // const viewModel = {
-  //   View: {
-  //     Name: '',
-  //     ViewSelectedBy: {
-  //     },
-  //     TableControl: {
-  //       TableHeaders: {
-  //       },
-  //       TableRowEntries: {
-  //         TableRowEntry: {
-  //           TableColumnItems: {
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-  // const resolver = new SchemaDefinitionResolver();
-
-  // model.commands.parameters.
-  // const classObjects = items(model.schemas)
-  //   .linq.where(each => !each.value || each.value.details.csharp.skip)
-  //   .linq.select(each => resolver.resolveTypeDeclaration(<any>each.value, true, state))
-  //   .linq.where(each => each instanceof ObjectImplementation);
-  // for (const classObject of classObjects) {
-  //   classObject.schema
-  // }
-  // const outputClasses = items(model.http.operations)
-  //   .linq.selectMany(o => items(o.value.responses))
-  //   .linq.where(rd => rd.key === '200')
-  //   .linq.selectMany(ra => ra.value)
-  //   .linq.where(r => r.schema !== undefined)
-  //   .linq.select(r => { const csharp = (<Schema>r.schema).details.csharp; return `${csharp.namespace}${csharp.namespace ? '.' : ''}${csharp.name}` })
-  //   .linq.distinct();
-  // for (const outputClass in outputClasses) {
-  //   const entry = {
-  //     TableColumnHeader: {
-  //       Label: outputClass
-  //     },
-  //     TableColumnItem: {
-  //       PropertyName: outputClass
-  //     }
-  //   }
-  // }
 
   const entries = items(model.http.operations)
     .linq.selectMany(o => items(o.value.responses))
     .linq.where(rd => rd.key === '200')
     .linq.selectMany(ra => ra.value)
-    .linq.where(r => r.schema !== undefined)
-    .linq.select(r => {
-      const csharp = (<Schema>r.schema).details.csharp;
-      return `${csharp.namespace}${csharp.namespace ? '.' : ''}${csharp.name}`;
-    })
+    .linq.where(r => r.schema !== undefined && r.schema.details.csharp.fullname)
+    .linq.select(r => <string>(<Schema>r.schema).details.csharp.fullname)
     .linq.distinct()
     .linq.select(c => createViewModel(c));
 

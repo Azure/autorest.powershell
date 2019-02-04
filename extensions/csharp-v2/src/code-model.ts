@@ -15,6 +15,7 @@ export interface SchemaDetails extends schema.SchemaDetails {
   classImplementation?: ModelClass;
   interfaceImplementation?: ModelInterface;
   interfaceName?: string;
+  fullname?: string;
 }
 
 export interface PropertyDetails extends schema.PropertyDetails {
