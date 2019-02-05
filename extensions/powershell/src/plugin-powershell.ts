@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { generateFormatPs1xml } from './generate-format-ps1xml';
 
 import { PsdFile } from './file-formats/psd-file'
 import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation } from '@microsoft.azure/codegen';
@@ -40,10 +41,10 @@ export async function powershell(service: Host) {
     await service.ProtectFiles(project.testFolder);
 
     // wait for all the generation to be done
-    await generateCsproj(service, project);
     await copyRuntime(service, project);
     await generateCsproj(service, project);
     await generateModule(service, project);
+    await generateFormatPs1xml(service, model, project);
 
     // debug data
     service.WriteFile('code-model-v3.powershell.yaml', serialize(model), undefined, 'source-file-other');
