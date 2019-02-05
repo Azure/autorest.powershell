@@ -1,21 +1,14 @@
 import * as XmlBuilder from 'xmlbuilder';
-import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from './project';
-import { deconstruct, pascalCase, items, length, values, Dictionary } from '@microsoft.azure/codegen';
-import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
+import { length, values } from '@microsoft.azure/codegen';
+import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 
 export function generateFormatPs1xml(service: Host, model: codemodel.Model, project: Project) {
-  const viewModels = values(model.http.operations)
-    .linq.selectMany(o => items(o.responses))
-    .linq.where(rd => rd.key === '200')
-    .linq.selectMany(ra => ra.value)
-    .linq.where(r => r.schema && r.schema.details.csharp.fullname)
-    .linq.select(r => {
-      const schema = <Schema>r.schema;
-      return { schema: schema, className: <string>schema.details.csharp.fullname };
-    })
-    .linq.distinct(x => x.className)
+  const viewModels = values(model.schemas)
+    .linq.where(s => s.type === JsonType.Object && (length(s.properties) || length(s.allOf)) && s.details.csharp.fullname)
+    .linq.select(s => ({ schema: <Schema>s, className: <string>s.details.csharp.fullname }))
     .linq.select(x => createViewModel(x.schema, x.className));
 
   const ps1xml = XmlBuilder.create({
