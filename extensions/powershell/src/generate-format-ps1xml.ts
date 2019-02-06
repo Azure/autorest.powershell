@@ -12,7 +12,9 @@ export function generateFormatPs1xml(service: Host, model: codemodel.Model, proj
 
   const ps1xml = XmlBuilder.create({
     Configuration: {
-      ViewDefinitions: viewModels.linq.toArray()
+      ViewDefinitions: {
+        View: viewModels.linq.toArray()
+      }
     }
   });
   service.WriteFile(`${project.moduleName}.format.ps1xml`, ps1xml.end({ pretty: true }), undefined, 'source-file-other');
@@ -36,20 +38,18 @@ function createViewModel(schema: Schema, className: string): object {
     }).linq.toArray();
 
   return {
-    View: {
-      Name: className,
-      ViewSelectedBy: [{
-        TypeName: className
-      }],
-      TableControl: {
-        TableHeaders: {
-          TableColumnHeader: values(entries).linq.select(e => e.TableColumnHeader).linq.toArray()
-        },
-        TableRowEntries: {
-          TableRowEntry: {
-            TableColumnItems: {
-              TableColumnItem: values(entries).linq.select(e => e.TableColumnItem).linq.toArray()
-            }
+    Name: className,
+    ViewSelectedBy: [{
+      TypeName: className
+    }],
+    TableControl: {
+      TableHeaders: {
+        TableColumnHeader: values(entries).linq.select(e => e.TableColumnHeader).linq.toArray()
+      },
+      TableRowEntries: {
+        TableRowEntry: {
+          TableColumnItems: {
+            TableColumnItem: values(entries).linq.select(e => e.TableColumnItem).linq.toArray()
           }
         }
       }
