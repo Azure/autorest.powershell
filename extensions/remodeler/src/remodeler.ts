@@ -600,7 +600,7 @@ export class Remodeler {
           if (op) {
             // Nelson; hack -- this gets the path back from xmsmetadata
             const actualPath: string = pathItem.instance['x-ms-metadata'] && pathItem.instance['x-ms-metadata'].path ? pathItem.instance['x-ms-metadata'].path : path;
-            console.error(`Actual Path : ${actualPath}`);
+            // console.error(`Actual Path : ${actualPath}`);
 
             this.add(Interpretations.getOperationId(method, actualPath, op, this.oai.info.title, this.modelState), { instance: { method, path: actualPath, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }

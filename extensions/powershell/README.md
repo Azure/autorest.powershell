@@ -22,6 +22,9 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 #### PowerShell
 ``` yaml
 
+enable-multi-api: true
+load-priority: 1001
+
 use-extension:
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
@@ -63,9 +66,12 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
+  create-virtual-properties:
+    input: create-commands
+
   # Choose names for everything in c#
   csnamer:
-    input: create-commands # and the generated c# files
+    input: create-virtual-properties # and the generated c# files
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:

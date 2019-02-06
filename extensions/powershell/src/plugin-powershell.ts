@@ -173,9 +173,9 @@ async function generateModule(service: Host, project: Project) {
 
   // always overwrite this section
   psd1.append('modules', function* () {
-    yield ``
+    yield ``;
     yield indent(`# Warning: This region is code-generated and will get replaced upon regeneration.`);
-    yield ``
+    yield ``;
     yield indent(`NestedModules = @(`);
     yield indent(`"./bin/${project.moduleName}.private.dll"`, 2);
     yield indent(`"${project.psm1}"`, 2);
@@ -186,7 +186,11 @@ async function generateModule(service: Host, project: Project) {
       // add in reference to the profile module here.
       yield indent(`# @({ModuleName="Az.Accounts", ModuleVersion="2.0",Guid="00000000-0000-0000-0000-000000000000"})`, 2);
       yield indent(`)`);
+      yield ``;
     }
+    yield indent(`FormatsToProcess = @(`);
+    yield indent(`"./${project.moduleName}.format.ps1xml"`, 2);
+    yield indent(`)`);
   })
 
   service.WriteFile(project.psd1, psd1.text, undefined, 'source-file-powershell');
