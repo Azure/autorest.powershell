@@ -8,8 +8,7 @@ import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 export function generateFormatPs1xml(service: Host, model: codemodel.Model, project: Project) {
   const viewModels = values(model.schemas)
     .linq.where(s => s.type === JsonType.Object && (length(s.properties) || length(s.allOf)) && s.details.csharp.fullname)
-    .linq.select(s => ({ schema: <Schema>s, className: <string>s.details.csharp.fullname }))
-    .linq.select(x => createViewModel(x.schema, x.className));
+    .linq.select(s => createViewModel(<Schema>s, <string>s.details.csharp.fullname));
 
   const ps1xml = XmlBuilder.create({
     Configuration: {
@@ -27,15 +26,11 @@ function createViewModel(schema: Schema, className: string): object {
     .linq.select(p => {
       const propName = p.details.csharp.name;
       return {
-        HeaderEntry: {
-          TableColumnHeader: {
-            Label: propName
-          }
+        TableColumnHeader: {
+          Label: propName
         },
-        ItemEntry: {
-          TableColumnItem: {
-            PropertyName: propName
-          }
+        TableColumnItem: {
+          PropertyName: propName
         }
       }
     }).linq.toArray();
@@ -47,10 +42,14 @@ function createViewModel(schema: Schema, className: string): object {
         TypeName: className
       }],
       TableControl: {
-        TableHeaders: values(entries).linq.select(e => e.HeaderEntry).linq.toArray(),
+        TableHeaders: {
+          TableColumnHeader: values(entries).linq.select(e => e.TableColumnHeader).linq.toArray()
+        },
         TableRowEntries: {
           TableRowEntry: {
-            TableColumnItems: values(entries).linq.select(e => e.ItemEntry).linq.toArray()
+            TableColumnItems: {
+              TableColumnItem: values(entries).linq.select(e => e.TableColumnItem).linq.toArray()
+            }
           }
         }
       }
