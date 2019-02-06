@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { deconstruct, pascalCase, items, length, values, Dictionary } from '@microsoft.azure/codegen';
-import { JsonType } from '@microsoft.azure/autorest.codemodel-v3';
+import { JsonType, EnumDetails } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { Catch, Try, Else, ElseIf, If, Interface, ImportDirective, ImportStatic, Attribute, Parameter, ParameterModifier, Access, Modifier, dotnet, ClassType, Alias, Class, Constructor, Field, LambdaMethod, PartialMethod, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, LocalVariable, Using, Return, LambdaProperty, LazyProperty, Property } from '@microsoft.azure/codegen-csharp';
 
@@ -13,7 +13,7 @@ import { State } from './state';
 import { Project as codeDomProject } from '@microsoft.azure/codegen-csharp';
 import { ModelCmdlet } from './model-cmdlet';
 import { ModuleClass } from './module-class';
-import { PSObject, PSTypeConverter, TypeConverterAttribute } from './powershell-declarations';
+import { PSObject, PSTypeConverter, TypeConverterAttribute, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from './powershell-declarations';
 import { CmdletClass } from './cmdlet-class';
 
 
@@ -31,6 +31,46 @@ export class ServiceNamespace extends Namespace {
 
     // module class
     this.moduleClass = new ModuleClass(this, state);
+  }
+}
+
+export class SupportNamespace extends Namespace {
+  public get outputFolder(): string {
+    return this.state.project.apiextensionsfolder;
+  }
+
+  constructor(parent: Namespace, public state: State, objectInitializer?: Partial<SupportNamespace>) {
+    super('Support', parent);
+    this.apply(objectInitializer);
+
+    const enumInfos = values(state.model.schemas)
+      .linq.selectMany(s => values(s.properties))
+      .linq.where(p => p.schema.details.csharp.enum !== undefined)
+      .linq.distinct(p => <EnumDetails>p.schema.details.csharp.enum)
+      .linq.select(p => ({ details: <EnumDetails>p.schema.details.csharp.enum, description: p.schema.details.csharp.description }))
+      .linq.toArray();
+    for (const enumInfo of enumInfos) {
+      const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
+
+      const enumClass = new Class(this, enumInfo.details.name, undefined, {
+        interfaces: [IArgumentCompleter],
+        partial: true,
+        description: enumInfo.description || `Argument completer implementation for ${enumInfo.details.name}.`
+      })
+      const commandName = new Parameter("commandName", System.String, { description: "The name of the command that needs argument completion." });
+      const parameterName = new Parameter("parameterName", System.String, { description: "The name of the parameter that needs argument completion." });
+      const wordToComplete = new Parameter("wordToComplete", System.String, { description: "The (possibly empty) word being completed." });
+      const commandAst = new Parameter("commandAst", CommandAst, { description: "The command ast in case it is needed for completion." });
+      const fakeBoundParameters = new Parameter("fakeBoundParameters", System.Collections.IDictionary, { description: "This parameter is similar to $PSBoundParameters, except that sometimes PowerShell cannot or will not attempt to evaluate an argument, in which case you may need to use commandAst." });
+      const completeArgumentParams = [commandName, parameterName, wordToComplete, commandAst, fakeBoundParameters];
+
+      enumClass.add(new Method("CompleteArgument", System.Collections.Generic.IEnumerable(CompletionResult), { parameters: completeArgumentParams, description: "Implementations of this function are called by PowerShell to complete arguments.", returnsDescription: "A collection of completion results, most like with ResultType set to ParameterValue." })).add(function* () {
+        for (const enumValue of enumValues) {
+          yield If(`${System.String.declaration}.IsNullOrEmpty(${wordToComplete.name}) || "${enumValue}".StartsWith(${wordToComplete.name}, ${System.StringComparison.declaration}.InvariantCultureIgnoreCase)`,
+            `yield return new ${CompletionResult.declaration}("${enumValue}", "${enumValue}", ${CompletionResultType.declaration}.ParameterValue, "${enumValue}");`);
+        }
+      });
+    }
   }
 }
 
@@ -372,6 +412,8 @@ export class Project extends codeDomProject {
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));
 
+    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, state))
+
     this.addNamespace(this.modelCmdlets = new ModelCmdletNamespace(this.serviceNamespace, state));
     // add cmdlet namespace
     this.addNamespace(this.cmdlets = new CmdletNamespace(this.serviceNamespace, state));
@@ -388,6 +430,7 @@ export class Project extends codeDomProject {
   }
 
   public serviceNamespace!: ServiceNamespace;
+  public supportNamespace!: SupportNamespace;
   public cmdlets!: CmdletNamespace;
   public modelCmdlets!: ModelCmdletNamespace;
   public modelsExtensions!: ModelExtensionsNamespace;
