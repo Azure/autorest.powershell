@@ -70,9 +70,12 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
+  create-virtual-properties:
+    input: create-commands
+
   # Choose names for everything in c#
   csnamer:
-    input: create-commands # and the generated c# files
+    input: create-virtual-properties # and the generated c# files
   
   # ensures that names/descriptions are properly set for powershell
   psnamer:

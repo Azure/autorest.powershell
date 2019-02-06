@@ -20,13 +20,18 @@ export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
+const visited = new Set<any>();
+
 function populateCSdetails(node: any) {
   if (typeof node === 'object' && node !== null) {
     if (node.details && !node.details.csharp) {
       node.details.csharp = linq.clone(node.details.default);
     } else {
       for (const [key, member] of Object.entries(node)) {
-        populateCSdetails(member);
+        if (!visited.has(member)) {
+          visited.add(member);
+          populateCSdetails(member);
+        }
       }
     }
   }
@@ -39,10 +44,15 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
     model.details.csharp = linq.clone(model.details.default);
   }
 
+
   // make sure recursively that every details field has csharp
   for (const [key, member] of Object.entries(model)) {
-    populateCSdetails(member);
+    if (!visited.has(member)) {
+      visited.add(member);
+      populateCSdetails(member);
+    }
   }
+  visited.clear();
 
   // tweak names for PS
   for (const operations of values(model.commands.operations)) {
@@ -51,7 +61,7 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
       const Name = 'Name';
       const parameterNamesLowerCase = operations.parameters.map(each => each.name.toLowerCase());
       // resource name for resource matching cmdlet verb should be 'Name'
-      if ((operations.noun + Name).toLowerCase() === parameter.details.csharp.name.toLowerCase() && !parameterNamesLowerCase.includes(Name)) {
+      if ((operations.noun + Name).toLowerCase() === parameter.details.csharp.name.toLowerCase() && !parameterNamesLowerCase.includes(Name.toLocaleLowerCase())) {
         parameter.details.csharp.name = Name;
 
         // plural Parameters -> singular, for well-known parameters
