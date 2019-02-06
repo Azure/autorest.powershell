@@ -31,18 +31,18 @@ export class Wildcard implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`/* 1 */ System.Linq.Enumerable.ToDictionary( ${valueOf(container)}.Property("${serializedName}")?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
+        return toExpression(`/* 1 */ System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}.Property("${serializedName}")?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
 
       case KnownMediaType.Xml:
-        return toExpression(`System.Linq.Enumerable.ToDictionary( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', toExpression('null'))} )`);
+        return toExpression(`System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', toExpression('null'))} )`);
 
       case KnownMediaType.Header: {
         const prefix = this.schema.extensions['x-ms-header-collection-prefix'];
         if (prefix) {
           // this is a catch for a specific set of headers
-          return toExpression(`System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${valueOf(container)}, header => header.Key.StartsWith("${serializedName}")), header => header.Key.Substring(${serializedName.length}), header => System.Linq.Enumerable.FirstOrDefault(header.Value))`);
+          return toExpression(`System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>(System.Linq.Enumerable.Where(${valueOf(container)}, header => header.Key.StartsWith("${serializedName}")), header => header.Key.Substring(${serializedName.length}), header => System.Linq.Enumerable.FirstOrDefault(header.Value))`);
         }
-        return toExpression(`System.Linq.Enumerable.ToDictionary( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', toExpression('null'))} )`);
+        return toExpression(`System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', toExpression('null'))} )`);
       }
     }
     return toExpression(`null /* deserializeFromContainerMember (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
@@ -53,7 +53,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Json:
         const nodeAsObject = `(${(valueOf(node))} as ${ClientRuntime.JsonObject})`;
-        return toExpression(`/* 2 */ System.Linq.Enumerable.ToDictionary( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
+        return toExpression(`/* 2 */ System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
     }
     return toExpression(`null /* deserializeFromNode (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
   }
