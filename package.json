@@ -2,8 +2,8 @@
   "private": true,
   "name": "autorest.incubator",
   "scripts": {
-    "start": "node ./extensions/incubator/dist/autorest-extension",
-    "debug": "node --inspect-brk ./extensions/incubator/dist/autorest-extension",
+    "start": "node --max_old_space_size=4096 ./extensions/incubator/dist/autorest-extension",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/incubator/dist/autorest-extension",
     "install": "node ./common/scripts/install-run-rush.js update",
     "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
   },

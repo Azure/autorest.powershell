@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel } from '@microsoft.azure/autorest.codemodel-v3';
-import { items, values } from '@microsoft.azure/codegen';
+import { items, keys, values, select } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 
@@ -22,6 +22,25 @@ export async function tweakModelPlugin(service: Host) {
 }
 
 async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+
+  const set = new Set<Schema>();
+  const removes = new Set<string>();
+
+  for (const key of keys(model.schemas)) {
+    const value = model.schemas[key];
+    if (set.has(value)) {
+      // this schema is already in the collection. let's drop it when we're done
+      removes.add(key);
+    } else {
+      set.add(value);
+    }
+  }
+
+  // remove schemas that are referenced elsewhere previously.
+  for (const each of removes.values()) {
+    delete model.schemas[each];
+  }
+
   /* REMOVE THIS -- not handled here anymore
     // consolodate compatible response types.
     for (const operation of values(model.http.operations)) {
