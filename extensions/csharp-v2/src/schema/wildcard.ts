@@ -31,7 +31,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`System.Linq.Enumerable.ToDictionary( ${valueOf(container)}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
+        return toExpression(`/* 1 */ System.Linq.Enumerable.ToDictionary( ${valueOf(container)}.Property("${serializedName}")?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
 
       case KnownMediaType.Xml:
         return toExpression(`System.Linq.Enumerable.ToDictionary( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', toExpression('null'))} )`);
@@ -53,7 +53,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Json:
         const nodeAsObject = `(${(valueOf(node))} as ${ClientRuntime.JsonObject})`;
-        return toExpression(`System.Linq.Enumerable.ToDictionary( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
+        return toExpression(`/* 2 */ System.Linq.Enumerable.ToDictionary( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, toExpression('null'))} )`);
     }
     return toExpression(`null /* deserializeFromNode (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
   }
