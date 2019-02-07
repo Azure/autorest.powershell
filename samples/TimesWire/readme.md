@@ -53,7 +53,7 @@ powershell:
 ``` yaml
 
 use:
-- "@microsoft.azure/autorest.incubator@preview"
+- "@microsoft.azure/autorest.powershell@beta"
 
 ```
 
