@@ -5,7 +5,7 @@
 import { deconstruct, pascalCase, items, length, values, Dictionary } from '@microsoft.azure/codegen';
 import { JsonType, EnumDetails } from '@microsoft.azure/autorest.codemodel-v3';
 
-import { Catch, Try, Else, ElseIf, If, Interface, ImportDirective, ImportStatic, Attribute, Parameter, ParameterModifier, Access, Modifier, dotnet, ClassType, Alias, Class, Constructor, Field, LambdaMethod, PartialMethod, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, LocalVariable, Using, Return, LambdaProperty, LazyProperty, Property } from '@microsoft.azure/codegen-csharp';
+import { Catch, Try, Else, ElseIf, If, Interface, ImportDirective, ImportStatic, Attribute, Parameter, ParameterModifier, Access, Modifier, dotnet, ClassType, Alias, Class, Constructor, Field, LambdaMethod, PartialMethod, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, LocalVariable, Using, Return, LambdaProperty, LazyProperty, Property, Struct } from '@microsoft.azure/codegen-csharp';
 
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
 
@@ -15,7 +15,6 @@ import { ModelCmdlet } from './model-cmdlet';
 import { ModuleClass } from './module-class';
 import { PSObject, PSTypeConverter, TypeConverterAttribute, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from './powershell-declarations';
 import { CmdletClass } from './cmdlet-class';
-
 
 export class ServiceNamespace extends Namespace {
   public moduleClass: ModuleClass;
@@ -52,7 +51,7 @@ export class SupportNamespace extends Namespace {
     for (const enumInfo of enumInfos) {
       const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
 
-      const enumClass = new Class(this, enumInfo.details.name, undefined, {
+      const enumClass = new Struct(this, enumInfo.details.name, undefined, {
         interfaces: [IArgumentCompleter],
         partial: true,
         description: enumInfo.description || `Argument completer implementation for ${enumInfo.details.name}.`

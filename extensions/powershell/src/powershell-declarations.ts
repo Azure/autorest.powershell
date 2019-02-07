@@ -30,6 +30,7 @@ export const IArgumentCompleter: IInterface = { allProperties: [], fullName: 'Sy
 export const CompletionResult: TypeDeclaration = new ClassType(sma, `CompletionResult`);
 export const CommandAst: TypeDeclaration = new ClassType(`${sma}.Language`, `CommandAst`);
 export const CompletionResultType: TypeDeclaration = new ClassType(sma, `CompletionResultType`);
+export const ArgumentCompleterAttribute: TypeDeclaration = new ClassType(sma, `ArgumentCompleter`);
 
 export const AsyncCommandRuntime = new ClassType(ClientRuntime, `PowerShell.AsyncCommandRuntime`);
 export const AsyncJob = new ClassType(ClientRuntime, `PowerShell.AsyncJob`);
