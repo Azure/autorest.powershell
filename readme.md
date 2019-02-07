@@ -1,4 +1,5 @@
-/multi-api# AutoRest Incubator.
+AutoRest PowerShell Generator Project
+
 
 # Contributing
 
@@ -19,10 +20,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 # NOTES
 This file is really only used for local testing, where loading the individual plugins on the cmdline is terribly
 cumbersome.
-
-The `AutoRest.Incubator` project really doens't need to be published anymore -- the individual components should be published
-and used instead -- even in beta-testing.
-
 
 ### Autorest plugin configuration
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
