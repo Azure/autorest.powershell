@@ -11,15 +11,16 @@
 - If you've been using the `PowerShell` Generator, you can upgrade pretty easily:
 
 ``` powershell
+    >
     # force npm to remove old stuff
     > npm cache clean --force
 
     # remove old autorest extensions
     > autorest --reset 
 
-    # install the lates version of hte incubator (you still have to 
-    # say --use=@microsoft.azure/autorest.incubator@preview when you use it! )
-    > autorest --use=@microsoft.azure/autorest.incubator@preview --help
+    # install the lates version of hte generator (you still have to 
+    # say --use=@microsoft.azure/autorest.powershell@beta when you use it! )
+    > autorest --powershell --help
     
     # verify the version you have
     > autorest --info 
@@ -36,7 +37,7 @@ Showing All Installed Extensions
 
  Type       Extension Name                           Version      Location
  core       @microsoft.azure/autorest-core           2.0.4289     C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@2.0.4289
- extension  @microsoft.azure/autorest.incubator      1.0.123      C:\Users\garretts\.autorest\@microsoft.azure_autorest.incubator@1.0.123
+ extension  @microsoft.azure/autorest.powershell      1.0.123      C:\Users\garretts\.autorest\@microsoft.azure_autorest.powershell@1.0.123
 ```
 
 # Prerequisites
@@ -56,7 +57,7 @@ Showing All Installed Extensions
     - install via npm:
     - `npm install -g dotnet-sdk-2.1`
 
-- AutoRest incubator project (where the generator is)
+- AutoRest powershell project (where the generator is)
 
 _use this to install and/or update to the latest version as updates come_
 
@@ -67,9 +68,6 @@ _use this to install and/or update to the latest version as updates come_
     # remove old autorest extensions
     > autorest --reset 
 
-    # install the lates version of hte incubator (you still have to 
-    # say --use=@microsoft.azure/autorest.incubator@preview when you use it! )
-    > autorest --use=@microsoft.azure/autorest.incubator@preview
 
 ```
 # CAVEATS, AND KNOWN ISSUES:
@@ -83,7 +81,7 @@ _use this to install and/or update to the latest version as updates come_
   <br>&nbsp;&nbsp;`operationId: MyResource_Get` or 
   <br>&nbsp;&nbsp;`operationId: SomeAPI_List`
   <br>if there are tags, we try to guess something useful, but no guarantees.
-- If something doesn't work, try to trim down the OpenAPI file to narrow down what it doesn't like, and post an issue back to https://github.com/azure/autorest.incubator with a clear example.
+- If something doesn't work, try to trim down the OpenAPI file to narrow down what it doesn't like, and post an issue back to https://github.com/azure/autorest.powershell with a clear example.
 - Http testing/mocking support works, see the second example below, however, it has primitive scrubbing, so be careful with storing API keys, etc.
 - Documentation/Deep Knowledge is coming as soon as I can get around to it. 
 
@@ -94,13 +92,13 @@ _use this to install and/or update to the latest version as updates come_
 ### When Using an autorest literate configuration file
 
 ```
-autorest --use=@microsoft.azure/autorest.incubator@preview --powershell --output-folder=./output path/to/autorest-cfg-file/readme.md
+autorest --use=@microsoft.azure/autorest.ubator@preview --powershell --output-folder=./output path/to/autorest-cfg-file/readme.md
 ```
 
 ### When building with just an OpenAPI2/Swagger file
 
 ```
-autorest --use=@microsoft.azure/autorest.incubator@preview --powershell --output-folder=./output --input-file=./path/to/swagger.json
+autorest --use=@microsoft.azure/autorest.powershell@preview --powershell --output-folder=./output --input-file=./path/to/swagger.json
 ```
 
 # Examples
@@ -112,7 +110,7 @@ autorest --use=@microsoft.azure/autorest.incubator@preview --powershell --output
 # try out the Xkcd example
 cd ./Examples/Xkcd
 
-autorest --use=@microsoft.azure/autorest.incubator@preview --powershell --input-file=xkcd.yaml --namespace=Xkcd --output-folder=./generated --clear-output-folder
+autorest --use=@microsoft.azure/autorest.powershell@preview --powershell --input-file=xkcd.yaml --namespace=Xkcd --output-folder=./generated --clear-output-folder
 ```
 Output:
 ```
@@ -120,7 +118,7 @@ AutoRest code generation utility [version: 2.0.4283; node: v8.11.2]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
    Loading AutoRest core      '/home/garretts/.autorest/@microsoft.azure_autorest-core@2.0.4286/node_modules/@microsoft.azure/autorest-core/dist' (2.0.4286)
-   Loading AutoRest extension '@microsoft.azure/autorest.incubator' (1.0.105->1.0.105)
+   Loading AutoRest extension '@microsoft.azure/autorest.powershell' (1.0.105->1.0.105)
 >
 ```
 
@@ -137,12 +135,12 @@ Output:
 Spawning in isolated process.
 Cleaning folders...
 Compiling private module code
-Private Module loaded (/autorest.incubator/Examples/Xkcd/generated/bin/XKCD.private.dll).
+Private Module loaded (/autorest.powershell/Examples/Xkcd/generated/bin/XKCD.private.dll).
 Processing cmdlet variants
 Generating unified cmdlet proxies
 Done.
 -------------------------------
-PS /work/autorest.incubator/Examples/Xkcd/generated [ testing XKCD ] >
+PS /work/autorest.powershell/Examples/Xkcd/generated [ testing XKCD ] >
 ```
 
 Note that the prompt has changed, and contains `[ testing XKCD ]` at the end, telling us that the module is loaded.
@@ -215,9 +213,9 @@ AutoRest code generation utility [version: 2.0.4283; node: v8.11.2]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
    Loading AutoRest core      '/home/garretts/.autorest/@microsoft.azure_autorest-core@2.0.4286/node_modules/@microsoft.azure/autorest-core/dist' (2.0.4286)
-   Loading AutoRest extension '@microsoft.azure/autorest.incubator' (preview->1.0.105)
+   Loading AutoRest extension '@microsoft.azure/autorest.powershell' (preview->1.0.105)
 
-PS /autorest.incubator/Examples/TimesWire>
+PS /autorest.powershell/Examples/TimesWire>
 ```
 
 Authentication varies so much between services, you'll have to add support to add authentication to the requests.
@@ -286,37 +284,37 @@ Describe 'Get-Article Tests' {
 Then you can record the API calls:
 
 ``` powershell
-PS /autorest.incubator/Examples/TimesWire/generated [ testing TimesNewswire ] > $TestMode = 'record' ; invoke-pester
+PS /autorest.powershell/Examples/TimesWire/generated [ testing TimesNewswire ] > $TestMode = 'record' ; invoke-pester
 Executing all tests in '.'
 
 # example test file, it's empty
-Executing script /autorest.incubator/Examples/TimesWire/generated/tests/Example.Tests.ps1
+Executing script /autorest.powershell/Examples/TimesWire/generated/tests/Example.Tests.ps1
 
 # test file for this api!
-Executing script /autorest.incubator/Examples/TimesWire/generated/tests/get-article.tests.ps1
+Executing script /autorest.powershell/Examples/TimesWire/generated/tests/get-article.tests.ps1
 
   Describing Get-Article Tests
     [+] gets sports articles 504ms
 Tests completed in 504ms
 Tests Passed: 1, Failed: 0, Skipped: 0, Pending: 0, Inconclusive: 0
-PS /autorest.incubator/Examples/TimesWire/generated [ testing TimesNewswire ] >
+PS /autorest.powershell/Examples/TimesWire/generated [ testing TimesNewswire ] >
 ```
 
 and then play them back without making actual remote calls: 
 
 ``` powershell
-PS /autorest.incubator/Examples/TimesWire/generated [ testing TimesNewswire ] > $TestMode = 'playback' ; invoke-pester
+PS /autorest.powershell/Examples/TimesWire/generated [ testing TimesNewswire ] > $TestMode = 'playback' ; invoke-pester
 Executing all tests in '.'
 
-Executing script /autorest.incubator/Examples/TimesWire/generated/tests/Example.Tests.ps1
+Executing script /autorest.powershell/Examples/TimesWire/generated/tests/Example.Tests.ps1
 
-Executing script /autorest.incubator/Examples/TimesWire/generated/tests/get-article.tests.ps1
+Executing script /autorest.powershell/Examples/TimesWire/generated/tests/get-article.tests.ps1
 
   Describing Get-Article Tests
     [+] gets sports articles 147ms
 Tests completed in 147ms # MUCH FASTER!
 Tests Passed: 1, Failed: 0, Skipped: 0, Pending: 0, Inconclusive: 0
-PS /autorest.incubator/Examples/TimesWire/generated [ testing TimesNewswire ] >
+PS /autorest.powershell/Examples/TimesWire/generated [ testing TimesNewswire ] >
 ```
 
 
