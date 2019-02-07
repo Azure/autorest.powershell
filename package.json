@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "autorest.incubator",
+  "name": "autorest.powershell-testing",
   "scripts": {
     "start": "node --max_old_space_size=4096 ./extensions/incubator/dist/autorest-extension",
     "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/incubator/dist/autorest-extension",
