@@ -1,7 +1,7 @@
 import * as XmlBuilder from 'xmlbuilder';
 import { codemodel, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';
-import { Project } from './project';
+import { Project } from '../project';
 import { length, values } from '@microsoft.azure/codegen';
 import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 

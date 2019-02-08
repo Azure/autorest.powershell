@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
-import { generateFormatPs1xml } from './generate-format-ps1xml';
+import { generateFormatPs1xml } from './generators/format-ps1xml';
 
 import { PsdFile } from './file-formats/psd-file'
 import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation } from '@microsoft.azure/codegen';
