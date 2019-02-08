@@ -1,64 +1,13 @@
 {
-  "name": "@microsoft.azure/autorest.incubator",
-  "version": "1.0.0",
-  "description": "AutoRest incubator project",
-  "main": "dist/plugin/main.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "private": true,
+  "name": "autorest.powershell-testing",
   "scripts": {
-    "start": "node ./dist/plugin/main.js",
-    "build": "npm run lint && tsc -p . && node .scripts/fix-aliased-imports.js",
-    "prepare": "npm run build",
-    "test": "npm run build && mocha dist/test",
-    "test-dead": "&& mocha dist/func-factory/test --timeout 100000 && mocha dist/highlevel/test --timeout 10000 && mocha dist/lowlevel/test --timeout 5000",
-    "test-run": "cls ; npm run build ; if ($LastExitCode -eq 0 ) { autorest --use=. --powershell C:/work/2018/azure-rest-api-specs/specification/containerregistry/resource-manager/readme.md --output-folder=./generated --debug --verbose    }",
-    "testci": "npm run test",
-    "publish-preview": "npm test && node ./.scripts/publish",
-    "unpack": "npm run run-pwsh unpack",
-    "run-pwsh": "pwsh -command \"& {param($script) pwsh -command ((convertfrom-json (get-content -raw ./package.json)).'pwsh-scripts'.$script) }\"",
-    "lint": "tslint -c ./tslint.json  --project .",
-    "watch": "npm run run-pwsh watch"
+    "start": "node --max_old_space_size=4096 ./extensions/incubator/dist/autorest-extension",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/incubator/dist/autorest-extension",
+    "install": "node ./common/scripts/install-run-rush.js update",
+    "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
   },
-  "pwsh-scripts": {
-    "unpack": "remove-item -recurse ./package -ea 0 ; yarn pack ; gzip -cd *.tgz | tar -xvf - ; erase *.tgz",
-    "watch": "Start-Process -FilePath (get-command node) -ArgumentList @('./.scripts/fix-aliased-imports.js' , '--watch') ; Start-Process -FilePath (get-command tsc)  @('-p','.','--watch')"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Azure/autorest.incubator.git"
-  },
-  "keywords": [
-    "AutoRest",
-    "Incubator"
-  ],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Azure/autorest.incubator/issues"
-  },
-  "homepage": "https://github.com/Azure/autorest.incubator#readme",
   "devDependencies": {
-    "@types/js-yaml": "3.10.1",
-    "@types/mocha": "latest",
-    "@types/node": "^8.0.51",
-    "mocha": "latest",
-    "mocha-typescript": "latest",
-    "semver": "^5.4.1",
-    "tslint": "^5.11.0",
-    "tslint-language-service-ts3": "1.0.0",
-    "tslint-microsoft-contrib": "^5.2.1",
-    "tspath": "^1.2.10",
-    "typescript": "^3.1.1",
-    "yarn": "^1.7.0",
-    "tslint-sonarts": "^1.8.0",
-    "get-powershell": "*"
-  },
-  "dependencies": {
-    "@microsoft.azure/async-io": "2.0.19",
-    "@microsoft.azure/autorest-extension-base": "1.0.23",
-    "@microsoft.azure/tasks": "^2.0.12",
-    "js-yaml": "^3.10.0",
-    "source-map-support": "0.5.3"
+    "pwsh": "0.2.0"
   }
 }

@@ -1,0 +1,213 @@
+/**
+ * This is the main configuration file for Rush.
+ * For full documentation, please see https://rushjs.io
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
+  /**
+   * (Required) This specifies the version of the Rush engine to be used in this repo.
+   * Rush's "version selector" feature ensures that the globally installed tool will
+   * behave like this release, regardless of which version is installed globally.
+   *
+   * The common/scripts/install-run-rush.js automation script also uses this version.
+   *
+   * NOTE: If you upgrade to a new major version of Rush, you should replace the "v5"
+   * path segment in the "$schema" field for all your Rush config files.  This will ensure
+   * correct error-underlining and tab-completion for editors such as VS Code.
+   */
+  "rushVersion": "5.3.1",
+  /**
+   * The next field selects which package manager should be installed and determines its version.
+   * Rush installs its own local copy of the package manager to ensure that your build process
+   * is fully isolated from whatever tools are present in the local environment.
+   *
+   * Specify one of: "pnpmVersion", "npmVersion", or "yarnVersion".  See the Rush documentation
+   * for details about these alternatives.
+   */
+  "pnpmVersion": "2.15.1",
+  /**
+   * Options that are only used when the PNPM package manager is selected
+   */
+  "pnpmOptions": {
+    /**
+     * If true, then Rush will add the "--strict-peer-dependencies" option when invoking PNPM.
+     * This causes "rush install" to fail if there are unsatisfied peer dependencies, which is
+     * an invalid state that can cause build failures or incompatible dependency versions.
+     * (For historical reasons, JavaScript package managers generally do not treat this invalid
+     * state as an error.)
+     *
+     * The default value is false to avoid legacy compatibility issues.
+     * It is strongly recommended to set strictPeerDependencies=true.
+     */
+    "strictPeerDependencies": true
+  },
+  /**
+   * Older releases of the NodeJS engine may be missing features required by your system.
+   * Other releases may have bugs.  In particular, the "latest" version will not be a
+   * Long Term Support (LTS) version and is likely to have regressions.
+   *
+   * Specify a SemVer range to ensure developers use a NodeJS version that is appropriate
+   * for your repo.
+   */
+  "nodeSupportedVersionRange": ">=8.9.4 <11.0.0",
+  "ensureConsistentVersions": true,
+  "projectFolderMinDepth": 2,
+  "projectFolderMaxDepth": 3,
+  "repository": {
+    /**
+     * This setting is sometimes needed when using "rush change" with multiple Git remotes.
+     * It specifies the remote url for the official Git repository.  If this URL is provided,
+     * "rush change" will use it to find the right remote to compare against.
+     */
+    // "url": "https://github.com/Microsoft/rush-example"
+  },
+  /**
+   * Event hooks are customized script actions that Rush executes when specific events occur
+   */
+  "eventHooks": {
+    /**
+     * The list of shell commands to run before the Rush installation starts
+     */
+    "preRushInstall": [
+      // "common/scripts/pre-rush-install.js"
+    ],
+    /**
+     * The list of shell commands to run after the Rush installation finishes
+     */
+    "postRushInstall": [],
+    /**
+     * The list of shell commands to run before the Rush build command starts
+     */
+    "preRushBuild": [],
+    /**
+     * The list of shell commands to run after the Rush build command finishes
+     */
+    "postRushBuild": []
+  },
+  /**
+   * Rush can collect anonymous telemetry about everyday developer activity such as
+   * success/failure of installs, builds, and other operations.  You can use this to identify
+   * problems with your toolchain or Rush itself.  THIS TELEMETRY IS NOT SHARED WITH MICROSOFT.
+   * It is written into JSON files in the common/temp folder.  It's up to you to write scripts
+   * that read these JSON files and do something with them.  These scripts are typically registered
+   * in the "eventHooks" section.
+   */
+  "telemetryEnabled": false,
+  "projects": [
+    {
+      "packageName": "@microsoft.azure/tasks",
+      "projectFolder": "perks/libraries/tasks",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/async-io",
+      "projectFolder": "perks/libraries/async-io",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/eventing",
+      "projectFolder": "perks/libraries/eventing",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/extension",
+      "projectFolder": "perks/libraries/extension",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/datastore",
+      "projectFolder": "perks/libraries/datastore",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/linq",
+      "projectFolder": "perks/libraries/linq",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/openapi",
+      "projectFolder": "perks/libraries/openapi",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/uri",
+      "projectFolder": "perks/libraries/uri",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/oai2-to-oai3",
+      "projectFolder": "perks/libraries/oai2-to-oai3",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/autorest-extension-base",
+      "projectFolder": "perks/libraries/autorest-extension-base",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/autorest.codemodel-v3",
+      "projectFolder": "perks/libraries/codemodel-v3",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/codegen",
+      "projectFolder": "perks/libraries/codegen",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/codegen-csharp",
+      "projectFolder": "perks/libraries/codegen-csharp",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/object-comparison",
+      "projectFolder": "perks/libraries/object-comparison",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@microsoft.azure/deduplication",
+      "projectFolder": "perks/libraries/deduplication",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    /* --- project packages --- */ 
+    {
+      "packageName": "@microsoft.azure/autorest.csharp-v2",
+      "projectFolder": "extensions/csharp-v2",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@microsoft.azure/autorest.remodeler",
+      "projectFolder": "extensions/remodeler",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@microsoft.azure/autorest.powershell",
+      "projectFolder": "extensions/powershell",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@microsoft.azure/autorest.incubator",
+      "projectFolder": "extensions/incubator",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    }
+  ]
+}

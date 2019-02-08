@@ -2,13 +2,12 @@
 {
   "files.eol": "\n",
   "files.exclude": {
-    "node_modules/**": true,
-    "dist/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
     "generated/**": true,
     "generated": true,
     "ps-generated/**": true,
     "generated2/**": true,
-    "**/node_modules/**": true,
     "**/*.js.map": true,
     "**/*.js": {
       "when": "$(basename).ts"
@@ -27,7 +26,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.tabSize": 2,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
   },
   "[json]": {
     "editor.formatOnSave": true,
@@ -42,4 +41,9 @@
     "editor.detectIndentation": false
   },
   "typescript.tsdk": "node_modules\\typescript\\lib",
+  "files.associations": {
+    "rush.json": "jsonc",
+    "command-line.json": "jsonc",
+    "common-versions.json": "jsonc"
+  },
 }

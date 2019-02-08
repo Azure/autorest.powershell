@@ -1,0 +1,31 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/command-line.schema.json",
+  "commands": [
+    {
+      "commandKind": "bulk",
+      "name": "set-version",
+      "summary": "set the version in the package.json files",
+      "enableParallelism": true,
+      "ignoreMissingScript": true
+    },
+    {
+      "commandKind": "global",
+      "name": "sync-versions",
+      "summary": "sync versions of sibling projects",
+      "shellCommand": "node common/scripts/sync-versions.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "watch",
+      "summary": "run npm watch on all projects",
+      "shellCommand": "node common/scripts/watch.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "clean",
+      "summary": "run npm clean on all projects",
+      "shellCommand": "node common/scripts/clean.js"
+    }
+  ],
+  "parameters": []
+}

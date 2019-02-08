@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <LangVersion>7.1</LangVersion>
+    <OutputType>Library</OutputType>
+     <TargetFramework>netstandard2.0</TargetFramework>
+    <nowarn>1998</nowarn> <!-- some methods are marked async that don't have an await in them.-->
+  </PropertyGroup>
+
+  <ItemGroup>
+     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+     <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
+     <PackageReference Include="Microsoft.CSharp" Version="*"/>
+  </ItemGroup>
+</Project>
