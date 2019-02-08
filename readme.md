@@ -47,13 +47,6 @@ load-priority: 1001
 ``` yaml 
 powershellincubator: true
 enable-multi-api: true
-
-api-folder: private/api
-api-extensions-folder: private/api-extensions
-runtime-folder: private/runtime
-cmdlet-folder: private/cmdlets/generated
-custom-cmdlet-folder: private/custom
-module-folder: private/
 use-namespace-folders: false
 
 pipeline:
@@ -127,7 +120,6 @@ output-artifact:
 
 
 ``` yaml $(llcsharp)
-api-folder: ""
 
 pipeline:
   # "Shake the tree", and normalize the model
