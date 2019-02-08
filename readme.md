@@ -78,14 +78,17 @@ pipeline:
   psnamer:
     input: csnamer 
 
+  cosmetic-modifier:
+    input: psnamer  
+
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: psnamer # and the generated c# files
+    input: cosmetic-modifier # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: psnamer
+    input: cosmetic-modifier
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
@@ -111,6 +114,29 @@ output-artifact:
   - source-file-other
 
 ```
+
+``` yaml
+directive:
+  - where-model: (^ApiKey$)
+    set-name: $1s
+
+  - where-property: Tag
+    set-name: Tago
+  
+  - where-parameter: Name
+    set-name: MyName
+
+
+  - remove-command: Get-AzOperation.*
+
+  - where-noun: ^Configuration(.*)
+    set-value:  'MyConfiguration$1' 
+  
+  - where-verb: Get 
+    set-value: Retrieve
+
+```
+
 
 
 ``` yaml $(llcsharp)

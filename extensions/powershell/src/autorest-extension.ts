@@ -8,6 +8,7 @@ import { AutoRestExtension, } from '@microsoft.azure/autorest-extension-base';
 import { createCommands } from './plugin-create-commands'
 import { powershell } from './plugin-powershell';
 import { namer } from './plugin-namer'
+import { cosmeticModifier } from './cosmetic-modifier'
 
 require('source-map-support').install();
 
@@ -18,6 +19,7 @@ async function main() {
   pluginHost.Add('powershell', powershell);
   pluginHost.Add('create-commands', createCommands);
   pluginHost.Add('psnamer', namer);
+  pluginHost.Add('cosmetic-modifier', cosmeticModifier);
 
   await pluginHost.Run();
 }
