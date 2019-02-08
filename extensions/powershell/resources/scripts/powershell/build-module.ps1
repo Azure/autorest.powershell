@@ -77,6 +77,7 @@ if( $commands.length -eq 0  ) {
 }
 
 $outputs = @{}
+$argumentCompleters = @{}
 
 write-host -fore green "Processing cmdlet variants"
 $commands |% {
@@ -120,8 +121,15 @@ $commands |% {
 
         $p = $metadata.Parameters[$name]
         if( -not ($cmdlet.cmdlet.parameters.ContainsKey($name) ) ) {
+            $argumentCompleter = $p.Attributes | Where-Object { $_.GetType().FullName -eq 'System.Management.Automation.ArgumentCompleterAttribute' } | Select-Object -First 1
+            if($argumentCompleter) {
+                if(-not ($argumentCompleters.ContainsKey($targetCmdlet))) {
+                    $argumentCompleters[$targetCmdlet] = @{}
+                }
+                $argumentCompleters[$targetCmdlet][$name] = $argumentCompleter.Type
+            }
             # add the parameter to the target
-            $newParam = New-Object System.Management.Automation.ParameterMetadata($p);
+            $newParam = New-Object System.Management.Automation.ParameterMetadata($p)
             $newParam.ParameterSets.Clear()
             $cmdlet.cmdlet.Parameters.add($name, $newParam)
         }
@@ -195,6 +203,20 @@ $outputs.Keys |% {
         }
         $text = $text.replace("[CmdletBinding(", "[CmdletBinding(DefaultParameterSetName='$defaultName'$commaSpace")
     }
+
+    if($argumentCompleters.ContainsKey($cmdletname)) {
+        $argumentCompleters[$cmdletname].Keys |% {
+            $paramName = $_
+            $completerType = $argumentCompleters[$cmdletname][$paramName]
+
+            if($text -match "\r\n(\s*)\[(.*)]\r\n\s*\$`{$paramName}") {
+                $spaces = $matches[1]
+                $typeName = $matches[2]
+                $text = $text -replace "\r\n$spaces\[$typeName]\r\n$spaces\$`{$paramName}", "`n$spaces[ArgumentCompleter([$completerType])]`n$spaces[$typeName]`n$spaces$`{$paramName}"
+            }
+        }
+    }
+
     $outputType = ($each.variants.GetEnumerator() | Select-Object -First 1).Value.outputType
     $outputTypeAttribute = ''
     if($outputType) {

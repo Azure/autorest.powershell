@@ -76,6 +76,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     });
     this.description = schemaWithFeatures.schema.details.csharp.description;
     this.implementation = schemaWithFeatures;
+    this.partial = true;
 
     this.apply(objectInitializer);
 
