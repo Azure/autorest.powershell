@@ -13,7 +13,7 @@ import { Attribute, Access, Modifier, Class, LiteralExpression, StringExpression
 import { Schema, Binary } from '@microsoft.azure/autorest.csharp-v2';
 
 
-import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from './powershell-declarations';
+import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, ArgumentCompleterAttribute } from './powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {
@@ -184,6 +184,10 @@ default:
       const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
       cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
       cmdletParameter.description = desc;
+
+      if (td.schema.details.csharp.enum !== undefined) {
+        cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
+      }
     }
   }
 

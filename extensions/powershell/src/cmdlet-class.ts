@@ -12,7 +12,7 @@ import { TerminalCase, Catch, ForEach, Else, Finally, If, Return, Switch, Try, U
 import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, InvocationInfo } from './powershell-declarations';
+import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, ArgumentCompleterAttribute, InvocationInfo } from './powershell-declarations';
 import { State } from './state';
 
 export class CmdletClass extends Class {
@@ -609,10 +609,15 @@ export class CmdletClass extends Class {
           },
           description: parameter.details.csharp.description
         }));
-        if (!parameter.details.csharp.isBodyParameter) {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)] }));
-        } else {
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`), new LiteralExpression('ValueFromPipeline = true')] }));
+
+        const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)];
+        if (parameter.details.csharp.isBodyParameter) {
+          parameters.push(new LiteralExpression('ValueFromPipeline = true'));
+        }
+        cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: parameters }));
+
+        if (td.schema.details.csharp.enum !== undefined) {
+          cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
         }
       }
     }
