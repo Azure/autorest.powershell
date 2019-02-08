@@ -11,6 +11,14 @@ namespace Microsoft.Rest.ClientRuntime
     /// </remarks>
     public partial class EventData : EventArgs
     {
+        public string CmdletInvocationId;
+        public string ProcessRecordId;
+        public string ParameterSetName;
+
+        public System.Management.Automation.InvocationInfo InvocationInfo;
+
+        public System.Exception Exception;
+
     }
 
     /// <summary>
