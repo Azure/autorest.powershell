@@ -41,7 +41,7 @@ export async function powershell(service: Host) {
     await service.ProtectFiles(project.testFolder);
 
     // wait for all the generation to be done
-    await copyRuntime(service, project);
+    await copyRequiredFiles(service, project);
     await generateCsproj(service, project);
     await generateModule(service, project);
     await generateFormatPs1xml(service, model, project);
@@ -54,15 +54,12 @@ export async function powershell(service: Host) {
   }
 }
 
-async function copyRuntime(service: Host, project: Project) {
-  // PowerShell Scripts
-  await copyResources(join(resources, 'scripts', 'powershell'), async (fname, content) => service.WriteFile(fname, content, undefined, sourceFileCSharp));
+async function copyRequiredFiles(service: Host, project: Project) {
+  // Project assets
+  await copyResources(join(resources, 'assets'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-other'));
 
-  // c# files
-  await copyResources(join(resources, 'runtime', 'powershell'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
-  if (project.azure) {
-    await copyResources(join(resources, 'runtime', 'powershell.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
-  }
+  // Runtime files
+  await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
 }
 
 async function generateCsproj(service: Host, project: Project) {
