@@ -7,6 +7,7 @@ import { intersect } from '@microsoft.azure/codegen';
 import { Expression, TypeDeclaration, Parameter, ParameterModifier, Access, Modifier, dotnet, ClassType, Class, Constructor, Field, LambdaMethod, PartialMethod, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, LocalVariable, Using, Return, LambdaProperty, LazyProperty, Property } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
+import { IInterface } from '@microsoft.azure/codegen-csharp';
 
 const sma = new Namespace(`System.Management.Automation`);
 
@@ -25,6 +26,11 @@ export const ResourceGroupCompleter: TypeDeclaration = new ClassType(sma, `Resou
 export const OutputTypeAttribute: TypeDeclaration = new ClassType(sma, `OutputType`);
 export const ErrorRecord: TypeDeclaration = new ClassType(sma, `ErrorRecord`);
 export const SwitchParameter: TypeDeclaration = new ClassType(sma, 'SwitchParameter');
+export const IArgumentCompleter: IInterface = { allProperties: [], fullName: 'System.Management.Automation.IArgumentCompleter' };
+export const CompletionResult: TypeDeclaration = new ClassType(sma, `CompletionResult`);
+export const CommandAst: TypeDeclaration = new ClassType(`${sma}.Language`, `CommandAst`);
+export const CompletionResultType: TypeDeclaration = new ClassType(sma, `CompletionResultType`);
+export const ArgumentCompleterAttribute: TypeDeclaration = new ClassType(sma, `ArgumentCompleter`);
 
 export const AsyncCommandRuntime = new ClassType(ClientRuntime, `PowerShell.AsyncCommandRuntime`);
 export const AsyncJob = new ClassType(ClientRuntime, `PowerShell.AsyncJob`);

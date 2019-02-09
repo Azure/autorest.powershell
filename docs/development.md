@@ -1,14 +1,87 @@
-# AutoRest PowerShell Generator
-<hr>
+# AutoRest PowerShell Generator - Development
 
-## Using the released version of `autorest.powershell`
+## Requirements
 
-See [Using AutoRest PowerShell ](docs/using-autorest-powershell) for examples, etc.
+Use of this project requires the following:
+
+- [NodeJS LTS](https://nodejs.org) (currently 10.15.0) <br> I recommend that you use a tool like [nvs](https://github.com/jasongin/nvs) so that you can switch between versions of node without pain <br>&nbsp;
+- [AutoRest](https://aka.ms/autorest) v3 beta <br> `npm install -g autorest@beta ` <br>&nbsp;
+- [RushJS](https://rushjs.io/) manages multiple nodejs projects in a single repository. <br> `npm install -g @microsoft/rush` <br>&nbsp;
+- PowerShell 6.0 - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g pwsh` <br>&nbsp;
+- Dotnet SDK 2 or greater - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g dotnet-sdk-2.1 ` <br>&nbsp;
+- _Recommended_: [Visual Studio Code](https://code.visualstudio.com/)
+
+
+## Cloning this repository
+
+
+Make sure that you clone this repository with `--recurse` - there is a submodule with common code that we pull from the `https://github.com/azure/perks` project.
+
+
+``` powershell
+# clone recursively
+git clone https://github.com/azure/autorest.powershell --recurse
+
+# one-time
+cd autorest.powershell
+npm install
+```
+
+## Using RushJS
+
+This repository is built as a 'monorepo' using [RushJS](https://rushjs.io/) - which manages multiple nodejs projects in a single repository.
+
+``` powershell
+# install nodejs modules for all projects in the monorepo
+rush update
+```
+
+Rush is used to make sure that package versions are consistent between sub-projects
+
+``` powershell
+# ensure all projects are using the same versions
+rush sync-versions
+
+# install modules 
+rush update
+```
+
+## Compiling
+
+Rush is used to build `autorest.powershell`
+
+``` powershell
+# build everything
+rush rebuild
+```
+
+You can use `watch` to compile when a file is changed, which will rebuild dependencies automatically.
+Just kill the process with ctrl-c to stop it.
+
+``` powershell
+# start watching 
+rush watch
+```
+
+## Using your locally built version of `autorest.powershell`
+
+To use the locally built version of the plugin, add `--use:<path>` to the command line 
+
+``` powershell
+# using a local build
+> autorest --use:c:/work/autorest.powershell <...arguments>
+
+```
+
+### Debugging 
+When using the local 
+
+### Testing
+
+
 
 
 # Contributing
-
-For instructions on cloning/building/etc, see [Development](docs/development)
 
 
 ## Contributor License Agreement Requirements
@@ -42,6 +115,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 enable-multi-api: true
 load-priority: 1001
 ```
+
 
 ``` yaml 
 powershellincubator: true
@@ -79,11 +153,8 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
-  structural-modifier:
-    input: create-commands
-
   create-virtual-properties:
-    input: structural-modifier
+    input: create-commands
 
   # Choose names for everything in c#
   csnamer:
@@ -93,24 +164,21 @@ pipeline:
   psnamer:
     input: csnamer 
 
-  cosmetic-modifier:
-    input: psnamer  
-
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: cosmetic-modifier # and the generated c# files
+    input: psnamer # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: cosmetic-modifier
+    input: psnamer
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
     input:
      - llcsharp
      - powershell
-     - structural-modifier
+     - create-commands
 
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
@@ -129,6 +197,7 @@ output-artifact:
   - source-file-other
 
 ```
+
 
 ``` yaml $(llcsharp)
 api-folder: ""
@@ -178,62 +247,4 @@ output-artifact:
   - source-file-csproj
   # - source-file-other
 
-```
-
-### Example Configurations
-
-#### Command-Removal (regex)
-```yaml false
-directive:
-  - remove-command: Get-AzOperation.*
-```
-
-#### Command-Removal (string literal)
-```yaml false
-directive:
-  - remove-command: New-AzConfigurationStore
-```
-
-#### Command-Rename (regex)
-```yaml 
-directive:
-  - where-command: (.*)(ConfigurationStore)(.*)
-    set-name: $1CStore$3
-```
-
-#### Command-Rename (string literal)
-```yaml false
-directive:
-  - where-command: New-AzConfigurationStore
-    set-name: New-AzConf
-```
-
-#### Model Raname (regex)
-```yaml false
-directive:
-  - where-model: (^Configuration)(.*)
-    set-name:  Config$2
-```
-
-#### Model Rename (string literal)
-```yaml false
-directive:
-  - where-model: ConfigurationStore 
-    set-name:  CS
-```
-
-#### Parameter Rename and Aliasing
-```yaml false
-directive:
-  - where-parameter: ResourceGroupName 
-    set-name:  TheResourceGroup
-    set-alias: RG
-```
-
-#### Property Rename and Aliasing
-```yaml false
-directive:
-  - where-property: Name 
-    set-name:  Nombre
-    set-alias: TheName
 ```
