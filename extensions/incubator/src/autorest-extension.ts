@@ -10,6 +10,7 @@ import { csnamer } from '@microsoft.azure/autorest.csharp-v2/dist/plugin-namer'
 
 import { createCommands } from '@microsoft.azure/autorest.powershell/dist/plugin-create-commands'
 import { powershell } from '@microsoft.azure/autorest.powershell/dist/plugin-powershell';
+import { structuralModifier } from '@microsoft.azure/autorest.powershell/dist/structural-modifier';
 import { cosmeticModifier } from '@microsoft.azure/autorest.powershell/dist/cosmetic-modifier';
 import { namer } from '@microsoft.azure/autorest.powershell/dist/plugin-namer'
 
@@ -40,7 +41,8 @@ async function main() {
   pluginHost.Add('powershell', powershell);
   pluginHost.Add('create-commands', createCommands);
   pluginHost.Add('psnamer', namer);
-  pluginHost.Add('cosmetic-modifier', cosmeticModifier)
+  pluginHost.Add('cosmetic-modifier', cosmeticModifier);
+  pluginHost.Add('structural-modifier', structuralModifier);
 
   await pluginHost.Run();
 }

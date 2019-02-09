@@ -35,16 +35,11 @@
     - remove-command: Get-AzOperation.*
     ```
 - Name change - cosmetic 
-    - Noun change 
-        ```yaml
-        - where-noun: ^Compute(.*)
-          set-value: "$1"
-        ```
-    - Verb change
-        ```yaml
-        - where-verb: Get
-          set-value: Retrieve
-        ```
+      ```yaml
+       - where-command: ^(.+-Az)Compute(.*)
+          set-name: "$1$2"
+      ```
+        
 
 #### P2:
 - Supports Paging? 

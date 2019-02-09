@@ -3,72 +3,44 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, schema, command } from '@microsoft.azure/autorest.codemodel-v3';
-import { values } from '@microsoft.azure/codegen';
-import { deserialize, serialize } from '@microsoft.azure/codegen';
+import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';
-import { Scheme } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/security-scheme';
-import { triggerAsyncId } from 'async_hooks';
-
-
-export async function cosmeticModifier(service: Host) {
-  return processCodeModel(tweakModel, service);
-}
-
+import { values, pascalCase, fixLeadingNumber, deconstruct, nameof } from '@microsoft.azure/codegen';
 const directivesToFilter = new Set<string>([
   'where-model',
   'where-parameter',
   'where-property',
-  'remove-command'
+  'where-command'
 ]);
 
 let directives: Array<any> = [];
 let nounPrefix = '';
 
-async function processCodeModel(processExtension: (input: codemodel.Model, service: Host) => Promise<codemodel.Model>, service: Host) {
-  // Get the list of files
-  const files = await service.ListInputs('code-model-v3');
-
-  // get the openapi document
-  if (files.length === 0) {
-    throw new Error('Inputs missing.');
-  }
-
-  const original = await service.ReadFile(files[0]);
-
-  // deserialize
-  let codeModel = await deserialize<codemodel.Model>(original, files[0]);
-  directives = values(await service.GetValue('directive'))
-    .linq.where(directive => values(Object.keys(directive))
-      .linq.where(key => directivesToFilter.has(key))
-      .linq.any(each => !!each))
-    .linq.toArray();
-
-  const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
-  nounPrefix = await service.GetValue('noun-prefix') || azure ? 'Az' : ``;
-  codeModel = await processExtension(codeModel, service);
-
-  // output the model
-  await service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
-}
-
 interface WhereParameterDirective {
   'where-parameter': string;
-  'set-name': string
+  'set-name'?: string;
+  'set-alias'?: Array<string> | string;
 }
 
 interface WherePropertyDirective {
   'where-property': string;
-  'set-name': string
+  'set-name'?: string;
+  'set-alias'?: Array<string> | string;
 }
 
 interface WhereModelDirective {
   'where-model': string;
-  'set-name': string
+  'set-name': string;
 }
 
-interface RemoveCommandDirective {
-  'remove-command': string;
+interface WhereModelDirective {
+  'where-model': string;
+  'set-name': string;
+}
+
+interface WhereCommandDirective {
+  'where-command': string;
+  'set-name': string;
 }
 
 function isWhereParameterDirective(it: any): it is WhereParameterDirective {
@@ -83,8 +55,19 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
   return it['where-model'];
 }
 
-function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
-  return it['remove-command'];
+function isWhereCommandDirective(it: any): it is WhereCommandDirective {
+  return it['where-command'];
+}
+
+export async function cosmeticModifier(service: Host) {
+  directives = values(await service.GetValue('directive'))
+    .linq.where(directive => values(Object.keys(directive))
+      .linq.where(key => directivesToFilter.has(key))
+      .linq.any(each => !!each))
+    .linq.toArray();
+  const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+  nounPrefix = await service.GetValue('noun-prefix') || azure ? 'Az' : ``;
+  return processCodeModel(tweakModel, service);
 }
 
 async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
@@ -92,27 +75,47 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
   for (const directive of directives) {
 
     if (isWhereParameterDirective(directive)) {
-      const parameters = values(model.commands.operations)
-        .linq.selectMany(operation => values(operation.parameters))
-        .linq.where(parameter => parameter.details.csharp.name === directive['where-parameter'])
-        .linq.toArray();
+      if (directive['set-name'] !== undefined || directive['set-alias']) {
+        const parameters = values(model.commands.operations)
+          .linq.selectMany(operation => values(operation.parameters))
+          .linq.where(parameter => getPascalName(parameter.details.csharp.name) === getPascalName(directive['where-parameter']))
+          .linq.toArray();
 
-      parameters.forEach(parameter => {
-        parameter.details.csharp.name = directive["set-name"];
-      });
+        if (directive['set-name'] !== undefined) {
+          for (const parameter of parameters) {
+            parameter.details.csharp.name = directive['set-name'];
+          }
+        }
+
+        if (directive['set-alias'] !== undefined) {
+          for (const parameter of parameters) {
+            parameter.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
+          }
+        }
+      }
 
       continue;
     }
 
     if (isWherePropertyDirective(directive)) {
-      const properties = values(model.schemas)
-        .linq.selectMany(schema => values(schema.properties))
-        .linq.where(property => property.details.csharp.name === directive['where-property'])
-        .linq.toArray();
+      if (directive['set-name'] !== undefined || directive['set-alias']) {
+        const properties = values(model.schemas)
+          .linq.selectMany(schema => values(schema.properties))
+          .linq.where(property => getPascalName(property.details.csharp.name) === getPascalName(directive['where-property']))
+          .linq.toArray();
 
-      properties.forEach(property => {
-        property.details.csharp.name = directive["set-name"];
-      });
+        if (directive['set-name'] !== undefined) {
+          for (const property of properties) {
+            property.details.csharp.name = directive["set-name"];
+          }
+        }
+
+        if (directive['set-alias'] !== undefined) {
+          for (const property of properties) {
+            property.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
+          }
+        }
+      }
 
       continue;
     }
@@ -125,40 +128,57 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
         const models = values(model.schemas)
           .linq.where(schema => !!schema.details.csharp.name.match(regex))
           .linq.toArray();
-
-        models.forEach(model => {
+        for (const model of models) {
           const replacer = directive['set-name'];
           model.details.csharp.name = model.details.csharp.name.replace(regex, replacer);
-        });
+        }
       } else {
         const models = values(model.schemas)
-          .linq.where(schema => schema.details.csharp.name === whereModelVal)
+          .linq.where(schema => getPascalName(schema.details.csharp.name) === getPascalName(whereModelVal))
           .linq.toArray();
-
-        models.forEach(model => {
+        for (const model of models) {
           model.details.csharp.name = model.details.csharp.name.replace(whereModelVal, directive['set-name']);
-        });
+        }
       }
 
       continue;
     }
 
-    if (isRemoveCommandDirective(directive)) {
-      const removeCommandVal = directive['remove-command'];
 
-      // it is regex if it has something other than number, alpha-num or hyphen(-)
-      const isRegex = !(/^[a-zA-Z0-9-]*$/.test(removeCommandVal));
+    if (isWhereCommandDirective(directive)) {
+      const whereCommandValue = directive['where-command'];
+      const isRegex = !isCommandNameLiteral(directive['where-command']);
       if (isRegex) {
-        const regex = new RegExp(removeCommandVal);
-        for (const [key, operation] of Object.entries(model.commands.operations)) {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
-            delete model.commands.operations[key];
+        const regex = new RegExp(whereCommandValue);
+        const operations = values(model.commands.operations)
+          .linq.where(operation => !!`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex))
+          .linq.toArray();
+        for (const operation of operations) {
+          const replacer = directive['set-name'];
+          const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(regex, replacer);
+          if (isCommandNameLiteral(newName)) {
+            const newNameParts = getCommandNameParts(newName, nounPrefix);
+            operation.noun = newNameParts.noun;
+            operation.verb = newNameParts.verb
+          } else {
+            throw new Error(`set-name: ${directive['set-name']} value from directive provided is incorrect. 
+                          It should result in a string in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
           }
         }
       } else {
-        for (const [key, operation] of Object.entries(model.commands.operations)) {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}` === removeCommandVal) {
-            delete model.commands.operations[key];
+        const operations = values(model.commands.operations)
+          .linq.where(operation => `${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === whereCommandValue.toLowerCase())
+          .linq.toArray();
+        for (const operation of operations) {
+          const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(whereCommandValue, directive['set-name']);
+          if (isCommandNameLiteral(newName)) {
+            const newCommandName = getCommandNameParts(newName, nounPrefix);
+            operation.noun = newCommandName.noun;
+            operation.verb = newCommandName.verb
+
+          } else {
+            throw new Error(`set-name: ${directive['set-name']} value from directive provided is incorrect. 
+                            It should result in a string in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
           }
         }
       }
@@ -170,3 +190,25 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
   return model;
 }
 
+function getDistinctElements(elements: Array<string>): Array<string> {
+  return [... new Set<string>(elements)];
+}
+
+function getPascalName(name: string): string {
+  return pascalCase(fixLeadingNumber(deconstruct(name)));
+}
+
+function isCommandNameLiteral(str: string): boolean {
+  return /^[a-zA-Z]+-[a-zA-Z]+$/.test(str);
+}
+
+function getCommandName(verb: string, prefix: string, noun: string): string {
+  return `${getPascalName(verb)}-${getPascalName(prefix)}${getPascalName(noun)}`;
+}
+
+
+function getCommandNameParts(command: string, prefix: string): { noun: string, verb: string } {
+  command = command.replace(prefix, '');
+  const parts = command.split('-');
+  return { verb: parts[0], noun: parts[1] };
+}

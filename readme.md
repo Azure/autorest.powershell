@@ -30,7 +30,6 @@ enable-multi-api: true
 load-priority: 1001
 ```
 
-
 ``` yaml 
 powershellincubator: true
 enable-multi-api: true
@@ -67,8 +66,11 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
-  create-virtual-properties:
+  structural-modifier:
     input: create-commands
+
+  create-virtual-properties:
+    input: structural-modifier
 
   # Choose names for everything in c#
   csnamer:
@@ -95,7 +97,7 @@ pipeline:
     input:
      - llcsharp
      - powershell
-     - create-commands
+     - structural-modifier
 
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
@@ -114,30 +116,6 @@ output-artifact:
   - source-file-other
 
 ```
-
-``` yaml
-directive:
-  - where-model: (^ApiKey$)
-    set-name: $1s
-
-  - where-property: Tag
-    set-name: Tago
-  
-  - where-parameter: Name
-    set-name: MyName
-
-
-  - remove-command: Get-AzOperation.*
-
-  - where-noun: ^Configuration(.*)
-    set-value:  'MyConfiguration$1' 
-  
-  - where-verb: Get 
-    set-value: Retrieve
-
-```
-
-
 
 ``` yaml $(llcsharp)
 api-folder: ""
@@ -187,4 +165,62 @@ output-artifact:
   - source-file-csproj
   # - source-file-other
 
+```
+
+### Example Configurations
+
+#### Command-Removal (regex)
+```yaml false
+directive:
+  - remove-command: Get-AzOperation.*
+```
+
+#### Command-Removal (string literal)
+```yaml false
+directive:
+  - remove-command: New-AzConfigurationStore
+```
+
+#### Command-Rename (regex)
+```yaml 
+directive:
+  - where-command: (.*)(ConfigurationStore)(.*)
+    set-name: $1CStore$3
+```
+
+#### Command-Rename (string literal)
+```yaml false
+directive:
+  - where-command: New-AzConfigurationStore
+    set-name: New-AzConf
+```
+
+#### Model Raname (regex)
+```yaml false
+directive:
+  - where-model: (^Configuration)(.*)
+    set-name:  Config$2
+```
+
+#### Model Rename (string literal)
+```yaml false
+directive:
+  - where-model: ConfigurationStore 
+    set-name:  CS
+```
+
+#### Parameter Rename and Aliasing
+```yaml false
+directive:
+  - where-parameter: ResourceGroupName 
+    set-name:  TheResourceGroup
+    set-alias: RG
+```
+
+#### Property Rename and Aliasing
+```yaml false
+directive:
+  - where-property: Name 
+    set-name:  Nombre
+    set-alias: TheName
 ```
