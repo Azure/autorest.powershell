@@ -47,7 +47,7 @@ export async function powershell(service: Host) {
     await generateFormatPs1xml(service, model, project);
 
     // debug data
-    service.WriteFile('code-model-v3.powershell.yaml', serialize(model), undefined, 'source-file-other');
+    service.WriteFile(join(project.moduleFolder, 'code-model-v3.powershell.yaml'), serialize(model), undefined, 'source-file-other');
   } catch (E) {
     console.error(E);
     console.error((<Error>E).stack);

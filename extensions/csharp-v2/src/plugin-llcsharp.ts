@@ -96,7 +96,7 @@ export async function llcsharp(service: Host) {
     }
 
     // debug files...
-    service.WriteFile('code-model-v3.csharp.yaml', serialize(model), undefined, 'source-file-other');
+    service.WriteFile(join(apifolder, 'code-model-v3.csharp.yaml'), serialize(model), undefined, 'source-file-other');
 
   } catch (E) {
     console.error(E);
