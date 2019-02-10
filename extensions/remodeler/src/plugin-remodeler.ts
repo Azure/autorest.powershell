@@ -31,9 +31,9 @@ export async function processRequest(service: Host) {
     // go!
     const codeModel = remodeler.remodel();
 
-    // output the model
+    // output the model to the pipeline
     service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
-    service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
+    //service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
   } catch (E) {
     console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
     throw E;

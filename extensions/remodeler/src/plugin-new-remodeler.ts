@@ -10,6 +10,8 @@ import * as OpenAPI from '@microsoft.azure/openapi';
 import { Transformer, visit, Node } from "@microsoft.azure/datastore";
 import { clone } from '@microsoft.azure/linq';
 
+/* FYI: THIS PLUGIN IS NOT YET IN USE. */
+
 class Remodeler extends Transformer<OpenAPI.Model, codemodel.Model> {
   async process(target: codemodel.Model, nodes: Iterable<Node>) {
 
@@ -40,7 +42,7 @@ export async function processRequest(service: Host) {
     // deserialize
     const remodeler = new Remodeler(source);
 
-    // output the model
+    // output the model back to the pipeline
     service.WriteFile('code-model-v3.yaml', serialize(await remodeler.getOutput()), undefined /* await remodeler.getSourceMappings() */, 'code-model-v3');
 
   } catch (E) {
