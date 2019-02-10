@@ -75,6 +75,7 @@ export class Remodeler {
     if (original['x-ms-metadata'] && original['x-ms-metadata'].name) {
       name = original['x-ms-metadata'].name;
     }
+
     // normalize/warn about incorrect usage of binary/stream combinations
     // OAI (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#data-types)
     // indicates that format: string, type: binary is "any sequence of octets" (ie, the body should be treated as a stream of bytes)
@@ -155,6 +156,7 @@ export class Remodeler {
 
     this.addOrThrow(targetDictionary, name, newSchema);
 
+
     switch (type) {
       case JsonType.Integer:
       case JsonType.Number:
@@ -185,6 +187,7 @@ export class Remodeler {
     if (original.enum) {
       newSchema.enum = [...original.enum];
     }
+
 
     newSchema.details.default.enum = Interpretations.getEnumDefinition(original);
 
@@ -242,6 +245,7 @@ export class Remodeler {
 
     if (original.properties) {
       for (const { key: propertyName, value: property } of items(original.properties)) {
+
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>property);
         const newPropSchema = this.refOrAdd(`${name[0] === '.' ? name : `.${name}`}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
         newSchema.properties[propertyName] = new Property(propertyName, {
@@ -259,6 +263,7 @@ export class Remodeler {
         });
       }
     }
+
     return newSchema;
   }
 
@@ -600,7 +605,6 @@ export class Remodeler {
           if (op) {
             // Nelson; hack -- this gets the path back from xmsmetadata
             const actualPath: string = pathItem.instance['x-ms-metadata'] && pathItem.instance['x-ms-metadata'].path ? pathItem.instance['x-ms-metadata'].path : path;
-            // console.error(`Actual Path : ${actualPath}`);
 
             this.add(Interpretations.getOperationId(method, actualPath, op, this.oai.info.title, this.modelState), { instance: { method, path: actualPath, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }
