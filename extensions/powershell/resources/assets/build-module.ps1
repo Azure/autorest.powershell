@@ -1,20 +1,20 @@
 param([Switch]$isolated,[Switch]$test, [Switch]$code)
-pushd $PSScriptRoot
+Push-Location $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
-if($PSVersionTable.PSVersion.Major -lt 6) { 
-    popd
+if($PSVersionTable.PSVersion.Major -lt 6) {
+    Pop-Location
     write-error "This script requires PowerShell Core (don't worry: generated cmdlets can work in PowerShell Core or Windows Powershell)" 
 }
 
 if(-not $isolated) {
     # this ensures that we can run the script repeatedly without worrying about locked files/folders
-    write-host -fore green "Spawning in isolated process." 
+    Write-Host -fore green "Spawning in isolated process." 
     $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
     & $pwsh -command $MyInvocation.MyCommand.Path -isolated 
 
     if( $lastExitCode -ne 0) {
-        popd
+        Pop-Location
         return;
     }
 
@@ -27,72 +27,72 @@ if(-not $isolated) {
           $launch = "$PSScriptRoot/.vscode/launch.json"
           $shh = new-item -Type Directory -Path "$PSScriptRoot/.vscode" -ea 0
           set-content -path $launch -value '{ "version": "0.2.0", "configurations" : [{ "name" : "Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"#PID","justMyCode": false  }] }'
-          
-          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; set-content -path $launch -value ((get-content -path $launch -raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;  import-module '$mpath' "
+
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; Write-host -fore white -nonewline '' ;  return ' ' } ; set-content -path $launch -value ((get-content -path $launch -raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;  import-module '$mpath' "
         } else {
-          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; import-module '$mpath' "
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; Write-host -fore white -nonewline '' ;  return ' ' } ; import-module '$mpath' "
         }
 
         
         
     } else {
-        write-host -fore cyan "To test this module in a new powershell process, run `n"
-        write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "
-        write-host -fore cyan "`nor use -test with this script`n"
+        Write-Host -fore cyan "To test this module in a new powershell process, run `n"
+        Write-Host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command Import-Module '$( (dir ./*.psd1)[0].fullname )' "
+        Write-Host -fore cyan "`nor use -test with this script`n"
     }
-    popd
+    Pop-Location
     return
 }
 
-write-host -fore green "Cleaning folders..."
-@('./exported','./obj', './bin') |% { $shh = remove-item -recurse -ea 0 $_ }
+Write-Host -fore green "Cleaning folders..."
+@('./exports','./obj', './bin') |% { $shh = remove-item -recurse -ea 0 $_ }
 
-if( test-path ./bin ) {
-    popd
+if( Test-Path ./bin ) {
+    Pop-Location
     write-error "Unable to clean binary folder. (a process may have an open handle.)"
 }
 
-write-host -fore green "Compiling private module code"
+Write-Host -fore green "Compiling private module code"
 $shh = dotnet publish --configuration Release --output bin
 if( $lastExitCode -ne 0 ) {
     # if it fails, let's do it again so the output comes out nicely.
     dotnet publish --configuration Release --output bin
-    popd
+    Pop-Location
     write-error "Compilation failed"
 }
 
 @('./bin/Debug','./bin/Release') |% { $shh = Remove-Item -recurse -ea 0 $_ }
 $dll = (Get-ChildItem bin\*.private.dll)[0]
 
-if( -not (test-path $dll) ) {
-    popd
+if( -not (Test-Path $dll) ) {
+    Pop-Location
     write-error "Unable to find output assembly."
 }
 
 $commands = Get-Command -module (Import-Module $dll -passthru)
-write-host -fore gray "Private Module loaded ($dll)."
+Write-Host -fore gray "Private Module loaded ($dll)."
 
 # merge scripts into one file
 $modulename = (Get-ChildItem *.psd1)[0].Name -replace ".psd1",""
 $scriptmodule = $dll -replace ".private.",".scripts." -replace ".dll",".psm1"
 $scriptfile = ""; 
-Get-ChildItem -Recurse private\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(resolve-path -relative $_)`n" + (get-content -raw $_) } ; 
+Get-ChildItem -Recurse custom\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(resolve-path -relative $_)`n" + (get-content -raw $_) } ; 
 Set-Content $scriptmodule -Value $scriptfile
 if( $scriptfile -ne '' ) {
     $commands = $commands + (Get-Command -module (Import-Module $scriptmodule -PassThru))
-    write-host -fore gray "Private Scripts Module loaded ($scriptmodule)."
+    Write-Host -fore gray "Private Scripts Module loaded ($scriptmodule)."
 }
 
 # No commands?
 if( $commands.length -eq 0  ) {
-    popd
+    Pop-Location
     write-error "Unable get commands from private module."
 }
 
 $outputs = @{}
 $argumentCompleters = @{}
 
-write-host -fore green "Processing cmdlet variants"
+Write-Host -fore green "Processing cmdlet variants"
 $commands |% {
 
     $metadata = New-Object System.Management.Automation.CommandMetaData($_)
@@ -153,9 +153,9 @@ $commands |% {
     }
 }
 
-$shh = mkdir "./exported"
+$shh = mkdir "./exports"
 
-write-host -fore green "Generating unified cmdlet proxies"
+Write-Host -fore green "Generating unified cmdlet proxies"
 # Now, loop thru and spit out the proxies
 
 $outputs.Keys |% {
@@ -238,9 +238,9 @@ $outputs.Keys |% {
     $text = "function ${cmdletname} {`n$outputTypeAttribute$text`n}`n"
     $filename = $cmdletname -replace ".*[\\|/]","" -replace '\.ps1$',''
 
-    set-content "exported/${filename}.ps1" -value $text
+    set-content "exports/${filename}.ps1" -value $text
 }
-popd
-write-host -fore green "Done."
-write-host -fore green "-------------------------------"
+Pop-Location
+Write-Host -fore green "Done."
+Write-Host -fore green "-------------------------------"
 
