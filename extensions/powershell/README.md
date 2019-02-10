@@ -73,8 +73,11 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
-  create-virtual-properties:
+  structural-modifier:
     input: create-commands
+
+  create-virtual-properties:
+    input: structural-modifier
 
   # Choose names for everything in c#
   csnamer:
@@ -84,21 +87,24 @@ pipeline:
   psnamer:
     input: csnamer 
 
+  cosmetic-modifier:
+    input: psnamer  
+
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: psnamer # and the generated c# files
+    input: cosmetic-modifier # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: psnamer
+    input: cosmetic-modifier
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
     input:
      - llcsharp
      - powershell
-     - create-commands
+     - structural-modifier
 
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
