@@ -62,9 +62,7 @@ code-model-emitter-settings:
 
 # testing:  ask for the files we need
 output-artifact:
-  # - code-model-v3.yaml # this is filtered outby default. (remove before production)
   - source-file-csharp
   - source-file-csproj
-  # - source-file-other
 
 ```
