@@ -390,12 +390,12 @@ export class Project extends codeDomProject {
 
     this.moduleName = pascalCase(deconstruct(await service.GetValue('module-name') || model.info.title.replace(/client/ig, '')));
 
-    this.moduleFolder = await service.GetValue('module-folder') || './private';
+    this.moduleFolder = await service.GetValue('module-folder') || './generated';
 
-    this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets/generated`;
-    this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/cmdlets/models`;
-    this.customFolder = await service.GetValue('custom-cmdlet-folder') || `${this.moduleFolder}/custom/`;
-    this.testFolder = await service.GetValue('test-folder') || `${this.moduleFolder}/Tests`;
+    this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets`;
+    this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/model-cmdlets`;
+    this.customFolder = await service.GetValue('custom-cmdlet-folder') || `./custom`;
+    this.testFolder = await service.GetValue('test-folder') || `./test`;
 
     this.runtimefolder = await service.GetValue('runtime-folder') || `${this.moduleFolder}/runtime`;
 

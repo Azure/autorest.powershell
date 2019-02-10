@@ -29,24 +29,20 @@ use-extension:
 
 > forces multi-api mode 
 ``` yaml
-
 enable-multi-api: true
 load-priority: 1001
 ```
 
 # Pipeline Configuration
 ``` yaml 
+module-folder: generated/
+api-folder: $(module-folder)/api
+runtime-folder: $(module-folder)/runtime
+api-extensions-folder: $(module-folder)/api-extensions
+cmdlet-folder: $(module-folder)/cmdlets
+custom-cmdlet-folder: custom
+test-folder: test
 
-#api-folder: generated/api
-#runtime-folder: generated/runtime
-
-
-api-folder: private/api
-api-extensions-folder: private/api-extensions
-runtime-folder: private/runtime
-cmdlet-folder: private/cmdlets/generated
-custom-cmdlet-folder: private/custom
-module-folder: private/
 use-namespace-folders: false
 
 pipeline:

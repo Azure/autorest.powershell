@@ -8,8 +8,8 @@
   "main": "dist/exports.js",
   "typings": "dist/exports.d.ts",
   "scripts": {
-    "start": "node --max_old_space_size=4096 ./dist/autorest-extension.js",
-    "debug": "node --max_old_space_size=4096 --inspect-brk ./dist/autorest-extension.js",
+    "start": "node --max_old_space_size=4096 ./dist/main.js",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./dist/main.js",
     "watch": "tsc -p . --watch",
     "build": "tsc -p .",
     "set-version": "node -e \"let pkg = require('./package.json'); require('child_process').exec('git rev-list --parents HEAD --count --full-history .', (o,stdout) => { const v = pkg.version.split('.'); v[v.length-1] = parseInt(stdout.trim()); const orig=JSON.stringify(pkg,null,2);  pkg.version = v.join('.'); const delta = JSON.stringify(pkg,null,2 ); if( orig !== delta) require('fs').writeFileSync('./package.json',delta)})\"",
