@@ -18,21 +18,28 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
-
 #### PowerShell
-``` yaml
 
-enable-multi-api: true
-load-priority: 1001
-
+> Requires remodeler and csharpv2
+``` yaml 
 use-extension:
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
 ```
 
+> forces multi-api mode 
+``` yaml
 
-``` yaml $(powershell)
 enable-multi-api: true
+load-priority: 1001
+```
+
+# Pipeline Configuration
+``` yaml 
+
+#api-folder: generated/api
+#runtime-folder: generated/runtime
+
 
 api-folder: private/api
 api-extensions-folder: private/api-extensions
@@ -66,8 +73,11 @@ pipeline:
   create-commands:
     input: add-apiversion-constant # brings the code-model-v3 with it.
 
-  create-virtual-properties:
+  structural-modifier:
     input: create-commands
+
+  create-virtual-properties:
+    input: structural-modifier
 
   # Choose names for everything in c#
   csnamer:
@@ -77,21 +87,24 @@ pipeline:
   psnamer:
     input: csnamer 
 
+  cosmetic-modifier:
+    input: psnamer  
+
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: psnamer # and the generated c# files
+    input: cosmetic-modifier # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: psnamer
+    input: cosmetic-modifier
 
   # the default emitter will emit everything (no processing) from the inputs listed here.
   default/emitter:
     input:
      - llcsharp
      - powershell
-     - create-commands
+     - structural-modifier
 
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.

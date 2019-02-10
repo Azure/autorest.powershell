@@ -1,7 +1,17 @@
-AutoRest PowerShell Generator Project
+# AutoRest PowerShell Generator
+<hr>
+
+## Using the released version of `autorest.powershell`
+
+See [Using AutoRest PowerShell ](docs/using-autorest-powershell) for examples, etc.
 
 
 # Contributing
+
+For instructions on cloning/building/etc, see [Development](docs/development)
+
+
+## Contributor License Agreement Requirements
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -11,12 +21,15 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
 provided by the bot. You will only need to do this once across all repos using our CLA.
 
+## Code of Conduct
+
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 <hr>
-
+<hr>
+<hr>
 # NOTES
 This file is really only used for local testing, where loading the individual plugins on the cmdline is terribly
 cumbersome.
@@ -30,135 +43,10 @@ enable-multi-api: true
 load-priority: 1001
 ```
 
-
 ``` yaml 
-powershellincubator: true
-enable-multi-api: true
-
-api-folder: private/api
-api-extensions-folder: private/api-extensions
-runtime-folder: private/runtime
-cmdlet-folder: private/cmdlets/generated
-custom-cmdlet-folder: private/custom
-module-folder: private/
-use-namespace-folders: false
-
-pipeline:
-# --- extension remodeler --- 
-
-  # "Shake the tree", and normalize the model
-  remodeler:
-    input: openapi-document/multi-api/identity   # the plugin where we get inputs from
-
-  # Make some interpretations about what some things in the model mean
-  tweakcodemodel:
-    input: remodeler
-
-  # Specific things for Azure
-  tweakcodemodelazure:
-    input: tweakcodemodel
-
-  add-apiversion-constant:
-    input: tweakcodemodelazure
-
-# --- extension powershell --- 
-
-# creates high-level commands
-  create-commands:
-    input: add-apiversion-constant # brings the code-model-v3 with it.
-
-  create-virtual-properties:
-    input: create-commands
-
-  # Choose names for everything in c#
-  csnamer:
-    input: create-virtual-properties # and the generated c# files
-  
-  # ensures that names/descriptions are properly set for powershell
-  psnamer:
-    input: csnamer 
-
-  # creates powershell cmdlets for high-level commands. (leverages llc# code)
-  powershell:
-    input: psnamer # and the generated c# files
-
-# --- extension llcsharp  --- 
-  # generates c# files for http-operations
-  llcsharp:
-    input: psnamer
-
-  # the default emitter will emit everything (no processing) from the inputs listed here.
-  default/emitter:
-    input:
-     - llcsharp
-     - powershell
-     - create-commands
-
-
-# Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
-code-model-emitter-settings:
-  input-artifact: code-model-v3
-  is-object: true
-  output-uri-expr: |
-    "code-model-v3"
-
-# testing:  ask for the files we need
-output-artifact:
-  - code-model-v3.yaml # this is filtered outby default. (remove before production)
-  - source-file-csharp
-  - source-file-csproj
-  - source-file-powershell
-  - source-file-other
-
+use-extension:
+#  "@microsoft.azure/autorest.remodeler": "$(this-folder)/extensions/remodeler"
+#  "@microsoft.azure/autorest.csharp-v2": "$(this-folder)/extensions/csharp-v2"
+  "@microsoft.azure/autorest.powershell": "$(this-folder)/extensions/powershell"
 ```
 
-
-``` yaml $(llcsharp)
-api-folder: ""
-
-pipeline:
-  # "Shake the tree", and normalize the model
-  remodeler:
-    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
-
-  # Make some interpretations about what some things in the model mean
-  tweakcodemodel:
-    input: remodeler
-
-  # Specific things for Azure
-  tweakcodemodelazure:
-    input: tweakcodemodel
-
-  add-apiversion-constant:
-    input: tweakcodemodelazure
-
-  # Choose names for everything in c#
-  csnamer:
-    input: add-apiversion-constant
-
-  # generates c# files for http-operations
-  llcsharp:
-    input: csnamer
-
-
-  # the default emitter will emit everything (no processing) from the inputs listed here.
-  default/emitter:
-    input:
-     - llcsharp
-     - remodeler
-
-# Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
-code-model-emitter-settings:
-  input-artifact: code-model-v3
-  is-object: true
-  output-uri-expr: |
-    "code-model-v3"
-
-# testing:  ask for the files we need
-output-artifact:
-  # - code-model-v3.yaml # this is filtered outby default. (remove before production)
-  - source-file-csharp
-  - source-file-csproj
-  # - source-file-other
-
-```

@@ -49,8 +49,8 @@ export async function powershell(service: Host) {
     // debug data
     service.WriteFile('code-model-v3.powershell.yaml', serialize(model), undefined, 'source-file-other');
   } catch (E) {
-    console.error(E);
-    console.error((<Error>E).stack);
+    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    throw E;
   }
 }
 
@@ -78,7 +78,7 @@ async function generateCsproj(service: Host, project: Project) {
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0-RC1" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
@@ -230,6 +230,9 @@ async function generateModule(service: Host, project: Project) {
 
     # need to let the common module listen to events from this module
     $instance.EventListener = $VTable.EventListener
+
+    # get argument completers from the common module
+    $instance.ArgumentCompleter = $VTable.ArgumentCompleter
 `);
   }
 

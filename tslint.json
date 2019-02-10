@@ -7,6 +7,9 @@
   ],
   "jsRules": {},
   "rules": {
+    "no-nested-switch": false,
+    "no-small-switch": false,
+    "newline-per-chained-call": false,
     "switch-final-break": false,
     "no-empty-interface": false,
     "no-object-literal-type-assertion": false,

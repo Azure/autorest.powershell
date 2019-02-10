@@ -22,12 +22,10 @@ import { ObjectImplementation } from './object';
 import { String } from './string';
 import { Uuid } from './Uuid';
 import { UntypedWildcard, Wildcard } from './wildcard';
-
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
-
 export class SchemaDefinitionResolver {
-  private cache = new Map<string, EnhancedTypeDeclaration>();
+  private readonly cache = new Map<string, EnhancedTypeDeclaration>();
   private add(schema: Schema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
     this.cache.set(schema.details.default.name, value);
     return value;

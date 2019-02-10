@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "autorest.incubator",
+  "name": "autorest.powershell-testing",
   "scripts": {
     "start": "node --max_old_space_size=4096 ./extensions/incubator/dist/autorest-extension",
     "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/incubator/dist/autorest-extension",
@@ -8,6 +8,9 @@
     "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
   },
   "devDependencies": {
-    "pwsh": "0.2.0"
+    "pwsh": "0.2.0",
+    "tslint": "^5.12.1",
+    "tslint-microsoft-contrib": "^6.0.0",
+    "typescript": "^3.3.3"
   }
 }

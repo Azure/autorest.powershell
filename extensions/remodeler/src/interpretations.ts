@@ -27,6 +27,7 @@ export function getDescription(defaultValue: string, original: OpenAPI.Extension
 
 export function getParameterImplementationLocation(defaultValue: components.ImplementationLocation, original: OpenAPI.Parameter & OpenAPI.Extensions): components.ImplementationLocation {
   const xloc = original['x-ms-parameter-location'];
+
   if (typeof (xloc) === 'string') {
     switch (xloc.toLowerCase()) {
       case 'method':

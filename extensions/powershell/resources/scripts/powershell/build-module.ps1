@@ -1,4 +1,4 @@
-param([Switch]$isolated,[Switch]$test)
+param([Switch]$isolated,[Switch]$test, [Switch]$code)
 pushd $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
@@ -21,7 +21,20 @@ if(-not $isolated) {
     if($test) {
         $mpath = $(( dir ./*.psd1)[0].fullname)
         $mname = $(( dir ./*.psd1)[0].basename)
-        & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
+
+        if( $code)  {
+          # add a .vscode/launch.json folder 
+          $launch = "$PSScriptRoot/.vscode/launch.json"
+          $shh = new-item -Type Directory -Path "$PSScriptRoot/.vscode" -ea 0
+          set-content -path $launch -value '{ "version": "0.2.0", "configurations" : [{ "name" : "Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"#PID","justMyCode": false  }] }'
+          
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; set-content -path $launch -value ((get-content -path $launch -raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;  import-module '$mpath' "
+        } else {
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; import-module '$mpath' "
+        }
+
+        
+        
     } else {
         write-host -fore cyan "To test this module in a new powershell process, run `n"
         write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "
@@ -77,6 +90,7 @@ if( $commands.length -eq 0  ) {
 }
 
 $outputs = @{}
+$argumentCompleters = @{}
 
 write-host -fore green "Processing cmdlet variants"
 $commands |% {
@@ -120,8 +134,15 @@ $commands |% {
 
         $p = $metadata.Parameters[$name]
         if( -not ($cmdlet.cmdlet.parameters.ContainsKey($name) ) ) {
+            $argumentCompleter = $p.Attributes | Where-Object { $_.GetType().FullName -eq 'System.Management.Automation.ArgumentCompleterAttribute' } | Select-Object -First 1
+            if($argumentCompleter) {
+                if(-not ($argumentCompleters.ContainsKey($targetCmdlet))) {
+                    $argumentCompleters[$targetCmdlet] = @{}
+                }
+                $argumentCompleters[$targetCmdlet][$name] = $argumentCompleter.Type
+            }
             # add the parameter to the target
-            $newParam = New-Object System.Management.Automation.ParameterMetadata($p);
+            $newParam = New-Object System.Management.Automation.ParameterMetadata($p)
             $newParam.ParameterSets.Clear()
             $cmdlet.cmdlet.Parameters.add($name, $newParam)
         }
@@ -195,6 +216,20 @@ $outputs.Keys |% {
         }
         $text = $text.replace("[CmdletBinding(", "[CmdletBinding(DefaultParameterSetName='$defaultName'$commaSpace")
     }
+
+    if($argumentCompleters.ContainsKey($cmdletname)) {
+        $argumentCompleters[$cmdletname].Keys |% {
+            $paramName = $_
+            $completerType = $argumentCompleters[$cmdletname][$paramName]
+
+            if($text -match "\r\n(\s*)\[(.*)]\r\n\s*\$`{$paramName}") {
+                $spaces = $matches[1]
+                $typeName = $matches[2]
+                $text = $text -replace "\r\n$spaces\[$typeName]\r\n$spaces\$`{$paramName}", "`n$spaces[ArgumentCompleter([$completerType])]`n$spaces[$typeName]`n$spaces$`{$paramName}"
+            }
+        }
+    }
+
     $outputType = ($each.variants.GetEnumerator() | Select-Object -First 1).Value.outputType
     $outputTypeAttribute = ''
     if($outputType) {

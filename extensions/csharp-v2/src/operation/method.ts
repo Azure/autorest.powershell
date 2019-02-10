@@ -148,7 +148,7 @@ export class OperationMethod extends Method {
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
         + "&"`
-            )}
+          )}
         ).TrimEnd('?','&')`)
         });
         yield url.declarationStatement;
@@ -225,6 +225,12 @@ export class EventListener {
     if (this.emitSignals) {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `await ${this.expression.value}.Signal(${eventName}${params});`;
+    }
+  }
+  *snycSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    if (this.emitSignals) {
+      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
+      yield `${this.expression.value}.Signal(${eventName}${params}).Wait();`;
     }
   }
   *signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {

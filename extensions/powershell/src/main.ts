@@ -3,13 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutoRestExtension } from '@microsoft.azure/autorest-extension-base';
+import { AutoRestExtension, } from '@microsoft.azure/autorest-extension-base';
+import { initializePlugins } from './autorest-extension';
 
-import { llcsharp } from './plugin-llcsharp';
-import { csnamer } from './plugin-namer';
+require('source-map-support').install();
 
-export async function initializePlugins(pluginHost: AutoRestExtension) {
-  // add plugins
-  pluginHost.Add('csnamer', csnamer);
-  pluginHost.Add('llcsharp', llcsharp);
+export async function main() {
+  const pluginHost = new AutoRestExtension();
+  await initializePlugins(pluginHost);
+  await pluginHost.Run();
 }
+
+main();
