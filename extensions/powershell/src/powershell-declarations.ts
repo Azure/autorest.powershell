@@ -17,6 +17,7 @@ export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
 export const PSObject: TypeDeclaration = new ClassType(sma, `PSObject`);
 export const CmdletAttribute: TypeDeclaration = new ClassType(sma, `Cmdlet`);
 export const ParameterAttribute: TypeDeclaration = new ClassType(sma, `Parameter`);
+export const InvocationInfo: TypeDeclaration = new ClassType(sma, `InvocationInfo`);
 export const PSTypeConverter: Class = new Class(sma, `PSTypeConverter`);
 export const ValidateNotNull: TypeDeclaration = new ClassType(sma, `ValidateNotNull`);
 export const Alias: TypeDeclaration = new ClassType(sma, `Alias`);
@@ -45,10 +46,15 @@ export function verbEnum(category: string, verb: string): Expression {
 
 export const Events = intersect(ClientRuntime.Events, {
   CmdletProcessRecordStart: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletProcessRecordStart`),
+  CmdletProcessRecordAsyncStart: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletProcessRecordAsyncStart`),
   CmdletException: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletException`),
   CmdletGetPipeline: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletGetPipeline`),
   CmdletBeforeAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletBeforeAPICall`),
   CmdletAfterAPICall: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletAfterAPICall`),
+  CmdletBeginProcessing: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletBeginProcessing`),
+  CmdletEndProcessing: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletEndProcessing`),
+  CmdletProcessRecordEnd: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletProcessRecordEnd`),
+  CmdletProcessRecordAsyncEnd: new LiteralExpression(`${ClientRuntime.Events.declaration}.CmdletProcessRecordAsyncEnd`),
   FollowingNextLink: new LiteralExpression(`${ClientRuntime.Events.declaration}.FollowingNextLink`),
   Verbose: new LiteralExpression(`${ClientRuntime.Events.declaration}.Verbose`),
   Debug: new LiteralExpression(`${ClientRuntime.Events.declaration}.Debug`),

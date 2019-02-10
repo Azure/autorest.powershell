@@ -3,17 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { escapeString, pascalCase, items, length, values } from '@microsoft.azure/codegen';
 import { JsonType } from '@microsoft.azure/autorest.codemodel-v3';
+import { escapeString, items, length, pascalCase, values } from '@microsoft.azure/codegen';
 
-import { Attribute, Access, Modifier, Class, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, } from '@microsoft.azure/codegen-csharp';
+import { Binary, Schema } from '@microsoft.azure/autorest.csharp-v2';
+import { Access, Attribute, Class, ImplementedProperty, InitializedField, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, } from '@microsoft.azure/codegen-csharp';
 
-
-import { Schema, Binary } from '@microsoft.azure/autorest.csharp-v2';
-
-
-import { CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, ArgumentCompleterAttribute } from './powershell-declarations';
+import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from './powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {

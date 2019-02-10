@@ -118,7 +118,6 @@ load-priority: 1001
 
 
 ``` yaml 
-powershellincubator: true
 enable-multi-api: true
 
 api-folder: private/api

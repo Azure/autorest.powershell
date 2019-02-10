@@ -36,5 +36,6 @@ export async function processRequest(service: Host) {
 
   } catch (E) {
     console.error(E);
+    console.error(E.stack);
   }
 }

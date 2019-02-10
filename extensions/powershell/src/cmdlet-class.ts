@@ -3,23 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { escapeString, Dictionary, items, values } from '@microsoft.azure/codegen';
-import { KnownMediaType, getAllProperties, JsonType, command } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
+import { Dictionary, escapeString, items, values } from '@microsoft.azure/codegen';
+import {
+  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
+  LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or
+} from '@microsoft.azure/codegen-csharp';
 
-import { TerminalCase, Catch, ForEach, Else, If, Return, Switch, Try, Using, Ternery, LocalVariable, OneOrMoreStatements, Statements, BackedProperty, LambdaProperty, Property, Parameter, Namespace, LambdaMethod, Method, InitializedField, Expression, IsDeclaration, LiteralExpression, StringExpression, toExpression, valueOf, ClassType, dotnet, System, Constructor, Class, Attribute, Access, Modifier } from '@microsoft.azure/codegen-csharp';
-
-
-import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, ArgumentCompleterAttribute } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
 import { State } from './state';
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
   public state: State;
-  private eventListener: EventListener;
-  private dropBodyParameter: boolean;
+  private readonly eventListener: EventListener;
+  private readonly dropBodyParameter: boolean;
+  private invocationInfo!: ImplementedProperty;
+  correlationId!: InitializedField;
+  processRecordId!: Field;
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -37,12 +42,18 @@ export class CmdletClass extends Class {
     this.addCommonStuff();
 
     this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`;
+    const $this = this;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
       access: Access.Protected,
       description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
-      body: `Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);`
+      *body() {
+        yield `Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);`;
+        yield If($this.$<Property>('Break'), 'System.AttachDebugger.Break();');
+
+        yield $this.eventListener.syncSignal(Events.CmdletBeginProcessing);
+      }
     }));
 
     // construct the class
@@ -66,12 +77,28 @@ export class CmdletClass extends Class {
 
   private addCommonStuff() {
 
+    if (this.state.project.azure) {
+      // add a private copy of invocation information for our own uses.
+      const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
+      this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
+      this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
+      this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
+      this.add(this.invocationInfo);
+
+      this.correlationId = this.add(new InitializedField("__correlationId", dotnet.String, `System.Guid.NewGuid().ToString()`, { description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
+      this.processRecordId = this.add(new Field("__processRecordId", dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
+    }
+
     // pipeline property
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
 
     // client API property (gs01: fill this in correctly)
     const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`), { description: `The reference to the client API class.` }));
+
+    // debugging
+    const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: `Wait for .NET debugger to attach` }));
+    brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Wait for .NET debugger to attach"`] }));
 
     // Cmdlet Parameters for pipeline manipulations.
     const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be prepended to the front of the pipeline` }));
@@ -104,9 +131,11 @@ export class CmdletClass extends Class {
       yield `base.StopProcessing();`;
     });
 
+    const $this = this;
     this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Performs clean-up after the command execution` })).add(function* () {
       // gs01: remember what you were doing here to make it so these can be parallelized...
       yield '';
+      yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
     });
   }
 
@@ -127,6 +156,7 @@ export class CmdletClass extends Class {
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
+      yield $this.processRecordId.assign('System.Guid.NewGuid().ToString()');
       yield Try(function* () {
         yield `// work`;
         const normal = new Statements(function* () {
@@ -190,6 +220,10 @@ export class CmdletClass extends Class {
         yield `// Write exception out to error channel.`;
         yield `WriteError( new ${ErrorRecord}(${exception.use},string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
       });
+
+      yield Finally(function* () {
+        yield $this.eventListener.snycSignalNoCheck(Events.CmdletProcessRecordEnd);
+      });
     });
 
   }
@@ -207,12 +241,18 @@ export class CmdletClass extends Class {
 
     PAR.add(function* () {
       // construct the call to the operation
+      yield $this.eventListener.signal(Events.CmdletProcessRecordAsyncStart);
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
 
       const pipeline = $this.$<Property>('Pipeline');
 
-      yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(this.MyInvocation.BoundParameters)`));
+      if ($this.state.project.azure) {
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId})`));
+      } else {
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo})`));
+      }
+
 
       yield pipeline.invokeMethod('Prepend', $this.$<Property>('HttpPipelinePrepend'));
       yield pipeline.invokeMethod('Append', $this.$<Property>('HttpPipelineAppend'));
@@ -266,26 +306,39 @@ export class CmdletClass extends Class {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
             yield `// Error Response : ${each.responseCode} `;
+            const unexpected = function* () {
+              yield `// Unrecognized Response. Create an error record based on what we have.`;
+              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}\\nBody: {await responseMessage.Content.ReadAsStringAsync()}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+            }
             if (each.schema) {
               // the schema should be the error information.
-              const props = getAllProperties(each.schema);
-              const codeProp = values(props).linq.first(p => p.details.csharp.name === 'Code');
-              const messageProp = values(props).linq.first(p => p.details.csharp.name === 'Message');
+              // this supports both { error { message, code} } and { message, code} 
+
+              let props = getAllProperties(each.schema);
+              const errorProperty = values(props).linq.first(p => p.details.default.name === 'error');
+              let ep = '';
+              if (errorProperty) {
+                props = getAllProperties(errorProperty.schema);
+                ep = `${errorProperty.details.csharp.name}?.`;
+              }
+
+              const codeProp = values(props).linq.first(p => p.details.default.name === 'code');
+              const messageProp = values(props).linq.first(p => p.details.default.name === 'message');
+
               if (codeProp && messageProp) {
-                yield `var code = (await response).${codeProp.details.csharp.name};`;
-                yield `var message = (await response).${messageProp.details.csharp.name};`;
-                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{code}] : {message}"), code.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response).${ep}${codeProp.details.csharp.name};` });
+                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response).${ep}${messageProp.details.csharp.name};` });
+                yield lcode.declarationStatement;
+                yield lmessage.declarationStatement;
+                yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
+                yield Else(`WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`)
                 return;
               } else {
-                // yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
-                // what do we do with the response object?
-                yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+                yield unexpected;
                 return;
               }
             } else {
-              // yield new LocalVariable('responseMessage', dotnet.Var, { initializer: `response.ResponseMessage as System.Net.Http.HttpResponseMessage` });
-              // all we know is that this was an error, and we can't proceed.
-              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+              yield unexpected;
               return;
             }
           }
@@ -356,10 +409,16 @@ export class CmdletClass extends Class {
         $this.add(responseMethod);
       }
 
-      // make the call.
-      yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
-      yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-      yield $this.eventListener.signal(Events.CmdletAfterAPICall);
+      yield Try(function* () {
+        // make the call.
+        yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
+        yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+        yield $this.eventListener.signal(Events.CmdletAfterAPICall);
+
+      });
+      yield Finally(function* () {
+        yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);
+      });
     });
   }
 
@@ -508,7 +567,17 @@ export class CmdletClass extends Class {
       ]);
 
       if ($this.state.project.azure) {
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ) );`;
+        // in azure mode, we signal the AzAccount module with every event that makes it here.
+        /*
+        yield `${System.Func(ClientRuntime.EventData)} azureMessageData = () => {
+          var md = ${messageData.value}();
+          md.InvocationInfo = ${$this.invocationInfo};
+          md.ParameterSetName = this.ParameterSetName;
+          md.InvocationId = InvocationId;
+          md.ProcessRecordId = ProcessRecordId;
+        };`;
+*/
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {messageData().Message ?? ${System.String.Empty}}");`;
@@ -517,6 +586,7 @@ export class CmdletClass extends Class {
   }
 
   private addPowershellParameters(operation: command.CommandOperation) {
+
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
       // create a single
@@ -541,7 +611,7 @@ export class CmdletClass extends Class {
           },
           description: parameter.details.csharp.description,
         }));
-        this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation.BoundParameters, "${parameter.name}") as string`)));
+        this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation, ${this.correlationId.value}, "${parameter.name}") as string`)));
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
 
       } else if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
@@ -572,7 +642,7 @@ export class CmdletClass extends Class {
         if (parameter.details.csharp.isBodyParameter) {
           parameters.push(new LiteralExpression('ValueFromPipeline = true'));
         }
-        cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: parameters }));
+        cmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
         if (td.schema.details.csharp.enum !== undefined) {
           cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
