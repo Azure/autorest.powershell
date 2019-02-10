@@ -1,4 +1,4 @@
-param([Switch]$isolated,[Switch]$test)
+param([Switch]$isolated,[Switch]$test, [Switch]$code)
 pushd $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
@@ -21,7 +21,20 @@ if(-not $isolated) {
     if($test) {
         $mpath = $(( dir ./*.psd1)[0].fullname)
         $mname = $(( dir ./*.psd1)[0].basename)
-        & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' }   ; ipmo '$mpath' "
+
+        if( $code)  {
+          # add a .vscode/launch.json folder 
+          $launch = "$PSScriptRoot/.vscode/launch.json"
+          $shh = new-item -Type Directory -Path "$PSScriptRoot/.vscode" -ea 0
+          set-content -path $launch -value '{ "version": "0.2.0", "configurations" : [{ "name" : "Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"#PID","justMyCode": false  }] }'
+          
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; set-content -path $launch -value ((get-content -path $launch -raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;  import-module '$mpath' "
+        } else {
+          & $pwsh -noexit -command  "function prompt { `$ESC = [char]27 ; Write-host -nonewline -foregroundcolor green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -nonewline -foregroundcolor white ; write-host -fore white -nonewline '' ;  return ' ' } ; import-module '$mpath' "
+        }
+
+        
+        
     } else {
         write-host -fore cyan "To test this module in a new powershell process, run `n"
         write-host -fore white " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -noexit -command ipmo '$( (dir ./*.psd1)[0].fullname )' "

@@ -3,17 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, JsonType, processCodeModel, ModelState, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
-import { items, length, values, keys, Dictionary, excludeXDash } from '@microsoft.azure/codegen';
-
-
-import { camelCase, deconstruct, fixLeadingNumber, pascalCase } from '@microsoft.azure/codegen';
+import { camelCase, deconstruct, Dictionary, excludeXDash, fixLeadingNumber, items, keys, length, pascalCase, values } from '@microsoft.azure/codegen';
 import { System } from '@microsoft.azure/codegen-csharp';
 
+import { Host } from '@microsoft.azure/autorest-extension-base';
 import { SchemaDetails } from './code-model';
 import { SchemaDefinitionResolver } from './schema/schema-resolver';
-import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export async function csnamer(service: Host) {
   return processCodeModel(nameStuffRight, service);
@@ -169,21 +166,21 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
     }
   }
   /* IN PROGRESS : GS01
-  
+
     for (const each of values(codeModel.schemas).linq.where(each => !!each.details.csharp.virtualProperties)) {
       // on models that have virtual properties, we're going to set nice c# names for each of them.
       const virtualProperties = <Dictionary<VirtualProperty>>each.details.csharp.virtualProperties;
-  
+
       const mine = items(virtualProperties).linq.where(each => each.value.kind === 'my-property').linq.toArray();
       const parents = items(virtualProperties).linq.where(each => each.value.kind === 'parent-property').linq.toArray();
       const children = items(virtualProperties).linq.where(each => each.value.kind === 'child-property').linq.toArray();
-  
+
       // our new virtual properties go here.
       const newVirtualProperties = new Dictionary<VirtualProperty>();
-  
+
       // my properties (easy)
       for (const kv of values(mine)) {
-        // strategy: use the least amount of things from 'propertyName' starting with the end. 
+        // strategy: use the least amount of things from 'propertyName' starting with the end.
         let name = '';
         for (let i = kv.value.propertyName.length; i > 0; i--) {
           name = `${name}${toPascal(kv.value.propertyName[i - 1])}`;
@@ -197,10 +194,10 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
           }
         }
       }
-  
+
       // parent properties (easy-ish)
       for (const kv of values(parents)) {
-        // strategy: use the least amount of things from 'propertyName' starting with the end. 
+        // strategy: use the least amount of things from 'propertyName' starting with the end.
         let name = '';
         for (let i = kv.value.propertyName.length; i > 0; i--) {
           name = `${name}${toPascal(kv.value.propertyName[i - 1])}`;

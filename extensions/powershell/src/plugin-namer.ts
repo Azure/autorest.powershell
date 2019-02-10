@@ -3,31 +3,29 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
-import { processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';
-import { values, pascalCase, fixLeadingNumber, deconstruct } from '@microsoft.azure/codegen';
-import { singularize } from './name-inferrer';
+import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { deconstruct, fixLeadingNumber, pascalCase, values } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
+import { singularize } from './name-inferrer';
 
 // well-known parameters to singularize
 const parametersToSingularize = new Set<string>([
   'tags'
 ]);
 
-
 export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-const visited = new Set<any>();
+const visited = new Set();
 
 function populateCSdetails(node: any) {
   if (typeof node === 'object' && node !== null) {
     if (node.details && !node.details.csharp) {
       node.details.csharp = linq.clone(node.details.default);
     } else {
-      for (const [key, member] of Object.entries(node)) {
+      for (const member of Object.values(node)) {
         if (!visited.has(member)) {
           visited.add(member);
           populateCSdetails(member);
@@ -44,9 +42,8 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
     model.details.csharp = linq.clone(model.details.default);
   }
 
-
   // make sure recursively that every details field has csharp
-  for (const [key, member] of Object.entries(model)) {
+  for (const member of Object.values(model)) {
     if (!visited.has(member)) {
       visited.add(member);
       populateCSdetails(member);
@@ -89,7 +86,6 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
 
   return model;
 }
-
 
 function getPascalName(name: string): string {
   return pascalCase(fixLeadingNumber(deconstruct(name)));

@@ -230,6 +230,9 @@ async function generateModule(service: Host, project: Project) {
 
     # need to let the common module listen to events from this module
     $instance.EventListener = $VTable.EventListener
+
+    # get argument completers from the common module
+    $instance.ArgumentCompleter = $VTable.ArgumentCompleter
 `);
   }
 

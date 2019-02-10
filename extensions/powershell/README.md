@@ -18,21 +18,28 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
-
 #### PowerShell
-``` yaml
 
-enable-multi-api: true
-load-priority: 1001
-
+> Requires remodeler and csharpv2
+``` yaml 
 use-extension:
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
 ```
 
+> forces multi-api mode 
+``` yaml
 
-``` yaml $(powershell)
 enable-multi-api: true
+load-priority: 1001
+```
+
+# Pipeline Configuration
+``` yaml 
+
+#api-folder: generated/api
+#runtime-folder: generated/runtime
+
 
 api-folder: private/api
 api-extensions-folder: private/api-extensions
