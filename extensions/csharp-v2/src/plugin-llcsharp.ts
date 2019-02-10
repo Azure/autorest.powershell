@@ -99,7 +99,7 @@ export async function llcsharp(service: Host) {
     service.WriteFile('code-model-v3.csharp.yaml', serialize(model), undefined, 'source-file-other');
 
   } catch (E) {
-    console.error(E);
+    console.error(`${__filename} - ${JSON.stringify(E)}`);
     throw E;
   }
 }

@@ -44,6 +44,8 @@ export async function processRequest(service: Host) {
     service.WriteFile('code-model-v3.yaml', serialize(await remodeler.getOutput()), undefined /* await remodeler.getSourceMappings() */, 'code-model-v3');
 
   } catch (E) {
-    console.error(E);
+    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    throw E;
+
   }
 }

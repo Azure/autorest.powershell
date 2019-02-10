@@ -11,6 +11,7 @@ import { Remodeler } from './remodeler';
 
 export async function processRequest(service: Host) {
   try {
+
     // Get the list of files
     const files = await service.ListInputs();
 
@@ -33,9 +34,8 @@ export async function processRequest(service: Host) {
     // output the model
     service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
     service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
-
   } catch (E) {
-    console.error(E);
-    console.error(E.stack);
+    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    throw E;
   }
 }
