@@ -63,8 +63,8 @@ export class String implements EnhancedTypeDeclaration {
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`null != (${value}?.ToString()) ? (${ClientRuntime.JsonNode}) new ${ClientRuntime.JsonString}(${value}) : null`);
-
+        return toExpression(`null != (((object)${value})?.ToString()) ? (${ClientRuntime.JsonNode}) new ${ClientRuntime.JsonString}(${value}.ToString()) : null`);
+        
       case KnownMediaType.Xml:
         return toExpression(`null != (${value}?.ToString()) ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
