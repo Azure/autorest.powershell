@@ -77,14 +77,14 @@ export class CmdletClass extends Class {
 
   private addCommonStuff() {
 
-    if (this.state.project.azure) {
-      // add a private copy of invocation information for our own uses.
-      const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
-      this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
-      this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
-      this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
-      this.add(this.invocationInfo);
+    // add a private copy of invocation information for our own uses.
+    const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
+    this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
+    this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
+    this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
+    this.add(this.invocationInfo);
 
+    if (this.state.project.azure) {
       this.correlationId = this.add(new InitializedField("__correlationId", dotnet.String, `System.Guid.NewGuid().ToString()`, { description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
       this.processRecordId = this.add(new Field("__processRecordId", dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
     }
@@ -156,7 +156,9 @@ export class CmdletClass extends Class {
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
-      yield $this.processRecordId.assign('System.Guid.NewGuid().ToString()');
+      if ($this.state.project.azure) {
+        yield $this.processRecordId.assign('System.Guid.NewGuid().ToString()');
+      }
       yield Try(function* () {
         yield `// work`;
         const normal = new Statements(function* () {

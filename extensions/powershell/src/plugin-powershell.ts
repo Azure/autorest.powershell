@@ -49,7 +49,7 @@ export async function powershell(service: Host) {
     await generateFormatPs1xml(service, model, project);
 
   } catch (E) {
-    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     throw E;
   }
 }
