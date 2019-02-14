@@ -8,7 +8,7 @@ import { Dictionary, escapeString, items, values } from '@microsoft.azure/codege
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral
 } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime, EventListener, Schema } from '@microsoft.azure/autorest.csharp-v2';
@@ -41,7 +41,7 @@ export class CmdletClass extends Class {
     // basic stuff
     this.addCommonStuff();
 
-    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`;
+    this.description = operation.details.csharp.description;
     const $this = this;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
@@ -170,7 +170,7 @@ export class CmdletClass extends Class {
 
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
-          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
+          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command as a job"`] }));
         }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
@@ -655,12 +655,11 @@ export class CmdletClass extends Class {
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
 
+    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `HelpUri = "${this.description}"`];
     if (this.isWritableCmdlet(operation)) {
-      // add should process
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `SupportsShouldProcess = true`] }));
-    } else {
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
+      cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
+    this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     const rt = new Dictionary<boolean>();
     for (const op of values(operation.callGraph)) {
