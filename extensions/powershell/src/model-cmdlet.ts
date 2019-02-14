@@ -42,7 +42,7 @@ export class ModelCmdlet extends Class {
 
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`)] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`), `HelpUri = "Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object."`] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
 }
 
