@@ -5,7 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace psgen_proxy
+namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.Get, "ProxyCmdlet")]
     [OutputType(typeof(string))]
