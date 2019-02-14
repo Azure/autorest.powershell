@@ -11,7 +11,7 @@ import {
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or
 } from '@microsoft.azure/codegen-csharp';
 
-import { ClientRuntime, EventListener, Schema } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
@@ -690,11 +690,18 @@ export class CmdletClass extends Class {
           if (td) {
             if (!rt[td.declaration]) {
               rt[td.declaration] = true;
-              outputTypes.add(`typeof(${td.declaration})`);
+              const type = (td instanceof ArrayOf) ? td.elementTypeDeclaration : td.declaration;
+              outputTypes.add(`typeof(${type})`);
             }
           }
         }
       }
+
+      if (outputTypes.size === 0) {
+        outputTypes.add(`typeof(${dotnet.Bool})`);
+      }
+
+      this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
 
       // if any response does not return a return type,
       // the cmdlet should have a PassThru parameter
@@ -702,15 +709,8 @@ export class CmdletClass extends Class {
         .linq.where(responsesItem => responsesItem.key !== 'default')
         .linq.selectMany(responsesItem => responsesItem.value)
         .linq.any(value => value.schema === undefined);
-
-      if (outputTypes.size !== 0) {
-        this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
-      } else {
-        this.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${dotnet.Bool})`] }));
-      }
-
       if (shouldAddPassThru) {
-        const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given there is't a return type by default.`;
+        const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given that there isn't a return type by default.`;
         const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
         passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
       }
