@@ -8,7 +8,7 @@ import { Dictionary, escapeString, items, values } from '@microsoft.azure/codege
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement
 } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
@@ -216,6 +216,12 @@ export class CmdletClass extends Class {
         });
       });
 
+      const exceptionWhenTerminatingError = new Parameter('exception', System.Exception);
+      yield Catch(exceptionWhenTerminatingError, function* () {
+        yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exceptionWhenTerminatingError.use}.GetType().Name} - {${exceptionWhenTerminatingError.use}.Message} : {${exceptionWhenTerminatingError.use}.StackTrace}"`));
+        yield `ThrowTerminatingError( new ${ErrorRecord}(${exceptionWhenTerminatingError.use},string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
+      }, { when: new LiteralExpression(`(exception as System.Management.Automation.PipelineStoppedException)!= null && (exception as System.Management.Automation.PipelineStoppedException).InnerException == null`) });
+
       const exception = new Parameter('exception', System.Exception);
       yield Catch(exception, function* () {
         yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exception.use}.GetType().Name} - {${exception.use}.Message} : {${exception.use}.StackTrace}"`));
@@ -224,7 +230,7 @@ export class CmdletClass extends Class {
       });
 
       yield Finally(function* () {
-        yield $this.eventListener.snycSignalNoCheck(Events.CmdletProcessRecordEnd);
+        yield $this.eventListener.syncSignalNoCheck(Events.CmdletProcessRecordEnd);
       });
     });
 
@@ -704,7 +710,7 @@ export class CmdletClass extends Class {
 
       this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
 
-      // if any response does not return a return type,
+      // if any response does not return,
       // the cmdlet should have a PassThru parameter
       const shouldAddPassThru = items(httpOperation.responses)
         .linq.where(responsesItem => responsesItem.key !== 'default')

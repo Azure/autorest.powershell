@@ -49,7 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private readonly System.Action Cancel;
         private readonly CancellationToken CancellationToken;
 
-        internal AsyncJob(PSCmdlet cmdlet,string line,string name, CancellationToken cancellationToken, System.Action cancelMethod) : base(line, name)
+        internal AsyncJob(PSCmdlet cmdlet, string line, string name, CancellationToken cancellationToken, System.Action cancelMethod) : base(line, name)
         {
             SetJobState(JobState.NotStarted);
             // know how to cancel/check for cancelation
@@ -77,17 +77,27 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SetJobState(JobState.Running);
             task.ContinueWith(antecedent =>
             {
-                if( antecedent.IsCanceled ) {
+                if (antecedent.IsCanceled)
+                {
                     // if the task was canceled, we're just going to call it completed.
                     SetJobState(JobState.Completed);
-                } else if( antecedent.IsFaulted) {
+                }
+                else if (antecedent.IsFaulted)
+                {
+                    foreach (var innerException in antecedent.Exception.Flatten().InnerExceptions)
+                    {
+                        WriteError(new System.Management.Automation.ErrorRecord(innerException, string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null));
+                    }
+
                     // a fault indicates an actual failure
                     SetJobState(JobState.Failed);
-                } else {
+                }
+                else
+                {
                     // otherwiser it's a completed state. 
                     SetJobState(JobState.Completed);
                 }
-            },CancellationToken);
+            }, CancellationToken);
         }
 
         private void CheckForCancellation()
