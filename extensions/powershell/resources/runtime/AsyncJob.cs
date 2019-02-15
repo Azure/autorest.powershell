@@ -84,12 +84,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
                 else if (antecedent.IsFaulted)
                 {
-                    // a fault indicates an actual failure
                     foreach (var innerException in antecedent.Exception.Flatten().InnerExceptions)
                     {
                         WriteError(new System.Management.Automation.ErrorRecord(innerException, string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null));
                     }
 
+                    // a fault indicates an actual failure
                     SetJobState(JobState.Failed);
                 }
                 else
