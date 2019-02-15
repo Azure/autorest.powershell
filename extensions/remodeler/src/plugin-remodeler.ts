@@ -35,7 +35,7 @@ export async function processRequest(service: Host) {
     service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
     //service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
   } catch (E) {
-    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     throw E;
   }
 }

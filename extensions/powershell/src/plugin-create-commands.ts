@@ -26,7 +26,7 @@ export async function createCommands(service: Host) {
     // service.UpdateConfigurationFile('readme.powershell.md', `${txt}\n\n and more.`);
   } catch (E) {
     // console.error(E);
-    console.error(`${__filename} - FAILURE ${JSON.stringify(E)}`);
+    console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     throw E;
   }
 

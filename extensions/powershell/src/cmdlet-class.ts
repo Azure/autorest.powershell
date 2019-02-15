@@ -8,7 +8,11 @@ import { Dictionary, escapeString, items, values } from '@microsoft.azure/codege
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
+<<<<<<< HEAD
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, CatchStatement
+=======
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement
+>>>>>>> cfe344a1e1ac6961c685133c5c0ce4d5ee695563
 } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
@@ -41,7 +45,7 @@ export class CmdletClass extends Class {
     // basic stuff
     this.addCommonStuff();
 
-    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`;
+    this.description = operation.details.csharp.description;
     const $this = this;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
@@ -77,14 +81,14 @@ export class CmdletClass extends Class {
 
   private addCommonStuff() {
 
-    if (this.state.project.azure) {
-      // add a private copy of invocation information for our own uses.
-      const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
-      this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
-      this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
-      this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
-      this.add(this.invocationInfo);
+    // add a private copy of invocation information for our own uses.
+    const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
+    this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
+    this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
+    this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
+    this.add(this.invocationInfo);
 
+    if (this.state.project.azure) {
       this.correlationId = this.add(new InitializedField("__correlationId", dotnet.String, `System.Guid.NewGuid().ToString()`, { description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
       this.processRecordId = this.add(new Field("__processRecordId", dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
     }
@@ -156,7 +160,9 @@ export class CmdletClass extends Class {
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
-      yield $this.processRecordId.assign('System.Guid.NewGuid().ToString()');
+      if ($this.state.project.azure) {
+        yield $this.processRecordId.assign('System.Guid.NewGuid().ToString()');
+      }
       yield Try(function* () {
         yield `// work`;
         const normal = new Statements(function* () {
@@ -168,7 +174,7 @@ export class CmdletClass extends Class {
 
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
-          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
+          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command as a job"`] }));
         }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
@@ -659,12 +665,11 @@ export class CmdletClass extends Class {
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
 
+    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `HelpUri = "${this.description}"`];
     if (this.isWritableCmdlet(operation)) {
-      // add should process
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `SupportsShouldProcess = true`] }));
-    } else {
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
+      cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
+    this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     const rt = new Dictionary<boolean>();
     for (const httpOperation of values(operation.callGraph)) {

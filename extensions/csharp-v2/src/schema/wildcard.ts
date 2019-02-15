@@ -104,7 +104,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
             yield `${container}.Add("${serializedName}", ${innerContainer});`;
             yield ForEach(each, `${toExpression(value)}.Keys`, function* () {
               yield `var ${eachvalue} = ${value}[${each}];`;
-              yield `AddIf( ${$this.leafType.serializeToNode(mediaType, `${eachvalue} as ${$this.leafType.declaration}`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`;
+              yield `AddIf( ${$this.leafType.serializeToNode(mediaType, `(${eachvalue} as ${$this.leafType.declaration})`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`;
             });
           });
 

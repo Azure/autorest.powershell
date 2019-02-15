@@ -226,9 +226,9 @@ First, this service requires an API key you can get from http://developer.nytime
 
 Next we have to add a `Module.cs` that can patch into the http pipeline.
 
-The place to do that is by creating a `./private/custom` folder in the `output-folder`.
+The place to do that is by creating a `./custom` folder in the `output-folder`.
 
-This example already has a  [`Module.cs`](./Examples/TimesWire/generated/private/custom/Module.cs) folder has one created for you.
+This example already has a  [`Module.cs`](./Examples/TimesWire/generated/custom/Module.cs) folder has one created for you.
 
 ``` powershell
 # lets' build the module (complete with the custom file)

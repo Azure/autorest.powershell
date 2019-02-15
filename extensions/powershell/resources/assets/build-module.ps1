@@ -89,6 +89,10 @@ if( $commands.length -eq 0  ) {
     write-error "Unable get commands from private module."
 }
 
+$exportPath = (Join-Path $PSScriptRoot 'exports-new')
+$null = New-Item -ItemType Directory -Force -Path $exportPath
+Get-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+
 $outputs = @{}
 $argumentCompleters = @{}
 
