@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -45,7 +47,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var outputTypeText = outputType != null ? $"[OutputType('{outputType}')]{Environment.NewLine}" : String.Empty;
                 sb.Append(outputTypeText);
 
-                var variantParameterCounts = cmdletGroup.Select(cg => (variant: cg.variant, paramCount: cg.metadata.Parameters.Count)).ToArray();
+                bool IsDontShow(ParameterMetadata pm) => pm.Attributes.OfType<ParameterAttribute>().Any(p => p.DontShow);
+                var variantParamCountGroups = cmdletGroup
+                    .Select(cg => (
+                        variant: cg.variant,
+                        paramCount: cg.metadata.Parameters.Count(p => !IsDontShow(p.Value) && p.Key != "DefaultProfile"),
+                        isSimple: cg.metadata.Parameters.Where(p => !IsDontShow(p.Value) && p.Key != "DefaultProfile").All(p => p.Value.ParameterType.IsPsSimple())))
+                    .GroupBy(vpc => vpc.isSimple)
+                    .ToArray();
+                var variantParameterCounts = (variantParamCountGroups.Any(g => g.Key) ? variantParamCountGroups.Where(g => g.Key) : variantParamCountGroups).SelectMany(g => g).ToArray();
                 var smallestParameterCount = variantParameterCounts.Min(vpc => vpc.paramCount);
                 var defaultParameterSet = variantParameterCounts.First(vpc => vpc.paramCount == smallestParameterCount).variant;
 
@@ -101,7 +111,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                 sb.AppendLine("begin {");
                 var sourceText = cmdletGroup.Select(cg => cg.info.Source).First();
-                var variantText = hasMultipleVariants ? "_$($PsCmdlet.ParameterSetName)" : String.Empty;
                 var beginText = $@"{Indent}try {{
 {Indent}{Indent}$outBuffer = $null
 {Indent}{Indent}if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer)) {{
@@ -167,5 +176,35 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
         public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
+
+        // https://stackoverflow.com/a/863944/294804
+        private static bool IsSimple(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                // nullable type, check if the nested type is simple.
+                return typeInfo.GetGenericArguments()[0].IsSimple();
+            }
+
+            return typeInfo.IsPrimitive
+                   || typeInfo.IsEnum
+                   || type == typeof(string)
+                   || type == typeof(decimal);
+        }
+
+        // https://stackoverflow.com/a/32025393/294804
+        private static bool HasImplicitConversion(this Type baseType, Type targetType) => 
+            baseType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => mi.Name == "op_Implicit" && mi.ReturnType == targetType)
+                .Any(mi => mi.GetParameters().FirstOrDefault()?.ParameterType == baseType);
+
+        public static bool IsPsSimple(this Type type) =>
+            type.IsSimple()
+            || type == typeof(SwitchParameter)
+            || type == typeof(Hashtable)
+            || type == typeof(PSCredential)
+            || type.HasImplicitConversion(typeof(string))
+            || (type.IsArray && type.GetElementType().IsPsSimple());
     }
 }
