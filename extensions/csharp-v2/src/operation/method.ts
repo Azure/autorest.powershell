@@ -227,7 +227,7 @@ export class EventListener {
       yield `await ${this.expression.value}.Signal(${eventName}${params});`;
     }
   }
-  *snycSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+  *syncSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait();`;

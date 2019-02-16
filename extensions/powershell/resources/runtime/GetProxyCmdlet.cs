@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -21,14 +23,20 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private const string Indent = "    ";
 
+        private const string UnnamedVariant = "__Generic";
+
+        private const string AllParameterSets = "__AllParameterSets";
+
         protected override void ProcessRecord()
         {
-            var cmdletGroups = CommandInfo.Select(ci =>
-            {
-                var metadata = new CommandMetadata(ci);
-                var parts = metadata.Name.Split('_');
-                return (name: parts[0], variant: parts.Length > 1 ? parts[1] : "default", info: ci, metadata: metadata);
-            }).GroupBy(cg => cg.name);
+            var cmdletGroups = CommandInfo
+                .Where(ci => ci.Name != "Get-ProxyCmdlet")
+                .Select(ci => {
+                    var metadata = new CommandMetadata(ci);
+                    var parts = metadata.Name.Split('_');
+                    return (name: parts[0], variant: parts.Length > 1 ? parts[1] : UnnamedVariant, info: ci, metadata: metadata);
+                })
+                .GroupBy(cg => cg.name);
             foreach (var cmdletGroup in cmdletGroups)
             {
                 var cmdletName = cmdletGroup.Key;
@@ -39,7 +47,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var outputTypeText = outputType != null ? $"[OutputType('{outputType}')]{Environment.NewLine}" : String.Empty;
                 sb.Append(outputTypeText);
 
-                var variantParameterCounts = cmdletGroup.Select(cg => (variant: cg.variant, paramCount: cg.metadata.Parameters.Count)).ToArray();
+                bool IsDontShow(ParameterMetadata pm) => pm.Attributes.OfType<ParameterAttribute>().Any(p => p.DontShow);
+                var variantParamCountGroups = cmdletGroup
+                    .Select(cg => (
+                        variant: cg.variant,
+                        paramCount: cg.metadata.Parameters.Count(p => !IsDontShow(p.Value) && p.Key != "DefaultProfile"),
+                        isSimple: cg.metadata.Parameters.Where(p => !IsDontShow(p.Value) && p.Key != "DefaultProfile").All(p => p.Value.ParameterType.IsPsSimple())))
+                    .GroupBy(vpc => vpc.isSimple)
+                    .ToArray();
+                var variantParameterCounts = (variantParamCountGroups.Any(g => g.Key) ? variantParamCountGroups.Where(g => g.Key) : variantParamCountGroups).SelectMany(g => g).ToArray();
                 var smallestParameterCount = variantParameterCounts.Min(vpc => vpc.paramCount);
                 var defaultParameterSet = variantParameterCounts.First(vpc => vpc.paramCount == smallestParameterCount).variant;
 
@@ -48,13 +64,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var supportsShouldProcess = cmdletGroup.Any(cg => cg.metadata.SupportsShouldProcess);
                 var sspText = supportsShouldProcess ? $"{(hasMultipleVariants ? ", " : String.Empty)}SupportsShouldProcess={true.ToPsBool()}, ConfirmImpact='Medium'" : String.Empty;
                 sb.AppendLine($"[CmdletBinding({dpsText}{sspText})]");
-                sb.AppendLine("param(");
 
+                sb.Append("param(");
                 var allVariants = cmdletGroup.Select(cg => cg.variant).ToArray();
                 var parameterGroups = cmdletGroup
                     .SelectMany(cg => cg.metadata.Parameters.Select(p => (variant: cg.variant, parameter: p)))
                     .GroupBy(p => p.parameter.Key) // Parameter key is the Parameter name
                     .ToList();
+                sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
                 foreach (var parameterGroup in parameterGroups)
                 {
                     var hasAllVariants = !allVariants.Except(parameterGroup.Select(pg => pg.variant)).Any();
@@ -68,7 +85,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                         var mandatoryText = paramAttribute.Mandatory ? $"Mandatory={paramAttribute.Mandatory.ToPsBool()}, " : String.Empty;
                         var dontShowText = paramAttribute.DontShow ? $"DontShow={paramAttribute.DontShow.ToPsBool()}, " : String.Empty;
                         var vfpText = paramAttribute.ValueFromPipeline ? $"ValueFromPipeline={paramAttribute.ValueFromPipeline.ToPsBool()}, " : String.Empty;
-                        var helpText = $"HelpMessage='{paramAttribute.HelpMessage}'";
+                        var helpText = $"HelpMessage='{paramAttribute.HelpMessage.ToPsStringLiteral()}'";
                         sb.AppendLine($"{Indent}[Parameter({psnText}{mandatoryText}{dontShowText}{vfpText}{helpText})]");
                     }
                     var aliases = parameterGroup.SelectMany(pg => pg.parameter.Value.Attributes.OfType<AliasAttribute>()).FirstOrDefault();
@@ -87,19 +104,24 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.AppendLine($"{Indent}[{parameterTypeText}]");
 
                     var parameterName = parameterGroup.Key;
-                    var parameterSeparator = parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1 ? ")" : ",";
-                    sb.AppendLine($"{Indent}${{{parameterName}}}{parameterSeparator}{Environment.NewLine}");
+                    var parameterSeparator = parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1 ? String.Empty : $",{Environment.NewLine}";
+                    sb.AppendLine($"{Indent}${{{parameterName}}}{parameterSeparator}");
                 }
+                sb.AppendLine($"){Environment.NewLine}");
 
                 sb.AppendLine("begin {");
                 var sourceText = cmdletGroup.Select(cg => cg.info.Source).First();
-                var variantText = hasMultipleVariants ? "_$($PsCmdlet.ParameterSetName)" : String.Empty;
                 var beginText = $@"{Indent}try {{
 {Indent}{Indent}$outBuffer = $null
 {Indent}{Indent}if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer)) {{
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
-{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""{sourceText}\{cmdletName}{variantText}"", [System.Management.Automation.CommandTypes]::Cmdlet)
+{Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
+{Indent}{Indent}$variantSuffix = ""_$parameterSet""
+{Indent}{Indent}if (""$parameterSet"" -eq '{UnnamedVariant}' -or ""$parameterSet"" -eq '{AllParameterSets}') {{
+{Indent}{Indent}{Indent}$variantSuffix = ''
+{Indent}{Indent}}}
+{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""{sourceText}\{cmdletName}$variantSuffix"", [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
 {Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
 {Indent}{Indent}$steppablePipeline.Begin($PSCmdlet)
@@ -152,5 +174,37 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var match = regex.Match(type.ToString());
             return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
         }
+
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
+
+        // https://stackoverflow.com/a/863944/294804
+        private static bool IsSimple(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                // nullable type, check if the nested type is simple.
+                return typeInfo.GetGenericArguments()[0].IsSimple();
+            }
+
+            return typeInfo.IsPrimitive
+                   || typeInfo.IsEnum
+                   || type == typeof(string)
+                   || type == typeof(decimal);
+        }
+
+        // https://stackoverflow.com/a/32025393/294804
+        private static bool HasImplicitConversion(this Type baseType, Type targetType) => 
+            baseType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => mi.Name == "op_Implicit" && mi.ReturnType == targetType)
+                .Any(mi => mi.GetParameters().FirstOrDefault()?.ParameterType == baseType);
+
+        public static bool IsPsSimple(this Type type) =>
+            type.IsSimple()
+            || type == typeof(SwitchParameter)
+            || type == typeof(Hashtable)
+            || type == typeof(PSCredential)
+            || type.HasImplicitConversion(typeof(string))
+            || (type.IsArray && type.GetElementType().IsPsSimple());
     }
 }
