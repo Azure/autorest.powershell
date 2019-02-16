@@ -1,5 +1,6 @@
 export * from './clientruntime';
 export * from './code-model';
+export * from './schema/array';
 export { EventListener } from './operation/method';
 export * from './schema/binary';
 export * from './schema/object';

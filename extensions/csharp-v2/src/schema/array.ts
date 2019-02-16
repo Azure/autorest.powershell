@@ -35,6 +35,10 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   protected get serializedName(): string | undefined {
     return this.schema.xml ? this.schema.xml.name : undefined;
   }
+  get elementTypeDeclaration(): string {
+    return this.elementType.declaration;
+  }
+
   get declaration(): string {
     return `${this.elementType.declaration}[]`;
   }

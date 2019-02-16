@@ -8,10 +8,10 @@ import { Dictionary, escapeString, items, values } from '@microsoft.azure/codege
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral
 } from '@microsoft.azure/codegen-csharp';
 
-import { ClientRuntime, EventListener, Schema } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
@@ -41,7 +41,7 @@ export class CmdletClass extends Class {
     // basic stuff
     this.addCommonStuff();
 
-    this.description = `Implement a variant of the cmdlet ${operation.verb}-${operation.noun}.`;
+    this.description = operation.details.csharp.description;
     const $this = this;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
@@ -170,7 +170,7 @@ export class CmdletClass extends Class {
 
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
-          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow=true`, `HelpMessage = "Run the command as a job"`] }));
+          asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command as a job"`] }));
         }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
@@ -404,9 +404,10 @@ export class CmdletClass extends Class {
             yield `WriteObject(await response);`;
             return;
           }
-
-          // no return type. Let's just return ... true?
-          yield `WriteObject(true);`;
+          yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")`, function* () {
+            // no return type. Let's just return ... true?
+            yield `WriteObject(true);`;
+          })
         });
         $this.add(responseMethod);
       }
@@ -588,7 +589,6 @@ export class CmdletClass extends Class {
   }
 
   private addPowershellParameters(operation: command.CommandOperation) {
-
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
       // create a single
@@ -655,15 +655,14 @@ export class CmdletClass extends Class {
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
 
+    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `HelpUri = "${this.description}"`];
     if (this.isWritableCmdlet(operation)) {
-      // add should process
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `SupportsShouldProcess = true`] }));
-    } else {
-      this.add(new Attribute(CmdletAttribute, { parameters: [verbEnum(operation.category, operation.verb), new StringExpression(variantName)] }));
+      cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
+    this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     const rt = new Dictionary<boolean>();
-    for (const op of values(operation.callGraph)) {
+    for (const httpOperation of values(operation.callGraph)) {
 
       /* testing
       for (const schema of
@@ -678,8 +677,9 @@ export class CmdletClass extends Class {
       }
       */
 
-      for (const item of items(op.responses).linq.where(each => each.key !== 'default')) {
-
+      // set to hold the output types
+      const outputTypes = new Set<string>();
+      for (const item of items(httpOperation.responses).linq.where(each => each.key !== 'default')) {
         for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);
 
@@ -691,10 +691,29 @@ export class CmdletClass extends Class {
           if (td) {
             if (!rt[td.declaration]) {
               rt[td.declaration] = true;
-              this.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
+              const type = (td instanceof ArrayOf) ? td.elementTypeDeclaration : td.declaration;
+              outputTypes.add(`typeof(${type})`);
             }
           }
         }
+      }
+
+      if (outputTypes.size === 0) {
+        outputTypes.add(`typeof(${dotnet.Bool})`);
+      }
+
+      this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
+
+      // if any response does not return a return type,
+      // the cmdlet should have a PassThru parameter
+      const shouldAddPassThru = items(httpOperation.responses)
+        .linq.where(responsesItem => responsesItem.key !== 'default')
+        .linq.selectMany(responsesItem => responsesItem.value)
+        .linq.any(value => value.schema === undefined);
+      if (shouldAddPassThru) {
+        const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given that there isn't a return type by default.`;
+        const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
+        passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
       }
     }
   }
