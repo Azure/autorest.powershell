@@ -41,7 +41,7 @@ export class CmdletClass extends Class {
     // basic stuff
     this.addCommonStuff();
 
-    this.description = operation.details.csharp.description;
+    this.description = escapeString(operation.details.csharp.description);
     const $this = this;
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
