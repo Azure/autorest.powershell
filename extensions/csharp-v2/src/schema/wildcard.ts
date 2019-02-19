@@ -5,7 +5,7 @@
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { nameof, camelCase, deconstruct } from '@microsoft.azure/codegen';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf, IsNotNull, And } from '@microsoft.azure/codegen-csharp';
 import { ForEach } from '@microsoft.azure/codegen-csharp';
 import { If } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
@@ -103,8 +103,13 @@ export class Wildcard implements EnhancedTypeDeclaration {
             yield `var ${innerContainer} = ${ClientRuntime.JsonObject.new()};`;
             yield `${container}.Add("${serializedName}", ${innerContainer});`;
             yield ForEach(each, `${toExpression(value)}.Keys`, function* () {
-              yield `var ${eachvalue} = ${value}[${each}];`;
-              yield `AddIf( ${$this.leafType.serializeToNode(mediaType, `(${eachvalue} as ${$this.leafType.declaration})`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`;
+              const eachv = `${value}[${each}]`;
+
+              yield If(And(IsNotNull(eachv), `${eachv} is ${$this.leafType.declaration} ${eachvalue}`),
+                `AddIf( ${$this.leafType.serializeToNode(mediaType, `${eachvalue}`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`);
+
+              //` ${eachvalue} = ${value}[${each}];`,  );
+              //yield `AddIf( ${$this.leafType.serializeToNode(mediaType, `(${eachvalue} as ${$this.leafType.declaration})`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`;
             });
           });
 
