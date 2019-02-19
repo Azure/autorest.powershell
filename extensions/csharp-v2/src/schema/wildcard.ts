@@ -65,7 +65,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serDict = ` System.Linq.Enumerable.Select( ${value}, (${each}) => new System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.Key, ${this.leafType.serializeToNode(mediaType, `${each}.Value`, serializedName)}))`;
+          const serDict = ` System.Linq.Enumerable.Select( (System.Collections.Generic.IEnumerable<object>)${value}.Keys, (${each}) => new System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.ToString(), ${this.leafType.serializeToNode(mediaType, `${value}[${each}]`, serializedName)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.JsonObject}(${serDict}) : null`);
         }
 
@@ -152,7 +152,7 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
       switch (mediaType) {
         case KnownMediaType.Json:
           const tmp = `__${camelCase(['json', ...deconstruct(serializedName)])}`;
-          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonObject}>("${serializedName}"), out var ${tmp}) ? ${ClientRuntime.JsonSerializable}.FromJson(${tmp}, ${defaultValue} ?? new ${typeDeclaration.declaration}()) : ${defaultValue}`);
+          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonObject}>("${serializedName}"), out var ${tmp}) ? ${ClientRuntime.JsonSerializable}.FromJson(${tmp}, ${defaultValue} ?? new System.Collections.Hashtable( new ${typeDeclaration.declaration}())) : ${defaultValue}`);
       }
     } finally {
     }
