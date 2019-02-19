@@ -11,6 +11,7 @@ import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
+import { clone } from '../../../perks/libraries/linq/dist/main';
 
 export async function createCommands(service: Host) {
 
@@ -51,6 +52,8 @@ async function commandCreator(model: codemodel.Model, service: Host): Promise<co
 }
 
 async function addVariant(vname: string, body: http.RequestBody | undefined, bodyParameterName: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, model: codemodel.Model, service: Host) {
+
+
   const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
 
   // if this has a body with it, let's add that parameter
@@ -124,6 +127,9 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     },
     operationId: operation.operationId,
     parameters: parameters.map(each => {
+      // make it's own copy of the parameter since after this, 
+      // the parameter can be altered for each operation individually.
+      each = clone(each);
       each.details.csharp = {
         ...each.details.default,
         name: getPascalName(each.details.default.name)
