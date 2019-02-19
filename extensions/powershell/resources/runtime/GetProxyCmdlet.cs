@@ -59,9 +59,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var smallestParameterCount = variantParameterCounts.Min(vpc => vpc.paramCount);
                 var defaultParameterSet = variantParameterCounts.First(vpc => vpc.paramCount == smallestParameterCount).variant;
 
-                var hasMultipleVariants = cmdletGroup.Count() > 1;
-                var dpsText = hasMultipleVariants ? $"DefaultParameterSetName='{defaultParameterSet}'" : String.Empty;
+                var dpsText = defaultParameterSet != UnnamedVariant ? $"DefaultParameterSetName='{defaultParameterSet}'" : String.Empty;
                 var supportsShouldProcess = cmdletGroup.Any(cg => cg.metadata.SupportsShouldProcess);
+                var hasMultipleVariants = cmdletGroup.Count() > 1;
                 var sspText = supportsShouldProcess ? $"{(hasMultipleVariants ? ", " : String.Empty)}SupportsShouldProcess={true.ToPsBool()}, ConfirmImpact='Medium'" : String.Empty;
                 sb.AppendLine($"[CmdletBinding({dpsText}{sspText})]");
 
