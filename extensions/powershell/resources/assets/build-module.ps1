@@ -40,7 +40,8 @@ if(-not $isolated) {
 }
 
 Write-Host -Fore green "Cleaning folders..."
-@('./exports', './obj', './bin') |% { $null = Remove-Item -Recurse -ea 0 $_ }
+@('./obj', './bin') |% { $null = Remove-Item -Recurse -ea 0 $_ }
+$null = (Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ea 0)
 
 if(Test-Path ./bin) {
     Pop-Location
