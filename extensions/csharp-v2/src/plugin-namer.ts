@@ -35,17 +35,31 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
     fullname: `${serviceNamespace}.${clientName}`
   };
 
-  for (const { key: schemaName, value: schema } of items(codeModel.schemas)) {
+
+  const schemaNames = new Set<string>();
+
+
+  for (const schema of values(codeModel.schemas)) {
+
+    // for each schema, we're going to set the name
+    // to the suggested name, unless we have collisions
+    // at which point, we're going to add a number (for now?)
     const details = schema.details.default;
+    let schemaName = details.name;
+    let n = 1;
+    while (schemaNames.has(schemaName)) {
+      schemaName = `${details.name}_${n++}`;
+    }
+    schemaNames.add(schemaName);
 
     // object types.
     if (schema.type === JsonType.Object) {
       schema.details.csharp = <SchemaDetails>{
         ...details,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(details.name)])), // objects have an interfaceName
-        name: pascalCase(fixLeadingNumber(deconstruct(schema.details.default.name))),
+        name: pascalCase(fixLeadingNumber(deconstruct(schemaName))),
         namespace: pascalCase([serviceNamespace, '.', `Models`]),  // objects have a namespace
-        fullname: `${pascalCase([serviceNamespace, '.', `Models`])}.${pascalCase(fixLeadingNumber(deconstruct(schema.details.default.name)))}`,
+        fullname: `${pascalCase([serviceNamespace, '.', `Models`])}.${pascalCase(fixLeadingNumber(deconstruct(schemaName)))}`,
       };
     } else if (schema.type === JsonType.String && schema.details.default.enum) {
       // oh, it's an enum type
@@ -77,7 +91,7 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
       };
     }
 
-    for (const { key: propertyName, value: propertySchema } of items(schema.properties)) {
+    for (const propertySchema of values(schema.properties)) {
       const propertyDetails = propertySchema.details.default;
 
       const className = schema.details.csharp.name;

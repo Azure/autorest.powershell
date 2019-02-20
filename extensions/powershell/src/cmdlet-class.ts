@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, components } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
@@ -25,6 +25,8 @@ export class CmdletClass extends Class {
   private invocationInfo!: ImplementedProperty;
   correlationId!: InitializedField;
   processRecordId!: Field;
+
+  private bodyParameter?: Expression;
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -270,17 +272,12 @@ export class CmdletClass extends Class {
 
       // find each parameter to the method, and find out where the value is going to come from.
       const operationParameters: Array<Expression> = values(apiCall.parameters).linq.where(each => !(each.details.default.constantValue)).linq.select(p => {
-        return values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition === p);
+        return values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid);
       }).linq.select(each => each ? each : new LiteralExpression('null')).linq.toArray();
 
       // is there a body parameter we should include?
-      const requestBody = apiCall.requestBody;
-      if (requestBody) {
-        // we have a body parameter.
-        const bodyParameter = values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.schema === requestBody.schema);
-        if (bodyParameter) {
-          operationParameters.push(bodyParameter);
-        }
+      if ($this.bodyParameter) {
+        operationParameters.push($this.bodyParameter);
       }
 
       // create the response handlers
@@ -577,15 +574,6 @@ export class CmdletClass extends Class {
 
       if ($this.state.project.azure) {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
-        /*
-        yield `${System.Func(ClientRuntime.EventData)} azureMessageData = () => {
-          var md = ${messageData.value}();
-          md.InvocationInfo = ${$this.invocationInfo};
-          md.ParameterSetName = this.ParameterSetName;
-          md.InvocationId = InvocationId;
-          md.ProcessRecordId = ProcessRecordId;
-        };`;
-*/
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
@@ -597,64 +585,59 @@ export class CmdletClass extends Class {
   private addPowershellParameters(operation: command.CommandOperation) {
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
-      // create a single
-
       const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
 
       if (parameter.details.default.constantValue) {
         // this parameter has a constant value -- SKIP IT
-        /*
-        // don't give it a parameter attribute
-        const cmdletParameter = this.add(new LambdaProperty(parameter.details.csharp.name, td, new StringExpression(parameter.details.default.constantValue), {
+        continue;
+      }
+
+      if (parameter.details.default.fromHost) {
+        // the parameter is expected to be gotten from the host.(ie, Az.Accounts)
+
+        const hostParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           metadata: {
-            parameterDefinition: parameter
-          },
-        }));
-        */
-      } else if (parameter.details.default.fromHost) {
-        // the parameter is expected to be gotten from the host.
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
-          metadata: {
-            parameterDefinition: parameter.details.default.originalParam
+            parameterDefinition: parameter.details.csharp.originalHttpParameter
           },
           description: parameter.details.csharp.description,
         }));
-        this.$<Method>('BeginProcessing').add(cmdletParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation, ${this.correlationId.value}, "${parameter.name}") as string`)));
-        // in the BeginProcessing, we should tell it to go get the value for this property from the common module
 
-      } else if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
+        // in the BeginProcessing, we should tell it to go get the value for this property from the common module
+        this.$<Method>('BeginProcessing').add(hostParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation, ${this.correlationId.value}, "${parameter.name}") as string`)));
+        continue;
+      }
+
+      if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
         // we're supposed to use parameters for the body parameter instead of a big object
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
-          metadata: {
-            parameterDefinition: parameter
-          },
+        const expandedBodyParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           description: parameter.details.csharp.description,
           initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`,
           setAccess: Access.Private,
           getAccess: Access.Private,
-
         }));
 
-        addPowershellParameters(this, <Schema>parameter.schema, cmdletParameter);
+        addPowershellParameters(this, <Schema>parameter.schema, expandedBodyParameter);
+        this.bodyParameter = expandedBodyParameter;
+        continue;
+      }
 
-      } else {
-        // regular cmdlet parameter
-        const cmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
-          metadata: {
-            parameterDefinition: parameter
-          },
-          description: parameter.details.csharp.description
-        }));
+      // regular cmdlet parameter
+      const regularCmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
+        metadata: {
+          parameterDefinition: parameter.details.csharp.httpParameter
+        },
+        description: parameter.details.csharp.description
+      }));
 
-        const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)];
-        if (parameter.details.csharp.isBodyParameter) {
-          parameters.push(new LiteralExpression('ValueFromPipeline = true'));
-        }
-        cmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+      const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)];
+      if (parameter.details.csharp.isBodyParameter) {
+        parameters.push(new LiteralExpression('ValueFromPipeline = true'));
+        this.bodyParameter = regularCmdletParameter;
+      }
+      regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
-        if (td.schema.details.csharp.enum !== undefined) {
-          cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
-        }
+      if (td.schema.details.csharp.enum !== undefined) {
+        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
       }
     }
   }
@@ -669,20 +652,6 @@ export class CmdletClass extends Class {
 
     const rt = new Dictionary<boolean>();
     for (const httpOperation of values(operation.callGraph)) {
-
-      /* testing
-      for (const schema of
-        values(operation.callGraph).linq
-          .selectMany(httpOperation => items(httpOperation.responses)).linq
-          .where(each => each.key !== 'default').linq
-          .select(each => each.value).linq
-          .selectMany(response => values(response.content)).linq
-          .distinct(mediaType => mediaType.schema).linq
-          .selectNonNullable(mediaType => mediaType.schema)) {
-        console.error(`it is ${schema.details.csharp.name}`);
-      }
-      */
-
       // set to hold the output types
       const outputTypes = new Set<string>();
       for (const item of items(httpOperation.responses).linq.where(each => each.key !== 'default')) {
