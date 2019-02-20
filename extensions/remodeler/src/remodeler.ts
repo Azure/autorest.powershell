@@ -16,6 +16,7 @@ import { dereference, Dereferenced, getExtensionProperties, Refable } from './co
 import * as Interpretations from './interpretations';
 import * as OpenAPI from '@microsoft.azure/openapi';
 
+const xmsMetadata = 'x-ms-metadata';
 const TODO_UNIMPLEMENTED = undefined;
 
 export class Remodeler {
@@ -73,9 +74,7 @@ export class Remodeler {
 
   copySchema = (name: string, original: OpenAPI.Schema, targetDictionary: Dictionary<Schema>): Schema => {
     // Nelson; hack -- this gets the name back from xmsmetadata
-    if (original['x-ms-metadata'] && original['x-ms-metadata'].name) {
-      name = original['x-ms-metadata'].name;
-    }
+    const schemaDefaultName = original[xmsMetadata] && original[xmsMetadata].name ? original[xmsMetadata].name : name;
 
     // normalize/warn about incorrect usage of binary/stream combinations
     // OAI (https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#data-types)
@@ -189,7 +188,7 @@ export class Remodeler {
       newSchema.enum = [...original.enum];
     }
 
-
+    newSchema.details.default.name = schemaDefaultName;
     newSchema.details.default.enum = Interpretations.getEnumDefinition(original);
 
     // object properties
@@ -607,7 +606,7 @@ export class Remodeler {
           const op = <OpenAPI.HttpOperation>pathItem.instance[method];
           if (op) {
             // Nelson; hack -- this gets the path back from xmsmetadata
-            const actualPath: string = pathItem.instance['x-ms-metadata'] && pathItem.instance['x-ms-metadata'].path ? pathItem.instance['x-ms-metadata'].path : path;
+            const actualPath: string = pathItem.instance[xmsMetadata] && pathItem.instance[xmsMetadata].path ? pathItem.instance[xmsMetadata].path : path;
 
             this.add(Interpretations.getOperationId(method, actualPath, op, this.oai.info.title, this.modelState), { instance: { method, path: actualPath, operation: op, pathItem: pathItem.instance } }, this.model.http.operations, this.copyOperation);
           }
