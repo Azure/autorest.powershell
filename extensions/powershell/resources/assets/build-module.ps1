@@ -85,9 +85,11 @@ if( $commands.length -eq 0 ) {
     Write-Error "Unable get commands from private module."
 }
 
+$commands = $commands | Where-Object { $_.Name -ne 'New-ProxyCmdlet' -and $_.Name -ne 'New-TestStub'}
+
 $exportPath = (Join-Path $PSScriptRoot 'exports')
 $null = New-Item -ItemType Directory -Force -Path $exportPath
-Get-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
 
 Pop-Location
 Write-Host -Fore green "Done."
