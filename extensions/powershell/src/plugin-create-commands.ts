@@ -11,7 +11,8 @@ import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
-import { clone } from '../../../perks/libraries/linq/dist/main';
+
+import { clone } from '@microsoft.azure/linq';
 
 export async function createCommands(service: Host) {
 
