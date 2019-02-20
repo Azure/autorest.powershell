@@ -5,7 +5,7 @@
 
 
 import { components } from '@microsoft.azure/autorest.codemodel-v3';
-import { Discriminator, JsonType, Property, Schema, XML, StatusCodes } from '@microsoft.azure/autorest.codemodel-v3';
+import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@microsoft.azure/autorest.codemodel-v3';
 import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '@microsoft.azure/codegen';
 import { isMediaTypeJson, isMediaTypeXml } from '@microsoft.azure/autorest.codemodel-v3';
 import { ModelState } from '@microsoft.azure/autorest.codemodel-v3';
@@ -48,6 +48,7 @@ export class Remodeler {
 
     newSchema.details = {
       default: {
+        uid: `schema:${uid()}`,
         description: Interpretations.getDescription('', original),
         name: Interpretations.getName(name, original),
       }
@@ -254,6 +255,7 @@ export class Remodeler {
 
           details: {
             default: {
+              uid: `property:${uid()}`,
               deprecationMessage: Interpretations.getDeprecationMessage(original),
               description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), property),
               name: Interpretations.getName(propertyName, propertySchema.instance),
@@ -549,6 +551,7 @@ export class Remodeler {
           extensions: getExtensionProperties(header.instance),
           details: {
             default: {
+              uid: `property:${uid()}`,
               deprecationMessage: Interpretations.getDeprecationMessage(original),
               description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), header.instance),
               name: Interpretations.getName(propertyName, propertySchema.instance),
