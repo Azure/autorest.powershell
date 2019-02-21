@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get, "ProxyCmdlet")]
+    [Cmdlet(VerbsCommon.New, "ProxyCmdlet")]
     [OutputType(typeof(string))]
-    public class GetProxyCmdlet : PSCmdlet
+    public class NewProxyCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
@@ -23,14 +21,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private const string Indent = "    ";
 
-        private const string UnnamedVariant = "__Generic";
-
-        private const string AllParameterSets = "__AllParameterSets";
-
         protected override void ProcessRecord()
         {
             var cmdletGroups = CommandInfo
-                .Where(ci => ci.Name != "Get-ProxyCmdlet")
                 .Select(ci => {
                     var metadata = new CommandMetadata(ci);
                     var parts = metadata.Name.Split('_');
@@ -162,49 +155,5 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 File.WriteAllText(Path.Combine(OutputFolder, $"{cmdletName}.ps1"), sb.ToString());
             }
         }
-    }
-
-    public static class PsExtensions
-    {
-        public static string ToPsBool(this bool value) => $"${value.ToString().ToLowerInvariant()}";
-
-        public static string ToPsType(this Type type)
-        {
-            var regex = new Regex(@"^(.*)`{1}\d+(.*)$");
-            var match = regex.Match(type.ToString());
-            return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
-        }
-
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
-
-        // https://stackoverflow.com/a/863944/294804
-        private static bool IsSimple(this Type type)
-        {
-            var typeInfo = type.GetTypeInfo();
-            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                // nullable type, check if the nested type is simple.
-                return typeInfo.GetGenericArguments()[0].IsSimple();
-            }
-
-            return typeInfo.IsPrimitive
-                   || typeInfo.IsEnum
-                   || type == typeof(string)
-                   || type == typeof(decimal);
-        }
-
-        // https://stackoverflow.com/a/32025393/294804
-        private static bool HasImplicitConversion(this Type baseType, Type targetType) => 
-            baseType.GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .Where(mi => mi.Name == "op_Implicit" && mi.ReturnType == targetType)
-                .Any(mi => mi.GetParameters().FirstOrDefault()?.ParameterType == baseType);
-
-        public static bool IsPsSimple(this Type type) =>
-            type.IsSimple()
-            || type == typeof(SwitchParameter)
-            || type == typeof(Hashtable)
-            || type == typeof(PSCredential)
-            || type.HasImplicitConversion(typeof(string))
-            || (type.IsArray && type.GetElementType().IsPsSimple());
     }
 }

@@ -226,3 +226,5 @@ if( $global:TestMode -eq $null )   {
         $script:recording = @{}
     }
 }
+
+$PSDefaultParameterValues["*:HttpPipelineAppend"] = $script:mock

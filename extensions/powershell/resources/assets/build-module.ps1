@@ -91,6 +91,10 @@ $exportPath = (Join-Path $PSScriptRoot 'exports')
 $null = New-Item -ItemType Directory -Force -Path $exportPath
 New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
 
+$testPath = (Join-Path $PSScriptRoot 'test')
+$null = New-Item -ItemType Directory -Force -Path $testPath
+New-TestStub -CommandInfo $commands -OutputFolder $testPath
+
 Pop-Location
 Write-Host -Fore green "Done."
 Write-Host -Fore green "-------------------------------"
