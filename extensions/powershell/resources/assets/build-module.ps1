@@ -40,7 +40,8 @@ if(-not $isolated) {
 }
 
 Write-Host -Fore green "Cleaning folders..."
-@('./exports', './obj', './bin') |% { $null = Remove-Item -Recurse -ea 0 $_ }
+@('./obj', './bin') |% { $null = Remove-Item -Recurse -ea 0 $_ }
+$null = (Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ea 0)
 
 if(Test-Path ./bin) {
     Pop-Location
@@ -84,9 +85,15 @@ if( $commands.length -eq 0 ) {
     Write-Error "Unable get commands from private module."
 }
 
+$commands = $commands | Where-Object { $_.Name -ne 'New-ProxyCmdlet' -and $_.Name -ne 'New-TestStub'}
+
 $exportPath = (Join-Path $PSScriptRoot 'exports')
 $null = New-Item -ItemType Directory -Force -Path $exportPath
-Get-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+
+$testPath = (Join-Path $PSScriptRoot 'test')
+$null = New-Item -ItemType Directory -Force -Path $testPath
+New-TestStub -CommandInfo $commands -OutputFolder $testPath
 
 Pop-Location
 Write-Host -Fore green "Done."
