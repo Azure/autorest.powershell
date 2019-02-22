@@ -14,7 +14,7 @@ import {
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory } from './powershell-declarations';
 import { State } from './state';
 
 export class CmdletClass extends Class {
@@ -100,32 +100,39 @@ export class CmdletClass extends Class {
 
     // debugging
     const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: `Wait for .NET debugger to attach` }));
-    brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Wait for .NET debugger to attach"`] }));
+    brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "Wait for .NET debugger to attach"`] }));
+    brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     // Cmdlet Parameters for pipeline manipulations.
     const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be prepended to the front of the pipeline` }));
-    prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"`] }));
+    prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"`] }));
     prepend.add(new Attribute(ValidateNotNull));
+    prepend.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be appended to the front of the pipeline` }));
-    append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
+    append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
+    append.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     const proxyCredential = this.add(new Property('ProxyCredential', PSCredential, { attributes: [], description: `Credentials for a proxy server to use for the remote call` }));
-    proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
+    proxyCredential.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "Credentials for a proxy server to use for the remote call"`] }));
     proxyCredential.add(new Attribute(ValidateNotNull));
+    proxyCredential.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     const useDefaultCreds = this.add(new Property('ProxyUseDefaultCredentials ', SwitchParameter, { attributes: [], description: `Use the default credentials for the proxy` }));
-    useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
+    useDefaultCreds.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "Use the default credentials for the proxy"`] }));
+    useDefaultCreds.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     const proxyUri = this.add(new Property('Proxy', System.Uri, { attributes: [], description: `The URI for the proxy server to use` }));
-    proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow= true`, `HelpMessage = "The URI for the proxy server to use"`] }));
+    proxyUri.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "The URI for the proxy server to use"`] }));
+    proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     if (this.state.project.azure) {
       const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
       defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
       defaultProfile.add(new Attribute(ValidateNotNull));
       defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
+      defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
     }
 
     this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Interrupts currently running code within the command.` })).add(function* () {
@@ -644,7 +651,7 @@ export class CmdletClass extends Class {
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
 
-    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName), `HelpUri = "${this.description}"`];
+    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName)];
     if (this.isWritableCmdlet(operation)) {
       cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
@@ -690,6 +697,9 @@ export class CmdletClass extends Class {
         const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
         passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
       }
+
+      this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))
+      this.add(new Attribute(GeneratedAttribute));
     }
   }
 }

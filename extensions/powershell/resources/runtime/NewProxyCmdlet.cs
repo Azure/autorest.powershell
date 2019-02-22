@@ -27,7 +27,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(ci => {
                     var metadata = new CommandMetadata(ci);
                     var parts = metadata.Name.Split('_');
-                    return (name: parts[0], variant: parts.Length > 1 ? parts[1] : UnnamedVariant, info: ci, metadata: metadata);
+                    return (name: parts[0], variant: parts.Length > 1 ? parts[1] : NoParameters, info: ci, metadata: metadata);
                 })
                 .GroupBy(cg => cg.name);
             foreach (var cmdletGroup in cmdletGroups)
@@ -52,7 +52,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var smallestParameterCount = variantParameterCounts.Min(vpc => vpc.paramCount);
                 var defaultParameterSet = variantParameterCounts.First(vpc => vpc.paramCount == smallestParameterCount).variant;
 
-                var dpsText = defaultParameterSet != UnnamedVariant ? $"DefaultParameterSetName='{defaultParameterSet}'" : String.Empty;
+                var dpsText = defaultParameterSet != NoParameters ? $"DefaultParameterSetName='{defaultParameterSet}'" : String.Empty;
                 var supportsShouldProcess = cmdletGroup.Any(cg => cg.metadata.SupportsShouldProcess);
                 var hasMultipleVariants = cmdletGroup.Count() > 1;
                 var sspText = supportsShouldProcess ? $"{(hasMultipleVariants ? ", " : String.Empty)}SupportsShouldProcess={true.ToPsBool()}, ConfirmImpact='Medium'" : String.Empty;
@@ -111,7 +111,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
 {Indent}{Indent}$variantSuffix = ""_$parameterSet""
-{Indent}{Indent}if (""$parameterSet"" -eq '{UnnamedVariant}' -or ""$parameterSet"" -eq '{AllParameterSets}') {{
+{Indent}{Indent}if (""$parameterSet"" -eq '{NoParameters}' -or ""$parameterSet"" -eq '{AllParameterSets}') {{
 {Indent}{Indent}{Indent}$variantSuffix = ''
 {Indent}{Indent}}}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""{sourceText}\{cmdletName}$variantSuffix"", [System.Management.Automation.CommandTypes]::Cmdlet)

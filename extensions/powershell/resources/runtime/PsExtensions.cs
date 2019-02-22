@@ -9,7 +9,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     public static class PsExtensions
     {
-        public const string UnnamedVariant = "__Generic";
+        public const string NoParameters = "__NoParameters";
 
         public const string AllParameterSets = "__AllParameterSets";
 
