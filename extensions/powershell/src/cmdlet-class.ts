@@ -52,7 +52,7 @@ export class CmdletClass extends Class {
       description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
       *body() {
         yield `Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);`;
-        yield If($this.$<Property>('Break'), 'System.AttachDebugger.Break();');
+        yield If($this.$<Property>('Break'), 'AttachDebugger.Break();');
 
         yield $this.eventListener.syncSignal(Events.CmdletBeginProcessing);
       }

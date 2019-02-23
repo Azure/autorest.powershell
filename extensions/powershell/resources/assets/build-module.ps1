@@ -1,4 +1,4 @@
-param([Switch]$isolated, [Switch]$test, [Switch]$code)
+param([Switch]$isolated, [Switch]$test, [Switch]$code, [Switch]$Release)
 Push-Location $PSScriptRoot
 $ErrorActionPreference = "Stop"
 
@@ -38,7 +38,10 @@ if(-not $isolated) {
     Pop-Location
     return
 }
-
+$dotnetcfg = 'debug'
+if($Release) {
+  $dotnetcfg = 'release'
+}
 Write-Host -Fore green "Cleaning folders..."
 @('./obj', './bin') |% { $null = Remove-Item -Recurse -ea 0 $_ }
 $null = (Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ea 0)
@@ -49,10 +52,10 @@ if(Test-Path ./bin) {
 }
 
 Write-Host -Fore green "Compiling private module code"
-$null = dotnet publish --configuration Release --output bin
+$null = dotnet publish --configuration $dotnetcfg --output bin
 if( $lastExitCode -ne 0 ) {
     # if it fails, let's do it again so the output comes out nicely.
-    dotnet publish --configuration Release --output bin
+    dotnet publish --configuration $dotnetcfg --output bin
     Pop-Location
     Write-Error "Compilation failed"
 }
