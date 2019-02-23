@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
-using static Microsoft.Rest.ClientRuntime.PowerShell.PsExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
