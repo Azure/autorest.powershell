@@ -10,6 +10,7 @@ import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
 import { IInterface } from '@microsoft.azure/codegen-csharp';
 
 const sma = new Namespace(`System.Management.Automation`);
+const rest = new Namespace(`Microsoft.Rest`);
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
@@ -35,6 +36,13 @@ export const ArgumentCompleterAttribute: TypeDeclaration = new ClassType(sma, `A
 
 export const AsyncCommandRuntime = new ClassType(ClientRuntime, `PowerShell.AsyncCommandRuntime`);
 export const AsyncJob = new ClassType(ClientRuntime, `PowerShell.AsyncJob`);
+
+export const DescriptionAttribute: TypeDeclaration = new ClassType(rest, `Description`);
+export const DoNotExportAttribute: TypeDeclaration = new ClassType(rest, `DoNotExport`);
+export const GeneratedAttribute: TypeDeclaration = new ClassType(rest, `Generated`);
+export const ProfileAttribute: TypeDeclaration = new ClassType(rest, `Profile`);
+export const CategoryAttribute: TypeDeclaration = new ClassType(rest, `Category`);
+export const ParameterCategory: TypeDeclaration = new ClassType(rest, `ParameterCategory`);
 
 export function ErrorCategory(category: string): Expression {
   return new LiteralExpression(`${sma}.ErrorCategory.${category}`);

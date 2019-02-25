@@ -20,6 +20,7 @@ const jsonArray = new ClassType(carbon, 'JsonArray');
 const jsonObject = new ClassType(carbon, 'JsonObject');
 
 export const ClientRuntime = intersect(clientRuntimeNamespace, {
+  AttachDebugger: new ClassType(clientRuntimeNamespace, 'AttachDebugger'),
   Method: intersect(method, {
     Get: new LiteralExpression(`${method.declaration}.Get`),
     Put: new LiteralExpression(`${method.declaration}.Put`),

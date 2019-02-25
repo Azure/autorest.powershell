@@ -1,8 +1,8 @@
-namespace System
+namespace Microsoft.Rest.ClientRuntime
 {
-    public static class AttachDebugger
+    internal static class AttachDebugger
     {
-        public static void Break()
+        internal static void Break()
         {
             while (!System.Diagnostics.Debugger.IsAttached)
             {
