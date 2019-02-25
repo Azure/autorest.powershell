@@ -9,7 +9,7 @@ import { escapeString, items, length, pascalCase, values } from '@microsoft.azur
 import { Binary, Schema } from '@microsoft.azure/autorest.csharp-v2';
 import { Access, Attribute, Class, ImplementedProperty, InitializedField, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, } from '@microsoft.azure/codegen-csharp';
 
-import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter } from './powershell-declarations';
+import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
 import { State } from './state';
 
 export interface WithState extends Class {
@@ -42,8 +42,10 @@ export class ModelCmdlet extends Class {
 
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`), `HelpUri = "Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object."`] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
+  $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
+  $class.add(new Attribute(GeneratedAttribute));
 }
 
 export function addPowershellParameters($class: WithState, schema: Schema, prop: Variable, ensureMemberIsCreated: Statements | undefined = undefined, expandName = false) {

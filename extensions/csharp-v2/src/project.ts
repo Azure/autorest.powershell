@@ -40,8 +40,8 @@ export class Project extends codeDomProject {
 
       'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.Rest': this.projectNamespace
     };
-
   }
 
   public async init(): Promise<this> {
