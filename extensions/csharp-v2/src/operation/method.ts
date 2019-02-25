@@ -79,7 +79,7 @@ export class OperationMethod extends Method {
       this.addParameter(this.bodyParameter);
     }
 
-    for (const { key: responseCode, value: responses } of items(this.operation.responses)) {
+    for (const responses of values(this.operation.responses)) {
       for (const response of values(responses)) {
         const responseType = response.schema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.schema, true, state) : null;
         const headerType = response.headerSchema ? state.project.modelsNamespace.resolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
@@ -298,7 +298,6 @@ export class CallMethod extends Method {
 
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
-            const i = 0;
             for (const { key: responseCode, value: responses } of items(opMethod.operation.responses)) {
               if (responseCode !== 'default') {
                 // will use enum when it can, fall back to casting int when it can't

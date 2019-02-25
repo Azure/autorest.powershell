@@ -73,8 +73,8 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     implData.interfaceImplementation = this;
     this.description = `${schema.details.default.description}`;
 
-    for (const { key: propertyName, value: property } of items(schema.properties)) {
-      this.add(new ModelInterfaceProperty(this, property, state.path('properties', propertyName)));
+    for (const { key: index, value: property } of items(schema.properties)) {
+      this.add(new ModelInterfaceProperty(this, property, state.path('properties', index)));
     }
 
     // mark it as json serializable
