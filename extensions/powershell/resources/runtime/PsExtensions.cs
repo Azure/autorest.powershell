@@ -7,12 +7,8 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    public static class PsExtensions
+    internal static class PsExtensions
     {
-        public const string UnnamedVariant = "__Generic";
-
-        public const string AllParameterSets = "__AllParameterSets";
-
         public static string ToPsBool(this bool value) => $"${value.ToString().ToLowerInvariant()}";
 
         public static string ToPsType(this Type type)
