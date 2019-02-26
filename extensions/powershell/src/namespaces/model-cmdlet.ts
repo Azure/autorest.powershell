@@ -24,7 +24,7 @@ export class ModelCmdletNamespace extends Namespace {
   public createModelCmdlets() {
     // generate the model cmdlets unless they dont want them.
     if (!this.state.project.skipModelCmdlets) {
-      for (const { key: id, value: schema } of items(this.state.model.schemas)) {
+      for (const { key: index, value: schema } of items(this.state.model.schemas)) {
         if (schema.type !== JsonType.Object) {
           continue;
         }
@@ -39,7 +39,7 @@ export class ModelCmdletNamespace extends Namespace {
         }
 
         if (found) {
-          this.addClass(new ModelCmdlet(this, <Schema>schema, this.state.path('schemas', id)));
+          this.addClass(new ModelCmdlet(this, <Schema>schema, this.state.path('schemas', index)));
         }
       }
     }

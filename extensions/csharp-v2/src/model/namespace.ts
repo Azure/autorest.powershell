@@ -29,8 +29,8 @@ export class ModelsNamespace extends Namespace {
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;
 
-    for (const { key: schemaName, value: schema } of items(schemas)) {
-      const state = this.state.path(schemaName);
+    for (const { key: index, value: schema } of items(schemas)) {
+      const state = this.state.path(index);
 
       // verify that the model isn't in a bad state
       if (validation.objectWithFormat(schema, state)) {

@@ -113,9 +113,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
       // um. just how do we *really* know which allOf is polymorphic?
       // that's really sad.
-      for (const eachAllOf of items(this.schema.allOf)) {
-        const parentSchema = eachAllOf.value;
-        const aState = this.state.path('allOf', eachAllOf.key);
+      for (const { key: eachAllOfIndex, value: eachAllOfValue } of items(this.schema.allOf)) {
+        const parentSchema = eachAllOfValue;
+        const aState = this.state.path('allOf', eachAllOfIndex);
 
         const parentDecl = this.state.project.modelsNamespace.resolveTypeDeclaration(parentSchema, true, aState);
 
@@ -136,11 +136,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
-    for (const eachSchema of items(this.schema.allOf)) {
+    for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.allOf)) {
       // gs01: Critical -- pull thru parent allOf's!
-      const aSchema = eachSchema.value;
+      const aSchema = eachSchemaValue;
 
-      const aState = this.state.path('allOf', eachSchema.key);
+      const aState = this.state.path('allOf', eachSchemaIndex);
 
       const td = this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema, true, aState);
       const className = (<ModelClass>aSchema.details.csharp.classImplementation).fullName;
@@ -161,7 +161,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       // now, create proxy properties for the members
       iface.allProperties.map((each) => {
         // make sure we don't over expose read-only properties.
-        const p = this.add(new ProxyProperty(backingField, each, this.state, { description: `Inherited model <see cref="${iface.name}" /> - ${eachSchema.value.details.csharp.description}` }));
+        const p = this.add(new ProxyProperty(backingField, each, this.state, { description: `Inherited model <see cref="${iface.name}" /> - ${eachSchemaValue.details.csharp.description}` }));
         if (each.setAccess === Access.Internal) {
           p.setterStatements = undefined;
         }
@@ -176,8 +176,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // and then expand the nested properties into this class forwarding to the member.
 
     // add properties
-    for (const { key: propertyName, value: property } of items(this.schema.properties)) {
-      const prop = new ModelProperty(this, property, property.serializedName || propertyName, this.state.path('properties', propertyName));
+    for (const { key: index, value: property } of items(this.schema.properties)) {
+      const name = property.serializedName || property.details.csharp.name || property.details.default.name;
+      const prop = new ModelProperty(this, property, name, this.state.path('properties', index));
       this.add(prop);
 
       validationStatements.add(prop.validatePresenceStatement(this.validationEventListener));
