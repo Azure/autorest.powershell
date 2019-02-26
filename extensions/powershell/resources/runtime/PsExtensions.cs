@@ -3,23 +3,11 @@ using System.Collections;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal static class PsExtensions
     {
-        public static string ToPsBool(this bool value) => $"${value.ToString().ToLowerInvariant()}";
-
-        public static string ToPsType(this Type type)
-        {
-            var regex = new Regex(@"^(.*)`{1}\d+(.*)$");
-            var match = regex.Match(type.ToString());
-            return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
-        }
-
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
-
         // https://stackoverflow.com/a/863944/294804
         private static bool IsSimple(this Type type)
         {
