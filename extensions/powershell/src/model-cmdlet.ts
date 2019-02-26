@@ -63,7 +63,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
   }
 
   // add a parameter for each property
-  for (const { key: name, value: property } of items(schema.properties)) {
+  for (const property of values(schema.properties)) {
 
     const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(property.schema, true, $class.state);
 
@@ -71,7 +71,7 @@ export function addPowershellParameters($class: WithState, schema: Schema, prop:
       // properties property get inlining without hassle
       const member = new MemberVariable(prop, property.details.csharp.name);
 
-      if (name === 'properties') {
+      if (property.schema.details.csharp.name.toLowerCase() === 'properties') {
         // inline these properties instead.
         const ensure = new Statements(ensureMemberIsCreated);
         ensure.add(`${valueOf(member)} = ${valueOf(member)} ?? new ${property.schema.details.csharp.fullname}();`);
