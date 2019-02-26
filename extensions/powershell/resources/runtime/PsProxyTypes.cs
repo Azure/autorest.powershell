@@ -131,7 +131,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public static bool IsValidParameterSetName(this string parameterSetName) =>
             !String.IsNullOrEmpty(parameterSetName)
-            && parameterSetName != NoParameters
             && parameterSetName != AllParameterSets;
 
         public static Variant ToVariant(this CommandInfo info)
