@@ -193,8 +193,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
         public override string ToString() => $@"<#
-.ForwardHelpTargetName {VariantGroup.ModuleName}\{VariantGroup.CmdletName}{(VariantGroup.DefaultParameterSetName.IsValidParameterSetName() ? $"_{VariantGroup.DefaultParameterSetName}" : String.Empty)}
-.ForwardHelpCategory Cmdlet
 .Description
 {VariantGroup.Description}
 #>

@@ -28,6 +28,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variantGroup in variantsGroups)
             {
                 var sb = new StringBuilder();
+                sb.Append(variantGroup.ToHelpCommentOutput());
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
                 sb.Append(variantGroup.ToCmdletBindingOutput());
@@ -58,8 +59,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 sb.Append(variantGroup.ToBeginOutput());
                 sb.Append(variantGroup.ToProcessOutput());
                 sb.Append(variantGroup.ToEndOutput());
-
-                sb.Append(variantGroup.ToHelpCommentOutput());
 
                 sb.Append($"}}{Environment.NewLine}");
 
