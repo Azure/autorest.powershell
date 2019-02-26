@@ -52,6 +52,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                     sb.Append(parameterGroup.ToArgumentCompleterOutput());
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
+                    sb.Append(parameterGroup.HelpMessage.ToParameterHelpOutput());
                     sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
                 }
                 sb.Append($"){Environment.NewLine}{Environment.NewLine}");

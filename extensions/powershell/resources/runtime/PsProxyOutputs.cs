@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
@@ -15,7 +16,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             OutputTypes = outputTypes.ToArray();
         }
 
-        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({String.Join(", ", OutputTypes.Select(ot => $"'{ot}'"))})]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"'{ot}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
     internal class CmdletBindingOutput
@@ -29,10 +30,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public override string ToString()
         {
-            var isValidDpsn = VariantGroup.DefaultParameterSetName.IsValidParameterSetName();
-            var dpsText = isValidDpsn ? $"DefaultParameterSetName='{VariantGroup.DefaultParameterSetName}'" : String.Empty;
-            var sspText = VariantGroup.SupportsShouldProcess ? $"{(isValidDpsn ? ", " : String.Empty)}SupportsShouldProcess={true.ToPsBool()}, ConfirmImpact='Medium'" : String.Empty;
-            return $"[CmdletBinding({dpsText}{sspText})]{Environment.NewLine}";
+            var dpsText = VariantGroup.DefaultParameterSetName.IsValidParameterSetName() ? $"DefaultParameterSetName='{VariantGroup.DefaultParameterSetName}'" : String.Empty;
+            var sspText = VariantGroup.SupportsShouldProcess ? $"SupportsShouldProcess{ItemSeparator}ConfirmImpact='Medium'" : String.Empty;
+            var propertyText = new[] {dpsText, sspText}.JoinIgnoreEmpty(ItemSeparator);
+            return $"[CmdletBinding({propertyText})]{Environment.NewLine}";
         }
     }
 
@@ -52,12 +53,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString()
         {
             var pa = Parameter.ParameterAttribute;
-            var psnText = HasMultipleVariantsInVariantGroup && !HasAllVariantsInParameterGroup ? $"ParameterSetName='{Parameter.VariantName}', " : String.Empty;
-            var mandatoryText = pa.Mandatory ? $"Mandatory={pa.Mandatory.ToPsBool()}, " : String.Empty;
-            var dontShowText = pa.DontShow ? $"DontShow={pa.DontShow.ToPsBool()}, " : String.Empty;
-            var vfpText = pa.ValueFromPipeline ? $"ValueFromPipeline={pa.ValueFromPipeline.ToPsBool()}, " : String.Empty;
-            var helpText = $"HelpMessage='{pa.HelpMessage.ToPsStringLiteral()}'";
-            return $"{Indent}[Parameter({psnText}{mandatoryText}{dontShowText}{vfpText}{helpText})]{Environment.NewLine}";
+            var psnText = HasMultipleVariantsInVariantGroup && !HasAllVariantsInParameterGroup ? $"ParameterSetName='{Parameter.VariantName}'" : String.Empty;
+            var mandatoryText = pa.Mandatory ? "Mandatory" : String.Empty;
+            var dontShowText = pa.DontShow ? "DontShow" : String.Empty;
+            var vfpText = pa.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
+            var propertyText = new[] { psnText, mandatoryText, dontShowText, vfpText }.JoinIgnoreEmpty(ItemSeparator);
+            return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
 
@@ -70,7 +71,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Alias = alias;
         }
 
-        public override string ToString() => Alias != null ? $"{Indent}[Alias({String.Join(",", Alias.AliasNames.Select(an => $"'{an}'"))})]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => Alias != null ? $"{Indent}[Alias({Alias.AliasNames.Select(an => $"'{an}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
     internal class ValidateNotNullOutput
@@ -179,7 +180,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}throw
 {Indent}}}
 }}
-
 ";
     }
 
@@ -199,6 +199,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 ";
     }
 
+    internal class ParameterHelpOutput
+    {
+        public string HelpMessage { get; }
+
+        public ParameterHelpOutput(string helpMessage)
+        {
+            HelpMessage = helpMessage;
+        }
+
+        public override string ToString() => !String.IsNullOrEmpty(HelpMessage) ? $"{Indent}# {HelpMessage.ToPsStringLiteral()}{Environment.NewLine}" : String.Empty;
+    }
+
     internal static class PsProxyOutputExtensions
     {
         public const string NoParameters = "__NoParameters";
@@ -206,6 +218,21 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public const string AllParameterSets = "__AllParameterSets";
 
         public const string Indent = "    ";
+
+        public const string ItemSeparator = ", ";
+
+        public static string ToPsBool(this bool value) => $"${value.ToString().ToLowerInvariant()}";
+
+        public static string ToPsType(this Type type)
+        {
+            var regex = new Regex(@"^(.*)`{1}\d+(.*)$");
+            var match = regex.Match(type.ToString());
+            return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
+        }
+
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
+
+        public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 
         public static OutputTypeOutput ToOutputTypeOutput(this IEnumerable<PSTypeName> outputTypes) => new OutputTypeOutput(outputTypes);
 
@@ -230,5 +257,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
         public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
+
+        public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
     }
 }

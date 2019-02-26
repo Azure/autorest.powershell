@@ -90,6 +90,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public AliasAttribute Alias { get; }
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
+        public string HelpMessage { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
         {
@@ -103,6 +104,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Alias = Parameters.SelectMany(p => p.Attributes.OfType<AliasAttribute>()).FirstOrDefault();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
+            HelpMessage = Parameters.Select(p => p.ParameterAttribute.HelpMessage).FirstOrDefault(hm => !String.IsNullOrEmpty(hm));
         }
     }
 
