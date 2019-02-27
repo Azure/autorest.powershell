@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, components } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, components, http, HttpOperation, Response } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
@@ -650,56 +650,60 @@ export class CmdletClass extends Class {
   }
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
-
     const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName)];
     if (this.isWritableCmdlet(operation)) {
       cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
+
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
-    const rt = new Dictionary<boolean>();
+    // set to hold the output types
+    const outputTypes = new Set<string>();
     for (const httpOperation of values(operation.callGraph)) {
-      // set to hold the output types
-      const outputTypes = new Set<string>();
+      const pageableInfo = httpOperation.details.default.pageable;
       for (const item of items(httpOperation.responses).linq.where(each => each.key !== 'default')) {
         for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?
-          const td = props.length !== 1 ?
+          const typeDeclaration = props.length !== 1 ?
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
 
-          if (td) {
-            if (!rt[td.declaration]) {
-              rt[td.declaration] = true;
-              const type = (td instanceof ArrayOf) ? td.elementTypeDeclaration : td.declaration;
-              outputTypes.add(`typeof(${type})`);
-            }
+          let type = '';
+          if (typeDeclaration instanceof ArrayOf) {
+            type = typeDeclaration.elementTypeDeclaration;
+          } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+            const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
+            const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+            type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+          } else {
+            type = typeDeclaration.declaration;
           }
+
+          outputTypes.add(`typeof(${type})`);
         }
       }
-
-      if (outputTypes.size === 0) {
-        outputTypes.add(`typeof(${dotnet.Bool})`);
-      }
-
-      this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
-
-      // if any response does not return,
-      // the cmdlet should have a PassThru parameter
-      const shouldAddPassThru = items(httpOperation.responses)
-        .linq.where(responsesItem => responsesItem.key !== 'default')
-        .linq.selectMany(responsesItem => responsesItem.value)
-        .linq.any(value => value.schema === undefined);
-      if (shouldAddPassThru) {
-        const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given that there isn't a return type by default.`;
-        const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
-        passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
-      }
-
-      this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))
-      this.add(new Attribute(GeneratedAttribute));
     }
+
+    // if any response does not return,
+    // the cmdlet should have a PassThru parameter
+    const shouldAddPassThru: boolean = values(operation.callGraph)
+      .linq.selectMany(httpOperation => items(httpOperation.responses))
+      .linq.selectMany(responsesItem => responsesItem.value)
+      .linq.any(value => value.schema === undefined);
+    if (outputTypes.size === 0) {
+      outputTypes.add(`typeof(${dotnet.Bool})`);
+    }
+
+    this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
+    if (shouldAddPassThru) {
+      const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given that there isn't a return type by default.`;
+      const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
+      passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
+    }
+
+    this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))
+    this.add(new Attribute(GeneratedAttribute));
   }
 }
