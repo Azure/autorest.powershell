@@ -119,7 +119,7 @@ async function inlineProperties(model: codemodel.Model, service: Host): Promise<
     Individual models can change the $THRESHOLD for generate
   */
 
-  for (const { key: schemaName, value: schema } of items(model.schemas)) {
+  for (const schema of values(model.schemas)) {
     if (schema.type === JsonType.Object) {
 
       // did we already inline this objecct
