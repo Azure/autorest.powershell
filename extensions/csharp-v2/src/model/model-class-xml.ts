@@ -50,7 +50,7 @@ export class XmlSerializableClass extends Class {
       deserializeStatements.add(`${each.field.value} = new ${each.className}(xml);`);
     }
     pushTempVar();
-    for (const { value: property } of items(modelClass.schema.properties)) {
+    for (const property of values(modelClass.schema.properties)) {
       const prop = modelClass.$<ModelProperty>(property.details.csharp.name);
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Xml, prop, container, prop.serializedName);
 

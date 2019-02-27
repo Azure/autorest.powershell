@@ -64,7 +64,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
   // if an operation has a response that has a schema with string/binary we should make the response  application/octet-stream
   for (const operation of values(model.http.operations)) {
-    for (const { key: responseCode, value: responses } of items(operation.responses)) {
+    for (const responses of values(operation.responses)) {
       for (const response of responses) {
         if (response.schema) {
           if (response.schema.type === JsonType.String && response.schema.format === StringFormat.Binary) {
@@ -85,7 +85,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     // === Header Schemas ===
     // go thru the operations, find responses that have header values, and add a property to the schemas that are returned with those values
     for (const operation of values(model.http.operations)) {
-      for (const { key: mediaType, value: responses } of items(operation.responses)) {
+      for (const responses of values(operation.responses)) {
         for (const response of responses) {
           // for a given response, find the possible models that can be returned from the service
           for (const header of items(response.headers)) {

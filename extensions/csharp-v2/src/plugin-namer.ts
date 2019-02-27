@@ -153,7 +153,7 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
       };
     }
 
-    for (const { key: responseCode, value: responses } of items(operation.responses)) {
+    for (const responses of values(operation.responses)) {
       // per responseCode
       for (const response of values(responses)) {
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;

@@ -33,8 +33,8 @@ export class JsonSerializerClass extends Class {
     // iterate thru all the models
     // each model should have a class and an interface.
     // if the class has a discriminator value, tell the parent model that it has children
-    for (const { key: schemaName, value: schema } of items(schemas)) {
-      const state = this.state.path('components', 'schemas', schemaName);
+    for (const { key: index, value: schema } of items(schemas)) {
+      const state = this.state.path('components', 'schemas', index);
       if (schema.details.csharp && schema.details.csharp.classImplementation) {
         // must be a class.
         // const implData: CSharpSchemaDetails = schema.details.csharp;

@@ -20,7 +20,7 @@ export class ModelExtensionsNamespace extends Namespace {
     const $this = this;
 
     // Add typeconverters to model classes (partial)
-    for (const { key: schemaName, value: schema } of items(schemas)) {
+    for (const schema of values(schemas)) {
       if (!schema || schema.details.csharp.skip) {
         continue;
       }

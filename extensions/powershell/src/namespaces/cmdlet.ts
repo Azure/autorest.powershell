@@ -20,8 +20,8 @@ export class CmdletNamespace extends Namespace {
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
     // generate cmdlet classes on top of the SDK
-    for (const { key: id, value: operation } of items(state.model.commands.operations)) {
-      this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', id)));
+    for (const { key: index, value: operation } of items(state.model.commands.operations)) {
+      this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', index)));
 
       /* if (operation.details.powershell.hasBody) {
         // make a copy that doesn't use the body parameter
