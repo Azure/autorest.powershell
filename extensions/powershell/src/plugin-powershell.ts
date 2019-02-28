@@ -60,5 +60,8 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // Runtime files
   await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
+
+  // platyPS files
+  await copyResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, sourceFileCSharp));
 }
 
