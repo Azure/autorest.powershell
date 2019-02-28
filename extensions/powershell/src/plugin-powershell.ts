@@ -63,5 +63,8 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // Example : copy Binary files
   // await copyBinaryResources(join(resources, 'binaries'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'binary-file'));
+
+  // platyPS files
+  await copyBinaryResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, 'binary-file'));
 }
 

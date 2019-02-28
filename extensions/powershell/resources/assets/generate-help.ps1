@@ -1,28 +1,59 @@
-pushd $PSScriptRoot
-$ErrorActionPreference = "Stop"
+param([Switch]$Isolated)
+Push-Location $PSScriptRoot
+$ErrorActionPreference = 'Stop'
+
+if($PSEdition -ne 'Core') {
+  Write-Error 'This script requires PowerShell Core. Note: Generated cmdlets will work in PowerShell Core or Windows Powershell.'
+}
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-
-if( $PSVersionTable.PSVersion.Major -lt 6 ) { 
-    write-error "This script requires Core PowerShell (don't worry: generated cmdlets can work in Core PowerShell or Windows Powershell)" 
+if(-not $Isolated) {
+  Write-Host -ForegroundColor Green "Spawning in isolated process."
+  & $pwsh -NonInteractive -NoLogo -NoProfile -Command $MyInvocation.MyCommand.Path -Isolated
+  Pop-Location
+  return;
 }
 
-if( -not (get-module platyps -ea 0 )) {
-     write-error "This script requires the 'platyps' module -- please install it (install-module platyps -scope currentuser) " 
+$WarningPreference = 'SilentlyContinue'
+$docsPath = Join-Path $PSScriptRoot 'docs'
+$null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
+
+$modulePsd1 = Get-Item -Path *.psd1 | Select-Object -First 1
+$modulePath = $modulePsd1.FullName
+$moduleName = $modulePsd1.BaseName
+$platyPS = Join-Path $PSScriptRoot 'generated' 'platyPS'
+
+Import-Module $platyPS
+Import-Module $modulePath
+
+# Generate markdowns
+if((Get-Item -Path (Join-Path $docsPath '*.md') -Exclude readme.md | Measure-Object).Count -eq 0) {
+  New-MarkdownHelp -Module $moduleName -OutputFolder $docsPath -WithModulePage -AlphabeticParamsOrder -UseFullTypeName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 }
+Update-MarkdownHelpModule -Path $docsPath -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
-if( -not (test-path ./help) ) {
-    mkdir ./help -ea 0 
-}
+# Update module page markdown
+$modulePage = Join-Path $docsPath "$moduleName.md"
+$mpContent = Get-Content -Path $modulePage
+$moduleNameLower = "$($moduleName.ToLower())"
+$mpContent = $mpContent -replace 'Download Help Link: {{Please enter FwLink manually}}.*', "Download Help Link: https://docs.microsoft.com/en-us/powershell/module/$moduleNameLower"
+$mpContent = $mpContent -replace 'Help Version: {{Please enter version of help manually \(X\.X\.X\.X\) format}}.*', "Help Version: 1.0.0.0"
+$mpContent = $mpContent -replace '{{Manually Enter Description Here}}.*', "$((Get-Module $moduleName).Description)"
+Set-Content -Path $modulePage -Value $mpContent
 
-$mpath = $(( dir ./*.psd1)[0].fullname)
-$mname = $(( dir ./*.psd1)[0].basename)
+# Update cmdlet markdowns
+Get-Item -Path (Join-Path $docsPath '*.md') | ForEach-Object {
+  $md = $_
+  $cmdletNameLower = "$($md.BaseName.ToLower())"
+  $mdContent = Get-Content -Path $md
+  $mdContent = $mdContent -replace 'external help file:.*', "external help file: $moduleName-help.xml"
+  $mdContent = $mdContent -replace 'online version:.*', "online version: https://docs.microsoft.com/en-us/powershell/module/$moduleNameLower/$cmdletNameLower"
+  Set-Content -Path $md -Value $mdContent
+};
 
-# generate help for the proxy'd cmdlets.
-& $pwsh -command "`$warningpreference = 'silent' ; ipmo $mpath ; get-command -module $mname |% { platyps\new-MarkdownHelp -command `$_ -OutputFolder ./help -ea 0  } ; `$shh = platyps\update-markdownhelpmodule -path ./help -ea 0 -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName "
+# Generate -help.xml
+New-ExternalHelp -Path $docsPath -OutputPath $PSScriptRoot -Force
 
-# makes sure external help file is set correctly. 
-dir ./help/*.md |% { set-content -Path $_ ( (Get-Content -Path $_) -replace "external help file:.*", "external help file: $mname-help.xml" ) }
-
-# generate the help file
-platyps\New-ExternalHelp -Path ./help -OutputPath ./ -force
+Pop-Location
+Write-Host -ForegroundColor Green 'Done.'
+Write-Host -ForegroundColor Green '-------------------------------'
