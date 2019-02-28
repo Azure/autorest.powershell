@@ -138,7 +138,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`if (${value} != null && ${value}.Length > 0) { queryParameters.Add("${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty)))); }`);
+          return toExpression(`${value} != null && ${value}.Length > 0 ? "${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty))) : System.String.Empty`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
