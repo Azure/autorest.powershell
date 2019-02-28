@@ -24,8 +24,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var variantGroups = CommandInfo
                 .Select(ci => ci.ToVariant())
                 .GroupBy(v => v.CmdletName)
-                .Select(vg => new VariantTestGroup(vg.Key, vg.Select(v => v).ToArray(), Path.Combine(OutputFolder, $"{vg.Key}.Tests.ps1")))
-                .Where(vtg => !File.Exists(vtg.Filename) && !vtg.IsGenerated);
+                .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, true))
+                .Where(vtg => !File.Exists(vtg.FilePath) && !vtg.IsGenerated);
 
             foreach (var variantGroup in variantGroups)
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
                 sb.AppendLine("}");
 
-                File.WriteAllText(variantGroup.Filename, sb.ToString());
+                File.WriteAllText(variantGroup.FilePath, sb.ToString());
             }
         }
     }
