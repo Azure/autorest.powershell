@@ -193,6 +193,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
         public override string ToString() => $@"<#
+.Synopsis
+{VariantGroup.Description}
 .Description
 {VariantGroup.Description}
 #>

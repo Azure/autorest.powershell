@@ -5,7 +5,7 @@
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 import { generateFormatPs1xml } from './generators/format-ps1xml';
-import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation } from '@microsoft.azure/codegen';
+import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation, copyBinaryResources } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
@@ -60,5 +60,11 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // Runtime files
   await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides);
+
+  // Example : copy Binary files
+  // await copyBinaryResources(join(resources, 'binaries'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'binary-file'));
+
+  // platyPS files
+  await copyBinaryResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, 'binary-file'));
 }
 
