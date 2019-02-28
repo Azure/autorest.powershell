@@ -19,38 +19,34 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string OutputFolder { get; set; }
 
-        private const string Indent = "    ";
-
         protected override void ProcessRecord()
         {
-            var cmdletFilenameGroups = CommandInfo
-                .Select(ci => {
-                    var metadata = new CommandMetadata(ci);
-                    var parts = metadata.Name.Split('_');
-                    return (name: parts[0], variant: parts.Length > 1 ? parts[1] : NoParameters, info: ci, metadata: metadata);
-                })
-                .GroupBy(cg => cg.name)
-                .Select(cg => (cmdletGroup: cg, filename: Path.Combine(OutputFolder, $"{cg.Key}.Tests.ps1")))
-                .Where(cgf => !File.Exists(cgf.filename));
-            foreach (var cmdletFilenameGroup in cmdletFilenameGroups)
+            var variantGroups = CommandInfo
+                .Select(ci => ci.ToVariant())
+                .GroupBy(v => v.CmdletName)
+                .Select(vg => new VariantTestGroup(vg.Key, vg.Select(v => v).ToArray(), Path.Combine(OutputFolder, $"{vg.Key}.Tests.ps1")))
+                .Where(vtg => !File.Exists(vtg.Filename) && !vtg.IsGenerated);
+
+            foreach (var variantGroup in variantGroups)
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($@". ""$PSScriptRoot/HttpPipelineMocking.ps1""{Environment.NewLine}");
 
-                var cmdletName = cmdletFilenameGroup.cmdletGroup.Key;
-                sb.AppendLine($"Describe '{cmdletName}' {{");
-                var cmdletGroupList = cmdletFilenameGroup.cmdletGroup.ToList();
+                sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
+                var variants = variantGroup.Variants
+                    .Where(v => !v.Attributes.OfType<GeneratedAttribute>().Any())
+                    .ToList();
 
-                foreach (var variantGroup in cmdletGroupList)
+                foreach (var variant in variants)
                 {
-                    sb.AppendLine($"{Indent}It '{variantGroup.variant}' {{");
+                    sb.AppendLine($"{Indent}It '{variant.VariantName}' {{");
                     sb.AppendLine($"{Indent}{Indent}{{ throw [System.NotImplementedException] }} | Should -Not -Throw");
-                    var variantSeparator = cmdletGroupList.IndexOf(variantGroup) == cmdletGroupList.Count - 1 ? String.Empty : Environment.NewLine;
+                    var variantSeparator = variants.IndexOf(variant) == variants.Count - 1 ? String.Empty : Environment.NewLine;
                     sb.AppendLine($"{Indent}}}{variantSeparator}");
                 }
                 sb.AppendLine("}");
 
-                File.WriteAllText(cmdletFilenameGroup.filename, sb.ToString());
+                File.WriteAllText(variantGroup.Filename, sb.ToString());
             }
         }
     }

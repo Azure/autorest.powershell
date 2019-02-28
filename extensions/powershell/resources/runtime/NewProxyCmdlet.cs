@@ -20,12 +20,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            var variantsGroups = CommandInfo
+            var variantGroups = CommandInfo
                 .Select(ci => ci.ToVariant())
                 .GroupBy(v => v.CmdletName)
                 .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray()));
 
-            foreach (var variantGroup in variantsGroups)
+            foreach (var variantGroup in variantGroups)
             {
                 var sb = new StringBuilder();
                 sb.Append(variantGroup.ToHelpCommentOutput());

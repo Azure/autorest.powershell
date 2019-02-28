@@ -53,6 +53,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class VariantTestGroup : VariantGroup
+    {
+        public string Filename { get; }
+        public bool IsGenerated { get; }
+
+        public VariantTestGroup(string cmdletName, Variant[] variants, string filename) : base(cmdletName, variants)
+        {
+            Filename = filename;
+            IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
+        }
+    }
+
     internal class Variant
     {
         public string CmdletName { get; }
