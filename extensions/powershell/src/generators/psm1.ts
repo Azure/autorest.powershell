@@ -14,14 +14,12 @@ export async function generatePsm1(service: Host, project: Project) {
     # from PSModulePath
     # (this must be the modified version of Az.Accounts)
 
-    $module = Get-Module Az.Accounts 
-    if ($module -ne $null -and $module.Version.ToString().CompareTo("0.4.0") -lt 0) 
-    { 
-        Write-Error "This module requires Az.Accounts version 0.4.0. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information." -ErrorAction Stop 
-    } 
-    elseif ($module -eq $null) 
-    { 
-        $module = Import-Module Az.Accounts -MinimumVersion 0.4.0 -Scope Global -passthru
+    $module = Get-Module Az.Accounts
+    if ($module -ne $null -and $module.Version.ToString().CompareTo("0.4.0") -lt 0) {
+      Write-Error "This module requires Az.Accounts version 0.4.0. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information." -ErrorAction Stop
+    }
+    elseif ($module -eq $null) {
+      $module = Import-Module Az.Accounts -MinimumVersion 0.4.0 -Scope Global -PassThru
     }
 
     Write-Host "Loaded Common Module '$($module.Name)'"
@@ -47,17 +45,27 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   psm1.prepend('Initialization', `
-    # this module instance.
-    $instance =  [${project.serviceNamespace.moduleClass.declaration}]::Instance
+    # this module instance
+    $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
     # load nested script module if it exists
     if(Test-Path "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1") {
       Import-Module "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1"
     }
 
-    $privatemodule = Import-Module -PassThru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
-    # export the 'exported' cmdlets
-    Get-ChildItem "$PSScriptRoot/exports" -Recurse -Filter "*.ps1" -File | Sort-Object Name | ForEach-Object {
+    # load private module dll
+    $null = Import-Module -PassThru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
+
+    # export the cmdlets
+    $exports = "$PSScriptRoot/exports"
+    $directories = Get-ChildItem -Directory -Path $exports
+    if(($directories | Measure-Object).Count -gt 0) {
+      # TODO: Change to load selected profile if it exists for the module
+      $profile = $directories | Select-Object -Last 1
+      Write-Host "Loaded Profile '$($profile.Name)'"
+      $exports = $profile.FullName
+    }
+    Get-ChildItem -Path $exports -Recurse -Filter "*.ps1" -File | Sort-Object Name | ForEach-Object {
       Write-Verbose "Dot sourcing private script file: $($_.Name)"
       . $_.FullName
       # Explicity export the member
@@ -67,7 +75,7 @@ export async function generatePsm1(service: Host, project: Project) {
   psm1.append('Finalization', `
     # finish initialization of this module
     $instance.Init();
-  `);
+`);
 
   psm1.trim();
 
