@@ -1,10 +1,27 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    internal class ProfileGroup
+    {
+        public string ProfileName { get; }
+        public Variant[] Variants { get; }
+
+        private const string NoProfiles = "__NoProfiles";
+        public string ProfileFolder { get; }
+
+        public ProfileGroup(Variant[] variants, string profileName = NoProfiles)
+        {
+            ProfileName = profileName;
+            Variants = variants;
+            ProfileFolder = ProfileName != NoProfiles ? ProfileName : String.Empty;
+        }
+    }
+
     internal class VariantGroup
     {
         public string CmdletName { get; }
@@ -16,8 +33,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasMultipleVariants { get; }
         public string ModuleName { get; }
         public string Description { get; }
+        public bool IsGenerated { get; }
 
-        public VariantGroup(string cmdletName, Variant[] variants)
+        public string OutputFolder { get; }
+        public string FileName { get; }
+        public string FilePath { get; }
+
+        public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, bool isTest = false)
         {
             CmdletName = cmdletName;
             Variants = variants;
@@ -27,6 +49,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasMultipleVariants = Variants.Length > 1;
             ModuleName = Variants.Select(v => v.Info.Source).First();
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
+            IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
+
+            OutputFolder = outputFolder;
+            FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
+            FilePath = Path.Combine(OutputFolder, FileName);
         }
 
         private string DetermineDefaultParameterSetName()
@@ -63,6 +90,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Attribute[] Attributes { get; }
         public Parameter[] Parameters { get; }
         public Parameter[] CmdletOnlyParameters { get; }
+        public string[] Profiles { get; }
 
         public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata)
         {
@@ -75,6 +103,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletOnlyParameters = Parameters.Where(p => !p.Metadata.Attributes.OfType<CategoryAttribute>().Any(a =>
                 a.Categories.Contains(ParameterCategory.Azure) ||
                 a.Categories.Contains(ParameterCategory.Runtime))).ToArray();
+            Profiles = Attributes.OfType<ProfileAttribute>().SelectMany(pa => pa.Profiles).ToArray();
         }
     }
 
