@@ -115,6 +115,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
 
   return model.commands.operations[`${length(model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
     asjob: operation.details.default.asjob ? true : false,
+    extensions: operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone({ 'x-ms-metadata': operation.pathExtensions['x-ms-metadata'] }) : {} : {},
     ...variant,
     details: {
       ...operation.details,

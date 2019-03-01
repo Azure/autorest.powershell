@@ -14,7 +14,7 @@ import {
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute } from './powershell-declarations';
 import { State } from './state';
 
 export class CmdletClass extends Class {
@@ -705,5 +705,14 @@ export class CmdletClass extends Class {
 
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))
     this.add(new Attribute(GeneratedAttribute));
+    if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
+      const profileNames = Object.keys(operation.extensions['x-ms-metadata'].profiles);
+      // wrap profile names
+      profileNames.forEach((element, index) => {
+        profileNames[index] = `"${element}"`;
+      });
+
+      this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
+    }
   }
 }
