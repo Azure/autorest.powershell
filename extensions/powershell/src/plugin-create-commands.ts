@@ -113,9 +113,14 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     vname = `${vname}Etc`;
   }
 
+  const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
+
   return model.commands.operations[`${length(model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
     asjob: operation.details.default.asjob ? true : false,
-    extensions: operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone({ 'x-ms-metadata': operation.pathExtensions['x-ms-metadata'] }) : {} : {},
+    extensions: {
+      ...operation.pathExtensions,
+      'x-ms-metadata': xmsMetadata
+    },
     ...variant,
     details: {
       ...operation.details,
