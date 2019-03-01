@@ -8,7 +8,7 @@ import { Dictionary, escapeString, items, values } from '@microsoft.azure/codege
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
@@ -210,7 +210,7 @@ export class CmdletClass extends Class {
         } : normal;
 
         if (writable) {
-          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].details.default.name}' operation")`, work);
+          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].details.csharp.name}' operation")`, work);
         } else {
           yield work;
         }
@@ -278,7 +278,7 @@ export class CmdletClass extends Class {
       const apiCall = operation.callGraph[0];
 
       // find each parameter to the method, and find out where the value is going to come from.
-      const operationParameters: Array<Expression> = values(apiCall.parameters).linq.where(each => !(each.details.default.constantValue)).linq.select(p => {
+      const operationParameters: Array<Expression> = values(apiCall.parameters).linq.where(each => !(each.details.csharp.constantValue)).linq.select(p => {
         return values($this.properties).linq.where(each => each.metadata.parameterDefinition).linq.first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid);
       }).linq.select(each => each ? each : new LiteralExpression('null')).linq.toArray();
 
@@ -327,15 +327,15 @@ export class CmdletClass extends Class {
               // this supports both { error { message, code} } and { message, code} 
 
               let props = getAllProperties(each.schema);
-              const errorProperty = values(props).linq.first(p => p.details.default.name === 'error');
+              const errorProperty = values(props).linq.first(p => p.details.csharp.name === 'error');
               let ep = '';
               if (errorProperty) {
                 props = getAllProperties(errorProperty.schema);
                 ep = `${errorProperty.details.csharp.name}?.`;
               }
 
-              const codeProp = values(props).linq.first(p => p.details.default.name === 'code');
-              const messageProp = values(props).linq.first(p => p.details.default.name === 'message');
+              const codeProp = values(props).linq.first(p => p.details.csharp.name === 'code');
+              const messageProp = values(props).linq.first(p => p.details.csharp.name === 'message');
 
               if (codeProp && messageProp) {
                 const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response).${ep}${codeProp.details.csharp.name};` });
@@ -452,7 +452,7 @@ export class CmdletClass extends Class {
 
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
-        if (!(parameter.details.default.constantValue)) {
+        if (!(parameter.details.csharp.constantValue)) {
           yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.csharp.name, container, parameter.details.csharp.name);
         }
       }
@@ -516,15 +516,13 @@ export class CmdletClass extends Class {
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
 
-        if (!(parameter.details.default.constantValue)) {
-          const bp = <BackedProperty>$this.$<Property>(parameter.details.csharp.name);
+        if (!(parameter.details.csharp.constantValue)) {
+          const bp = $this.$<Property>(parameter.details.csharp.name);
 
           // dont' serialize if it's a constant or host parameter.
           // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.csharp.name);
           yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
-
         }
-
       }
     });
   }
@@ -594,12 +592,12 @@ export class CmdletClass extends Class {
       // these are the parameters that this command expects
       const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
 
-      if (parameter.details.default.constantValue) {
+      if (parameter.details.csharp.constantValue) {
         // this parameter has a constant value -- SKIP IT
         continue;
       }
 
-      if (parameter.details.default.fromHost) {
+      if (parameter.details.csharp.fromHost) {
         // the parameter is expected to be gotten from the host.(ie, Az.Accounts)
 
         const hostParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
@@ -611,6 +609,36 @@ export class CmdletClass extends Class {
 
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
         this.$<Method>('BeginProcessing').add(hostParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation, ${this.correlationId.value}, "${parameter.name}") as string`)));
+        continue;
+      }
+      const $this = this;
+
+      if (parameter.details.csharp.apiversion) {
+        // Api-version parameters for azure are a custom implementation
+        this.add(new ImplementedProperty(parameter.details.csharp.name, td, {
+          metadata: {
+            parameterDefinition: parameter.details.csharp.originalHttpParameter
+          },
+          description: parameter.details.csharp.description,
+          *getterStatements() {
+            const metadata = operation.extensions['x-ms-metadata'];
+            // const profiles = <Dictionary<string>>metadata.profiles;
+
+            // temptesting
+            const profiles = new Dictionary<string>();
+            for (const each of metadata.apiVersions) {
+              profiles[each] = each;
+            }
+
+
+            yield Switch(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Profile`, function* () {
+              for (const { key: profileName, value: apiVersion } of items(profiles)) {
+                yield TerminalCase(`"${profileName}"`, Return(`"${apiVersion}"`));
+              }
+              yield TerminalDefaultCase(Return(`"${metadata.apiVersions[0]}"`));
+            });
+          }
+        }));
         continue;
       }
 
@@ -660,7 +688,7 @@ export class CmdletClass extends Class {
     // set to hold the output types
     const outputTypes = new Set<string>();
     for (const httpOperation of values(operation.callGraph)) {
-      const pageableInfo = httpOperation.details.default.pageable;
+      const pageableInfo = httpOperation.details.csharp.pageable;
       for (const item of items(httpOperation.responses).linq.where(each => each.key !== 'default')) {
         for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);

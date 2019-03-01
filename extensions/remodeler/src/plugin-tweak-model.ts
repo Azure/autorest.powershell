@@ -41,27 +41,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     delete model.schemas[each];
   }
 
-  /* REMOVE THIS -- not handled here anymore
-    // consolodate compatible response types.
-    for (const operation of values(model.http.operations)) {
-      // TODO: mimetypes might start with the mimetype and have extra stuff after
-      // this should be fixed if it happens.
-
-      // if an operation response has a application/json and text/json, remove the text/json and add that mime type to the list of 'accepts'
-      for (const response of values(operation.responses)) {
-        const content = response.content;
-        if (content['application/json'] && content['text/json']) {
-          content['application/json'].accepts.push('text/json');
-          delete content['text/json'];
-          service.Message({
-            Channel: Channel.Debug,
-            Text: `operation '${operation.details.default.name}' lists both "application/json" and "text/json" -- these are being combined.`
-          });
-        }
-      }
-    }
-  */
-
   // if an operation has a response that has a schema with string/binary we should make the response  application/octet-stream
   for (const operation of values(model.http.operations)) {
     for (const responses of values(operation.responses)) {
@@ -155,20 +134,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     //
     operation.parameters = values(operation.parameters).linq.where(p => !(p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name))).linq.toArray();
 
-    /*
-        for (const parameter of values(operation.parameters).linq.where(p => p.in === ParameterLocation.Header && p.name === 'if-match')) {
-          switch (parameter.name) {
-            case 'if-match':
-              operation.details.default.ifmatch = parameter;
-              remove.push(parameter.name);
-              break;
-
-            default:
-
-          }
-        }
-        operation.parameters = operation.parameters.filter(each => remove.includes(each.name));
-        */
   }
 
   // identify models that are polymorphic in nature
@@ -191,21 +156,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       if (parameter.schema.enum.length === 1) {
         // parameters with an enum single value are constants
         parameter.details.default.constantValue = parameter.schema.enum[0];
-      }
-
-      if (parameter.name === 'api-version') {
-
-        // only set it if it hasn't been set yet.
-        if (!parameter.details.default.constantValue) {
-          // api-version constant parameter pulls value from the model/info/version
-          parameter.details.default.constantValue = model.info.version;
-        }
-
-        if (!parameter.details.default.constantValue) {
-          // um... api-version didn't have an enum, and we didn't get from model.info.version.
-          // that's not cool.
-          service.Message({ Channel: Channel.Error, Text: `Parameter 'api-version' doesn't have a single enum-value, and model.info.version is '${model.info.version}' ` });
-        }
       }
     }
   }

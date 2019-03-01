@@ -71,14 +71,14 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     this.apply(objectInitializer);
     const implData = (schema.details.csharp = schema.details.csharp || {});
     implData.interfaceImplementation = this;
-    this.description = `${schema.details.default.description}`;
+    this.description = `${schema.details.csharp.description}`;
 
     for (const { key: index, value: property } of items(schema.properties)) {
       this.add(new ModelInterfaceProperty(this, property, state.path('properties', index)));
     }
 
     // mark it as json serializable
-    if (!schema.details.default.isHeaderModel) {
+    if (!schema.details.csharp.isHeaderModel) {
       if (this.state.project.jsonSerialization) {
         this.interfaces.push(ClientRuntime.IJsonSerializable);
       }

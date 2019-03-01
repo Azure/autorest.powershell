@@ -325,10 +325,7 @@ export class Remodeler {
     return this.add(ref.name, ref, dictionary, copyFunc);
   }
 
-  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: components.ImplementationLocation = components.ImplementationLocation.Client, targetDictionary: Dictionary<HttpOperationParameter>): HttpOperationParameter {
-    if (targetDictionary && targetDictionary[name]) {
-      return targetDictionary[name];
-    }
+  copyParameter(name: string, original: OpenAPI.Parameter, implementationLocation: components.ImplementationLocation = components.ImplementationLocation.Client): HttpOperationParameter {
     const location = Interpretations.getParameterImplementationLocation(implementationLocation, original);
 
     const style = OpenAPI.isCookieParameter(original) ? EncodingStyle.Form :
@@ -361,7 +358,6 @@ export class Remodeler {
       schema: OpenAPI.hasSchema(original) ? this.refOrAdd(`.Parameter.${name}`, <any>paramSchema, this.model.schemas, this.copySchema) : undefined,
       extensions: getExtensionProperties(original),
     });
-    this.addOrThrow(targetDictionary, name, newParameter);
 
     newParameter.details.default.name = Interpretations.getName(original.name, original);
     newParameter.details.default.deprecationMessage = Interpretations.getDeprecationMessage(original);
@@ -370,12 +366,6 @@ export class Remodeler {
     // TODO: not handled: Examples, Example, Content
 
     return newParameter;
-  }
-
-  remodelParameters(source: Dictionary<Refable<OpenAPI.Parameter>>) {
-    for (const parameterName of keys(source)) {
-      this.refOrAdd(parameterName, this.dereference(source[parameterName]), this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Client, this.model.http.parameters));
-    }
   }
 
   copyOperation = (name: string, original: { method: HttpMethod; path: string; operation: OpenAPI.HttpOperation; pathItem: OpenAPI.PathItem }, targetDictionary: Dictionary<HttpOperation>): HttpOperation => {
@@ -415,13 +405,13 @@ export class Remodeler {
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Method, this.model.http.parameters)));
+        newOperation.parameters.push(this.copyParameter(`${name}.${p.instance.name}`, p.instance, components.ImplementationLocation.Method));
       }
     }
     if (original.pathItem.parameters) {
       for (const parameterName of original.pathItem.parameters) {
         const p = this.dereference(parameterName);
-        newOperation.parameters.push(this.refOrAdd(`${name}.${p.instance.name}`, p, this.model.http.parameters, (n, o) => this.copyParameter(n, o, components.ImplementationLocation.Method, this.model.http.parameters)));
+        newOperation.parameters.push(this.copyParameter(`${name}.${p.instance.name}`, p.instance, components.ImplementationLocation.Method));
       }
     }
 
@@ -762,9 +752,11 @@ export class Remodeler {
       if (this.oai.components.schemas) {
         this.remodelT(this.oai.components.schemas, this.model.schemas, this.copySchema);
       }
+      /* Don't make globally accessible parameters anymore
       if (this.oai.components.parameters) {
         this.remodelParameters(this.oai.components.parameters);
-      }
+      } */
+
       if (this.oai.components.headers) {
         this.remodelT(this.oai.components.headers, this.model.http.headers, this.copyHeader);
       }

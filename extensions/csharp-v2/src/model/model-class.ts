@@ -177,7 +177,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     for (const { key: index, value: property } of items(this.schema.properties)) {
-      const name = property.serializedName || property.details.csharp.name || property.details.default.name;
+      const name = property.serializedName || property.details.csharp.name;
       const prop = new ModelProperty(this, property, name, this.state.path('properties', index));
       this.add(prop);
 

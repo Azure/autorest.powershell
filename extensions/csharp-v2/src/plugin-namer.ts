@@ -56,7 +56,7 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
     if (schema.type === JsonType.Object) {
       schema.details.csharp = <SchemaDetails>{
         ...details,
-        interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(details.name)])), // objects have an interfaceName
+        interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
         name: pascalCase(fixLeadingNumber(deconstruct(schemaName))),
         namespace: pascalCase([serviceNamespace, '.', `Models`]),  // objects have a namespace
         fullname: `${pascalCase([serviceNamespace, '.', `Models`])}.${pascalCase(fixLeadingNumber(deconstruct(schemaName)))}`,
@@ -65,7 +65,7 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
       // oh, it's an enum type
       schema.details.csharp = <SchemaDetails>{
         ...details,
-        interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(details.name)])),
+        interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
         name: pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name))),
         namespace: pascalCase([serviceNamespace, '.', `Support`]),
         fullname: `${pascalCase([serviceNamespace, '.', `Support`])}.${pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name)))}`,
