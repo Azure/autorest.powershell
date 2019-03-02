@@ -14,7 +14,7 @@ import {
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
 
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, PSObject } from './powershell-declarations';
 import { State } from './state';
 
 export class CmdletClass extends Class {
@@ -128,7 +128,7 @@ export class CmdletClass extends Class {
     proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     if (this.state.project.azure) {
-      const defaultProfile = this.add(new Property('DefaultProfile', dotnet.Object, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
+      const defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
       defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
       defaultProfile.add(new Attribute(ValidateNotNull));
       defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
