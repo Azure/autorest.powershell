@@ -2,16 +2,12 @@ param([Switch]$Isolated)
 Push-Location $PSScriptRoot
 $ErrorActionPreference = 'Stop'
 
-if($PSEdition -ne 'Core') {
-  Write-Error 'This script requires PowerShell Core. Note: Generated cmdlets will work in PowerShell Core or Windows Powershell.'
-}
-
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
 if(-not $Isolated) {
-  Write-Host -ForegroundColor Green "Spawning in isolated process."
-  & $pwsh -NonInteractive -NoLogo -NoProfile -Command $MyInvocation.MyCommand.Path -Isolated
+  Write-Host -ForegroundColor Green 'Creating isolated process...'
+  & $pwsh -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path -Isolated
   Pop-Location
-  return;
+  return
 }
 
 $WarningPreference = 'SilentlyContinue'
