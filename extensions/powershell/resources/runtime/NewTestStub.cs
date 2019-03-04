@@ -30,7 +30,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variantGroup in variantGroups)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($@". ""$PSScriptRoot/HttpPipelineMocking.ps1""{Environment.NewLine}");
+                sb.AppendLine($@". (Join-Path $PSScriptRoot 'HttpPipelineMocking.ps1'){Environment.NewLine}");
 
                 sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
                 var variants = variantGroup.Variants

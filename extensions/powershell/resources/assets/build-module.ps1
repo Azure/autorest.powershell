@@ -8,7 +8,7 @@ if($PSEdition -ne 'Core') {
 if(-not $Isolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & "$pwsh" -NoLogo -NoProfile -NonInteractive -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
 
   if($LastExitCode -ne 0) {
     # Build failed. Don't attempt to run the module.
