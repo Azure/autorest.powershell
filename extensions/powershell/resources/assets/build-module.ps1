@@ -15,6 +15,14 @@ if(-not $Isolated) {
     return
   }
 
+  if($Test) {
+    . (Join-Path $PSScriptRoot 'test-module.ps1')
+    if($LastExitCode -ne 0) {
+      # Tests failed. Don't attempt to run the module.
+      return
+    }
+  }
+
   if($Code) {
     . (Join-Path $PSScriptRoot 'run-module.ps1') -Code
   } elseif($Run) {
