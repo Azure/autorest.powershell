@@ -1,19 +1,14 @@
 param([Switch]$Isolated, [Switch]$Code)
-Push-Location $PSScriptRoot
 $ErrorActionPreference = 'Stop'
 
 if(-not $Isolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & $pwsh -NoExit -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
-  Pop-Location
+  & "$pwsh" -NoExit -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
   return
 }
 
-$modulePsd1 = Get-Item -Path *.psd1 | Select-Object -First 1
-if(-not $modulePsd1) {
-  Write-Error 'Module has not been built. Run ''./build-module.ps1'' to build the module.'
-}
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 

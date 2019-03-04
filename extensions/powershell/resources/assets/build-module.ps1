@@ -8,9 +8,10 @@ if($PSEdition -ne 'Core') {
 if(-not $Isolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & $pwsh -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
+  & "$pwsh" -NoLogo -NoProfile -NonInteractive -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
 
   if($LastExitCode -ne 0) {
+    # Build failed. Don't attempt to run the module.
     return
   }
 
@@ -21,7 +22,6 @@ if(-not $Isolated) {
   } else {
     Write-Host -ForegroundColor Cyan 'To run this module in an isolated PowerShell session, run ''./run-module.ps1'' or provide the ''-Run'' parameter to this script.'
   }
-
   return
 }
 
@@ -40,17 +40,12 @@ $buildConfig = 'Debug'
 if($Release) {
   $buildConfig = 'Release'
 }
-
-$buildOutput = dotnet publish --configuration $buildConfig --output bin
+dotnet publish --configuration $buildConfig --output bin /nologo
 if($LastExitCode -ne 0) {
-  # if it fails, let's do it again so the output comes out nicely.
-#   dotnet publish --configuration $buildConfig --output bin
-  Write-Host $buildOutput
-  Write-Error 'Compilation failed'
+  Write-Error 'Compilation failed.'
 }
 
 $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
-# $dll = (Get-ChildItem bin\*.private.dll)[0]
 $dll = Get-Item -Path (Join-Path $binFolder '*.private.dll') | Select-Object -First 1
 
 if(-not (Test-Path $dll)) {
@@ -58,7 +53,7 @@ if(-not (Test-Path $dll)) {
 }
 
 $commands = Get-Command -Module (Import-Module $dll -PassThru)
-Write-Host -ForegroundColor Gray "Module DLL Loaded [$dll]"
+Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
 
 # https://stackoverflow.com/a/40969712/294804
 $currentFunctions = Get-ChildItem function:
@@ -67,7 +62,7 @@ Get-ChildItem -Recurse $scriptsPath | ForEach-Object { . $_.FullName }
 $scriptFunctions = Get-ChildItem function: | Where-Object { $currentFunctions -notcontains $_ }
 if(($scriptFunctions | Measure-Object).Count -gt 0) {
   $commands = $commands + ($scriptFunctions | ForEach-Object { Get-Command -Name $_.Name })
-  Write-Host -ForegroundColor Gray 'Custom Scripts Loaded'
+  Write-Host -ForegroundColor Green 'Custom Scripts Loaded'
 }
 
 # merge scripts into one file
@@ -96,28 +91,3 @@ $null = New-Item -ItemType Directory -Force -Path $testPath
 New-TestStub -CommandInfo $commands -OutputFolder $testPath
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
-
-# # $runCommand = "& ""$(Join-Path $PSScriptRoot 'run-module.ps1')"" -Isolated"
-# if($Code) {
-# #   $mpath = $(( dir ./*.psd1)[0].fullname)
-# #   $mname = $(( dir ./*.psd1)[0].basename)
-# #   $testCommandExtra = ''
-# #   if($code) {
-# #     # add a .vscode/launch.json folder 
-# #     $vscodeDirectory = New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot '.vscode')
-# #     $launchJson = Join-Path $vscodeDirectory 'launch.json'
-# #     Set-Content -Path $launchJson -Value '{ "version": "0.2.0", "configurations":[{ "name":"Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"#PID", "justMyCode":false }] }'
-# #     $testCommandExtra = " Set-Content -Path $launch -value ((Get-Content -Path $launch -Raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;"
-# #   }
-# #   & $pwsh -NoExit -Command "function prompt { `$ESC = [char]27 ; Write-host -nonewline -ForegroundColor Green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -NoNewline -ForegroundColor White ; Write-host -ForegroundColor White -NoNewline '' ;  return ' ' } ;$testCommandExtra Import-Module '$mpath' "
-# #   & (Join-Path $PSScriptRoot 'run-module.ps1') -Isolated -Command ((Get-Command Get-CodeParameter).Definition)
-# #   $runCommand = "$runCommand -Command $((Get-Command Get-CodeParameter).Definition)"
-# #   Invoke-Expression $runCommand
-# . (Join-Path $PSScriptRoot 'run-module.ps1') -Isolated -Command ((Get-Command Get-CodeParameter).Definition)
-# } elseif($Run) {
-# #   & (Join-Path $PSScriptRoot 'run-module.ps1') -Isolated
-# #   Invoke-Expression $runCommand
-# . (Join-Path $PSScriptRoot 'run-module.ps1') -Isolated
-# } else {
-#   Write-Host -ForegroundColor Cyan 'To run this module in an isolated PowerShell session, run ''./run-module.ps1'' or provide the ''-Run'' parameter to this script.'
-# }

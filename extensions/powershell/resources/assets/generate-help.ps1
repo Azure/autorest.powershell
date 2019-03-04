@@ -1,12 +1,10 @@
 param([Switch]$Isolated)
-Push-Location $PSScriptRoot
 $ErrorActionPreference = 'Stop'
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
 if(-not $Isolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
-  & $pwsh -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path -Isolated
-  Pop-Location
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path -Isolated
   return
 }
 
@@ -14,7 +12,7 @@ $WarningPreference = 'SilentlyContinue'
 $docsPath = Join-Path $PSScriptRoot 'docs'
 $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
 
-$modulePsd1 = Get-Item -Path *.psd1 | Select-Object -First 1
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 $platyPS = Join-Path $PSScriptRoot 'generated' 'platyPS'
@@ -50,6 +48,4 @@ Get-Item -Path (Join-Path $docsPath '*.md') | ForEach-Object {
 # Generate -help.xml
 New-ExternalHelp -Path $docsPath -OutputPath $PSScriptRoot -Force
 
-Pop-Location
-Write-Host -ForegroundColor Green 'Done.'
-Write-Host -ForegroundColor Green '-------------------------------'
+Write-Host -ForegroundColor Green '-------------Done-------------'
