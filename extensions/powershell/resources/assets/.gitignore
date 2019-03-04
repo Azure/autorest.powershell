@@ -2,4 +2,4 @@ bin
 obj
 generated
 node_modules
-test/results
+test/*-TestResults.xml
