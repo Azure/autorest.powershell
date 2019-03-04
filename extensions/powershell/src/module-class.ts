@@ -99,7 +99,7 @@ export class ModuleClass extends Class {
     this.add(new Constructor(this, {
       access: Access.Private,
       description: `Creates the module instance.`,
-      body: function*() {
+      body: function* () {
         yield `/// constructor`;
         yield clientProperty.assignPrivate(clientAPI.new());
         yield `${$this.fHandler}.Proxy = ${$this.fWebProxy};`;
@@ -208,6 +208,7 @@ export class ModuleClass extends Class {
     const ArgumentCompleter = this.add(new Property('ArgumentCompleter', argumentCompleterDelegate, { description: `Gets completion data for azure specific fields` }));
 
     const moduleIdentity = this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The Name of this module ` }));
+    const currentProfile = this.add(new InitializedField('Profile', dotnet.String, System.String.Empty, { description: `The currently selected profile.` }));
     const moduleResourceId = this.add(new LambdaProperty('ResourceId', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The ResourceID for this module (azure arm).` }));
 
     /* get parameter method (calls azAccounts) */

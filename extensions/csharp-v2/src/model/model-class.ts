@@ -82,6 +82,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     super(namespace, schemaWithFeatures.schema.details.csharp.name);
     this.implementation = schemaWithFeatures;
+
+    // mark the code-model with the class we're creating.
+    this.schema.details.csharp.classImplementation = this;
+
     this.isPolymorphic = false;
     this.discriminators = new Map<string, ModelClass>();
     this.parentModelClasses = new Array<ModelClass>();
@@ -92,8 +96,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // create an interface for this model class
 
-    // mark the code-model with the class we're creating.
-    this.schema.details.csharp.classImplementation = this;
+
 
     // get all the header properties for this model
     this.hasHeaderProperties = values(this.schema.properties).linq.any(property => property.details.csharp[HeaderProperty] === HeaderPropertyType.Header || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header);

@@ -27,7 +27,7 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
   private add(schema: Schema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
-    this.cache.set(schema.details.csharp.name, value);
+    this.cache.set(schema.details.csharp.fullname || '', value);
     return value;
   }
 
@@ -44,7 +44,7 @@ export class SchemaDefinitionResolver {
         return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
 
       case JsonType.Object:
-        const result = this.cache.get(schema.details.csharp.name);
+        const result = this.cache.get(schema.details.csharp.fullname || '');
         if (result) {
           return result;
         }

@@ -516,13 +516,17 @@ export class CmdletClass extends Class {
       for (const parameter of values(operation.parameters)) {
         const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
 
-        if (!(parameter.details.csharp.constantValue)) {
-          const bp = $this.$<Property>(parameter.details.csharp.name);
-
-          // dont' serialize if it's a constant or host parameter.
-          // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.csharp.name);
-          yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
+        // skip parameters that are handled elsewise.
+        if (parameter.details.csharp.constantValue || parameter.details.csharp.apiversion) {
+          continue;
         }
+
+        const bp = $this.$<Property>(parameter.details.csharp.name);
+
+        // dont' serialize if it's a constant or host parameter.
+        // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.csharp.name);
+        yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
+
       }
     });
   }
@@ -602,7 +606,7 @@ export class CmdletClass extends Class {
 
         const hostParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           metadata: {
-            parameterDefinition: parameter.details.csharp.originalHttpParameter
+            parameterDefinition: parameter.details.csharp.httpParameter
           },
           description: parameter.details.csharp.description,
         }));
@@ -616,20 +620,15 @@ export class CmdletClass extends Class {
       if (parameter.details.csharp.apiversion) {
         // Api-version parameters for azure are a custom implementation
         this.add(new ImplementedProperty(parameter.details.csharp.name, td, {
+          getAccess: Access.Internal,
+          setAccess: Access.Private,
           metadata: {
-            parameterDefinition: parameter.details.csharp.originalHttpParameter
+            parameterDefinition: parameter.details.csharp.httpParameter
           },
           description: parameter.details.csharp.description,
           *getterStatements() {
             const metadata = operation.extensions['x-ms-metadata'];
-            // const profiles = <Dictionary<string>>metadata.profiles;
-
-            // temptesting
-            const profiles = new Dictionary<string>();
-            for (const each of metadata.apiVersions) {
-              profiles[each] = each;
-            }
-
+            const profiles = <Dictionary<string>>metadata.profiles || new Dictionary<string>();
 
             yield Switch(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Profile`, function* () {
               for (const { key: profileName, value: apiVersion } of items(profiles)) {

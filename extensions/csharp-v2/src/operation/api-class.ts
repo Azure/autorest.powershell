@@ -29,9 +29,18 @@ export class ApiClass extends Class {
       // we'll do that work in the OM and expose them as public properties.
       const operationMethod = new OperationMethod(this, operation, state.path('components', 'operations', operationIndex));
       this.addMethod(operationMethod);
-      this.addMethod(new CallMethod(this, operationMethod, state.path('components', 'operations', operationIndex)));
+
+      // check if this exact method is been created before (because _call and _validate have less specific parameters than the api) 
+      const cm = new CallMethod(this, operationMethod, state.path('components', 'operations', operationIndex));
+      if (!this.hasMethodWithSameDeclaration(cm)) {
+        this.addMethod(cm);
+      }
+
       if (!this.state.project.storagePipeline) {
-        this.addMethod(new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationIndex)));
+        const vm = new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationIndex));
+        if (!this.hasMethodWithSameDeclaration(vm)) {
+          this.addMethod(vm);
+        }
       }
     }
   }

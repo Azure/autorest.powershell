@@ -22,9 +22,6 @@ export async function processRequest(service: Host) {
 
     const original = await service.ReadFile(files[0]);
 
-    // TODO: don't use a hard-coded path
-    // writeFileSync("C:/work/2018/autorest.powershell/generated/original.yaml", serialize(JSON.parse(original)));
-
     // deserialize
     const remodeler = new Remodeler(new ModelState(service, await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), files[0]));
 
