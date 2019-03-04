@@ -54,10 +54,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var pa = Parameter.ParameterAttribute;
             var psnText = HasMultipleVariantsInVariantGroup && !HasAllVariantsInParameterGroup ? $"ParameterSetName='{Parameter.VariantName}'" : String.Empty;
+            var positionText = pa.Position != Int32.MinValue ? $"Position={pa.Position}" : String.Empty;
             var mandatoryText = pa.Mandatory ? "Mandatory" : String.Empty;
             var dontShowText = pa.DontShow ? "DontShow" : String.Empty;
             var vfpText = pa.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
-            var propertyText = new[] { psnText, mandatoryText, dontShowText, vfpText }.JoinIgnoreEmpty(ItemSeparator);
+            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
