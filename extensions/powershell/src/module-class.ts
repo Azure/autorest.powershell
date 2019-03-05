@@ -206,6 +206,7 @@ export class ModuleClass extends Class {
     const GetParameterValue = this.add(new Property('GetParameterValue', getParameterDelegate, { description: `The delegate to call to get parameter data from a common module.` }));
     const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: `A delegate that gets called for each signalled event` }));
     const ArgumentCompleter = this.add(new Property('ArgumentCompleter', argumentCompleterDelegate, { description: `Gets completion data for azure specific fields` }));
+    const ProfileName = this.add(new Property('ProfileName', System.String, { description: `The name of the currently selected Azure profile` }));
 
     const moduleIdentity = this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The Name of this module ` }));
     const currentProfile = this.add(new InitializedField('Profile', dotnet.String, System.String.Empty, { description: `The currently selected profile.` }));
