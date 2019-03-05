@@ -66,7 +66,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
 
   constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: Partial<EnumClass>) {
     if (!schemaWithFeatures.schema.details.csharp.enum) {
-      throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.details.default.name}`);
+      throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.details.csharp.name}`);
     }
 
     super(state.project.supportNamespace, schemaWithFeatures.schema.details.csharp.enum.name, undefined, {

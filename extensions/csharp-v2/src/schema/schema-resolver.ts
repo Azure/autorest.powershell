@@ -27,7 +27,7 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
   private add(schema: Schema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
-    this.cache.set(schema.details.default.name, value);
+    this.cache.set(schema.details.csharp.fullname || '', value);
     return value;
   }
 
@@ -44,7 +44,7 @@ export class SchemaDefinitionResolver {
         return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
 
       case JsonType.Object:
-        const result = this.cache.get(schema.details.default.name);
+        const result = this.cache.get(schema.details.csharp.fullname || '');
         if (result) {
           return result;
         }
@@ -88,14 +88,14 @@ export class SchemaDefinitionResolver {
 
                 default:
                   // what? What kind of a monster are you?
-                  console.error(`NOT SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.default.name}`);
+                  console.error(`NOT SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.csharp.name}`);
                   throw new Error('Not Supported Yet. ');
               }
             case 'undefined':
               break;
 
             default:
-              console.error(`NOT SUPPORTED: Object with additionalProperties: '${schema.additionalProperties}' --  ${schema.details.default.name}`);
+              console.error(`NOT SUPPORTED: Object with additionalProperties: '${schema.additionalProperties}' --  ${schema.details.chsarp.name}`);
               throw new Error('What does that even mean?');
           }
           // object with no properties?
@@ -106,7 +106,7 @@ export class SchemaDefinitionResolver {
           // *AND* additionalProperties is set.
           // Which means that this object should implement a dictionary too.
           // (handled in model-class itself...)
-          console.error(`FYI : Has ADDITIONALPROPERTIES ${schema.details.default.name} : ${length(schema.properties)}`);
+          console.error(`FYI : Has ADDITIONALPROPERTIES ${schema.details.csharp.name} : ${length(schema.properties)}`);
         }
 
         return this.add(schema, new ObjectImplementation(schema));

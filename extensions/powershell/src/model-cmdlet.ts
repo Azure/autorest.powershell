@@ -16,13 +16,14 @@ export interface WithState extends Class {
   state: State;
 }
 
+let nn = 0;
+
 export class ModelCmdlet extends Class {
   public state: State;
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `New${state.project.nounPrefix}${schema.details.csharp.name}Object`;
-
+    const name = `New${state.project.nounPrefix}${schema.details.csharp.name}Object_${schema.details.csharp.apiname}`;
     super(namespace, name, PSCmdlet);
     this.state = state;
     this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`;
@@ -41,8 +42,9 @@ export class ModelCmdlet extends Class {
 }
 
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
+
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object`)] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object_${schema.details.csharp.apiname}`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
   $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
   $class.add(new Attribute(GeneratedAttribute));
@@ -180,7 +182,7 @@ default:
       }
 
       const desc = (property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
-      cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.default.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+      cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${property.details.csharp.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
       cmdletParameter.description = desc;
 
       if (td.schema.details.csharp.enum !== undefined) {

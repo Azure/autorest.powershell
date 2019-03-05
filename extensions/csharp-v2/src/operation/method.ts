@@ -58,7 +58,6 @@ export class OperationMethod extends Method {
     }
 
     // add parameters
-    // const [constants, params] = values(this.operation.parameters).linq.bifurcate(each => each.details.csharp.constantValue)
     this.methodParameters = this.operation.parameters.map((value, index) => {
       const p = <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index)));
       if (value.details.csharp.constantValue) {

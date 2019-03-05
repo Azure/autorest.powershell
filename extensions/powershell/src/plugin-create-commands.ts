@@ -94,6 +94,22 @@ function isNameConflict(model: codemodel.Model, vname: string) {
 }
 
 async function addCommandOperation(vname: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, model: codemodel.Model, service: Host): Promise<command.CommandOperation> {
+
+  let apiversion = '';
+
+  for (const each of items(operation.responses)) {
+    for (const rsp of each.value) {
+      if (rsp.schema && rsp.schema.details && rsp.schema.details.csharp && rsp.schema.details.csharp.apiversion) {
+        console.error(rsp.schema.details.csharp.apiversion);
+        apiversion = rsp.schema.details.csharp.apiversion;
+        break;
+
+      }
+    }
+  }
+
+  vname = `${apiversion}${vname}`;
+
   // if vname is > 64 characters, let's trim it
   // after trimming it, make sure there aren't any other operation with a name that's exactly the same
   if (vname.length > 64) {
@@ -105,7 +121,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
         break;
       }
     }
-    vname = `${newVName}Etc`;
+    vname = `${newVName}`;
   }
 
   // if we have an identical vname, let's add 'etc'
@@ -113,9 +129,14 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     vname = `${vname}Etc`;
   }
 
+  const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
+
   return model.commands.operations[`${length(model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
     asjob: operation.details.default.asjob ? true : false,
-    extensions: operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone({ 'x-ms-metadata': operation.pathExtensions['x-ms-metadata'] }) : {} : {},
+    extensions: {
+      ...operation.pathExtensions,
+      'x-ms-metadata': xmsMetadata
+    },
     ...variant,
     details: {
       ...operation.details,

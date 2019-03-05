@@ -8,7 +8,19 @@ import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation }
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
 
+class ApiVersionModelExtensionsNamespace extends Namespace {
+  public get outputFolder(): string {
+    return `${this.baseFolder}/${this.apiVersion.replace(/.*\./g, '')}`;
+  }
+  constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: Partial<ModelExtensionsNamespace>) {
+    super(apiVersion);
+    this.apply(objectInitializer);
+  }
+}
+
 export class ModelExtensionsNamespace extends Namespace {
+  private subNamespaces = new Dictionary<Namespace>();
+
   public get outputFolder(): string {
     return this.state.project.apiextensionsfolder;
   }
@@ -37,16 +49,20 @@ export class ModelExtensionsNamespace extends Namespace {
           continue;
         }
 
+        // get the actual full namespace for the schema
+        const fullname = schema.details.csharp.namespace || this.fullName;
+        const ns = this.subNamespaces[fullname] || this.add(new ApiVersionModelExtensionsNamespace(this.state.project.apiextensionsfolder, fullname));
+
         // create the model extensions for each object model
         // 2. A partial interface with the type converter attribute
-        const modelInterface = new Interface(this, interfaceName, {
+        const modelInterface = new Interface(ns, interfaceName, {
           partial: true,
           description: td.schema.details.csharp.description
         });
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
 
         // 1. A partial class with the type converter attribute
-        const model = new Class(this, className, undefined, {
+        const model = new Class(ns, className, undefined, {
           partial: true,
           description: td.schema.details.csharp.description
         });
@@ -67,7 +83,7 @@ export class ModelExtensionsNamespace extends Namespace {
         // + string ToJsonString()
 
         // 3. A TypeConverter class
-        const typeConverter = new Class(this, converterClass, PSTypeConverter, {
+        const typeConverter = new Class(ns, converterClass, PSTypeConverter, {
           description: `A PowerShell PSTypeConverter to support converting to an instance of <see cref="${className}" />`,
         });
         typeConverter.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
@@ -168,7 +184,7 @@ export class ModelExtensionsNamespace extends Namespace {
               const memTD = $this.resolver.resolveTypeDeclaration(member.schema, true, state);
               if (memTD instanceof ObjectImplementation) {
                 // it's an object, try the typeconverter
-                yield `${member.details.csharp.name} = ${member.schema.details.csharp.name}TypeConverter.ConvertFrom(sourceValue.${member.details.csharp.name}),`;
+                yield `${member.details.csharp.name} = ${member.schema.details.csharp.fullname}TypeConverter.ConvertFrom(sourceValue.${member.details.csharp.name}),`;
               } else {
                 // just assign it.
                 yield `${member.details.csharp.name} = sourceValue.${member.details.csharp.name},`;

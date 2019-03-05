@@ -80,7 +80,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Xml: {
           // XElement should be a container of items, right?
           // if the reference doesn't define an XML schema then use its default name
-          const defaultName = this.elementType.schema.details.default.name;
+          const defaultName = this.elementType.schema.details.csharp.name;
           const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}.Elements("${this.elementType.schema.xml ? this.elementType.schema.xml.name || defaultName : defaultName}"), (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
 
           return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
@@ -164,7 +164,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
-          const defaultName = this.elementType.schema.details.default.name;
+          const defaultName = this.elementType.schema.details.csharp.name;
           return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
             `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString()`,

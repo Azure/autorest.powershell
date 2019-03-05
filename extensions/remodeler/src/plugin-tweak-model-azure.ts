@@ -7,7 +7,7 @@
 import { codemodel, JsonType, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 import { keys, length, values } from '@microsoft.azure/codegen';
 
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 
 const xmsPageable = 'x-ms-pageable';
 // Azure version -
@@ -115,5 +115,36 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       delete operation.responses['202'];
     }
   }
+
+  // Api Version parameter handling for Azure.
+  // if there is only a single api-version for the operation, let's just make it a constant
+  // otherwise, we need to make it selectable, but default to the 'latest' version there is.
+  for (const operation of values(model.http.operations)) {
+    const apiVersions = operation.pathExtensions && operation.pathExtensions['x-ms-metadata'] ? operation.pathExtensions['x-ms-metadata'].apiVersions : undefined;
+    for (const parameter of values(operation.parameters)) {
+
+      if (parameter.name === 'api-version') {
+        // only set it if it hasn't been set yet.
+        // if (parameter.details.default.constantValue) {
+        //continue;
+        //}
+
+        if (apiVersions) {
+          // set the constant value to the first one
+          if (apiVersions.length === 1) {
+            parameter.details.default.constantValue = apiVersions[0];
+            continue;
+          }
+
+          // otherwise, the parameter can't have a constant value
+          parameter.details.default.constantValue = undefined;
+
+          // mark it so that we can add profile support in the method generation
+          parameter.details.default.apiversion = true;
+        }
+      }
+    }
+  }
+
   return model;
 }

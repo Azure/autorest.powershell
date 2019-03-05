@@ -17,12 +17,25 @@ import * as validation from '../validations';
 import { ModelInterface } from './interface';
 import { ModelClass } from './model-class';
 
+
+class ApiVersionNamespace extends Namespace {
+  constructor(namespace: string, objectInitializer?: Partial<ApiVersionNamespace>) {
+    super(namespace);
+    this.apply(objectInitializer);
+    this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
+  }
+}
+
 export class ModelsNamespace extends Namespace {
+  private subNamespaces = new Dictionary<Namespace>();
 
   resolver = new SchemaDefinitionResolver();
 
   constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelsNamespace>) {
     super('Models', parent);
+    this.subNamespaces[this.fullName] = this;
+
+
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
@@ -50,7 +63,12 @@ export class ModelsNamespace extends Namespace {
       if (td instanceof ObjectImplementation) {
         // it's a class object.
         // create it if necessary
-        const mc = schema.details.csharp.classImplementation || new ModelClass(this, td, this.state, { description: schema.details.csharp.description });
+
+        const fullname = schema.details.csharp.namespace || this.fullName;
+
+        const ns = this.subNamespaces[fullname] || this.add(new ApiVersionNamespace(fullname));
+
+        const mc = schema.details.csharp.classImplementation || new ModelClass(ns, td, this.state, { description: schema.details.csharp.description });
 
         // this gets implicity created during class creation:
         return <ModelInterface>schema.details.csharp.interfaceImplementation;
