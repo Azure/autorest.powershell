@@ -32,6 +32,7 @@ export class Project extends codeDomProject {
   public nounPrefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
+  public get model() { return this.state.model; }
 
   constructor(protected state: State) {
     super();
