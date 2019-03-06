@@ -1,58 +1,50 @@
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
-import { setIndentation, indent } from '@microsoft.azure/codegen';
 import { PSScriptFile } from '../file-formats/psscript-file';
 
 export async function generatePsm1(service: Host, project: Project) {
-  setIndentation(2);
-  // write out the psm1 file if it's not there.
   const psm1 = new PSScriptFile(await service.ReadFile(project.psm1) || '');
-
   psm1.append('Initialization', `
-  # this module instance
+  # Get this module's instance
   $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
-  # load nested script module if it exists
-  if(Test-Path "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1") {
-    Import-Module "$PSScriptRoot/bin/${project.moduleName}.scripts.psm1"
+  # Load the custom script module
+  $scriptModulePath = Join-Path $PSScriptRoot ${project.psm1Custom}
+  if(Test-Path $scriptModulePath) {
+    $null = Import-Module -Name $scriptModulePath
   }
 
-  # load private module dll
-  $null = Import-Module -PassThru "$PSScriptRoot/bin/${project.moduleName}.private.dll"
+  # Load the private module dll
+  $null = Import-Module -Name (Join-Path $PSScriptRoot ${project.dll})
 `);
-
 
   if (project.azure) {
     psm1.append('AzureInitialization', `
-  # from PSModulePath
-  # (this must be the modified version of Az.Accounts)
-
-  $module = Get-Module Az.Accounts
-  if ($module -ne $null -and $module.Version.ToString().CompareTo("1.2.1") -lt 0) {
-    Write-Error "This module requires Az.Accounts version 1.2.1. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information." -ErrorAction Stop
+  # Load required Az.Accounts module
+  $sharedModule = Get-Module -Name Az.Accounts
+  if ($sharedModule -ne $null -and $sharedModule.Version.ToString().CompareTo('1.2.1') -lt 0) {
+    Write-Error 'This module requires Az.Accounts version 1.2.1. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information.' -ErrorAction Stop
+  } elseif ($sharedModule -eq $null) {
+    $sharedModule = Import-Module -Name Az.Accounts -MinimumVersion 1.2.1 -Scope Global -PassThru
   }
-  elseif ($module -eq $null) {
-    $module = Import-Module Az.Accounts -MinimumVersion 1.2.1 -Scope Global -PassThru
-  }
+  Write-Host "Loaded Module '$($sharedModule.Name)'"
 
-  Write-Host "Loaded Common Module '$($module.Name)'"
-
-  # ask for the table of functions we can call in the common module.
+  # Ask for the shared functionality table
   $VTable = Register-AzModule
 
-  # delegate responsibility to the common module for tweaking the pipeline at module load
+  # Tweaks the pipeline on module load
   $instance.OnModuleLoad = $VTable.OnModuleLoad
 
-  # and a chance to tweak the pipeline when we are about to make a call.
+  # Tweaks the pipeline per call
   $instance.OnNewRequest = $VTable.OnNewRequest
 
-  # Need to get parameter values back from the common module
+  # Gets shared parameter values
   $instance.GetParameterValue = $VTable.GetParameterValue
 
-  # need to let the common module listen to events from this module
+  # Allows shared module to listen to events from this module
   $instance.EventListener = $VTable.EventListener
 
-  # get argument completers from the common module
+  # Gets shared argument completers
   $instance.ArgumentCompleter = $VTable.ArgumentCompleter
 
   # The name of the currently selected Azure profile
@@ -61,7 +53,8 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   psm1.append('LoadExports', `
-  $exportsPath = "$PSScriptRoot/exports"
+  # Export proxy cmdlet scripts
+  $exportsPath = Join-Path $PSScriptRoot ${project.exportsFolder}
   $directories = Get-ChildItem -Directory -Path $exportsPath
   $profileDirectory = $null
   if($instance.ProfileName) {
@@ -83,7 +76,7 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   if($exportsPath) {
-    Get-ChildItem -Path $exportsPath -Recurse -Filter "*.ps1" -File | Sort-Object Name | ForEach-Object {
+    Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
       Write-Verbose "Loading script file: $($_.Name)"
       . $_.FullName
       Export-ModuleMember -Function $_.BaseName
@@ -92,7 +85,7 @@ export async function generatePsm1(service: Host, project: Project) {
 `)
 
   psm1.append('Finalization', `
-  # finish initialization of this module
+  # Finalize initialization of this module
   $instance.Init();
   Write-Host "Loaded Module '$($instance.Name)'"
 `);

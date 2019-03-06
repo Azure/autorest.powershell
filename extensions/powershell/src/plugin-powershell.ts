@@ -13,6 +13,7 @@ import { State } from './state';
 import { generatePsd1 } from './generators/psd1';
 import { generatePsm1 } from './generators/psm1';
 import { generateCsproj } from './generators/csproj';
+import { generatePsm1Custom } from './generators/psm1.custom';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
@@ -47,6 +48,7 @@ export async function powershell(service: Host) {
     await generatePsd1(service, project);
     await generatePsm1(service, project);
     await generateFormatPs1xml(service, model, project);
+    await generatePsm1Custom(service, project);
 
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
