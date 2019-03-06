@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using System.Text;
 using System.Text.RegularExpressions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
@@ -30,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public override string ToString()
         {
-            var dpsText = VariantGroup.DefaultParameterSetName.IsValidParameterSetName() ? $"DefaultParameterSetName='{VariantGroup.DefaultParameterSetName}'" : String.Empty;
+            var dpsText = VariantGroup.DefaultParameterSetName.IsValidDefaultParameterSetName() ? $"DefaultParameterSetName='{VariantGroup.DefaultParameterSetName}'" : String.Empty;
             var sspText = VariantGroup.SupportsShouldProcess ? $"SupportsShouldProcess{ItemSeparator}ConfirmImpact='Medium'" : String.Empty;
             var propertyText = new[] {dpsText, sspText}.JoinIgnoreEmpty(ItemSeparator);
             return $"[CmdletBinding({propertyText})]{Environment.NewLine}";
@@ -143,11 +144,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
-{Indent}{Indent}$variantSuffix = ""_$parameterSet""
-{Indent}{Indent}if (""$parameterSet"" -eq '{NoParameters}' -or ""$parameterSet"" -eq '{AllParameterSets}') {{
-{Indent}{Indent}{Indent}$variantSuffix = ''
-{Indent}{Indent}}}
-{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""{VariantGroup.ModuleName}\{VariantGroup.CmdletName}$variantSuffix"", [System.Management.Automation.CommandTypes]::Cmdlet)
+{GetParameterSetToCmdletMapping()}
+{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""$($mapping[""$parameterSet""])"", [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
 {Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
 {Indent}{Indent}$steppablePipeline.Begin($PSCmdlet)
@@ -157,6 +155,19 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 }}
 
 ";
+
+        private string GetParameterSetToCmdletMapping()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{Indent}{Indent}$mapping = @{{");
+            foreach (var variant in VariantGroup.Variants)
+            {
+                sb.AppendLine($@"{Indent}{Indent}{Indent}{variant.VariantName} = '{variant.PrivateModuleName}\{variant.PrivateCmdletName}';");
+            }
+            sb.Append($"{Indent}{Indent}}}");
+            return sb.ToString();
+        }
+
     }
 
     internal class ProcessOutput

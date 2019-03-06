@@ -1,24 +1,18 @@
 param([Switch]$Isolated)
-Push-Location $PSScriptRoot
 $ErrorActionPreference = 'Stop'
-
-if($PSEdition -ne 'Core') {
-  Write-Error 'This script requires PowerShell Core. Note: Generated cmdlets will work in PowerShell Core or Windows Powershell.'
-}
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
 if(-not $Isolated) {
-  Write-Host -ForegroundColor Green "Spawning in isolated process."
-  & $pwsh -NonInteractive -NoLogo -NoProfile -Command $MyInvocation.MyCommand.Path -Isolated
-  Pop-Location
-  return;
+  Write-Host -ForegroundColor Green 'Creating isolated process...'
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path -Isolated
+  return
 }
 
 $WarningPreference = 'SilentlyContinue'
 $docsPath = Join-Path $PSScriptRoot 'docs'
 $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
 
-$modulePsd1 = Get-Item -Path *.psd1 | Select-Object -First 1
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 $platyPS = Join-Path $PSScriptRoot 'generated' 'platyPS'
@@ -54,6 +48,4 @@ Get-Item -Path (Join-Path $docsPath '*.md') | ForEach-Object {
 # Generate -help.xml
 New-ExternalHelp -Path $docsPath -OutputPath $PSScriptRoot -Force
 
-Pop-Location
-Write-Host -ForegroundColor Green 'Done.'
-Write-Host -ForegroundColor Green '-------------------------------'
+Write-Host -ForegroundColor Green '-------------Done-------------'

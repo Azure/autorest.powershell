@@ -1,91 +1,77 @@
-param([Switch]$isolated, [Switch]$test, [Switch]$code, [Switch]$Release)
-Push-Location $PSScriptRoot
-$ErrorActionPreference = "Stop"
+param([Switch]$Isolated, [Switch]$Run, [Switch]$Test, [Switch]$Code, [Switch]$Release)
+$ErrorActionPreference = 'Stop'
 
-if($PSVersionTable.PSVersion.Major -lt 6) {
-  Pop-Location
-  Write-Error "This script requires PowerShell Core (don't worry: generated cmdlets can work in PowerShell Core or Windows Powershell)" 
+if($PSEdition -ne 'Core') {
+  Write-Error 'This script requires PowerShell Core to execute. [Note] Generated cmdlets will work in both PowerShell Core or Windows PowerShell.'
 }
 
-if(-not $isolated) {
-  # this ensures that we can run the script repeatedly without worrying about locked files/folders
-  Write-Host -ForegroundColor Green "Spawning in isolated process." 
+if(-not $Isolated) {
+  Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & $pwsh -Command $MyInvocation.MyCommand.Path -Isolated
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
 
-  if($lastExitCode -ne 0) {
-    Pop-Location
-    return;
+  if($LastExitCode -ne 0) {
+    # Build failed. Don't attempt to run the module.
+    return
   }
 
-  if($test) {
-    $mpath = $(( dir ./*.psd1)[0].fullname)
-    $mname = $(( dir ./*.psd1)[0].basename)
-    $testCommandExtra = ''
-    if($code) {
-      # add a .vscode/launch.json folder 
-      $launch = "$PSScriptRoot/.vscode/launch.json"
-      $null = New-Item -Type Directory -Path "$PSScriptRoot/.vscode" -ErrorAction SilentlyContinue
-      set-content -path $launch -value '{ "version": "0.2.0", "configurations" : [{ "name" : "Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"#PID","justMyCode": false  }] }'
-      $testCommandExtra = " Set-Content -Path $launch -value ((Get-Content -Path $launch -Raw ) -replace '#PID',([System.Diagnostics.Process]::GetCurrentProcess().id)  )  ; code $PSScriptRoot ;"
+  if($Test) {
+    . (Join-Path $PSScriptRoot 'test-module.ps1')
+    if($LastExitCode -ne 0) {
+      # Tests failed. Don't attempt to run the module.
+      return
     }
-    & $pwsh -NoExit -Command "function prompt { `$ESC = [char]27 ; Write-host -nonewline -ForegroundColor Green ('PS ' + `$(get-location) ) ;  Write-Host (' ['+ `$ESC +'[02;46m testing $mname '+ `$ESC +'[0m] >') -NoNewline -ForegroundColor White ; Write-host -ForegroundColor White -NoNewline '' ;  return ' ' } ;$testCommandExtra Import-Module '$mpath' "
-  } else {
-    Write-Host -ForegroundColor Cyan "To test this module in a new powershell process, run `n"
-    Write-Host -ForegroundColor White " & '$([System.Diagnostics.Process]::GetCurrentProcess().Path)' -NoExit -Command Import-Module '$( (dir ./*.psd1)[0].fullname )' "
-    Write-Host -ForegroundColor Cyan "`nor use -test with this script`n"
   }
-  Pop-Location
+
+  if($Code) {
+    . (Join-Path $PSScriptRoot 'run-module.ps1') -Code
+  } elseif($Run) {
+    . (Join-Path $PSScriptRoot 'run-module.ps1')
+  } else {
+    Write-Host -ForegroundColor Cyan 'To run this module in an isolated PowerShell session, run ''./run-module.ps1'' or provide the ''-Run'' parameter to this script.'
+  }
   return
 }
-$dotnetcfg = 'debug'
+
+Write-Host -ForegroundColor Green 'Cleaning build folders...'
+$binFolder = (Join-Path $PSScriptRoot 'bin')
+$objFolder = (Join-Path $PSScriptRoot 'obj')
+$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
+$null = Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+
+if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
+  Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+}
+
+Write-Host -ForegroundColor Green 'Compiling module...'
+$buildConfig = 'Debug'
 if($Release) {
-  $dotnetcfg = 'release'
+  $buildConfig = 'Release'
 }
-Write-Host -ForegroundColor Green "Cleaning folders..."
-@('./obj', './bin') |% { $null = Remove-Item -Recurse -ErrorAction SilentlyContinue $_ }
-$null = (Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue)
-
-if(Test-Path ./bin) {
-  Pop-Location
-  Write-Error "Unable to clean binary folder. (a process may have an open handle.)"
+dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig --output $binFolder /nologo
+if($LastExitCode -ne 0) {
+  Write-Error 'Compilation failed.'
 }
 
-Write-Host -ForegroundColor Green "Compiling private module code"
-$null = dotnet publish --configuration $dotnetcfg --output bin
-if( $lastExitCode -ne 0 ) {
-  # if it fails, let's do it again so the output comes out nicely.
-  dotnet publish --configuration $dotnetcfg --output bin
-  Pop-Location
-  Write-Error "Compilation failed"
-}
+$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
+$dll = Get-Item -Path (Join-Path $binFolder '*.private.dll') | Select-Object -First 1
 
-@('./bin/Debug','./bin/Release') |% { $null = Remove-Item -Recurse -ErrorAction SilentlyContinue $_ }
-$dll = (Get-ChildItem bin\*.private.dll)[0]
-
-if( -not (Test-Path $dll) ) {
-  Pop-Location
-  Write-Error "Unable to find output assembly."
+if(-not (Test-Path $dll)) {
+  Write-Error "Unable to find output assembly in '$binFolder'."
 }
 
 $commands = Get-Command -Module (Import-Module $dll -PassThru)
-Write-Host -ForegroundColor gray "Private Module loaded ($dll)."
+Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
 
-# merge scripts into one file
-$modulename = (Get-ChildItem *.psd1)[0].Name -replace ".psd1",""
-$scriptmodule = $dll -replace ".private.",".scripts." -replace ".dll",".psm1"
-$scriptfile = ""; 
-Get-ChildItem -Recurse custom\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(Resolve-Path -Relative $_)`n" + (Get-Content -raw $_) } ; 
-Set-Content $scriptmodule -Value $scriptfile
-if( $scriptfile -ne '' ) {
-  $commands = $commands + (Get-Command -module (Import-Module $scriptmodule -PassThru))
-  Write-Host -ForegroundColor gray "Private Scripts Module loaded ($scriptmodule)."
+$customFolder = (Join-Path $PSScriptRoot 'custom')
+$customPsm1 = Get-Item -Path (Join-Path $customFolder '*.custom.psm1') | Select-Object -First 1
+if(Test-Path $customPsm1) {
+  $commands += Get-Command -Module (Import-Module $customPsm1 -PassThru)
+  Write-Host -ForegroundColor Green "Custom PSM1 Loaded [$customPsm1]"
 }
 
-# No commands?
-if( $commands.length -eq 0 ) {
-  Pop-Location
-  Write-Error "Unable get commands from private module."
+if(($commands | Measure-Object).Count -eq 0) {
+  Write-Error 'Unable to locate any cmdlets.'
 }
 
 $commands = $commands | Where-Object { $_.Name -ne 'New-ProxyCmdlet' -and $_.Name -ne 'New-TestStub'}
@@ -98,6 +84,4 @@ $testPath = Join-Path $PSScriptRoot 'test'
 $null = New-Item -ItemType Directory -Force -Path $testPath
 New-TestStub -CommandInfo $commands -OutputFolder $testPath
 
-Pop-Location
-Write-Host -ForegroundColor Green "Done."
-Write-Host -ForegroundColor Green "-------------------------------"
+Write-Host -ForegroundColor Green '-------------Done-------------'

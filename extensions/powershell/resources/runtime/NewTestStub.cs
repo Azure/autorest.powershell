@@ -22,7 +22,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         protected override void ProcessRecord()
         {
             var variantGroups = CommandInfo
-                .Select(ci => ci.ToVariant())
+                .SelectMany(ci => ci.ToVariants())
                 .GroupBy(v => v.CmdletName)
                 .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, true))
                 .Where(vtg => !File.Exists(vtg.FilePath) && !vtg.IsGenerated);
@@ -30,7 +30,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variantGroup in variantGroups)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($@". ""$PSScriptRoot/HttpPipelineMocking.ps1""{Environment.NewLine}");
+                sb.AppendLine($@". (Join-Path $PSScriptRoot 'HttpPipelineMocking.ps1'){Environment.NewLine}");
 
                 sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
                 var variants = variantGroup.Variants

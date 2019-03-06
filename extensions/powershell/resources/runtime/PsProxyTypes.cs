@@ -31,7 +31,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsShouldProcess { get; }
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
-        public string ModuleName { get; }
         public string Description { get; }
         public bool IsGenerated { get; }
 
@@ -47,7 +46,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsShouldProcess = Variants.Any(v => v.Metadata.SupportsShouldProcess);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
-            ModuleName = Variants.Select(v => v.Info.Source).First();
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
 
@@ -60,7 +58,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var defaultParameterSet = Variants
                 .Select(v => v.Metadata.DefaultParameterSetName)
-                .FirstOrDefault(dpsn => dpsn.IsValidParameterSetName());
+                .FirstOrDefault(dpsn => dpsn.IsValidDefaultParameterSetName());
 
             if (String.IsNullOrEmpty(defaultParameterSet))
             {
@@ -86,6 +84,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string VariantName { get; }
         public CommandInfo Info { get; }
         public CommandMetadata Metadata { get; }
+        public bool IsFunction { get; }
+        public string PrivateModuleName { get; }
+        public string PrivateCmdletName { get; }
 
         public Attribute[] Attributes { get; }
         public Parameter[] Parameters { get; }
@@ -98,7 +99,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             VariantName = variantName;
             Info = info;
             Metadata = metadata;
-            Attributes = Metadata.CommandType.GetCustomAttributes(false).Cast<Attribute>().ToArray();
+            IsFunction = Info.CommandType == CommandTypes.Function;
+            PrivateModuleName = Info.Source;
+            PrivateCmdletName = Metadata.Name;
+            Attributes = this.ToAttributes();
             Parameters = this.ToParameters();
             CmdletOnlyParameters = Parameters.Where(p => !p.Metadata.Attributes.OfType<CategoryAttribute>().Any(a =>
                 a.Categories.Contains(ParameterCategory.Azure) ||
@@ -158,17 +162,36 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal static class PsProxyTypeExtensions
     {
-        public static bool IsValidParameterSetName(this string parameterSetName) =>
+        public static bool IsValidDefaultParameterSetName(this string parameterSetName) =>
             !String.IsNullOrEmpty(parameterSetName)
             && parameterSetName != AllParameterSets;
 
-        public static Variant ToVariant(this CommandInfo info)
+        public static Variant[] ToVariants(this CommandInfo info)
         {
             var metadata = new CommandMetadata(info);
-            var parts = metadata.Name.Split('_');
-            return new Variant(parts[0], parts.Length > 1 ? parts[1] : NoParameters, info, metadata);
+            var privateCmdletName = metadata.Name;
+            if (info.CommandType == CommandTypes.Function)
+            {
+                // Functions have multiple parameter sets, so we declare a variant per parameter set.
+                return info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata)).ToArray();
+            }
+
+            var parts = privateCmdletName.Split('_');
+            return new[] { new Variant(parts[0], parts.Length > 1 ? parts[1] : NoParameters, info, metadata) };
         }
 
-        public static Parameter[] ToParameters(this Variant variant) => variant.Metadata.Parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value)).ToArray();
+        public static Parameter[] ToParameters(this Variant variant)
+        {
+            var parameters = variant.Metadata.Parameters.AsEnumerable();
+            if (variant.IsFunction)
+            {
+                parameters = parameters.Where(p => p.Value.ParameterSets.ContainsKey(variant.VariantName));
+            }
+            return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value)).ToArray();
+        }
+
+        public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction 
+            ? ((FunctionInfo)variant.Info).ScriptBlock.Attributes.ToArray()
+            : variant.Metadata.CommandType.GetCustomAttributes(false).Cast<Attribute>().ToArray();
     }
 }
