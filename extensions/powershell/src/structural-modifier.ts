@@ -8,11 +8,16 @@ import { values } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 
 const directivesToFilter = new Set<string>([
-  'remove-command'
+  'remove-command',
+  'hide-command'
 ]);
 
 interface RemoveCommandDirective {
   'remove-command': string;
+}
+
+interface HideCommandDirective {
+  'hide-command': string;
 }
 
 let directives: Array<any> = [];
@@ -33,7 +38,11 @@ function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
   return it['remove-command'];
 }
 
-async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
+function isHideCommandDirective(it: any): it is HideCommandDirective {
+  return it['hide-command'];
+}
+
+async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
 
   for (const directive of directives) {
 
@@ -50,6 +59,26 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
         } else {
           if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === removeCommandVal.toLowerCase()) {
             delete model.commands.operations[key];
+          }
+        }
+      }
+
+      continue;
+    }
+
+    if (isHideCommandDirective(directive)) {
+      const hideCommandVal = directive['hide-command'];
+
+      for (const [key, operation] of Object.entries(model.commands.operations)) {
+        const isRegex = !isCommandNameLiteral(hideCommandVal);
+        if (isRegex) {
+          const regex = new RegExp(hideCommandVal);
+          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
+            model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;
+          }
+        } else {
+          if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === hideCommandVal.toLowerCase()) {
+            model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;;
           }
         }
       }
