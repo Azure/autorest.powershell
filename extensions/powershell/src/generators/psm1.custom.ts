@@ -12,8 +12,7 @@ export async function generatePsm1Custom(service: Host, project: Project) {
 `);
   psm1.append('LoadScripts', `
   # Export custom scripts
-  $scriptsPath = Join-Path $PSScriptRoot ${project.customFolder}
-  Get-ChildItem -Path $scriptsPath -Recurse -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
+  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
     Write-Verbose "Loading script file: $($_.Name)"
     . $_.FullName
     Export-ModuleMember -Function $_.BaseName

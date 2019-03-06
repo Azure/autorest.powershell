@@ -63,26 +63,12 @@ if(-not (Test-Path $dll)) {
 $commands = Get-Command -Module (Import-Module $dll -PassThru)
 Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
 
-# https://stackoverflow.com/a/40969712/294804
-$currentFunctions = Get-ChildItem function:
-$scriptsPath = Join-Path $PSScriptRoot 'custom' '*.ps1'
-Get-ChildItem -Recurse $scriptsPath | ForEach-Object { . $_.FullName }
-$scriptFunctions = Get-ChildItem function: | Where-Object { $currentFunctions -notcontains $_ }
-if(($scriptFunctions | Measure-Object).Count -gt 0) {
-  $commands = $commands + ($scriptFunctions | ForEach-Object { Get-Command -Name $_.Name })
-  Write-Host -ForegroundColor Green 'Custom Scripts Loaded'
+$customFolder = (Join-Path $PSScriptRoot 'custom')
+$customPsm1 = Get-Item -Path (Join-Path $customFolder '*.custom.psm1') | Select-Object -First 1
+if(Test-Path $customPsm1) {
+  $commands += Get-Command -Module (Import-Module $customPsm1 -PassThru)
+  Write-Host -ForegroundColor Green "Custom PSM1 Loaded [$customPsm1]"
 }
-
-# merge scripts into one file
-# $modulename = (Get-ChildItem *.psd1)[0].Name -replace ".psd1",""
-# $scriptmodule = $dll -replace ".private.",".scripts." -replace ".dll",".psm1"
-# $scriptfile = ""; 
-# Get-ChildItem -Recurse custom\*.ps1 |% { $scriptfile = $scriptfile +"`n`n# Included from: $(Resolve-Path -Relative $_)`n" + (Get-Content -raw $_) } ; 
-# Set-Content $scriptmodule -Value $scriptfile
-# if( $scriptfile -ne '' ) {
-#   $commands = $commands + (Get-Command -Module (Import-Module $scriptmodule -PassThru))
-#   Write-Host -ForegroundColor Gray "Private Scripts Module loaded ($scriptmodule)."
-# }
 
 if(($commands | Measure-Object).Count -eq 0) {
   Write-Error 'Unable to locate any cmdlets.'
