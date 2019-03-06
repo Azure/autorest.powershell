@@ -94,6 +94,7 @@ export async function generatePsm1(service: Host, project: Project) {
   psm1.append('Finalization', `
   # finish initialization of this module
   $instance.Init();
+  Write-Host "Loaded Module '$($instance.Name)'"
 `);
 
   psm1.trim();
