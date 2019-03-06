@@ -22,7 +22,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         protected override void ProcessRecord()
         {
             var variantGroups = CommandInfo
-                .Select(ci => ci.ToVariant())
+                .SelectMany(ci => ci.ToVariants())
                 .GroupBy(v => v.CmdletName)
                 .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, true))
                 .Where(vtg => !File.Exists(vtg.FilePath) && !vtg.IsGenerated);

@@ -19,10 +19,14 @@ export class Project extends codeDomProject {
   public customFolder!: string;
   public testFolder!: string;
   public runtimefolder!: string;
+  public binFolder!: string;
+  public exportsFolder!: string;
   public moduleName!: string;
   public csproj!: string;
+  public dll!: string;
   public psd1!: string;
   public psm1!: string;
+  public psm1Custom!: string;
   public apifolder!: string;
   public apiextensionsfolder!: string;
   public moduleFolder!: string;
@@ -74,20 +78,21 @@ export class Project extends codeDomProject {
     this.moduleName = pascalCase(deconstruct(await service.GetValue('module-name') || model.info.title.replace(/client/ig, '')));
 
     this.moduleFolder = await service.GetValue('module-folder') || './generated';
-
     this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets`;
     this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/model-cmdlets`;
     this.customFolder = await service.GetValue('custom-cmdlet-folder') || `./custom`;
     this.testFolder = await service.GetValue('test-folder') || `./test`;
-
     this.runtimefolder = await service.GetValue('runtime-folder') || `${this.moduleFolder}/runtime`;
-
     this.apifolder = await service.GetValue('api-folder') || `${this.moduleFolder}/api`;
     this.apiextensionsfolder = await service.GetValue('api-extensions-folder') || `${this.moduleFolder}/api-extensions`;
+    this.binFolder = await service.GetValue('bin-folder') || `./bin`;
+    this.exportsFolder = await service.GetValue('exports-folder') || `./exports`;
 
     this.csproj = await service.GetValue('csproj') || `${this.moduleName}.private.csproj`;
+    this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.moduleName}.private.dll`;
     this.psd1 = await service.GetValue('psd1') || `${this.moduleName}.psd1`;
     this.psm1 = await service.GetValue('psm1') || `${this.moduleName}.psm1`;
+    this.psm1Custom = await service.GetValue('psm1-custom') || `${this.customFolder}/${this.moduleName}.custom.psm1`;
 
     this.nounPrefix = await service.GetValue('noun-prefix') || this.azure ? 'Az' : ``;
 
