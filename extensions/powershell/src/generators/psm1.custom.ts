@@ -9,13 +9,18 @@ export async function generatePsm1Custom(service: Host, project: Project) {
   psm1.append('Initialization', `
   # Load the private module dll
   $null = Import-Module -PassThru -Name (Join-Path $PSScriptRoot ${dllPath})
+  # Export nothing to clear implicit exports
+  Export-ModuleMember
 `);
   psm1.append('LoadScripts', `
+  # https://stackoverflow.com/a/40969712/294804
+  $currentFunctions = Get-ChildItem function:
+  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
+  $scriptFunctions = Get-ChildItem function: | Where-Object { $currentFunctions -notcontains $_ }
+
   # Export custom scripts
-  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
-    Write-Verbose "Loading script file: $($_.Name)"
-    . $_.FullName
-    Export-ModuleMember -Function $_.BaseName
+  if(($scriptFunctions | Measure-Object).Count -gt 0) {
+    $scriptFunctions | ForEach-Object { Export-ModuleMember -Function $_.Name }
   }
 `)
   psm1.trim();
