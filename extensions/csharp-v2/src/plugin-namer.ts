@@ -5,7 +5,7 @@
 
 import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
-import { camelCase, deconstruct, Dictionary, excludeXDash, fixLeadingNumber, items, keys, length, pascalCase, values, lowest, maximum, minimum } from '@microsoft.azure/codegen';
+import { camelCase, deconstruct, Dictionary, excludeXDash, fixLeadingNumber, items, keys, length, pascalCase, values, lowest, maximum, minimum, getPascalIdentifier } from '@microsoft.azure/codegen';
 import { System } from '@microsoft.azure/codegen-csharp';
 
 import { Host } from '@microsoft.azure/autorest-extension-base';
@@ -15,26 +15,6 @@ import * as semver from "semver";
 
 export async function csnamer(service: Host) {
   return processCodeModel(nameStuffRight, service);
-}
-
-function toPascal(txt: string): string {
-  return pascalCase(fixLeadingNumber(deconstruct(txt)));
-}
-
-// azure rest specs currently use versioning of the form yyyy-mm-dd
-// to take into consideration this we convert to an equivalent of
-// semver for comparisons.
-function getSemverEquivalent(version: string) {
-  let result = '';
-  for (const i of version.split('-')) {
-    if (!result) {
-      result = i;
-      continue;
-    }
-    const n = Number.parseInt(i);
-    result = Number.isNaN(n) ? `${result}-${i}` : `${result}.${n}`;
-  }
-  return result;
 }
 
 function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceNamespace: string) {
@@ -67,7 +47,7 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
     // at which point, we're going to add a number (for now?)
     const details = schema.details.default;
     let schemaName = details.name;
-    const apiName = (!thisApiversion) ? '' : toPascal(`Api ${thisApiversion}`);
+    const apiName = (!thisApiversion) ? '' : getPascalIdentifier(`Api ${thisApiversion}`);
     const ns = (!thisApiversion) ? [] : ['.', apiName];
 
 
@@ -84,25 +64,25 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         apiversion: thisApiversion,
         apiname: apiName,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
-        name: pascalCase(fixLeadingNumber(deconstruct(schemaName))),
+        name: getPascalIdentifier(schemaName),
         namespace: pascalCase([serviceNamespace, '.', `Models`, ...ns]),  // objects have a namespace
-        fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${pascalCase(fixLeadingNumber(deconstruct(schemaName)))}`,
+        fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${getPascalIdentifier(schemaName)}`,
       };
     } else if (schema.type === JsonType.String && schema.details.default.enum) {
       // oh, it's an enum type
       schema.details.csharp = <SchemaDetails>{
         ...details,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
-        name: pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name))),
+        name: getPascalIdentifier(schema.details.default.enum.name),
         namespace: pascalCase([serviceNamespace, '.', `Support`]),
-        fullname: `${pascalCase([serviceNamespace, '.', `Support`])}.${pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name)))}`,
+        fullname: `${pascalCase([serviceNamespace, '.', `Support`])}.${getPascalIdentifier(schema.details.default.enum.name)}`,
         enum: {
           ...schema.details.default.enum,
-          name: pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name))),
+          name: getPascalIdentifier(schema.details.default.enum.name),
           values: schema.details.default.enum.values.map(each => {
             return {
               ...each,
-              name: pascalCase(fixLeadingNumber(deconstruct(each.name))),
+              name: getPascalIdentifier(each.name),
               description: each.description
             };
           })
@@ -125,12 +105,12 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
     if (schema.details.default.enum) {
       schema.details.csharp.enum = {
         ...schema.details.default.enum,
-        name: pascalCase(fixLeadingNumber(deconstruct(schema.details.default.enum.name)))
+        name: getPascalIdentifier(schema.details.default.enum.name)
       };
 
       // and the value names themselves
       for (const value of values(schema.details.csharp.enum.values)) {
-        value.name = pascalCase(fixLeadingNumber(deconstruct(value.name)));
+        value.name = getPascalIdentifier(value.name);
       }
     }
   }
@@ -143,7 +123,7 @@ async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promis
   // set the namespace for the service
   const serviceNamespace = await service.GetValue('namespace') || 'Sample.API';
   const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
-  const clientName = pascalCase(fixLeadingNumber(deconstruct(codeModel.details.default.name)));
+  const clientName = getPascalIdentifier(codeModel.details.default.name);
 
   // set c# client details (name)
   codeModel.details.csharp = {
@@ -218,7 +198,7 @@ function setPropertyNames(schema: Schema) {
 
     const className = schema.details.csharp.name;
 
-    let pname = pascalCase(fixLeadingNumber(deconstruct(propertyDetails.name)));
+    let pname = getPascalIdentifier(propertyDetails.name);
     if (pname === className) {
       pname = `${pname}Property`;
     }
@@ -245,7 +225,7 @@ async function setOperationNames(codeModel: codemodel.Model, resolver: SchemaDef
 
     operation.details.csharp = {
       ...details, // inherit
-      name: pascalCase(fixLeadingNumber(deconstruct(details.name))), // operations have pascal cased names
+      name: getPascalIdentifier(details.name), // operations have pascal cased names
     };
 
     // parameters are camelCased.
