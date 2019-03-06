@@ -670,6 +670,11 @@ export class CmdletClass extends Class {
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
+      if (parameter.details.csharp.completer) {
+        // add the completer to this class and tag this parameter with the completer.
+        // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
+      }
+
       if (td.schema.details.csharp.enum !== undefined) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
       }

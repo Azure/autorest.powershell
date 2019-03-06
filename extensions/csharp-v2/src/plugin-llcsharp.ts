@@ -96,7 +96,7 @@ export async function llcsharp(service: Host) {
     }
 
   } catch (E) {
-    console.error(`${__filename} - ${JSON.stringify(E)}`);
+    console.error(`${__filename} - ${E.stack}/${E.message}`);
     throw E;
   }
 }

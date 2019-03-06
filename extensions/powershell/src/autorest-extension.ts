@@ -10,6 +10,7 @@ import { createCommands } from './plugin-create-commands';
 import { namer } from './plugin-namer';
 import { powershell } from './plugin-powershell';
 import { structuralModifier } from './structural-modifier';
+import { addCompleter } from './plugin-add-azure-completers'
 
 export async function initializePlugins(pluginHost: AutoRestExtension) {
   // add plugins
@@ -18,4 +19,5 @@ export async function initializePlugins(pluginHost: AutoRestExtension) {
   pluginHost.Add('psnamer', namer);
   pluginHost.Add('cosmetic-modifier', cosmeticModifier);
   pluginHost.Add('structural-modifier', structuralModifier);
+  pluginHost.Add('add-azure-completer', addCompleter);
 }
