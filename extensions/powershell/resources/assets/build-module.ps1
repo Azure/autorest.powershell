@@ -48,7 +48,7 @@ $buildConfig = 'Debug'
 if($Release) {
   $buildConfig = 'Release'
 }
-dotnet publish --configuration $buildConfig --output bin /nologo
+dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig --output $binFolder /nologo
 if($LastExitCode -ne 0) {
   Write-Error 'Compilation failed.'
 }

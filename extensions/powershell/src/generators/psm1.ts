@@ -16,6 +16,9 @@ export async function generatePsm1(service: Host, project: Project) {
 
   # Load the private module dll
   $null = Import-Module -Name (Join-Path $PSScriptRoot ${project.dll})
+
+  # Export nothing to clear implicit exports
+  Export-ModuleMember
 `);
 
   if (project.azure) {
