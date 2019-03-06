@@ -10,7 +10,7 @@ import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType 
 
 export class SupportNamespace extends Namespace {
   public get outputFolder(): string {
-    return this.state.project.apiextensionsfolder;
+    return this.state.project.apiExtensionsFolder;
   }
 
   constructor(parent: Namespace, public state: State, objectInitializer?: Partial<SupportNamespace>) {
