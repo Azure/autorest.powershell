@@ -3,19 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, components, http, HttpOperation, Response } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
-
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
-
 import { addPowershellParameters } from './model-cmdlet';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, DoNotExportAttribute } from './powershell-declarations';
 import { State } from './state';
+import { Channel } from '@microsoft.azure/autorest-extension-base';
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
@@ -680,6 +679,11 @@ export class CmdletClass extends Class {
     const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.verb), new StringExpression(variantName)];
     if (this.isWritableCmdlet(operation)) {
       cmdletAttribParams.push(`SupportsShouldProcess = true`);
+    }
+
+    if (operation.details.csharp.hideDirective !== undefined) {
+      this.add(new Attribute(DoNotExportAttribute));
+      this.state.service.Message({ Channel: Channel.Information, Text: `Applied 'hide-command: ${operation.details.csharp.hideDirective}' directive. Added attribute ${DoNotExportAttribute.declaration} to cmdlet ${operation.verb}-${operation.noun}.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
