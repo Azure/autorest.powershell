@@ -44,24 +44,27 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   }
 
   private required: boolean;
-  public IsHeaderProperty: boolean;
+  // DISABLED
+  // public IsHeaderProperty: boolean;
   public schema: Schema;
   public serializedName: string;
   private typeDeclaration: EnhancedTypeDeclaration;
 
-  constructor(parent: ModelClass, property: Property, serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
-    const decl = state.project.modelsNamespace.resolveTypeDeclaration(property.schema, property.details.csharp.required, state.path("schema"));
-    super(property.details.csharp.name, decl);
+  // constructor(property: Property, serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
+  constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: Partial<ModelProperty>) {
+    const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path("schema"));
+    super(name, decl);
     this.typeDeclaration = decl;
     this.serializedName = serializedName;
-    this.schema = property.schema;
+    this.schema = schema;
     if (this.schema.readOnly) {
       this.setAccess = Access.Internal;
     }
     this.apply(objectInitializer);
-    this.description = property.details.csharp.description;
-    this.required = property.details.csharp.required;
-    this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
+    this.description = description;
+    this.required = isRequired;
+    // DISABLED
+    // this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
   }
 
   public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
