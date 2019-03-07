@@ -34,10 +34,11 @@ if(-not $Isolated) {
 }
 
 Write-Host -ForegroundColor Green 'Cleaning build folders...'
-$binFolder = (Join-Path $PSScriptRoot 'bin')
-$objFolder = (Join-Path $PSScriptRoot 'obj')
+$binFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}')
+$objFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}')
 $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
-$null = Get-ChildItem -Path 'exports' -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+$exportPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
+$null = Get-ChildItem -Path $exportPath -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 
 if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
   Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
@@ -63,7 +64,7 @@ if(-not (Test-Path $dll)) {
 $commands = Get-Command -Module (Import-Module $dll -PassThru)
 Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
 
-$customFolder = (Join-Path $PSScriptRoot 'custom')
+$customFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}')
 $customPsm1 = Get-Item -Path (Join-Path $customFolder '*.custom.psm1') | Select-Object -First 1
 if(Test-Path $customPsm1) {
   $commands += Get-Command -Module (Import-Module $customPsm1 -PassThru)
@@ -76,11 +77,10 @@ if(($commands | Measure-Object).Count -eq 0) {
 
 $commands = $commands | Where-Object { $_.Name -ne 'New-ProxyCmdlet' -and $_.Name -ne 'New-TestStub'}
 
-$exportPath = Join-Path $PSScriptRoot 'exports'
 $null = New-Item -ItemType Directory -Force -Path $exportPath
 New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
 
-$testPath = Join-Path $PSScriptRoot 'test'
+$testPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testPath
 New-TestStub -CommandInfo $commands -OutputFolder $testPath
 
