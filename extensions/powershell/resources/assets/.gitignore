@@ -1,5 +1,6 @@
 bin
 obj
 generated
-node_modules
+exports
+!exports/readme.md
 test/*-TestResults.xml

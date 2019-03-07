@@ -12,12 +12,12 @@ export interface GeneratorSettings {
   azure: boolean;
   cmdletFolder: string;
   customFolder: string;
-  runtimefolder: string;
+  runtimeFolder: string;
   moduleName: string;
   csproj: string;
   psd1: string;
   psm1: string;
-  apifolder: string;
+  apiFolder: string;
 }
 
 export class State extends ModelState<codemodel.Model> {

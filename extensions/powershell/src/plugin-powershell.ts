@@ -91,7 +91,10 @@ async function copyRequiredFiles(service: Host, project: Project) {
         try {
           value = safeEval(inner, {
             $config: await service.GetValue(''),
-            $project: project
+            $project: project,
+            $lib: {
+              path: require('path')
+            }
           });
         }
         catch {
@@ -115,7 +118,7 @@ async function copyRequiredFiles(service: Host, project: Project) {
   await copyResources(join(resources, 'assets'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
 
   // Runtime files
-  await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+  await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
   // azure Runtime files
   if (project.azure) {
