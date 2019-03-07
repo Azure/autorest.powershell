@@ -20,5 +20,5 @@ $moduleName = $modulePsd1.BaseName
 Import-Module -Name Pester
 Import-Module $modulePath
 
-$testFolder = (Join-Path $PSScriptRoot 'test')
+$testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 Invoke-Pester -Script @{ Path = $testFolder } -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")

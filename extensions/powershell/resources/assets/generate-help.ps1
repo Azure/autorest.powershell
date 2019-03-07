@@ -9,13 +9,13 @@ if(-not $Isolated) {
 }
 
 $WarningPreference = 'SilentlyContinue'
-$docsPath = Join-Path $PSScriptRoot 'docs'
+$docsPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
 
 $modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
-$platyPS = Join-Path $PSScriptRoot 'generated' 'platyPS'
+$platyPS = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.moduleFolder)}' 'platyPS'
 
 Import-Module $platyPS
 Import-Module $modulePath
