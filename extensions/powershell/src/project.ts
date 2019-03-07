@@ -74,7 +74,7 @@ export class Project extends codeDomProject {
     this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
 
     const smc = await service.GetValue('skip-model-cmdlets');
-    this.skipModelCmdlets = smc ? true : false;
+    this.skipModelCmdlets = !!smc;
 
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 

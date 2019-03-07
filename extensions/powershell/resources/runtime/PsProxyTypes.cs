@@ -58,7 +58,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var defaultParameterSet = Variants
                 .Select(v => v.Metadata.DefaultParameterSetName)
-                .FirstOrDefault(dpsn => dpsn.IsValidDefaultParameterSetName());
+                .LastOrDefault(dpsn => dpsn.IsValidDefaultParameterSetName());
 
             if (String.IsNullOrEmpty(defaultParameterSet))
             {
