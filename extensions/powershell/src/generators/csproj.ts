@@ -1,9 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateCsproj(service: Host, project: Project) {
   // write out the csproj file if it's not there.
   if (!await service.ReadFile(project.csproj)) {
+
+    const release = project.azure ? `    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;SIGN</DefineConstants>` :
+      `    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>`;
+
     service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -29,10 +41,7 @@ export async function generateCsproj(service: Host, project: Project) {
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>TRACE;RELEASE;NETSTANDARD;SIGN</DefineConstants>
+${release}
   </PropertyGroup>
 
   <ItemGroup>

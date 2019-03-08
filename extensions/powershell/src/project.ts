@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { deconstruct, pascalCase, Dictionary } from '@microsoft.azure/codegen';
 import { SchemaDefinitionResolver } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from './state';
@@ -23,6 +24,7 @@ export class Project extends codeDomProject {
   public objFolder!: string;
   public exportsFolder!: string;
   public docsFolder!: string;
+  public serviceName!: string;
   public moduleName!: string;
   public csproj!: string;
   public dllName!: string;
@@ -30,6 +32,7 @@ export class Project extends codeDomProject {
   public psd1!: string;
   public psm1!: string;
   public psm1Custom!: string;
+  public formatPs1xml!: string;
   public apiFolder!: string;
   public apiExtensionsFolder!: string;
   public baseFolder!: string;
@@ -37,7 +40,7 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
   public skipModelCmdlets!: boolean;
-  public nounPrefix!: string;
+  public prefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
   public get model() { return this.state.model; }
@@ -74,13 +77,17 @@ export class Project extends codeDomProject {
     const mil = await service.GetValue('max-inlined-parameters');
     this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
 
-    const smc = await service.GetValue('skip-model-cmdlets');
-    this.skipModelCmdlets = !!smc;
-
+    // Flags
+    this.skipModelCmdlets = !!(await service.GetValue('skip-model-cmdlets'));
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 
-    this.moduleName = await service.GetValue('module-name') || pascalCase(deconstruct(model.info.title.replace(/client/ig, '')));
+    // Names
+    this.prefix = await service.GetValue('prefix') || this.azure ? 'Az' : ``;
+    this.serviceName = await service.GetValue('service-name') || pascalCase(deconstruct(model.info.title.replace(/client/ig, '')));
+    this.moduleName = await service.GetValue('module-name') || !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName;
+    this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
 
+    // Folders
     this.baseFolder = await service.GetValue('base-folder') || '.';
     this.moduleFolder = await service.GetValue('module-folder') || `${this.baseFolder}/generated`;
     this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets`;
@@ -95,14 +102,13 @@ export class Project extends codeDomProject {
     this.exportsFolder = await service.GetValue('exports-folder') || `${this.baseFolder}/exports`;
     this.docsFolder = await service.GetValue('docs-folder') || `${this.baseFolder}/docs`;
 
-    this.csproj = await service.GetValue('csproj') || `${this.moduleName}.csproj`;
-    this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
+    // File paths
+    this.csproj = await service.GetValue('csproj') || `${this.baseFolder}/${this.moduleName}.csproj`;
     this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.dllName}.dll`;
-    this.psd1 = await service.GetValue('psd1') || `${this.moduleName}.psd1`;
-    this.psm1 = await service.GetValue('psm1') || `${this.moduleName}.psm1`;
+    this.psd1 = await service.GetValue('psd1') || `${this.baseFolder}/${this.moduleName}.psd1`;
+    this.psm1 = await service.GetValue('psm1') || `${this.baseFolder}/${this.moduleName}.psm1`;
     this.psm1Custom = await service.GetValue('psm1-custom') || `${this.customFolder}/${this.moduleName}.custom.psm1`;
-
-    this.nounPrefix = await service.GetValue('noun-prefix') || this.azure ? 'Az' : ``;
+    this.formatPs1xml = await service.GetValue('format-ps1xml') || `${this.baseFolder}/${this.moduleName}.format.ps1xml`;
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));

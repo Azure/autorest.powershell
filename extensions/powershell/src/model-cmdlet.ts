@@ -23,7 +23,7 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `New${state.project.nounPrefix}${schema.details.csharp.name}Object_${schema.details.csharp.apiname}`;
+    const name = `New${state.project.prefix}${schema.details.csharp.name}Object_${schema.details.csharp.apiname}`;
     super(namespace, name, PSCmdlet);
     this.state = state;
     this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`;
@@ -44,7 +44,7 @@ export class ModelCmdlet extends Class {
 function addClassAttributes($class: WithState, schema: Schema, name: string) {
 
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.nounPrefix}${schema.details.csharp.name || ''}Object_${schema.details.csharp.apiname}`)] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.prefix}${schema.details.csharp.name || ''}Object_${schema.details.csharp.apiname}`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
   $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
   $class.add(new Attribute(GeneratedAttribute));
