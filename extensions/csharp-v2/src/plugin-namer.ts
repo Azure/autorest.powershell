@@ -21,7 +21,6 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
 
-
   // in Azure Mode, we want to always put schemas into the namespace of the lowest supported apiversion.
   // otherwise, we just want to differientiate with a simple incremental numbering scheme.
 
