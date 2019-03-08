@@ -15,6 +15,7 @@ export async function generateCsproj(service: Host, project: Project) {
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>${project.binFolder}</OutputPath>
+    <PublishDir>$(OutputPath)</PublishDir>
     <!-- Some methods are marked async and don't have an await in them -->
     <NoWarn>1998</NoWarn>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
