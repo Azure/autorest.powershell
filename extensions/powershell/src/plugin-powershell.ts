@@ -122,5 +122,8 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // platyPS files
   await copyBinaryResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, 'binary-file'));
+
+  // Signing key file
+  await copyBinaryResources(join(resources, 'signing'), async (fname, content) => service.WriteFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
 }
 

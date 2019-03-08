@@ -25,6 +25,7 @@ export class Project extends codeDomProject {
   public docsFolder!: string;
   public moduleName!: string;
   public csproj!: string;
+  public dllName!: string;
   public dll!: string;
   public psd1!: string;
   public psm1!: string;
@@ -94,8 +95,9 @@ export class Project extends codeDomProject {
     this.exportsFolder = await service.GetValue('exports-folder') || `${this.baseFolder}/exports`;
     this.docsFolder = await service.GetValue('docs-folder') || `${this.baseFolder}/docs`;
 
-    this.csproj = await service.GetValue('csproj') || `${this.moduleName}.private.csproj`;
-    this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.moduleName}.private.dll`;
+    this.csproj = await service.GetValue('csproj') || `${this.moduleName}.csproj`;
+    this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
+    this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.dllName}.dll`;
     this.psd1 = await service.GetValue('psd1') || `${this.moduleName}.psd1`;
     this.psm1 = await service.GetValue('psm1') || `${this.moduleName}.psm1`;
     this.psm1Custom = await service.GetValue('psm1-custom') || `${this.customFolder}/${this.moduleName}.custom.psm1`;
