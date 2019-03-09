@@ -5,187 +5,316 @@
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';
-import { values, pascalCase, fixLeadingNumber, deconstruct, nameof } from '@microsoft.azure/codegen';
-const directivesToFilter = new Set<string>([
-  'where-model',
-  'where-parameter',
-  'where-property',
-  'where-command'
-]);
+import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
+
 
 let directives: Array<any> = [];
-let nounPrefix = '';
-
-interface WhereParameterDirective {
-  'where-parameter': string;
-  'set-name'?: string;
-  'set-alias'?: Array<string> | string;
-}
-
-interface WherePropertyDirective {
-  'where-property': string;
-  'set-name'?: string;
-  'set-alias'?: Array<string> | string;
-}
-
-interface WhereModelDirective {
-  'where-model': string;
-  'set-name': string;
-}
-
-interface WhereModelDirective {
-  'where-model': string;
-  'set-name': string;
-}
 
 interface WhereCommandDirective {
-  'where-command': string;
-  'set-name': string;
+  where: {
+    noun?: string;
+    verb?: string;
+    variant?: string;
+    'parameter-name'?: string;
+  };
+  set: {
+    noun?: string;
+    verb?: string;
+    variant?: string;
+    hidden?: Boolean;
+    'parameter-name'?: string;
+    'parameter-description'?: string;
+  };
 }
 
-function isWhereParameterDirective(it: any): it is WhereParameterDirective {
-  return it['where-parameter'];
+interface WhereModelDirective {
+  where: {
+    'model-name'?: string;
+    'property-name'?: string;
+  };
+  set: {
+    'model-name'?: string;
+    'property-name'?: string;
+    'property-description'?: string;
+  }
 }
 
-function isWherePropertyDirective(it: any): it is WherePropertyDirective {
-  return it['where-property'];
-}
-
-function isWhereModelDirective(it: any): it is WhereModelDirective {
-  return it['where-model'];
+function isDirective(it: any): it is WhereCommandDirective {
+  return it.where && it.set;
 }
 
 function isWhereCommandDirective(it: any): it is WhereCommandDirective {
-  return it['where-command'];
+  const directive = it;
+  const where = directive.where;
+  const set = directive.set;
+  if (where && set) {
+    if ((set['parameter-name'] || set.hidden || set.noun || set["parameter-description"] || set.verb || set.variant)
+      && (where.noun || where.verb || where.variant || where["parameter-name"])) {
+      let error = where['model-name'] ? `Can't select model and command at the same time.` : ``;
+      error += where['property-name'] ? `Can't select property and command at the same time.` : ``;
+      error = set['property-name'] ? `Can't set a property-name when a command is selected.` : ``;
+      error += set['property-description'] ? `Can't set a property-description when a command is selected.` : ``;
+      error += set['model-name'] ? `Can't set a model-name when a command is selected.` : ``;
+      if (error) {
+        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
+      }
+
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+function isWhereModelDirective(it: any): it is WhereModelDirective {
+  const directive = it;
+  const where = directive.where;
+  const set = directive.set;
+  if (where && set) {
+    if ((set["model-name"] || set["property-description"] || set["property-name"])
+      && (where['model-name'] || where['property-name'])) {
+      let error = where['noun'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
+      error += where['parameter-name'] ? `Can't select a parameter and command at the same time.` : ``;
+      error = set['property-name'] ? `Can't set property-name when a model is selected.` : ``;
+      error += set['noun'] ? `Can't set command noun when a model is selected.` : ``;
+      error += set['verb'] ? `Can't set command verb when a model is selected.` : ``;
+      error += set['variant'] ? `Can't set command variant when a model is selected.` : ``;
+      error += set['hidden'] ? `Can't hide a command when a model is selected.` : ``;
+      error += set['variant'] ? `Can't set a variant name when a model is selected.` : ``;
+      if (error) {
+        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
+      }
+
+      return true;
+    }
+  }
+
+
+  return false;
 }
 
 export async function cosmeticModifier(service: Host) {
   directives = values(await service.GetValue('directive'))
-    .linq.where(directive => values(Object.keys(directive))
-      .linq.where(key => directivesToFilter.has(key))
-      .linq.any(each => !!each))
+    .linq.select(directive => directive)
+    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive))
     .linq.toArray();
-  const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
-  nounPrefix = await service.GetValue('noun-prefix') || azure ? 'Az' : ``;
+
   return processCodeModel(tweakModel, service);
 }
 
 async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
 
   for (const directive of directives) {
-
-    if (isWhereParameterDirective(directive)) {
-      if (directive['set-name'] !== undefined || directive['set-alias']) {
-        const parameters = values(model.commands.operations)
-          .linq.selectMany(operation => values(operation.parameters))
-          .linq.where(parameter => getPascalName(parameter.details.csharp.name) === getPascalName(directive['where-parameter']))
-          .linq.toArray();
-
-        if (directive['set-name'] !== undefined) {
-          for (const parameter of parameters) {
-            parameter.details.csharp.name = directive['set-name'];
-          }
-        }
-
-        if (directive['set-alias'] !== undefined) {
-          for (const parameter of parameters) {
-            parameter.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
-          }
-        }
-      }
-
-      continue;
-    }
-
-    if (isWherePropertyDirective(directive)) {
-      if (directive['set-name'] !== undefined || directive['set-alias']) {
-        const properties = values(model.schemas)
-          .linq.selectMany(schema => values(schema.properties))
-          .linq.where(property => getPascalName(property.details.csharp.name) === getPascalName(directive['where-property']))
-          .linq.toArray();
-
-        if (directive['set-name'] !== undefined) {
-          for (const property of properties) {
-            property.details.csharp.name = directive["set-name"];
-          }
-        }
-
-        if (directive['set-alias'] !== undefined) {
-          for (const property of properties) {
-            property.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
-          }
-        }
-      }
-
-      continue;
-    }
-
-    if (isWhereModelDirective(directive)) {
-      const whereModelVal = directive['where-model'];
-      const isRegex = !(/^[a-zA-Z0-9]*$/.test(whereModelVal));
-      if (isRegex) {
-        const regex = new RegExp(whereModelVal);
-        const models = values(model.schemas)
-          .linq.where(schema => !!schema.details.csharp.name.match(regex))
-          .linq.toArray();
-        for (const model of models) {
-          const replacer = directive['set-name'];
-          model.details.csharp.name = model.details.csharp.name.replace(regex, replacer);
-        }
-      } else {
-        const models = values(model.schemas)
-          .linq.where(schema => getPascalName(schema.details.csharp.name) === getPascalName(whereModelVal))
-          .linq.toArray();
-        for (const model of models) {
-          model.details.csharp.name = model.details.csharp.name.replace(whereModelVal, directive['set-name']);
-        }
-      }
-
-      continue;
-    }
-
-
     if (isWhereCommandDirective(directive)) {
-      const whereCommandValue = directive['where-command'];
-      const isRegex = !isCommandNameLiteral(directive['where-command']);
-      if (isRegex) {
-        const regex = new RegExp(whereCommandValue);
-        const operations = values(model.commands.operations)
-          .linq.where(operation => !!`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex))
-          .linq.toArray();
-        for (const operation of operations) {
-          const replacer = directive['set-name'];
-          const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(regex, replacer);
-          if (isCommandNameLiteral(newName)) {
-            const newNameParts = getCommandNameParts(newName, nounPrefix);
-            operation.noun = newNameParts.noun;
-            operation.verb = newNameParts.verb
-          } else {
-            throw new Error(`set-name: ${directive['set-name']} value from directive provided is incorrect. 
-                          It should result in a string in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
-          }
-        }
-      } else {
-        const operations = values(model.commands.operations)
-          .linq.where(operation => `${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === whereCommandValue.toLowerCase())
-          .linq.toArray();
-        for (const operation of operations) {
-          const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(whereCommandValue, directive['set-name']);
-          if (isCommandNameLiteral(newName)) {
-            const newCommandName = getCommandNameParts(newName, nounPrefix);
-            operation.noun = newCommandName.noun;
-            operation.verb = newCommandName.verb
+      const nounSelect = directive.where.noun;
+      const verbSelect = directive.where.verb;
+      const variantSelect = directive.where.variant;
+      const parameterSelect = directive.where["parameter-name"];
 
-          } else {
-            throw new Error(`set-name: ${directive['set-name']} value from directive provided is incorrect. 
-                            It should result in a string in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
-          }
-        }
+      const nounReplacer = directive.set.noun;
+      const verbReplacer = directive.set.verb;
+      const variantReplacer = directive.set.variant
+      const shouldHide = directive.set.hidden;
+      const parameterReplacer = directive.set["parameter-name"];
+      const paramDescriptionReplacer = directive.set["parameter-description"];
+
+      // select all operations
+      let operations = values(model.commands.operations).linq.toArray();
+
+      if (nounSelect) {
+        operations = values(model.commands.operations)
+          .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.noun}`) : !!`${operation.noun}`.match(new RegExp(nounSelect, 'gi')))
+          .linq.toArray();
       }
 
-      continue;
+      if (verbSelect) {
+        operations = values(model.commands.operations)
+          .linq.where(operation => isNotRegex(verbSelect) ? !!(verbSelect === `${operation.details.csharp.verb}`) : !!`${operation.details.csharp.verb}`.match(new RegExp(verbSelect, 'gi')))
+          .linq.toArray();
+      }
+
+      if (variantSelect) {
+        operations = values(model.commands.operations)
+          .linq.where(operation => isNotRegex(variantSelect) ? !!(variantSelect === `${operation.details.csharp.name}`) : !!`${operation.details.csharp.name}`.match(new RegExp(variantSelect, 'gi')))
+          .linq.toArray();
+      }
+
+      // if (nounSelect) {
+      //   operations = values(model.commands.operations)
+      //     .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.details.csharp.noun}`) : !!`${operation.details.csharp.noun}`.match(new RegExp(nounSelect, 'gi')))
+      //     .linq.toArray();
+      // }
+
+      // if (nounSelect) {
+      //   operations = values(model.commands.operations)
+      //     .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.details.csharp.noun}`) : !!`${operation.details.csharp.noun}`.match(new RegExp(nounSelect, 'gi')))
+      //     .linq.toArray();
+      // }
+
+
+
+
+      //   if (isRegex) {
+      //     const nounPrefix = model.details.csharp.nounPrefix;
+      //     const regex = new RegExp(whereCommandValue);
+      //     const operations = values(model.commands.operations)
+      //       .linq.where(operation => !!`${operation.details.csharp.verb} -${nounPrefix} ${operation.details.csharp.noun} `.match(regex))
+      //       .linq.toArray();
+      //     for (const operation of operations) {
+      //       const replacer = directive['set-name'];
+      //       const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(regex, replacer);
+      //       if (isCommandNameLiteral(newName)) {
+      //         const newCommandName = getCommandNameParts(newName, nounPrefix);
+      //         operation.details.csharp.noun = newCommandName.noun;
+      //         operation.details.csharp.verb = newCommandName.verb;
+      //         operation.details.csharp.nounPrefix = operation.details.csharp.nounPrefix = newCommandName.prefix;;
+      //       } else {
+      //         throw new Error(`set - name: ${directive['set-name']} value from directive provided is incorrect.
+      // It should result in a valid cmdlet name in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
+      //       }
+      //     }
+
+
     }
   }
+
+  //   if (directive['set-name'] !== undefined || directive['set-alias']) {
+  //     const parameters = values(model.commands.operations)
+  //       .linq.selectMany(operation => values(operation.parameters))
+  //       .linq.where(parameter => getPascalName(parameter.details.csharp.name) === getPascalName(directive['where-parameter']))
+  //       .linq.toArray();
+
+  //     if (directive['set-name'] !== undefined) {
+  //       for (const parameter of parameters) {
+  //         parameter.details.csharp.name = directive['set-name'];
+  //       }
+  //     }
+
+  //     if (directive['set-alias'] !== undefined) {
+  //       for (const parameter of parameters) {
+  //         parameter.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
+  //       }
+  //     }
+  //   }
+
+  //   continue;
+  // }
+  // if (isWhereParameterDirective(directive)) {
+  //   if (directive['set-name'] !== undefined || directive['set-alias']) {
+  //     const parameters = values(model.commands.operations)
+  //       .linq.selectMany(operation => values(operation.parameters))
+  //       .linq.where(parameter => getPascalName(parameter.details.csharp.name) === getPascalName(directive['where-parameter']))
+  //       .linq.toArray();
+
+  //     if (directive['set-name'] !== undefined) {
+  //       for (const parameter of parameters) {
+  //         parameter.details.csharp.name = directive['set-name'];
+  //       }
+  //     }
+
+  //     if (directive['set-alias'] !== undefined) {
+  //       for (const parameter of parameters) {
+  //         parameter.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
+  //       }
+  //     }
+  //   }
+
+  //   continue;
+  // }
+
+  // if (isWherePropertyDirective(directive)) {
+  //   if (directive['set-name'] !== undefined || directive['set-alias']) {
+  //     const properties = values(model.schemas)
+  //       .linq.selectMany(schema => values(schema.properties))
+  //       .linq.where(property => getPascalName(property.details.csharp.name) === getPascalName(directive['where-property']))
+  //       .linq.toArray();
+
+  //     if (directive['set-name'] !== undefined) {
+  //       for (const property of properties) {
+  //         property.details.csharp.name = directive["set-name"];
+  //       }
+  //     }
+
+  //     if (directive['set-alias'] !== undefined) {
+  //       for (const property of properties) {
+  //         property.details.csharp.alias = (Array.isArray(directive['set-alias'])) ? getDistinctElements(directive['set-alias']) : [directive['set-alias']];
+  //       }
+  //     }
+  //   }
+
+  //   continue;
+  // }
+
+  // if (isWhereModelDirective(directive)) {
+  //   const whereModelVal = directive['where-model'];
+  //   const isRegex = !(/^[a-zA-Z0-9]*$/.test(whereModelVal));
+  //   if (isRegex) {
+  //     const regex = new RegExp(whereModelVal);
+  //     const models = values(model.schemas)
+  //       .linq.where(schema => !!schema.details.csharp.name.match(regex))
+  //       .linq.toArray();
+  //     for (const model of models) {
+  //       const replacer = directive['set-name'];
+  //       model.details.csharp.name = model.details.csharp.name.replace(regex, replacer);
+  //     }
+  //   } else {
+  //     const models = values(model.schemas)
+  //       .linq.where(schema => getPascalName(schema.details.csharp.name) === getPascalName(whereModelVal))
+  //       .linq.toArray();
+  //     for (const model of models) {
+  //       model.details.csharp.name = model.details.csharp.name.replace(whereModelVal, directive['set-name']);
+  //     }
+  //   }
+
+  //   continue;
+  // }
+
+
+  // if (isWhereCommandDirective(directive)) {
+  //   const whereCommandValue = directive['where-command'];
+  //   const isRegex = !isCommandNameLiteral(directive['where-command']);
+  //   if (isRegex) {
+  //     const nounPrefix = model.details.csharp.nounPrefix;
+  //     const regex = new RegExp(whereCommandValue);
+  //     const operations = values(model.commands.operations)
+  //       .linq.where(operation => !!`${operation.details.csharp.verb} -${nounPrefix} ${operation.details.csharp.noun} `.match(regex))
+  //       .linq.toArray();
+  //     for (const operation of operations) {
+  //       const replacer = directive['set-name'];
+  //       const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(regex, replacer);
+  //       if (isCommandNameLiteral(newName)) {
+  //         const newCommandName = getCommandNameParts(newName, nounPrefix);
+  //         operation.details.csharp.noun = newCommandName.noun;
+  //         operation.details.csharp.verb = newCommandName.verb;
+  //         operation.details.csharp.nounPrefix = operation.details.csharp.nounPrefix = newCommandName.prefix;;
+  //       } else {
+  //         throw new Error(`set - name: ${directive['set-name']} value from directive provided is incorrect.
+  // It should result in a valid cmdlet name in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
+  //       }
+  //     }
+  //   } else {
+  //     const nounPrefix = model.details.csharp.nounPrefix;
+  //     const operations = values(model.commands.operations)
+  //       .linq.where(operation => `${operation.details.csharp.verb} -${nounPrefix} ${operation.details.csharp.noun} `.toLowerCase() === whereCommandValue.toLowerCase())
+  //       .linq.toArray();
+  //     for (const operation of operations) {
+  //       const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(whereCommandValue, directive['set-name']);
+  //       if (isCommandNameLiteral(newName)) {
+  //         const newCommandName = getCommandNameParts(newName, nounPrefix);
+  //         operation.details.csharp.noun = newCommandName.noun;
+  //         operation.details.csharp.verb = newCommandName.verb;
+  //         operation.details.csharp.nounPrefix = newCommandName.prefix;
+  //       } else {
+  //         throw new Error(`set - name: ${directive['set-name']} value from directive provided is incorrect.
+  // It should result in a valid cmdlet name in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
+  //       }
+  //     }
+  //   }
+
+  //   continue;
+  // }
+
 
   return model;
 }
@@ -198,17 +327,18 @@ function getPascalName(name: string): string {
   return pascalCase(fixLeadingNumber(deconstruct(name)));
 }
 
-function isCommandNameLiteral(str: string): boolean {
-  return /^[a-zA-Z]+-[a-zA-Z]+$/.test(str);
+function isNotRegex(str: string): boolean {
+  return /^[a-zA-Z0-9]+$/.test(str);
 }
 
 function getCommandName(verb: string, prefix: string, noun: string): string {
-  return `${getPascalName(verb)}-${getPascalName(prefix)}${getPascalName(noun)}`;
+  return `${getPascalName(verb)} -${getPascalName(prefix)} ${getPascalName(noun)} `;
 }
 
 
-function getCommandNameParts(command: string, prefix: string): { noun: string, verb: string } {
-  command = command.replace(prefix, '');
+function getCommandNameParts(command: string, prefix: string): { noun: string, verb: string, prefix: string } {
   const parts = command.split('-');
-  return { verb: parts[0], noun: parts[1] };
+  const containsOldPrefix = !!parts[1].match(new RegExp(`^ ${prefix} `, 'gi'));
+
+  return { verb: parts[0], noun: containsOldPrefix ? parts[1].replace(prefix, '') : parts[1], prefix: containsOldPrefix ? prefix : '' };
 }
