@@ -100,7 +100,7 @@ export async function cosmeticModifier(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
+async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
 
   for (const directive of directives) {
     const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
