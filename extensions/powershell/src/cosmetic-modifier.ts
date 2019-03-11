@@ -107,75 +107,61 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
 
   for (const directive of directives) {
     if (isWhereCommandDirective(directive)) {
-      const nounSelect = directive.where.noun;
-      const verbSelect = directive.where.verb;
-      const variantSelect = directive.where.variant;
-      const parameterSelect = directive.where["parameter-name"];
+      const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
+        return selector ? isNotRegex(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
+      }
+
+      const nounRegex = getParsedSelector(directive.where.noun);
+      const verbRegex = getParsedSelector(directive.where.verb);
+      const variantRegex = getParsedSelector(directive.where.variant);
+      const parameterRegex = getParsedSelector(directive.where["parameter-name"]);
 
       const nounReplacer = directive.set.noun;
       const verbReplacer = directive.set.verb;
-      const variantReplacer = directive.set.variant
-      const shouldHide = directive.set.hidden;
+      const variantReplacer = directive.set.variant;
+      const shouldHide = !!directive.set.hidden;
       const parameterReplacer = directive.set["parameter-name"];
       const paramDescriptionReplacer = directive.set["parameter-description"];
 
       // select all operations
       let operations = values(model.commands.operations).linq.toArray();
-
-      if (nounSelect) {
-        operations = values(model.commands.operations)
-          .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.noun}`) : !!`${operation.noun}`.match(new RegExp(nounSelect, 'gi')))
+      if (nounRegex) {
+        operations = values(operations)
+          .linq.where(operation =>
+            !!`${operation.details.csharp.noun}`.match(nounRegex))
           .linq.toArray();
       }
 
-      if (verbSelect) {
-        operations = values(model.commands.operations)
-          .linq.where(operation => isNotRegex(verbSelect) ? !!(verbSelect === `${operation.details.csharp.verb}`) : !!`${operation.details.csharp.verb}`.match(new RegExp(verbSelect, 'gi')))
+      if (verbRegex) {
+        operations = values(operations)
+          .linq.where(operation =>
+            !!`${operation.details.csharp.verb}`.match(verbRegex))
           .linq.toArray();
       }
 
-      if (variantSelect) {
-        operations = values(model.commands.operations)
-          .linq.where(operation => isNotRegex(variantSelect) ? !!(variantSelect === `${operation.details.csharp.name}`) : !!`${operation.details.csharp.name}`.match(new RegExp(variantSelect, 'gi')))
+      if (variantRegex) {
+        operations = values(operations)
+          .linq.where(operation =>
+            !!`${operation.details.csharp.name}`.match(variantRegex))
           .linq.toArray();
       }
 
-      // if (nounSelect) {
-      //   operations = values(model.commands.operations)
-      //     .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.details.csharp.noun}`) : !!`${operation.details.csharp.noun}`.match(new RegExp(nounSelect, 'gi')))
-      //     .linq.toArray();
-      // }
+      if (parameterRegex) {
+        const parameters = values(operations).linq.selectMany(operation => operation.parameters).linq.where(parameter =>
+          !!`${parameter.details.csharp.verb}`.match(parameterRegex));
+        for (const parameter of parameters) {
+          parameter.details.csharp.name = parameterReplacer ? parameterRegex ? parameter.details.csharp.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.details.csharp.name;
+          parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
+        }
 
-      // if (nounSelect) {
-      //   operations = values(model.commands.operations)
-      //     .linq.where(operation => isNotRegex(nounSelect) ? !!(nounSelect === `${operation.details.csharp.noun}`) : !!`${operation.details.csharp.noun}`.match(new RegExp(nounSelect, 'gi')))
-      //     .linq.toArray();
-      // }
-
-
-
-
-      //   if (isRegex) {
-      //     const nounPrefix = model.details.csharp.nounPrefix;
-      //     const regex = new RegExp(whereCommandValue);
-      //     const operations = values(model.commands.operations)
-      //       .linq.where(operation => !!`${operation.details.csharp.verb} -${nounPrefix} ${operation.details.csharp.noun} `.match(regex))
-      //       .linq.toArray();
-      //     for (const operation of operations) {
-      //       const replacer = directive['set-name'];
-      //       const newName = getCommandName(operation.verb, nounPrefix, operation.noun).replace(regex, replacer);
-      //       if (isCommandNameLiteral(newName)) {
-      //         const newCommandName = getCommandNameParts(newName, nounPrefix);
-      //         operation.details.csharp.noun = newCommandName.noun;
-      //         operation.details.csharp.verb = newCommandName.verb;
-      //         operation.details.csharp.nounPrefix = operation.details.csharp.nounPrefix = newCommandName.prefix;;
-      //       } else {
-      //         throw new Error(`set - name: ${directive['set-name']} value from directive provided is incorrect.
-      // It should result in a valid cmdlet name in the form: /^[a-zA-Z]+-[a-zA-Z]+$/`);
-      //       }
-      //     }
-
-
+      } else if (operations) {
+        for (const operation of operations) {
+          operation.details.csharp.noun = nounReplacer ? nounRegex ? operation.details.csharp.noun.replace(nounRegex, nounReplacer) : nounReplacer : operation.details.csharp.noun;
+          operation.details.csharp.verb = verbReplacer ? verbRegex ? operation.details.csharp.verb.replace(verbRegex, verbReplacer) : verbReplacer : operation.details.csharp.verb;
+          operation.details.csharp.name = variantReplacer ? variantRegex ? operation.details.csharp.name.replace(variantRegex, variantReplacer) : variantReplacer : operation.details.csharp.name;
+          operation.details.csharp.hide = shouldHide;
+        }
+      }
     }
   }
 
