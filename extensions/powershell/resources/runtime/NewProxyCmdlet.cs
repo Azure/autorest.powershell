@@ -20,7 +20,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            var variants = CommandInfo.SelectMany(ci => ci.ToVariants()).ToArray();
+            var variants = CommandInfo
+                .SelectMany(ci => ci.ToVariants())
+                .Where(v => !v.Attributes.OfType<DoNotExportAttribute>().Any())
+                .ToArray();
             var allProfiles = variants.SelectMany(v => v.Profiles).Distinct().ToArray();
             var profileGroups = allProfiles.Any()
                 ? variants

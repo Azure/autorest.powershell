@@ -20,7 +20,9 @@ export class Project extends codeDomProject {
   public testFolder!: string;
   public runtimeFolder!: string;
   public binFolder!: string;
+  public objFolder!: string;
   public exportsFolder!: string;
+  public docsFolder!: string;
   public moduleName!: string;
   public csproj!: string;
   public dll!: string;
@@ -29,6 +31,7 @@ export class Project extends codeDomProject {
   public psm1Custom!: string;
   public apiFolder!: string;
   public apiExtensionsFolder!: string;
+  public baseFolder!: string;
   public moduleFolder!: string;
   public schemaDefinitionResolver: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
@@ -71,22 +74,25 @@ export class Project extends codeDomProject {
     this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
 
     const smc = await service.GetValue('skip-model-cmdlets');
-    this.skipModelCmdlets = smc ? true : false;
+    this.skipModelCmdlets = !!smc;
 
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 
     this.moduleName = await service.GetValue('module-name') || pascalCase(deconstruct(model.info.title.replace(/client/ig, '')));
 
-    this.moduleFolder = await service.GetValue('module-folder') || './generated';
+    this.baseFolder = await service.GetValue('base-folder') || '.';
+    this.moduleFolder = await service.GetValue('module-folder') || `${this.baseFolder}/generated`;
     this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets`;
     this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/model-cmdlets`;
-    this.customFolder = await service.GetValue('custom-cmdlet-folder') || `./custom`;
-    this.testFolder = await service.GetValue('test-folder') || `./test`;
+    this.customFolder = await service.GetValue('custom-cmdlet-folder') || `${this.baseFolder}/custom`;
+    this.testFolder = await service.GetValue('test-folder') || `${this.baseFolder}/test`;
     this.runtimeFolder = await service.GetValue('runtime-folder') || `${this.moduleFolder}/runtime`;
     this.apiFolder = await service.GetValue('api-folder') || `${this.moduleFolder}/api`;
     this.apiExtensionsFolder = await service.GetValue('api-extensions-folder') || `${this.moduleFolder}/api-extensions`;
-    this.binFolder = await service.GetValue('bin-folder') || `./bin`;
-    this.exportsFolder = await service.GetValue('exports-folder') || `./exports`;
+    this.binFolder = await service.GetValue('bin-folder') || `${this.baseFolder}/bin`;
+    this.objFolder = await service.GetValue('obj-folder') || `${this.baseFolder}/obj`;
+    this.exportsFolder = await service.GetValue('exports-folder') || `${this.baseFolder}/exports`;
+    this.docsFolder = await service.GetValue('docs-folder') || `${this.baseFolder}/docs`;
 
     this.csproj = await service.GetValue('csproj') || `${this.moduleName}.private.csproj`;
     this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.moduleName}.private.dll`;
