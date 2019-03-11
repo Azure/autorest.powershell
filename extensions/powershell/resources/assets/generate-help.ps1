@@ -35,17 +35,4 @@ $mpContent = $mpContent -replace 'Help Version: {{Please enter version of help m
 $mpContent = $mpContent -replace '{{Manually Enter Description Here}}.*', "$((Get-Module $moduleName).Description)"
 Set-Content -Path $modulePage -Value $mpContent -Force
 
-# Update cmdlet markdowns
-Get-Item -Path (Join-Path $docsPath '*.md') | ForEach-Object {
-  $md = $_
-  $cmdletNameLower = "$($md.BaseName.ToLower())"
-  $mdContent = Get-Content -Path $md
-  $mdContent = $mdContent -replace 'external help file:.*', "external help file: $moduleName-help.xml"
-  $mdContent = $mdContent -replace 'online version:.*', "online version: https://docs.microsoft.com/en-us/powershell/module/$moduleNameLower/$cmdletNameLower"
-  Set-Content -Path $md -Value $mdContent -Force
-};
-
-# Generate -help.xml
-New-ExternalHelp -Path $docsPath -OutputPath $PSScriptRoot -Force
-
 Write-Host -ForegroundColor Green '-------------Done-------------'
