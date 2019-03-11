@@ -53,11 +53,11 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         const isRegex = !isCommandNameLiteral(removeCommandVal);
         if (isRegex) {
           const regex = new RegExp(removeCommandVal);
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
+          if (`${operation.details.csharp.verb}-${nounPrefix}${operation.details.csharp.noun}`.match(regex)) {
             delete model.commands.operations[key];
           }
         } else {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === removeCommandVal.toLowerCase()) {
+          if (`${operation.details.csharp.verb}-${nounPrefix}${operation.details.csharp.noun}`.toLowerCase() === removeCommandVal.toLowerCase()) {
             delete model.commands.operations[key];
           }
         }
@@ -73,11 +73,11 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         const isRegex = !isCommandNameLiteral(hideCommandVal);
         if (isRegex) {
           const regex = new RegExp(hideCommandVal);
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
+          if (`${operation.details.csharp.verb}-${nounPrefix}${operation.details.csharp.noun}`.match(regex)) {
             model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;
           }
         } else {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === hideCommandVal.toLowerCase()) {
+          if (`${operation.details.csharp.verb}-${nounPrefix}${operation.details.csharp.noun}`.toLowerCase() === hideCommandVal.toLowerCase()) {
             model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;;
           }
         }

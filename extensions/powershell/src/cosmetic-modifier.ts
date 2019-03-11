@@ -194,7 +194,7 @@ async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
 
       } else if (models) {
         for (const model of models) {
-          model.details.csharp.noun = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
+          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
         }
       }
 
