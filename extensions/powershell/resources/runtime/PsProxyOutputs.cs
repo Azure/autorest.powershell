@@ -33,7 +33,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var dpsText = VariantGroup.DefaultParameterSetName.IsValidDefaultParameterSetName() ? $"DefaultParameterSetName='{VariantGroup.DefaultParameterSetName}'" : String.Empty;
             var sspText = VariantGroup.SupportsShouldProcess ? $"SupportsShouldProcess{ItemSeparator}ConfirmImpact='Medium'" : String.Empty;
-            var propertyText = new[] {dpsText, sspText}.JoinIgnoreEmpty(ItemSeparator);
+            var propertyText = new[] { dpsText, sspText }.JoinIgnoreEmpty(ItemSeparator);
             return $"[CmdletBinding({propertyText})]{Environment.NewLine}";
         }
     }
@@ -209,6 +209,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {VariantGroup.Description}
 .Description
 {VariantGroup.Description}
+.Link
+{VariantGroup.Link}
 #>
 ";
     }
