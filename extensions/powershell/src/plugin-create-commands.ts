@@ -142,6 +142,8 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
       ...operation.details,
       csharp: {
         ...operation.details.default,
+        noun: variant.noun,
+        verb: variant.verb,
         name: vname
       }
     },
