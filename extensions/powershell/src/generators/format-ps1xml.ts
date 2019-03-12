@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as XmlBuilder from 'xmlbuilder';
 import { codemodel, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host } from '@microsoft.azure/autorest-extension-base';

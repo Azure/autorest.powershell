@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
@@ -9,13 +14,13 @@ export async function generatePsm1(service: Host, project: Project) {
   $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
   # Load the custom script module
-  $scriptModulePath = Join-Path $PSScriptRoot ${project.psm1Custom}
+  $scriptModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
   if(Test-Path $scriptModulePath) {
     $null = Import-Module -Name $scriptModulePath
   }
 
   # Load the private module dll
-  $null = Import-Module -Name (Join-Path $PSScriptRoot ${project.dll})
+  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
 
   # Export nothing to clear implicit exports
   Export-ModuleMember
@@ -57,7 +62,7 @@ export async function generatePsm1(service: Host, project: Project) {
 
   psm1.append('LoadExports', `
   # Export proxy cmdlet scripts
-  $exportsPath = Join-Path $PSScriptRoot ${project.exportsFolder}
+  $exportsPath = Join-Path $PSScriptRoot '${project.exportsFolder}'
   $directories = Get-ChildItem -Directory -Path $exportsPath
   $profileDirectory = $null
   if($instance.ProfileName) {
