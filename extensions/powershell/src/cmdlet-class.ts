@@ -683,7 +683,7 @@ export class CmdletClass extends Class {
     if (operation.details.csharp.hide !== undefined) {
       this.add(new Attribute(DoNotExportAttribute));
       const cmdletName = `${operation.details.csharp.name ? `${operation.details.csharp.noun}_${operation.details.csharp.name}` : operation.details.csharp.noun}`;
-      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hide' directive. Added attribute ${DoNotExportAttribute.declaration} to cmdlet ${cmdletName}.` });
+      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hidden' directive. Added attribute ${DoNotExportAttribute.declaration} to cmdlet ${cmdletName}.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
