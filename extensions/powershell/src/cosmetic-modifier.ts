@@ -188,12 +188,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
               Channel: Channel.Verbose, Text: `Changed command from ${oldCommandName} to ${newCommandName}.`
             });
           }
-
-          if (shouldHide) {
-            service.Message({
-              Channel: Channel.Verbose, Text: `Hiding ${newCommandName}.`
-            });
-          }
         }
       }
 
@@ -208,7 +202,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const propertyNameReplacer = directive.set["property-name"];
       const propertyDescriptionReplacer = directive.set["property-description"];
 
-      // select all operations
+      // select all models
       let models = values(model.schemas).linq.toArray();
       if (modelNameRegex) {
         models = values(models)
