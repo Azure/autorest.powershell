@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
 import { generateFormatPs1xml } from './generators/format-ps1xml';
-import { Text, TextWithRegions, deserialize, serialize, applyOverrides, copyResources, indent, setIndentation, copyBinaryResources, safeEval } from '@microsoft.azure/codegen';
+import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
@@ -14,7 +14,6 @@ import { generatePsd1 } from './generators/psd1';
 import { generatePsm1 } from './generators/psm1';
 import { generateCsproj } from './generators/csproj';
 import { generatePsm1Custom } from './generators/psm1.custom';
-import { toExpression } from '@microsoft.azure/codegen-csharp';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
@@ -42,6 +41,7 @@ export async function powershell(service: Host) {
     await service.ProtectFiles(project.csproj);
     await service.ProtectFiles(project.customFolder);
     await service.ProtectFiles(project.testFolder);
+    await service.ProtectFiles(project.docsFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(service, project);
@@ -127,5 +127,10 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // platyPS files
   await copyBinaryResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, 'binary-file'));
+
+  if (project.azure) {
+    // Signing key file
+    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => service.WriteFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
+  }
 }
 

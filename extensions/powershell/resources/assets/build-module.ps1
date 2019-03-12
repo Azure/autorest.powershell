@@ -1,4 +1,4 @@
-param([Switch]$Isolated, [Switch]$Run, [Switch]$Test, [Switch]$Code, [Switch]$Release)
+param([Switch]$Isolated, [Switch]$Run, [Switch]$Test, [Switch]$Docs, [Switch]$Code, [Switch]$Release)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -19,6 +19,14 @@ if(-not $Isolated) {
     . (Join-Path $PSScriptRoot 'test-module.ps1')
     if($LastExitCode -ne 0) {
       # Tests failed. Don't attempt to run the module.
+      return
+    }
+  }
+
+  if($Docs) {
+    . (Join-Path $PSScriptRoot 'generate-help.ps1')
+    if($LastExitCode -ne 0) {
+      # Docs generation failed. Don't attempt to run the module.
       return
     }
   }
@@ -49,7 +57,7 @@ $buildConfig = 'Debug'
 if($Release) {
   $buildConfig = 'Release'
 }
-dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig --output $binFolder /nologo
+dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig /nologo
 if($LastExitCode -ne 0) {
   Write-Error 'Compilation failed.'
 }

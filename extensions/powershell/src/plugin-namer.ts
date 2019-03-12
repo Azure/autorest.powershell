@@ -67,12 +67,12 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
         const sanitizedName = removeProhibitedPrefix(
           parameter.details.csharp.name,
-          operation.noun,
+          operation.details.csharp.noun,
           otherParametersNames
         );
 
         if (parameter.details.csharp.name !== sanitizedName) {
-          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed parameter from ${parameter.details.csharp.name} to ${sanitizedName} from command ${operation.verb}-${operation.noun}` });
+          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed parameter from ${parameter.details.csharp.name} to ${sanitizedName} from command ${operation.verb}-${operation.details.csharp.noun}` });
 
           // sanitize name
           parameter.details.csharp.name = sanitizedName;
@@ -96,7 +96,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         );
 
         if (property.details.csharp.name !== sanitizedName) {
-          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed property from ${property.details.csharp.name} to ${sanitizedName} from model ${schema.details.csharp.name}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed property from ${property.details.csharp.name} to ${sanitizedName} from model ${schema.details.csharp.name}` });
 
           // sanitize name
           property.details.csharp.name = sanitizedName;

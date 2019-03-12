@@ -33,6 +33,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasMultipleVariants { get; }
         public string Description { get; }
         public bool IsGenerated { get; }
+        public string Link { get; }
 
         public string OutputFolder { get; }
         public string FileName { get; }
@@ -48,6 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasMultipleVariants = Variants.Length > 1;
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
+            Link = $@"https://docs.microsoft.com/en-us/powershell/module/{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
 
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
@@ -58,7 +60,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var defaultParameterSet = Variants
                 .Select(v => v.Metadata.DefaultParameterSetName)
-                .FirstOrDefault(dpsn => dpsn.IsValidDefaultParameterSetName());
+                .LastOrDefault(dpsn => dpsn.IsValidDefaultParameterSetName());
 
             if (String.IsNullOrEmpty(defaultParameterSet))
             {

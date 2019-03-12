@@ -28,6 +28,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var variantGroups = CommandInfo
                 .SelectMany(ci => ci.ToVariants())
+                .Where(v => !v.Attributes.OfType<DoNotExportAttribute>().Any())
                 .GroupBy(v => v.CmdletName)
                 .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, true))
                 .Where(vtg => !File.Exists(vtg.FilePath) && (IncludeGenerated || !vtg.IsGenerated));
