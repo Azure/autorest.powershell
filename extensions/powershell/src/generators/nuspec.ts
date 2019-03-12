@@ -8,7 +8,11 @@ import { Project } from '../project';
 import { setIndentation, indent, guid } from '@microsoft.azure/codegen';
 import { PsdFile } from '../file-formats/psd-file';
 
-export async function generatePsd1(service: Host, project: Project) {
+export async function generateNuspec(service: Host, project: Project) {
+  // If the file is already there, don't write a new one.
+  if (await service.ReadFile(project.csproj)) {
+    return;
+  }
   setIndentation(2);
   const psd1 = new PsdFile(await service.ReadFile(project.psd1));
 

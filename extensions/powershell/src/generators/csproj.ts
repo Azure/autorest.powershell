@@ -19,6 +19,7 @@ export async function generateCsproj(service: Host, project: Project) {
     service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>${project.moduleVersion}</Version>
     <LangVersion>7.1</LangVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
