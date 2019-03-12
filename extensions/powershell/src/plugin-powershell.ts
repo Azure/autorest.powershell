@@ -122,7 +122,7 @@ async function copyRequiredFiles(service: Host, project: Project) {
 
   // azure Runtime files
   if (project.azure) {
-    await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+    await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
   }
 
   // platyPS files

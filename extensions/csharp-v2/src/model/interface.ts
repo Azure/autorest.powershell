@@ -63,7 +63,9 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   }
 
   get hasHeaderProperties(): boolean {
-    return this.classImplementation.hasHeaderProperties;
+    // disabled
+    // return this.classImplementation.hasHeaderProperties; 
+    return false;
   }
   constructor(parent: TypeContainer, schema: Schema, public classImplementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.csharp.name}`);
@@ -73,17 +75,22 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     implData.interfaceImplementation = this;
     this.description = `${schema.details.csharp.description}`;
 
-    /* OLD PROPERTIES *    
-        for (const { key: index, value: property } of items(schema.properties)) {
-          this.add(new ModelInterfaceProperty(this, property, state.path('properties', index)));
-        }
-        //property.details.csharp.required
-    */
-    for (const { key: index, value: property } of items(schema.details.csharp.virtualProperties)) {
-      const actual = property.property;
-      this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties', index)));
-    }
+    const virtualProperties = this.schema.details.csharp.virtualProperties || {
+      owned: [],
+      inherited: [],
+      inlined: []
+    };
+    if (this.schema.details.csharp.virtualProperties) {
+      for (const property of [...virtualProperties.owned]) {
+        const actual = property.property;
+        this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Owned Property" }));
+      }
 
+      for (const property of [...virtualProperties.inlined]) {
+        const actual = property.property;
+        this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Inlined Property" }));
+      }
+    }
     // mark it as json serializable
     if (!schema.details.csharp.isHeaderModel) {
       if (this.state.project.jsonSerialization) {

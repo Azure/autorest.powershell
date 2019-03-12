@@ -42,6 +42,15 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
     return this.typeDeclaration.serializeToContainerMember(mediaType, container, this, serializedName);
   }
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    if (this.required) {
+      return (<EnhancedTypeDeclaration>this.type).validatePresence(eventListener, this);
+    }
+    return ``;
+  }
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return (<EnhancedTypeDeclaration>this.type).validateValue(eventListener, this);
+  }
 
   private required: boolean;
   // DISABLED
@@ -67,13 +76,5 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
     // this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
   }
 
-  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
-    if (this.required) {
-      return (<EnhancedTypeDeclaration>this.type).validatePresence(eventListener, this);
-    }
-    return ``;
-  }
-  public validationStatement(eventListener: Variable): OneOrMoreStatements {
-    return (<EnhancedTypeDeclaration>this.type).validateValue(eventListener, this);
-  }
+
 }

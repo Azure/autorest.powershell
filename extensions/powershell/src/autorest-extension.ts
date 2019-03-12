@@ -19,5 +19,5 @@ export async function initializePlugins(pluginHost: AutoRestExtension) {
   pluginHost.Add('psnamer', namer);
   pluginHost.Add('cosmetic-modifier', cosmeticModifier);
   pluginHost.Add('structural-modifier', structuralModifier);
-  pluginHost.Add('add-azure-completer', addCompleter);
+  pluginHost.Add('add-azure-completers', addCompleter);
 }
