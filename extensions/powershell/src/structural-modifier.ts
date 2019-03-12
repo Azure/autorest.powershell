@@ -4,85 +4,91 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
-import { values } from '@microsoft.azure/codegen';
-import { Host } from '@microsoft.azure/autorest-extension-base';
-
-const directivesToFilter = new Set<string>([
-  'remove-command',
-  'hide-command'
-]);
+import { values, items } from '@microsoft.azure/codegen';
+import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
+import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 interface RemoveCommandDirective {
-  'remove-command': string;
-}
-
-interface HideCommandDirective {
-  'hide-command': string;
+  where: {
+    noun?: string;
+    verb?: string;
+    variant?: string;
+  };
+  remove: Boolean;
 }
 
 let directives: Array<any> = [];
-let nounPrefix = '';
+
+function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
+  const directive = <RemoveCommandDirective>it;
+  const where = directive.where;
+  const remove = directive.remove;
+  if (where && remove && (where.noun || where.verb || where.variant)) {
+    return true;
+  }
+
+  return false;
+}
 
 export async function structuralModifier(service: Host) {
   directives = values(await service.GetValue('directive'))
-    .linq.where(directive => values(Object.keys(directive))
-      .linq.where(key => directivesToFilter.has(key))
-      .linq.any(each => !!each))
+    .linq.select(directive => directive)
+    .linq.where(directive => isRemoveCommandDirective(directive))
     .linq.toArray();
-  const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
-  nounPrefix = await service.GetValue('noun-prefix') || azure ? 'Az' : ``;
+
   return processCodeModel(tweakModel, service);
-}
-
-function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
-  return it['remove-command'];
-}
-
-function isHideCommandDirective(it: any): it is HideCommandDirective {
-  return it['hide-command'];
 }
 
 async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
 
   for (const directive of directives) {
-
-    if (isRemoveCommandDirective(directive)) {
-      const removeCommandVal = directive['remove-command'];
-
-      for (const [key, operation] of Object.entries(model.commands.operations)) {
-        const isRegex = !isCommandNameLiteral(removeCommandVal);
-        if (isRegex) {
-          const regex = new RegExp(removeCommandVal);
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
-            delete model.commands.operations[key];
-          }
-        } else {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === removeCommandVal.toLowerCase()) {
-            delete model.commands.operations[key];
-          }
-        }
-      }
-
-      continue;
+    const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
+      return selector ? isNotRegex(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
 
-    if (isHideCommandDirective(directive)) {
-      const hideCommandVal = directive['hide-command'];
+    if (isRemoveCommandDirective(directive)) {
+      const nounRegex = getParsedSelector(directive.where.noun);
+      const verbRegex = getParsedSelector(directive.where.verb);
+      const variantRegex = getParsedSelector(directive.where.variant);
 
-      for (const [key, operation] of Object.entries(model.commands.operations)) {
-        const isRegex = !isCommandNameLiteral(hideCommandVal);
-        if (isRegex) {
-          const regex = new RegExp(hideCommandVal);
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.match(regex)) {
-            model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;
-          }
-        } else {
-          if (`${operation.verb}-${nounPrefix}${operation.noun}`.toLowerCase() === hideCommandVal.toLowerCase()) {
-            model.commands.operations[key].details.csharp.hideDirective = hideCommandVal;;
-          }
-        }
+      // select all operations
+      const operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
+      let operationsToRemoveKeys = new Set<number>();
+      if (nounRegex) {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => !!`${operation.value.details.csharp.noun}`.match(nounRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = matchingKeys;
       }
 
+      if (verbRegex) {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      if (variantRegex) {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      for (const key of operationsToRemoveKeys) {
+        const operationInfo = model.commands.operations[key].details.csharp;
+        service.Message({
+          Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.noun}_${operationInfo.name}` : operationInfo.noun}`
+        });
+
+        delete model.commands.operations[key];
+      }
       continue;
     }
   }
@@ -90,6 +96,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
   return model;
 }
 
-function isCommandNameLiteral(str: string): boolean {
-  return /^[a-zA-Z]+-[a-zA-Z]+$/.test(str);
+function isNotRegex(str: string): boolean {
+  return /^[a-zA-Z0-9]+$/.test(str);
 }
