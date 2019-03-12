@@ -680,9 +680,10 @@ export class CmdletClass extends Class {
       cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }
 
-    if (operation.details.csharp.hideDirective !== undefined) {
+    if (operation.details.csharp.hide !== undefined) {
       this.add(new Attribute(DoNotExportAttribute));
-      this.state.service.Message({ Channel: Channel.Information, Text: `Applied 'hide-command: ${operation.details.csharp.hideDirective}' directive. Added attribute ${DoNotExportAttribute.declaration} to cmdlet ${operation.details.csharp.verb}-${operation.details.csharp.noun}.` });
+      const cmdletName = `${operation.details.csharp.name ? `${operation.details.csharp.noun}_${operation.details.csharp.name}` : operation.details.csharp.noun}`;
+      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hide' directive. Added attribute ${DoNotExportAttribute.declaration} to cmdlet ${cmdletName}.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
