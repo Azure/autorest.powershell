@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel, processCodeModel, Schema } from '@microsoft.azure/autorest.codemodel-v3';
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
@@ -149,16 +149,51 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           .linq.where(parameter => !!`${parameter.details.csharp.name}`.match(parameterRegex))
           .linq.toArray();
         for (const parameter of parameters) {
+          const prevName = parameter.details.csharp.name;
           parameter.details.csharp.name = parameterReplacer ? parameterRegex ? parameter.details.csharp.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.details.csharp.name;
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
+          if (parameterReplacer) {
+            service.Message({
+              Channel: Channel.Verbose, Text: `Changed parameter-name from ${prevName} to ${parameter.details.csharp.name}.`
+            });
+          }
+
+          if (paramDescriptionReplacer) {
+            service.Message({
+              Channel: Channel.Verbose, Text: `Set parameter-description from parameter ${parameter.details.csharp.name}.`
+            });
+          }
+
         }
 
       } else if (operations) {
         for (const operation of operations) {
-          operation.details.csharp.noun = nounReplacer ? nounRegex ? operation.details.csharp.noun.replace(nounRegex, nounReplacer) : nounReplacer : operation.details.csharp.noun;
-          operation.details.csharp.verb = verbReplacer ? verbRegex ? operation.details.csharp.verb.replace(verbRegex, verbReplacer) : verbReplacer : operation.details.csharp.verb;
-          operation.details.csharp.name = variantReplacer ? variantRegex ? operation.details.csharp.name.replace(variantRegex, variantReplacer) : variantReplacer : operation.details.csharp.name;
+          const prevNoun = operation.details.csharp.noun;
+          const prevVerb = operation.details.csharp.verb;
+          const prevVariantName = operation.details.csharp.name;
+          const oldCommandName = `${prevVerb}-${prevVariantName ? `${prevNoun}_${prevVariantName}` : prevNoun}`;
+
+          operation.details.csharp.noun = nounReplacer ? nounRegex ? prevNoun.replace(nounRegex, nounReplacer) : nounReplacer : prevNoun;
+          operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
+          operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
           operation.details.csharp.hide = shouldHide;
+
+          const newNoun = operation.details.csharp.noun;
+          const newVerb = operation.details.csharp.verb;
+          const newVariantName = operation.details.csharp.name;
+          const newCommandName = `${newVerb}-${newVariantName ? `${newNoun}_${newVariantName}` : newNoun}`;
+
+          if (nounReplacer || verbReplacer || variantReplacer) {
+            service.Message({
+              Channel: Channel.Verbose, Text: `Changed command from ${oldCommandName} to ${newCommandName}.`
+            });
+          }
+
+          if (shouldHide) {
+            service.Message({
+              Channel: Channel.Verbose, Text: `Hiding ${newCommandName}.`
+            });
+          }
         }
       }
 
@@ -188,13 +223,23 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           .linq.where(property => !!`${property.details.csharp.name}`.match(propertyNameRegex))
           .linq.toArray();
         for (const property of properties) {
+          const prevName = property.details.csharp.name;
           property.details.csharp.name = propertyNameReplacer ? propertyNameRegex ? property.details.csharp.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.details.csharp.name;
           property.description = propertyDescriptionReplacer ? propertyDescriptionReplacer : property.description;
+
+          if (propertyNameRegex) {
+            service.Message({
+              Channel: Channel.Verbose, Text: `Changed property-name from ${prevName} to ${property.details.csharp.name}.`
+            });
+          }
         }
 
       } else if (models) {
         for (const model of models) {
-          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
+          const prevName = model.details.csharp.name;
+          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name; service.Message({
+            Channel: Channel.Verbose, Text: `Changed model-name from ${prevName} to ${model.details.csharp.name}.`
+          });
         }
       }
 
