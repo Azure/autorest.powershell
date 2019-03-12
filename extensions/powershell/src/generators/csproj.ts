@@ -28,6 +28,8 @@ export async function generateCsproj(service: Host, project: Project) {
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>${project.binFolder}</OutputPath>
     <PublishDir>$(OutputPath)</PublishDir>
+    <NuspecFile>${project.moduleName}.nuspec</NuspecFile>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
     <!-- Some methods are marked async and don't have an await in them -->
     <NoWarn>1998</NoWarn>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
