@@ -45,7 +45,11 @@ export class Project extends codeDomProject {
   public prefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
-  public get model() { return this.state.model; }
+  public serviceNamespace!: ServiceNamespace;
+  public supportNamespace!: SupportNamespace;
+  public cmdlets!: CmdletNamespace;
+  public modelCmdlets!: ModelCmdletNamespace;
+  public modelsExtensions!: ModelExtensionsNamespace;
 
   constructor(protected state: State) {
     super();
@@ -81,7 +85,8 @@ export class Project extends codeDomProject {
     this.moduleVersion = await service.GetValue('module-version') || '1.0.0';
 
     // Flags
-    this.skipModelCmdlets = !!(await service.GetValue('skip-model-cmdlets'));
+    const smc = await service.GetValue('skip-model-cmdlets');
+    this.skipModelCmdlets = smc === undefined ? false : !!smc;
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 
     // Names
@@ -131,9 +136,11 @@ export class Project extends codeDomProject {
     return this;
   }
 
-  public serviceNamespace!: ServiceNamespace;
-  public supportNamespace!: SupportNamespace;
-  public cmdlets!: CmdletNamespace;
-  public modelCmdlets!: ModelCmdletNamespace;
-  public modelsExtensions!: ModelExtensionsNamespace;
+  public get model() {
+    return this.state.model;
+  }
+
+  titleToServiceName(title: string): string {
+    return "";
+  }
 }
