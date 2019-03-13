@@ -176,7 +176,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           operation.details.csharp.noun = nounReplacer ? nounRegex ? prevNoun.replace(nounRegex, nounReplacer) : nounReplacer : prevNoun;
           operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
           operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
-          operation.details.csharp.hide = shouldHide;
+          operation.details.csharp.hidden = (directive.set.hidden !== undefined) ? !!directive.set.hidden : operation.details.csharp.hidden;
 
           const newNoun = operation.details.csharp.noun;
           const newVerb = operation.details.csharp.verb;
