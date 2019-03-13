@@ -5,55 +5,50 @@
 
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
-import { setIndentation, indent, guid } from '@microsoft.azure/codegen';
-import { PsdFile } from '../file-formats/psd-file';
+import { relative } from 'path';
 
 export async function generateNuspec(service: Host, project: Project) {
   // If the file is already there, don't write a new one.
-  if (await service.ReadFile(project.csproj)) {
+  if (await service.ReadFile(project.nuspec)) {
     return;
   }
-  setIndentation(2);
-  const psd1 = new PsdFile(await service.ReadFile(project.psd1));
 
-  if (!psd1.has('definition')) {
-    psd1.append('definition', function* () {
-      yield indent(`RootModule = '${project.psm1}'`);
-      yield indent(`ModuleVersion = '${project.moduleVersion}'`);
-      yield indent(`CompatiblePSEditions = 'Core', 'Desktop'`);
-      yield indent(`GUID = '${guid()}'`);
-      const author = project.azure ? 'Microsoft Corporation' : '';
-      yield indent(`Author = '${author}'`);
-      const companyName = project.azure ? 'Microsoft Corporation' : '';
-      yield indent(`CompanyName = '${companyName}'`);
-      const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : '';
-      yield indent(`Copyright = '${copyright}'`);
-      const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : '';
-      yield indent(`Description = '${description}'`);
-      yield indent(`PowerShellVersion = '5.1'`);
-      yield indent(`DotNetFrameworkVersion = '4.7.2'`);
-      yield indent(`RequiredAssemblies = '${project.dll}'`);
-      yield indent(`FormatsToProcess = '${project.formatPs1xml}'`);
-    });
-  }
+  const authorsOwners = project.azure ? 'Microsoft Corporation' : '';
+  const licenseUrl = project.azure ? `https://aka.ms/azps-license` : '';
+  const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : '';
+  const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : '';
+  const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : '';
+  const tags = project.azure ? 'Azure ResourceManager ARM AppConfiguration PSModule' : '';
+  const dependencies = project.azure ? `
+    <dependencies>
+      <dependency id="Az.Accounts" version="1.4.0" />
+    </dependencies>` : '';
 
-  if (!psd1.has('private data')) {
-    psd1.append('private data', function* () {
-      yield indent(`PrivateData = @{`);
-      yield indent(`PSData = @{`, 2);
-
-      const tags = project.azure ? `'Azure', 'ResourceManager', 'ARM', '${project.serviceName}'` : `''`;
-      yield indent(`Tags = ${tags}`, 3)
-      const licenseUri = project.azure ? `https://aka.ms/azps-license` : '';
-      yield indent(`LicenseUri = '${licenseUri}'`, 3)
-      const projectUri = project.azure ? `https://github.com/Azure/azure-powershell` : '';
-      yield indent(`ProjectUri = '${projectUri}'`, 3)
-      yield indent(`ReleaseNotes = ''`, 3)
-
-      yield indent(`}`, 2)
-      yield indent(`}`)
-    });
-  }
-
-  service.WriteFile(project.psd1, psd1.text, undefined, 'source-file-powershell');
+  service.WriteFile(project.nuspec, `<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>${project.moduleName}</id>
+    <version>${project.moduleVersion}</version>
+    <authors>${authorsOwners}</authors>
+    <owners>${authorsOwners}</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>${licenseUrl}</licenseUrl>
+    <projectUrl>${projectUrl}</projectUrl>
+    <description>${description}</description>
+    <releaseNotes></releaseNotes>
+    <copyright>${copyright}</copyright>
+    <tags>${tags}</tags>${dependencies}
+  </metadata>
+  <files>
+    <file src="${project.formatPs1xml}" />
+    <file src="${project.psd1}" />
+    <file src="${project.psm1}" />
+    <file src="${project.dll}" />
+    <file src="${project.binFolder}/${project.dllName}.deps.json" />
+    <file src="${project.customFolder}/**/*.*" exclude="${project.customFolder}/readme.md;${project.customFolder}/**/*.cs" />
+    <file src="${project.docsFolder}/**/*.md" exclude="${project.docsFolder}/readme.md" />
+    <file src="${project.exportsFolder}/**/*.ps1" />
+  </files>
+</package>
+`, undefined, 'source-file-other');
 }

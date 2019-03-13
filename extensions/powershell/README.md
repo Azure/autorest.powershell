@@ -34,15 +34,7 @@ load-priority: 1001
 ```
 
 # Pipeline Configuration
-``` yaml 
-module-folder: generated/
-api-folder: $(module-folder)/api
-runtime-folder: $(module-folder)/runtime
-api-extensions-folder: $(module-folder)/api-extensions
-cmdlet-folder: $(module-folder)/cmdlets
-custom-cmdlet-folder: custom
-test-folder: test
-
+``` yaml
 use-namespace-folders: false
 
 pipeline:
