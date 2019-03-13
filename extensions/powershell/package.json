@@ -1,7 +1,7 @@
 {
   "name": "@microsoft.azure/autorest.powershell",
   "version": "1.0.0",
-  "description": "AutoRest PowerShell Generator",
+  "description": "AutoRest PowerShell Cmdlet Generator",
   "main": "dist/exports.js",
   "typings": "dist/exports.d.ts",
   "directories": {
