@@ -39,15 +39,15 @@ export async function generatePsd1(service: Host, project: Project) {
       yield indent(`PSData = @{`, 2);
 
       const tags = project.azure ? `'Azure', 'ResourceManager', 'ARM', '${project.serviceName}'` : `''`;
-      yield indent(`Tags = ${tags}`, 3)
+      yield indent(`Tags = ${tags}`, 3);
       const licenseUri = project.azure ? `https://aka.ms/azps-license` : '';
-      yield indent(`LicenseUri = '${licenseUri}'`, 3)
+      yield indent(`LicenseUri = '${licenseUri}'`, 3);
       const projectUri = project.azure ? `https://github.com/Azure/azure-powershell` : '';
-      yield indent(`ProjectUri = '${projectUri}'`, 3)
-      yield indent(`ReleaseNotes = ''`, 3)
+      yield indent(`ProjectUri = '${projectUri}'`, 3);
+      yield indent(`ReleaseNotes = ''`, 3);
 
-      yield indent(`}`, 2)
-      yield indent(`}`)
+      yield indent(`}`, 2);
+      yield indent(`}`);
     });
   }
 

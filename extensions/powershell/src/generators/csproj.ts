@@ -33,7 +33,6 @@ export async function generateCsproj(service: Host, project: Project) {
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <!-- Some methods are marked async and don't have an await in them -->
     <NoWarn>1998</NoWarn>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
@@ -53,7 +52,6 @@ ${release}
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 
-</Project>
-`, undefined, 'source-file-csharp');
+</Project>`, undefined, 'source-file-csharp');
   }
 }

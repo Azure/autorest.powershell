@@ -5,7 +5,6 @@
 
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
-import { relative } from 'path';
 
 export async function generateNuspec(service: Host, project: Project) {
   // If the file is already there, don't write a new one.
@@ -40,15 +39,19 @@ export async function generateNuspec(service: Host, project: Project) {
     <tags>${tags}</tags>${dependencies}
   </metadata>
   <files>
-    <file src="${project.formatPs1xml}" />
-    <file src="${project.psd1}" />
-    <file src="${project.psm1}" />
-    <file src="${project.dll}" />
-    <file src="${project.binFolder}/${project.dllName}.deps.json" />
-    <file src="${project.customFolder}/**/*.*" exclude="${project.customFolder}/readme.md;${project.customFolder}/**/*.cs" />
-    <file src="${project.docsFolder}/**/*.md" exclude="${project.docsFolder}/readme.md" />
-    <file src="${project.exportsFolder}/**/*.ps1" />
+    <file src="${removeCd(project.formatPs1xml)}" />
+    <file src="${removeCd(project.psd1)}" />
+    <file src="${removeCd(project.psm1)}" />
+    <!-- https://github.com/NuGet/Home/issues/3584 -->
+    <file src="${removeCd(project.dll)}" target="${removeCd(project.binFolder)}" />
+    <file src="${removeCd(project.binFolder)}/${project.dllName}.deps.json" target="${removeCd(project.binFolder)}" />
+    <file src="${removeCd(project.customFolder)}/**/*.*" exclude="${removeCd(project.customFolder)}/readme.md;${removeCd(project.customFolder)}/**/*.cs" />
+    <file src="${removeCd(project.docsFolder)}/**/*.md" exclude="${removeCd(project.docsFolder)}/readme.md" />
+    <file src="${removeCd(project.exportsFolder)}/**/*.ps1" />
   </files>
-</package>
-`, undefined, 'source-file-other');
+</package>`, undefined, 'source-file-other');
+}
+
+function removeCd(path: string): string {
+  return path.startsWith('./') ? path.replace('./', '') : path;
 }

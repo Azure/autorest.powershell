@@ -22,7 +22,7 @@ export async function generateFormatPs1xml(service: Host, model: codemodel.Model
       }
     }
   });
-  service.WriteFile(`${project.moduleName}.format.ps1xml`, ps1xml.end({ pretty: true }), undefined, 'source-file-other');
+  service.WriteFile(project.formatPs1xml, ps1xml.end({ pretty: true }), undefined, 'source-file-other');
 }
 
 function createViewModel(schema: Schema, className: string): object {

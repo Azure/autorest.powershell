@@ -23,8 +23,7 @@ export async function generatePsm1(service: Host, project: Project) {
   $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
 
   # Export nothing to clear implicit exports
-  Export-ModuleMember
-`);
+  Export-ModuleMember`);
 
   if (project.azure) {
     const accountsVersion = '1.4.0';
@@ -57,8 +56,7 @@ export async function generatePsm1(service: Host, project: Project) {
   $instance.ArgumentCompleter = $VTable.ArgumentCompleter
 
   # The name of the currently selected Azure profile
-  $instance.ProfileName = $VTable.ProfileName
-`);
+  $instance.ProfileName = $VTable.ProfileName`);
   }
 
   psm1.append('LoadExports', `
@@ -90,14 +88,12 @@ export async function generatePsm1(service: Host, project: Project) {
       . $_.FullName
       Export-ModuleMember -Function $_.BaseName
     }
-  }
-`)
+  }`);
 
   psm1.append('Finalization', `
   # Finalize initialization of this module
   $instance.Init();
-  Write-Host "Loaded Module '$($instance.Name)'"
-`);
+  Write-Host "Loaded Module '$($instance.Name)'"`);
 
   psm1.trim();
   service.WriteFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
