@@ -4,18 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
+import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
 import { length, values, getPascalIdentifier, removeSequentialDuplicates } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 
 export async function createInlinedPropertiesPlugin(service: Host) {
-  return processCodeModel(inlineProperties, service);
+  return processCodeModel(createVirtuals, service);
 }
 
 const threshold = 24;
 
-function inlineSchema(schema: Schema, stack = new Array<string>()) {
+function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
   // did we already inline this objecct
   if (schema.details.default.inline === 'yes') {
     return true;
@@ -46,7 +47,7 @@ function inlineSchema(schema: Schema, stack = new Array<string>()) {
   // First we should run thru the properties in parent classes and create inliners for each property they have.
   for (const parentSchema of values(schema.allOf)) {
     // make sure that the parent is done.
-    inlineSchema(parentSchema, [...stack, `${schema.details.default.name}`]);
+    createVirtualProperties(parentSchema, [...stack, `${schema.details.default.name}`]);
 
     const parentProperties = parentSchema.details.default.virtualProperties || {
       owned: [],
@@ -60,6 +61,7 @@ function inlineSchema(schema: Schema, stack = new Array<string>()) {
       virtualProperties.inherited.push({
         name: virtualProperty.name,
         property: virtualProperty.property,
+        private: virtualProperty.private,
         nameComponents: virtualProperty.nameComponents,
         accessViaProperty: virtualProperty,
         accessViaMember: virtualProperty.name,
@@ -75,7 +77,7 @@ function inlineSchema(schema: Schema, stack = new Array<string>()) {
     const name = property.details.default.name;
 
     // for each object member, make sure that it's inlined it's children that it can.
-    inlineSchema(property.schema, [...stack, `${schema.details.default.name}::${name}`]);
+    createVirtualProperties(property.schema, [...stack, `${schema.details.default.name}::${name}`]);
 
     // this happens if there is a circular reference.
     // this means that this class should not attempt any inlining of that property at all .
@@ -113,6 +115,7 @@ function inlineSchema(schema: Schema, stack = new Array<string>()) {
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
+          private: inlinedProperty.private,
           nameComponents: [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents])],
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty.name,
@@ -171,7 +174,88 @@ function inlineSchema(schema: Schema, stack = new Array<string>()) {
   return true;
 }
 
-async function inlineProperties(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+function createVirtualParameters(operation: CommandOperation) {
+  const virtualParameters = {
+    operation: new Array<VirtualParameter>(),
+    body: new Array<VirtualParameter>()
+  };
+
+  const dropBodyParameter = operation.details.default.dropBodyParameter ? true : false
+
+  // loop thru the parameters of the command operation, and if there is a body parameter, expand it if necessary.
+  for (const parameter of values(operation.parameters)) {
+    if (parameter.details.default.constantValue) {
+      // this parameter has a constant value -- SKIP IT
+      continue;
+    }
+
+    if (parameter.details.default.fromHost || parameter.details.default.apiversion) {
+      // handled in the generator right now. Not exposed to the user directly.
+      continue;
+    }
+
+    if (dropBodyParameter && parameter.details.default.isBodyParameter) {
+      // the client will make a hidden body parameter for this, and we're expected to fill it.
+      const vps = parameter.schema.details.default.virtualProperties;
+      if (vps) {
+        for (const property of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
+          if (property.private || property.property.schema.readOnly) {
+            // private or readonly properties aren't needed as parameters.
+            continue;
+          }
+          virtualParameters.body.push({
+            name: property.name,
+            description: property.property.details.default.description,
+            required: property.property.details.default.required,
+            schema: property.property.schema,
+            origin: property,
+          });
+        }
+      }
+    } else {
+      virtualParameters.operation.push({
+        name: parameter.details.default.name,
+        description: parameter.details.default.description,
+        required: true, /* if it's present in the variant, it's required  */
+        schema: parameter.schema,
+        origin: parameter,
+      });
+    }
+  }
+
+  // after that, we need to make sure we avoid name collisions.
+  const usedNames = new Set(virtualParameters.operation.map(each => each.name));
+  const collision = new Array<VirtualParameter>();
+
+  for (const each of virtualParameters.body) {
+    if (usedNames.has(each.name)) {
+      collision.push(each);
+    }
+  }
+
+  for (const each of collision) {
+    let depth = -2;
+    let newname = each.name;
+
+    const prop = <VirtualProperty>each.origin;
+    do {
+      newname = getPascalIdentifier(prop.nameComponents.slice(depth, prop.nameComponents.length).join(' '));
+    }
+    while (usedNames.has(newname) && ((depth * -1) < prop.nameComponents.length));
+
+    while (usedNames.has(newname)) {
+      // still bad? 
+      newname = newname + "1";
+    }
+    each.name = newname;
+  }
+
+
+  operation.details.default.virtualParameters = virtualParameters;
+
+}
+
+async function createVirtuals(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
     
@@ -188,8 +272,13 @@ async function inlineProperties(model: codemodel.Model, service: Host): Promise<
         continue;
       }
       // we have an object, let's process it.
-      inlineSchema(schema);
+      createVirtualProperties(schema);
     }
   }
+
+  for (const operation of values(model.commands.operations)) {
+    createVirtualParameters(operation);
+  }
+
   return model;
 }
