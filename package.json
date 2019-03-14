@@ -8,8 +8,8 @@
     "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
   },
   "devDependencies": {
-    "pwsh": "0.2.0",
     "tslint": "^5.12.1",
+    "pwsh": "0.2.0",
     "tslint-microsoft-contrib": "^6.0.0",
     "typescript": "^3.3.3"
   }
