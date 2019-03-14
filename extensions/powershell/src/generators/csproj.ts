@@ -19,6 +19,7 @@ export async function generateCsproj(service: Host, project: Project) {
     service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>${project.moduleVersion}</Version>
     <LangVersion>7.1</LangVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
@@ -28,9 +29,10 @@ export async function generateCsproj(service: Host, project: Project) {
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>${project.binFolder}</OutputPath>
     <PublishDir>$(OutputPath)</PublishDir>
+    <NuspecFile>${project.moduleName}.nuspec</NuspecFile>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
     <!-- Some methods are marked async and don't have an await in them -->
     <NoWarn>1998</NoWarn>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
@@ -50,7 +52,6 @@ ${release}
     <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 
-</Project>
-`, undefined, 'source-file-csharp');
+</Project>`, undefined, 'source-file-csharp');
   }
 }

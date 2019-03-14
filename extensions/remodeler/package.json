@@ -1,7 +1,7 @@
 {
   "name": "@microsoft.azure/autorest.remodeler",
   "version": "1.0.0",
-  "description": "AutoRest remodeler",
+  "description": "AutoRest Remodeler (component)",
   "directories": {
     "doc": "docs"
   },

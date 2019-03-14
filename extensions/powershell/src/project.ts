@@ -27,6 +27,7 @@ export class Project extends codeDomProject {
   public serviceName!: string;
   public moduleName!: string;
   public csproj!: string;
+  public nuspec!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -39,6 +40,8 @@ export class Project extends codeDomProject {
   public moduleFolder!: string;
   public schemaDefinitionResolver: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
+  public moduleVersion!: string;
+  public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
   public projectNamespace: string;
@@ -74,8 +77,12 @@ export class Project extends codeDomProject {
     const model = this.state.model;
     const state = this.state;
 
+    // Values
     const mil = await service.GetValue('max-inlined-parameters');
     this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
+    this.moduleVersion = await service.GetValue('module-version') || '1.0.0';
+    const pro = await service.GetValue('profile');
+    this.profiles = Array.isArray(pro) ? <string[]>pro : [];
 
     // Flags
     this.skipModelCmdlets = !!(await service.GetValue('skip-model-cmdlets'));
@@ -109,6 +116,7 @@ export class Project extends codeDomProject {
     this.psm1 = await service.GetValue('psm1') || `${this.baseFolder}/${this.moduleName}.psm1`;
     this.psm1Custom = await service.GetValue('psm1-custom') || `${this.customFolder}/${this.moduleName}.custom.psm1`;
     this.formatPs1xml = await service.GetValue('format-ps1xml') || `${this.baseFolder}/${this.moduleName}.format.ps1xml`;
+    this.nuspec = await service.GetValue('nuspec') || `${this.baseFolder}/${this.moduleName}.nuspec`;
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));

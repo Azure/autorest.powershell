@@ -15,8 +15,8 @@ export async function generatePsm1Custom(service: Host, project: Project) {
   # Load the private module dll
   $null = Import-Module -PassThru -Name (Join-Path $PSScriptRoot '${dllPath}')
   # Export nothing to clear implicit exports
-  Export-ModuleMember
-`);
+  Export-ModuleMember`);
+
   psm1.append('LoadScripts', `
   # https://stackoverflow.com/a/40969712/294804
   $currentFunctions = Get-ChildItem function:
@@ -26,8 +26,8 @@ export async function generatePsm1Custom(service: Host, project: Project) {
   # Export custom scripts
   if(($scriptFunctions | Measure-Object).Count -gt 0) {
     $scriptFunctions | ForEach-Object { Export-ModuleMember -Function $_.Name }
-  }
-`)
+  }`);
+
   psm1.trim();
   service.WriteFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
 }
