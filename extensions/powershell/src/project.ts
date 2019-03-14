@@ -41,6 +41,7 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
   public moduleVersion!: string;
+  public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
   public projectNamespace: string;
@@ -76,9 +77,12 @@ export class Project extends codeDomProject {
     const model = this.state.model;
     const state = this.state;
 
+    // Values
     const mil = await service.GetValue('max-inlined-parameters');
     this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
     this.moduleVersion = await service.GetValue('module-version') || '1.0.0';
+    const pro = await service.GetValue('profile');
+    this.profiles = Array.isArray(pro) ? <string[]>pro : [];
 
     // Flags
     this.skipModelCmdlets = !!(await service.GetValue('skip-model-cmdlets'));
