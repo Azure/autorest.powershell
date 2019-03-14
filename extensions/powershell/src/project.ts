@@ -145,6 +145,20 @@ export class Project extends codeDomProject {
   }
 
   titleToServiceName(title: string): string {
+    /*
+    Client
+    Management
+    Azure
+    Microsoft
+    APIs
+    API
+    REST
+    (CamelCaser)
+    EndsWith(ServiceResourceProvider)
+    EndsWith(ResourceProvider)
+    EndsWith(DataPlane)
+    EndsWith(Data)
+    */
     return "";
   }
 }
