@@ -5,7 +5,7 @@
 
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
-import { setIndentation, indent, guid } from '@microsoft.azure/codegen';
+import { setIndentation, indent, guid, values } from '@microsoft.azure/codegen';
 import { PsdFile } from '../file-formats/psd-file';
 
 export async function generatePsd1(service: Host, project: Project) {
@@ -45,6 +45,12 @@ export async function generatePsd1(service: Host, project: Project) {
       const projectUri = project.azure ? `https://github.com/Azure/azure-powershell` : '';
       yield indent(`ProjectUri = '${projectUri}'`, 3);
       yield indent(`ReleaseNotes = ''`, 3);
+      if (project.azure && project.profiles.length) {
+        const profiles = values(project.profiles)
+          .linq.select(p => `'${p}'`)
+          .linq.toArray().join(', ');
+        yield indent(`Profiles = ${profiles}`, 3);
+      }
 
       yield indent(`}`, 2);
       yield indent(`}`);
