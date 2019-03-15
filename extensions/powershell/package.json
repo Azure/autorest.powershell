@@ -22,7 +22,8 @@
   },
   "keywords": [
     "AutoRest",
-    "PowerShell"
+    "PowerShell", 
+    "Cmdlet"
   ],
   "author": "",
   "license": "MIT",
