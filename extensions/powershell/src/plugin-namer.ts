@@ -10,8 +10,8 @@ import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
 
 // well-known parameters to singularize
-const parametersToSingularize = new Set<string>([
-  'tags'
+const namesToSingularize = new Set<string>([
+  'Tags'
 ]);
 
 export async function namer(service: Host) {
@@ -32,80 +32,91 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
   if (shouldSanitize || isAzure) {
     for (const operation of values(model.commands.operations)) {
-      for (const parameter of values(operation.parameters)) {
+      const virtualParameters = values(operation.details.csharp.virtualParameters)
+        .linq.selectMany(virtualParameters => virtualParameters)
+        .linq.select(parameter => parameter)
+        .linq.toArray();
+      for (const parameter of virtualParameters) {
         // save previous name as alias
-        parameter.details.csharp.alias = [parameter.details.csharp.name];
-        const otherParametersNames = values(operation.parameters)
-          .linq.select(each => each.details.csharp.name)
-          .linq.where(name => name !== parameter.details.csharp.name)
+        const prevName = parameter.name;
+        const otherParametersNames = values(virtualParameters)
+          .linq.select(each => each.name)
+          .linq.where(name => name !== parameter.name)
           .linq.toArray();
 
         const sanitizedName = removeProhibitedPrefix(
-          parameter.details.csharp.name,
+          parameter.name,
           operation.details.csharp.noun,
           otherParametersNames
         );
 
-        if (parameter.details.csharp.name !== sanitizedName) {
-          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed parameter from ${parameter.details.csharp.name} to ${sanitizedName} from command ${operation.verb}-${operation.details.csharp.noun}` });
+        if (prevName !== sanitizedName) {
+          if (parameter.alias === undefined) {
+            parameter.alias = [];
+          }
 
-          // sanitize name
-          parameter.details.csharp.name = sanitizedName;
+          parameter.alias.push(parameter.name);
+
+          // change name
+          parameter.name = sanitizedName;
+          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
+        } else if (namesToSingularize.has(parameter.name) && isAzure) {
+          if (parameter.alias === undefined) {
+            parameter.alias = [];
+          }
+
+          parameter.alias.push(parameter.name);
+
+          // change name
+          parameter.name = singularize(parameter.name);
+          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename ->  Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
         }
       }
     }
 
     for (const schema of values(model.schemas)) {
-      for (const property of values(schema.properties)) {
+      const virtualProperties = values(schema.details.csharp.virtualProperties)
+        .linq.selectMany(virtualProperties => virtualProperties)
+        .linq.select(property => property)
+        .linq.toArray();
+      for (const property of virtualProperties) {
         // save previous name as alias
-        property.details.csharp.alias = [property.details.csharp.name];
-        const otherPropertiesNames = values(schema.properties)
-          .linq.select(each => each.details.csharp.name)
-          .linq.where(name => name !== property.details.csharp.name)
+        const otherPropertiesNames = values(virtualProperties)
+          .linq.select(each => each.name)
+          .linq.where(name => name !== property.name)
           .linq.toArray();
 
         const sanitizedName = removeProhibitedPrefix(
-          property.details.csharp.name,
+          property.name,
           schema.details.csharp.name,
           otherPropertiesNames
         );
 
-        if (property.details.csharp.name !== sanitizedName) {
-          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed property from ${property.details.csharp.name} to ${sanitizedName} from model ${schema.details.csharp.name}` });
+        if (property.name !== sanitizedName) {
+          // apply alias
+          const prevName = property.name
+          if (property.alias === undefined) {
+            property.alias = [];
+          }
 
-          // sanitize name
-          property.details.csharp.name = sanitizedName;
+          property.alias.push(property.name);
+
+          // change name
+          property.name = sanitizedName;
+          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+        } else if (namesToSingularize.has(property.name) && isAzure) {
+          // apply alias
+          const prevName = property.name
+          if (property.alias === undefined) {
+            property.alias = [];
+          }
+
+          property.alias.push(prevName);
+
+          // change name
+          property.name = singularize(property.name);
+          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure property rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         }
-      }
-    }
-  }
-
-  if (isAzure) {
-    // tweak names for PS
-    for (const operations of values(model.commands.operations)) {
-      for (const parameter of values(operations.parameters)) {
-        const parameterNamesLowerCase = operations.parameters.map(each => each.name.toLowerCase());
-
-        // plural Parameters -> singular, for well-known parameters
-        if (parametersToSingularize.has(parameter.details.csharp.name.toLowerCase())
-          && !parameterNamesLowerCase.includes(singularize(parameter.details.csharp.name.toLowerCase()))) {
-          parameter.details.csharp.name = singularize(parameter.details.csharp.names);
-        }
-
-        // make sure parameters are following naming conventions
-        parameter.details.csharp.name = getPascalIdentifier(parameter.details.csharp.name);
-      }
-    }
-
-    // plural Parameters -> singular, for well-known parameters
-    for (const schema of values(model.schemas)) {
-      for (const property of values(schema.properties)) {
-        if (parametersToSingularize.has(property.details.csharp.name.toLocaleLowerCase())) {
-          property.details.csharp.name = singularize(property.details.csharp.name);
-        }
-
-        // make sure parameters are following naming conventions
-        property.details.csharp.name = getPascalIdentifier(property.details.csharp.name);
       }
     }
   }
