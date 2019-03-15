@@ -17,6 +17,7 @@ export async function createInlinedPropertiesPlugin(service: Host) {
 const threshold = 4;
 
 function inlineSchema(schema: Schema) {
+  /*
   // did we already inline this objecct
   if (schema.details.default.inline === 'yes') {
     return true;
@@ -106,7 +107,7 @@ function inlineSchema(schema: Schema) {
       }
     }
   }
-
+*/
   return true;
 }
 
