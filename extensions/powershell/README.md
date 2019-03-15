@@ -37,6 +37,9 @@ load-priority: 1001
 ``` yaml
 use-namespace-folders: false
 
+api-folder: generated/api
+runtime-folder: generated/runtime
+
 pipeline:
 # --- extension remodeler --- 
 
