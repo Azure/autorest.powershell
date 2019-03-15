@@ -18,42 +18,17 @@ export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-const visited = new Set();
-
-function populateCSdetails(node: any) {
-  if (typeof node === 'object' && node !== null) {
-    if (node.details && !node.details.csharp) {
-      node.details.csharp = linq.clone(node.details.default);
-    } else {
-      for (const member of Object.values(node)) {
-        if (!visited.has(member)) {
-          visited.add(member);
-          populateCSdetails(member);
-        }
-      }
-    }
-  }
-}
-
 async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
   // get the value 
   const isAzure = !!await service.GetValue('azure') || !!await service.GetValue('azure-arm') || false;
   const shouldSanitize = !!await service.GetValue('sanitize-names');
 
-  // make sure csharp has all the model details
-  if (!model.details.csharp) {
-    model.details.csharp = linq.clone(model.details.default);
-  }
-
   // make sure recursively that every details field has csharp
-  for (const member of Object.values(model)) {
-    if (!visited.has(member)) {
-      visited.add(member);
-      populateCSdetails(member);
+  for (const { index, instance } of linq.visitor(model)) {
+    if (index === 'details' && instance.default && !instance.csharp) {
+      instance.csharp = linq.clone(instance.default);
     }
   }
-
-  visited.clear();
 
   if (shouldSanitize || isAzure) {
     for (const operation of values(model.commands.operations)) {

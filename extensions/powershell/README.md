@@ -81,9 +81,12 @@ pipeline:
   cosmetic-modifier:
     input: psnamer  
 
+  add-azure-completers:
+    input: cosmetic-modifier
+
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: cosmetic-modifier # and the generated c# files
+    input: add-azure-completers # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations

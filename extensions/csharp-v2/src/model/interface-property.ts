@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Access, InterfaceProperty } from '@microsoft.azure/codegen-csharp';
-import { Property, Schema } from '../code-model';
+import { Schema } from '../code-model';
 import { State } from '../generator';
-import { ModelInterface } from './interface';
+
 
 export class ModelInterfaceProperty extends InterfaceProperty {
-  constructor(parent: ModelInterface, property: Property, state: State, objectInitializer?: Partial<ModelInterfaceProperty>) {
-    super(property.details.csharp.name, state.project.modelsNamespace.resolveTypeDeclaration(property.schema, property.details.csharp.required, state.path('schema')));
-    if (property.schema.readOnly) {
+  constructor(name: string, schema: Schema, isRequired: boolean, state: State, objectInitializer?: Partial<ModelInterfaceProperty>) {
+    super(name, state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path('schema')));
+    if (schema.readOnly) {
       this.setAccess = Access.Internal;
     }
     this.apply(objectInitializer);

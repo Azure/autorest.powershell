@@ -11,10 +11,10 @@ import {
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
-import { addPowershellParameters } from './model-cmdlet';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, DoNotExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
+import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
@@ -590,6 +590,11 @@ export class CmdletClass extends Class {
   }
 
   private addPowershellParameters(operation: command.CommandOperation) {
+    const vps = operation.details.csharp.virtualParameters || {
+      body: [],
+      operation: [],
+    };
+
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
       const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
@@ -647,12 +652,36 @@ export class CmdletClass extends Class {
           setAccess: Access.Private,
           getAccess: Access.Private,
         }));
+        if (vps) {
+          for (const vParam of vps.body) {
+            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, vParam.required, this.state);
+            const cmdletParameter = new ImplementedProperty(vParam.name, propertyType, {
+              getterStatements: new Statements(`return ${expandedBodyParameter.value}.${vParam.origin.name};`),
+              setterStatements: new Statements(`${expandedBodyParameter.value}.${vParam.origin.name} = value;`)
+            });
+            const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
+            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+            cmdletParameter.description = desc;
 
-        addPowershellParameters(this, <Schema>parameter.schema, expandedBodyParameter);
+            if (propertyType.schema.details.csharp.enum !== undefined) {
+              cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${propertyType.declaration})`] }));
+            }
+
+            this.add(cmdletParameter);
+          }
+        }
+
+        // const vp = parameter.schema.details.csharp.virtualProperties;
+        // addPowershellParameters(this, <Schema>parameter.schema, expandedBodyParameter);
+        // if (vp) {
+        // virtualPropertiesToPowerShellParameters(this, [...vp.owned, ...vp.inherited, ...vp.inlined], expandedBodyParameter);
+        //}
+
         this.bodyParameter = expandedBodyParameter;
         continue;
       }
 
+      /*
       // regular cmdlet parameter
       const regularCmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
         metadata: {
@@ -668,8 +697,43 @@ export class CmdletClass extends Class {
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
+      if (parameter.details.csharp.completer) {
+        // add the completer to this class and tag this parameter with the completer.
+        // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
+      }
+
       if (td.schema.details.csharp.enum !== undefined) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
+      }
+      */
+    }
+
+    if (vps) {
+      for (const vParam of vps.operation) {
+        const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /*parameter.required*/ true, this.state);
+        const origin = <IParameter>vParam.origin;
+        const regularCmdletParameter = this.add(new BackedProperty(vParam.name, td, {
+          metadata: {
+            parameterDefinition: origin.details.csharp.httpParameter
+          },
+          description: vParam.description
+        }));
+
+        const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];
+        if (origin.details.csharp.isBodyParameter) {
+          parameters.push(new LiteralExpression('ValueFromPipeline = true'));
+          this.bodyParameter = regularCmdletParameter;
+        }
+        regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+
+        if (origin.details.csharp.completer) {
+          // add the completer to this class and tag this parameter with the completer.
+          // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
+        }
+
+        if (td.schema.details.csharp.enum !== undefined) {
+          regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
+        }
       }
     }
   }

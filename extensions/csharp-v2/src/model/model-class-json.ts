@@ -66,20 +66,15 @@ export class JsonSerializableClass extends Class {
     }
 
     pushTempVar();
-    for (const property of values(modelClass.schema.properties)) {
-      const prop = modelClass.$<ModelProperty>(property.details.csharp.name);
+    for (const prop of values(modelClass.ownedProperties)) {
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName);
 
-      if (property.details.csharp[HeaderProperty] === HeaderPropertyType.Header) {
-        // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled
-        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeHeaders})`, serializeStatement));
+      if (prop.schema.readOnly) {
+        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
       } else {
-        if (property.schema.readOnly) {
-          serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
-        } else {
-          serializeStatements.add(serializeStatement);
-        }
+        serializeStatements.add(serializeStatement);
       }
+
       deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, prop)));
     }
     popTempVar();

@@ -7,7 +7,7 @@ import { JsonType, processCodeModel, codemodel, components, command, http, getAl
 
 import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService } from '@microsoft.azure/codegen';
 
-import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.csharp-v2';
+import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
@@ -56,10 +56,10 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
   // if this has a body with it, let's add that parameter
   if (body && body.schema) {
-    op.details.csharp.hasBody = true;
+    op.details.default.hasBody = true;
     op.parameters.push(new components.IParameter(bodyParameterName, body.schema, {
       details: {
-        csharp: {
+        default: {
           description: body.schema.details.default.description,
           name: getPascalName(bodyParameterName),
           isBodyParameter: true,
@@ -69,10 +69,10 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
     // let's add a variant where it's expanded out.
     const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
-    opExpanded.details.csharp.dropBodyParameter = true;
+    opExpanded.details.default.dropBodyParameter = true;
     opExpanded.parameters.push(new components.IParameter(`${bodyParameterName}Body`, body.schema, {
       details: {
-        csharp: {
+        default: {
           description: body.schema.details.default.description,
           name: getPascalName(`${bodyParameterName}Body`),
           isBodyParameter: true,
@@ -86,7 +86,7 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
 
 function isNameConflict(model: codemodel.Model, vname: string) {
   for (const each of values(model.commands.operations)) {
-    if (each.details.csharp.name === vname) {
+    if (each.details.default.name === vname) {
       return true;
     }
   }
@@ -99,9 +99,9 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
 
   for (const each of items(operation.responses)) {
     for (const rsp of each.value) {
-      if (rsp.schema && rsp.schema.details && rsp.schema.details.csharp && rsp.schema.details.csharp.apiversion) {
-        console.error(rsp.schema.details.csharp.apiversion);
-        apiversion = rsp.schema.details.csharp.apiversion;
+      if (rsp.schema && rsp.schema.details && rsp.schema.details.default && rsp.schema.details.default.apiversion) {
+        console.error(rsp.schema.details.default.apiversion);
+        apiversion = rsp.schema.details.default.apiversion;
         break;
 
       }
@@ -140,7 +140,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     ...variant,
     details: {
       ...operation.details,
-      csharp: {
+      default: {
         ...operation.details.default,
         noun: variant.noun,
         verb: variant.verb,
@@ -152,7 +152,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
       // make it's own copy of the parameter since after this, 
       // the parameter can be altered for each operation individually.
       const each = clone(httpParameter, false, undefined, undefined, ['schema']);
-      each.details.csharp = {
+      each.details.default = {
         ...each.details.default,
         name: getPascalName(each.details.default.name),
         httpParameter

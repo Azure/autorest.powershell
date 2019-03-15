@@ -178,16 +178,23 @@ export class ModelExtensionsNamespace extends Namespace {
           yield Try(function* () {
             yield `return new ${className}`;
             yield `{`;
+            const props = td.schema.details.csharp.virtualProperties || {
+              owned: [],
+              inlined: [],
+              inherited: []
+            };
+            const all = [...props.owned, ...props.inherited];
             // loop thru members...
-            for (const member of values(td.schema.properties)) {
+            for (const member of values(all)) {
               // if it's a primitive field
-              const memTD = $this.resolver.resolveTypeDeclaration(member.schema, true, state);
+              const memTD = $this.resolver.resolveTypeDeclaration(<Schema>member.property.schema, true, state);
               if (memTD instanceof ObjectImplementation) {
                 // it's an object, try the typeconverter
-                yield `${member.details.csharp.name} = ${member.schema.details.csharp.fullname}TypeConverter.ConvertFrom(sourceValue.${member.details.csharp.name}),`;
+                // todo: fix this! We don't have the proper acess to generate the right code for this at this point.
+                // yield `${member.accessViaMember} = ${member.property.schema.details.csharp.fullname}TypeConverter.ConvertFrom(sourceValue.${member.accessViaMember}),`;
               } else {
                 // just assign it.
-                yield `${member.details.csharp.name} = sourceValue.${member.details.csharp.name},`;
+                // yield `${member.accessViaMember} = sourceValue.${member.accessViaMember},`;
               }
               // otherwise use the field's typeconverter
 
