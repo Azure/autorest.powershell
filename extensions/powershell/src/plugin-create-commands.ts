@@ -312,7 +312,7 @@ function inferCommandNames(operationId: string): Array<CommandVariant> {
         // create two operations -- OPERATION and OPERATION2
         // there should be only three things in the collection -- otherwise, we need a better alg.
         if (operation.length !== 3) {
-          throw new Error(`Unable to perform detection form operation '${group}'/'${method}' -- too many values in operation : '${JSON.stringify(operation)}'`);
+          // throw new Error(`Unable to perform detection form operation '${group}'/'${method}' -- too many values in operation : '${JSON.stringify(operation)}'`);
         }
 
         return [getVariant(operation[0], group, operation.slice(3)), getVariant(operation[2], group, operation.slice(3))];
