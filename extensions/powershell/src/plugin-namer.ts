@@ -26,7 +26,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
   // make sure recursively that every details field has csharp
   for (const { index, instance } of linq.visitor(model)) {
     if (index === 'details' && instance.default && !instance.csharp) {
-      instance.csharp = linq.clone(instance.default);
+      instance.csharp = linq.clone(instance.default, false, undefined, undefined, ['schema']);
     }
   }
 
