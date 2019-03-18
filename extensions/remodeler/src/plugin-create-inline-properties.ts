@@ -65,7 +65,9 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         nameComponents: virtualProperty.nameComponents,
         accessViaProperty: virtualProperty,
         accessViaMember: virtualProperty.name,
-        accessViaSchema: parentSchema
+        accessViaSchema: parentSchema,
+        description: virtualProperty.description,
+        alias: []
       });
     }
   }
@@ -99,7 +101,9 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         propertySchema: schema,
         property,
         nameComponents: [getPascalIdentifier(name)],
-        private: true
+        private: true,
+        description: property.description || '',
+        alias: []
       };
       virtualProperties.owned.push(privateProperty);
 
@@ -119,7 +123,9 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
           nameComponents: [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents])],
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty.name,
-          accessViaSchema: schema
+          accessViaSchema: schema,
+          description: inlinedProperty.description,
+          alias: []
         });
       }
     } else {
@@ -167,6 +173,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       name,
       property,
       nameComponents: [name],
+      description: property.description || '',
+      alias: []
     });
   }
 
@@ -200,7 +208,7 @@ function createVirtualParameters(operation: CommandOperation) {
       if (vps) {
         for (const property of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
           if (property.private || property.property.schema.readOnly) {
-            // private or readonly properties aren't needed as parameters.
+            // private or readonly properties aren't needed as parameters. 
             continue;
           }
           virtualParameters.body.push({
@@ -209,6 +217,8 @@ function createVirtualParameters(operation: CommandOperation) {
             required: property.property.details.default.required,
             schema: property.property.schema,
             origin: property,
+            alias: []
+
           });
         }
       }
@@ -219,6 +229,7 @@ function createVirtualParameters(operation: CommandOperation) {
         required: true, /* if it's present in the variant, it's required  */
         schema: parameter.schema,
         origin: parameter,
+        alias: []
       });
     }
   }
