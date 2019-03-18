@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
@@ -37,5 +38,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             || type == typeof(PSCredential)
             || type.HasImplicitConversion(typeof(string))
             || (type.IsArray && type.GetElementType().IsPsSimple());
+
+        public static string ToPsList(this IEnumerable<string> items) => String.Join(", ", items.Select(i => $"'{i}'"));
     }
 }

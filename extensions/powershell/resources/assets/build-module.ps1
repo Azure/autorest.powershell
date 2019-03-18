@@ -79,17 +79,19 @@ if(Test-Path $customPsm1) {
   Write-Host -ForegroundColor Green "Custom PSM1 Loaded [$customPsm1]"
 }
 
+$excludedCmdlets = 'New-ProxyCmdlet', 'New-TestStub', 'Set-Psd1Export'
+$commands = $commands | Where-Object { $excludedCmdlets -notcontains $_.Name }
 if(($commands | Measure-Object).Count -eq 0) {
   Write-Error 'Unable to locate any cmdlets.'
 }
 
-$commands = $commands | Where-Object { $_.Name -ne 'New-ProxyCmdlet' -and $_.Name -ne 'New-TestStub'}
-
 $null = New-Item -ItemType Directory -Force -Path $exportPath
-New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+$exportedCmdlets = New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
 
 $testPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testPath
 New-TestStub -CommandInfo $commands -OutputFolder $testPath
+
+Set-Psd1Export -CmdletNames $exportedCmdlets -Psd1Path (Join-Path $PSScriptRoot '${$project.psd1}')
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
