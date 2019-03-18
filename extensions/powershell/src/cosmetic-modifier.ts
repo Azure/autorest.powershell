@@ -116,7 +116,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const nounReplacer = directive.set.noun;
       const verbReplacer = directive.set.verb;
       const variantReplacer = directive.set.variant;
-      const shouldHide = !!directive.set.hidden;
       const parameterReplacer = directive.set["parameter-name"];
       const paramDescriptionReplacer = directive.set["parameter-description"];
 
