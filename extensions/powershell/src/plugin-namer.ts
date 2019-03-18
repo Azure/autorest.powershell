@@ -59,7 +59,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           parameter.name = sanitizedName;
-          service.Message({ Channel: Channel.Information, Text: `Sanitized name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
         } else if (namesToSingularize.has(parameter.name) && isAzure) {
           if (parameter.alias === undefined) {
             parameter.alias = [];
