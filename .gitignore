@@ -300,7 +300,8 @@ generated*/*
 petstore*/*
 
 **/generated*/*
-
+extensions/powershell/resources/bin
+extensions/powershell/resources/obj
 
 # Logs
 *.log

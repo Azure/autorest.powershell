@@ -8,7 +8,6 @@ using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "TestStub")]
-    [OutputType(typeof(string))]
     public class NewTestStub : PSCmdlet
     {
         [Parameter(Mandatory = true)]
