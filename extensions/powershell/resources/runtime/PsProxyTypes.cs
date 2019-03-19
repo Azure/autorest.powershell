@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.CodeDom.Compiler;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
@@ -50,7 +51,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
-            IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
+            IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedCodeAttribute>().Any());
             Link = $@"https://docs.microsoft.com/en-us/powershell/module/{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
 
             OutputFolder = outputFolder;

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
+using System.CodeDom.Compiler;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
@@ -40,7 +41,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                 sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
                 var variants = variantGroup.Variants
-                    .Where(v => IncludeGenerated || !v.Attributes.OfType<GeneratedAttribute>().Any())
+                    .Where(v => IncludeGenerated || !v.Attributes.OfType<GeneratedCodeAttribute>().Any())
                     .ToList();
 
                 foreach (var variant in variants)

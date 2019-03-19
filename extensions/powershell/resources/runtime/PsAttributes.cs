@@ -22,12 +22,6 @@ namespace Microsoft.Rest
 
     [AttributeUsage(AttributeTargets.Class)]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
-    public class GeneratedAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Class)]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ProfileAttribute : Attribute
     {
         public string[] Profiles { get; }
