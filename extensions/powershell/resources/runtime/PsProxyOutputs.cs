@@ -224,7 +224,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HelpMessage = helpMessage;
         }
 
-        public override string ToString() => !String.IsNullOrEmpty(HelpMessage) ? $"{Indent}# {HelpMessage}{Environment.NewLine}" : String.Empty;
+        public override string ToString() => !String.IsNullOrEmpty(HelpMessage)
+            ? HelpMessage.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
+            : String.Empty;
     }
 
     internal static class PsProxyOutputExtensions
