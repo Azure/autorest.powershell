@@ -95,7 +95,7 @@ export class Project extends codeDomProject {
 
     // Names
     this.prefix = await service.GetValue('prefix') || this.azure ? 'Az' : ``;
-    this.serviceName = await service.GetValue('service-name') || pascalCase(deconstruct(model.info.title.replace(/client/ig, '')));
+    this.serviceName = await service.GetValue('service-name') || (this.azure ? Project.titleToServiceName(model.info.title) : model.info.title);
     this.moduleName = await service.GetValue('module-name') || !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName;
     this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
 
@@ -144,21 +144,13 @@ export class Project extends codeDomProject {
     return this.state.model;
   }
 
-  titleToServiceName(title: string): string {
-    /*
-    Client
-    Management
-    Azure
-    Microsoft
-    APIs
-    API
-    REST
-    (CamelCaser)
-    EndsWith(ServiceResourceProvider)
-    EndsWith(ResourceProvider)
-    EndsWith(DataPlane)
-    EndsWith(Data)
-    */
-    return "";
+  public static titleToServiceName(title: string): string {
+    const titleCamelCase = pascalCase(deconstruct(title)).trim();
+    const serviceName = titleCamelCase
+      // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+      .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+      // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+      .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+    return serviceName || titleCamelCase;
   }
 }
