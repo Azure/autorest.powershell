@@ -1,0 +1,296 @@
+""Content Moderator API"""
+ACE Provisioning ManagementPartner API
+ADHybridHealthService
+AdvisorManagementClient
+AlertsManagementClient
+API Client
+ApiManagementClient
+ApiManagementClient
+Application Insights Data Plane
+ApplicationClient
+ApplicationInsightsDataClient
+ApplicationInsightsManagementClient
+ApplicationInsightsManagementClient
+AppServiceCertificateOrders API Client
+AppServiceEnvironments API Client
+AppServicePlans API Client
+AuthorizationManagementClient
+AutomationClient
+AutomationManagement
+AutomationManagementClient
+AutoSuggest Client
+Azure Action Groups API
+Azure Activity Log Alerts API
+Azure Addons Resource Provider
+Azure Alerts Management Service Resource Provider
+Azure Bot Service
+Azure Container Registry
+Azure Data Lake Storage REST API
+Azure Data Migration Service Resource Provider
+Azure Database Migration Service Resource Provider
+Azure Dedicated HSM Resource Provider
+Azure Enterprise Knowledge Graph Service
+Azure Log Analytics
+Azure Log Analytics - Operations Management
+Azure Machine Learning Compute Management Client
+Azure Machine Learning Workspaces
+Azure Maps Resource Provider
+Azure Media Services
+Azure Metrics
+Azure Migrate
+Azure ML Commitment Plans Management Client
+Azure ML Web Services Management Client
+Azure Reservation API
+Azure Resource Graph
+Azure SQL Database
+Azure SQL Database Backup
+Azure SQL Database Backup Long Term Retention Policy
+Azure SQL Database capabilities
+Azure SQL Database Datamasking Policies and Rules
+Azure SQL Database disaster recovery configurations
+Azure SQL Database Import/Export spec
+Azure SQL Database replication links
+Azure SQL Database server firewall rules
+Azure SQL Server API spec
+Azure SQL Server Backup Long Term Retention Vault
+Azure Stack Azure Bridge Client
+AzureAnalysisServices
+AzureBridgeAdminClient
+AzureBridgeAdminClient
+AzureDeploymentManager
+AzureStack Azure Bridge Client
+AzureStackManagementClient
+BackupAdminClient
+BackupManagementClient
+BatchAI
+BatchManagement
+BatchService
+BillingClient
+BillingManagementClient
+BlueprintClient
+BlueprintManagementClient
+CdnManagementClient
+CertificateRegistrationProvider API Client
+Certificates API Client
+CognitiveServicesManagementClient
+CommerceAdminClient
+CommerceManagementClient
+Common Definitions
+Common Referenced Parameters File
+Compute Admin Client
+ComputeAdminClient
+ComputeDiskAdminManagementClient
+ComputeManagementClient
+ComputeManagementClient
+ComputeManagementConvenienceClient
+Computer Vision API
+Computer Vision Client
+ConsumptionManagementClient
+ContainerInstanceManagementClient
+ContainerRegistryManagementClient
+ContainerServiceClient
+ContainerServiceManagementClient
+Content Moderator Client
+Cosmos DB
+CostManagementClient
+Custom Image Search Client
+Custom Vision Prediction Client
+Custom Vision Training Client
+CustomerInsightsManagementClient
+Database Threat Detection Policy APIs
+DataBoxEdgeManagementClient
+DataBoxManagementClient
+DataBoxManagementClient
+DatabricksClient
+DataCatalogRestClient
+DataFactoryManagementClient
+DataFactoryManagementClient
+DataLakeAnalyticsAccountManagementClient
+DataLakeAnalyticsCatalogManagementClient
+DataLakeAnalyticsJobManagementClient
+DataLakeStoreAccountManagementClient
+DataLakeStoreAccountManagementClient
+DataLakeStoreFileSystemManagementClient
+DataMigrationManagementClient
+DeletedWebApps API Client
+DeviceServices
+DevSpacesManagement
+DevSpacesManagementClient
+DevTestLabsClient
+Diagnostics API Client
+DiskResourceProviderClient
+DnsManagementClient
+Domain Services Resource Provider
+DomainRegistrationProvider API Client
+Domains API Client
+EdgeGatewayManagementClient
+EngagementFabric
+Entity Search Client
+EventGridClient
+EventGridClient
+EventGridManagementClient
+EventHub2018PreviewManagementClient
+EventHubManagementClient
+ExpressRouteCrossConnection REST APIs
+FabricAdminClient
+FabricAdminClient
+Face Client
+FeatureClient
+FrontDoorManagementClient
+FrontDoorManagementClient
+GalleryAdminClient
+GalleryManagementClient
+GraphRbacManagementClient
+Guest Diagnostic Settings API
+Guest Diagnostic Settings Association API
+GuestConfiguration
+GuestConfigurationClient
+HanaManagementClient
+HanaManagementClient
+HDInsightJobManagementClient
+HDInsightManagementClient
+HDInsightManagementClient
+Image Search Client
+InfrastructureInsightsAdminClient
+InfrastructureInsightsManagementClient
+InstanceMetadataClient
+IntuneResourceManagementClient
+IotCentralClient
+iotDpsClient
+iotHubClient
+IoTSpacesClient
+KeyVaultAdminClient
+KeyVaultClient
+KeyVaultManagementClient
+KustoManagementClient
+KustoManagementClient
+Local Search Client
+LogAnalyticsManagementClient
+LogicAppsManagementClient
+LogicManagementClient
+LUIS Authoring Client
+LUIS Runtime Client
+Machine Learning Compute Management Client
+Machine Learning Workspaces Management Client
+ManagedApplicationClient
+ManagedLabsClient
+ManagedServiceIdentityClient
+Management Groups API
+ManagementLinkClient
+ManagementLockClient
+MariaDBManagementClient
+MariaDBManagementClient
+MarketplaceOrdering.Agreements
+MediaServicesManagementClient
+Microsoft Insights API
+Microsoft NetApp
+Microsoft Storage Sync
+Microsoft.ResourceHealth
+MicrosoftSerialConsoleClient
+ML Team Account Management Client
+MonitorClient
+MonitorClient
+MonitorClient
+MonitorManagementClient
+MySQLManagementClient
+NetworkAdminClient
+NetworkAdminManagementClient
+NetworkManagementClient
+NetworkManagementClient
+NetworkResourceProviderClient
+News Search Client
+NotificationHubsManagementClient
+OperationalInsightsDataClient
+OperationalInsightsManagementClient
+OperationsManagementClient
+PolicyClient
+PolicyClient
+PolicyEventsClient
+PolicyInsightsClient
+PolicyStatesClient
+PolicyTrackedResourcesClient
+PostgreSQLManagementClient
+Power BI Embedded Management Client
+PowerBIDedicated
+PredictionEndpoint
+PrivateDnsManagementClient
+Provider API Client
+QnAMaker Client
+Recommendations API Client
+Recovery Services Backup Client
+RecoveryServicesBackupClient
+RecoveryServicesClient
+RecoveryServicesClient
+RedisManagementClient
+Relay API
+RemediationsClient
+ResourceGraphClient
+ResourceHealthMetadata API Client
+ResourceManagementClient
+RunCommandsClient
+SchedulerManagementClient
+Schema of Azure Container Registry events published to Azure Event Grid
+Schema of Azure EventHub events published to Azure Event Grid
+Schema of Azure IoT Hub events published to Azure Event Grid
+Schema of Azure Maps events published to Azure Event Grid
+Schema of Azure Media Services events published to Azure Event Grid
+Schema of Azure resource events published to Azure Event Grid
+Schema of Azure ServiceBus Messaging events published to Azure Event Grid
+Schema of Azure Storage events published to Azure Event Grid
+SeaBreezeManagementClient
+SearchIndexClient
+SearchManagementClient
+SearchServiceClient
+Security Center
+Security Insights
+Service Fabric Client APIs
+Service Map
+ServiceBusManagementClient
+ServiceFabricManagementClient
+ServiceFabricManagementClient
+ServiceFabricMeshManagementClient
+SharedImageGalleryServiceClient
+SignalRManagementClient
+SiteRecoveryManagementClient
+Spell Check Client
+SqlManagementClient
+SqlManagementClient
+SqlVirtualMachineManagementClient
+SqlVirtualMachineManagementClient
+StorageAdminClient
+StorageImportExport
+StorageManagement
+StorageManagementClient
+StorSimple8000SeriesManagementClient
+StorSimpleManagementClient
+Stream Analytics Management Client
+StreamAnalyticsManagementClient
+SubscriptionClient
+SubscriptionClient
+SubscriptionClient
+SubscriptionClient
+SubscriptionDefinitionsClient
+SubscriptionsAdminClient
+SubscriptionsManagementClient
+Text Analytics Client
+TimeSeriesInsightsClient
+TopLevelDomains API Client
+TrafficManagerManagementClient
+TrafficManagerManagementClient
+TrainingApi
+Update Management API
+UpdateAdminClient
+UpdateAdminClient
+UsageManagementClient
+Video Search Client
+VirtualWANAsAServiceManagementClient
+Visual Search Client
+Visual Studio Projects Resource Provider Client
+Visual Studio Resource Provider Client
+VM Insights Onboarding API
+Web Search Client
+WebApplicationFirewallManagement
+WebApps API Client
+WebSite Management Client
+WebSiteManagementClient
+Workload Monitor API

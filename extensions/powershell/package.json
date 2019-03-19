@@ -22,7 +22,7 @@
   },
   "keywords": [
     "AutoRest",
-    "PowerShell", 
+    "PowerShell",
     "Cmdlet"
   ],
   "author": "",
@@ -52,6 +52,7 @@
     "@microsoft.azure/linq": "^2.1.0",
     "@microsoft.azure/autorest.csharp-v2": "^1.0.0",
     "@microsoft.azure/tasks": "^2.1.0",
+    "@microsoft.azure/async-io": "^2.1.0",
     "source-map-support": "0.5.9",
     "xmlbuilder": "10.1.1"
   }
