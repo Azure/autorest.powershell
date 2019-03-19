@@ -49,7 +49,6 @@ ${release}
   <ItemGroup>
     <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="4.3.0" />
   </ItemGroup>
 
 </Project>`, undefined, 'source-file-csharp');
