@@ -45,6 +45,7 @@ export class Project extends codeDomProject {
   public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
+  public nounPrefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
   public serviceNamespace!: ServiceNamespace;
@@ -97,6 +98,7 @@ export class Project extends codeDomProject {
     // Names
     this.prefix = await service.GetValue('prefix') || this.azure ? 'Az' : ``;
     this.serviceName = await service.GetValue('service-name') || (this.azure ? Project.titleToServiceName(model.info.title) : model.info.title);
+    this.nounPrefix = await service.GetValue('noun-prefix') || this.azure ? this.serviceName : ``;
     this.moduleName = await service.GetValue('module-name') || !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName;
     this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
 
@@ -159,8 +161,8 @@ export class Project extends codeDomProject {
     if (!this.azure) {
       return noun;
     }
-    const pattern = deconstruct(this.serviceName).join('|');
+    const pattern = deconstruct(this.nounPrefix).join('|');
     const regex = new RegExp(pattern, 'g');
-    return `${this.serviceName}${noun.replace(regex, '')}`;
+    return `${this.nounPrefix}${noun.replace(regex, '')}`;
   }
 }
