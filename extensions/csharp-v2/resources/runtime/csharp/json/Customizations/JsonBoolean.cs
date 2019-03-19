@@ -1,5 +1,6 @@
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonBoolean
     {
         public static JsonBoolean Create(bool? value) => value is bool b ? new JsonBoolean(b) : null;
@@ -7,6 +8,4 @@ namespace Carbon.Json
 
         internal override object ToValue() => Value;
     }
-
-
 }

@@ -2,6 +2,7 @@
 
 namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ParserException : Exception
     {
         public ParserException(string message)

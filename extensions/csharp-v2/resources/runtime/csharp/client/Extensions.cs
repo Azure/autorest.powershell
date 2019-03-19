@@ -1,5 +1,6 @@
 namespace Microsoft.Rest.ClientRuntime
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static partial class Extensions
     {
         internal static bool If<T>(T input, out T output)

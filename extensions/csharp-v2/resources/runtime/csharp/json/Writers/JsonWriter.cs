@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonWriter
     {
         const string indentation = "  ";  // 2 spaces
@@ -24,19 +25,19 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Array    : WriteArray((IEnumerable<JsonNode>)node); break;
-                case JsonType.Object   : WriteObject((JsonObject)node); break;
+                case JsonType.Array: WriteArray((IEnumerable<JsonNode>)node); break;
+                case JsonType.Object: WriteObject((JsonObject)node); break;
 
                 // Primitives
-                case JsonType.Binary   : WriteBinary((XBinary)node);    break;
-                case JsonType.Boolean  : WriteBoolean((bool)node);      break;
-                case JsonType.Date     : WriteDate((JsonDate)node);     break;
-                case JsonType.Null     : WriteNull();                   break;
-                case JsonType.Number   : WriteNumber((JsonNumber)node); break;
-                case JsonType.String   : WriteString(node);             break;
+                case JsonType.Binary: WriteBinary((XBinary)node); break;
+                case JsonType.Boolean: WriteBoolean((bool)node); break;
+                case JsonType.Date: WriteDate((JsonDate)node); break;
+                case JsonType.Null: WriteNull(); break;
+                case JsonType.Number: WriteNumber((JsonNumber)node); break;
+                case JsonType.String: WriteString(node); break;
             }
         }
-        
+
         public void WriteArray(IEnumerable<JsonNode> array)
         {
             currentLevel++;
@@ -174,8 +175,8 @@ namespace Carbon.Json
             {
                 writer.Write('"');
                 writer.Write(date.ToIsoString());
-            writer.Write('"');
-        }
+                writer.Write('"');
+            }
         }
 
         public void WriteNull()
@@ -218,4 +219,4 @@ namespace Carbon.Json
 }
 
 
-    // TODO: Replace with System.Text.Json when available
+// TODO: Replace with System.Text.Json when available

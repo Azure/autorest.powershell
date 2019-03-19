@@ -1,5 +1,6 @@
 ﻿namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public enum TokenKind
     {
         LeftBrace,      // {	Object start
@@ -21,6 +22,7 @@
         Eof = 50
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public /* readonly */ struct JsonToken
     {
         public static readonly JsonToken BraceOpen = new JsonToken(TokenKind.LeftBrace, "{");

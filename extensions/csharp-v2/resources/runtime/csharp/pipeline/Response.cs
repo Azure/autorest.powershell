@@ -3,6 +3,8 @@ namespace Microsoft.Rest.ClientRuntime
 {
     using System;
     using System.Threading.Tasks;
+
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class Response : EventData
     {
         public Response() : base()
@@ -10,6 +12,7 @@ namespace Microsoft.Rest.ClientRuntime
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class Response<T> : Response
     {
         private Func<Task<T>> _resultDelegate;

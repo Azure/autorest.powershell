@@ -11,11 +11,13 @@ namespace Microsoft.Rest.ClientRuntime
     /// <summary>
     /// The interface for sending an HTTP request across the wire.
     /// </summary>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface ISendAsync
     {
         Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class SendAsyncTerminalFactory : ISendAsyncTerminalFactory, ISendAsync
     {
         SendAsync implementation;
@@ -26,6 +28,7 @@ namespace Microsoft.Rest.ClientRuntime
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => implementation(request, callback);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class SendAsyncFactory : ISendAsyncFactory
     {
         public class Sender : ISendAsync
@@ -42,6 +45,7 @@ namespace Microsoft.Rest.ClientRuntime
 
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class HttpClientFactory : ISendAsyncTerminalFactory, ISendAsync
     {
         HttpClient client;
@@ -54,16 +58,19 @@ namespace Microsoft.Rest.ClientRuntime
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, callback.Token);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface ISendAsyncFactory
     {
         ISendAsync Create(ISendAsync next);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface ISendAsyncTerminalFactory
     {
         ISendAsync Create();
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class HttpPipeline : ISendAsync
     {
         private ISendAsync pipeline;
@@ -212,6 +219,7 @@ namespace Microsoft.Rest.ClientRuntime
         public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback) => Pipeline.SendAsync(request, callback);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static partial class Extensions
     {
         internal static HttpRequestMessage CloneAndDispose(this HttpRequestMessage original, System.Uri requestUri = null, System.Net.Http.HttpMethod method = null)

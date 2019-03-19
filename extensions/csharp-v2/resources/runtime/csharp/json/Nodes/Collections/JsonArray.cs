@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public abstract partial class JsonArray : JsonNode, IEnumerable<JsonNode>
     {
         public override JsonType Type => JsonType.Array;

@@ -6,6 +6,7 @@ namespace Carbon.Json
 {
     using Parser;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public abstract partial class JsonNode
     {
         public abstract JsonType Type { get; }
@@ -19,22 +20,22 @@ namespace Carbon.Json
         }
 
         #region Type Helpers
-        
-        public bool IsArray  => Type == JsonType.Array;
 
-        public bool IsDate   => Type == JsonType.Date;
+        public bool IsArray => Type == JsonType.Array;
+
+        public bool IsDate => Type == JsonType.Date;
 
         public bool IsObject => Type == JsonType.Object;
 
         public bool IsNumber => Type == JsonType.Number;
 
-        public bool IsNull   => Type == JsonType.Null;
+        public bool IsNull => Type == JsonType.Null;
 
         #endregion
 
         public void WriteTo(TextWriter textWriter, bool pretty = true)
         {
-            var writer = new JsonWriter(textWriter, pretty); 
+            var writer = new JsonWriter(textWriter, pretty);
 
             writer.WriteNode(this);
         }
@@ -127,8 +128,8 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Date   : return ((JsonDate)node).ToDateTimeOffset();
-                case JsonType.String : return JsonDate.Parse(node.ToString()).ToDateTimeOffset();
+                case JsonType.Date: return ((JsonDate)node).ToDateTimeOffset();
+                case JsonType.String: return JsonDate.Parse(node.ToString()).ToDateTimeOffset();
 
                 case JsonType.Number:
                     var num = (JsonNumber)node;
@@ -151,8 +152,8 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Number : return (JsonNumber)node;
-                case JsonType.String : return float.Parse(node.ToString());
+                case JsonType.Number: return (JsonNumber)node;
+                case JsonType.String: return float.Parse(node.ToString());
             }
 
             throw new ConversionException(node, typeof(float));
@@ -162,8 +163,8 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Number : return (JsonNumber)node;
-                case JsonType.String : return double.Parse(node.ToString());
+                case JsonType.Number: return (JsonNumber)node;
+                case JsonType.String: return double.Parse(node.ToString());
             }
 
             throw new ConversionException(node, typeof(double));
@@ -176,7 +177,7 @@ namespace Carbon.Json
                 case JsonType.Number: return (JsonNumber)node;
                 case JsonType.String: return decimal.Parse(node.ToString());
             }
-            
+
             throw new ConversionException(node, typeof(decimal));
         }
 
@@ -187,8 +188,8 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Number : return (JsonNumber)node;
-                case JsonType.String : return short.Parse(node.ToString());
+                case JsonType.Number: return (JsonNumber)node;
+                case JsonType.String: return short.Parse(node.ToString());
             }
 
             throw new ConversionException(node, typeof(short));
@@ -198,8 +199,8 @@ namespace Carbon.Json
         {
             switch (node.Type)
             {
-                case JsonType.Number : return (JsonNumber)node;
-                case JsonType.String : return int.Parse(node.ToString());
+                case JsonType.Number: return (JsonNumber)node;
+                case JsonType.String: return int.Parse(node.ToString());
             }
 
             throw new ConversionException(node, typeof(int));

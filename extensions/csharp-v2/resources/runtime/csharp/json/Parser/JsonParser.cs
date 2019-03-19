@@ -4,6 +4,7 @@ using System.IO;
 
 namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonParser : IDisposable
     {
         private readonly TokenReader reader;
@@ -37,8 +38,8 @@ namespace Carbon.Json.Parser
 
             switch (reader.Current.Kind)
             {
-                case TokenKind.LeftBrace   : return ReadObject(); // {
-                case TokenKind.LeftBracket : return ReadArray();  // [
+                case TokenKind.LeftBrace: return ReadObject(); // {
+                case TokenKind.LeftBracket: return ReadArray();  // [
 
                 default: throw new ParserException($"Expected '{{' or '['. Was {reader.Current}.");
             }
@@ -56,7 +57,7 @@ namespace Carbon.Json.Parser
                 switch (reader.Current.Kind)
                 {
                     case TokenKind.LeftBracket: return ReadArray();
-                    case TokenKind.LeftBrace   : return ReadObject();
+                    case TokenKind.LeftBrace: return ReadObject();
 
                     default: throw new ParserException($"Unexpected token reading field value. Was {reader.Current}.");
                 }
@@ -71,10 +72,10 @@ namespace Carbon.Json.Parser
 
             switch (literal.Kind)
             {
-                case TokenKind.Boolean  : return JsonBoolean.Parse(literal.Value);
-                case TokenKind.Null     : return XNull.Instance;
-                case TokenKind.Number   : return new JsonNumber(literal.Value);
-                case TokenKind.String   : return new JsonString(literal.Value);
+                case TokenKind.Boolean: return JsonBoolean.Parse(literal.Value);
+                case TokenKind.Null: return XNull.Instance;
+                case TokenKind.Number: return new JsonNumber(literal.Value);
+                case TokenKind.String: return new JsonString(literal.Value);
 
                 default: throw new ParserException($"Unexpected token reading literal. Was {literal}.");
             }

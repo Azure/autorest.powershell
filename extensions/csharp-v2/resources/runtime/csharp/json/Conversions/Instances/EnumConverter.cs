@@ -2,6 +2,7 @@
 
 namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal sealed class EnumConverter : IJsonConverter
     {
         private readonly Type type;

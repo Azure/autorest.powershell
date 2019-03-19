@@ -2,6 +2,7 @@
 
 namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal sealed class BinaryConverter : JsonConverter<byte[]>
     {
         public override JsonNode ToJson(byte[] value) => new XBinary(value);
@@ -10,8 +11,8 @@ namespace Carbon.Json.Converters
         {
             switch (node.Type)
             {
-                case JsonType.String : return Convert.FromBase64String(node.ToString());    // Base64 Encoded
-                case JsonType.Binary : return ((XBinary)node).Value;
+                case JsonType.String: return Convert.FromBase64String(node.ToString());    // Base64 Encoded
+                case JsonType.Binary: return ((XBinary)node).Value;
             }
 
             throw new ConversionException(node, typeof(byte[]));

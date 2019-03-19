@@ -3,6 +3,7 @@ using System.Text;
 
 namespace Carbon.Data
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public struct IsoDate
     {
         public int Year { get; set; }           // 0-3000
@@ -90,15 +91,16 @@ namespace Carbon.Data
 
         public static IsoDate FromDateTimeOffset(DateTimeOffset date)
         {
-            return new IsoDate {
-                Year   = date.Year,
-                Month  = date.Month,
-                Day    = date.Day,
-                Hour   = date.Hour,
+            return new IsoDate
+            {
+                Year = date.Year,
+                Month = date.Month,
+                Day = date.Day,
+                Hour = date.Hour,
                 Minute = date.Minute,
                 Second = date.Second,
                 Offset = date.Offset,
-                Kind   = date.Offset == TimeSpan.Zero ? DateTimeKind.Utc : DateTimeKind.Unspecified
+                Kind = date.Offset == TimeSpan.Zero ? DateTimeKind.Utc : DateTimeKind.Unspecified
             };
         }
 
@@ -162,9 +164,9 @@ namespace Carbon.Data
 
                     switch (i)
                     {
-                        case 0: builder.Hour        = int.Parse(part); break;
-                        case 1: builder.Minute      = int.Parse(part); break;
-                        case 2: builder.Second      = int.Parse(part); break;
+                        case 0: builder.Hour = int.Parse(part); break;
+                        case 1: builder.Minute = int.Parse(part); break;
+                        case 2: builder.Second = int.Parse(part); break;
                         case 3: builder.Millisecond = double.Parse("0." + part) * 1000; break;
                     }
                 }

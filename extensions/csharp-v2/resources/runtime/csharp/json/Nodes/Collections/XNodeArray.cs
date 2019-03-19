@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed partial class XNodeArray : JsonArray, ICollection<JsonNode>
     {
         private readonly List<JsonNode> items;

@@ -4,10 +4,13 @@ using System;
 
 namespace Microsoft.Rest.ClientRuntime
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IJsonSerializable
     {
         JsonNode ToJson(JsonObject container = null, SerializationMode serializationMode = SerializationMode.None);
     }
+
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class JsonSerializable
     {
         /// <summary>
@@ -181,7 +184,8 @@ namespace Microsoft.Rest.ClientRuntime
 
         internal static T FromJson<T>(JsonObject json, T container) where T : System.Collections.IDictionary
         {
-            if( null == json) {
+            if (null == json)
+            {
                 return container;
             }
 
@@ -211,9 +215,12 @@ namespace Microsoft.Rest.ClientRuntime
                 {
                     // Hmm. 
                     // One Last try to add it as a string representation?
-                    try {
+                    try
+                    {
                         container.Add(key, value.ToString());
-                    } catch {
+                    }
+                    catch
+                    {
                         // nope? Well, we tried. 
                     }
                 }

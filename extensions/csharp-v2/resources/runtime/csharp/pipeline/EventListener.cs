@@ -12,6 +12,7 @@ namespace Microsoft.Rest.ClientRuntime
     using GetEventData = System.Func<EventData>;
     using static Microsoft.Rest.ClientRuntime.Extensions;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IValidates
     {
         Task Validate(Microsoft.Rest.ClientRuntime.IEventListener listener);
@@ -24,6 +25,7 @@ namespace Microsoft.Rest.ClientRuntime
     /// The interface is designed to be as minimal as possible, allow for quick peeking of the event type (<c>id</c>) 
     /// and the cancellation status and provides a delegate for retrieving the event details themselves.
     /// </remarks>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IEventListener
     {
         Task Signal(string id, CancellationToken token, GetEventData createMessage);
@@ -31,6 +33,7 @@ namespace Microsoft.Rest.ClientRuntime
         System.Action Cancel { get; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static partial class Extensions
     {
         public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);
@@ -165,6 +168,7 @@ namespace Microsoft.Rest.ClientRuntime
     /// An Implementation of the IEventListener that supports subscribing to events and dispatching them
     /// (used for manually using the lowlevel interface)
     /// </summary>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class EventListener : CancellationTokenSource, IEnumerable<KeyValuePair<string, Event>>, IEventListener
     {
         private Dictionary<string, Event> calls = new Dictionary<string, Event>();

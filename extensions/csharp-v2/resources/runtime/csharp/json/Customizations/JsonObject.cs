@@ -3,10 +3,11 @@ namespace Carbon.Json
     using System;
     using System.Collections.Generic;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonObject
     {
-        internal override object ToValue() =>  Microsoft.Rest.ClientRuntime.JsonSerializable.FromJson(this,new System.Collections.Generic.Dictionary<string,object>());
-        
+        internal override object ToValue() => Microsoft.Rest.ClientRuntime.JsonSerializable.FromJson(this, new System.Collections.Generic.Dictionary<string, object>());
+
         public void SafeAdd(string name, Func<JsonNode> valueFn)
         {
             if (valueFn != null)

@@ -3,6 +3,7 @@ namespace Carbon.Json
     using System;
     using System.Linq;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class XNodeArray
     {
         public static XNodeArray Create<T>(T[] source, Func<T, JsonNode> selector)

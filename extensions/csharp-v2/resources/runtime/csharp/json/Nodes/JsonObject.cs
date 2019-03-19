@@ -5,6 +5,7 @@ using System.IO;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonObject : JsonNode, IDictionary<string, JsonNode>
     {
         private readonly Dictionary<string, JsonNode> items;

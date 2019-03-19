@@ -2,6 +2,7 @@
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed partial class JsonNumber : JsonNode
     {
         private readonly string value;

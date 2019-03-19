@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class JsonConverterFactory
     {
         private static readonly Dictionary<Type, IJsonConverter> converters = new Dictionary<Type, IJsonConverter>();

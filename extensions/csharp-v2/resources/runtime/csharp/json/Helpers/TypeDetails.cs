@@ -9,6 +9,7 @@ namespace Carbon.Json
     using Converters;
     using Internal.Extensions;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class TypeDetails
     {
         private readonly Type info;
@@ -49,7 +50,7 @@ namespace Carbon.Json
         private static TypeDetails Create(Type type)
         {
             var isGenericList = !type.IsPrimitive && type.ImplementsOpenGenericInterface(typeof(IList<>));
-            var isList        = !type.IsPrimitive && (isGenericList || typeof(IList).IsAssignableFrom(type));
+            var isList = !type.IsPrimitive && (isGenericList || typeof(IList).IsAssignableFrom(type));
 
             var isNullable = type.IsNullable();
 
@@ -96,16 +97,17 @@ namespace Carbon.Json
                 converter = new StringLikeConverter(nonNullType);
             }
 
-            return new TypeDetails(nonNullType) {
-                NonNullType   = nonNullType,
-                DefaultValue  = type.IsValueType ? Activator.CreateInstance(type) : null,
-                IsNullable    = isNullable,
-                IsList        = isList,
-                IsStringLike  = isStringLike,
-                ElementType   = elementType,
+            return new TypeDetails(nonNullType)
+            {
+                NonNullType = nonNullType,
+                DefaultValue = type.IsValueType ? Activator.CreateInstance(type) : null,
+                IsNullable = isNullable,
+                IsList = isList,
+                IsStringLike = isStringLike,
+                ElementType = elementType,
                 JsonConverter = converter
             };
-        }      
+        }
 
         #endregion
     }

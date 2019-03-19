@@ -4,6 +4,7 @@ namespace Carbon.Json
     using System.Globalization;
     using System.Linq;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonString
     {
         public static string DateFormat = "yyyy-MM-dd";

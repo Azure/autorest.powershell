@@ -4,6 +4,7 @@ using System.IO;
 
 namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal sealed class SourceReader : IDisposable
     {
         private readonly TextReader source;
@@ -13,7 +14,7 @@ namespace Carbon.Json.Parser
         private readonly SourceLocation location = new SourceLocation();
 
         private bool isEof = false;
-        
+
         public SourceReader(TextReader textReader)
         {
             this.source = textReader ?? throw new ArgumentNullException(nameof(textReader));
@@ -104,8 +105,8 @@ namespace Carbon.Json.Parser
             hexCode[3] = current; Next();
 
             return Convert.ToChar(int.Parse(
-                s       : new string(hexCode),
-                style   : NumberStyles.HexNumber,
+                s: new string(hexCode),
+                style: NumberStyles.HexNumber,
                 provider: NumberFormatInfo.InvariantInfo
             ));
         }

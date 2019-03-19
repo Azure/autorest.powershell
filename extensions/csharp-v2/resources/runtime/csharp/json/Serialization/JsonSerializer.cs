@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonSerializer
     {
         private int depth = 0;
@@ -337,7 +338,7 @@ namespace Carbon.Json
 
         private XList<T> CreateList<T>(object value) => new XList<T>((IList<T>)value);
 
-        private XImmutableArray<T> CreateArray<T>(T[] array) =>  new XImmutableArray<T>(array);
+        private XImmutableArray<T> CreateArray<T>(T[] array) => new XImmutableArray<T>(array);
 
         #endregion
 

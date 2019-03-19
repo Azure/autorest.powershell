@@ -5,6 +5,7 @@ using System.Reflection;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonModel
     {
         private Dictionary<string, JsonMember> map;
@@ -61,10 +62,10 @@ namespace Carbon.Json
             {
                 if (member.IsStatic) continue;
 
-                if (member.IsDefined(typeof(IgnoreDataMemberAttribute))) continue; 
+                if (member.IsDefined(typeof(IgnoreDataMemberAttribute))) continue;
 
                 members.Add(new JsonMember(member, i));
-                
+
                 i++;
             }
 
@@ -73,7 +74,7 @@ namespace Carbon.Json
                 if (member.IsDefined(typeof(IgnoreDataMemberAttribute))) continue;
 
                 members.Add(new JsonMember(member, i));
-                
+
                 i++;
             }
 

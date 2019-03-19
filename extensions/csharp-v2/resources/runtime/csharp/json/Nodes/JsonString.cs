@@ -2,6 +2,7 @@
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed partial class JsonString : JsonNode, IEquatable<JsonString>
     {
         private readonly string value;
