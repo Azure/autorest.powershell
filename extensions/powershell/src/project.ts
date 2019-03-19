@@ -14,6 +14,7 @@ import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
 
 export class Project extends codeDomProject {
+  public autorestVersion!: string;
   public azure!: boolean;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
@@ -76,6 +77,9 @@ export class Project extends codeDomProject {
     const service = this.state.service;
     const model = this.state.model;
     const state = this.state;
+
+    // used for GeneratedCodeAttribute
+    this.autorestVersion = await service.GetValue('autorest-version');
 
     // Values
     const mil = await service.GetValue('max-inlined-parameters');

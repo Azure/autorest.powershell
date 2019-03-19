@@ -734,8 +734,9 @@ export class CmdletClass extends Class {
       passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
     }
 
-    this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))
-    this.add(new Attribute(GeneratedAttribute));
+    this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${this.state.project.autorestVersion}"`] }));
+
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
       const profileNames = Object.keys(operation.extensions['x-ms-metadata'].profiles);
       // wrap profile names

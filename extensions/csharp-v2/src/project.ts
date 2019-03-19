@@ -20,6 +20,7 @@ export class Project extends codeDomProject {
   public defaultPipeline: boolean = true;
   public emitSignals: boolean = true;
   public projectNamespace: string;
+  public autorestVersion!: string;
   public overrides: Dictionary<string>;
 
   constructor(protected state: State) {
@@ -55,6 +56,9 @@ export class Project extends codeDomProject {
       this.xmlSerialization = true;
       this.defaultPipeline = false;
     }
+
+    // used for GeneratedCodeAttribute
+    this.autorestVersion = await service.GetValue('autorest-version');
 
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
 

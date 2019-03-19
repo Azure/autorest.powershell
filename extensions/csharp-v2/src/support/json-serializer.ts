@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Modifier } from '@microsoft.azure/codegen-csharp';
+import { Modifier, Attribute } from '@microsoft.azure/codegen-csharp';
 import { Class } from '@microsoft.azure/codegen-csharp';
 import { Method } from '@microsoft.azure/codegen-csharp';
 
@@ -13,12 +13,14 @@ import { Namespace } from '@microsoft.azure/codegen-csharp';
 import { Parameter } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export class JsonSerializerClass extends Class {
 
   constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<JsonSerializerClass>) {
     super(namespace, 'JsonSerialization');
     this.apply(objectInitializer);
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     this.partial = true;
     this.isStatic = true;

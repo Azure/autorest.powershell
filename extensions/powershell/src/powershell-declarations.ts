@@ -39,7 +39,7 @@ export const AsyncJob = new ClassType(ClientRuntime, `PowerShell.AsyncJob`);
 
 export const DescriptionAttribute: TypeDeclaration = new ClassType(rest, `Description`);
 export const DoNotExportAttribute: TypeDeclaration = new ClassType(rest, `DoNotExport`);
-export const GeneratedAttribute: TypeDeclaration = new ClassType(rest, `Generated`);
+export const GeneratedAttribute: TypeDeclaration = new ClassType(`System.CodeDom.Compiler`, `GeneratedCodeAttribute`);
 export const ProfileAttribute: TypeDeclaration = new ClassType(rest, `Profile`);
 export const CategoryAttribute: TypeDeclaration = new ClassType(rest, `Category`);
 export const ParameterCategory: TypeDeclaration = new ClassType(rest, `ParameterCategory`);

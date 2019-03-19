@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import { values } from '@microsoft.azure/codegen';
 import { EnumDetails } from '@microsoft.azure/autorest.codemodel-v3';
-import { If, Parameter, Method, Namespace, System, Struct } from '@microsoft.azure/codegen-csharp';
+import { If, Parameter, Method, Namespace, System, Struct, Attribute } from '@microsoft.azure/codegen-csharp';
 import { State } from '../state';
-import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from '../powershell-declarations';
+import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, GeneratedAttribute } from '../powershell-declarations';
 
 export class SupportNamespace extends Namespace {
   public get outputFolder(): string {
@@ -31,6 +31,8 @@ export class SupportNamespace extends Namespace {
         partial: true,
         description: enumInfo.description || `Argument completer implementation for ${enumInfo.details.name}.`
       })
+      enumClass.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
+
       const commandName = new Parameter("commandName", System.String, { description: "The name of the command that needs argument completion." });
       const parameterName = new Parameter("parameterName", System.String, { description: "The name of the parameter that needs argument completion." });
       const wordToComplete = new Parameter("wordToComplete", System.String, { description: "The (possibly empty) word being completed." });

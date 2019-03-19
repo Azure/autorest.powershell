@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { KnownMediaType, HeaderProperty, HeaderPropertyType } from "@microsoft.azure/autorest.codemodel-v3"
 import { items, values, EOL, } from '@microsoft.azure/codegen';
-import { Access, Modifier } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, Attribute } from '@microsoft.azure/codegen-csharp';
 import { Class } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { IsDeclaration, toExpression } from '@microsoft.azure/codegen-csharp';
@@ -19,6 +19,7 @@ import { Statements } from '@microsoft.azure/codegen-csharp';
 import { Switch } from '@microsoft.azure/codegen-csharp';
 import { Ternery } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 import { dotnet } from '@microsoft.azure/codegen-csharp';
 import { ModelClass } from './model-class';

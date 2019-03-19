@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { items } from '@microsoft.azure/codegen';
-import { Class, Namespace } from '@microsoft.azure/codegen-csharp';
+import { Class, Namespace, Attribute } from '@microsoft.azure/codegen-csharp';
 
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export class ApiClass extends Class {
 
@@ -15,6 +16,7 @@ export class ApiClass extends Class {
   constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<ApiClass>) {
     super(namespace, state.model.details.csharp.name);
     this.apply(objectInitializer);
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     // add basics
     // this.sender = this.add(new Property("Sender", ClientRuntime.ISendAsync));

@@ -6,7 +6,7 @@ import { items, values, Dictionary } from '@microsoft.azure/codegen';
 import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return } from '@microsoft.azure/codegen-csharp';
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from '../state';
-import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
+import { PSObject, PSTypeConverter, TypeConverterAttribute, GeneratedAttribute } from '../powershell-declarations';
 
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
@@ -59,6 +59,8 @@ export class ModelExtensionsNamespace extends Namespace {
           partial: true,
           description: td.schema.details.csharp.description
         });
+
+        modelInterface.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
 
         // 1. A partial class with the type converter attribute
@@ -66,7 +68,10 @@ export class ModelExtensionsNamespace extends Namespace {
           partial: true,
           description: td.schema.details.csharp.description
         });
+
+        model.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
         model.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
+
         model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
           static: Modifier.Static,
           parameters: [new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this model.' })],
@@ -86,6 +91,9 @@ export class ModelExtensionsNamespace extends Namespace {
         const typeConverter = new Class(ns, converterClass, PSTypeConverter, {
           description: `A PowerShell PSTypeConverter to support converting to an instance of <see cref="${className}" />`,
         });
+
+        typeConverter.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
+
         typeConverter.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
           override: Modifier.Override,
           parameters: [

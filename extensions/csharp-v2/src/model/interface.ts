@@ -6,7 +6,7 @@
 import { items, } from '@microsoft.azure/codegen';
 import { KnownMediaType } from "@microsoft.azure/autorest.codemodel-v3"
 
-import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Attribute } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
