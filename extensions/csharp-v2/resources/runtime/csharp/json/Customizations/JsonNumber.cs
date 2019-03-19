@@ -2,7 +2,6 @@ namespace Carbon.Json
 {
     using System;
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonNumber
     {
         public static readonly DateTime EpochDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

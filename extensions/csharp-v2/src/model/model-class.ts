@@ -246,12 +246,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     const hasNonHeaderProperties = values(this.properties).linq.any(p => !(<ModelProperty>p).IsHeaderProperty);
 
     if (this.state.project.jsonSerialization) {
-      this.jsonSerializer = new JsonSerializableClass(this, state);
+      this.jsonSerializer = new JsonSerializableClass(this);
     }
 
     if (hasNonHeaderProperties) {
       if (this.state.project.xmlSerialization) {
-        this.xmlSerializer = new XmlSerializableClass(this, state);
+        this.xmlSerializer = new XmlSerializableClass(this);
       }
       // if (this.state.project.jsonSerialization) {
       // this.jsonSerializer = new JsonSerializableClass(this);

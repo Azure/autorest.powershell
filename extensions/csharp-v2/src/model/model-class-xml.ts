@@ -22,13 +22,12 @@ export class XmlSerializableClass extends Class {
   private bfj!: Method;
   private afj!: Method;
 
-  constructor(protected modelClass: ModelClass, state: State, objectInitializer?: Partial<XmlSerializableClass>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<XmlSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
 
     this.addPartialMethods();
-    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     // set up the declaration for the toXml method.
     const container = new Parameter('container', System.Xml.Linq.XElement, { description: `The <see cref="${System.Xml.Linq.XElement}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });

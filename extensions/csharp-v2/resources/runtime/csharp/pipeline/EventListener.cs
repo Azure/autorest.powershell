@@ -33,7 +33,6 @@ namespace Microsoft.Rest.ClientRuntime
         System.Action Cancel { get; }
     }
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static partial class Extensions
     {
         public static Task Signal(this IEventListener instance, string id, CancellationToken token, Func<EventData> createMessage) => instance.Signal(id, token, createMessage);

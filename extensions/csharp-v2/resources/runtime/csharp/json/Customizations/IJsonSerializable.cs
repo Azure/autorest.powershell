@@ -4,13 +4,11 @@ using System;
 
 namespace Microsoft.Rest.ClientRuntime
 {
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IJsonSerializable
     {
         JsonNode ToJson(JsonObject container = null, SerializationMode serializationMode = SerializationMode.None);
     }
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class JsonSerializable
     {
         /// <summary>

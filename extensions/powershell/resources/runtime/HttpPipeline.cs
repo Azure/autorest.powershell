@@ -39,7 +39,6 @@ namespace Microsoft.Rest.ClientRuntime
     /// <summary>
     /// This is a necessary extension to the SendAsyncFactory to support the 'generic' delegate format.
     /// </summary>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class SendAsyncFactory
     {
         /// <summary>
@@ -63,7 +62,6 @@ namespace Microsoft.Rest.ClientRuntime
                 (req, token, cancel, listenerDelegate) => next.SendAsync(req, listener));
     }
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class HttpPipeline : ISendAsync
     {
         public HttpPipeline Append(SendAsyncStepDelegate item)

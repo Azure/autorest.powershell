@@ -3,7 +3,6 @@ namespace Carbon.Json
     using System;
     using System.Collections.Generic;
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class JsonNode
     {
         /// <summary>
