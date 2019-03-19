@@ -14,6 +14,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelInterfaceProperty } from './interface-property';
 import { ModelClass } from './model-class';
 import { TypeContainer } from '@microsoft.azure/codegen-csharp/dist/type-container';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {

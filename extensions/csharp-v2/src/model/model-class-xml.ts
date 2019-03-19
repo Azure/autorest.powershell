@@ -6,13 +6,15 @@
 import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codemodel-v3';
 import { EOL, items, values } from '@microsoft.azure/codegen';
 
-import { Access, Class, Constructor, dotnet, Expression, ExpressionOrLiteral, Field, If, InitializedField, IsDeclaration, Method, Modifier, Namespace, Not, OneOrMoreStatements, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery, TypeDeclaration, valueOf, Variable } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, dotnet, Expression, ExpressionOrLiteral, Field, If, InitializedField, IsDeclaration, Method, Modifier, Namespace, Not, OneOrMoreStatements, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery, TypeDeclaration, valueOf, Variable, Attribute } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 import { ModelClass } from './model-class';
 
 import { ModelProperty } from './property';
+import { State } from '../generator';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export class XmlSerializableClass extends Class {
   private btj!: Method;
@@ -20,12 +22,13 @@ export class XmlSerializableClass extends Class {
   private bfj!: Method;
   private afj!: Method;
 
-  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<XmlSerializableClass>) {
+  constructor(protected modelClass: ModelClass, state: State, objectInitializer?: Partial<XmlSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
 
     this.addPartialMethods();
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     // set up the declaration for the toXml method.
     const container = new Parameter('container', System.Xml.Linq.XElement, { description: `The <see cref="${System.Xml.Linq.XElement}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });

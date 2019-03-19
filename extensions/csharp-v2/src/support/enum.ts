@@ -75,6 +75,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
         genericParameters: [`${schemaWithFeatures.schema.details.csharp.enum.name}`]
       })],
     });
+
     this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
     this.description = schemaWithFeatures.schema.details.csharp.description;
     this.implementation = schemaWithFeatures;

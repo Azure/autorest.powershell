@@ -5,7 +5,7 @@
 import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, Attribute } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -16,6 +16,7 @@ import { JsonSerializableClass } from './model-class-json';
 import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
 import { ProxyProperty } from './proxy-property';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export interface BackingField {
   field: Field;
@@ -92,8 +93,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.state = state;
 
     this.apply(objectInitializer);
-    this.partial = true;
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
+    this.partial = true;
     // create an interface for this model class
 
 
@@ -244,12 +246,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     const hasNonHeaderProperties = values(this.properties).linq.any(p => !(<ModelProperty>p).IsHeaderProperty);
 
     if (this.state.project.jsonSerialization) {
-      this.jsonSerializer = new JsonSerializableClass(this);
+      this.jsonSerializer = new JsonSerializableClass(this, state);
     }
 
     if (hasNonHeaderProperties) {
       if (this.state.project.xmlSerialization) {
-        this.xmlSerializer = new XmlSerializableClass(this);
+        this.xmlSerializer = new XmlSerializableClass(this, state);
       }
       // if (this.state.project.jsonSerialization) {
       // this.jsonSerializer = new JsonSerializableClass(this);

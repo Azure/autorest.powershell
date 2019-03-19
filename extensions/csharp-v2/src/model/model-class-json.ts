@@ -27,6 +27,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
+import { State } from "../generator";
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -34,12 +35,13 @@ export class JsonSerializableClass extends Class {
   private bfj!: Method;
   private afj!: Method;
 
-  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<JsonSerializableClass>) {
+  constructor(protected modelClass: ModelClass, state: State, objectInitializer?: Partial<JsonSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
     this.description = modelClass.description;
     this.addPartialMethods();
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     // set up the declaration for the toJson method.
     const container = new Parameter('container', ClientRuntime.JsonObject, { description: `The <see cref="${ClientRuntime.JsonObject}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
