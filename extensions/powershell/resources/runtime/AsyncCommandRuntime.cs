@@ -4,6 +4,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     using System.Management.Automation.Host;
     using System.Threading;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class AsyncCommandRuntime : System.Management.Automation.ICommandRuntime2, System.IDisposable
     {
         private ICommandRuntime2 originalCommandRuntime;
@@ -755,7 +756,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
             }
             while (!ProcessRecordAsyncTask.IsCompleted);
-            if( ProcessRecordAsyncTask.IsFaulted ) {
+            if (ProcessRecordAsyncTask.IsFaulted)
+            {
                 // don't unwrap a Aggregate Exception -- we'll lose the stack trace of the actual exception.
                 // if(  ProcessRecordAsyncTask.Exception is System.AggregateException aggregate ) {
                 //   throw aggregate.InnerException;
@@ -766,7 +768,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public void Dispose()
         {
-            if( cmdlet != null ) {
+            if (cmdlet != null)
+            {
                 cmdlet.CommandRuntime = this.originalCommandRuntime;
                 cmdlet = null;
             }

@@ -9,6 +9,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "ProxyCmdlet")]
     [OutputType(typeof(string[]))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class NewProxyCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]

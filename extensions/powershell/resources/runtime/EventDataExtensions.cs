@@ -3,7 +3,7 @@ namespace Microsoft.Rest.ClientRuntime
 {
     using System;
 
-    [System.ComponentModel.TypeConverter(typeof(EventDataConverter))]
+
     /// <summary>
     /// PowerShell-specific data on top of the llc# EventData
     /// </summary>
@@ -12,14 +12,18 @@ namespace Microsoft.Rest.ClientRuntime
     /// Obviously, this code would need to be duplcated on both modules.
     /// This is preferable to sharing a common library, as versioning makes that problematic.
     /// </remarks>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
+    [System.ComponentModel.TypeConverter(typeof(EventDataConverter))]
     public partial class EventData : EventArgs
     {
     }
+
 
     /// <summary>
     /// A PowerShell PSTypeConverter to adapt an <c>EventData</c> object that has been passed.
     /// Usually used between modules.
     /// </summary>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class EventDataConverter : System.Management.Automation.PSTypeConverter
     {
         public override bool CanConvertTo(object sourceValue, Type destinationType) => false;

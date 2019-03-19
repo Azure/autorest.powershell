@@ -8,6 +8,7 @@ using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "TestStub")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class NewTestStub : PSCmdlet
     {
         [Parameter(Mandatory = true)]
