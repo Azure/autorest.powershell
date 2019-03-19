@@ -25,7 +25,7 @@ function populateCSdetails(node: any) {
     if (node.details && !node.details.csharp) {
       node.details.csharp = linq.clone(node.details.default);
     } else {
-      for (const member of Object.values(node)) {
+      for (const member of values(node)) {
         if (!visited.has(member)) {
           visited.add(member);
           populateCSdetails(member);
@@ -46,7 +46,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
   }
 
   // make sure recursively that every details field has csharp
-  for (const member of Object.values(model)) {
+  for (const member of values(<any>model)) {
     if (!visited.has(member)) {
       visited.add(member);
       populateCSdetails(member);

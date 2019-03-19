@@ -12,6 +12,7 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
+import { isNullOrUndefined } from 'util';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -152,5 +153,14 @@ export class Project extends codeDomProject {
       // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
       .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
     return serviceName || titleCamelCase;
+  }
+
+  public getCmdletNoun(noun: string) {
+    if (!this.azure) {
+      return noun;
+    }
+    const pattern = deconstruct(this.serviceName).join('|');
+    const regex = new RegExp(pattern, 'g');
+    return `${this.serviceName}${noun.replace(regex, '')}`;
   }
 }

@@ -1,7 +1,7 @@
 import { suite, test, slow, timeout, skip, only } from "mocha-typescript";
 import * as assert from "assert";
 import * as aio from "@microsoft.azure/async-io"
-import { Project } from '../src/project'
+import { Project } from '../project'
 import { values } from '@microsoft.azure/codegen';
 
 @suite class TestServiceName {
@@ -14,12 +14,12 @@ import { values } from '@microsoft.azure/codegen';
     assert(serviceNamesFile != null);
 
     const serviceNames = TestServiceName.normalizeEndlines(titlesFile, tl => `${tl} => ${Project.titleToServiceName(tl)}`);
-    // console.log(serviceNames);
+    //console.log(serviceNames);
     const normalizedServiceNamesFile = TestServiceName.normalizeEndlines(serviceNamesFile, tl => tl);
     assert.strictEqual(serviceNames, normalizedServiceNamesFile);
   }
 
-  static normalizeEndlines(text: string, selector: (each: string) => string) {
+  private static normalizeEndlines(text: string, selector: (each: string) => string) {
     return values(text.split(/\r\n|\r|\n/))
       .linq.select(tl => `${selector(tl)}\r\n`)
       .linq.toArray().join('');

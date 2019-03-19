@@ -6,6 +6,7 @@
 import { processCodeModel, codemodel } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { values } from '@microsoft.azure/codegen';
 
 export async function process(service: Host): Promise<void> {
   return processCodeModel(createCommandOperations, service);
@@ -13,7 +14,7 @@ export async function process(service: Host): Promise<void> {
 
 /** attempts to create command operations for each http operation */
 async function createCommandOperations(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-  for (const operation of Object.values(model.http.operations)) {
+  for (const operation of values(model.http.operations)) {
     // not implemented here.
   }
   return model;

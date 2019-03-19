@@ -5,11 +5,9 @@ AdvisorManagementClient
 AlertsManagementClient
 API Client
 ApiManagementClient
-ApiManagementClient
 Application Insights Data Plane
 ApplicationClient
 ApplicationInsightsDataClient
-ApplicationInsightsManagementClient
 ApplicationInsightsManagementClient
 AppServiceCertificateOrders API Client
 AppServiceEnvironments API Client
@@ -56,7 +54,6 @@ Azure SQL Server Backup Long Term Retention Vault
 Azure Stack Azure Bridge Client
 AzureAnalysisServices
 AzureBridgeAdminClient
-AzureBridgeAdminClient
 AzureDeploymentManager
 AzureStack Azure Bridge Client
 AzureStackManagementClient
@@ -81,7 +78,6 @@ Compute Admin Client
 ComputeAdminClient
 ComputeDiskAdminManagementClient
 ComputeManagementClient
-ComputeManagementClient
 ComputeManagementConvenienceClient
 Computer Vision API
 Computer Vision Client
@@ -100,15 +96,12 @@ CustomerInsightsManagementClient
 Database Threat Detection Policy APIs
 DataBoxEdgeManagementClient
 DataBoxManagementClient
-DataBoxManagementClient
 DatabricksClient
 DataCatalogRestClient
-DataFactoryManagementClient
 DataFactoryManagementClient
 DataLakeAnalyticsAccountManagementClient
 DataLakeAnalyticsCatalogManagementClient
 DataLakeAnalyticsJobManagementClient
-DataLakeStoreAccountManagementClient
 DataLakeStoreAccountManagementClient
 DataLakeStoreFileSystemManagementClient
 DataMigrationManagementClient
@@ -127,16 +120,13 @@ EdgeGatewayManagementClient
 EngagementFabric
 Entity Search Client
 EventGridClient
-EventGridClient
 EventGridManagementClient
 EventHub2018PreviewManagementClient
 EventHubManagementClient
 ExpressRouteCrossConnection REST APIs
 FabricAdminClient
-FabricAdminClient
 Face Client
 FeatureClient
-FrontDoorManagementClient
 FrontDoorManagementClient
 GalleryAdminClient
 GalleryManagementClient
@@ -146,9 +136,7 @@ Guest Diagnostic Settings Association API
 GuestConfiguration
 GuestConfigurationClient
 HanaManagementClient
-HanaManagementClient
 HDInsightJobManagementClient
-HDInsightManagementClient
 HDInsightManagementClient
 Image Search Client
 InfrastructureInsightsAdminClient
@@ -162,7 +150,6 @@ IoTSpacesClient
 KeyVaultAdminClient
 KeyVaultClient
 KeyVaultManagementClient
-KustoManagementClient
 KustoManagementClient
 Local Search Client
 LogAnalyticsManagementClient
@@ -179,7 +166,6 @@ Management Groups API
 ManagementLinkClient
 ManagementLockClient
 MariaDBManagementClient
-MariaDBManagementClient
 MarketplaceOrdering.Agreements
 MediaServicesManagementClient
 Microsoft Insights API
@@ -189,13 +175,10 @@ Microsoft.ResourceHealth
 MicrosoftSerialConsoleClient
 ML Team Account Management Client
 MonitorClient
-MonitorClient
-MonitorClient
 MonitorManagementClient
 MySQLManagementClient
 NetworkAdminClient
 NetworkAdminManagementClient
-NetworkManagementClient
 NetworkManagementClient
 NetworkResourceProviderClient
 News Search Client
@@ -203,7 +186,6 @@ NotificationHubsManagementClient
 OperationalInsightsDataClient
 OperationalInsightsManagementClient
 OperationsManagementClient
-PolicyClient
 PolicyClient
 PolicyEventsClient
 PolicyInsightsClient
@@ -219,7 +201,6 @@ QnAMaker Client
 Recommendations API Client
 Recovery Services Backup Client
 RecoveryServicesBackupClient
-RecoveryServicesClient
 RecoveryServicesClient
 RedisManagementClient
 Relay API
@@ -247,15 +228,12 @@ Service Fabric Client APIs
 Service Map
 ServiceBusManagementClient
 ServiceFabricManagementClient
-ServiceFabricManagementClient
 ServiceFabricMeshManagementClient
 SharedImageGalleryServiceClient
 SignalRManagementClient
 SiteRecoveryManagementClient
 Spell Check Client
 SqlManagementClient
-SqlManagementClient
-SqlVirtualMachineManagementClient
 SqlVirtualMachineManagementClient
 StorageAdminClient
 StorageImportExport
@@ -266,9 +244,6 @@ StorSimpleManagementClient
 Stream Analytics Management Client
 StreamAnalyticsManagementClient
 SubscriptionClient
-SubscriptionClient
-SubscriptionClient
-SubscriptionClient
 SubscriptionDefinitionsClient
 SubscriptionsAdminClient
 SubscriptionsManagementClient
@@ -276,10 +251,8 @@ Text Analytics Client
 TimeSeriesInsightsClient
 TopLevelDomains API Client
 TrafficManagerManagementClient
-TrafficManagerManagementClient
 TrainingApi
 Update Management API
-UpdateAdminClient
 UpdateAdminClient
 UsageManagementClient
 Video Search Client
