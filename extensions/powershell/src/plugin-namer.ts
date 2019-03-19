@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, values, removeProhibitedPrefix, getPascalIdentifier } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
@@ -32,10 +32,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
   if (shouldSanitize || isAzure) {
     for (const operation of values(model.commands.operations)) {
-      const virtualParameters = values(operation.details.csharp.virtualParameters)
-        .linq.selectMany(virtualParameters => virtualParameters)
-        .linq.select(parameter => parameter)
-        .linq.toArray();
+      const virtualParameters = [...allVirtualParameters(operation.details.csharp.virtualParameters)]
       for (const parameter of virtualParameters) {
         // save previous name as alias
         const prevName = parameter.name;
@@ -75,10 +72,8 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
 
     for (const schema of values(model.schemas)) {
-      const virtualProperties = values(schema.details.csharp.virtualProperties)
-        .linq.selectMany(virtualProperties => virtualProperties)
-        .linq.select(property => property)
-        .linq.toArray();
+      const virtualProperties = [...allVirtualProperties(schema.details.csharp.virtualProperties)];
+
       for (const property of virtualProperties) {
         // save previous name as alias
         const otherPropertiesNames = values(virtualProperties)

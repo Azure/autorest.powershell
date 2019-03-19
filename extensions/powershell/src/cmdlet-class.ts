@@ -10,7 +10,7 @@ import {
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, DoNotExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
@@ -24,7 +24,7 @@ export class CmdletClass extends Class {
   private invocationInfo!: ImplementedProperty;
   correlationId!: InitializedField;
   processRecordId!: Field;
-
+  private readonly thingsToSerialize: Array<{ parameter: Parameter, td: EnhancedTypeDeclaration }>;
   private bodyParameter?: Expression;
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
@@ -40,6 +40,7 @@ export class CmdletClass extends Class {
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
     // basic stuff
     this.addCommonStuff();
+    this.thingsToSerialize = new Array();
 
     this.description = escapeString(operation.details.csharp.description);
     const $this = this;
@@ -511,8 +512,10 @@ export class CmdletClass extends Class {
     }));
     deserializerConstructor.add(function* () {
       yield `// deserialize the contents`;
-      for (const parameter of values(operation.parameters)) {
-        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
+      /*
+      // for (const parameter of values(operation.parameters)) {
+      for (const each of $this.thingsToSerialize) {
+        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true , $this.state);
 
         // skip parameters that are handled elsewise.
         if (parameter.details.csharp.constantValue || parameter.details.csharp.apiversion) {
@@ -526,6 +529,7 @@ export class CmdletClass extends Class {
         yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
 
       }
+      */
     });
   }
 

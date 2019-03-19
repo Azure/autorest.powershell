@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, Schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
@@ -144,9 +144,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (parameterRegex) {
         const parameters = values(operations)
-          .linq.select(operation => values(operation.details.csharp.virtualParameters))
-          .linq.selectMany(parameters => parameters)
-          .linq.selectMany(parameter => parameter)
+          .linq.selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
           .linq.where(parameter => !!`${parameter.name}`.match(parameterRegex))
           .linq.toArray();
         for (const parameter of parameters) {
@@ -214,9 +212,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (propertyNameRegex) {
         const properties = values(models)
-          .linq.select(model => values(model.details.csharp.virtualProperties))
-          .linq.selectMany(properties => properties)
-          .linq.selectMany(property => property)
+          .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
           .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
           .linq.toArray();
         for (const property of properties) {

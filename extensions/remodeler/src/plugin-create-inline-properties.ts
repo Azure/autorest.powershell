@@ -4,14 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
-import { length, values, getPascalIdentifier, removeSequentialDuplicates } from '@microsoft.azure/codegen';
+import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
+import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 
 export async function createInlinedPropertiesPlugin(service: Host) {
   return processCodeModel(createVirtuals, service);
+}
+
+function getNameOptions(typeName: string, components: Array<string>) {
+  const result = new Set<string>();
+
+  // add a variant for each incrementally inclusive parent naming scheme.
+  for (let i = 0; i < components.length; i++) {
+    const subset = pascalCase([...removeSequentialDuplicates(components.slice(-1 * i, components.length))]);
+    result.add(subset);
+  }
+
+  // add a second-to-last-ditch option as <typename>.<name>
+  result.add(pascalCase([...removeSequentialDuplicates([...fixLeadingNumber(deconstruct(typeName)), ...deconstruct(components.last)])]));
+  return [...result.values()];
 }
 
 const threshold = 24;
@@ -63,6 +77,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         property: virtualProperty.property,
         private: virtualProperty.private,
         nameComponents: virtualProperty.nameComponents,
+        nameOptions: virtualProperty.nameOptions,
         accessViaProperty: virtualProperty,
         accessViaMember: virtualProperty.name,
         accessViaSchema: parentSchema,
@@ -86,21 +101,21 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
     const canInline = property.schema.details.default.inline === 'yes';
 
     // the target has properties that we can inline
-    const childCount = length(property.schema.details.default.virtualProperties);
+    const virtualChildProperties = property.schema.details.default.virtualProperties || {
+      owned: [],
+      inherited: [],
+      inlined: [],
+    }
+    const childCount = length(virtualChildProperties.owned) + length(virtualChildProperties.inherited) + length(virtualChildProperties.inlined);
     if (canInline && property.schema.required && (childCount < threshold || name === 'properties')) {
       // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
-      const virtualChildProperties = property.schema.details.default.virtualProperties || {
-        owned: [],
-        inherited: [],
-        inlined: [],
-      };
-
       // create a private property for the inlined ones to use.
       const privateProperty = {
         name: getPascalIdentifier(name),
         propertySchema: schema,
         property,
         nameComponents: [getPascalIdentifier(name)],
+        nameOptions: getNameOptions(schema.details.default.name, [name]),
         private: true,
         description: property.description || '',
         alias: []
@@ -116,11 +131,13 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
         const proposedName = getPascalIdentifier(inlinedProperty.name);
+        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents])];
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
           private: inlinedProperty.private,
-          nameComponents: [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents])],
+          nameComponents: components,
+          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, [name]),
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty.name,
           accessViaSchema: schema,
@@ -134,35 +151,6 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
     }
   }
 
-  // resolve name collisions.
-
-  let depth = -2;
-  let tryAgain = false;
-
-  const allProps = [...virtualProperties.owned, ...virtualProperties.inherited, ...virtualProperties.inlined];
-  // tslint:disable-next-line: no-constant-condition
-  do {
-    tryAgain = false;
-    const inlined = new Map<string, number>();
-    for (const each of allProps) {
-      // track number of instances of a given name.
-      inlined.set(each.name, (inlined.get(each.name) || 0) + 1);
-    }
-
-    for (const each of virtualProperties.inlined) {
-      const ct = inlined.get(each.name);
-      if (ct && ct > 1) {
-        const newname = getPascalIdentifier(each.nameComponents.slice(depth, each.nameComponents.length).join(' '));
-        if (newname !== each.name) {
-          each.name = newname;
-          tryAgain = true;
-        }
-      }
-    }
-    depth--;
-  } while (tryAgain);
-
-
   for (const property of nonObjectProperties) {
     const name = getPascalIdentifier(<string>property.details.default.name);
     // this is not something that has properties,
@@ -173,11 +161,28 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       name,
       property,
       nameComponents: [name],
+      nameOptions: [name],
       description: property.description || '',
       alias: []
     });
   }
 
+  // resolve name collisions.
+  const allProps = [...virtualProperties.owned, ...virtualProperties.inherited, ...virtualProperties.inlined];
+  const inlined = new Map<string, number>();
+
+  for (const each of allProps) {
+    // track number of instances of a given name.
+    inlined.set(each.name, (inlined.get(each.name) || 0) + 1);
+  }
+
+  const usedNames = new Set(inlined.keys());
+  for (const each of virtualProperties.inlined) {
+    const ct = inlined.get(each.name);
+    if (ct && ct > 1) {
+      each.name = selectName(each.nameOptions, usedNames);
+    }
+  }
   schema.details.default.inline = 'yes';
   return true;
 }
@@ -214,6 +219,7 @@ function createVirtualParameters(operation: CommandOperation) {
           virtualParameters.body.push({
             name: property.name,
             description: property.property.details.default.description,
+            nameOptions: property.nameOptions,
             required: property.property.details.default.required,
             schema: property.property.schema,
             origin: property,
@@ -225,6 +231,7 @@ function createVirtualParameters(operation: CommandOperation) {
     } else {
       virtualParameters.operation.push({
         name: parameter.details.default.name,
+        nameOptions: [parameter.details.default.name],
         description: parameter.details.default.description,
         required: true, /* if it's present in the variant, it's required  */
         schema: parameter.schema,
@@ -234,36 +241,10 @@ function createVirtualParameters(operation: CommandOperation) {
     }
   }
 
-  // after that, we need to make sure we avoid name collisions.
-  const usedNames = new Set(virtualParameters.operation.map(each => each.name));
-  const collision = new Array<VirtualParameter>();
-
-  for (const each of virtualParameters.body) {
-    if (usedNames.has(each.name)) {
-      collision.push(each);
-    }
-  }
-
-  for (const each of collision) {
-    let depth = -2;
-    let newname = each.name;
-
-    const prop = <VirtualProperty>each.origin;
-    do {
-      newname = getPascalIdentifier(prop.nameComponents.slice(depth, prop.nameComponents.length).join(' '));
-    }
-    while (usedNames.has(newname) && ((depth * -1) < prop.nameComponents.length));
-
-    while (usedNames.has(newname)) {
-      // still bad? 
-      newname = newname + "1";
-    }
-    each.name = newname;
-  }
+  resolveParameterNames([], virtualParameters);
 
 
   operation.details.default.virtualParameters = virtualParameters;
-
 }
 
 async function createVirtuals(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
