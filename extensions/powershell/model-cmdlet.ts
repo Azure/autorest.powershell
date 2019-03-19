@@ -23,12 +23,13 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const name = `New${state.project.prefix}${schema.details.csharp.name}Object_${schema.details.csharp.apiname}`;
+    const variantName = `${state.project.prefix}${state.project.getCmdletNoun(schema.details.csharp.name)}Object_${schema.details.csharp.apiname}`;
+    const name = `New${variantName}`;
     super(namespace, name, PSCmdlet);
     this.state = state;
     this.description = `Cmdlet to create an in-memory instance of the <see cref="${schema.details.csharp.name}" /> object.`;
     this.apply(objectInitializer);
-    addClassAttributes(this, schema, name);
+    addClassAttributes(this, schema, variantName);
 
     const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, this.state);
     const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
@@ -41,10 +42,10 @@ export class ModelCmdlet extends Class {
 
 }
 
-function addClassAttributes($class: WithState, schema: Schema, name: string) {
+function addClassAttributes($class: WithState, schema: Schema, variantName: string) {
 
   const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${$class.state.project.prefix}${schema.details.csharp.name || ''}Object_${schema.details.csharp.apiname}`)] }));
+  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${variantName}`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
   $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
   $class.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${$class.state.project.autorestVersion}"`] }));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Encodings.Web;
+using System.Web;
 
 namespace Carbon.Json
 {
@@ -145,9 +145,7 @@ namespace Carbon.Json
         public void WriteFieldName(string fieldName)
         {
             writer.Write('"');
-
-            JavaScriptEncoder.Default.Encode(writer, fieldName);
-
+            writer.Write(HttpUtility.JavaScriptStringEncode(fieldName));
             writer.Write('"');
         }
 
@@ -208,7 +206,7 @@ namespace Carbon.Json
             {
                 writer.Write('"');
 
-                JavaScriptEncoder.Default.Encode(writer, text);
+                writer.Write(HttpUtility.JavaScriptStringEncode(text));
 
                 writer.Write('"');
             }
