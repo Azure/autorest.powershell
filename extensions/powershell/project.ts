@@ -12,7 +12,7 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
-import { isNullOrUndefined } from 'util';
+import { Channel } from '@microsoft.azure/autorest-extension-base';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -163,6 +163,8 @@ export class Project extends codeDomProject {
     }
     const pattern = deconstruct(this.nounPrefix).join('|');
     const regex = new RegExp(pattern, 'g');
-    return `${this.nounPrefix}${noun.replace(regex, '')}`;
+    const nounCombined = `${this.nounPrefix}${noun.replace(regex, '')}`;
+    this.state.service.Message({ Channel: Channel.Verbose, Text: `Changed cmdlet noun from ${noun} to ${nounCombined}.` });
+    return nounCombined;
   }
 }
