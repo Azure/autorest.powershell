@@ -53,6 +53,9 @@ export class Project extends codeDomProject {
   public cmdlets!: CmdletNamespace;
   public modelCmdlets!: ModelCmdletNamespace;
   public modelsExtensions!: ModelExtensionsNamespace;
+  public accountsVersionMinimum!: string;
+  public platyPsVersionMinimum!: string;
+  public dependencyModuleFolder!: string;
 
   constructor(protected state: State) {
     super();
@@ -89,6 +92,8 @@ export class Project extends codeDomProject {
     this.moduleVersion = await service.GetValue('module-version') || '1.0.0';
     const pro = await service.GetValue('profile');
     this.profiles = Array.isArray(pro) ? <string[]>pro : [];
+    this.accountsVersionMinimum = '1.4.0';
+    this.platyPsVersionMinimum = '0.13.0';
 
     // Flags
     const smc = await service.GetValue('skip-model-cmdlets');
@@ -116,6 +121,7 @@ export class Project extends codeDomProject {
     this.objFolder = await service.GetValue('obj-folder') || `${this.baseFolder}/obj`;
     this.exportsFolder = await service.GetValue('exports-folder') || `${this.baseFolder}/exports`;
     this.docsFolder = await service.GetValue('docs-folder') || `${this.baseFolder}/docs`;
+    this.dependencyModuleFolder = await service.GetValue('dependency-module-folder') || `${this.moduleFolder}/modules`;
 
     // File paths
     this.csproj = await service.GetValue('csproj') || `${this.baseFolder}/${this.moduleName}.csproj`;

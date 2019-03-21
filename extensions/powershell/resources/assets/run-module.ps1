@@ -1,4 +1,4 @@
-param([Switch]$Isolated, [Switch]$Code)
+param([switch]$Isolated, [switch]$Code)
 $ErrorActionPreference = 'Stop'
 
 if(-not $Isolated) {
@@ -8,16 +8,16 @@ if(-not $Isolated) {
   return
 }
 
-$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts
+
+$localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
+if(Test-Path -Path $localModulesPath) {
+  $env:PSModulePath = "$localModulesPath$([IO.Path]::PathSeparator)$env:PSModulePath"
+}
+
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '${$project.psd1}')
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
-
-function Prompt {
-  Write-Host -NoNewline -ForegroundColor Green "PS $(Get-Location)"
-  Write-Host -NoNewline -ForegroundColor Gray ' ['
-  Write-Host -NoNewline -ForegroundColor White -BackgroundColor DarkCyan $moduleName
-  ']> '
-}
 
 if($Code) {
   $vscodeDirectory = New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot '.vscode')
@@ -28,3 +28,10 @@ if($Code) {
 }
 
 Import-Module -Name $modulePath
+
+function Prompt {
+  Write-Host -NoNewline -ForegroundColor Green "PS $(Get-Location)"
+  Write-Host -NoNewline -ForegroundColor Gray ' ['
+  Write-Host -NoNewline -ForegroundColor White -BackgroundColor DarkCyan $moduleName
+  ']> '
+}
