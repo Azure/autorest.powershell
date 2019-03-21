@@ -35,7 +35,7 @@ export async function generatePsm1(service: Host, project: Project) {
   } elseif ($sharedModule -eq $null) {
     $sharedModule = Import-Module -Name Az.Accounts -MinimumVersion ${accountsVersion} -Scope Global -PassThru
   }
-  Write-Host "Loaded Module '$($sharedModule.Name)'"
+  Write-Information "Loaded Module '$($sharedModule.Name)'"
 
   # Ask for the shared functionality table
   $VTable = Register-AzModule
@@ -78,7 +78,7 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   if($profileDirectory) {
-    Write-Host "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
+    Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
     $exportsPath = $profileDirectory.FullName
   }
 
@@ -93,7 +93,7 @@ export async function generatePsm1(service: Host, project: Project) {
   psm1.append('Finalization', `
   # Finalize initialization of this module
   $instance.Init();
-  Write-Host "Loaded Module '$($instance.Name)'"`);
+  Write-Information "Loaded Module '$($instance.Name)'"`);
 
   psm1.trim();
   service.WriteFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
