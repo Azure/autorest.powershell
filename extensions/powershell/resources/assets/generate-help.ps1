@@ -8,7 +8,7 @@ if(-not $Isolated) {
   return
 }
 
-. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts -PlatyPS
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$${$project.azure} -PlatyPS
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
 if(Test-Path -Path $localModulesPath) {
@@ -28,9 +28,9 @@ Import-Module -Name $modulePath
 
 # Generate markdowns
 if((Get-Item -Path (Join-Path $docsPath '*.md') -Exclude readme.md | Measure-Object).Count -eq 0) {
-  New-MarkdownHelp -Module $moduleName -OutputFolder $docsPath -WithModulePage -AlphabeticParamsOrder -UseFullTypeName -ExcludeDontShow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+  New-MarkdownHelp -Module $moduleName -OutputFolder $docsPath -WithModulePage -AlphabeticParamsOrder -UseFullTypeName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue #-ExcludeDontShow
 }
-Update-MarkdownHelpModule -Path $docsPath -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+Update-MarkdownHelpModule -Path $docsPath -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue #-ExcludeDontShow
 
 # Update module page markdown
 $modulePage = Join-Path $docsPath "$moduleName.md"

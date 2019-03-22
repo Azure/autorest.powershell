@@ -8,6 +8,21 @@ if(-not $Isolated) {
   return
 }
 
+function DownloadModule ([bool]$predicate, [string]$path, [string]$moduleName, [string]$versionMinimum) {
+  if($predicate) {
+    $module = Get-Module -ListAvailable -Name $moduleName
+    if((-not $module) -or ($versionMinimum -and ($module | ForEach-Object { $_.Version } | Where-Object { $_ -ge [System.Version]$versionMinimum } | Measure-Object).Count -eq 0)) {
+      $null = New-Item -ItemType Directory -Force -Path $path
+      Write-Host -ForegroundColor Green "Installing local $moduleName module into '$path'..."
+      if($versionMinimum) {
+        Find-Module -Name $moduleName -MinimumVersion $versionMinimum -Repository PSGallery | Save-Module -Path $path
+      } else {
+        Find-Module -Name $moduleName -Repository PSGallery | Save-Module -Path $path
+      }
+    }
+  }
+}
+
 $all = (@($Accounts.IsPresent, $PlatyPS.IsPresent, $Pester.IsPresent) | Select-Object -Unique | Measure-Object).Count -eq 1
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
@@ -15,29 +30,6 @@ if(Test-Path -Path $localModulesPath) {
   $env:PSModulePath = "$localModulesPath$([IO.Path]::PathSeparator)$env:PSModulePath"
 }
 
-if($all -or $Accounts) {
-  $accountsModule = Get-Module -ListAvailable -Name Az.Accounts
-  if((-not $accountsModule) -or ($accountsModule | ForEach-Object { $_.Version } | Where-Object { $_ -ge [System.Version]'${$project.accountsVersionMinimum}' } | Measure-Object).Count -eq 0) {
-    $null = New-Item -ItemType Directory -Force -Path $localModulesPath
-    Write-Host -ForegroundColor Green "Installing local Az.Accounts module into '$localModulesPath'..."
-    Find-Module -Name Az.Accounts -MinimumVersion '${$project.accountsVersionMinimum}' -Repository PSGallery | Save-Module -Path $localModulesPath
-  }
-}
-
-if($all -or $PlatyPS) {
-  $platyPSModule = Get-Module -ListAvailable -Name platyPS
-  if((-not $platyPSModule) -or ($platyPSModule | ForEach-Object { $_.Version } | Where-Object { $_ -ge [System.Version]'${$project.platyPsVersionMinimum}' } | Measure-Object).Count -eq 0) {
-    $null = New-Item -ItemType Directory -Force -Path $localModulesPath
-    Write-Host -ForegroundColor Green "Installing local platyPS module into '$localModulesPath'..."
-    Find-Module -Name platyPS -MinimumVersion '${$project.platyPsVersionMinimum}' -Repository PSGallery | Save-Module -Path $localModulesPath
-  }
-}
-
-if($all -or $Pester) {
-  $pesterModule = Get-Module -ListAvailable -Name Pester
-  if(-not $pesterModule) {
-    $null = New-Item -ItemType Directory -Force -Path $localModulesPath
-    Write-Host -ForegroundColor Green "Installing local Pester module into '$localModulesPath'..."
-    Find-Module -Name Pester -Repository PSGallery | Save-Module -Path $localModulesPath
-  }
-}
+DownloadModule -predicate ($all -or $Accounts) -path $localModulesPath -moduleName 'Az.Accounts' -versionMinimum '${$project.accountsVersionMinimum}'
+DownloadModule -predicate ($all -or $PlatyPS) -path $localModulesPath -moduleName 'platyPS' -versionMinimum '${$project.platyPsVersionMinimum}'
+DownloadModule -predicate ($all -or $Pester) -path $localModulesPath -moduleName 'Pester' -versionMinimum ''

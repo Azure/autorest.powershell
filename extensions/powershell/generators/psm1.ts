@@ -27,15 +27,15 @@ export async function generatePsm1(service: Host, project: Project) {
   Export-ModuleMember`);
 
   if (project.azure) {
-    const localAccountsPath = join(relative(project.baseFolder, project.dependencyModuleFolder), 'Az.Accounts', 'Az.Accounts.psd1');
+    const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     psm1.append('AzureInitialization', `
   # Load required Az.Accounts module
   $sharedModule = Get-Module -Name Az.Accounts
   if (-not $sharedModule) {
     $accountsName = 'Az.Accounts'
-    $localAccountsPath = '${localAccountsPath}'
-    if(Test-Path -Path $localAccountsPath) {
-      $accountsName = $localAccountsPath
+    $localAccounts = Get-ChildItem -Path (Join-Path $PSScriptRoot '${localModulesPath}') -Recurse -Include 'Az.Accounts.psd1' | Select-Object -Last 1
+    if($localAccounts -and (Test-Path -Path $localAccounts)) {
+      $accountsName = $localAccounts.FullName
     }
     $sharedModule = Import-Module -Name $accountsName -MinimumVersion ${project.accountsVersionMinimum} -Scope Global -PassThru
   } elseif ($sharedModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') {

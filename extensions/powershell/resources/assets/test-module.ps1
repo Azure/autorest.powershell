@@ -8,7 +8,7 @@ if(-not $Isolated) {
   return
 }
 
-. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts -Pester
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$${$project.azure} -Pester
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
 if(Test-Path -Path $localModulesPath) {

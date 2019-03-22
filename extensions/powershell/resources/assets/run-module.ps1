@@ -8,7 +8,10 @@ if(-not $Isolated) {
   return
 }
 
-. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts
+$isAzure = $${$project.azure}
+if($isAzure) {
+  . (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts
+}
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
 if(Test-Path -Path $localModulesPath) {
@@ -19,6 +22,13 @@ $modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '${$project.psd1}')
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 
+function Prompt {
+  Write-Host -NoNewline -ForegroundColor Green "PS $(Get-Location)"
+  Write-Host -NoNewline -ForegroundColor Gray ' ['
+  Write-Host -NoNewline -ForegroundColor White -BackgroundColor DarkCyan $moduleName
+  ']> '
+}
+
 if($Code) {
   $vscodeDirectory = New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot '.vscode')
   $launchJson = Join-Path $vscodeDirectory 'launch.json'
@@ -28,10 +38,3 @@ if($Code) {
 }
 
 Import-Module -Name $modulePath
-
-function Prompt {
-  Write-Host -NoNewline -ForegroundColor Green "PS $(Get-Location)"
-  Write-Host -NoNewline -ForegroundColor Gray ' ['
-  Write-Host -NoNewline -ForegroundColor White -BackgroundColor DarkCyan $moduleName
-  ']> '
-}
