@@ -7,6 +7,7 @@ import { codemodel, processCodeModel, Schema } from '@microsoft.azure/autorest.c
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
+import { getCategory } from './plugin-create-commands';
 
 
 let directives: Array<any> = [];
@@ -49,7 +50,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
       && (where.noun || where.verb || where.variant || where["parameter-name"])) {
       let error = where['model-name'] ? `Can't select model and command at the same time.` : ``;
       error += where['property-name'] ? `Can't select property and command at the same time.` : ``;
-      error = set['property-name'] ? `Can't set a property-name when a command is selected.` : ``;
+      error += set['property-name'] ? `Can't set a property-name when a command is selected.` : ``;
       error += set['property-description'] ? `Can't set a property-description when a command is selected.` : ``;
       error += set['model-name'] ? `Can't set a model-name when a command is selected.` : ``;
       if (error) {
@@ -73,7 +74,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
       && (where['model-name'] || where['property-name'])) {
       let error = where['noun'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
       error += where['parameter-name'] ? `Can't select a parameter and command at the same time.` : ``;
-      error = set['property-name'] ? `Can't set property-name when a model is selected.` : ``;
+      error += set['property-name'] ? `Can't set property-name when a model is selected.` : ``;
       error += set['noun'] ? `Can't set command noun when a model is selected.` : ``;
       error += set['verb'] ? `Can't set command verb when a model is selected.` : ``;
       error += set['variant'] ? `Can't set command variant when a model is selected.` : ``;
@@ -116,7 +117,6 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const nounReplacer = directive.set.noun;
       const verbReplacer = directive.set.verb;
       const variantReplacer = directive.set.variant;
-      const shouldHide = !!directive.set.hidden;
       const parameterReplacer = directive.set["parameter-name"];
       const paramDescriptionReplacer = directive.set["parameter-description"];
 
@@ -170,22 +170,30 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         for (const operation of operations) {
           const prevNoun = operation.details.csharp.noun;
           const prevVerb = operation.details.csharp.verb;
+          const prevVerbCategory = operation.details.csharp.category;
           const prevVariantName = operation.details.csharp.name;
           const oldCommandName = `${prevVerb}-${prevVariantName ? `${prevNoun}_${prevVariantName}` : prevNoun}`;
 
+          // set values
           operation.details.csharp.noun = nounReplacer ? nounRegex ? prevNoun.replace(nounRegex, nounReplacer) : nounReplacer : prevNoun;
           operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
+          operation.details.csharp.category = getCategory(operation.details.csharp.verb);
           operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
           operation.details.csharp.hidden = (directive.set.hidden !== undefined) ? !!directive.set.hidden : operation.details.csharp.hidden;
 
           const newNoun = operation.details.csharp.noun;
           const newVerb = operation.details.csharp.verb;
+          const newVerbCategory = operation.details.csharp.category;
           const newVariantName = operation.details.csharp.name;
           const newCommandName = `${newVerb}-${newVariantName ? `${newNoun}_${newVariantName}` : newNoun}`;
 
           if (nounReplacer || verbReplacer || variantReplacer) {
+            let modificationMessage = `Changed command from ${oldCommandName} to ${newCommandName}. `
+            if (newVerbCategory !== prevVerbCategory) {
+              modificationMessage += `Changed verb category from ${prevVerbCategory} to ${newVerbCategory}. `;
+            }
             service.Message({
-              Channel: Channel.Verbose, Text: `Changed command from ${oldCommandName} to ${newCommandName}.`
+              Channel: Channel.Verbose, Text: modificationMessage
             });
           }
         }
