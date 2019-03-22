@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>Microsoft.Rest.ClientRuntime.PowerShell</RootNamespace>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**\*.*</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="runtime\NewProxyCmdlet.cs" />
+    <Compile Include="runtime\NewTestStub.cs" />
+    <Compile Include="runtime\PsAttributes.cs" />
+    <Compile Include="runtime\PsExtensions.cs" />
+    <Compile Include="runtime\PsProxyOutputs.cs" />
+    <Compile Include="runtime\PsProxyTypes.cs" />
+    <Compile Include="runtime\SetPsd1Export.cs" />
+  </ItemGroup>
+
+</Project>

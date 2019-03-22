@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -7,7 +8,7 @@ using System.Text;
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.New, "ProxyCmdlet")]
-    [OutputType(typeof(string))]
+    [OutputType(typeof(string[]))]
     public class NewProxyCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]
@@ -20,6 +21,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
+            var exportedCmdletNames = new List<string>();
             var variants = CommandInfo
                 .SelectMany(ci => ci.ToVariants())
                 .Where(v => !v.Attributes.OfType<DoNotExportAttribute>().Any())
@@ -78,8 +80,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                     Directory.CreateDirectory(variantGroup.OutputFolder);
                     File.WriteAllText(variantGroup.FilePath, sb.ToString());
+                    exportedCmdletNames.Add(variantGroup.CmdletName);
                 }
             }
+
+            WriteObject(exportedCmdletNames.Distinct().ToArray(), true);
         }
     }
 }

@@ -67,7 +67,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       for (const responses of values(operation.responses)) {
         for (const response of responses) {
           // for a given response, find the possible models that can be returned from the service
-          for (const header of values(response.headers)) {
+          /* for (const header of values(response.headers)) {
 
             if (!response.schema) {
               // no response schema? can we fake one?
@@ -90,7 +90,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
                 // create a property for the header value
                 const newProperty = new Property(header.key, { schema: header.schema, description: header.description });
-
+                newProperty.details.default.name = header.key;
                 // mark it that it's a header-only property
                 newProperty.details.default[HeaderProperty] = HeaderPropertyType.Header;
 
@@ -105,10 +105,13 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
                   // no.. There is duplication between header and body property. Probably because of etags.
                   // tell it to be a header-and-body property.
                   property.details.default[HeaderProperty] = HeaderPropertyType.HeaderAndBody;
+                  property.details.default.name = header.key;
                 }
               }
             }
+            
           }
+          */
         }
       }
     }

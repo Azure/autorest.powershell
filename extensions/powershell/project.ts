@@ -12,6 +12,7 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
+import { Channel } from '@microsoft.azure/autorest-extension-base';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -44,9 +45,14 @@ export class Project extends codeDomProject {
   public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
+  public nounPrefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
-  public get model() { return this.state.model; }
+  public serviceNamespace!: ServiceNamespace;
+  public supportNamespace!: SupportNamespace;
+  public cmdlets!: CmdletNamespace;
+  public modelCmdlets!: ModelCmdletNamespace;
+  public modelsExtensions!: ModelExtensionsNamespace;
 
   constructor(protected state: State) {
     super();
@@ -85,13 +91,15 @@ export class Project extends codeDomProject {
     this.profiles = Array.isArray(pro) ? <string[]>pro : [];
 
     // Flags
-    this.skipModelCmdlets = !!(await service.GetValue('skip-model-cmdlets'));
+    const smc = await service.GetValue('skip-model-cmdlets');
+    this.skipModelCmdlets = smc === undefined ? false : !!smc;
     this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
 
     // Names
-    this.prefix = await service.GetValue('prefix') || this.azure ? 'Az' : ``;
-    this.serviceName = await service.GetValue('service-name') || pascalCase(deconstruct(model.info.title.replace(/client/ig, '')));
-    this.moduleName = await service.GetValue('module-name') || !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName;
+    this.prefix = await service.GetValue('prefix') || (this.azure ? 'Az' : ``);
+    this.serviceName = await service.GetValue('service-name') || (this.azure ? Project.titleToServiceName(model.info.title) : model.info.title);
+    this.nounPrefix = await service.GetValue('noun-prefix') || (this.azure ? this.serviceName : ``);
+    this.moduleName = await service.GetValue('module-name') || (!!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName);
     this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
 
     // Folders
@@ -135,9 +143,28 @@ export class Project extends codeDomProject {
     return this;
   }
 
-  public serviceNamespace!: ServiceNamespace;
-  public supportNamespace!: SupportNamespace;
-  public cmdlets!: CmdletNamespace;
-  public modelCmdlets!: ModelCmdletNamespace;
-  public modelsExtensions!: ModelExtensionsNamespace;
+  public get model() {
+    return this.state.model;
+  }
+
+  public static titleToServiceName(title: string): string {
+    const titleCamelCase = pascalCase(deconstruct(title)).trim();
+    const serviceName = titleCamelCase
+      // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+      .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+      // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+      .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+    return serviceName || titleCamelCase;
+  }
+
+  public getCmdletNoun(noun: string) {
+    if (!this.azure) {
+      return noun;
+    }
+    const pattern = deconstruct(this.nounPrefix).join('|');
+    const regex = new RegExp(pattern, 'g');
+    const nounCombined = `${this.nounPrefix}${noun.replace(regex, '')}`;
+    this.state.service.Message({ Channel: Channel.Verbose, Text: `Changed cmdlet noun from ${noun} to ${nounCombined}.` });
+    return nounCombined;
+  }
 }
