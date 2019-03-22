@@ -94,8 +94,8 @@ export class Project extends codeDomProject {
     this.maxInlinedParameters = await this.getConfigValue('max-inlined-parameters', 4);
     this.moduleVersion = await this.getConfigValue('module-version', '1.0.0');
     this.profiles = await this.getConfigValue('profile', <string[]>[]);
-    this.accountsVersionMinimum = '1.4.0';
-    this.platyPsVersionMinimum = '0.13.0';
+    this.accountsVersionMinimum = '1.4.1';
+    this.platyPsVersionMinimum = '0.13.1';
 
     // Flags
     this.skipModelCmdlets = await this.getConfigValue('skip-model-cmdlets', false);
