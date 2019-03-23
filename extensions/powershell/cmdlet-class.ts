@@ -675,7 +675,7 @@ export class CmdletClass extends Class {
   }
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
-    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.category, operation.details.csharp.verb), new StringExpression(variantName)];
+    const cmdletAttribParams: Array<ExpressionOrLiteral> = [verbEnum(operation.details.csharp.category, operation.details.csharp.verb), new StringExpression(variantName)];
     if (this.isWritableCmdlet(operation)) {
       cmdletAttribParams.push(`SupportsShouldProcess = true`);
     }

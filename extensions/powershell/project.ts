@@ -13,6 +13,8 @@ import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
 import { Channel } from '@microsoft.azure/autorest-extension-base';
+import { Model } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/code-model';
+import { IAutoRestPluginInitiator } from '@microsoft.azure/autorest-extension-base/dist/lib/extension-base';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -53,12 +55,20 @@ export class Project extends codeDomProject {
   public cmdlets!: CmdletNamespace;
   public modelCmdlets!: ModelCmdletNamespace;
   public modelsExtensions!: ModelExtensionsNamespace;
+  public accountsVersionMinimum!: string;
+  public platyPsVersionMinimum!: string;
+  public dependencyModuleFolder!: string;
+
+  private model!: Model;
+  private service!: IAutoRestPluginInitiator;
 
   constructor(protected state: State) {
     super();
     this.schemaDefinitionResolver = new SchemaDefinitionResolver();
     state.project = this;
     this.projectNamespace = state.model.details.csharp.namespace;
+    this.service = state.service;
+    this.model = state.model;
 
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
@@ -79,72 +89,71 @@ export class Project extends codeDomProject {
 
   public async init(): Promise<this> {
     await super.init();
-    const service = this.state.service;
-    const model = this.state.model;
-    const state = this.state;
 
     // Values
-    const mil = await service.GetValue('max-inlined-parameters');
-    this.maxInlinedParameters = typeof mil === 'number' ? mil : 4;
-    this.moduleVersion = await service.GetValue('module-version') || '1.0.0';
-    const pro = await service.GetValue('profile');
-    this.profiles = Array.isArray(pro) ? <string[]>pro : [];
+    this.maxInlinedParameters = await this.getConfigValue('max-inlined-parameters', 4);
+    this.moduleVersion = await this.getConfigValue('module-version', '1.0.0');
+    this.profiles = await this.getConfigValue('profile', <string[]>[]);
+    this.accountsVersionMinimum = '1.4.0';
+    this.platyPsVersionMinimum = '0.13.1';
 
     // Flags
-    const smc = await service.GetValue('skip-model-cmdlets');
-    this.skipModelCmdlets = smc === undefined ? false : !!smc;
-    this.azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+    this.skipModelCmdlets = await this.getConfigValue('skip-model-cmdlets', false);
+    this.azure = await this.getConfigValue('azure', false) || await this.getConfigValue('azure-arm', false) || false;
 
     // Names
-    this.prefix = await service.GetValue('prefix') || (this.azure ? 'Az' : ``);
-    this.serviceName = await service.GetValue('service-name') || (this.azure ? Project.titleToServiceName(model.info.title) : model.info.title);
-    this.nounPrefix = await service.GetValue('noun-prefix') || (this.azure ? this.serviceName : ``);
-    this.moduleName = await service.GetValue('module-name') || (!!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName);
-    this.dllName = await service.GetValue('dll-name') || `${this.moduleName}.private`;
+    this.prefix = await this.getConfigValue('prefix', this.azure ? 'Az' : ``);
+    this.serviceName = await this.getConfigValue('service-name', this.azure ? Project.titleToServiceName(this.model.info.title) : this.model.info.title);
+    this.nounPrefix = await this.getConfigValue('noun-prefix', this.azure ? this.serviceName : ``);
+    this.moduleName = await this.getConfigValue('module-name', !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName);
+    this.dllName = await this.getConfigValue('dll-name', `${this.moduleName}.private`);
 
     // Folders
-    this.baseFolder = await service.GetValue('base-folder') || '.';
-    this.moduleFolder = await service.GetValue('module-folder') || `${this.baseFolder}/generated`;
-    this.cmdletFolder = await service.GetValue('cmdlet-folder') || `${this.moduleFolder}/cmdlets`;
-    this.modelCmdletFolder = await service.GetValue('model-cmdlet-folder') || `${this.moduleFolder}/model-cmdlets`;
-    this.customFolder = await service.GetValue('custom-cmdlet-folder') || `${this.baseFolder}/custom`;
-    this.testFolder = await service.GetValue('test-folder') || `${this.baseFolder}/test`;
-    this.runtimeFolder = await service.GetValue('runtime-folder') || `${this.moduleFolder}/runtime`;
-    this.apiFolder = await service.GetValue('api-folder') || `${this.moduleFolder}/api`;
-    this.apiExtensionsFolder = await service.GetValue('api-extensions-folder') || `${this.moduleFolder}/api-extensions`;
-    this.binFolder = await service.GetValue('bin-folder') || `${this.baseFolder}/bin`;
-    this.objFolder = await service.GetValue('obj-folder') || `${this.baseFolder}/obj`;
-    this.exportsFolder = await service.GetValue('exports-folder') || `${this.baseFolder}/exports`;
-    this.docsFolder = await service.GetValue('docs-folder') || `${this.baseFolder}/docs`;
+    this.baseFolder = await this.getConfigValue('base-folder', '.');
+    this.moduleFolder = await this.getConfigValue('module-folder', `${this.baseFolder}/generated`);
+    this.cmdletFolder = await this.getConfigValue('cmdlet-folder', `${this.moduleFolder}/cmdlets`);
+    this.modelCmdletFolder = await this.getConfigValue('model-cmdlet-folder', `${this.moduleFolder}/model-cmdlets`);
+    this.customFolder = await this.getConfigValue('custom-cmdlet-folder', `${this.baseFolder}/custom`);
+    this.testFolder = await this.getConfigValue('test-folder', `${this.baseFolder}/test`);
+    this.runtimeFolder = await this.getConfigValue('runtime-folder', `${this.moduleFolder}/runtime`);
+    this.apiFolder = await this.getConfigValue('api-folder', `${this.moduleFolder}/api`);
+    this.apiExtensionsFolder = await this.getConfigValue('api-extensions-folder', `${this.moduleFolder}/api-extensions`);
+    this.binFolder = await this.getConfigValue('bin-folder', `${this.baseFolder}/bin`);
+    this.objFolder = await this.getConfigValue('obj-folder', `${this.baseFolder}/obj`);
+    this.exportsFolder = await this.getConfigValue('exports-folder', `${this.baseFolder}/exports`);
+    this.docsFolder = await this.getConfigValue('docs-folder', `${this.baseFolder}/docs`);
+    this.dependencyModuleFolder = await this.getConfigValue('dependency-module-folder', `${this.moduleFolder}/modules`);
 
     // File paths
-    this.csproj = await service.GetValue('csproj') || `${this.baseFolder}/${this.moduleName}.csproj`;
-    this.dll = await service.GetValue('dll') || `${this.binFolder}/${this.dllName}.dll`;
-    this.psd1 = await service.GetValue('psd1') || `${this.baseFolder}/${this.moduleName}.psd1`;
-    this.psm1 = await service.GetValue('psm1') || `${this.baseFolder}/${this.moduleName}.psm1`;
-    this.psm1Custom = await service.GetValue('psm1-custom') || `${this.customFolder}/${this.moduleName}.custom.psm1`;
-    this.formatPs1xml = await service.GetValue('format-ps1xml') || `${this.baseFolder}/${this.moduleName}.format.ps1xml`;
-    this.nuspec = await service.GetValue('nuspec') || `${this.baseFolder}/${this.moduleName}.nuspec`;
+    this.csproj = await this.getConfigValue('csproj', `${this.baseFolder}/${this.moduleName}.csproj`);
+    this.dll = await this.getConfigValue('dll', `${this.binFolder}/${this.dllName}.dll`);
+    this.psd1 = await this.getConfigValue('psd1', `${this.baseFolder}/${this.moduleName}.psd1`);
+    this.psm1 = await this.getConfigValue('psm1', `${this.baseFolder}/${this.moduleName}.psm1`);
+    this.psm1Custom = await this.getConfigValue('psm1-custom', `${this.customFolder}/${this.moduleName}.custom.psm1`);
+    this.formatPs1xml = await this.getConfigValue('format-ps1xml', `${this.baseFolder}/${this.moduleName}.format.ps1xml`);
+    this.nuspec = await this.getConfigValue('nuspec', `${this.baseFolder}/${this.moduleName}.nuspec`);
 
     // add project namespace
-    this.addNamespace(this.serviceNamespace = new ServiceNamespace(state));
-    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, state));
-    this.addNamespace(this.modelCmdlets = new ModelCmdletNamespace(this.serviceNamespace, state));
+    this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
+    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
+    this.addNamespace(this.modelCmdlets = new ModelCmdletNamespace(this.serviceNamespace, this.state));
     // add cmdlet namespace
-    this.addNamespace(this.cmdlets = new CmdletNamespace(this.serviceNamespace, state));
-    this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>state.model.schemas, state.path('components', 'schemas')));
+    this.addNamespace(this.cmdlets = new CmdletNamespace(this.serviceNamespace, this.state));
+    this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas')));
 
     if (!this.skipModelCmdlets) {
       this.modelCmdlets.createModelCmdlets();
     }
 
     // abort now if we have any errors.
-    state.checkpoint();
+    this.state.checkpoint();
     return this;
   }
 
-  public get model() {
-    return this.state.model;
+  private async getConfigValue<T>(key: string, defaultValue: T): Promise<T> {
+    // GetValue returns null when values are not found.
+    const value = await this.service.GetValue(key);
+    return value !== null ? <T>value : defaultValue;
   }
 
   public static titleToServiceName(title: string): string {

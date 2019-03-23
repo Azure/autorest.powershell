@@ -144,7 +144,8 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
         ...operation.details.default,
         noun: variant.noun,
         verb: variant.verb,
-        name: vname
+        name: vname,
+        category: variant.category
       }
     },
     operationId: operation.operationId,
@@ -376,7 +377,7 @@ function getVerb(operation: string): string {
   return category[operation] ? operation : 'Invoke';
 }
 
-function getCategory(verb: string): string {
+export function getCategory(verb: string): string {
   const match = items(category).linq.first(item => item.key === verb);
   if (match) {
     return match.value;

@@ -1,4 +1,4 @@
-param([Switch]$Isolated)
+param([switch]$Isolated)
 $ErrorActionPreference = 'Stop'
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
@@ -8,23 +8,29 @@ if(-not $Isolated) {
   return
 }
 
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$${$project.azure} -PlatyPS
+
+$localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
+if(Test-Path -Path $localModulesPath) {
+  $env:PSModulePath = "$localModulesPath$([IO.Path]::PathSeparator)$env:PSModulePath"
+}
+
 $WarningPreference = 'SilentlyContinue'
 $docsPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
 
-$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '*.psd1') | Select-Object -First 1
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '${$project.psd1}')
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
-$platyPS = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.moduleFolder)}' 'platyPS'
 
-Import-Module $platyPS
-Import-Module $modulePath
+Import-Module -Name platyPS
+Import-Module -Name $modulePath
 
 # Generate markdowns
 if((Get-Item -Path (Join-Path $docsPath '*.md') -Exclude readme.md | Measure-Object).Count -eq 0) {
-  New-MarkdownHelp -Module $moduleName -OutputFolder $docsPath -WithModulePage -AlphabeticParamsOrder -UseFullTypeName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+  New-MarkdownHelp -Module $moduleName -OutputFolder $docsPath -WithModulePage -AlphabeticParamsOrder -UseFullTypeName -ErrorAction SilentlyContinue -WarningAction SilentlyContinue #-ExcludeDontShow
 }
-Update-MarkdownHelpModule -Path $docsPath -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+Update-MarkdownHelpModule -Path $docsPath -RefreshModulePage -AlphabeticParamsOrder -UseFullTypeName -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue #-ExcludeDontShow
 
 # Update module page markdown
 $modulePage = Join-Path $docsPath "$moduleName.md"
