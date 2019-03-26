@@ -89,7 +89,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
         if (property.name !== sanitizedName) {
           // apply alias
-          const prevName = property.name
+          const prevName = property.name;
           if (property.alias === undefined) {
             property.alias = [];
           }
@@ -101,7 +101,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         } else if (namesToSingularize.has(property.name) && isAzure) {
           // apply alias
-          const prevName = property.name
+          const prevName = property.name;
           if (property.alias === undefined) {
             property.alias = [];
           }

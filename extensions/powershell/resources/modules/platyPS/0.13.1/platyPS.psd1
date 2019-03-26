@@ -12,7 +12,7 @@
 RootModule = 'platyPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.12.0'
+ModuleVersion = '0.13.1'
 
 # ID used to uniquely identify this module
 GUID = '0bdcabef-a4b7-4a6d-bf7e-d879817ebbff'

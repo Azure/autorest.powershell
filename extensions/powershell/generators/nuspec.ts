@@ -20,7 +20,7 @@ export async function generateNuspec(service: Host, project: Project) {
   const tags = project.azure ? 'Azure ResourceManager ARM AppConfiguration PSModule' : '';
   const dependencies = project.azure ? `
     <dependencies>
-      <dependency id="Az.Accounts" version="1.4.0" />
+      <dependency id="Az.Accounts" version="${project.accountsVersionMinimum}" />
     </dependencies>` : '';
 
   service.WriteFile(project.nuspec, `<?xml version="1.0" encoding="utf-8"?>

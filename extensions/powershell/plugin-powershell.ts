@@ -122,13 +122,8 @@ async function copyRequiredFiles(service: Host, project: Project) {
   // Runtime files
   await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
-  // azure Runtime files
-  if (project.azure) {
-    await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
-  }
-
-  // platyPS files
-  await copyBinaryResources(join(resources, 'platyPS'), async (fname, content) => service.WriteFile(join(`${project.moduleFolder}/platyPS`, fname), content, undefined, 'binary-file'));
+  // Modules files
+  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => service.WriteFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
 
   if (project.azure) {
     // Signing key file

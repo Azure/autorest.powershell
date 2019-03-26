@@ -6,6 +6,7 @@
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
+import { join, relative } from 'path';
 
 export async function generatePsm1(service: Host, project: Project) {
   const psm1 = new PSScriptFile(await service.ReadFile(project.psm1) || '');
@@ -26,16 +27,21 @@ export async function generatePsm1(service: Host, project: Project) {
   Export-ModuleMember`);
 
   if (project.azure) {
-    const accountsVersion = '1.4.0';
+    const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     psm1.append('AzureInitialization', `
   # Load required Az.Accounts module
   $sharedModule = Get-Module -Name Az.Accounts
-  if ($sharedModule -ne $null -and $sharedModule.Version.ToString().CompareTo('${accountsVersion}') -lt 0) {
-    Write-Error 'This module requires Az.Accounts version ${accountsVersion}. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information.' -ErrorAction Stop
-  } elseif ($sharedModule -eq $null) {
-    $sharedModule = Import-Module -Name Az.Accounts -MinimumVersion ${accountsVersion} -Scope Global -PassThru
+  if (-not $sharedModule) {
+    $accountsName = 'Az.Accounts'
+    $localAccounts = Get-ChildItem -Path (Join-Path $PSScriptRoot '${localModulesPath}') -Recurse -Include 'Az.Accounts.psd1' | Select-Object -Last 1
+    if($localAccounts -and (Test-Path -Path $localAccounts)) {
+      $accountsName = $localAccounts.FullName
+    }
+    $sharedModule = Import-Module -Name $accountsName -MinimumVersion ${project.accountsVersionMinimum} -Scope Global -PassThru
+  } elseif ($sharedModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') {
+    Write-Error 'This module requires Az.Accounts version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information.' -ErrorAction Stop
   }
-  Write-Host "Loaded Module '$($sharedModule.Name)'"
+  Write-Information "Loaded Module '$($sharedModule.Name)'"
 
   # Ask for the shared functionality table
   $VTable = Register-AzModule
@@ -78,7 +84,7 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   if($profileDirectory) {
-    Write-Host "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
+    Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
     $exportsPath = $profileDirectory.FullName
   }
 
@@ -93,7 +99,7 @@ export async function generatePsm1(service: Host, project: Project) {
   psm1.append('Finalization', `
   # Finalize initialization of this module
   $instance.Init();
-  Write-Host "Loaded Module '$($instance.Name)'"`);
+  Write-Information "Loaded Module '$($instance.Name)'"`);
 
   psm1.trim();
   service.WriteFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');

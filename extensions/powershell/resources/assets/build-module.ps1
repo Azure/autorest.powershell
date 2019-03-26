@@ -1,4 +1,4 @@
-param([Switch]$Isolated, [Switch]$Run, [Switch]$Test, [Switch]$Docs, [Switch]$Code, [Switch]$Release)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -27,6 +27,14 @@ if(-not $Isolated) {
     . (Join-Path $PSScriptRoot 'generate-help.ps1')
     if($LastExitCode -ne 0) {
       # Docs generation failed. Don't attempt to run the module.
+      return
+    }
+  }
+
+  if($Pack) {
+    . (Join-Path $PSScriptRoot 'pack-module.ps1')
+    if($LastExitCode -ne 0) {
+      # Packing failed. Don't attempt to run the module.
       return
     }
   }
@@ -63,7 +71,7 @@ if($LastExitCode -ne 0) {
 }
 
 $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
-$dll = Get-Item -Path (Join-Path $binFolder '*.private.dll') | Select-Object -First 1
+$dll = Get-Item -Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}')
 
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
@@ -72,8 +80,7 @@ if(-not (Test-Path $dll)) {
 $commands = Get-Command -Module (Import-Module $dll -PassThru)
 Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
 
-$customFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}')
-$customPsm1 = Get-Item -Path (Join-Path $customFolder '*.custom.psm1') | Select-Object -First 1
+$customPsm1 = Get-Item -Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.psm1Custom)}')
 if(Test-Path $customPsm1) {
   $commands += Get-Command -Module (Import-Module $customPsm1 -PassThru)
   Write-Host -ForegroundColor Green "Custom PSM1 Loaded [$customPsm1]"
