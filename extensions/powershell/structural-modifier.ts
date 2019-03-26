@@ -55,8 +55,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
       let operationsToRemoveKeys = new Set<number>();
       if (nounRegex) {
-        const matchingKeys = new Set(items(operations)
-          .linq.where(operation => !!`${operation.value.details.csharp.noun}`.match(nounRegex))
+        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.noun}`.match(nounRegex))
           .linq.select(operation => operation.key)
           .linq.toArray());
 
@@ -65,7 +64,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (verbRegex) {
         const matchingKeys = new Set(items(operations)
-          .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex))
+          .linq.where(operation => !!`${operation.value.details.default.verb}`.match(verbRegex))
           .linq.select(operation => operation.key)
           .linq.toArray());
 
@@ -74,7 +73,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (variantRegex) {
         const matchingKeys = new Set(items(operations)
-          .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex))
+          .linq.where(operation => !!`${operation.value.details.default.name}`.match(variantRegex))
           .linq.select(operation => operation.key)
           .linq.toArray());
 
@@ -82,7 +81,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       }
 
       for (const key of operationsToRemoveKeys) {
-        const operationInfo = model.commands.operations[key].details.csharp;
+        const operationInfo = model.commands.operations[key].details.default;
         service.Message({
           Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.noun}_${operationInfo.name}` : operationInfo.noun}`
         });

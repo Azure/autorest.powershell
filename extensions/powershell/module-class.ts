@@ -7,7 +7,7 @@ import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, Implemente
 
 import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
 
-import { InvocationInfo, PSCredential, } from './powershell-declarations';
+import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from './powershell-declarations';
 import { State } from './state';
 
 export class ModuleClass extends Class {
@@ -87,8 +87,6 @@ export class ModuleClass extends Class {
 
     const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     const clientProperty = this.add(new Property('ClientAPI', clientAPI, { description: `The instance of the Client API` }));
-
-
 
     if (this.state.project.azure) {
       this.createAzureInitAndPipeline(namespace);

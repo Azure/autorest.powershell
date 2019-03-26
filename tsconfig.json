@@ -13,7 +13,7 @@
     "declaration": true,
     "stripInternal": true,
     "noEmitHelpers": false,
-    "target": "es2017",
+    "target": "esnext",
     "types": [
       "node"
     ],

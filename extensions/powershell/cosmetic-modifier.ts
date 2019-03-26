@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, Schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
@@ -144,22 +144,22 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (parameterRegex) {
         const parameters = values(operations)
-          .linq.selectMany(operation => operation.parameters)
-          .linq.where(parameter => !!`${parameter.details.csharp.name}`.match(parameterRegex))
+          .linq.selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
+          .linq.where(parameter => !!`${parameter.name}`.match(parameterRegex))
           .linq.toArray();
         for (const parameter of parameters) {
-          const prevName = parameter.details.csharp.name;
-          parameter.details.csharp.name = parameterReplacer ? parameterRegex ? parameter.details.csharp.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.details.csharp.name;
+          const prevName = parameter.name;
+          parameter.name = parameterReplacer ? parameterRegex ? parameter.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.name;
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
           if (parameterReplacer) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Changed parameter-name from ${prevName} to ${parameter.details.csharp.name}.`
+              Channel: Channel.Verbose, Text: `Changed parameter-name from ${prevName} to ${parameter.name}.`
             });
           }
 
           if (paramDescriptionReplacer) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Set parameter-description from parameter ${parameter.details.csharp.name}.`
+              Channel: Channel.Verbose, Text: `Set parameter-description from parameter ${parameter.name}.`
             });
           }
 
@@ -214,17 +214,17 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       if (propertyNameRegex) {
         const properties = values(models)
-          .linq.selectMany(model => values(model.properties))
-          .linq.where(property => !!`${property.details.csharp.name}`.match(propertyNameRegex))
+          .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
+          .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
           .linq.toArray();
         for (const property of properties) {
-          const prevName = property.details.csharp.name;
-          property.details.csharp.name = propertyNameReplacer ? propertyNameRegex ? property.details.csharp.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.details.csharp.name;
+          const prevName = property.name;
+          property.name = propertyNameReplacer ? propertyNameRegex ? property.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.name;
           property.description = propertyDescriptionReplacer ? propertyDescriptionReplacer : property.description;
 
           if (propertyNameRegex) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Changed property-name from ${prevName} to ${property.details.csharp.name}.`
+              Channel: Channel.Verbose, Text: `Changed property-name from ${prevName} to ${property.name}.`
             });
           }
         }
