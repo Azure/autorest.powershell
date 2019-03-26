@@ -11,7 +11,7 @@ import { ClientRuntime, Schema, EventListener } from '@microsoft.azure/autorest.
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
-import { clone } from '@microsoft.azure/linq';
+import { clone, Dictionary } from '@microsoft.azure/linq';
 
 export async function createCommands(service: Host) {
 
@@ -144,8 +144,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
         ...operation.details.default,
         noun: variant.noun,
         verb: variant.verb,
-        name: vname,
-        category: variant.category
+        name: vname
       }
     },
     operationId: operation.operationId,
@@ -195,7 +194,6 @@ async function addVariants(parameters: Array<http.HttpOperationParameter>, opera
   // wait! "update" should be "set" if it's a POST
   if (variant.verb === 'Update' && operation.method === http.HttpMethod.Put) {
     variant.verb = `Set`;
-    variant.category = getCategory(`Set`);
   }
 
   // no optionals:
@@ -217,7 +215,7 @@ async function detect(model: codemodel.Model, service: Host): Promise<codemodel.
   const commonCandidates = await commonParameters(service);
 
   for (const operation of values(model.http.operations)) {
-    for (const variant of inferCommandNames(operation.operationId)) {
+    for (const variant of await inferCommandNames(operation.operationId, service)) {
 
       // no common parameters (standard variations)
       await addVariants(operation.parameters, operation, variant, model, service);
@@ -283,11 +281,10 @@ const pluralizationService = new Lazy(() => {
 interface CommandVariant {
   verb: string;
   noun: string;
-  category: string;
   variant: string;
 }
 
-function inferCommandNames(operationId: string): Array<CommandVariant> {
+async function inferCommandNames(operationId: string, service: Host): Promise<Array<CommandVariant>> {
   const pluralization = pluralizationService.Value;
 
   let [group, method] = operationId.split('_', 2);
@@ -302,7 +299,11 @@ function inferCommandNames(operationId: string): Array<CommandVariant> {
   group = pluralization.singularize(group);
   const operation = deconstruct(method);
 
-  if (operation.length > 1) {
+  // get verb mappings
+  verbMap = await service.GetValue('verb-mapping');
+  if (verbMap[method]) {
+    return [getVariant(method, group, [])];
+  } else if (operation.length > 1) {
     // options supported
     // OPERATION or OPERATION2 => OPERATION-GROUP, OPERATION2-GROUP
     // OPERATION by FILTER => OPERATION-GROUP_FILTER
@@ -338,12 +339,11 @@ function inferCommandNames(operationId: string): Array<CommandVariant> {
 function getVariant(operation: string, group: string | Array<string>, suffix: Array<string>): CommandVariant {
   const pluralization = pluralizationService.Value;
   group = !Array.isArray(group) ? [group] : group;
-
-  const v = getVerb(operation);
-  if (v === 'Invoke') {
+  const verb = getVerb(operation);
+  if (verb === 'Invoke') {
     // if the 'operation' name was  "post" -- it's kindof redundant.
     // so, only include the operation name in the group name if it's anything else
-    if (operation !== 'post') {
+    if (operation.toLowerCase() !== 'post') {
       group = [operation, ...group];
     }
   }
@@ -352,258 +352,26 @@ function getVariant(operation: string, group: string | Array<string>, suffix: Ar
   const noun = pascalCase(group);
 
   return {
-    category: getCategory(v),
     noun,
     variant: pascalCase(suffix),
-    verb: v,
+    verb
   };
 }
 
-function fail(message: string): any {
-  throw new Error(message);
-}
+// operationIdMethod -> psVerb
+let verbMap: { [operationIdMethod: string]: string } = {}
 
 function getVerb(operation: string): string {
-  operation = operation.toLowerCase();
-  const match = items(verbs).linq.first(item => item.key.toLowerCase() === operation);
-  if (match) {
-    return match.value;
+  if (verbMap[operation]) {
+    return getPascalName(verbMap[operation]);
+  } else {
+    return 'Invoke';
   }
-  const matchDirect = items(category).linq.first(item => item.key.toLowerCase() === operation);
-  if (matchDirect) {
-    return matchDirect.key;
-  }
-
-  return category[operation] ? operation : 'Invoke';
 }
-
-export function getCategory(verb: string): string {
-  const match = items(category).linq.first(item => item.key === verb);
-  if (match) {
-    return match.value;
-  }
-
-  return fail(`Verb '${verb}' has no matching category.`);
-}
-const Verbs = {
-  Common: 'System.Management.Automation.VerbsCommon',
-  Data: 'System.Management.Automation.VerbsData',
-  Lifecycle: 'System.Management.Automation.VerbsLifecycle',
-  Diagnostic: 'System.Management.Automation.VerbsDiagnostic',
-  Communications: 'System.Management.Automation.VerbsCommunications',
-  Security: 'System.Management.Automation.VerbsSecurity',
-  Other: 'System.Management.Automation.VerbsOther'
-};
 
 function getPascalName(name: string): string {
   return pascalCase(fixLeadingNumber(deconstruct(name)));
 }
 
-const category: { [verb: string]: string } = {
-  'Add': Verbs.Common,
-  'Clear': Verbs.Common,
-  'Close': Verbs.Common,
-  'Copy': Verbs.Common,
-  'Enter': Verbs.Common,
-  'Exit': Verbs.Common,
-  'Find': Verbs.Common,
-  'Format': Verbs.Common,
-  'Get': Verbs.Common,
-  'Hide': Verbs.Common,
-  'Join': Verbs.Common,
-  'Lock': Verbs.Common,
-  'Move': Verbs.Common,
-  'New': Verbs.Common,
-  'Open': Verbs.Common,
-  'Optimize': Verbs.Common,
-  'Pop': Verbs.Common,
-  'Push': Verbs.Common,
-  'Redo': Verbs.Common,
-  'Remove': Verbs.Common,
-  'Rename': Verbs.Common,
-  'Reset': Verbs.Common,
-  'Resize': Verbs.Common,
-  'Search': Verbs.Common,
-  'Select': Verbs.Common,
-  'Set': Verbs.Common,
-  'Show': Verbs.Common,
-  'Skip': Verbs.Common,
-  'Split': Verbs.Common,
-  'Step': Verbs.Common,
-  'Switch': Verbs.Common,
-  'Undo': Verbs.Common,
-  'Unlock': Verbs.Common,
-  'Watch': Verbs.Common,
-  'Backup': Verbs.Data,
-  'Checkpoint': Verbs.Data,
-  'Compare': Verbs.Data,
-  'Compress': Verbs.Data,
-  'Convert': Verbs.Data,
-  'ConvertFrom': Verbs.Data,
-  'ConvertTo': Verbs.Data,
-  'Dismount': Verbs.Data,
-  'Edit': Verbs.Data,
-  'Expand': Verbs.Data,
-  'Export': Verbs.Data,
-  'Group': Verbs.Data,
-  'Import': Verbs.Data,
-  'Initialize': Verbs.Data,
-  'Limit': Verbs.Data,
-  'Merge': Verbs.Data,
-  'Mount': Verbs.Data,
-  'Out': Verbs.Data,
-  'Publish': Verbs.Data,
-  'Restore': Verbs.Data,
-  'Save': Verbs.Data,
-  'Sync': Verbs.Data,
-  'Unpublish': Verbs.Data,
-  'Update': Verbs.Data,
-  'Approve': Verbs.Lifecycle,
-  'Assert': Verbs.Lifecycle,
-  'Complete': Verbs.Lifecycle,
-  'Confirm': Verbs.Lifecycle,
-  'Deny': Verbs.Lifecycle,
-  'Disable': Verbs.Lifecycle,
-  'Enable': Verbs.Lifecycle,
-  'Install': Verbs.Lifecycle,
-  'Invoke': Verbs.Lifecycle,
-  'Register': Verbs.Lifecycle,
-  'Request': Verbs.Lifecycle,
-  'Restart': Verbs.Lifecycle,
-  'Resume': Verbs.Lifecycle,
-  'Start': Verbs.Lifecycle,
-  'Stop': Verbs.Lifecycle,
-  'Submit': Verbs.Lifecycle,
-  'Suspend': Verbs.Lifecycle,
-  'Uninstall': Verbs.Lifecycle,
-  'Unregister': Verbs.Lifecycle,
-  'Wait': Verbs.Lifecycle,
-  'Debug': Verbs.Diagnostic,
-  'Measure': Verbs.Diagnostic,
-  'Ping': Verbs.Diagnostic,
-  'Repair': Verbs.Diagnostic,
-  'Resolve': Verbs.Diagnostic,
-  'Test': Verbs.Diagnostic,
-  'Trace': Verbs.Diagnostic,
-  'Connect': Verbs.Communications,
-  'Disconnect': Verbs.Communications,
-  'Read': Verbs.Communications,
-  'Receive': Verbs.Communications,
-  'Send': Verbs.Communications,
-  'Write': Verbs.Communications,
-  'Block': Verbs.Security,
-  'Grant': Verbs.Security,
-  'Protect': Verbs.Security,
-  'Revoke': Verbs.Security,
-  'Unblock': Verbs.Security,
-  'Unprotect': Verbs.Security,
-  'Use': Verbs.Other,
-};
 
-const verbs: { [verb: string]: string } = {
-  'Access': 'Get',
-  'List': 'Get',
-  'Cat': 'Get',
-  'Type': 'Get',
-  'Dir': 'Get',
-  'Put': 'Set',
-  'Post': 'Invoke',
-  'Get': 'Get',
-  'Delete': 'Remove',
-  'Obtain': 'Get',
-  'Dump': 'Get',
-  'Acquire': 'Get',
-  'Examine': 'Get',
-  'Suggest': 'Get',
-  'Retrieve': 'Get',
-  'Create': 'New',
-  'Generate': 'New',
-  'Allocate': 'New',
-  'Provision': 'New',
-  'Make': 'New',
-  'Regenerate': 'New', // Alternatives: Redo, Update, Reset
-  'Replace': 'Update',
-  'Failover': 'Set',
-  'Assign': 'Set',
-  'Configure': 'Set',
-  'Activate': 'Initialize',
-  'Build': 'Build',
-  'Compile': 'Build',
-  'Deploy': 'Deploy',
-  'Apply': 'Add',
-  'Append': 'Add',
-  'Attach': 'Add',
-  'Concatenate': 'Add',
-  'Insert': 'Add',
-  'Cut': 'Remove',
-  'Dispose': 'Remove',
-  'Discard': 'Remove',
-  'Generalize': 'Reset',
-  'Patch': 'Update',
-  'Refresh': 'Update',
-  'Reprocess': 'Update', // Alternatives: Redo
-  'Upgrade': 'Update',
-  'Reimage': 'Update', // Alternatives: Format, Reset
-  'Retarget': 'Update',
-  'Validate': 'Test',
-  'Check': 'Test',
-  'Verify': 'Test',
-  'Analyze': 'Test',
-  'Is': 'Test',
-  'Evaluate': 'Test', // Alternatives: Invoke
-  'Power': 'Start',
-  'PowerOn': 'Start',
-  'Run': 'Start', // Alternatives: Invoke
-  'Trigger': 'Start',
-  'Pause': 'Suspend',
-  'Cancel': 'Stop',
-  'PowerOff': 'Stop',
-  'End': 'Stop',
-  'Shutdown': 'Stop',
-  'Reboot': 'Restart',
-  'ForceReboot': 'Restart',
-  'Finish': 'Complete',
-  'Wipe': 'Clear',
-  'Purge': 'Clear', // Alternatives: Remove
-  'Flush': 'Clear',
-  'Erase': 'Clear',
-  'Unmark': 'Clear',
-  'Unset': 'Clear',
-  'Nullify': 'Clear',
-  'Recover': 'Restore',
-  'Undelete': 'Restore',
-  'Synchronize': 'Sync',
-  'Synch': 'Sync',
-  'Load': 'Import',
-  'Capture': 'Export', // Alternatives: Trace
-  'Migrate': 'Move', // Alternatives: Export
-  'Transfer': 'Move',
-  'Name': 'Move',
-  'Reassociate': 'Move',
-  'Change': 'Rename',
-  'Swap': 'Switch', // Alternatives: Move
-  'Execute': 'Invoke',
-  'Perform': 'Invoke',
-  'Discover': 'Find', // Alternatives: Search
-  'Locate': 'Find',
-  'Release': 'Publish', // Alternatives: Clear, Unlock
-  'Resubmit': 'Submit',
-  'Duplicate': 'Copy',
-  'Clone': 'Copy',
-  'Replicate': 'Copy',
-  'Into': 'Enter',
-  'Combine': 'Join',
-  'Unite': 'Join',
-  'Associate': 'Join',
-  'Restrict': 'Lock',
-  'Secure': 'Lock',
-  'Unrestrict': 'Unlock',
-  'Unsecure': 'Unlock',
-  'Display': 'Show',
-  'Produce': 'Show',
-  'Bypass': 'Skip',
-  'Jump': 'Skip',
-  'Separate': 'Split',
-  'Notify': 'Send',
-  'Authorize': 'Grant'
-};
+
