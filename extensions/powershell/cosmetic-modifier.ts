@@ -7,7 +7,6 @@ import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualPr
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
-import { getCategory } from './plugin-create-commands';
 
 
 let directives: Array<any> = [];
@@ -170,28 +169,22 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         for (const operation of operations) {
           const prevNoun = operation.details.csharp.noun;
           const prevVerb = operation.details.csharp.verb;
-          const prevVerbCategory = operation.details.csharp.category;
           const prevVariantName = operation.details.csharp.name;
           const oldCommandName = `${prevVerb}-${prevVariantName ? `${prevNoun}_${prevVariantName}` : prevNoun}`;
 
           // set values
           operation.details.csharp.noun = nounReplacer ? nounRegex ? prevNoun.replace(nounRegex, nounReplacer) : nounReplacer : prevNoun;
           operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
-          operation.details.csharp.category = getCategory(operation.details.csharp.verb);
           operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
           operation.details.csharp.hidden = (directive.set.hidden !== undefined) ? !!directive.set.hidden : operation.details.csharp.hidden;
 
           const newNoun = operation.details.csharp.noun;
           const newVerb = operation.details.csharp.verb;
-          const newVerbCategory = operation.details.csharp.category;
           const newVariantName = operation.details.csharp.name;
           const newCommandName = `${newVerb}-${newVariantName ? `${newNoun}_${newVariantName}` : newNoun}`;
 
           if (nounReplacer || verbReplacer || variantReplacer) {
             let modificationMessage = `Changed command from ${oldCommandName} to ${newCommandName}. `
-            if (newVerbCategory !== prevVerbCategory) {
-              modificationMessage += `Changed verb category from ${prevVerbCategory} to ${newVerbCategory}. `;
-            }
             service.Message({
               Channel: Channel.Verbose, Text: modificationMessage
             });
