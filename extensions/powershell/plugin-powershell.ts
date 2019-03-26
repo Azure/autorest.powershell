@@ -14,6 +14,7 @@ import { generatePsd1 } from './generators/psd1';
 import { generatePsm1 } from './generators/psm1';
 import { generateCsproj } from './generators/csproj';
 import { generatePsm1Custom } from './generators/psm1.custom';
+import { generatePsm1Internal } from './generators/psm1.internal';
 import { generateNuspec } from './generators/nuspec';
 
 const sourceFileCSharp = 'source-file-csharp';
@@ -51,6 +52,7 @@ export async function powershell(service: Host) {
     await generatePsm1(service, project);
     await generateFormatPs1xml(service, model, project);
     await generatePsm1Custom(service, project);
+    await generatePsm1Internal(service, project);
     await generateNuspec(service, project);
 
   } catch (E) {

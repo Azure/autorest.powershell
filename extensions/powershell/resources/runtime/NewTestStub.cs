@@ -4,15 +4,17 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    [Cmdlet(VerbsCommon.New, "TestStub")]
-    public class NewTestStub : PSCmdlet
+    [Cmdlet(VerbsData.Export, "TestStub")]
+    [DoNotExport]
+    public class ExportTestStub : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public CommandInfo[] CommandInfo { get; set; }
+        public string[] ModulePath { get; set; }
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
@@ -25,9 +27,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            var variantGroups = CommandInfo
+            var variantGroups = GetModuleCmdlets(this, ModulePath)
                 .SelectMany(ci => ci.ToVariants())
-                .Where(v => !v.Attributes.OfType<DoNotExportAttribute>().Any())
+                .Where(v => !v.IsDoNotExport)
                 .GroupBy(v => v.CmdletName)
                 .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, true))
                 .Where(vtg => !File.Exists(vtg.FilePath) && (IncludeGenerated || !vtg.IsGenerated));

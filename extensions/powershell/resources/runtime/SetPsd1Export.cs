@@ -2,16 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.Set, "Psd1Export")]
-    [OutputType(typeof(string))]
+    [DoNotExport]
     public class SetPsd1Export : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public string[] CmdletNames { get; set; }
+        public string ExportsFolder { get; set; }
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
@@ -24,6 +25,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
+            if (!Directory.Exists(ExportsFolder))
+            {
+                throw new ArgumentException($"Exports folder '{ExportsFolder}' does not exist");
+            }
+
             if (!File.Exists(Psd1Path))
             {
                 throw new ArgumentException($"Psd1 file '{Psd1Path}' does not exist");
@@ -49,7 +55,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 psd1Lines.Insert(exportIndex, String.Empty);
             }
 
-            var exportList = CmdletNames.ToList();
+            var exportList = GetScriptCmdlets(ExportsFolder).Select(sc => sc.Name).Distinct().ToList();
             exportList.Add("*");
             psd1Lines[exportIndex] = $"{ExportHeader}{exportList.ToPsList()}";
 

@@ -1,30 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    [Cmdlet(VerbsCommon.New, "ProxyCmdlet")]
-    [OutputType(typeof(string[]))]
-    public class NewProxyCmdlet : PSCmdlet
+    [Cmdlet(VerbsData.Export, "ProxyCmdlet")]
+    [DoNotExport]
+    public class ExportProxyCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public CommandInfo[] CommandInfo { get; set; }
+        public string[] ModulePath { get; set; }
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public string OutputFolder { get; set; }
+        public string ExportsFolder { get; set; }
+
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
+        public string InternalFolder { get; set; }
 
         protected override void ProcessRecord()
         {
-            var exportedCmdletNames = new List<string>();
-            var variants = CommandInfo
+            var variants = GetModuleCmdlets(this, ModulePath)
                 .SelectMany(ci => ci.ToVariants())
-                .Where(v => !v.Attributes.OfType<DoNotExportAttribute>().Any())
+                .Where(v => !v.IsDoNotExport)
                 .ToArray();
             var allProfiles = variants.SelectMany(v => v.Profiles).Distinct().ToArray();
             var profileGroups = allProfiles.Any()
@@ -37,8 +40,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var profileGroup in profileGroups)
             {
                 var variantGroups = profileGroup.Variants
-                    .GroupBy(v => v.CmdletName)
-                    .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), Path.Combine(OutputFolder, profileGroup.ProfileFolder)));
+                    .GroupBy(v => new { v.CmdletName, v.IsInternal })
+                    .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(),
+                        Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, profileGroup.ProfileFolder)));
 
                 foreach (var variantGroup in variantGroups)
                 {
@@ -80,11 +84,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                     Directory.CreateDirectory(variantGroup.OutputFolder);
                     File.WriteAllText(variantGroup.FilePath, sb.ToString());
-                    exportedCmdletNames.Add(variantGroup.CmdletName);
                 }
             }
-
-            WriteObject(exportedCmdletNames.Distinct().ToArray(), true);
         }
     }
 }

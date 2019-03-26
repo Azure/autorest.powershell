@@ -89,6 +89,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool IsFunction { get; }
         public string PrivateModuleName { get; }
         public string PrivateCmdletName { get; }
+        public bool IsInternal { get; }
+        public bool IsDoNotExport { get; }
 
         public Attribute[] Attributes { get; }
         public Parameter[] Parameters { get; }
@@ -106,6 +108,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             PrivateCmdletName = Metadata.Name;
             Attributes = this.ToAttributes();
             Parameters = this.ToParameters();
+            IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
+            IsDoNotExport = Attributes.OfType<DoNotExportAttribute>().Any();
             CmdletOnlyParameters = Parameters.Where(p => !p.Metadata.Attributes.OfType<CategoryAttribute>().Any(a =>
                 a.Categories.Contains(ParameterCategory.Azure) ||
                 a.Categories.Contains(ParameterCategory.Runtime))).ToArray();

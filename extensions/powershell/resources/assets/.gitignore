@@ -2,6 +2,7 @@ bin
 obj
 .vs
 generated
+internal
 exports
 !exports/readme.md
 test/*-TestResults.xml

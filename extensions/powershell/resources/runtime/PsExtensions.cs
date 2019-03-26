@@ -40,5 +40,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             || (type.IsArray && type.GetElementType().IsPsSimple());
 
         public static string ToPsList(this IEnumerable<string> items) => String.Join(", ", items.Select(i => $"'{i}'"));
+
+        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T: class
+            => cmdlet.InvokeCommand.NewScriptBlock(script).Invoke().Select(o => o?.BaseObject as T).Where(m => m != null);
+
+        public static void RunScript(this PSCmdlet cmdlet, string script)
+            => cmdlet.RunScript<PSObject>(script);
     }
 }

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="runtime\ExportScriptCmdlet.cs" />
     <Compile Include="runtime\NewProxyCmdlet.cs" />
     <Compile Include="runtime\NewTestStub.cs" />
     <Compile Include="runtime\PsAttributes.cs" />

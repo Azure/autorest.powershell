@@ -21,6 +21,7 @@ export class Project extends codeDomProject {
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public customFolder!: string;
+  public internalFolder!: string;
   public testFolder!: string;
   public runtimeFolder!: string;
   public binFolder!: string;
@@ -36,6 +37,7 @@ export class Project extends codeDomProject {
   public psd1!: string;
   public psm1!: string;
   public psm1Custom!: string;
+  public psm1Internal!: string;
   public formatPs1xml!: string;
   public apiFolder!: string;
   public apiExtensionsFolder!: string;
@@ -114,6 +116,7 @@ export class Project extends codeDomProject {
     this.cmdletFolder = await this.getConfigValue('cmdlet-folder', `${this.moduleFolder}/cmdlets`);
     this.modelCmdletFolder = await this.getConfigValue('model-cmdlet-folder', `${this.moduleFolder}/model-cmdlets`);
     this.customFolder = await this.getConfigValue('custom-cmdlet-folder', `${this.baseFolder}/custom`);
+    this.internalFolder = await this.getConfigValue('internal-cmdlet-folder', `${this.baseFolder}/internal`);
     this.testFolder = await this.getConfigValue('test-folder', `${this.baseFolder}/test`);
     this.runtimeFolder = await this.getConfigValue('runtime-folder', `${this.moduleFolder}/runtime`);
     this.apiFolder = await this.getConfigValue('api-folder', `${this.moduleFolder}/api`);
@@ -130,6 +133,7 @@ export class Project extends codeDomProject {
     this.psd1 = await this.getConfigValue('psd1', `${this.baseFolder}/${this.moduleName}.psd1`);
     this.psm1 = await this.getConfigValue('psm1', `${this.baseFolder}/${this.moduleName}.psm1`);
     this.psm1Custom = await this.getConfigValue('psm1-custom', `${this.customFolder}/${this.moduleName}.custom.psm1`);
+    this.psm1Internal = await this.getConfigValue('psm1-internal', `${this.internalFolder}/${this.moduleName}.internal.psm1`);
     this.formatPs1xml = await this.getConfigValue('format-ps1xml', `${this.baseFolder}/${this.moduleName}.format.ps1xml`);
     this.nuspec = await this.getConfigValue('nuspec', `${this.baseFolder}/${this.moduleName}.nuspec`);
 
