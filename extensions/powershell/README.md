@@ -112,318 +112,207 @@ output-artifact:
 ```
 
 ``` yaml
-
 verb-mapping: 
-  Access: 
-    verb: Get
-    category: Common
-  Acquire: 
-    verb: Get
-    category: Common
-  Activate: 
-    verb: Initialize
-    category: Data
-  Allocate: 
-    verb: New
-    category: Common
-  Analyze: 
-    verb: Test
-    category: Diagnostic
-  Append: 
-    verb: Add
-    category: Common
-  Apply: 
-    verb: Add
-    category: Common
-  Assign: 
-    verb: Set
-    category: Common
-  Associate: 
-    verb: Join
-    category: Common
-  Attach: 
-    verb: Add
-    category: Common
-  Authorize: 
-    verb: Grant
-    category: Security
-  Build: 
-    verb: Build
-  Bypass: 
-    verb: Skip
-    category: Common
-  Cancel: 
-    verb: Stop
-    category: Lifecycle
-  Capture: 
-    verb: Export
-    category: Data
-  Cat: 
-    verb: Get
-    category: Common
-  Change: 
-    verb: Rename
-    category: Common
-  Check: 
-    verb: Test
-    category: Diagnostic
-  Clone: 
-    verb: Copy
-    category: Common
-  Combine: 
-    verb: Join
-    category: Common
-  Compile: 
-    verb: Build
-  Concatenate: 
-    verb: Add
-    category: Common
-  Configure: 
-    verb: Set
-    category: Common
-  Create: 
-    verb: New
-    category: Common
-  Cut: 
-    verb: Remove
-    category: Common
-  Delete: 
-    verb: Remove
-    category: Common
-  Deploy: 
-    verb: Deploy
-  Dir: 
-    verb: Get
-    category: Common
-  Discard: 
-    verb: Remove
-    category: Common
-  Discover: 
-    verb: Find
-    category: Common
-  Display: 
-    verb: Show
-    category: Common
-  Dispose: 
-    verb: Remove
-    category: Common
-  Dump: 
-    verb: Get
-    category: Common
-  Duplicate: 
-    verb: Copy
-    category: Common
-  End: 
-    verb: Stop
-    category: Lifecycle
-  Erase: 
-    verb: Clear
-    category: Common
-  Evaluate: 
-    verb: Test
-    category: Diagnostic
-  Examine: 
-    verb: Get
-    category: Common
-  Execute: 
-    verb: Invoke
-    category: Lifecycle
-  Failover: 
-    verb: Set
-    category: Common
-  Finish: 
-    verb: Complete
-    category: Lifecycle
-  Flush: 
-    verb: Clear
-    category: Common
-  ForceReboot: 
-    verb: Restart
-    category: Lifecycle
-  Generalize: 
-    verb: Reset
-    category: Common
-  Generate: 
-    verb: New
-    category: Common
-  Get: 
-    verb: Get
-    category: Common
-  Insert: 
-    verb: Add
-    category: Common
-  Into: 
-    verb: Enter
-    category: Common
-  Is: 
-    verb: Test
-    category: Diagnostic
-  Jump: 
-    verb: Skip
-    category: Common
-  List: 
-    verb: Get
-    category: Common
-  Load: 
-    verb: Import
-    category: Data
-  Locate: 
-    verb: Find
-    category: Common
-  Make: 
-    verb: New
-    category: Common
-  Migrate: 
-    verb: Move
-    category: Common
-  Name: 
-    verb: Move
-    category: Common
-  Notify: 
-    verb: Send
-    category: Communications
-  Nullify: 
-    verb: Clear
-    category: Common
-  Obtain: 
-    verb: Get
-    category: Common
-  Patch: 
-    verb: Update
-    category: Data
-  Pause: 
-    verb: Suspend
-    category: Lifecycle
-  Perform: 
-    verb: Invoke
-    category: Lifecycle
-  Post: 
-    verb: Invoke
-    category: Lifecycle
-  Power: 
-    verb: Start
-    category: Lifecycle
-  PowerOff: 
-    verb: Stop
-    category: Lifecycle
-  PowerOn: 
-    verb: Start
-    category: Lifecycle
-  Produce: 
-    verb: Show
-    category: Common
-  Provision: 
-    verb: New
-    category: Common
-  Purge: 
-    verb: Clear
-    category: Common
-  Put: 
-    verb: Set
-    category: Common
-  Reassociate: 
-    verb: Move
-    category: Common
-  Reboot: 
-    verb: Restart
-    category: Lifecycle
-  Recover: 
-    verb: Restore
-    category: Data
-  Refresh: 
-    verb: Update
-    category: Data
-  Regenerate: 
-    verb: New
-    category: Common
-  Reimage: 
-    verb: Update
-    category: Data
-  Release: 
-    verb: Publish
-    category: Data
-  Replace: 
-    verb: Update
-    category: Data
-  Replicate: 
-    verb: Copy
-    category: Common
-  Reprocess: 
-    verb: Update
-    category: Data
-  Restrict: 
-    verb: Lock
-    category: Common
-  Resubmit: 
-    verb: Submit
-    category: Lifecycle
-  Retarget: 
-    verb: Update
-    category: Data
-  Retrieve: 
-    verb: Get
-    category: Common
-  Run: 
-    verb: Start
-    category: Lifecycle
-  Secure: 
-    verb: Lock
-    category: Common
-  Separate: 
-    verb: Split
-    category: Common
-  Shutdown: 
-    verb: Stop
-    category: Lifecycle
-  Suggest: 
-    verb: Get
-    category: Common
-  Swap: 
-    verb: Switch
-    category: Common
-  Synch: 
-    verb: Sync
-    category: Data
-  Synchronize: 
-    verb: Sync
-    category: Data
-  Transfer: 
-    verb: Move
-    category: Common
-  Trigger: 
-    verb: Start
-    category: Lifecycle
-  Type: 
-    verb: Get
-    category: Common
-  Undelete: 
-    verb: Restore
-    category: Data
-  Unite: 
-    verb: Join
-    category: Common
-  Unmark: 
-    verb: Clear
-    category: Common
-  Unrestrict: 
-    verb: Unlock
-    category: Common
-  Unsecure: 
-    verb: Unlock
-    category: Common
-  Unset: 
-    verb: Clear
-    category: Common
-  Upgrade: 
-    verb: Update
-    category: Data
-  Validate: 
-    verb: Test
-    category: Diagnostic
-  Verify: 
-    verb: Test
-    category: Diagnostic
-  Wipe: 
-    verb: Clear
-    category: Common
+  Access: Get
+  Acquire: Get
+  Activate: Initialize
+  Add: Add
+  Allocate: New
+  Analyze: Test
+  Append: Add
+  Apply: Add
+  Approve: Approve
+  Assert: Assert
+  Assign: Set
+  Associate: Join
+  Attach: Add
+  Authorize: Grant
+  Backup: Backup
+  Block: Block
+  Build: Build
+  Bypass: Skip
+  Cancel: Stop
+  Capture: Export
+  Cat: Get
+  Change: Rename
+  Check: Test
+  Checkpoint: Checkpoint
+  Clear: Clear
+  Clone: Copy
+  Close: Close
+  Combine: Join
+  Compare: Compare
+  Compile: Build
+  Complete: Complete
+  Compress: Compress
+  Concatenate: Add
+  Configure: Set
+  Confirm: Confirm
+  Connect: Connect
+  Convert: Convert
+  ConvertFrom: ConvertFrom
+  ConvertTo: ConvertTo
+  Copy: Copy
+  Create: New
+  Cut: Remove
+  Debug: Debug
+  Delete: Remove
+  Deny: Deny
+  Deploy: Deploy
+  Dir: Get
+  Disable: Disable
+  Discard: Remove
+  Disconnect: Disconnect
+  Discover: Find
+  Dismount: Dismount
+  Display: Show
+  Dispose: Remove
+  Dump: Get
+  Duplicate: Copy
+  Edit: Edit
+  Enable: Enable
+  End: Stop
+  Enter: Enter
+  Erase: Clear
+  Evaluate: Test
+  Examine: Get
+  Execute: Invoke
+  Exit: Exit
+  Expand: Expand
+  Export: Export
+  Failover: Set
+  Find: Find
+  Finish: Complete
+  Flush: Clear
+  ForceReboot: Restart
+  Format: Format
+  Generalize: Reset
+  Generate: New
+  Get: Get
+  Grant: Grant
+  Group: Group
+  Hide: Hide
+  Import: Import
+  Initialize: Initialize
+  Insert: Add
+  Install: Install
+  Into: Enter
+  Invoke: Invoke
+  Is: Test
+  Join: Join
+  Jump: Skip
+  Limit: Limit
+  List: Get
+  Load: Import
+  Locate: Find
+  Lock: Lock
+  Make: New
+  Measure: Measure
+  Merge: Merge
+  Migrate: Move
+  Mount: Mount
+  Move: Move
+  Name: Move
+  New: New
+  Notify: Send
+  Nullify: Clear
+  Obtain: Get
+  Open: Open
+  Optimize: Optimize
+  Out: Out
+  Patch: Update
+  Pause: Suspend
+  Perform: Invoke
+  Ping: Ping
+  Pop: Pop
+  Post: Invoke
+  Power: Start
+  PowerOff: Stop
+  PowerOn: Start
+  Produce: Show
+  Protect: Protect
+  Provision: New
+  Publish: Publish
+  Purge: Clear
+  Push: Push
+  Put: Set
+  Read: Read
+  Reassociate: Move
+  Reboot: Restart
+  Receive: Receive
+  Recover: Restore
+  Redo: Redo
+  Refresh: Update
+  Regenerate: New
+  Register: Register
+  Reimage: Update
+  Release: Publish
+  Remove: Remove
+  Rename: Rename
+  Repair: Repair
+  Replace: Update
+  Replicate: Copy
+  Reprocess: Update
+  Request: Request
+  Reset: Reset
+  Resize: Resize
+  Resolve: Resolve
+  Restart: Restart
+  Restore: Restore
+  Restrict: Lock
+  Resubmit: Submit
+  Resume: Resume
+  Retarget: Update
+  Retrieve: Get
+  Revoke: Revoke
+  Run: Start
+  Save: Save
+  Search: Search
+  Secure: Lock
+  Select: Select
+  Send: Send
+  Separate: Split
+  Set: Set
+  Show: Show
+  Shutdown: Stop
+  Skip: Skip
+  Split: Split
+  Start: Start
+  Step: Step
+  Stop: Stop
+  Submit: Submit
+  Suggest: Get
+  Suspend: Suspend
+  Swap: Switch
+  Switch: Switch
+  Sync: Sync
+  Synch: Sync
+  Synchronize: Sync
+  Test: Test
+  Trace: Trace
+  Transfer: Move
+  Trigger: Start
+  Type: Get
+  Unblock: Unblock
+  Undelete: Restore
+  Undo: Undo
+  Uninstall: Uninstall
+  Unite: Join
+  Unlock: Unlock
+  Unmark: Clear
+  Unprotect: Unprotect
+  Unpublish: Unpublish
+  Unregister: Unregister
+  Unrestrict: Unlock
+  Unsecure: Unlock
+  Unset: Clear
+  Update: Update
+  Upgrade: Update
+  Use: Use
+  Validate: Test
+  Verify: Test
+  Wait: Wait
+  Watch: Watch
+  Wipe: Clear
+  Write: Write
 ```
