@@ -41,10 +41,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static string ToPsList(this IEnumerable<string> items) => String.Join(", ", items.Select(i => $"'{i}'"));
 
-        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T: class
-            => cmdlet.InvokeCommand.NewScriptBlock(script).Invoke().Select(o => o?.BaseObject as T).Where(m => m != null);
+        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T : class
+            => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
 
         public static void RunScript(this PSCmdlet cmdlet, string script)
             => cmdlet.RunScript<PSObject>(script);
+
+        public static IEnumerable<T> RunScript<T>(this EngineIntrinsics engineIntrinsics, string script) where T : class
+            => PsHelpers.RunScript<T>(engineIntrinsics.InvokeCommand, script);
+
+        public static void RunScript(this EngineIntrinsics engineIntrinsics, string script)
+            => engineIntrinsics.RunScript<PSObject>(script);
     }
 }

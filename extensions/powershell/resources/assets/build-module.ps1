@@ -39,13 +39,14 @@ if(-not $Isolated) {
     }
   }
 
-  $runModulePath = Join-Path $PSScriptRoot 'run-module.ps1'
+  $runModuleRelative = '${$lib.path.relative($project.baseFolder, `run-module.ps1`)}'
+  $runModulePath = Join-Path $PSScriptRoot $runModuleRelative
   if($Code) {
     . $runModulePath -Code
   } elseif($Run) {
     . $runModulePath
   } else {
-    Write-Host -ForegroundColor Cyan "To run this module in an isolated PowerShell session, run '$runModulePath' or provide the '-Run' parameter to this script."
+    Write-Host -ForegroundColor Cyan "To run this module in an isolated PowerShell session, run '$runModuleRelative' or provide the '-Run' parameter to this script."
   }
   return
 }

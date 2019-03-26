@@ -89,7 +89,14 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   if($exportsPath) {
-    Export-ScriptCmdlet -ScriptFolder $exportsPath
+    #Export-ScriptCmdlet -ScriptFolder $exportsPath
+    #$thing = Export-ScriptCmdlet -ScriptFolder $exportsPath
+    #Write-Host $thing
+    #Invoke-Expression -Command $thing
+    #Invoke-Expression -Command (Export-ScriptCmdlet -ScriptFolder $exportsPath)
+    #Export-ScriptCmdlet -ScriptFolder $exportsPath -EngineIntrinsics $ExecutionContext
+    Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
+    Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath)
   }`);
 
   psm1.append('Finalization', `

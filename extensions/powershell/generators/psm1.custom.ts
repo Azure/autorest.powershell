@@ -24,7 +24,12 @@ export async function generatePsm1Custom(service: Host, project: Project) {
 
   # Export nothing to clear implicit exports
   Export-ModuleMember`);
-  psm1.append('LoadScripts', 'Export-ScriptCmdlet -ScriptFolder $PSScriptRoot');
+  // psm1.append('LoadScripts', 'Export-ScriptCmdlet -ScriptFolder $PSScriptRoot');
+  // psm1.append('LoadScripts', 'Invoke-Expression -Command (Export-ScriptCmdlet -ScriptFolder $PSScriptRoot)');
+  // psm1.append('LoadScripts', `Export-ScriptCmdlet -ScriptFolder $PSScriptRoot -EngineIntrinsics $ExecutionContext`);
+  psm1.append('LoadScripts', `
+  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
+  Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot)`);
   psm1.trim();
   service.WriteFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
 }
