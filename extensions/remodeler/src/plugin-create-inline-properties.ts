@@ -122,22 +122,49 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       };
       virtualProperties.owned.push(privateProperty);
 
-
-      for (const inlinedProperty of [...virtualChildProperties.inherited, ...virtualChildProperties.inlined, ...virtualChildProperties.owned]) {
+      for (const inlinedProperty of [...virtualChildProperties.inherited, ...virtualChildProperties.owned]) {
         // child properties are be inlined without prefixing the name with the property name
         // unless there is a collision, in which case, we have to resolve 
 
         // (scan back from the far right)
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
-        const proposedName = getPascalIdentifier(inlinedProperty.name);
-        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents])];
+
+
+        const proposedName = getPascalIdentifier(`${name === 'properties' ? '' : getPascalIdentifier(name)} ${inlinedProperty.name}`);
+
+        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
           private: inlinedProperty.private,
           nameComponents: components,
-          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, [name]),
+          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
+          accessViaProperty: privateProperty,
+          accessViaMember: inlinedProperty.name,
+          accessViaSchema: schema,
+          description: inlinedProperty.description,
+          alias: []
+        });
+      }
+
+      for (const inlinedProperty of [...virtualChildProperties.inlined]) {
+        // child properties are be inlined without prefixing the name with the property name
+        // unless there is a collision, in which case, we have to resolve 
+
+        // (scan back from the far right)
+        // deeper child properties should be inlined with their parent's name 
+        // ie, this.[properties].owner.name should be this.ownerName 
+
+
+        const proposedName = getPascalIdentifier(inlinedProperty.name);
+        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
+        virtualProperties.inlined.push({
+          name: proposedName,
+          property: inlinedProperty.property,
+          private: inlinedProperty.private,
+          nameComponents: components,
+          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty.name,
           accessViaSchema: schema,

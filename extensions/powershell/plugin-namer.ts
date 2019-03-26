@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, values, removeProhibitedPrefix, getPascalIdentifier } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
@@ -116,5 +116,19 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
   }
 
+  // do collision detection work.
+  for (const command of values(model.commands.operations)) {
+    const vp = command.details.csharp.virtualParameters;
+    if (vp) {
+      resolveParameterNames([], vp);
+    }
+  }
+
+  for (const schema of values(model.schemas)) {
+    const vp = schema.details.csharp.virtualProperties;
+    if (vp) {
+      resolvePropertyNames([schema.details.csharp.name], vp);
+    }
+  }
   return model;
 }

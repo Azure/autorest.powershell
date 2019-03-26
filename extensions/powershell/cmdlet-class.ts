@@ -450,10 +450,10 @@ export class CmdletClass extends Class {
       yield `container = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
 
       for (const parameter of values(operation.parameters)) {
-        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
-        if (!(parameter.details.csharp.constantValue)) {
-          yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.csharp.name, container, parameter.details.csharp.name);
-        }
+        // const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
+        // if (!(parameter.details.csharp.constantValue)) {
+        // yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.csharp.name, container, parameter.details.csharp.name);
+        // }
       }
 
       yield `return container;`;
