@@ -111,11 +111,11 @@ output-artifact:
   - source-file-other
 ```
 
-The following verb-mapping is used as an aid to infer cmdlet-verbs. Every entry maps an operationId-method to a PowerShell cmdlet verb. The operationId-method is the identifier that comes after the underscore in the operationId. For example:
+The following verb-mapping is used as an aid to infer cmdlet-verbs. Every entry maps an operationId-method to a PowerShell cmdlet-verb. The operationId-method is the identifier that comes after the underscore in the operationId. For example:
 - In MyResource_List, the method is List.
 - In SomeAPI_CheckNameAvailability, the method is CheckNameAvailability.
 
-Note: It is not necessary to have an entry for every method because AutoRest will still be able to infer a verb by examining the operationId. 
+Note: It is not necessary to have an entry for every method because AutoRest will still be able to infer a verb by examining the operationId. However, if an entry is added in the configuration, it is guaranteed that the cmdlet created will get the cmdlet-verb from the operationId-method -> cmdlet verb mapping.
 
 ``` yaml
 verb-mapping: 
