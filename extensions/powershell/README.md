@@ -110,3 +110,320 @@ output-artifact:
   - source-file-powershell
   - source-file-other
 ```
+
+``` yaml
+
+verb-mapping: 
+  Access: 
+    verb: Get
+    category: Common
+  Acquire: 
+    verb: Get
+    category: Common
+  Activate: 
+    verb: Initialize
+    category: Data
+  Allocate: 
+    verb: New
+    category: Common
+  Analyze: 
+    verb: Test
+    category: Diagnostic
+  Append: 
+    verb: Add
+    category: Common
+  Apply: 
+    verb: Add
+    category: Common
+  Assign: 
+    verb: Set
+    category: Common
+  Associate: 
+    verb: Join
+    category: Common
+  Attach: 
+    verb: Add
+    category: Common
+  Authorize: 
+    verb: Grant
+    category: Security
+  Build: 
+    verb: Build
+  Bypass: 
+    verb: Skip
+    category: Common
+  Cancel: 
+    verb: Stop
+    category: Lifecycle
+  Capture: 
+    verb: Export
+    category: Data
+  Cat: 
+    verb: Get
+    category: Common
+  Change: 
+    verb: Rename
+    category: Common
+  Check: 
+    verb: Test
+    category: Diagnostic
+  Clone: 
+    verb: Copy
+    category: Common
+  Combine: 
+    verb: Join
+    category: Common
+  Compile: 
+    verb: Build
+  Concatenate: 
+    verb: Add
+    category: Common
+  Configure: 
+    verb: Set
+    category: Common
+  Create: 
+    verb: New
+    category: Common
+  Cut: 
+    verb: Remove
+    category: Common
+  Delete: 
+    verb: Remove
+    category: Common
+  Deploy: 
+    verb: Deploy
+  Dir: 
+    verb: Get
+    category: Common
+  Discard: 
+    verb: Remove
+    category: Common
+  Discover: 
+    verb: Find
+    category: Common
+  Display: 
+    verb: Show
+    category: Common
+  Dispose: 
+    verb: Remove
+    category: Common
+  Dump: 
+    verb: Get
+    category: Common
+  Duplicate: 
+    verb: Copy
+    category: Common
+  End: 
+    verb: Stop
+    category: Lifecycle
+  Erase: 
+    verb: Clear
+    category: Common
+  Evaluate: 
+    verb: Test
+    category: Diagnostic
+  Examine: 
+    verb: Get
+    category: Common
+  Execute: 
+    verb: Invoke
+    category: Lifecycle
+  Failover: 
+    verb: Set
+    category: Common
+  Finish: 
+    verb: Complete
+    category: Lifecycle
+  Flush: 
+    verb: Clear
+    category: Common
+  ForceReboot: 
+    verb: Restart
+    category: Lifecycle
+  Generalize: 
+    verb: Reset
+    category: Common
+  Generate: 
+    verb: New
+    category: Common
+  Get: 
+    verb: Get
+    category: Common
+  Insert: 
+    verb: Add
+    category: Common
+  Into: 
+    verb: Enter
+    category: Common
+  Is: 
+    verb: Test
+    category: Diagnostic
+  Jump: 
+    verb: Skip
+    category: Common
+  List: 
+    verb: Get
+    category: Common
+  Load: 
+    verb: Import
+    category: Data
+  Locate: 
+    verb: Find
+    category: Common
+  Make: 
+    verb: New
+    category: Common
+  Migrate: 
+    verb: Move
+    category: Common
+  Name: 
+    verb: Move
+    category: Common
+  Notify: 
+    verb: Send
+    category: Communications
+  Nullify: 
+    verb: Clear
+    category: Common
+  Obtain: 
+    verb: Get
+    category: Common
+  Patch: 
+    verb: Update
+    category: Data
+  Pause: 
+    verb: Suspend
+    category: Lifecycle
+  Perform: 
+    verb: Invoke
+    category: Lifecycle
+  Post: 
+    verb: Invoke
+    category: Lifecycle
+  Power: 
+    verb: Start
+    category: Lifecycle
+  PowerOff: 
+    verb: Stop
+    category: Lifecycle
+  PowerOn: 
+    verb: Start
+    category: Lifecycle
+  Produce: 
+    verb: Show
+    category: Common
+  Provision: 
+    verb: New
+    category: Common
+  Purge: 
+    verb: Clear
+    category: Common
+  Put: 
+    verb: Set
+    category: Common
+  Reassociate: 
+    verb: Move
+    category: Common
+  Reboot: 
+    verb: Restart
+    category: Lifecycle
+  Recover: 
+    verb: Restore
+    category: Data
+  Refresh: 
+    verb: Update
+    category: Data
+  Regenerate: 
+    verb: New
+    category: Common
+  Reimage: 
+    verb: Update
+    category: Data
+  Release: 
+    verb: Publish
+    category: Data
+  Replace: 
+    verb: Update
+    category: Data
+  Replicate: 
+    verb: Copy
+    category: Common
+  Reprocess: 
+    verb: Update
+    category: Data
+  Restrict: 
+    verb: Lock
+    category: Common
+  Resubmit: 
+    verb: Submit
+    category: Lifecycle
+  Retarget: 
+    verb: Update
+    category: Data
+  Retrieve: 
+    verb: Get
+    category: Common
+  Run: 
+    verb: Start
+    category: Lifecycle
+  Secure: 
+    verb: Lock
+    category: Common
+  Separate: 
+    verb: Split
+    category: Common
+  Shutdown: 
+    verb: Stop
+    category: Lifecycle
+  Suggest: 
+    verb: Get
+    category: Common
+  Swap: 
+    verb: Switch
+    category: Common
+  Synch: 
+    verb: Sync
+    category: Data
+  Synchronize: 
+    verb: Sync
+    category: Data
+  Transfer: 
+    verb: Move
+    category: Common
+  Trigger: 
+    verb: Start
+    category: Lifecycle
+  Type: 
+    verb: Get
+    category: Common
+  Undelete: 
+    verb: Restore
+    category: Data
+  Unite: 
+    verb: Join
+    category: Common
+  Unmark: 
+    verb: Clear
+    category: Common
+  Unrestrict: 
+    verb: Unlock
+    category: Common
+  Unsecure: 
+    verb: Unlock
+    category: Common
+  Unset: 
+    verb: Clear
+    category: Common
+  Upgrade: 
+    verb: Update
+    category: Data
+  Validate: 
+    verb: Test
+    category: Diagnostic
+  Verify: 
+    verb: Test
+    category: Diagnostic
+  Wipe: 
+    verb: Clear
+    category: Common
+```
