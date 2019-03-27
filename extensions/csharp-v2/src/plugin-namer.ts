@@ -219,12 +219,25 @@ function setPropertyNames(schema: Schema) {
 }
 
 async function setOperationNames(codeModel: codemodel.Model, resolver: SchemaDefinitionResolver, service: Host) {
+  // keep a list of operation names that we've assigned.
+  const operationNames = new Set<string>();
+
   for (const operation of values(codeModel.http.operations)) {
     const details = operation.details.default;
 
+    // come up with a name
+    const oName = getPascalIdentifier(details.name);
+    let i = 1;
+    let operationName = oName;
+    while (operationNames.has(operationName)) {
+      // if we have used that name, try again.
+      operationName = `${oName}${i++}`;
+    }
+    operationNames.add(operationName);
+
     operation.details.csharp = {
       ...details, // inherit
-      name: getPascalIdentifier(details.name), // operations have pascal cased names
+      name: operationName,
     };
 
     // parameters are camelCased.

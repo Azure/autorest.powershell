@@ -4,20 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
-import { items, keys, length, values, Dictionary } from '@microsoft.azure/codegen';
-
+import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
+import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 
 export async function createInlinedPropertiesPlugin(service: Host) {
-  return processCodeModel(inlineProperties, service);
+  return processCodeModel(createVirtuals, service);
 }
 
-const threshold = 4;
+function getNameOptions(typeName: string, components: Array<string>) {
+  const result = new Set<string>();
 
-function inlineSchema(schema: Schema) {
-  /*
+  // add a variant for each incrementally inclusive parent naming scheme.
+  for (let i = 0; i < components.length; i++) {
+    const subset = pascalCase([...removeSequentialDuplicates(components.slice(-1 * i, components.length))]);
+    result.add(subset);
+  }
+
+  // add a second-to-last-ditch option as <typename>.<name>
+  result.add(pascalCase([...removeSequentialDuplicates([...fixLeadingNumber(deconstruct(typeName)), ...deconstruct(components.last)])]));
+  return [...result.values()];
+}
+
+const threshold = 24;
+
+function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
   // did we already inline this objecct
   if (schema.details.default.inline === 'yes') {
     return true;
@@ -29,89 +42,239 @@ function inlineSchema(schema: Schema) {
 
   // this is bad. This would happen when we have a circular reference in the tree.
   if (schema.details.default.inline === 'inprogress') {
-    console.error(`Note: model  ${schema.details.default.name} has a circular reference, and we're skipping inlining.`);
+    console.error(`Note: model  ${schema.details.default.name} has a circular reference, and we're skipping inlining.\n  ${stack.join(' => ')}`);
     // mark it as 'not-inlining'
     schema.details.default.inline = 'no';
     return false;
   }
+
+  // ok, set to in progress now.
+  schema.details.default.inline = 'inprogress';
+
   // virutual property set.
-  let virtualProperties = schema.details.default.virtualProperties = new Dictionary<VirtualProperty>()
+  let virtualProperties = schema.details.default.virtualProperties = {
+    owned: new Array<VirtualProperty>(),
+    inherited: new Array<VirtualProperty>(),
+    inlined: new Array<VirtualProperty>(),
+  };
 
-  let [objs, others] = items(schema.properties).linq.bifurcate(each => each.value.schema.type === JsonType.Object);
+  // First we should run thru the properties in parent classes and create inliners for each property they have.
+  for (const parentSchema of values(schema.allOf)) {
+    // make sure that the parent is done.
+    createVirtualProperties(parentSchema, [...stack, `${schema.details.default.name}`]);
 
+    const parentProperties = parentSchema.details.default.virtualProperties || {
+      owned: [],
+      inherited: [],
+      inlined: [],
+    };
 
-  // run thru the properties in this class.
-  for (const { key: name, value: property } of objs) {
-
-    // for each object member, let's see if it can inline it's children.
-    const success = inlineSchema(property.schema);
-
-    if (schema.details.default.inline === 'no') {
-      // this happens if there is a circular reference.
-      // this means that this class should not attempt any inlining of properties.
-      // all properties should be exposed as primitive properties only.
-      others = items(schema.properties).linq.toArray();
-
-      // and we should clear out any properties that we inlined up to now
-      virtualProperties = schema.details.default.virtualProperties = new Dictionary<VirtualProperty>();
-
-      // and stop working on inlining here.
-      break;
-    }
-
-    // the target has properties that we can inline
-    const childCount = length(property.schema.details.default.virtualProperties);
-    if (childCount < threshold || name === 'properties') {
-      // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
-      for (const childProperty of items(property.schema.details.default.virtualProperties)) {
-        virtualProperties[`${name} ${childProperty.key}`] = {
-          kind: 'child-property',
-          container: property.schema,
-          property: childProperty.value.property,
-          propertyName: [name, ...childProperty.value.propertyName],
-        }
-      }
-    } else {
-      // otherwise, we're not below the threshold, and we should treat this as a non-inlined property
-      others.push({ key: name, value: property });
+    // now we go thru the parent's virutal properties and create our own copies 
+    for (const virtualProperty of [...parentProperties.inherited, ...parentProperties.inlined, ...parentProperties.owned]) {
+      // we are just copying over theirs to ours.
+      virtualProperties.inherited.push({
+        name: virtualProperty.name,
+        property: virtualProperty.property,
+        private: virtualProperty.private,
+        nameComponents: virtualProperty.nameComponents,
+        nameOptions: virtualProperty.nameOptions,
+        accessViaProperty: virtualProperty,
+        accessViaMember: virtualProperty.name,
+        accessViaSchema: parentSchema,
+        description: virtualProperty.description,
+        alias: []
+      });
     }
   }
 
-  for (const { key: name, value: property } of others) {
+  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each => each.schema.type === JsonType.Object);
+
+  // run thru the properties in this class.
+  for (const property of objectProperties) {
+    const name = property.details.default.name;
+
+    // for each object member, make sure that it's inlined it's children that it can.
+    createVirtualProperties(property.schema, [...stack, `${schema.details.default.name}::${name}`]);
+
+    // this happens if there is a circular reference.
+    // this means that this class should not attempt any inlining of that property at all .
+    const canInline = property.schema.details.default.inline === 'yes';
+
+    // the target has properties that we can inline
+    const virtualChildProperties = property.schema.details.default.virtualProperties || {
+      owned: [],
+      inherited: [],
+      inlined: [],
+    }
+    const childCount = length(virtualChildProperties.owned) + length(virtualChildProperties.inherited) + length(virtualChildProperties.inlined);
+    if (canInline && property.schema.required && (childCount < threshold || name === 'properties')) {
+      // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
+      // create a private property for the inlined ones to use.
+      const privateProperty = {
+        name: getPascalIdentifier(name),
+        propertySchema: schema,
+        property,
+        nameComponents: [getPascalIdentifier(name)],
+        nameOptions: getNameOptions(schema.details.default.name, [name]),
+        private: true,
+        description: property.description || '',
+        alias: []
+      };
+      virtualProperties.owned.push(privateProperty);
+
+      for (const inlinedProperty of [...virtualChildProperties.inherited, ...virtualChildProperties.owned]) {
+        // child properties are be inlined without prefixing the name with the property name
+        // unless there is a collision, in which case, we have to resolve 
+
+        // (scan back from the far right)
+        // deeper child properties should be inlined with their parent's name 
+        // ie, this.[properties].owner.name should be this.ownerName 
+
+
+        const proposedName = getPascalIdentifier(`${name === 'properties' ? '' : getPascalIdentifier(name)} ${inlinedProperty.name}`);
+
+        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
+        virtualProperties.inlined.push({
+          name: proposedName,
+          property: inlinedProperty.property,
+          private: inlinedProperty.private,
+          nameComponents: components,
+          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
+          accessViaProperty: privateProperty,
+          accessViaMember: inlinedProperty.name,
+          accessViaSchema: schema,
+          description: inlinedProperty.description,
+          alias: []
+        });
+      }
+
+      for (const inlinedProperty of [...virtualChildProperties.inlined]) {
+        // child properties are be inlined without prefixing the name with the property name
+        // unless there is a collision, in which case, we have to resolve 
+
+        // (scan back from the far right)
+        // deeper child properties should be inlined with their parent's name 
+        // ie, this.[properties].owner.name should be this.ownerName 
+
+
+        const proposedName = getPascalIdentifier(inlinedProperty.name);
+        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
+        virtualProperties.inlined.push({
+          name: proposedName,
+          property: inlinedProperty.property,
+          private: inlinedProperty.private,
+          nameComponents: components,
+          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
+          accessViaProperty: privateProperty,
+          accessViaMember: inlinedProperty.name,
+          accessViaSchema: schema,
+          description: inlinedProperty.description,
+          alias: []
+        });
+      }
+    } else {
+      // otherwise, we're not below the threshold, and we should treat this as a non-inlined property
+      nonObjectProperties.push(property);
+    }
+  }
+
+  for (const property of nonObjectProperties) {
+    const name = getPascalIdentifier(<string>property.details.default.name);
     // this is not something that has properties,
     // so we don't need to do any inlining
     // however, we can add it to our list of virtual properties
     // so that our consumers can get it.
-    virtualProperties[name] = {
-      kind: 'my-property',
-      container: schema,
+    virtualProperties.owned.push({
+      name,
       property,
-      propertyName: [name],
-    }
+      nameComponents: [name],
+      nameOptions: [name],
+      description: property.description || '',
+      alias: []
+    });
   }
 
-  // now we should run thru the properties in parent classes and create inliners for each property they have.
-  for (const parentSchema of values(schema.allOf)) {
+  // resolve name collisions.
+  const allProps = [...virtualProperties.owned, ...virtualProperties.inherited, ...virtualProperties.inlined];
+  const inlined = new Map<string, number>();
 
-    // make sure that the parent is done.
-    inlineSchema(parentSchema);
+  for (const each of allProps) {
+    // track number of instances of a given name.
+    inlined.set(each.name, (inlined.get(each.name) || 0) + 1);
+  }
 
-    // now we go thru the parent's virutal properties and create our own copies 
-    for (const { key: name, value: virtualProperty } of items(parentSchema.details.default.virtualProperties)) {
-      // we are just copying over theirs to ours.
-      virtualProperties[name] = {
-        kind: 'parent-property',
-        container: virtualProperty.container,
-        property: virtualProperty.property,
-        propertyName: virtualProperty.propertyName,
-      }
+  const usedNames = new Set(inlined.keys());
+  for (const each of virtualProperties.inlined) {
+    const ct = inlined.get(each.name);
+    if (ct && ct > 1) {
+      each.name = selectName(each.nameOptions, usedNames);
     }
   }
-*/
+  schema.details.default.inline = 'yes';
   return true;
 }
 
-async function inlineProperties(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+function createVirtualParameters(operation: CommandOperation) {
+  const virtualParameters = {
+    operation: new Array<VirtualParameter>(),
+    body: new Array<VirtualParameter>()
+  };
+
+  const dropBodyParameter = operation.details.default.dropBodyParameter ? true : false
+
+  // loop thru the parameters of the command operation, and if there is a body parameter, expand it if necessary.
+  for (const parameter of values(operation.parameters)) {
+    if (parameter.details.default.constantValue) {
+      // this parameter has a constant value -- SKIP IT
+      continue;
+    }
+
+    if (parameter.details.default.fromHost || parameter.details.default.apiversion) {
+      // handled in the generator right now. Not exposed to the user directly.
+      continue;
+    }
+
+    if (dropBodyParameter && parameter.details.default.isBodyParameter) {
+      // the client will make a hidden body parameter for this, and we're expected to fill it.
+      const vps = parameter.schema.details.default.virtualProperties;
+      if (vps) {
+        for (const property of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
+          if (property.private || property.property.schema.readOnly) {
+            // private or readonly properties aren't needed as parameters. 
+            continue;
+          }
+          virtualParameters.body.push({
+            name: property.name,
+            description: property.property.details.default.description,
+            nameOptions: property.nameOptions,
+            required: property.property.details.default.required,
+            schema: property.property.schema,
+            origin: property,
+            alias: []
+
+          });
+        }
+      }
+    } else {
+      virtualParameters.operation.push({
+        name: parameter.details.default.name,
+        nameOptions: [parameter.details.default.name],
+        description: parameter.details.default.description,
+        required: true, /* if it's present in the variant, it's required  */
+        schema: parameter.schema,
+        origin: parameter,
+        alias: []
+      });
+    }
+  }
+
+  resolveParameterNames([], virtualParameters);
+
+
+  operation.details.default.virtualParameters = virtualParameters;
+}
+
+async function createVirtuals(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
     
@@ -128,8 +291,13 @@ async function inlineProperties(model: codemodel.Model, service: Host): Promise<
         continue;
       }
       // we have an object, let's process it.
-      inlineSchema(schema);
+      createVirtualProperties(schema);
     }
   }
+
+  for (const operation of values(model.commands.operations)) {
+    createVirtualParameters(operation);
+  }
+
   return model;
 }
