@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="runtime\ExportFormatPs1xml.cs" />
+    <Compile Include="runtime\FormatTypes.cs" />
     <Compile Include="runtime\GetScriptCmdlet.cs" />
     <Compile Include="runtime\ExportProxyCmdlet.cs" />
     <Compile Include="runtime\ExportTestStub.cs" />
@@ -20,6 +22,7 @@
     <Compile Include="runtime\PsProxyOutputs.cs" />
     <Compile Include="runtime\PsProxyTypes.cs" />
     <Compile Include="runtime\SetPsd1Export.cs" />
+    <Compile Include="runtime\XmlExtensions.cs" />
   </ItemGroup>
 
 </Project>

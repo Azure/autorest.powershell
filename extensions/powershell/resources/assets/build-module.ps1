@@ -45,7 +45,7 @@ if(-not $Isolated) {
   } elseif($Run) {
     . $runModulePath
   } else {
-    Write-Host -ForegroundColor Cyan "To run this module in an isolated PowerShell session, run 'run-module.ps1' or provide the '-Run' parameter to this script."
+    Write-Host -ForegroundColor Cyan "To run this module in an isolated PowerShell session, run the 'run-module.ps1' script or provide the '-Run' parameter to this script."
   }
   return
 }
@@ -106,5 +106,8 @@ Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
 
 $psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
 Set-Psd1Export -ExportsFolder $exportsFolder -Psd1Path $psd1
+
+$formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
+Export-FormatPs1xml -FilePath $formatPs1xml
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
