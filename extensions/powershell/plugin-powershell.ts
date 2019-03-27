@@ -50,7 +50,7 @@ export async function powershell(service: Host) {
     await generateCsproj(service, project);
     await generatePsd1(service, project);
     await generatePsm1(service, project);
-    await generateFormatPs1xml(service, model, project);
+    // await generateFormatPs1xml(service, model, project);
     await generatePsm1Custom(service, project);
     await generatePsm1Internal(service, project);
     await generateNuspec(service, project);

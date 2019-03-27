@@ -10,15 +10,30 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal static class PsExtensions
     {
         // https://stackoverflow.com/a/863944/294804
+        // https://stackoverflow.com/a/4452598/294804
+        // https://stackoverflow.com/a/28701974/294804
+        // Note: This will unwrap nested collections, but we don't generate nested collections.
+        private static Type Unwrap(this Type type)
+        {
+            if (type.IsArray)
+            {
+                return type.GetElementType().Unwrap();
+            }
+
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsGenericType
+                && (typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>) || typeof(IEnumerable<>).IsAssignableFrom(type)))
+            {
+                return typeInfo.GetGenericArguments().First().Unwrap();
+            }
+
+            return type;
+        }
+
+        // https://stackoverflow.com/a/863944/294804
         private static bool IsSimple(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
-            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                // nullable type, check if the nested type is simple.
-                return typeInfo.GetGenericArguments()[0].IsSimple();
-            }
-
             return typeInfo.IsPrimitive
                    || typeInfo.IsEnum
                    || type == typeof(string)
@@ -31,13 +46,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Where(mi => mi.Name == "op_Implicit" && mi.ReturnType == targetType)
                 .Any(mi => mi.GetParameters().FirstOrDefault()?.ParameterType == baseType);
 
-        public static bool IsPsSimple(this Type type) =>
-            type.IsSimple()
-            || type == typeof(SwitchParameter)
-            || type == typeof(Hashtable)
-            || type == typeof(PSCredential)
-            || type.HasImplicitConversion(typeof(string))
-            || (type.IsArray && type.GetElementType().IsPsSimple());
+        public static bool IsPsSimple(this Type type)
+        {
+            var unwrappedType = type.Unwrap();
+            return unwrappedType.IsSimple()
+                   || unwrappedType == typeof(SwitchParameter)
+                   || unwrappedType == typeof(Hashtable)
+                   || unwrappedType == typeof(PSCredential)
+                   || unwrappedType == typeof(DateTime)
+                   || unwrappedType.HasImplicitConversion(typeof(string));
+        }
 
         public static string ToPsList(this IEnumerable<string> items) => String.Join(", ", items.Select(i => $"'{i}'"));
 
