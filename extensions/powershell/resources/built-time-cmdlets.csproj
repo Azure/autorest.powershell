@@ -11,9 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="runtime\ExportScriptCmdlet.cs" />
-    <Compile Include="runtime\NewProxyCmdlet.cs" />
-    <Compile Include="runtime\NewTestStub.cs" />
+    <Compile Include="runtime\GetScriptCmdlet.cs" />
+    <Compile Include="runtime\ExportProxyCmdlet.cs" />
+    <Compile Include="runtime\ExportTestStub.cs" />
+    <Compile Include="runtime\PsHelpers.cs" />
     <Compile Include="runtime\PsAttributes.cs" />
     <Compile Include="runtime\PsExtensions.cs" />
     <Compile Include="runtime\PsProxyOutputs.cs" />
