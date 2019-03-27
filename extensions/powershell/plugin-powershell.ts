@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
-import { generateFormatPs1xml } from './generators/format-ps1xml';
 import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
@@ -50,7 +49,6 @@ export async function powershell(service: Host) {
     await generateCsproj(service, project);
     await generatePsd1(service, project);
     await generatePsm1(service, project);
-    // await generateFormatPs1xml(service, model, project);
     await generatePsm1Custom(service, project);
     await generatePsm1Internal(service, project);
     await generateNuspec(service, project);
