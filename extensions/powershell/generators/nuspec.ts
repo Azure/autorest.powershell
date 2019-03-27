@@ -45,6 +45,7 @@ export async function generateNuspec(service: Host, project: Project) {
     <!-- https://github.com/NuGet/Home/issues/3584 -->
     <file src="${removeCd(project.dll)}" target="${removeCd(project.binFolder)}" />
     <file src="${removeCd(project.binFolder)}/${project.dllName}.deps.json" target="${removeCd(project.binFolder)}" />
+    <file src="${removeCd(project.internalFolder)}/**/*.*" />
     <file src="${removeCd(project.customFolder)}/**/*.*" exclude="${removeCd(project.customFolder)}/readme.md;${removeCd(project.customFolder)}/**/*.cs" />
     <file src="${removeCd(project.docsFolder)}/**/*.md" exclude="${removeCd(project.docsFolder)}/readme.md" />
     <file src="${removeCd(project.exportsFolder)}/**/*.ps1" />

@@ -14,14 +14,14 @@ export async function generatePsm1(service: Host, project: Project) {
   # Get this module's instance
   $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
-  # Load the custom script module
-  $scriptModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
-  if(Test-Path $scriptModulePath) {
-    $null = Import-Module -Name $scriptModulePath
-  }
-
   # Load the private module dll
   $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
+
+  # Load the custom module
+  $customModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
+  if(Test-Path $customModulePath) {
+    $null = Import-Module -Name $customModulePath
+  }
 
   # Export nothing to clear implicit exports
   Export-ModuleMember`);
@@ -89,11 +89,8 @@ export async function generatePsm1(service: Host, project: Project) {
   }
 
   if($exportsPath) {
-    Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | Sort-Object Name | ForEach-Object {
-      Write-Verbose "Loading script file: $($_.Name)"
-      . $_.FullName
-      Export-ModuleMember -Function $_.BaseName
-    }
+    Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
+    Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath)
   }`);
 
   psm1.append('Finalization', `

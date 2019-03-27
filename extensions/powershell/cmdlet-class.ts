@@ -11,7 +11,7 @@ import {
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration } from '@microsoft.azure/autorest.csharp-v2';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, DoNotExportAttribute } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
@@ -753,9 +753,9 @@ export class CmdletClass extends Class {
     }
 
     if (!!operation.details.csharp.hidden) {
-      this.add(new Attribute(DoNotExportAttribute));
+      this.add(new Attribute(InternalExportAttribute));
       const cmdletName = `${operation.details.csharp.verb}-${operation.details.csharp.name ? `${operation.details.csharp.noun}_${operation.details.csharp.name}` : operation.details.csharp.noun}`;
-      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hidden' directive to ${cmdletName}. Added attribute ${DoNotExportAttribute.declaration} to cmdlet.` });
+      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));

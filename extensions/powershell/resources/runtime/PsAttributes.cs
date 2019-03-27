@@ -19,6 +19,11 @@ namespace Microsoft.Rest
     }
 
     [AttributeUsage(AttributeTargets.Class)]
+    public class InternalExportAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Class)]
     public class GeneratedAttribute : Attribute
     {
     }

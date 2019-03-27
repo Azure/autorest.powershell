@@ -39,24 +39,24 @@ if(-not $Isolated) {
     }
   }
 
+  $runModulePath = Join-Path $PSScriptRoot 'run-module.ps1'
   if($Code) {
-    . (Join-Path $PSScriptRoot 'run-module.ps1') -Code
+    . $runModulePath -Code
   } elseif($Run) {
-    . (Join-Path $PSScriptRoot 'run-module.ps1')
+    . $runModulePath
   } else {
-    Write-Host -ForegroundColor Cyan 'To run this module in an isolated PowerShell session, run ''./run-module.ps1'' or provide the ''-Run'' parameter to this script.'
+    Write-Host -ForegroundColor Cyan "To run this module in an isolated PowerShell session, run 'run-module.ps1' or provide the '-Run' parameter to this script."
   }
   return
 }
 
 Write-Host -ForegroundColor Green 'Cleaning build folders...'
-$binFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}')
-$objFolder = (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}')
+$binFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}'
+$objFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}'
 $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
-$exportPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
-$null = Get-ChildItem -Path $exportPath -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 
 if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
+  Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
   Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
 }
 
@@ -71,34 +71,40 @@ if($LastExitCode -ne 0) {
 }
 
 $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
-$dll = Get-Item -Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}')
+$dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
 
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
 }
 
-$commands = Get-Command -Module (Import-Module $dll -PassThru)
-Write-Host -ForegroundColor Green "Module DLL Loaded [$dll]"
+# Load DLL to use build-time cmdlets
+$null = Import-Module -Name $dll
 
-$customPsm1 = Get-Item -Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.psm1Custom)}')
+$modulePaths = $dll
+$customPsm1 = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.psm1Custom)}'
 if(Test-Path $customPsm1) {
-  $commands += Get-Command -Module (Import-Module $customPsm1 -PassThru)
-  Write-Host -ForegroundColor Green "Custom PSM1 Loaded [$customPsm1]"
+  $modulePaths = @($dll, $customPsm1)
 }
 
-$excludedCmdlets = 'New-ProxyCmdlet', 'New-TestStub', 'Set-Psd1Export'
-$commands = $commands | Where-Object { $excludedCmdlets -notcontains $_.Name }
-if(($commands | Measure-Object).Count -eq 0) {
-  Write-Error 'Unable to locate any cmdlets.'
+$exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
+if(Test-Path $exportsFolder) {
+  $null = Get-ChildItem -Path $exportsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 }
+$null = New-Item -ItemType Directory -Force -Path $exportsFolder
 
-$null = New-Item -ItemType Directory -Force -Path $exportPath
-$exportedCmdlets = New-ProxyCmdlet -CommandInfo $commands -OutputFolder $exportPath
+$internalFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.internalFolder)}'
+if(Test-Path $internalFolder) {
+  $null = Get-ChildItem -Path $internalFolder -Recurse -Exclude '*.psm1', 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+}
+$null = New-Item -ItemType Directory -Force -Path $internalFolder
 
-$testPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
-$null = New-Item -ItemType Directory -Force -Path $testPath
-New-TestStub -CommandInfo $commands -OutputFolder $testPath
+Export-ProxyCmdlet -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder
 
-Set-Psd1Export -CmdletNames $exportedCmdlets -Psd1Path (Join-Path $PSScriptRoot '${$project.psd1}')
+$testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
+$null = New-Item -ItemType Directory -Force -Path $testFolder
+Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
+
+$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
+Set-Psd1Export -ExportsFolder $exportsFolder -Psd1Path $psd1
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
