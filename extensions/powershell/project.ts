@@ -28,6 +28,7 @@ export class Project extends codeDomProject {
   public objFolder!: string;
   public exportsFolder!: string;
   public docsFolder!: string;
+  public examplesFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
   public csproj!: string;
@@ -126,6 +127,7 @@ export class Project extends codeDomProject {
     this.exportsFolder = await this.getConfigValue('exports-folder', `${this.baseFolder}/exports`);
     this.docsFolder = await this.getConfigValue('docs-folder', `${this.baseFolder}/docs`);
     this.dependencyModuleFolder = await this.getConfigValue('dependency-module-folder', `${this.moduleFolder}/modules`);
+    this.examplesFolder = await this.getConfigValue('examples-folder', `${this.baseFolder}/examples`);
 
     // File paths
     this.csproj = await this.getConfigValue('csproj', `${this.baseFolder}/${this.moduleName}.csproj`);

@@ -7,11 +7,6 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateNuspec(service: Host, project: Project) {
-  // If the file is already there, don't write a new one.
-  if (await service.ReadFile(project.nuspec)) {
-    return;
-  }
-
   const authorsOwners = project.azure ? 'Microsoft Corporation' : '';
   const licenseUrl = project.azure ? `https://aka.ms/azps-license` : '';
   const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : '';
