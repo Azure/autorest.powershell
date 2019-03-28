@@ -7,16 +7,13 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateCsproj(service: Host, project: Project) {
-  // write out the csproj file if it's not there.
-  if (!await service.ReadFile(project.csproj)) {
-
-    const release = project.azure ? `    <SignAssembly>true</SignAssembly>
+  const release = project.azure ? `    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>TRACE;RELEASE;NETSTANDARD;SIGN</DefineConstants>` :
-      `    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>`;
+    `    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>`;
 
-    service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
+  service.WriteFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>${project.moduleVersion}</Version>
@@ -52,5 +49,4 @@ ${release}
   </ItemGroup>
 
 </Project>`, undefined, 'source-file-csharp');
-  }
 }

@@ -39,10 +39,11 @@ export async function powershell(service: Host) {
 
     await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
 
-    await service.ProtectFiles(project.csproj);
+    await service.ProtectFiles(project.psd1);
     await service.ProtectFiles(project.customFolder);
     await service.ProtectFiles(project.testFolder);
     await service.ProtectFiles(project.docsFolder);
+    await service.ProtectFiles(project.examplesFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(service, project);
