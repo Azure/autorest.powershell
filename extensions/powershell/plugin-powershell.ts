@@ -15,6 +15,8 @@ import { generateCsproj } from './generators/csproj';
 import { generatePsm1Custom } from './generators/psm1.custom';
 import { generatePsm1Internal } from './generators/psm1.internal';
 import { generateNuspec } from './generators/nuspec';
+import { generateGitIgnore } from './generators/gitignore';
+import { generateGitAttributes } from './generators/gitattributes';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
@@ -53,6 +55,8 @@ export async function powershell(service: Host) {
     await generatePsm1Custom(service, project);
     await generatePsm1Internal(service, project);
     await generateNuspec(service, project);
+    await generateGitIgnore(service, project);
+    await generateGitAttributes(service, project);
 
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
