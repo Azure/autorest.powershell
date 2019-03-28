@@ -33,6 +33,8 @@ export class Project extends codeDomProject {
   public moduleName!: string;
   public csproj!: string;
   public nuspec!: string;
+  public gitIgnore!: string;
+  public gitAttributes!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -138,6 +140,8 @@ export class Project extends codeDomProject {
     this.psm1Internal = await this.getConfigValue('psm1-internal', `${this.internalFolder}/${this.moduleName}.internal.psm1`);
     this.formatPs1xml = await this.getConfigValue('format-ps1xml', `${this.baseFolder}/${this.moduleName}.format.ps1xml`);
     this.nuspec = await this.getConfigValue('nuspec', `${this.baseFolder}/${this.moduleName}.nuspec`);
+    this.gitIgnore = `${this.baseFolder}/.gitignore`;
+    this.gitAttributes = `${this.baseFolder}/.gitattributes`;
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
