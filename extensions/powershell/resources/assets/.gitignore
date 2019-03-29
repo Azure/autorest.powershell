@@ -1,7 +1,0 @@
-bin
-obj
-.vs
-generated
-exports
-!exports/readme.md
-test/*-TestResults.xml

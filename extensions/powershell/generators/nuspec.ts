@@ -7,11 +7,6 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateNuspec(service: Host, project: Project) {
-  // If the file is already there, don't write a new one.
-  if (await service.ReadFile(project.nuspec)) {
-    return;
-  }
-
   const authorsOwners = project.azure ? 'Microsoft Corporation' : '';
   const licenseUrl = project.azure ? `https://aka.ms/azps-license` : '';
   const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : '';
@@ -45,6 +40,7 @@ export async function generateNuspec(service: Host, project: Project) {
     <!-- https://github.com/NuGet/Home/issues/3584 -->
     <file src="${removeCd(project.dll)}" target="${removeCd(project.binFolder)}" />
     <file src="${removeCd(project.binFolder)}/${project.dllName}.deps.json" target="${removeCd(project.binFolder)}" />
+    <file src="${removeCd(project.internalFolder)}/**/*.*" />
     <file src="${removeCd(project.customFolder)}/**/*.*" exclude="${removeCd(project.customFolder)}/readme.md;${removeCd(project.customFolder)}/**/*.cs" />
     <file src="${removeCd(project.docsFolder)}/**/*.md" exclude="${removeCd(project.docsFolder)}/readme.md" />
     <file src="${removeCd(project.exportsFolder)}/**/*.ps1" />

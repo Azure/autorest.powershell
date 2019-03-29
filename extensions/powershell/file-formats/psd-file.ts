@@ -5,7 +5,8 @@ export class PsdFile extends TextWithRegions {
   private footer: string;
   constructor(content?: TextPossibilities, objectIntializer?: Partial<PsdFile>) {
     content = content || '@{}';
-    const [, header, contents, footer] = /(^.*?@{)(.*)(}\s*)/.exec(new Text(content).text.replace(/[\r?\n]/g, '«').replace(/^«*/, '').replace(/«*$/, '')) || [, '@{', '', '}'];
+    // https://stackoverflow.com/a/10805292/294804
+    const [, header, contents, footer] = /(^.*?@{)(.*)(}\s*)/.exec(new Text(content).text.replace(/\r?\n|\r/g, '«').replace(/^«*/, '').replace(/«*$/, '')) || [, '@{', '', '}'];
     super((contents || '').replace(/«/g, '\n'));
     this.header = header || '';
     this.footer = footer || '';
