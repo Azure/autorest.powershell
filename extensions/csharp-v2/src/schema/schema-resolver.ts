@@ -192,6 +192,10 @@ export class SchemaDefinitionResolver {
         return new Numeric(schema, required, required ? 'float' : 'float?');
 
       case undefined:
+        if (schema.extensions['x-ms-enum']) {
+          return new EnumImplementation(schema, required);
+        }
+
         // "any" case
         // this can happen when a model is just an all-of something else. (sub in the other type?)
         break;
