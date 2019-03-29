@@ -1,3 +1,14 @@
 # Exports
-This directory contains the cmdlets *exported by* `{$project.moduleName}`. No other cmdlets in this repository are directly exported. What that means is the `{$project.moduleName}` module will run [Export-ModuleMember](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/export-modulemember?view=powershell-6) on the cmldets in this directory. The cmdlets in this directory are generated at **build-time**. Do not put any custom code, files, cmdlets, etc. into this directory. Please use `${$lib.path.relative($project.baseFolder, $project.customFolder)}` for all custom implementation.
+This directory contains the cmdlets *exported by* `{$project.moduleName}`. No other cmdlets in this repository are directly exported. What that means is the `{$project.moduleName}` module will run [Export-ModuleMember](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/export-modulemember?view=powershell-6) on the cmldets in this directory. The cmdlets in this directory are generated at **build-time**. Do not put any custom code, files, cmdlets, etc. into this directory. Please use `${$lib.path.relative($project.exportsFolder, $project.customFolder)}` for all custom implementation.
 
+## Info
+- Modifiable: no
+- Generated: all
+- Committed: no
+- Packaged: yes
+
+## Details
+The cmdlets generated here are created every time you run `build-module.ps1`. These cmdlets are a merge of all (excluding `InternalExport`) cmdlets from the private binary (`${$lib.path.relative($project.exportsFolder, $project.dll)}`) and from the `${$lib.path.relative($project.exportsFolder, $project.psm1Custom)}` module. Cmdlets that are *not merged* from those directories are decorated with the `InternalExport` attribute. This happens when you set the cmdlet to **hide** from configuration. For more information on hiding, see [cmdlet hiding](https://github.com/Azure/autorest/blob/master/docs/powershell/options.md#cmdlet-hiding-exportation-suppression) or the `readme.md` in `${$lib.path.relative($project.exportsFolder, $project.internalFolder)}`.
+
+## Purpose
+We generate script cmdlets out of the binary cmdlets and custom cmdlets. The format of script cmdlets are simplistic; thus, easier to generate at build time. Generating the cmdlets is required as to allow merging of generated binary, hand-written binary, and hand-written custom cmdlets. For Azure cmdlets (those using `--azure`), having script cmdlets simplifies the mechanism for exporting Azure profiles.
