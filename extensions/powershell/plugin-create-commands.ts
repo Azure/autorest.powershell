@@ -42,9 +42,43 @@ async function commonParameters(service: Host): Promise<Array<string>> {
   ] : [];
 }
 
+async function getConfigValue<T>(key: string, defaultValue: T, service: Host): Promise<T> {
+  // GetValue returns null when values are not found.
+  const value = await service.GetValue(key);
+  return value !== null ? <T>value : defaultValue;
+}
+
+export function titleToServiceName(title: string): string {
+  const titleCamelCase = pascalCase(deconstruct(title)).trim();
+  const serviceName = titleCamelCase
+    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+  return serviceName || titleCamelCase;
+}
+
 async function commandCreator(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-  // check to see if there are already operations in the configuration that we should load
-  // and check to see if we should infer new operations
+  const isAzure = !!(await getConfigValue('azure', false, service) || await getConfigValue('azure-arm', false, service) || false);
+  const prefix = await getConfigValue('prefix', isAzure ? 'Az' : ``, service);
+  const serviceName = await getConfigValue('service-name', isAzure ? titleToServiceName(model.info.title) : model.info.title, service);
+  const subjectPrefix = await getConfigValue('subject-prefix', isAzure ? serviceName : ``, service);
+
+  model.details.default.isAzure = isAzure;
+  model.details.default.prefix = prefix;
+  service.Message({
+    Channel: Channel.Verbose, Text: `[CMDLET-PREFIX] => '${model.details.default.prefix}'`
+  });
+
+  model.details.default.serviceName = serviceName;
+  service.Message({
+    Channel: Channel.Verbose, Text: `[SERVICE-NAME] => '${model.details.default.serviceName}'`
+  });
+
+  model.details.default.subjectPrefix = subjectPrefix;
+  service.Message({
+    Channel: Channel.Verbose, Text: `[SUBJECT-PREFIX] => '${model.details.default.subjectPrefix}'`
+  });
 
   // perform the detection
   model = await detect(model, service);
@@ -142,7 +176,8 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
       ...operation.details,
       default: {
         ...operation.details.default,
-        noun: variant.noun,
+        subject: variant.subject,
+        subjectPrefix: variant.subjectPrefix,
         verb: variant.verb,
         name: vname
       }
@@ -197,13 +232,13 @@ async function addVariants(parameters: Array<http.HttpOperationParameter>, opera
   }
 
   // no optionals:
-  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
+  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
   await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, model, service);
 
   // handle optional parameter variants
   for (const combo of combos) {
     const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
-    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.noun} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
+    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
   }
 }
@@ -215,7 +250,7 @@ async function detect(model: codemodel.Model, service: Host): Promise<codemodel.
   const commonCandidates = await commonParameters(service);
 
   for (const operation of values(model.http.operations)) {
-    for (const variant of await inferCommandNames(operation.operationId, service)) {
+    for (const variant of await inferCommandNames(operation.operationId, service, model)) {
 
       // no common parameters (standard variations)
       await addVariants(operation.parameters, operation, variant, model, service);
@@ -280,11 +315,13 @@ const pluralizationService = new Lazy(() => {
 
 interface CommandVariant {
   verb: string;
-  noun: string;
+  subject: string;
+  subjectPrefix: string;
   variant: string;
 }
 
-async function inferCommandNames(operationId: string, service: Host): Promise<Array<CommandVariant>> {
+async function inferCommandNames(operationId: string, service: Host, model: codemodel.Model): Promise<Array<CommandVariant>> {
+
   const pluralization = pluralizationService.Value;
 
   let [group, method] = operationId.split('_', 2);
@@ -293,7 +330,7 @@ async function inferCommandNames(operationId: string, service: Host): Promise<Ar
     method = group;
     group = '';
 
-    // todo:  with no group, figure out a strategy for verb/nouning the method..
+    // todo:  with no group, figure out a strategy for verb/subject-ing the method..
   }
 
   group = pluralization.singularize(group);
@@ -302,7 +339,7 @@ async function inferCommandNames(operationId: string, service: Host): Promise<Ar
   // get verb mappings
   verbMap = await service.GetValue('verb-mapping');
   if (verbMap[method]) {
-    return [getVariant(method, group, [])];
+    return [getVariant(method, group, [], model)];
   } else if (operation.length > 1) {
     // options supported
     // OPERATION or OPERATION2 => OPERATION-GROUP, OPERATION2-GROUP
@@ -317,26 +354,26 @@ async function inferCommandNames(operationId: string, service: Host): Promise<Ar
           // throw new Error(`Unable to perform detection form operation '${group}'/'${method}' -- too many values in operation : '${JSON.stringify(operation)}'`);
         }
 
-        return [getVariant(operation[0], group, operation.slice(3)), getVariant(operation[2], group, operation.slice(3))];
+        return [getVariant(operation[0], group, operation.slice(3), model), getVariant(operation[2], group, operation.slice(3), model)];
 
       case 'by':
       case 'with':
         // create one operation -- OPERATION-GROUP_filter
-        return [getVariant(operation[0], group, operation.slice(2))];
+        return [getVariant(operation[0], group, operation.slice(2), model)];
     }
     // OPERATION[SUFFIX] => OPERATION-GROUP[SUFFIX]
-    return [getVariant(operation[0], [group, ...operation.slice(1)], operation.slice(1))];
+    return [getVariant(operation[0], [group, ...operation.slice(1)], operation.slice(1), model)];
     // would generate simpler name, but I fear for collisions on things like Registries_ListCredentials => get-credentials or Registries_RegenerateCredential => new-credential
     // return [getVariant(operation[0], `${pascalCase(operation.slice(1))}`, operation.slice(1))];
 
   } else {
     // for now, the rest should look like:
     // OPERATION => OPERATION-GROUP
-    return [getVariant(operation[0], group, [])];
+    return [getVariant(operation[0], group, [], model)];
   }
 }
 
-function getVariant(operation: string, group: string | Array<string>, suffix: Array<string>): CommandVariant {
+function getVariant(operation: string, group: string | Array<string>, suffix: Array<string>, model: codemodel.Model): CommandVariant {
   const pluralization = pluralizationService.Value;
   group = !Array.isArray(group) ? [group] : group;
   const verb = getVerb(operation);
@@ -349,12 +386,12 @@ function getVariant(operation: string, group: string | Array<string>, suffix: Ar
   }
 
   group = group.map(each => pluralization.singularize(each));
-  const noun = pascalCase(group);
 
   return {
-    noun,
+    subject: pascalCase(group),
     variant: pascalCase(suffix),
-    verb
+    verb,
+    subjectPrefix: model.details.default.subjectPrefix
   };
 }
 
