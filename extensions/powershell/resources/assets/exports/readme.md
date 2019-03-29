@@ -1,1 +1,3 @@
 # Exports
+This directory contains the cmdlets *exported by* `{$project.moduleName}`. No other cmdlets in this repository are directly exported. What that means is the `{$project.moduleName}` module will run [Export-ModuleMember](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/export-modulemember?view=powershell-6) on the cmldets in this directory. The cmdlets in this directory are generated at **build-time**. Do not put any custom code, files, cmdlets, etc. into this directory. Please use `${$lib.path.relative($project.baseFolder, $project.customFolder)}` for all custom implementation.
+
