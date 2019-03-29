@@ -29,7 +29,8 @@ export class CmdletClass extends Class {
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
-    const variantName = `${state.project.prefix}${state.project.getCmdletNoun(operation.details.csharp.noun)}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
+    const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`
+    const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
 
     const name = `${operation.details.csharp.verb}${variantName}`;
     super(namespace, name, PSCmdlet);
@@ -754,8 +755,9 @@ export class CmdletClass extends Class {
 
     if (!!operation.details.csharp.hidden) {
       this.add(new Attribute(InternalExportAttribute));
-      const cmdletName = `${operation.details.csharp.verb}-${operation.details.csharp.name ? `${operation.details.csharp.noun}_${operation.details.csharp.name}` : operation.details.csharp.noun}`;
-      this.state.service.Message({ Channel: Channel.Verbose, Text: `Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
+      const noun = `${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`
+      const cmdletName = `${operation.details.csharp.verb}-${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
+      this.state.service.Message({ Channel: Channel.Verbose, Text: `[DIRECTIVE] Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));

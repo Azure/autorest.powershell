@@ -10,7 +10,8 @@ import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/co
 
 interface RemoveCommandDirective {
   where: {
-    noun?: string;
+    subject?: string;
+    subjectPrefix?: string;
     verb?: string;
     variant?: string;
   };
@@ -23,7 +24,7 @@ function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
   const directive = <RemoveCommandDirective>it;
   const where = directive.where;
   const remove = directive.remove;
-  if (where && remove && (where.noun || where.verb || where.variant)) {
+  if (where && remove && (where.subject || where.verb || where.variant || where.subjectPrefix)) {
     return true;
   }
 
@@ -47,19 +48,28 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
 
     if (isRemoveCommandDirective(directive)) {
-      const nounRegex = getParsedSelector(directive.where.noun);
+      const subjectRegex = getParsedSelector(directive.where.subject);
+      const subjectPrefixRegex = getParsedSelector(directive.where.subjectPrefix);
       const verbRegex = getParsedSelector(directive.where.verb);
       const variantRegex = getParsedSelector(directive.where.variant);
 
       // select all operations
       const operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
       let operationsToRemoveKeys = new Set<number>();
-      if (nounRegex) {
-        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.noun}`.match(nounRegex))
+      if (subjectRegex) {
+        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subject}`.match(subjectRegex))
           .linq.select(operation => operation.key)
           .linq.toArray());
 
         operationsToRemoveKeys = matchingKeys;
+      }
+
+      if (subjectPrefixRegex) {
+        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subjectPrefix}`.match(subjectPrefixRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
       }
 
       if (verbRegex) {
@@ -83,7 +93,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       for (const key of operationsToRemoveKeys) {
         const operationInfo = model.commands.operations[key].details.default;
         service.Message({
-          Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.noun}_${operationInfo.name}` : operationInfo.noun}`
+          Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.subjectPrefix}${operationInfo.subject}_${operationInfo.name}` : `${operationInfo.subjectPrefix}${operationInfo.subject}`}`
         });
 
         delete model.commands.operations[key];

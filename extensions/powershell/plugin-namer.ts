@@ -5,7 +5,7 @@
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
-import { deconstruct, fixLeadingNumber, pascalCase, values, removeProhibitedPrefix, getPascalIdentifier } from '@microsoft.azure/codegen';
+import { deconstruct, values, removeProhibitedPrefix } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
 
@@ -18,9 +18,24 @@ export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
+export function getDeduplicatedSubjectPrefix(subjectPrefix: string, subject: string): string {
+  // It removes intersection with the subject from the subjectPrefix:
+  //    ContainerServiceContainerService -> ContainerService, 
+  //    AppConfigurationConfigurationService -> AppConfiguration
+
+  const deconstructedSubject = deconstruct(subject);
+  const endingsToMatch = [];
+  for (let i = 0; i < deconstructedSubject.length; i++) {
+    endingsToMatch.push(`${deconstructedSubject.slice(0, i + 1).join('')}$`);
+  }
+
+  const regex = new RegExp(`(.*)(${endingsToMatch.join('|')})`, 'g');
+  return subjectPrefix.replace(regex, '$1');
+}
+
 async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
   // get the value 
-  const isAzure = !!await service.GetValue('azure') || !!await service.GetValue('azure-arm') || false;
+  const isAzure = model.details.default.isAzure;
   const shouldSanitize = !!await service.GetValue('sanitize-names');
 
   // make sure recursively that every details field has csharp
@@ -32,6 +47,24 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
   if (shouldSanitize || isAzure) {
     for (const operation of values(model.commands.operations)) {
+      // clean the noun (i.e. subjectPrefix + subject)
+      const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
+      const newSubjectPrefix = getDeduplicatedSubjectPrefix(operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
+      if (prevSubjectPrefix !== newSubjectPrefix) {
+        const verb = operation.details.csharp.verb;
+        const subject = operation.details.csharp.subject;
+        const variantName = operation.details.csharp.name;
+        const prevCmdletName = getCmdletName(verb, prevSubjectPrefix, subject);
+        operation.details.csharp.subjectPrefix = newSubjectPrefix;
+        const newCmdletName = getCmdletName(verb, operation.details.csharp.subjectPrefix, subject);
+        service.Message(
+          {
+            Channel: Channel.Verbose,
+            Text: `Sanitized cmdlet-name -> Changed cmdlet-name from ${prevCmdletName} to ${newCmdletName}: {subjectPrefix: ${newSubjectPrefix}, subject: ${subject}${variantName ? `, variant: ${variantName}}` : '}'}`
+          }
+        );
+      }
+
       const virtualParameters = [...allVirtualParameters(operation.details.csharp.virtualParameters)]
       for (const parameter of virtualParameters) {
         // save previous name as alias
@@ -43,7 +76,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
         const sanitizedName = removeProhibitedPrefix(
           parameter.name,
-          operation.details.csharp.noun,
+          operation.details.csharp.subject,
           otherParametersNames
         );
 
@@ -56,7 +89,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           parameter.name = sanitizedName;
-          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
         } else if (namesToSingularize.has(parameter.name) && isAzure) {
           if (parameter.alias === undefined) {
             parameter.alias = [];
@@ -66,7 +99,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           parameter.name = singularize(parameter.name);
-          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename ->  Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.noun}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
         }
       }
     }
@@ -98,7 +131,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           property.name = sanitizedName;
-          service.Message({ Channel: Channel.Verbose, Text: `Sanitized name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         } else if (namesToSingularize.has(property.name) && isAzure) {
           // apply alias
           const prevName = property.name;
@@ -110,7 +143,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           property.name = singularize(property.name);
-          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure property rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure property-rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         }
       }
     }
@@ -131,4 +164,9 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
   }
   return model;
+}
+
+
+function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
+  return `${verb}_${subjectPrefix}${subject}`;
 }
