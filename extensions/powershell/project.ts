@@ -47,7 +47,7 @@ export class Project extends codeDomProject {
   public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
-  public nounPrefix!: string;
+  public subjectPrefix!: string;
   public projectNamespace: string;
   public overrides: Dictionary<string>;
   public serviceNamespace!: ServiceNamespace;
@@ -99,12 +99,16 @@ export class Project extends codeDomProject {
 
     // Flags
     this.skipModelCmdlets = await this.getConfigValue('skip-model-cmdlets', false);
-    this.azure = await this.getConfigValue('azure', false) || await this.getConfigValue('azure-arm', false) || false;
+    this.azure = this.model.details.default.isAzure;
 
     // Names
-    this.prefix = await this.getConfigValue('prefix', this.azure ? 'Az' : ``);
-    this.serviceName = await this.getConfigValue('service-name', this.azure ? Project.titleToServiceName(this.model.info.title) : this.model.info.title);
-    this.nounPrefix = await this.getConfigValue('noun-prefix', this.azure ? this.serviceName : ``);
+    this.prefix = this.model.details.default.prefix;
+    this.serviceName = this.model.details.default.serviceName;
+    this.subjectPrefix = this.model.details.default.subjectPrefix;
+
+    // Add subjectPrefix to the model so it can be used by the plugin-create-commands plugin.
+    this.model.details.default.subjectPrefix = this.subjectPrefix;
+
     this.moduleName = await this.getConfigValue('module-name', !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName);
     this.dllName = await this.getConfigValue('dll-name', `${this.moduleName}.private`);
 
@@ -154,26 +158,5 @@ export class Project extends codeDomProject {
     // GetValue returns null when values are not found.
     const value = await this.service.GetValue(key);
     return value !== null ? <T>value : defaultValue;
-  }
-
-  public static titleToServiceName(title: string): string {
-    const titleCamelCase = pascalCase(deconstruct(title)).trim();
-    const serviceName = titleCamelCase
-      // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
-      .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
-      // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
-      .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
-    return serviceName || titleCamelCase;
-  }
-
-  public getCmdletNoun(noun: string) {
-    if (!this.azure) {
-      return noun;
-    }
-    const pattern = deconstruct(this.nounPrefix).join('|');
-    const regex = new RegExp(pattern, 'g');
-    const nounCombined = `${this.nounPrefix}${noun.replace(regex, '')}`;
-    this.state.service.Message({ Channel: Channel.Verbose, Text: `Changed cmdlet noun from ${noun} to ${nounCombined}.` });
-    return nounCombined;
   }
 }
