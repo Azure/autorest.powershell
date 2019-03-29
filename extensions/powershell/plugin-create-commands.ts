@@ -186,7 +186,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
     parameters: parameters.map(httpParameter => {
       // make it's own copy of the parameter since after this, 
       // the parameter can be altered for each operation individually.
-      const each = clone(httpParameter, false, undefined, undefined, ['schema']);
+      const each = clone(httpParameter, false, undefined, undefined, ['schema', 'origin']);
       each.details.default = {
         ...each.details.default,
         name: getPascalName(each.details.default.name),
