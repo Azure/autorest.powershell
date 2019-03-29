@@ -399,8 +399,8 @@ function getVariant(operation: string, group: string | Array<string>, suffix: Ar
 let verbMap: { [operationIdMethod: string]: string } = {}
 
 function getVerb(operation: string): string {
-  if (verbMap[operation]) {
-    return getPascalName(verbMap[operation]);
+  if (verbMap[getPascalName(operation)]) {
+    return verbMap[getPascalName(operation)];
   } else {
     return 'Invoke';
   }
