@@ -87,7 +87,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
     }
   }
 
-  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each => each.schema.type === JsonType.Object);
+  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each => each.schema.type === JsonType.Object && !each.schema.additionalProperties && length(each.schema.properties) > 0);
 
   // run thru the properties in this class.
   for (const property of objectProperties) {
@@ -220,7 +220,7 @@ function createVirtualParameters(operation: CommandOperation) {
     body: new Array<VirtualParameter>()
   };
 
-  const dropBodyParameter = operation.details.default.dropBodyParameter ? true : false
+  const dropBodyParameter = !!operation.details.default.dropBodyParameter;
 
   // loop thru the parameters of the command operation, and if there is a body parameter, expand it if necessary.
   for (const parameter of values(operation.parameters)) {
