@@ -13,13 +13,15 @@ let directives: Array<any> = [];
 
 interface WhereCommandDirective {
   where: {
-    noun?: string;
+    subject?: string;
+    'subject-prefix'?: string;
     verb?: string;
     variant?: string;
     'parameter-name'?: string;
   };
   set: {
-    noun?: string;
+    subject?: string;
+    'subject-prefix'?: string;
     verb?: string;
     variant?: string;
     hidden?: Boolean;
@@ -45,8 +47,9 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const where = directive.where;
   const set = directive.set;
   if (where && set) {
-    if ((set['parameter-name'] || set.hidden || set.noun || set["parameter-description"] || set.verb || set.variant)
-      && (where.noun || where.verb || where.variant || where["parameter-name"])) {
+    // just let the subject-prefix to be an empty string
+    if ((set['parameter-name'] || set.hidden || set.subject || set["parameter-description"] || set.verb || set.variant || set['subject-prefix'] !== undefined)
+      && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'])) {
       let error = where['model-name'] ? `Can't select model and command at the same time.` : ``;
       error += where['property-name'] ? `Can't select property and command at the same time.` : ``;
       error += set['property-name'] ? `Can't set a property-name when a command is selected.` : ``;
@@ -71,10 +74,11 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
   if (where && set) {
     if ((set["model-name"] || set["property-description"] || set["property-name"])
       && (where['model-name'] || where['property-name'])) {
-      let error = where['noun'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
+      let error = where['subject'] || where['subject-prefix'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
       error += where['parameter-name'] ? `Can't select a parameter and command at the same time.` : ``;
       error += set['property-name'] ? `Can't set property-name when a model is selected.` : ``;
-      error += set['noun'] ? `Can't set command noun when a model is selected.` : ``;
+      error += set['subject'] ? `Can't set command subject when a model is selected.` : ``;
+      error += set['subject-prefix'] ? `Can't set command subject-prefix when a model is selected.` : ``;
       error += set['verb'] ? `Can't set command verb when a model is selected.` : ``;
       error += set['variant'] ? `Can't set command variant when a model is selected.` : ``;
       error += set['hidden'] ? `Can't hide a command when a model is selected.` : ``;
@@ -108,12 +112,14 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
 
     if (isWhereCommandDirective(directive)) {
-      const nounRegex = getParsedSelector(directive.where.noun);
+      const subjectRegex = getParsedSelector(directive.where['subject']);
+      const subjectPrefixRegex = getParsedSelector(directive.where['subject-prefix']);
       const verbRegex = getParsedSelector(directive.where.verb);
       const variantRegex = getParsedSelector(directive.where.variant);
       const parameterRegex = getParsedSelector(directive.where["parameter-name"]);
 
-      const nounReplacer = directive.set.noun;
+      const subjectReplacer = directive.set['subject'];
+      const subjectPrefixReplacer = directive.set['subject-prefix'];
       const verbReplacer = directive.set.verb;
       const variantReplacer = directive.set.variant;
       const parameterReplacer = directive.set["parameter-name"];
@@ -121,10 +127,17 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       // select all operations
       let operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
-      if (nounRegex) {
+      if (subjectRegex) {
         operations = values(operations)
           .linq.where(operation =>
-            !!`${operation.details.csharp.noun}`.match(nounRegex))
+            !!`${operation.details.csharp.subject}`.match(subjectRegex))
+          .linq.toArray();
+      }
+
+      if (subjectPrefixRegex) {
+        operations = values(operations)
+          .linq.where(operation =>
+            !!`${operation.details.csharp.subjectPrefix}`.match(subjectPrefixRegex))
           .linq.toArray();
       }
 
@@ -153,13 +166,13 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
           if (parameterReplacer) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Changed parameter-name from ${prevName} to ${parameter.name}.`
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed parameter-name from ${prevName} to ${parameter.name}.`
             });
           }
 
           if (paramDescriptionReplacer) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Set parameter-description from parameter ${parameter.name}.`
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Set parameter-description from parameter ${parameter.name}.`
             });
           }
 
@@ -167,24 +180,32 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
       } else if (operations) {
         for (const operation of operations) {
-          const prevNoun = operation.details.csharp.noun;
+          const getCmdletName = (verb: string, subjectPrefix: string, subject: string, variantName: string): string => {
+            return `${verb}-${subjectPrefix}${subject}${variantName ? `_${variantName}` : ``}`
+          }
+
+          const prevSubject = operation.details.csharp.subject;
+          const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
           const prevVerb = operation.details.csharp.verb;
           const prevVariantName = operation.details.csharp.name;
-          const oldCommandName = `${prevVerb}-${prevVariantName ? `${prevNoun}_${prevVariantName}` : prevNoun}`;
+          const oldCommandName = getCmdletName(prevVerb, prevSubjectPrefix, prevSubject, prevVariantName);
 
           // set values
-          operation.details.csharp.noun = nounReplacer ? nounRegex ? prevNoun.replace(nounRegex, nounReplacer) : nounReplacer : prevNoun;
+          operation.details.csharp.subject = subjectReplacer ? subjectRegex ? prevSubject.replace(subjectRegex, subjectRegex) : subjectReplacer : prevSubject;
+          operation.details.csharp.subjectPrefix = subjectPrefixReplacer !== undefined ? subjectPrefixRegex ? prevSubjectPrefix.replace(subjectPrefixRegex, subjectPrefixReplacer) : subjectPrefixReplacer : prevSubjectPrefix;
           operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
           operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
           operation.details.csharp.hidden = (directive.set.hidden !== undefined) ? !!directive.set.hidden : operation.details.csharp.hidden;
 
-          const newNoun = operation.details.csharp.noun;
+          const newSubject = operation.details.csharp.subject;
+          const newSubjectPrefix = operation.details.csharp.subjectPrefix;
           const newVerb = operation.details.csharp.verb;
           const newVariantName = operation.details.csharp.name;
-          const newCommandName = `${newVerb}-${newVariantName ? `${newNoun}_${newVariantName}` : newNoun}`;
+          const newCommandName = getCmdletName(newVerb, newSubjectPrefix, newSubject, newVariantName);
 
-          if (nounReplacer || verbReplacer || variantReplacer) {
-            let modificationMessage = `Changed command from ${oldCommandName} to ${newCommandName}. `
+          // just the subject prefix can be an empty string
+          if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
+            let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
             service.Message({
               Channel: Channel.Verbose, Text: modificationMessage
             });
@@ -224,7 +245,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           if (propertyNameRegex) {
             service.Message({
-              Channel: Channel.Verbose, Text: `Changed property-name from ${prevName} to ${property.name}.`
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed property-name from ${prevName} to ${property.name}.`
             });
           }
         }
@@ -233,7 +254,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         for (const model of models) {
           const prevName = model.details.csharp.name;
           model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name; service.Message({
-            Channel: Channel.Verbose, Text: `Changed model-name from ${prevName} to ${model.details.csharp.name}.`
+            Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
           });
         }
       }
