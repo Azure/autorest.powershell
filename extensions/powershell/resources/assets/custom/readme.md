@@ -18,8 +18,24 @@ For script cmdlets, these are loaded via the `${$lib.path.relative($project.cust
 This allows the modules to have cmdlets that were not defined in the REST specification. It also allows combining logic using generated cmdlets. This is a level of customization beyond what can be done using the [readme configuration options](https://github.com/Azure/autorest/blob/master/docs/powershell/options.md) that are currently available. These custom cmdlets are then referenced by the cmdlets created at build-time in the `${$lib.path.relative($project.customFolder, $project.exportsFolder)}` folder.
 
 ## Usage
-The easiest way currently to start developing custom cmdlets is to copy an existing cmdlet. For C# cmdlets, copy one from the `generated/cmdlets` folder. For script cmdlets, build the project using `build-module.ps1` and copy one of the scripts from the `${$lib.path.relative($project.customFolder, $project.exportsFolder)}` folder. 
+The easiest way currently to start developing custom cmdlets is to copy an existing cmdlet. For C# cmdlets, copy one from the `generated/cmdlets` folder. For script cmdlets, build the project using `build-module.ps1` and copy one of the scripts from the `${$lib.path.relative($project.customFolder, $project.exportsFolder)}` folder. After that, if you want to add new parameter sets, follow the guidelines in the `Details` section above. For implementing a new cmdlets, at minimum, please keep these parameters:
+- Break
+- DefaultProfile
+- HttpPipelineAppend
+- HttpPipelinePrepend
+- Proxy
+- ProxyCredential
+- ProxyUseDefaultCredentials
+
+These provide functionality to our HTTP pipeline and other useful features. In script, you can forward these parameters using `$PSBoundParameters` to the other cmdlets you're calling within `{$project.moduleName}`. For C#, follow the usage seen in the `ProcessRecordAsync` method.
 
 ### Attributes
-
-### Internal Module
+For processing the cmdlets, we've created some additional attributes:
+- `${$project.modelsExtensions.fullName}.DescriptionAttribute`
+  - Used in C# cmdlets to provide a high-level description of the cmdlet. This is propegated to reference documentation via [help comments](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comment_based_help) in the exported scripts.
+- `${$project.modelsExtensions.fullName}.DoNotExportAttribute`
+  - Used in C# and script cmdlets to suppress creating an exported cmdlet at build-time. These cmdlets will *not be exposed* by `{$project.moduleName}`.
+- `${$project.modelsExtensions.fullName}.InternalExportAttribute`
+  - Used in C# cmdlets to route exported cmdlets to the `${$lib.path.relative($project.customFolder, $project.internalFolder)}`, which are *not exposed* by `{$project.moduleName}`. For more information, see [readme.md](${$lib.path.relative($project.customFolder, $project.internalFolder)}/readme.md) in the `${$lib.path.relative($project.customFolder, $project.internalFolder)}` folder.
+- `${$project.modelsExtensions.fullName}.ProfileAttribute`
+  - Used in C# and script cmdlets to define which Azure profiles the cmdlet supports. This is only supported for Azure (`--azure`) modules.
