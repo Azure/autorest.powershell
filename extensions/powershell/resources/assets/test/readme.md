@@ -7,4 +7,11 @@ This directory contains the [Pester](https://www.powershellgallery.com/packages/
 - Committed: yes
 - Packaged: no
 
+## Details (*WIP*)
+We allow three testing modes: `live`, `record`, and `playback`.
+
 ## Purpose
+Custom cmdlets generally encompass additional functionality not described in the REST specification, or combines functionality generated from the REST spec. To validate this functionality continues to operate as intended, creating tests that can be ran and re-ran against custom cmdlets is part of the framework.
+
+## Usage (*WIP*)
+This feature is currently a **work-in-progress**. It is able to create test recordings of the HTTP pipeline. However, folder structure, file names, and processes are being implemented.
