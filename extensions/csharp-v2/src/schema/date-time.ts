@@ -47,7 +47,7 @@ export class DateTime extends Primitive {
       case KnownMediaType.UriParameter:
         return toExpression(this.isRequired ?
           `${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)` :
-          `null == ${value} ? ${System.String.Empty} : "${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)"`
+          `(null == ${value} ? ${System.String.Empty} : ${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`
         );
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
@@ -107,7 +107,7 @@ export class DateTime1123 extends DateTime {
 export class UnixTime extends Primitive {
   public isXmlAttribute: boolean = false;
   public jsonType = ClientRuntime.JsonNumber;
-  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)');
+  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)');
 
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
@@ -118,12 +118,12 @@ export class UnixTime extends Primitive {
 
   /** emits an expression serialize this to the value required by the container */
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
-    return super.serializeToNode(mediaType, new LiteralExpression(`(long)${value}.Subtract(EpochDate).TotalSeconds`), serializedName);
+    return super.serializeToNode(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), serializedName);
   }
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    return super.serializeToContainerMember(mediaType, new LiteralExpression(`(long)${value}.Subtract(EpochDate).TotalSeconds`), container, serializedName);
+    return super.serializeToContainerMember(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), container, serializedName);
   }
 
   constructor(schema: Schema, public isRequired: boolean) {

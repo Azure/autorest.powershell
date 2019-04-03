@@ -17,12 +17,20 @@ export class SupportNamespace extends Namespace {
     super('Support', parent);
     this.apply(objectInitializer);
 
+    /*
     const enumInfos = values(state.model.schemas)
       .linq.selectMany(s => values(s.properties))
       .linq.where(p => p.schema.details.csharp.enum !== undefined)
       .linq.distinct(p => <EnumDetails>p.schema.details.csharp.enum)
       .linq.select(p => ({ details: <EnumDetails>p.schema.details.csharp.enum, description: p.schema.details.csharp.description }))
       .linq.toArray();
+*/
+
+    const enumInfos = values(state.model.schemas)
+      .linq.where(each => each.details.csharp.enum !== undefined)
+      .linq.select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
+      .linq.toArray();
+
     for (const enumInfo of enumInfos) {
       const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
 

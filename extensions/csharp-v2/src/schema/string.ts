@@ -102,8 +102,11 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.Xml: {
         return this.deserializeFromNode(mediaType, `${System.Xml.Linq.XElement}.Parse(${content})`, defaultValue);
       }
+      case KnownMediaType.UriParameter: {
+        return toExpression(content);
+      }
     }
-    return toExpression(``);
+    return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}`);
   }
 
   /** emits an expression to deserialize content from a content/response */

@@ -110,7 +110,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
       switch (mediaType) {
         case KnownMediaType.Json:
           // node should be a json type
-          return toExpression(`${node} is ${this.jsonType} ${tmp} ? ${this.castJsonTypeToPrimitive(tmp, defaultValue.value)} : ${defaultValue} /* maybe */`);
+          return toExpression(`${node} is ${this.jsonType} ${tmp} ? ${this.castJsonTypeToPrimitive(tmp, defaultValue.value)} : ${defaultValue}`);
 
         case KnownMediaType.Xml:
           // XElement or XAttribute
@@ -127,7 +127,19 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
 
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
-    return toExpression(``);
+    try {
+      const tmp = pushTempVar();
+
+      switch (mediaType) {
+        case KnownMediaType.UriParameter: {
+          return toExpression(`${this.baseType}.TryParse( ${valueOf(content)}, out ${this.baseType} ${tmp} ) ? ${tmp} : ${defaultValue}`);
+
+        }
+      }
+    } finally {
+      popTempVar();
+    }
+    return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}`);
   }
 
   /** emits an expression to deserialize content from a content/response */

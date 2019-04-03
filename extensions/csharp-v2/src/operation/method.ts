@@ -61,7 +61,10 @@ export class OperationMethod extends Method {
     this.methodParameters = this.operation.parameters.map((value, index) => {
       const p = <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index)));
       if (value.details.csharp.constantValue) {
-        p.defaultInitializer = `${value.details.csharp.constantValue}`;
+
+        const constTd = state.project.modelsNamespace.resolveTypeDeclaration(value.schema, true, state);
+        p.defaultInitializer = constTd.deserializeFromString(KnownMediaType.UriParameter, new StringExpression(`${value.details.csharp.constantValue}`), toExpression(constTd.defaultOfType));
+        // p.defaultInitializer = `${value.details.csharp.constantValue}`;
       }
       return p;
     });
@@ -113,6 +116,8 @@ export class OperationMethod extends Method {
         + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '')}
         + "`);
     }
+    path = path.startsWith('/') ? path.substr(1) : path;
+    path = path.replace(/\s*\+ ""/gm, '');
 
     const bp = this.bodyParameter;
     // add method implementation...
@@ -123,11 +128,7 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// construct URL`;
-      /* FIXING!
-      if (queryParams.length > 0) {
-        yield `var queryParameters = new System.Collections.Generic.List<string>();`;
-      }
-      */
+
       let url: LocalVariable;
       if ($this.state.project.storagePipeline) {
         if (queryParams.length > 0) {
@@ -148,7 +149,7 @@ export class OperationMethod extends Method {
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
         + "&"`
           )}
-        ).TrimEnd('?','&')`)
+        ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
         });
         yield url.declarationStatement;
 
@@ -210,7 +211,7 @@ export class OperationMethod extends Method {
       const p = this.parameters[i];
       if (p && p.defaultInitializer) {
         this.parameters.splice(i, 1);
-        this.insert(new LocalVariable(p.name, p.type, { initializer: new StringExpression(p.defaultInitializer) }));
+        this.insert(new LocalVariable(p.name, p.type, { initializer: p.defaultInitializer }));
       }
     }
   }
