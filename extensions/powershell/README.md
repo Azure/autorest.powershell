@@ -33,26 +33,6 @@ enable-multi-api: true
 load-priority: 1001
 ```
 
-> Folder Structure
-``` yaml
-use-namespace-folders: false
-module-folder: generated
-cmdlet-folder: $(module-folder)/cmdlets
-model-cmdlet-folder: $(module-folder)/model-cmdlets
-custom-cmdlet-folder: custom
-internal-cmdlet-folder: internal
-test-folder: test
-runtime-folder: $(module-folder)/runtime
-api-folder: $(module-folder)/api
-api-extensions-folder: $(module-folder)/api-extensions
-bin-folder: bin
-obj-folder: obj
-exports-folder: exports
-docs-folder: docs
-dependency-module-folder: $(module-folder)/modules
-examples-folder: examples
-```
-
 > Values
 ``` yaml
 module-version: 0.1.0
@@ -69,16 +49,37 @@ module-name: $(service-name)
 dll-name: $(module-name).private
 ```
 
+> Folders
+``` yaml
+use-namespace-folders: false
+current-folder: .
+module-folder: $(current-folder)/generated
+cmdlet-folder: $(module-folder)/cmdlets
+model-cmdlet-folder: $(module-folder)/model-cmdlets
+custom-cmdlet-folder: $(current-folder)/custom
+internal-cmdlet-folder: $(current-folder)/internal
+test-folder: $(current-folder)/test
+runtime-folder: $(module-folder)/runtime
+api-folder: $(module-folder)/api
+api-extensions-folder: $(module-folder)/api-extensions
+bin-folder: $(current-folder)/bin
+obj-folder: $(current-folder)/obj
+exports-folder: $(current-folder)/exports
+docs-folder: $(current-folder)/docs
+dependency-module-folder: $(module-folder)/modules
+examples-folder: $(current-folder)/examples
+```
+
 > File Paths
 ``` yaml
-csproj: $(module-name).csproj
+csproj: $(current-folder)/$(module-name).csproj
 dll: $(bin-folder)/$(dll-name).dll
-psd1: $(module-name).psd1
-psm1: $(module-name).psm1
+psd1: $(current-folder)/$(module-name).psd1
+psm1: $(current-folder)/$(module-name).psm1
 psm1-custom: $(custom-cmdlet-folder)/$(module-name).custom.psm1
 psm1-internal: $(internal-cmdlet-folder)/$(module-name).internal.psm1
-format-ps1xml: $(module-name).format.ps1xml
-nuspec: $(module-name).nuspec
+format-ps1xml: $(current-folder)/$(module-name).format.ps1xml
+nuspec: $(current-folder)/$(module-name).nuspec
 ```
 
 # Pipeline Configuration

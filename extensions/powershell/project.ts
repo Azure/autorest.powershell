@@ -112,7 +112,7 @@ export class Project extends codeDomProject {
     this.dllName = await Project.getConfigValue(this.service, 'dll-name');
 
     // Folders
-    this.baseFolder = '.';
+    this.baseFolder = await Project.getConfigValue(this.service, 'current-folder');
     this.moduleFolder = await Project.getConfigValue(this.service, 'module-folder');
     this.cmdletFolder = await Project.getConfigValue(this.service, 'cmdlet-folder');
     this.modelCmdletFolder = await Project.getConfigValue(this.service, 'model-cmdlet-folder');
