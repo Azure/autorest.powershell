@@ -20,6 +20,9 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
+  get defaultOfType() {
+    return toExpression(`null /* arrayOf */`);
+  }
 
   constructor(public schema: Schema, public isRequired: boolean, protected elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
   }
@@ -74,8 +77,8 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}, (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))}) ) )`;
-          return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
+          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp} , (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}) ) )`;
+          return toExpression(`If( ${valueOf(node)} as ${ClientRuntime.JsonArray}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
         }
         case KnownMediaType.Xml: {
           // XElement should be a container of items, right?

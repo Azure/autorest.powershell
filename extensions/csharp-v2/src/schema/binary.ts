@@ -17,6 +17,10 @@ export class Binary implements EnhancedTypeDeclaration {
   constructor(public schema: Schema, public isRequired: boolean) {
   }
 
+  get defaultOfType() {
+    return toExpression(`null /* binary type */`);
+  }
+
   get declaration(): string {
     return System.IO.Stream.declaration;
   }

@@ -77,14 +77,15 @@ export class SchemaDefinitionResolver {
                   }
                   // it has properties.
                   // it's a specific kind of dictionary<string, addlSchema>
-                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, false, state.path('additionalProperties')));
+                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
 
                 case JsonType.String:
                 case JsonType.Boolean:
                 case JsonType.Number:
                   // it's a primitive type (string/boolean/number)
                   // it should be a simple dictionary<string, t>
-                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, false, state.path('additionalProperties')));
+
+                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
 
                 default:
                   // what? What kind of a monster are you?

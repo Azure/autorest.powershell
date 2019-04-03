@@ -19,6 +19,11 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   get schema(): Schema {
     return this.classImplementation.schema;
   }
+
+  get defaultOfType() {
+    return this.classImplementation.defaultOfType;
+  }
+
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     return this.classImplementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
   }

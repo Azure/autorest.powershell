@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Modifier } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, toExpression } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral, StringExpression } from '@microsoft.azure/codegen-csharp';
 import { InitializedField } from '@microsoft.azure/codegen-csharp';
@@ -28,6 +28,11 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;
   get schema(): Schema {
     return this.implementation.schema;
+  }
+
+
+  get defaultOfType() {
+    return toExpression(`null /* enum value */`);
   }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {

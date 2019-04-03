@@ -23,6 +23,10 @@ export class Wildcard implements EnhancedTypeDeclaration {
   constructor(public schema: Schema, protected leafType: EnhancedTypeDeclaration) {
   }
 
+  get defaultOfType() {
+    return toExpression(`null /* wildcard */`);
+  }
+
   get declaration(): string {
     return `System.Collections.Generic.IDictionary<string,${this.leafType.declaration}>`;
   }
@@ -128,6 +132,11 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
 
   constructor(public schema: Schema) {
+  }
+
+
+  get defaultOfType() {
+    return toExpression(`null /* wildcard */`);
   }
 
   static deserializeFromContainerMemberToType(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression, typeDeclaration: TypeDeclaration): Expression {

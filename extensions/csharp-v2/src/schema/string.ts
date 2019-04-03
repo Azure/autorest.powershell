@@ -19,6 +19,10 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 export class String implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
 
+  get defaultOfType() {
+    return toExpression(`null`);
+  }
+
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {
@@ -64,7 +68,7 @@ export class String implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Json:
         return toExpression(`null != (((object)${value})?.ToString()) ? (${ClientRuntime.JsonNode}) new ${ClientRuntime.JsonString}(${value}.ToString()) : null`);
-        
+
       case KnownMediaType.Xml:
         return toExpression(`null != (${value}?.ToString()) ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
@@ -98,8 +102,11 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.Xml: {
         return this.deserializeFromNode(mediaType, `${System.Xml.Linq.XElement}.Parse(${content})`, defaultValue);
       }
+      case KnownMediaType.UriParameter: {
+        return toExpression(content);
+      }
     }
-    return toExpression(``);
+    return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}`);
   }
 
   /** emits an expression to deserialize content from a content/response */

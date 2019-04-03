@@ -25,7 +25,7 @@ export class JsonSerializerClass extends Class {
 
     const tojson = this.addMethod(new Method('ToJson', ClientRuntime.JsonNode, { static: Modifier.Static }));
     const objP = tojson.addParameter(new Parameter('obj', dotnet.ThisObject));
-    const container = tojson.addParameter(new Parameter('container', ClientRuntime.JsonObject, { defaultInitializer: `= null` }));
+    const container = tojson.addParameter(new Parameter('container', ClientRuntime.JsonObject, { defaultInitializer: dotnet.Null }));
     tojson.add(`return null;`);
 
     const schemas = state.model.schemas;

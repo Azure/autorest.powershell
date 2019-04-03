@@ -54,6 +54,10 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   abstract declaration: string;
   abstract jsonType: ClassType;
 
+  get defaultOfType() {
+    return toExpression(`default(${this.declaration})`);
+  }
+
   constructor(public schema: Schema) {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */
@@ -123,7 +127,19 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
 
   /** emits an expression to deserialize content from a string */
   deserializeFromString(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
-    return toExpression(``);
+    try {
+      const tmp = pushTempVar();
+
+      switch (mediaType) {
+        case KnownMediaType.UriParameter: {
+          return toExpression(`${this.baseType}.TryParse( ${valueOf(content)}, out ${this.baseType} ${tmp} ) ? ${tmp} : ${defaultValue}`);
+
+        }
+      }
+    } finally {
+      popTempVar();
+    }
+    return toExpression(`null /* deserializeFromString doesn't support '${mediaType}' ${__filename}`);
   }
 
   /** emits an expression to deserialize content from a content/response */
