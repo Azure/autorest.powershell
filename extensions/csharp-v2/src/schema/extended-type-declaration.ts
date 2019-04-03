@@ -36,6 +36,9 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements;
 
+  /** defaultOfType */
+  readonly defaultOfType: Expression;
+
   /** is a value for this required */
   isRequired: boolean;
 

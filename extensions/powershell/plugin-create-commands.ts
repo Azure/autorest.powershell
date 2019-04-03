@@ -102,17 +102,20 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
     }));
 
     // let's add a variant where it's expanded out.
-    const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
-    opExpanded.details.default.dropBodyParameter = true;
-    opExpanded.parameters.push(new components.IParameter(`${bodyParameterName}Body`, body.schema, {
-      details: {
-        default: {
-          description: body.schema.details.default.description,
-          name: getPascalName(`${bodyParameterName}Body`),
-          isBodyParameter: true,
+    // *IF* the body is an object
+    if (body.schema.type === JsonType.Object) {
+      const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
+      opExpanded.details.default.dropBodyParameter = true;
+      opExpanded.parameters.push(new components.IParameter(`${bodyParameterName}Body`, body.schema, {
+        details: {
+          default: {
+            description: body.schema.details.default.description,
+            name: getPascalName(`${bodyParameterName}Body`),
+            isBodyParameter: true,
+          }
         }
-      }
-    }));
+      }));
+    }
   }
 
   //

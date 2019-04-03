@@ -146,10 +146,18 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       schema.details.default.isPolymorphic = true;
     }
 
-    // make sure that all our polymorphic parents have a reference to this type.
-    for (const parent of getPolymorphicBases(schema)) {
-      parent.details.polymorphicChildren = parent.details.polymorphicChildren || new Array<Schema>();
-      parent.details.polymorphicChildren.push(schema);
+
+    const parents = getPolymorphicBases(schema);
+    if (parents.length > 0) {
+      // if our parent is polymorphic, then we must have a discriminator value
+      schema.details.default.discriminatorValue = schema.extensions['x-ms-discriminator-value'] || schema.details.default.name;
+
+      // and make sure that all our polymorphic parents have a reference to this type.
+      for (const parent of getPolymorphicBases(schema)) {
+
+        parent.details.polymorphicChildren = parent.details.polymorphicChildren || new Array<Schema>();
+        parent.details.polymorphicChildren.push(schema);
+      }
     }
   }
 

@@ -13,5 +13,6 @@ export class EnumImplementation extends String {
     super(schema, isRequired);
   }
 
+
   get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}`; }
 }

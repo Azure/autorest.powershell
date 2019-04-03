@@ -20,6 +20,11 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
 
+
+  get defaultOfType() {
+    return toExpression(`null /* object */`);
+  }
+
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {

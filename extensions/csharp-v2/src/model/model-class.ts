@@ -5,7 +5,7 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, ImplementedProperty, Virtual } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, ImplementedProperty, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -42,6 +42,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     return this.featureImplementation.serializeToNode(mediaType, value, serializedName);
   }
 
+  get defaultOfType() {
+    return toExpression(`null /* model class */`);
+  }
   /** emits an expression serialize this to a HttpContent */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     return this.featureImplementation.serializeToContent(mediaType, value);
@@ -290,7 +293,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       // we'll add a deserializer factory method a bit later..
     }
 
-    if (this.schema.extensions['x-ms-discriminator-value']) {
+    if (this.schema.details.csharp.discriminatorValue) {
       // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
       // um. just how do we *really* know which allOf is polymorphic?
       // that's really sad.
@@ -307,7 +310,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           this.parentModelClasses.push(parentClass);
 
           // tell that parent who we are.
-          parentClass.addDiscriminator(this.schema.extensions['x-ms-discriminator-value'], this);
+          parentClass.addDiscriminator(this.schema.details.csharp.discriminatorValue, this);
         }
       }
     }

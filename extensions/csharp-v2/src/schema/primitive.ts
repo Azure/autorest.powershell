@@ -54,6 +54,10 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   abstract declaration: string;
   abstract jsonType: ClassType;
 
+  get defaultOfType() {
+    return toExpression(`default(${this.declaration})`);
+  }
+
   constructor(public schema: Schema) {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */
@@ -106,7 +110,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
       switch (mediaType) {
         case KnownMediaType.Json:
           // node should be a json type
-          return toExpression(`${node} is ${this.jsonType} ${tmp} ? ${this.castJsonTypeToPrimitive(tmp, defaultValue.value)} : ${defaultValue}`);
+          return toExpression(`${node} is ${this.jsonType} ${tmp} ? ${this.castJsonTypeToPrimitive(tmp, defaultValue.value)} : ${defaultValue} /* maybe */`);
 
         case KnownMediaType.Xml:
           // XElement or XAttribute

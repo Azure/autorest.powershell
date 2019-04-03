@@ -12,12 +12,17 @@ import { Variable } from '@microsoft.azure/codegen-csharp';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { ClientRuntime } from '../clientruntime';
 
 export class ByteArray implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
 
   get declaration(): string {
     return `byte[]`;
+  }
+
+  get defaultOfType() {
+    return toExpression(`null /* byte array */`);
   }
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
@@ -43,6 +48,10 @@ export class ByteArray implements EnhancedTypeDeclaration {
 
   /** emits an expression serialize this to the value required by the container */
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        return toExpression(`${ClientRuntime.JsonString.new(`System.Convert.ToBase64String(${value})`)}`);
+    }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   /** emits an expression serialize this to the value required by the container */
