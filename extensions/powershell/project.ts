@@ -98,7 +98,7 @@ export class Project extends codeDomProject {
     // Values
     this.maxInlinedParameters = await this.getConfigValue('max-inlined-parameters', 4);
     this.moduleVersion = await this.getConfigValue('module-version', '0.1.0');
-    this.profiles = await this.getConfigValue('profile', <string[]>[]);
+    this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.accountsVersionMinimum = '1.4.0';
     this.platyPsVersionMinimum = '0.13.1';
 
