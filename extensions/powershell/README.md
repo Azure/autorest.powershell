@@ -36,21 +36,21 @@ load-priority: 1001
 > Folder Structure
 ``` yaml
 use-namespace-folders: false
-module-folder: $(output-folder)/generated
+module-folder: generated
 cmdlet-folder: $(module-folder)/cmdlets
 model-cmdlet-folder: $(module-folder)/model-cmdlets
-custom-cmdlet-folder: $(output-folder)/custom
-internal-cmdlet-folder: $(output-folder)/internal
-test-folder: $(output-folder)/test
+custom-cmdlet-folder: custom
+internal-cmdlet-folder: internal
+test-folder: test
 runtime-folder: $(module-folder)/runtime
 api-folder: $(module-folder)/api
 api-extensions-folder: $(module-folder)/api-extensions
-bin-folder: $(output-folder)/bin
-obj-folder: $(output-folder)/obj
-exports-folder: $(output-folder)/exports
-docs-folder: $(output-folder)/docs
+bin-folder: bin
+obj-folder: obj
+exports-folder: exports
+docs-folder: docs
 dependency-module-folder: $(module-folder)/modules
-examples-folder: $(output-folder)/examples
+examples-folder: examples
 ```
 
 > Values
@@ -71,14 +71,14 @@ dll-name: $(module-name).private
 
 > File Paths
 ``` yaml
-csproj: $(output-folder)/$(module-name).csproj
+csproj: $(module-name).csproj
 dll: $(bin-folder)/$(dll-name).dll
-psd1: $(output-folder)/$(module-name).psd1
-psm1: $(output-folder)/$(module-name).psm1
-psm1-custom: $(custom-folder)/$(module-name).custom.psm1
-psm1-internal: $(internal-folder)/$(module-name).internal.psm1
-format-ps1xml: $(output-folder)/$(module-name).format.ps1xml
-nuspec: $(output-folder)/$(module-name).nuspec
+psd1: $(module-name).psd1
+psm1: $(module-name).psm1
+psm1-custom: $(custom-cmdlet-folder)/$(module-name).custom.psm1
+psm1-internal: $(internal-cmdlet-folder)/$(module-name).internal.psm1
+format-ps1xml: $(module-name).format.ps1xml
+nuspec: $(module-name).nuspec
 ```
 
 # Pipeline Configuration

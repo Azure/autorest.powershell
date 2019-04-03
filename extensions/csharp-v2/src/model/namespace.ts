@@ -24,6 +24,10 @@ class ApiVersionNamespace extends Namespace {
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
   }
+
+  get outputFolder() {
+    return this.name.replace(/^.*\.Models/g, 'Models').replace(/\./g, '/');
+  }
 }
 
 export class ModelsNamespace extends Namespace {
@@ -51,6 +55,10 @@ export class ModelsNamespace extends Namespace {
       }
       this.resolveTypeDeclaration(schema, true, state);
     }
+  }
+
+  get outputFolder() {
+    return 'Models';
   }
 
   public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): EnhancedTypeDeclaration {
