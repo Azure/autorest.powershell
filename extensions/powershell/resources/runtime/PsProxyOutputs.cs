@@ -145,7 +145,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
 {GetParameterSetToCmdletMapping()}
-{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(""$($mapping[""$parameterSet""])"", [System.Management.Automation.CommandTypes]::Cmdlet)
+{Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
 {Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
 {Indent}{Indent}$steppablePipeline.Begin($PSCmdlet)

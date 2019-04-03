@@ -30,18 +30,30 @@ export async function generatePsm1(service: Host, project: Project) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     psm1.append('AzureInitialization', `
   # Load required Az.Accounts module
-  $sharedModule = Get-Module -Name Az.Accounts
-  if (-not $sharedModule) {
-    $accountsName = 'Az.Accounts'
-    $localAccounts = Get-ChildItem -Path (Join-Path $PSScriptRoot '${localModulesPath}') -Recurse -Include 'Az.Accounts.psd1' | Select-Object -Last 1
-    if($localAccounts -and (Test-Path -Path $localAccounts)) {
-      $accountsName = $localAccounts.FullName
+  $accountsName = 'Az.Accounts'
+  $accountsModule = Get-Module -Name $accountsName
+  if(-not $accountsModule) {
+    $localAccountsPath = Join-Path $PSScriptRoot '${localModulesPath}'
+    if(Test-Path -Path $localAccountsPath) {
+      $localAccounts = Get-ChildItem -Path $localAccountsPath -Recurse -Include 'Az.Accounts.psd1' | Select-Object -Last 1
+      if($localAccounts) {
+        $accountsModule = Import-Module -Name ($localAccounts.FullName) -Scope Global -PassThru
+      }
     }
-    $sharedModule = Import-Module -Name $accountsName -MinimumVersion ${project.accountsVersionMinimum} -Scope Global -PassThru
-  } elseif ($sharedModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') {
-    Write-Error 'This module requires Az.Accounts version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new session before importing this module. This error could indicate that multiple incompatible versions of the Azure PowerShell cmdlets are installed on your system. Please see https://aka.ms/azps-version-error for troubleshooting information.' -ErrorAction Stop
+    if(-not $accountsModule) {
+      $hasAdequateVersion = (Get-Module -Name $accountsName -ListAvailable | Where-Object { $_.Version -ge [System.Version]'${project.accountsVersionMinimum}' } | Measure-Object).Count -gt 0
+      if($hasAdequateVersion) {
+        $accountsModule = Import-Module -Name $accountsName -MinimumVersion ${project.accountsVersionMinimum} -Scope Global -PassThru
+      }
+    }
   }
-  Write-Information "Loaded Module '$($sharedModule.Name)'"
+
+  if(-not $accountsModule) {
+    Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. For installation instructions, please see: https://docs.microsoft.com/en-us/powershell/azure/install-az-ps" -ErrorAction Stop
+  } elseif (($accountsModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') -and (-not $localAccounts)) {
+    Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new PowerShell session and import this module again.\`nAdditionally, this error could indicate that multiple incompatible versions of Azure PowerShell modules are installed on your system. For troubleshooting information, please see: https://aka.ms/azps-version-error" -ErrorAction Stop
+  }
+  Write-Information "Loaded Module '$($accountsModule.Name)'"
 
   # Ask for the shared functionality table
   $VTable = Register-AzModule
