@@ -3,15 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, } from '@microsoft.azure/autorest.codemodel-v3';
-
+import { processCodeModel, codemodel, components, command, http, getAllProperties, } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService } from '@microsoft.azure/codegen';
-
 import { Schema } from '@microsoft.azure/autorest.csharp-v2';
-
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
-import { clone, Dictionary } from '@microsoft.azure/linq';
+import { clone } from '@microsoft.azure/linq';
+import { Project } from './project';
 
 export async function createCommands(service: Host) {
 
@@ -34,21 +32,21 @@ export async function createCommands(service: Host) {
   return processCodeModel(commandCreator, service);
 }
 
+async function getIsAzure(service: Host): Promise<boolean> {
+  return !!(await Project.getConfigValue(service, 'azure'));
+}
+
 async function commonParameters(service: Host): Promise<Array<string>> {
-  const isAzure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+  const isAzure = await getIsAzure(service);
   return isAzure ? [
     // 'resourceGroupName',
     'subscriptionId'
   ] : [];
 }
 
-async function getConfigValue<T>(key: string, defaultValue: T, service: Host): Promise<T> {
-  // GetValue returns null when values are not found.
-  const value = await service.GetValue(key);
-  return value !== null ? <T>value : defaultValue;
-}
-
-export function titleToServiceName(title: string): string {
+// UNUSED
+// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
+export function titleToAzureServiceName(title: string): string {
   const titleCamelCase = pascalCase(deconstruct(title)).trim();
   const serviceName = titleCamelCase
     // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
@@ -59,10 +57,10 @@ export function titleToServiceName(title: string): string {
 }
 
 async function commandCreator(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-  const isAzure = !!(await getConfigValue('azure', false, service) || await getConfigValue('azure-arm', false, service) || false);
-  const prefix = await getConfigValue('prefix', isAzure ? 'Az' : ``, service);
-  const serviceName = await getConfigValue('service-name', isAzure ? titleToServiceName(model.info.title) : model.info.title, service);
-  const subjectPrefix = await getConfigValue('subject-prefix', isAzure ? serviceName : ``, service);
+  const isAzure = await getIsAzure(service);
+  const prefix = await Project.getConfigValue(service, 'prefix');
+  var serviceName = await Project.getConfigValue(service, 'service-name');
+  const subjectPrefix = await Project.getConfigValue(service, 'subject-prefix');
 
   model.details.default.isAzure = isAzure;
   model.details.default.prefix = prefix;

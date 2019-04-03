@@ -20,26 +20,69 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 #### PowerShell
 
-> Requires remodeler and csharpv2
+> Requires
 ``` yaml 
 use-extension:
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
 ```
 
-> forces multi-api mode 
+> Multi-Api Mode
 ``` yaml
 enable-multi-api: true
 load-priority: 1001
 ```
 
-# Pipeline Configuration
+> Folder Structure
 ``` yaml
 use-namespace-folders: false
+module-folder: $(output-folder)/generated
+cmdlet-folder: $(module-folder)/cmdlets
+model-cmdlet-folder: $(module-folder)/model-cmdlets
+custom-cmdlet-folder: $(output-folder)/custom
+internal-cmdlet-folder: $(output-folder)/internal
+test-folder: $(output-folder)/test
+runtime-folder: $(module-folder)/runtime
+api-folder: $(module-folder)/api
+api-extensions-folder: $(module-folder)/api-extensions
+bin-folder: $(output-folder)/bin
+obj-folder: $(output-folder)/obj
+exports-folder: $(output-folder)/exports
+docs-folder: $(output-folder)/docs
+dependency-module-folder: $(module-folder)/modules
+examples-folder: $(output-folder)/examples
+```
 
-api-folder: generated/api
-runtime-folder: generated/runtime
+> Values
+``` yaml
+module-version: 0.1.0
+skip-model-cmdlets: false
+azure: false
+```
 
+> Names
+``` yaml
+prefix: ''
+service-name: $(title)
+subject-prefix: ''
+module-name: $(service-name)
+dll-name: $(module-name).private
+```
+
+> File Paths
+``` yaml
+csproj: $(output-folder)/$(module-name).csproj
+dll: $(bin-folder)/$(dll-name).dll
+psd1: $(output-folder)/$(module-name).psd1
+psm1: $(output-folder)/$(module-name).psm1
+psm1-custom: $(custom-folder)/$(module-name).custom.psm1
+psm1-internal: $(internal-folder)/$(module-name).internal.psm1
+format-ps1xml: $(output-folder)/$(module-name).format.ps1xml
+nuspec: $(output-folder)/$(module-name).nuspec
+```
+
+# Pipeline Configuration
+``` yaml
 pipeline:
 # --- extension remodeler --- 
 
@@ -121,7 +164,7 @@ The following verb-mapping is used as an aid to infer cmdlet-verbs. Every entry 
 Note: It is not necessary to have an entry for every method because AutoRest will still be able to infer a verb by examining the operationId. However, if an entry is added in the configuration, it is guaranteed that the cmdlet created will get the cmdlet-verb from the operationId-method -> cmdlet verb mapping.
 
 ``` yaml
-verb-mapping: 
+verb-mapping:
   Access: Get
   Acquire: Get
   Activate: Initialize
