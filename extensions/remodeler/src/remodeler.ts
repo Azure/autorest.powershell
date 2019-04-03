@@ -29,6 +29,7 @@ export class Remodeler {
 
   constructor(private modelState: ModelState<OpenAPI.Model>) {
     this.model = new codemodel.Model(this.oai.info.title, this.oai.info.version);
+    this.model.info.extensions[xmsMetadata] = this.oai.info[xmsMetadata];
   }
 
   private dereference<T>(item: Refable<T>): Dereferenced<T> {
