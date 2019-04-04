@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { processCodeModel, codemodel, components, command, http, getAllProperties, } from '@microsoft.azure/autorest.codemodel-v3';
+import { processCodeModel, codemodel, components, command, http, getAllProperties, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService } from '@microsoft.azure/codegen';
 import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
