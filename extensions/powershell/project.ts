@@ -17,6 +17,7 @@ import { Model } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/co
 import { IAutoRestPluginInitiator } from '@microsoft.azure/autorest-extension-base/dist/lib/extension-base';
 
 export class Project extends codeDomProject {
+  public autorestVersion!: string;
   public azure!: boolean;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
@@ -93,6 +94,9 @@ export class Project extends codeDomProject {
 
   public async init(): Promise<this> {
     await super.init();
+    // used for GeneratedCodeAttribute
+    this.autorestVersion = await this.state.service.GetValue('autorest-version');
+
 
     // Values
     this.moduleVersion = await Project.getConfigValue(this.service, 'module-version');
