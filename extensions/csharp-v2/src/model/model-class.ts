@@ -5,7 +5,7 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, ImplementedProperty, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, ImplementedProperty, Virtual, toExpression, Attribute } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -18,6 +18,7 @@ import { ModelProperty } from './property';
 import { OldProxyProperty } from './proxy-property';
 import { Schema } from '../code-model';
 import { access } from 'fs';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 function accessVirtualProperty(virtualProperty: VirtualProperty) {
   if (virtualProperty.accessViaProperty) {
@@ -98,6 +99,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.schema.details.csharp.classImplementation = this; // mark the code-model with the class we're creating.
     this.state = state;
     this.apply(objectInitializer);
+
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
 
     // must be a partial class
     this.partial = true;
