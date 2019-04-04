@@ -14,6 +14,7 @@ import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './support/namespace';
 
 export class Project extends codeDomProject {
+  public autorestVersion!: string;
   public storagePipeline: boolean = false;
   public jsonSerialization: boolean = true;
   public xmlSerialization: boolean = false;
@@ -55,6 +56,9 @@ export class Project extends codeDomProject {
       this.xmlSerialization = true;
       this.defaultPipeline = false;
     }
+
+    // used for GeneratedCodeAttribute
+    this.autorestVersion = await service.GetValue('autorest-version');
 
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
 
