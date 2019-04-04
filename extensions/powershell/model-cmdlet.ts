@@ -66,5 +66,5 @@ function addClassAttributes($class: WithState, schema: Schema, variantName: stri
   $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${variantName}`)] }));
   $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
   $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
-  $class.add(new Attribute(GeneratedAttribute));
+  $class.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${$class.state.project.autorestVersion}"`] }));
 }
