@@ -34,12 +34,67 @@ export async function llcsharp(service: Host) {
     const project = new Project(modelState);
     await project.init();
 
+    const cache = new Array<any>();
+    const replacer = (key: string, value: any) => {
+      if (typeof value === 'object' && value !== null) {
+        if (cache.indexOf(value) !== -1) {
+          // Duplicate reference found
+          try {
+            // If this value does not reference a parent it can be deduped
+            return JSON.parse(JSON.stringify(value));
+          } catch (error) {
+            // discard key if value cannot be deduped
+            return;
+          }
+        }
+        // Store value in our collection
+        cache.push(value);
+      }
+      return value;
+    }
+
+    const transformOutput = async (input: string) => {
+      let rx = /\$\{(.*?)\}/g;
+      let output = input;
+
+      for (let match; match = rx.exec(input);) {
+        const text = match[0];
+        const inner = match[1];
+        let value = await service.GetValue(inner);
+        if (value === null || value === undefined) {
+          // try as a safe eval execution.
+          try {
+            value = safeEval(inner, {
+              $config: await service.GetValue(''),
+              $project: project,
+              $lib: {
+                path: require('path')
+              }
+            });
+          }
+          catch {
+            value = null;
+          }
+        }
+        if (value !== undefined && value !== null) {
+          if (typeof value === 'object') {
+            value = JSON.stringify(value, replacer, 2);
+          }
+          if (value === '{}') {
+            value = 'true';
+          }
+          output = output.replace(text, value);
+        }
+      }
+      return output;
+    };
+
     await project.writeFiles(async (fname, content) => service.WriteFile(join(apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 
     // recursive copy resources
-    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
     if (project.defaultPipeline) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
     }
     if (project.jsonSerialization) {
       // Note:
@@ -85,14 +140,14 @@ export async function llcsharp(service: Host) {
         // 'internal partial class JsonNumber': 'public partial class JsonNumber'
         // 'internal partial class JsonNumber': 'public partial class JsonNumber'
         // 'internal partial class JsonNumber': 'public partial class JsonNumber'
-      });
+      }, transformOutput);
     }
     if (project.xmlSerialization) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
     }
 
     if (azure) {
-      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
     }
 
   } catch (E) {
