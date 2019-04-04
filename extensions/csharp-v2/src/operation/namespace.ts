@@ -14,4 +14,8 @@ export class ServiceNamespace extends Namespace {
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
   }
+
+  get outputFolder() {
+    return '';
+  }
 }

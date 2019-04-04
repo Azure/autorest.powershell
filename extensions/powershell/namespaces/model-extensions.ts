@@ -7,6 +7,7 @@ import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
+import { join } from 'path';
 
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
@@ -22,7 +23,7 @@ export class ModelExtensionsNamespace extends Namespace {
   private subNamespaces = new Dictionary<Namespace>();
 
   public get outputFolder(): string {
-    return this.state.project.apiExtensionsFolder;
+    return join(this.state.project.apiExtensionsFolder, 'Models');
   }
   resolver = new SchemaDefinitionResolver();
 
@@ -51,7 +52,7 @@ export class ModelExtensionsNamespace extends Namespace {
 
         // get the actual full namespace for the schema
         const fullname = schema.details.csharp.namespace || this.fullName;
-        const ns = this.subNamespaces[fullname] || this.add(new ApiVersionModelExtensionsNamespace(this.state.project.apiExtensionsFolder, fullname));
+        const ns = this.subNamespaces[fullname] || this.add(new ApiVersionModelExtensionsNamespace(this.outputFolder, fullname));
 
         // create the model extensions for each object model
         // 2. A partial interface with the type converter attribute
