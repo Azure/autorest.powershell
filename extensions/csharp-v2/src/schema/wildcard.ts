@@ -35,18 +35,37 @@ export class Wildcard implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`/* 1 */ new System.Collections.Hashtable( System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}.Property("${serializedName}")?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, this.leafType.defaultOfType)} ))`);
+        return System.Collections.Hashtable.new(
+          System.Linq.Enumerable.ToDictionary(`${valueOf(container)}.Property("${serializedName}")?.Keys ?? ${System.Linq.Enumerable.Empty(System.String)}`,
+            `each => each`,
+            `each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, this.leafType.defaultOfType)}`
+          ));
+      // return toExpression(`/* 1 */ new _ystem.Collections.Hashtable( System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( 
+      // ${valueOf(container)}.Property("${serializedName}")?.Keys ?? System.Linq.Enumerable.Empty<string>(), 
+      // each => each, 
+      // each => ${this.leafType.deserializeFromNode(mediaType, `${valueOf(container)}.Property("${serializedName}").PropertyT<${ClientRuntime.JsonNode}>(each)`, this.leafType.defaultOfType)} ))`);
 
-      case KnownMediaType.Xml:
-        return toExpression(`new System.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', this.leafType.defaultOfType )} ))`);
+      // case KnownMediaType.Xml:
+      // return toExpression(`new _ystem.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', this.leafType.defaultOfType )} ))`);
 
       case KnownMediaType.Header: {
         const prefix = this.schema.extensions['x-ms-header-collection-prefix'];
         if (prefix) {
           // this is a catch for a specific set of headers
-          return toExpression(`new System.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>(System.Linq.Enumerable.Where(${valueOf(container)}, header => header.Key.StartsWith("${serializedName}")), header => header.Key.Substring(${serializedName.length}), header => System.Linq.Enumerable.FirstOrDefault(header.Value)))`);
+          // return toExpression(`new _ystem.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>(System.Linq.Enumerable.Where(${valueOf(container)}, header => header.Key.StartsWith("${serializedName}")), header => header.Key.Substring(${serializedName.length}), header => System.Linq.Enumerable.FirstOrDefault(header.Value)))`);
+          return System.Collections.Hashtable.new(System.Linq.Enumerable.ToDictionary(
+            System.Linq.Enumerable.Where(container, `header => header.Key.StartsWith("${serializedName}")`),
+            `header => header.Key.Substring(${serializedName.length})`,
+            `header => System.Linq.Enumerable.FirstOrDefault(header.Value))`
+          ));
         }
-        return toExpression(`new System.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', this.leafType.defaultOfType)} ))`);
+        //return toExpression(`new _ystem.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${valueOf(container)}?.Elements() ?? System.Linq.Enumerable.Empty<System.Xml.Linq.XElement>(), element => element.Name.ToString(), element => ${this.leafType.deserializeFromNode(mediaType, 'element', this.leafType.defaultOfType)} ))`);
+        System.Collections.Hashtable.new(System.Linq.Enumerable.ToDictionary(
+          `${valueOf(container)}?.Elements() ?? ${System.Linq.Enumerable.Empty(System.Xml.Linq.XElement)}`,
+          `element => element.Name.ToString()`,
+          `element => ${this.leafType.deserializeFromNode(mediaType, 'element', this.leafType.defaultOfType)} )`
+        ));
+
       }
     }
     return toExpression(`null /* deserializeFromContainerMember (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
@@ -57,7 +76,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
     switch (mediaType) {
       case KnownMediaType.Json:
         const nodeAsObject = `(${(valueOf(node))} as ${ClientRuntime.JsonObject})`;
-        return toExpression(`/* 2 */ new System.Collections.Hashtable(System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, this.leafType.defaultOfType)} ))`);
+        return toExpression(`/* GS01: ChangeThisToUse dotnet classes */ new global::System.Collections.Hashtable(global::System.Linq.Enumerable.ToDictionary<string,string, ${this.leafType.declaration}>( ${nodeAsObject}?.Keys ?? System.Linq.Enumerable.Empty<string>(), each => each, each => ${this.leafType.deserializeFromNode(mediaType, `${nodeAsObject}.PropertyT<${ClientRuntime.JsonNode}>(each)`, this.leafType.defaultOfType)} ))`);
     }
     return toExpression(`null /* deserializeFromNode (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -69,7 +88,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serDict = ` System.Linq.Enumerable.Select( (System.Collections.Generic.IEnumerable<object>)${value}.Keys, (${each}) => new System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.ToString(), ${this.leafType.serializeToNode(mediaType, `${value}[${each}]`, serializedName)}))`;
+          const serDict = ` /* GS01: ChangeThisToUse dotnet classes */global::System.Linq.Enumerable.Select( (/* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.IEnumerable<object>)${value}.Keys, (${each}) => new /* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.ToString(), ${this.leafType.serializeToNode(mediaType, `${value}[${each}]`, serializedName)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.JsonObject}(${serDict}) : null`);
         }
 
@@ -158,7 +177,7 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
       switch (mediaType) {
         case KnownMediaType.Json:
           const tmp = `__${camelCase(['json', ...deconstruct(serializedName)])}`;
-          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonObject}>("${serializedName}"), out var ${tmp}) ? ${ClientRuntime.JsonSerializable}.FromJson(${tmp}, ${defaultValue} ?? new System.Collections.Hashtable( new ${typeDeclaration.declaration}())) : ${defaultValue}`);
+          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonObject}>("${serializedName}"), out var ${tmp}) ? ${ClientRuntime.JsonSerializable}.FromJson(${tmp}, ${defaultValue} ?? new global::System.Collections.Hashtable( new ${typeDeclaration.declaration}())) : ${defaultValue}`);
       }
     } finally {
     }

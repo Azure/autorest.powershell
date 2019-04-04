@@ -69,7 +69,9 @@ export class Wildcard implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serDict = ` System.Linq.Enumerable.Select( ${value}, (${each}) => new System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.Key, ${this.leafType.serializeToNode(mediaType, `${each}.Value`, serializedName)}))`;
+          //const serDict = ` System.Linq.Enumerable.Select( ${value}, (${each}) => new _ystem.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.Key, ${this.leafType.serializeToNode(mediaType, `${each}.Value`, serializedName)}))`;/
+          const serDict = System.Linq.Enumerable.Select(value, `(${each}) => ${System.Collections.Generic.KeyValuePair(System.String, ClientRuntime.JsonNode).new(`${each}.Key`, `${this.leafType.serializeToNode(mediaType, `${each}.Value`, serializedName)}`)}`);
+
           return toExpression(`null != ${value} ? new ${ClientRuntime.JsonObject}(${serDict}) : null`);
         }
 

@@ -137,9 +137,9 @@ export class OperationMethod extends Method {
           }
           yield `var _tempUrl = ${$this.resourceUri}.AbsoluteUri;`;
           yield If(`queryParameters.Count > 0`, `_tempUrl = $"{_tempUrl}{((_tempUrl.Contains("?") && !_tempUrl.EndsWith("?")) ? "&" : "?")}{string.Join("&", queryParameters)}";`);
-          yield `var _url = new System.Uri(_tempUrl);`;
+          yield `var _url =${System.Uri.new(`_tempUrl`)};`;
         } else {
-          yield `var _url = new System.Uri(${$this.resourceUri}.AbsoluteUri);`;
+          yield `var _url = ${System.Uri.new(`${$this.resourceUri}.AbsoluteUri`)};`;
         }
       } else {
         url = new LocalVariable('_url', dotnet.Var, {
@@ -159,7 +159,7 @@ export class OperationMethod extends Method {
       yield EOL;
 
       yield `// generate request object `;
-      yield `var request =  new System.Net.Http.HttpRequestMessage(${ClientRuntime.fullName}.Method.${$this.operation.method.capitalize()}, _url);`;
+      yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${$this.operation.method.capitalize()}, _url`)};`;
       yield eventListener.signal(ClientRuntime.Events.RequestCreated, `_url`);
       yield EOL;
 
@@ -179,7 +179,7 @@ export class OperationMethod extends Method {
       if (bp) {
         yield `// set body content`;
         yield `request.Content = ${bp.serializeToContent(bp.mediaType)};`;
-        yield `request.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("${bp.contentType}");`;
+        yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet, `_url`);
       }
 
@@ -238,7 +238,7 @@ export class EventListener {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException(); }`;
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()}; }`;
     }
   }
   *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
@@ -246,7 +246,7 @@ export class EventListener {
       const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw new System.OperationCanceledException(); }`;
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()} }`;
     }
 
   }
@@ -361,7 +361,7 @@ ${new Statements(responder()).implementation}
               asyncOperation));
             yield uriLocal;
 
-            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(new System.Uri(${uriLocal}), ${ClientRuntime.Method.Get});`;
+            yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(${System.Uri.new(uriLocal)}, ${ClientRuntime.Method.Get});`;
 
             yield EOL;
             yield `// and let's look at the current response body and see if we have some information we can give back to the listener`;
@@ -386,7 +386,7 @@ ${new Statements(responder()).implementation}
 
             yield EOL;
             yield `
-if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty(asyncOperation))
+if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.IsNullOrEmpty(`asyncOperation`)})
 {
     try {
         // we have a 200, and a should have a provisioning state.
@@ -396,7 +396,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
             await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", _response); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
             if( state?.ToString() != "Succeeded")
             {
-                _response.StatusCode = System.Net.HttpStatusCode.Created;
+                _response.StatusCode = ${System.Net.HttpStatusCode.Created};
             }
         }
     } catch {
@@ -476,7 +476,7 @@ if( _response.StatusCode == System.Net.HttpStatusCode.OK && string.IsNullOrEmpty
   }
 
   private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
-    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(new System.Uri(${valueOf(finalLocation)}), ${ClientRuntime.Method.Get})`);
+    yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(${System.Uri.new(finalLocation)}, ${ClientRuntime.Method.Get})`);
 
     yield EOL;
     yield `// drop the old response`;

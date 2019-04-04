@@ -107,7 +107,8 @@ export class DateTime1123 extends DateTime {
 export class UnixTime extends Primitive {
   public isXmlAttribute: boolean = false;
   public jsonType = ClientRuntime.JsonNumber;
-  private EpochDate = new LiteralExpression('new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc)');
+
+  private EpochDate = System.DateTime.new('1970', '1', '1', '0', '0', '0', System.DateTimeKind.Utc);
 
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;

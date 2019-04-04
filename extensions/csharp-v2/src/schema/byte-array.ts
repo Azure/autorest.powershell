@@ -5,7 +5,7 @@
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { camelCase, deconstruct, nameof } from '@microsoft.azure/codegen';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf, System } from '@microsoft.azure/codegen-csharp';
 import { If } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
 import { Variable } from '@microsoft.azure/codegen-csharp';
@@ -73,10 +73,10 @@ export class ByteArray implements EnhancedTypeDeclaration {
       const b = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Xml: {
-          return `AddIf( null != ${value} ? new System.Xml.Linq.XElement("${serializedName}", System.Convert.ToBase64String(${value})) : null, ${container}.Add);`
+          return `AddIf( null != ${value} ? ${System.Xml.Linq.XElement.new(serializedName, System.Convert.ToBase64String(value))}  : null, ${container}.Add);`
         }
         case KnownMediaType.Header: {
-          return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", System.Convert.ToBase64String(${value}));`);
+          return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", ${System.Convert.ToBase64String(value)});`);
         }
       }
 

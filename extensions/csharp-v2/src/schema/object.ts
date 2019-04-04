@@ -100,7 +100,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
           // to do -- add in a potential support for the filename too.
           contents = `${contents}${EOL}    bodyContent.Add( ${System.Net.Http.StreamContent.new(`${value}.${p.details.csharp.name}`)},"${p.serializedName}");`;
         }
-        // bodyContent.Add(new System.Net.Http.StreamContent(body.AudioFile), "audioFile");
+        // bodyContent.Add(new _ystem.Net.Http.StreamContent(body.AudioFile), "audioFile");
         return toExpression(`new ${System.Func(System.Net.Http.MultipartFormDataContent)}(() =>
 {
     var bodyContent = ${System.Net.Http.MultipartFormDataContent.new()};

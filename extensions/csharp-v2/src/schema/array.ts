@@ -77,16 +77,19 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp} , (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}) ) )`;
-          return toExpression(`If( ${valueOf(node)} as ${ClientRuntime.JsonArray}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
+          // const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp} , (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}) ) )`;
+
+          const deser = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(tmp, `(${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}`));
+
+          return toExpression(`If( ${valueOf(node)} as ${ClientRuntime.JsonArray}, out var ${tmp}) ? ${System.Func(this).new(`()=> ${valueOf(deser)} )`)}() : ${defaultValue}`);
         }
         case KnownMediaType.Xml: {
           // XElement should be a container of items, right?
           // if the reference doesn't define an XML schema then use its default name
-          const defaultName = this.elementType.schema.details.csharp.name;
-          const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}.Elements("${this.elementType.schema.xml ? this.elementType.schema.xml.name || defaultName : defaultName}"), (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
+          //const defaultName = this.elementType.schema.details.csharp.name;
+          //const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp}.Elements("${this.elementType.schema.xml ? this.elementType.schema.xml.name || defaultName : defaultName}"), (${each})=> ${this.elementType.deserializeFromNode(mediaType, each, toExpression('null'))} ) )`;
 
-          return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
+          //return toExpression(`If( ${valueOf(node)}, out var ${tmp}) ? new System.Func<${this.elementType.declaration}[]>(()=> ${deser} )() : ${defaultValue}`);
         }
       }
     } finally {
@@ -127,14 +130,14 @@ export class ArrayOf implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serArray = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName)}))`;
+          const serArray = `global::System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.XNodeArray}(${serArray}) : null`);
         }
 
         case KnownMediaType.Xml: {
           if (this.isWrapped) {
             const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
-            return toExpression(`null != ${value} ? new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name)}))`);
+            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name)}))`);
           } else {
             throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
@@ -145,7 +148,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '')})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '')})) : ${System.String.Empty})`);
       }
     } finally {
       popTempVar();
@@ -207,7 +210,8 @@ export class ArrayOf implements EnhancedTypeDeclaration {
 
         case KnownMediaType.Xml:
           if (this.isWrapped) {
-            return `AddIf( new System.Xml.Linq.XElement("${this.serializedName || serializedName}", ${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName)}):null), ${container}.Add); `;
+
+            return `AddIf( ${System.Xml.Linq.XElement.new(`"{this.serializedName || serializedName}"`, `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName)}):null`)}, ${container}.Add); `;
           } else {
             return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName)}, ${container}.Add);`));
           }

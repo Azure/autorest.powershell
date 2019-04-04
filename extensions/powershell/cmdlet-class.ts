@@ -320,7 +320,7 @@ export class CmdletClass extends Class {
             yield `// Error Response : ${each.responseCode} `;
             const unexpected = function* () {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
-              yield `WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}\\nBody: {await responseMessage.Content.ReadAsStringAsync()}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
+              yield `WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}\\nBody: {await responseMessage.Content.ReadAsStringAsync()}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`;
             }
             if (each.schema) {
               // the schema should be the error information.
@@ -343,7 +343,7 @@ export class CmdletClass extends Class {
                 yield lcode.declarationStatement;
                 yield lmessage.declarationStatement;
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(`WriteError(new System.Management.Automation.ErrorRecord(new System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`)
+                yield Else(`WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e) !== 'null').join(',')}}));`)
                 return;
               } else {
                 yield unexpected;
@@ -378,7 +378,7 @@ export class CmdletClass extends Class {
                     const nextLinkName = `${result.value}.${nextLinkProperty.details.csharp.name}`;
                     yield (If(`${nextLinkName} != null`,
                       If(`responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage `, function* () {
-                        yield `requestMessage = requestMessage.Clone(new System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
+                        yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
                         yield $this.eventListener.signal(Events.FollowingNextLink);
                         yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
                       })
@@ -561,11 +561,11 @@ export class CmdletClass extends Class {
 
       yield Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
-          yield `WriteVerbose($"{messageData().Message ?? ${System.String.Empty}}");`;
+          yield `WriteVerbose($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
         TerminalCase(Events.Warning.value, function* () {
-          yield `WriteWarning($"{messageData().Message ?? ${System.String.Empty}}");`;
+          yield `WriteWarning($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
@@ -575,11 +575,11 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Debug.value, function* () {
-          yield `WriteDebug($"{messageData().Message ?? ${System.String.Empty}}");`;
+          yield `WriteDebug($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
-          yield `WriteError(new System.Management.Automation.ErrorRecord( new System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );`;
+          yield `WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );`;
           yield Return();
         }),
       ]);
@@ -589,7 +589,7 @@ export class CmdletClass extends Class {
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
-      yield `WriteDebug($"{id}: {messageData().Message ?? ${System.String.Empty}}");`;
+      yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
       // any handling of the signal on our side...
     });
   }

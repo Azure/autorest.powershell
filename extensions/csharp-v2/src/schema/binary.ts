@@ -53,7 +53,7 @@ export class Binary implements EnhancedTypeDeclaration {
   /** emits an expression serialize this to the value required by the container */
   serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
     if (mediaType === KnownMediaType.Stream) {
-      return toExpression(`new System.Net.Http.StreamContent(${value})`);
+      return toExpression(System.Net.Http.StreamContent.new(value));
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
