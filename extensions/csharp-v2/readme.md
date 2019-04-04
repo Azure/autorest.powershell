@@ -36,12 +36,9 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
-  add-apiversion-constant:
-    input: tweakcodemodelazure
-
   # Choose names for everything in c#
   csnamer:
-    input: add-apiversion-constant
+    input: tweakcodemodelazure
 
   # generates c# files for http-operations
   llcsharp:

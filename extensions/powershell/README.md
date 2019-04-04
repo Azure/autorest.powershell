@@ -55,14 +55,11 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
-  add-apiversion-constant:
-    input: tweakcodemodelazure
-
 # --- extension powershell --- 
 
   # creates high-level commands
   create-commands:
-    input: add-apiversion-constant # brings the code-model-v3 with it.
+    input: tweakcodemodelazure # brings the code-model-v3 with it.
 
   structural-modifier:
     input: create-commands
@@ -112,6 +109,7 @@ output-artifact:
   - source-file-csproj
   - source-file-powershell
   - source-file-other
+  
 ```
 
 The following verb-mapping is used as an aid to infer cmdlet-verbs. Every entry maps an operationId-method to a PowerShell cmdlet-verb. The operationId-method is the identifier that comes after the underscore in the operationId. For example:

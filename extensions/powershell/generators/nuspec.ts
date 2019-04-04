@@ -6,7 +6,7 @@
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
-export async function generateNuspec(service: Host, project: Project) {
+export async function generateNuspec(project: Project) {
   const authorsOwners = project.azure ? 'Microsoft Corporation' : '';
   const licenseUrl = project.azure ? `https://aka.ms/azps-license` : '';
   const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : '';
@@ -18,7 +18,7 @@ export async function generateNuspec(service: Host, project: Project) {
       <dependency id="Az.Accounts" version="${project.accountsVersionMinimum}" />
     </dependencies>` : '';
 
-  service.WriteFile(project.nuspec, `<?xml version="1.0" encoding="utf-8"?>
+  project.state.writeFile(project.nuspec, `<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>${project.moduleName}</id>

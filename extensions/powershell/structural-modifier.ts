@@ -3,10 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { values, items } from '@microsoft.azure/codegen';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
+type State = ModelState<codemodel.Model>;
+
 
 interface RemoveCommandDirective {
   where: {
@@ -40,7 +42,7 @@ export async function structuralModifier(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
 
   for (const directive of directives) {
     const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
@@ -54,7 +56,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const variantRegex = getParsedSelector(directive.where.variant);
 
       // select all operations
-      const operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
+      const operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
       let operationsToRemoveKeys = new Set<number>();
       if (subjectRegex) {
         const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subject}`.match(subjectRegex))
@@ -91,18 +93,18 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       }
 
       for (const key of operationsToRemoveKeys) {
-        const operationInfo = model.commands.operations[key].details.default;
-        service.Message({
+        const operationInfo = state.model.commands.operations[key].details.default;
+        state.message({
           Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.subjectPrefix}${operationInfo.subject}_${operationInfo.name}` : `${operationInfo.subjectPrefix}${operationInfo.subject}`}`
         });
 
-        delete model.commands.operations[key];
+        delete state.model.commands.operations[key];
       }
       continue;
     }
   }
 
-  return model;
+  return state.model;
 }
 
 function isNotRegex(str: string): boolean {

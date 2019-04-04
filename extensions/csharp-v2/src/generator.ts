@@ -10,22 +10,23 @@ import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
 import { Project } from './project';
 
 export class State extends ModelState<Model> {
+  project!: Project;
 
-  public get project(): Project {
-    if (this.prj) {
-      return this.prj;
+  public constructor(service: Host, objectInitializer?: Partial<State>) {
+    super(service);
+    this.apply(objectInitializer);
+  }
+
+  async init(project?: Project) {
+    if (project) {
+      this.project = project;
     }
-    throw new Error();
+    return await super.init();
   }
 
-  public set project(prj: Project) {
-    this.prj = prj;
-  }
-  constructor(service: Host, model: Model, documentName: string, currentPath: JsonPath = new Array<string>(), private prj?: Project) {
-    super(service, model, documentName, currentPath);
-  }
-
-  public path(...childPath: JsonPath): State {
-    return new State(this.service, this.model, this.documentName, [...this.currentPath, ...childPath], this.project);
+  path(...childPath: JsonPath) {
+    const result = new State(this.service, this);
+    result.currentPath = [...this.currentPath, ...childPath];
+    return result;
   }
 }

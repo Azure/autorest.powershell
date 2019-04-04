@@ -8,8 +8,8 @@ import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
 
-export async function generatePsm1Custom(service: Host, project: Project) {
-  const psm1 = new PSScriptFile(await service.ReadFile(project.psm1Custom) || '');
+export async function generatePsm1Custom(project: Project) {
+  const psm1 = new PSScriptFile(await project.state.readFile(project.psm1Custom) || '');
   const dllPath = relative(project.customFolder, project.dll);
   const internalPath = relative(project.customFolder, project.psm1Internal);
   psm1.append('Initialization', `
@@ -28,5 +28,5 @@ export async function generatePsm1Custom(service: Host, project: Project) {
   Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
   Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot)`);
   psm1.trim();
-  service.WriteFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
+  project.state.writeFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
 }

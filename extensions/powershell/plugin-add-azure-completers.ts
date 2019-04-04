@@ -3,9 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { values } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+
+type State = ModelState<codemodel.Model>;
+
+
 
 const resourceGroupNames = new Set<string>([
   'resourcegroupname',
@@ -22,7 +26,8 @@ export async function addCompleter(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
+  const model = state.model;
   for (const operation of values(model.commands.operations)) {
     for (const parameter of values(operation.parameters)) {
       const parameterName = parameter.details.csharp.name.toLowerCase();

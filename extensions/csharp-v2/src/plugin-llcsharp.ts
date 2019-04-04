@@ -13,33 +13,14 @@ const resources = `${__dirname}/../resources`;
 
 export async function llcsharp(service: Host) {
   try {
-    // Get the list of files
-    const files = await service.ListInputs();
-    const apifolder = await service.GetValue('api-folder') || '';
-    const runtimefolder = await service.GetValue('runtime-folder') || 'runtime';
-    const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+    const project = await new Project(service).init();
 
-    // get the openapi document
-    if (files.length === 0) {
-      throw new Error('Inputs missing.');
-    }
-
-    const filename = files[0];
-
-    const codeModelText = await service.ReadFile(filename);
-    const model = await deserialize<Model>(codeModelText, filename);
-
-    const modelState = new State(service, model, filename);
-
-    const project = new Project(modelState);
-    await project.init();
-
-    await project.writeFiles(async (fname, content) => service.WriteFile(join(apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
+    await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 
     // recursive copy resources
-    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
     if (project.defaultPipeline) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
     }
     if (project.jsonSerialization) {
       // Note:
@@ -47,7 +28,7 @@ export async function llcsharp(service: Host) {
       // and I don't want to make code changes in the source repository, so I can keep merging from upstream as simple as possible.
       // so, we're converting as much as possible to internal, and exposing only what must be exposed to make the code compile.
 
-      await copyResources(join(resources, 'runtime', 'csharp', 'Json'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), {
+      await copyResources(join(resources, 'runtime', 'csharp', 'Json'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), {
         ...project.overrides,
         'public': 'internal',
         'internal (.*) class JsonNumber': 'public $1 class JsonNumber',
@@ -88,11 +69,11 @@ export async function llcsharp(service: Host) {
       });
     }
     if (project.xmlSerialization) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
     }
 
-    if (azure) {
-      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+    if (project.azure) {
+      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
     }
 
   } catch (E) {

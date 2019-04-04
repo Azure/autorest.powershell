@@ -6,8 +6,8 @@
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
-export async function generateGitIgnore(service: Host, project: Project) {
-  service.WriteFile(project.gitIgnore, `bin
+export async function generateGitIgnore(project: Project) {
+  project.state.writeFile(project.gitIgnore, `bin
 obj
 .vs
 generated

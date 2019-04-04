@@ -8,29 +8,19 @@ import { deserialize, serialize } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import * as OpenAPI from '@microsoft.azure/openapi';
 import { Remodeler } from './remodeler';
+type State = ModelState<OpenAPI.Model>;
 
 export async function processRequest(service: Host) {
   try {
-
-    // Get the list of files
-    const files = await service.ListInputs();
-
-    // get the openapi document
-    if (files.length === 0) {
-      throw new Error('Inputs missing.');
-    }
-
-    const original = await service.ReadFile(files[0]);
-
-    // deserialize
-    const remodeler = new Remodeler(new ModelState(service, await deserialize<OpenAPI.Model>(await service.ReadFile(files[0]), files[0]), files[0]));
+    const state = await new ModelState<OpenAPI.Model>(service).init();
+    // process
+    const remodeler = new Remodeler(state);
 
     // go!
     const codeModel = remodeler.remodel();
 
     // output the model to the pipeline
     service.WriteFile('code-model-v3.yaml', serialize(codeModel), undefined, 'code-model-v3');
-    //service.WriteFile('oai.yaml', original, undefined, 'source-file-other');
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     throw E;

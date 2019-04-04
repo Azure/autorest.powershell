@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, } from '@microsoft.azure/autorest.codemodel-v3';
+import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService } from '@microsoft.azure/codegen';
 
@@ -13,38 +13,23 @@ import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
 import { clone, Dictionary } from '@microsoft.azure/linq';
 
+type State = ModelState<codemodel.Model>;
+
 export async function createCommands(service: Host) {
-
-  const x = await service.ListInputs('');
-  const y = await service.ListInputs();
-
-  const z = await service.GetValue('configurationFiles');
-  try {
-
-    const txt = await service.GetConfigurationFile('readme.powershell.md');
-
-    // spit a configuration file back.
-    // service.UpdateConfigurationFile('readme.powershell.md', `${txt}\n\n and more.`);
-  } catch (E) {
-    // console.error(E);
-    console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
-    throw E;
-  }
-
   return processCodeModel(commandCreator, service);
 }
 
-async function commonParameters(service: Host): Promise<Array<string>> {
-  const isAzure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
+async function commonParameters(state: State): Promise<Array<string>> {
+  const isAzure = await state.getValue('azure') || await state.getValue('azure-arm') || false;
   return isAzure ? [
     // 'resourceGroupName',
     'subscriptionId'
   ] : [];
 }
 
-async function getConfigValue<T>(key: string, defaultValue: T, service: Host): Promise<T> {
+async function getConfigValue<T>(key: string, defaultValue: T, state: State): Promise<T> {
   // GetValue returns null when values are not found.
-  const value = await service.GetValue(key);
+  const value = await state.getValue(key);
   return value !== null ? <T>value : defaultValue;
 }
 
@@ -58,35 +43,36 @@ export function titleToServiceName(title: string): string {
   return serviceName || titleCamelCase;
 }
 
-async function commandCreator(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-  const isAzure = !!(await getConfigValue('azure', false, service) || await getConfigValue('azure-arm', false, service) || false);
-  const prefix = await getConfigValue('prefix', isAzure ? 'Az' : ``, service);
-  const serviceName = await getConfigValue('service-name', isAzure ? titleToServiceName(model.info.title) : model.info.title, service);
-  const subjectPrefix = await getConfigValue('subject-prefix', isAzure ? serviceName : ``, service);
+async function commandCreator(state: State): Promise<codemodel.Model> {
+  const model = state.model;
+
+  const isAzure = !!(await getConfigValue('azure', false, state) || await getConfigValue('azure-arm', false, state) || false);
+  const prefix = await getConfigValue('prefix', isAzure ? 'Az' : ``, state);
+  const serviceName = await getConfigValue('service-name', isAzure ? titleToServiceName(model.info.title) : model.info.title, state);
+  const subjectPrefix = await getConfigValue('subject-prefix', isAzure ? serviceName : ``, state);
 
   model.details.default.isAzure = isAzure;
   model.details.default.prefix = prefix;
-  service.Message({
+  state.message({
     Channel: Channel.Verbose, Text: `[CMDLET-PREFIX] => '${model.details.default.prefix}'`
   });
 
   model.details.default.serviceName = serviceName;
-  service.Message({
+  state.message({
     Channel: Channel.Verbose, Text: `[SERVICE-NAME] => '${model.details.default.serviceName}'`
   });
 
   model.details.default.subjectPrefix = subjectPrefix;
-  service.Message({
+  state.message({
     Channel: Channel.Verbose, Text: `[SUBJECT-PREFIX] => '${model.details.default.subjectPrefix}'`
   });
 
   // perform the detection
-  model = await detect(model, service);
-  return model;
+  return await detect(state);
 }
 
-async function addVariant(vname: string, body: http.RequestBody | undefined, bodyParameterName: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, model: codemodel.Model, service: Host) {
-  const op = await addCommandOperation(vname, parameters, operation, variant, model, service);
+async function addVariant(vname: string, body: http.RequestBody | undefined, bodyParameterName: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State) {
+  const op = await addCommandOperation(vname, parameters, operation, variant, state);
 
   // if this has a body with it, let's add that parameter
   if (body && body.schema) {
@@ -104,7 +90,7 @@ async function addVariant(vname: string, body: http.RequestBody | undefined, bod
     // let's add a variant where it's expanded out.
     // *IF* the body is an object
     if (body.schema.type === JsonType.Object) {
-      const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, model, service);
+      const opExpanded = await addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state);
       opExpanded.details.default.dropBodyParameter = true;
       opExpanded.parameters.push(new components.IParameter(`${bodyParameterName}Body`, body.schema, {
         details: {
@@ -130,17 +116,15 @@ function isNameConflict(model: codemodel.Model, vname: string) {
   return false;
 }
 
-async function addCommandOperation(vname: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, model: codemodel.Model, service: Host): Promise<command.CommandOperation> {
+async function addCommandOperation(vname: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State): Promise<command.CommandOperation> {
 
   let apiversion = '';
 
   for (const each of items(operation.responses)) {
     for (const rsp of each.value) {
       if (rsp.schema && rsp.schema.details && rsp.schema.details.default && rsp.schema.details.default.apiversion) {
-        console.error(rsp.schema.details.default.apiversion);
         apiversion = rsp.schema.details.default.apiversion;
         break;
-
       }
     }
   }
@@ -162,13 +146,13 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
   }
 
   // if we have an identical vname, let's add 'etc'
-  while (isNameConflict(model, vname)) {
+  while (isNameConflict(state.model, vname)) {
     vname = `${vname}Etc`;
   }
 
   const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
 
-  return model.commands.operations[`${length(model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
+  return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
     asjob: operation.details.default.asjob ? true : false,
     extensions: {
       ...operation.pathExtensions,
@@ -201,7 +185,7 @@ async function addCommandOperation(vname: string, parameters: Array<http.HttpOpe
   });
 }
 
-async function addVariants(parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, model: codemodel.Model, service: Host) {
+async function addVariants(parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State) {
   // now synthesize parameter set variants multiplexed by the variants.
 
   const [constants, params] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
@@ -235,28 +219,30 @@ async function addVariants(parameters: Array<http.HttpOperationParameter>, opera
   }
 
   // no optionals:
-  service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-  await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, model, service);
+  state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
+  await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
   // handle optional parameter variants
   for (const combo of combos) {
     const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
-    service.Message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-    await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, model, service);
+    state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
+    await addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, state);
   }
 }
 
-async function detect(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
-  service.Message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
+async function detect(state: State): Promise<codemodel.Model> {
+  const model = state.model;
+
+  state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
 
   // parameter names that are candidates to be changed to pull the value from the common module
-  const commonCandidates = await commonParameters(service);
+  const commonCandidates = await commonParameters(state);
 
   for (const operation of values(model.http.operations)) {
-    for (const variant of await inferCommandNames(operation.operationId, service, model)) {
+    for (const variant of await inferCommandNames(operation.operationId, state)) {
 
       // no common parameters (standard variations)
-      await addVariants(operation.parameters, operation, variant, model, service);
+      await addVariants(operation.parameters, operation, variant, state);
 
       // now see if we have parameters that can be made common
       const possibleCommon = values(operation.parameters).linq.where(parameter => commonCandidates.includes(parameter.name)).linq.toArray();
@@ -283,7 +269,7 @@ async function detect(model: codemodel.Model, service: Host): Promise<codemodel.
             return param;
           });
           // and shallow copy the parameter, into a new one, and overw
-          await addVariants(some, operation, variant, model, service);
+          await addVariants(some, operation, variant, state);
         }
       }
 
@@ -323,7 +309,7 @@ interface CommandVariant {
   variant: string;
 }
 
-async function inferCommandNames(operationId: string, service: Host, model: codemodel.Model): Promise<Array<CommandVariant>> {
+async function inferCommandNames(operationId: string, state: State): Promise<Array<CommandVariant>> {
 
   const pluralization = pluralizationService.Value;
 
@@ -340,9 +326,9 @@ async function inferCommandNames(operationId: string, service: Host, model: code
   const operation = deconstruct(method);
 
   // get verb mappings
-  verbMap = await service.GetValue('verb-mapping');
+  verbMap = await state.getValue('verb-mapping');
   if (verbMap[method]) {
-    return [getVariant(method, group, [], model)];
+    return [getVariant(method, group, [], state.model)];
   } else if (operation.length > 1) {
     // options supported
     // OPERATION or OPERATION2 => OPERATION-GROUP, OPERATION2-GROUP
@@ -357,22 +343,22 @@ async function inferCommandNames(operationId: string, service: Host, model: code
           // throw new Error(`Unable to perform detection form operation '${group}'/'${method}' -- too many values in operation : '${JSON.stringify(operation)}'`);
         }
 
-        return [getVariant(operation[0], group, operation.slice(3), model), getVariant(operation[2], group, operation.slice(3), model)];
+        return [getVariant(operation[0], group, operation.slice(3), state.model), getVariant(operation[2], group, operation.slice(3), state.model)];
 
       case 'by':
       case 'with':
         // create one operation -- OPERATION-GROUP_filter
-        return [getVariant(operation[0], group, operation.slice(2), model)];
+        return [getVariant(operation[0], group, operation.slice(2), state.model)];
     }
     // OPERATION[SUFFIX] => OPERATION-GROUP[SUFFIX]
-    return [getVariant(operation[0], [group, ...operation.slice(1)], operation.slice(1), model)];
+    return [getVariant(operation[0], [group, ...operation.slice(1)], operation.slice(1), state.model)];
     // would generate simpler name, but I fear for collisions on things like Registries_ListCredentials => get-credentials or Registries_RegenerateCredential => new-credential
     // return [getVariant(operation[0], `${pascalCase(operation.slice(1))}`, operation.slice(1))];
 
   } else {
     // for now, the rest should look like:
     // OPERATION => OPERATION-GROUP
-    return [getVariant(operation[0], group, [], model)];
+    return [getVariant(operation[0], group, [], state.model)];
   }
 }
 

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { codemodel, JsonType, processCodeModel } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { keys, length, values } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
+type State = ModelState<codemodel.Model>;
 
 const xmsPageable = 'x-ms-pageable';
 // Azure version -
@@ -17,7 +18,8 @@ export async function tweakModelAzurePlugin(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
+  const model = state.model;
 
   // service.Message({ Channel: Channel.Debug, Text: "THIS IS THE AZURE TWEAKER" });
 

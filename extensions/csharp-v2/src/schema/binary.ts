@@ -5,7 +5,7 @@
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { nameof } from '@microsoft.azure/codegen';
-import { System } from '@microsoft.azure/codegen-csharp';
+import { System, valueOf } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral, toExpression } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
 import { Variable } from '@microsoft.azure/codegen-csharp';
@@ -47,7 +47,7 @@ export class Binary implements EnhancedTypeDeclaration {
   }
   /** emits an expression to deserialize content from a content/response */
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
-    return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
+    return toExpression(`${valueOf(content)}.Content.ReadAsStreamAsync()`);
   }
 
   /** emits an expression serialize this to the value required by the container */

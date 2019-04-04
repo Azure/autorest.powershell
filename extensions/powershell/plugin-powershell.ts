@@ -23,23 +23,8 @@ const resources = `${__dirname}/../resources`;
 
 export async function powershell(service: Host) {
   try {
-    // Get the list of files
-    const files = await service.ListInputs('code-model-v3');
-    if (files.length === 0) {
-      throw new Error('Inputs missing.');
-    }
-
-    const codemodel = files[0];
-
-    // get the openapi document
-    const codeModelText = await service.ReadFile(codemodel);
-    const model = await deserialize<codemodel.Model>(codeModelText, codemodel);
-
-    // generate some files
-    const modelState = new State(service, model, codemodel);
-    const project = await new Project(modelState).init();
-
-    await project.writeFiles(async (filename, content) => service.WriteFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
+    const project = await new Project(service).init();
+    await project.writeFiles(async (filename, content) => project.state.writeFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
 
     await service.ProtectFiles(project.psd1);
     await service.ProtectFiles(project.customFolder);
@@ -48,15 +33,15 @@ export async function powershell(service: Host) {
     await service.ProtectFiles(project.examplesFolder);
 
     // wait for all the generation to be done
-    await copyRequiredFiles(service, project);
-    await generateCsproj(service, project);
-    await generatePsd1(service, project);
-    await generatePsm1(service, project);
-    await generatePsm1Custom(service, project);
-    await generatePsm1Internal(service, project);
-    await generateNuspec(service, project);
-    await generateGitIgnore(service, project);
-    await generateGitAttributes(service, project);
+    await copyRequiredFiles(project);
+    await generateCsproj(project);
+    await generatePsd1(project);
+    await generatePsm1(project);
+    await generatePsm1Custom(project);
+    await generatePsm1Internal(project);
+    await generateNuspec(project);
+    await generateGitIgnore(project);
+    await generateGitAttributes(project);
 
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
@@ -64,7 +49,7 @@ export async function powershell(service: Host) {
   }
 }
 
-async function copyRequiredFiles(service: Host, project: Project) {
+async function copyRequiredFiles(project: Project) {
 
   const cache = new Array<any>();
   const replacer = (key: string, value: any) => {
@@ -92,12 +77,12 @@ async function copyRequiredFiles(service: Host, project: Project) {
     for (let match; match = rx.exec(input);) {
       const text = match[0];
       const inner = match[1];
-      let value = await service.GetValue(inner);
+      let value = await project.state.getValue(inner);
       if (value === null || value === undefined) {
         // try as a safe eval execution.
         try {
           value = safeEval(inner, {
-            $config: await service.GetValue(''),
+            $config: await project.state.getValue(''),
             $project: project,
             $lib: {
               path: require('path')
@@ -122,17 +107,17 @@ async function copyRequiredFiles(service: Host, project: Project) {
   };
 
   // Project assets
-  await copyResources(join(resources, 'assets'), async (fname, content) => service.WriteFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
+  await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
 
   // Runtime files
-  await copyResources(join(resources, 'runtime'), async (fname, content) => service.WriteFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+  await copyResources(join(resources, 'runtime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
   // Modules files
-  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => service.WriteFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
+  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
 
   if (project.azure) {
     // Signing key file
-    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => service.WriteFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
+    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => project.state.writeFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
   }
 }
 

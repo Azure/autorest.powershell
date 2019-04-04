@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
+import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
+type State = ModelState<codemodel.Model>;
 
 
 export async function createInlinedPropertiesPlugin(service: Host) {
@@ -274,7 +275,7 @@ function createVirtualParameters(operation: CommandOperation) {
   operation.details.default.virtualParameters = virtualParameters;
 }
 
-async function createVirtuals(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function createVirtuals(state: State): Promise<codemodel.Model> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
     
@@ -283,7 +284,7 @@ async function createVirtuals(model: codemodel.Model, service: Host): Promise<co
     Individual models can change the $THRESHOLD for generate
   */
 
-  for (const schema of values(model.schemas)) {
+  for (const schema of values(state.model.schemas)) {
     if (schema.type === JsonType.Object) {
 
       // did we already inline this objecct
@@ -295,9 +296,9 @@ async function createVirtuals(model: codemodel.Model, service: Host): Promise<co
     }
   }
 
-  for (const operation of values(model.commands.operations)) {
+  for (const operation of values(state.model.commands.operations)) {
     createVirtualParameters(operation);
   }
 
-  return model;
+  return state.model;
 }

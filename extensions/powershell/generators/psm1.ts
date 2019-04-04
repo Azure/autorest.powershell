@@ -8,8 +8,8 @@ import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { join, relative } from 'path';
 
-export async function generatePsm1(service: Host, project: Project) {
-  const psm1 = new PSScriptFile(await service.ReadFile(project.psm1) || '');
+export async function generatePsm1(project: Project) {
+  const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
   psm1.append('Initialization', `
   # Get this module's instance
   $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
@@ -111,5 +111,5 @@ export async function generatePsm1(service: Host, project: Project) {
   Write-Information "Loaded Module '$($instance.Name)'"`);
 
   psm1.trim();
-  service.WriteFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
+  project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }

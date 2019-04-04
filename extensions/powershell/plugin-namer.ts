@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, values, removeProhibitedPrefix } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
+type State = ModelState<codemodel.Model>;
 
 // well-known parameters to singularize
 const namesToSingularize = new Set<string>([
@@ -33,20 +34,20 @@ export function getDeduplicatedSubjectPrefix(subjectPrefix: string, subject: str
   return subjectPrefix.replace(regex, '$1');
 }
 
-async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
   // get the value 
-  const isAzure = model.details.default.isAzure;
-  const shouldSanitize = !!await service.GetValue('sanitize-names');
+  const isAzure = state.model.details.default.isAzure;
+  const shouldSanitize = !!await state.getValue('sanitize-names');
 
   // make sure recursively that every details field has csharp
-  for (const { index, instance } of linq.visitor(model)) {
+  for (const { index, instance } of linq.visitor(state.model)) {
     if (index === 'details' && instance.default && !instance.csharp) {
       instance.csharp = linq.clone(instance.default, false, undefined, undefined, ['schema', 'origin']);
     }
   }
 
   if (shouldSanitize || isAzure) {
-    for (const operation of values(model.commands.operations)) {
+    for (const operation of values(state.model.commands.operations)) {
       // clean the noun (i.e. subjectPrefix + subject)
       const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
       const newSubjectPrefix = getDeduplicatedSubjectPrefix(operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
@@ -57,7 +58,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
         const prevCmdletName = getCmdletName(verb, prevSubjectPrefix, subject);
         operation.details.csharp.subjectPrefix = newSubjectPrefix;
         const newCmdletName = getCmdletName(verb, operation.details.csharp.subjectPrefix, subject);
-        service.Message(
+        state.message(
           {
             Channel: Channel.Verbose,
             Text: `Sanitized cmdlet-name -> Changed cmdlet-name from ${prevCmdletName} to ${newCmdletName}: {subjectPrefix: ${newSubjectPrefix}, subject: ${subject}${variantName ? `, variant: ${variantName}}` : '}'}`
@@ -89,7 +90,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           parameter.name = sanitizedName;
-          service.Message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
         } else if (namesToSingularize.has(parameter.name) && isAzure) {
           if (parameter.alias === undefined) {
             parameter.alias = [];
@@ -99,12 +100,12 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           parameter.name = singularize(parameter.name);
-          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+          state.message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
         }
       }
     }
 
-    for (const schema of values(model.schemas)) {
+    for (const schema of values(state.model.schemas)) {
       const virtualProperties = [...allVirtualProperties(schema.details.csharp.virtualProperties)];
 
       for (const property of virtualProperties) {
@@ -131,7 +132,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           property.name = sanitizedName;
-          service.Message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         } else if (namesToSingularize.has(property.name) && isAzure) {
           // apply alias
           const prevName = property.name;
@@ -143,27 +144,27 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
 
           // change name
           property.name = singularize(property.name);
-          service.Message({ Channel: Channel.Verbose, Text: `Well-Know Azure property-rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Verbose, Text: `Well-Know Azure property-rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
         }
       }
     }
   }
 
   // do collision detection work.
-  for (const command of values(model.commands.operations)) {
+  for (const command of values(state.model.commands.operations)) {
     const vp = command.details.csharp.virtualParameters;
     if (vp) {
       resolveParameterNames([], vp);
     }
   }
 
-  for (const schema of values(model.schemas)) {
+  for (const schema of values(state.model.schemas)) {
     const vp = schema.details.csharp.virtualProperties;
     if (vp) {
       resolvePropertyNames([schema.details.csharp.name], vp);
     }
   }
-  return model;
+  return state.model;
 }
 
 

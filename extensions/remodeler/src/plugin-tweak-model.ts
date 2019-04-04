@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel } from '@microsoft.azure/autorest.codemodel-v3';
+import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { items, keys, values, select } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
@@ -13,6 +13,7 @@ export enum HeaderPropertyType {
   Header = 'Header',
   HeaderAndBody = 'HeaderAndBody'
 }
+type State = ModelState<codemodel.Model>;
 
 // Universal version -
 // tweaks the code model to adjust things so that the code will generate better.
@@ -21,7 +22,8 @@ export async function tweakModelPlugin(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
+  const model = state.model;
 
   const set = new Set<Schema>();
   const removes = new Set<string>();
@@ -54,7 +56,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
   }
 
-  if (await service.GetValue('use-storage-pipeline')) {
+  if (await state.getValue('use-storage-pipeline')) {
     // we're going to create new models for the reponse headers ?
 
   } else {

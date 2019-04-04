@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Dictionary } from '@microsoft.azure/codegen';
-
 import { Project as codeDomProject } from '@microsoft.azure/codegen-csharp';
 
 import { State } from './generator';
@@ -19,14 +19,29 @@ export class Project extends codeDomProject {
   public xmlSerialization: boolean = false;
   public defaultPipeline: boolean = true;
   public emitSignals: boolean = true;
-  public projectNamespace: string;
-  public overrides: Dictionary<string>;
+  public projectNamespace!: string;
+  public overrides!: Dictionary<string>;
+  protected state!: State;
 
-  constructor(protected state: State) {
+  apifolder!: string;
+  runtimefolder!: string;
+  azure!: boolean;
+
+  constructor(protected service: Host, objectInitializer?: Partial<Project>) {
     super();
-    state.project = this;
+    this.apply(objectInitializer);
+  }
+
+  public async init(): Promise<this> {
+    await super.init();
+
+    this.state = await new State(this.service).init(this);
+    this.apifolder = await this.state.getValue('api-folder') || '';
+    this.runtimefolder = await this.state.getValue('runtime-folder') || 'runtime';
+    this.azure = await this.state.getValue('azure') || await this.state.getValue('azure-arm') || false;
+
     // add project namespace
-    this.projectNamespace = state.model.details.csharp.namespace;
+    this.projectNamespace = this.state.model.details.csharp.namespace;
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
       'Carbon.Internal.Extensions': `${this.projectNamespace}.Runtime.Json`,
@@ -42,13 +57,8 @@ export class Project extends codeDomProject {
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
       'Microsoft.Rest': this.projectNamespace
     };
-  }
 
-  public async init(): Promise<this> {
-    await super.init();
-
-    const service = this.state.service;
-    this.storagePipeline = await service.GetValue('use-storage-pipeline') || false;
+    this.storagePipeline = await this.state.getValue('use-storage-pipeline') || false;
     if (this.storagePipeline) {
       this.emitSignals = false;
       this.jsonSerialization = false;
@@ -66,12 +76,6 @@ export class Project extends codeDomProject {
 
     // create API class
     new ApiClass(this.serviceNamespace, this.state, { description: `Low-level API implementation for the ${this.state.model.info.title} service. \n${this.state.model.info.description || ''}` });
-
-    // if (this.jsonSerialization) {
-    // create serialization support
-    // new JsonSerializerClass(this.supportNamespace, this.state);
-    // }
-    // this.modelsNamespace.add(new ImportDirective(this.supportNamespace.fullName));
 
     // abort now if we have any errors.
     this.state.checkpoint();

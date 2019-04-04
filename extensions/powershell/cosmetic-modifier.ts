@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
+type State = ModelState<codemodel.Model>;
 
 let directives: Array<any> = [];
 
@@ -90,8 +91,6 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
       return true;
     }
   }
-
-
   return false;
 }
 
@@ -104,7 +103,7 @@ export async function cosmeticModifier(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-async function tweakModel(model: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<codemodel.Model> {
 
   for (const directive of directives) {
     const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
@@ -126,7 +125,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const paramDescriptionReplacer = directive.set["parameter-description"];
 
       // select all operations
-      let operations: Array<CommandOperation> = values(model.commands.operations).linq.toArray();
+      let operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
       if (subjectRegex) {
         operations = values(operations)
           .linq.where(operation =>
@@ -165,13 +164,13 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           parameter.name = parameterReplacer ? parameterRegex ? parameter.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.name;
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
           if (parameterReplacer) {
-            service.Message({
+            state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed parameter-name from ${prevName} to ${parameter.name}.`
             });
           }
 
           if (paramDescriptionReplacer) {
-            service.Message({
+            state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Set parameter-description from parameter ${parameter.name}.`
             });
           }
@@ -206,7 +205,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           // just the subject prefix can be an empty string
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
             let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
-            service.Message({
+            state.message({
               Channel: Channel.Verbose, Text: modificationMessage
             });
           }
@@ -225,17 +224,17 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       const propertyDescriptionReplacer = directive.set["property-description"];
 
       // select all models
-      let models = values(model.schemas).linq.toArray();
+      let models = values(state.model.schemas).linq.toArray();
       if (modelNameRegex) {
         models = values(models)
           .linq.where(model =>
-            !!`${model.details.csharp.name}`.match(modelNameRegex))
+            !!`${state.model.details.csharp.name}`.match(modelNameRegex))
           .linq.toArray();
       }
 
       if (propertyNameRegex) {
         const properties = values(models)
-          .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
+          .linq.selectMany(model => allVirtualProperties(state.model.details.csharp.virtualProperties))
           .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
           .linq.toArray();
         for (const property of properties) {
@@ -244,7 +243,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
           property.description = propertyDescriptionReplacer ? propertyDescriptionReplacer : property.description;
 
           if (propertyNameRegex) {
-            service.Message({
+            state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed property-name from ${prevName} to ${property.name}.`
             });
           }
@@ -253,7 +252,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
       } else if (models) {
         for (const model of models) {
           const prevName = model.details.csharp.name;
-          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name; service.Message({
+          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name; state.message({
             Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
           });
         }
@@ -263,7 +262,7 @@ async function tweakModel(model: codemodel.Model, service: Host): Promise<codemo
     }
   }
 
-  return model;
+  return state.model;
 }
 
 function isNotRegex(str: string): boolean {

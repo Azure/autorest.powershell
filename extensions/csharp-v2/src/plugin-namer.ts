@@ -11,7 +11,8 @@ import { System } from '@microsoft.azure/codegen-csharp';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Schema, SchemaDetails } from './code-model';
 import { SchemaDefinitionResolver } from './schema/schema-resolver';
-import * as semver from "semver";
+
+type State = ModelState<codemodel.Model>;
 
 export async function csnamer(service: Host) {
   return processCodeModel(nameStuffRight, service);
@@ -116,78 +117,27 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
 
 }
 
-async function nameStuffRight(codeModel: codemodel.Model, service: Host): Promise<codemodel.Model> {
+async function nameStuffRight(state: State): Promise<codemodel.Model> {
   const resolver = new SchemaDefinitionResolver();
+  const model = state.model;
 
   // set the namespace for the service
-  const serviceNamespace = await service.GetValue('namespace') || 'Sample.API';
-  const azure = await service.GetValue('azure') || await service.GetValue('azure-arm') || false;
-  const clientName = getPascalIdentifier(codeModel.details.default.name);
+  const serviceNamespace = await state.getValue('namespace') || 'Sample.API';
+  const azure = await state.getValue('azure') || await state.getValue('azure-arm') || false;
+  const clientName = getPascalIdentifier(model.details.default.name);
 
   // set c# client details (name)
-  codeModel.details.csharp = {
-    ...codeModel.details.default, // copy everything by default
+  model.details.csharp = {
+    ...model.details.default, // copy everything by default
     name: clientName,
     namespace: serviceNamespace,
     fullname: `${serviceNamespace}.${clientName}`
   };
 
-  setSchemaNames(<Dictionary<Schema>><any>codeModel.schemas, azure, serviceNamespace);
-  await setOperationNames(codeModel, resolver, service);
-  await createVirtualProperties(codeModel, resolver, service);
+  setSchemaNames(<Dictionary<Schema>><any>model.schemas, azure, serviceNamespace);
+  await setOperationNames(state, resolver);
 
-  return codeModel;
-}
-
-async function createVirtualProperties(codeModel: codemodel.Model, resolver: SchemaDefinitionResolver, service: Host) {
-
-  /* IN PROGRESS : GS01
-  
-    for (const each of values(codeModel.schemas).linq.where(each => !!each.details.csharp.virtualProperties)) {
-      // on models that have virtual properties, we're going to set nice c# names for each of them.
-      const virtualProperties = <Dictionary<VirtualProperty>>each.details.csharp.virtualProperties;
-  
-      const mine = items(virtualProperties).linq.where(each => each.value.kind === 'my-property').linq.toArray();
-      const parents = items(virtualProperties).linq.where(each => each.value.kind === 'parent-property').linq.toArray();
-      const children = items(virtualProperties).linq.where(each => each.value.kind === 'child-property').linq.toArray();
-  
-      // our new virtual properties go here.
-      const newVirtualProperties = new Dictionary<VirtualProperty>();
-  
-      // my properties (easy)
-      for (const kv of values(mine)) {
-        // strategy: use the least amount of things from 'propertyName' starting with the end.
-        let name = '';
-        for (let i = kv.value.propertyName.length; i > 0; i--) {
-          name = `${name}${toPascal(kv.value.propertyName[i - 1])}`;
-          if (!newVirtualProperties[name]) {
-            // we've found a name that's not taken yet.
-            newVirtualProperties[name] = {
-              ...kv.value,
-              implementation: ''
-            }
-            break;
-          }
-        }
-      }
-  
-      // parent properties (easy-ish)
-      for (const kv of values(parents)) {
-        // strategy: use the least amount of things from 'propertyName' starting with the end.
-        let name = '';
-        for (let i = kv.value.propertyName.length; i > 0; i--) {
-          name = `${name}${toPascal(kv.value.propertyName[i - 1])}`;
-          if (!newVirtualProperties[name]) {
-            // we've found a name that's not taken yet.
-            newVirtualProperties[name] = {
-              ...kv.value,
-              implementation: '$PARENT.'
-            }
-          }
-        }
-      }
-    }
-   */
+  return model;
 }
 
 function setPropertyNames(schema: Schema) {
@@ -218,11 +168,11 @@ function setPropertyNames(schema: Schema) {
 
 }
 
-async function setOperationNames(codeModel: codemodel.Model, resolver: SchemaDefinitionResolver, service: Host) {
+async function setOperationNames(state: State, resolver: SchemaDefinitionResolver) {
   // keep a list of operation names that we've assigned.
   const operationNames = new Set<string>();
 
-  for (const operation of values(codeModel.http.operations)) {
+  for (const operation of values(state.model.http.operations)) {
     const details = operation.details.default;
 
     // come up with a name
@@ -259,8 +209,8 @@ async function setOperationNames(codeModel: codemodel.Model, resolver: SchemaDef
     for (const responses of values(operation.responses)) {
       // per responseCode
       for (const response of values(responses)) {
-        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, new ModelState(service, codeModel, `?`, ['schemas', response.schema.details.default.name])) : undefined;
-        const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, new ModelState(service, codeModel, `?`, ['schemas', response.headerSchema.details.default.name])) : undefined;
+        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state.path('schemas', response.schema.details.default.name)) : undefined;
+        const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, state.path('schemas', response.headerSchema.details.default.name)) : undefined;
 
         const code = (System.Net.HttpStatusCode[response.responseCode].value || '').replace('System.Net.HttpStatusCode', '') || response.responseCode;
         let rawValue = code.replace(/\./, '');

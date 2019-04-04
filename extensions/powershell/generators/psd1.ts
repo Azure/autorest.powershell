@@ -8,9 +8,9 @@ import { Project } from '../project';
 import { setIndentation, indent, guid, values } from '@microsoft.azure/codegen';
 import { PsdFile } from '../file-formats/psd-file';
 
-export async function generatePsd1(service: Host, project: Project) {
+export async function generatePsd1(project: Project) {
   setIndentation(2);
-  const psd1 = new PsdFile(await service.ReadFile(project.psd1));
+  const psd1 = new PsdFile(await project.state.readFile(project.psd1));
 
   psd1.setRegion('definition', function* () {
     yield indent(`RootModule = '${project.psm1}'`);
@@ -58,5 +58,5 @@ export async function generatePsd1(service: Host, project: Project) {
     yield indent(`}`);
   }, false);
 
-  service.WriteFile(project.psd1, psd1.text, undefined, 'source-file-powershell');
+  project.state.writeFile(project.psd1, psd1.text, undefined, 'source-file-powershell');
 }

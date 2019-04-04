@@ -14,7 +14,7 @@ import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { Model } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/code-model';
-import { IAutoRestPluginInitiator } from '@microsoft.azure/autorest-extension-base/dist/lib/extension-base';
+import { Host } from '@microsoft.azure/autorest-extension-base';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -46,15 +46,15 @@ export class Project extends codeDomProject {
   public apiExtensionsFolder!: string;
   public baseFolder!: string;
   public moduleFolder!: string;
-  public schemaDefinitionResolver: SchemaDefinitionResolver;
+  public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public maxInlinedParameters!: number;
   public moduleVersion!: string;
   public profiles!: string[];
   public skipModelCmdlets!: boolean;
   public prefix!: string;
   public subjectPrefix!: string;
-  public projectNamespace: string;
-  public overrides: Dictionary<string>;
+  public projectNamespace!: string;
+  public overrides!: Dictionary<string>;
   public serviceNamespace!: ServiceNamespace;
   public supportNamespace!: SupportNamespace;
   public cmdlets!: CmdletNamespace;
@@ -63,17 +63,23 @@ export class Project extends codeDomProject {
   public accountsVersionMinimum!: string;
   public platyPsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
-
+  public state!: State;
   private model!: Model;
-  private service!: IAutoRestPluginInitiator;
 
-  constructor(protected state: State) {
+  constructor(protected service: Host, objectInitializer?: Partial<Project>) {
     super();
+    this.apply(objectInitializer);
+  }
+
+
+  public async init(): Promise<this> {
+    await super.init();
+    this.state = await new State(this.service).init(this);
+
     this.schemaDefinitionResolver = new SchemaDefinitionResolver();
-    state.project = this;
-    this.projectNamespace = state.model.details.csharp.namespace;
-    this.service = state.service;
-    this.model = state.model;
+
+    this.projectNamespace = this.state.model.details.csharp.namespace;
+    this.model = this.state.model;
 
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
@@ -90,10 +96,6 @@ export class Project extends codeDomProject {
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
       'Microsoft.Rest': `${this.projectNamespace}`,
     };
-  }
-
-  public async init(): Promise<this> {
-    await super.init();
 
     // Values
     this.maxInlinedParameters = await this.getConfigValue('max-inlined-parameters', 4);
@@ -166,7 +168,7 @@ export class Project extends codeDomProject {
 
   private async getConfigValue<T>(key: string, defaultValue: T): Promise<T> {
     // GetValue returns null when values are not found.
-    const value = await this.service.GetValue(key);
+    const value = await this.state.getValue(key);
     return value !== null ? <T>value : defaultValue;
   }
 }
