@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Modifier, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, toExpression, Attribute } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral, StringExpression } from '@microsoft.azure/codegen-csharp';
 import { InitializedField } from '@microsoft.azure/codegen-csharp';
@@ -23,6 +23,7 @@ import { Variable } from '@microsoft.azure/codegen-csharp';
 import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
+import { GeneratedAttribute } from '../csharp-declarations';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;
@@ -79,6 +80,8 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
         genericParameters: [`${schemaWithFeatures.schema.details.csharp.enum.name}`]
       })],
     });
+
+    this.add(new Attribute(GeneratedAttribute, { parameters: [`"AutoRest"`, `"${state.project.autorestVersion}"`] }));
     this.description = schemaWithFeatures.schema.details.csharp.description;
     this.implementation = schemaWithFeatures;
     this.partial = true;
