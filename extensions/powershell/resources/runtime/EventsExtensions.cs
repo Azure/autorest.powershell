@@ -1,6 +1,5 @@
 namespace Microsoft.Rest.ClientRuntime
 {
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public static partial class Events
     {
         public const string CmdletProcessRecordStart = nameof(CmdletProcessRecordStart);

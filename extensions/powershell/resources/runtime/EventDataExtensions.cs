@@ -3,7 +3,6 @@ namespace Microsoft.Rest.ClientRuntime
 {
     using System;
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [System.ComponentModel.TypeConverter(typeof(EventDataConverter))]
     /// <summary>
     /// PowerShell-specific data on top of the llc# EventData
