@@ -98,7 +98,7 @@ export class Project extends codeDomProject {
     this.moduleVersion = await Project.getConfigValue(this.service, 'module-version');
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.accountsVersionMinimum = '1.4.0';
-    this.platyPsVersionMinimum = '0.13.1';
+    this.platyPsVersionMinimum = '0.14.0';
 
     // Flags
     this.skipModelCmdlets = await Project.getConfigValue(this.service, 'skip-model-cmdlets');
