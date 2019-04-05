@@ -11,4 +11,8 @@ export class SupportNamespace extends Namespace {
     super('Support', parent);
     this.apply(objectInitializer);
   }
+
+  get outputFolder() {
+    return 'Support';
+  }
 }

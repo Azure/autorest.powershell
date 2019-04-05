@@ -7,10 +7,11 @@ import { EnumDetails } from '@microsoft.azure/autorest.codemodel-v3';
 import { If, Parameter, Method, Namespace, System, Struct } from '@microsoft.azure/codegen-csharp';
 import { State } from '../state';
 import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from '../powershell-declarations';
+import { join } from 'path';
 
 export class SupportNamespace extends Namespace {
   public get outputFolder(): string {
-    return this.state.project.apiExtensionsFolder;
+    return join(this.state.project.apiExtensionsFolder, 'Support');
   }
 
   constructor(parent: Namespace, public state: State, objectInitializer?: Partial<SupportNamespace>) {

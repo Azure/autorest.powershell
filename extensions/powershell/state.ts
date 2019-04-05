@@ -7,6 +7,7 @@ import { codemodel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
 import { Project } from './project';
+import { Dictionary } from '@microsoft.azure/codegen';
 
 export interface GeneratorSettings {
   azure: boolean;

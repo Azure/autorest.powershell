@@ -8,6 +8,7 @@ import { Model } from './code-model';
 import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
 
 import { Project } from './project';
+import { Dictionary } from '@microsoft.azure/codegen';
 
 export class State extends ModelState<Model> {
   project!: Project;

@@ -7,7 +7,7 @@ import { suite, test } from "mocha-typescript";
 import * as assert from "assert";
 import * as aio from "@microsoft.azure/async-io"
 import { values } from '@microsoft.azure/codegen';
-import { titleToServiceName } from "../plugin-create-commands";
+import { titleToAzureServiceName } from "../plugin-create-commands";
 
 @suite class TestServiceName {
 
@@ -18,7 +18,7 @@ import { titleToServiceName } from "../plugin-create-commands";
     assert(titlesFile != null);
     assert(serviceNamesFile != null);
 
-    const serviceNames = TestServiceName.normalizeEndlines(titlesFile, tl => `${tl} => ${titleToServiceName(tl)}`);
+    const serviceNames = TestServiceName.normalizeEndlines(titlesFile, tl => `${tl} => ${titleToAzureServiceName(tl)}`);
 
     //console.log(serviceNames);
     const normalizedServiceNamesFile = TestServiceName.normalizeEndlines(serviceNamesFile, tl => tl);

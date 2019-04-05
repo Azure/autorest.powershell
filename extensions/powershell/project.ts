@@ -12,9 +12,8 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
-import { Channel } from '@microsoft.azure/autorest-extension-base';
-import { Model } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/code-model';
 import { Host } from '@microsoft.azure/autorest-extension-base';
+import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -47,7 +46,6 @@ export class Project extends codeDomProject {
   public baseFolder!: string;
   public moduleFolder!: string;
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
-  public maxInlinedParameters!: number;
   public moduleVersion!: string;
   public profiles!: string[];
   public skipModelCmdlets!: boolean;
@@ -64,7 +62,7 @@ export class Project extends codeDomProject {
   public platyPsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
   public state!: State;
-  private model!: Model;
+  get model() { return <codemodel.Model>this.state.model };
 
   constructor(protected service: Host, objectInitializer?: Partial<Project>) {
     super();
@@ -79,7 +77,7 @@ export class Project extends codeDomProject {
     this.schemaDefinitionResolver = new SchemaDefinitionResolver();
 
     this.projectNamespace = this.state.model.details.csharp.namespace;
-    this.model = this.state.model;
+
 
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
@@ -98,54 +96,49 @@ export class Project extends codeDomProject {
     };
 
     // Values
-    this.maxInlinedParameters = await this.getConfigValue('max-inlined-parameters', 4);
-    this.moduleVersion = await this.getConfigValue('module-version', '0.1.0');
+    this.moduleVersion = await this.getConfigValue('module-version');
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.accountsVersionMinimum = '1.4.0';
     this.platyPsVersionMinimum = '0.13.1';
 
     // Flags
-    this.skipModelCmdlets = await this.getConfigValue('skip-model-cmdlets', false);
+    this.skipModelCmdlets = await this.getConfigValue('skip-model-cmdlets');
     this.azure = this.model.details.default.isAzure;
 
     // Names
     this.prefix = this.model.details.default.prefix;
     this.serviceName = this.model.details.default.serviceName;
     this.subjectPrefix = this.model.details.default.subjectPrefix;
-
-    // Add subjectPrefix to the model so it can be used by the plugin-create-commands plugin.
-    this.model.details.default.subjectPrefix = this.subjectPrefix;
-
-    this.moduleName = await this.getConfigValue('module-name', !!this.prefix ? `${this.prefix}.${this.serviceName}` : this.serviceName);
-    this.dllName = await this.getConfigValue('dll-name', `${this.moduleName}.private`);
+    this.moduleName = await this.getConfigValue('module-name');
+    this.dllName = await this.getConfigValue('dll-name');
 
     // Folders
-    this.baseFolder = await this.getConfigValue('base-folder', '.');
-    this.moduleFolder = await this.getConfigValue('module-folder', `${this.baseFolder}/generated`);
-    this.cmdletFolder = await this.getConfigValue('cmdlet-folder', `${this.moduleFolder}/cmdlets`);
-    this.modelCmdletFolder = await this.getConfigValue('model-cmdlet-folder', `${this.moduleFolder}/model-cmdlets`);
-    this.customFolder = await this.getConfigValue('custom-cmdlet-folder', `${this.baseFolder}/custom`);
-    this.internalFolder = await this.getConfigValue('internal-cmdlet-folder', `${this.baseFolder}/internal`);
-    this.testFolder = await this.getConfigValue('test-folder', `${this.baseFolder}/test`);
-    this.runtimeFolder = await this.getConfigValue('runtime-folder', `${this.moduleFolder}/runtime`);
-    this.apiFolder = await this.getConfigValue('api-folder', `${this.moduleFolder}/api`);
-    this.apiExtensionsFolder = await this.getConfigValue('api-extensions-folder', `${this.moduleFolder}/api-extensions`);
-    this.binFolder = await this.getConfigValue('bin-folder', `${this.baseFolder}/bin`);
-    this.objFolder = await this.getConfigValue('obj-folder', `${this.baseFolder}/obj`);
-    this.exportsFolder = await this.getConfigValue('exports-folder', `${this.baseFolder}/exports`);
-    this.docsFolder = await this.getConfigValue('docs-folder', `${this.baseFolder}/docs`);
-    this.dependencyModuleFolder = await this.getConfigValue('dependency-module-folder', `${this.moduleFolder}/modules`);
-    this.examplesFolder = await this.getConfigValue('examples-folder', `${this.baseFolder}/examples`);
+    this.baseFolder = await this.getConfigValue('current-folder');
+    this.moduleFolder = await this.getConfigValue('module-folder');
+    this.cmdletFolder = await this.getConfigValue('cmdlet-folder');
+    this.modelCmdletFolder = await this.getConfigValue('model-cmdlet-folder');
+    this.customFolder = await this.getConfigValue('custom-cmdlet-folder');
+    this.internalFolder = await this.getConfigValue('internal-cmdlet-folder');
+    this.testFolder = await this.getConfigValue('test-folder');
+    this.runtimeFolder = await this.getConfigValue('runtime-folder');
+    this.apiFolder = await this.getConfigValue('api-folder');
+    this.apiExtensionsFolder = await this.getConfigValue('api-extensions-folder');
+    this.binFolder = await this.getConfigValue('bin-folder');
+    this.objFolder = await this.getConfigValue('obj-folder');
+    this.exportsFolder = await this.getConfigValue('exports-folder');
+    this.docsFolder = await this.getConfigValue('docs-folder');
+    this.dependencyModuleFolder = await this.getConfigValue('dependency-module-folder');
+    this.examplesFolder = await this.getConfigValue('examples-folder');
 
     // File paths
-    this.csproj = await this.getConfigValue('csproj', `${this.baseFolder}/${this.moduleName}.csproj`);
-    this.dll = await this.getConfigValue('dll', `${this.binFolder}/${this.dllName}.dll`);
-    this.psd1 = await this.getConfigValue('psd1', `${this.baseFolder}/${this.moduleName}.psd1`);
-    this.psm1 = await this.getConfigValue('psm1', `${this.baseFolder}/${this.moduleName}.psm1`);
-    this.psm1Custom = await this.getConfigValue('psm1-custom', `${this.customFolder}/${this.moduleName}.custom.psm1`);
-    this.psm1Internal = await this.getConfigValue('psm1-internal', `${this.internalFolder}/${this.moduleName}.internal.psm1`);
-    this.formatPs1xml = await this.getConfigValue('format-ps1xml', `${this.baseFolder}/${this.moduleName}.format.ps1xml`);
-    this.nuspec = await this.getConfigValue('nuspec', `${this.baseFolder}/${this.moduleName}.nuspec`);
+    this.csproj = await this.getConfigValue('csproj');
+    this.dll = await this.getConfigValue('dll');
+    this.psd1 = await this.getConfigValue('psd1');
+    this.psm1 = await this.getConfigValue('psm1');
+    this.psm1Custom = await this.getConfigValue('psm1-custom');
+    this.psm1Internal = await this.getConfigValue('psm1-internal');
+    this.formatPs1xml = await this.getConfigValue('format-ps1xml');
+    this.nuspec = await this.getConfigValue('nuspec');
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
 
@@ -166,9 +159,12 @@ export class Project extends codeDomProject {
     return this;
   }
 
-  private async getConfigValue<T>(key: string, defaultValue: T): Promise<T> {
-    // GetValue returns null when values are not found.
+  public async getConfigValue<T>(key: string, defaultValue?: T): Promise<T> {
     const value = await this.state.getValue(key);
-    return value !== null ? <T>value : defaultValue;
+    // GetValue returns null when values are not found.
+    if (defaultValue === undefined && value === null) {
+      throw new Error(`No value for configuration key '${key}' was provided`);
+    }
+    return <T>(value !== null ? value : defaultValue);
   }
 }

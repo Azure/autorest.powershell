@@ -4,14 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, } from '@microsoft.azure/autorest.codemodel-v3';
-
-import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService } from '@microsoft.azure/codegen';
-
+import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService, fail } from '@microsoft.azure/codegen';
 import { Schema } from '@microsoft.azure/autorest.csharp-v2';
-
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 import { Lazy } from '@microsoft.azure/tasks';
-import { clone, Dictionary } from '@microsoft.azure/linq';
+import { clone } from '@microsoft.azure/linq';
 
 type State = ModelState<codemodel.Model>;
 
@@ -20,20 +17,16 @@ export async function createCommands(service: Host) {
 }
 
 async function commonParameters(state: State): Promise<Array<string>> {
-  const isAzure = await state.getValue('azure') || await state.getValue('azure-arm') || false;
+  const isAzure = !!await state.getValue('azure');
   return isAzure ? [
     // 'resourceGroupName',
     'subscriptionId'
   ] : [];
 }
 
-async function getConfigValue<T>(key: string, defaultValue: T, state: State): Promise<T> {
-  // GetValue returns null when values are not found.
-  const value = await state.getValue(key);
-  return value !== null ? <T>value : defaultValue;
-}
-
-export function titleToServiceName(title: string): string {
+// UNUSED
+// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
+export function titleToAzureServiceName(title: string): string {
   const titleCamelCase = pascalCase(deconstruct(title)).trim();
   const serviceName = titleCamelCase
     // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
@@ -43,16 +36,20 @@ export function titleToServiceName(title: string): string {
   return serviceName || titleCamelCase;
 }
 
+
 async function commandCreator(state: State): Promise<codemodel.Model> {
   const model = state.model;
 
-  const isAzure = !!(await getConfigValue('azure', false, state) || await getConfigValue('azure-arm', false, state) || false);
-  const prefix = await getConfigValue('prefix', isAzure ? 'Az' : ``, state);
-  const serviceName = await getConfigValue('service-name', isAzure ? titleToServiceName(model.info.title) : model.info.title, state);
-  const subjectPrefix = await getConfigValue('subject-prefix', isAzure ? serviceName : ``, state);
+  const isAzure = !!await state.getValue('azure');
 
-  model.details.default.isAzure = isAzure;
-  model.details.default.prefix = prefix;
+  const prefix = await state.getValue('prefix') || isAzure ? fail(`Configuration value 'prefix' is required (use '--prefix:<prefix>' or add to configuration file )`) : '';
+  var serviceName = await state.getValue('service-name') || fail(`Configuration value 'service-name' is required (use '--service-name:<name>' or add to configuration file )`);
+  const subjectPrefix = await state.getValue('subject-prefix') || isAzure ? fail(`Configuration value 'subject-prefix' is required (use '--subject-prefix:<prefix>' or add to configuration file )`) : '';
+
+  state.setValue('isAzure', isAzure);
+  state.setValue('prefix', prefix);
+  //model.details.default.isAzure = isAzure;
+  // model.details.default.prefix = prefix;
   state.message({
     Channel: Channel.Verbose, Text: `[CMDLET-PREFIX] => '${model.details.default.prefix}'`
   });
