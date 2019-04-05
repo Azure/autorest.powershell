@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class XmlExtensions
     {
         public static string ToXmlString<T>(this T inputObject, bool excludeDeclaration = false)
@@ -12,7 +13,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             //https://stackoverflow.com/a/760290/294804
             //https://stackoverflow.com/a/3732234/294804
             var namespaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
-            var xmlSettings = new XmlWriterSettings {OmitXmlDeclaration = excludeDeclaration, Indent = true};
+            var xmlSettings = new XmlWriterSettings { OmitXmlDeclaration = excludeDeclaration, Indent = true };
             using (var stringWriter = new StringWriter())
             using (var xmlWriter = XmlWriter.Create(stringWriter, xmlSettings))
             {

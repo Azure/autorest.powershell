@@ -6,9 +6,10 @@ using Pwsh = System.Management.Automation.PowerShell;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class PsHelpers
     {
-        public static IEnumerable<T> RunScript<T>(string script) where T: class
+        public static IEnumerable<T> RunScript<T>(string script) where T : class
             => Pwsh.Create().AddScript(script).Invoke<T>();
 
         public static void RunScript(string script)
@@ -22,7 +23,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static IEnumerable<CommandInfo> GetModuleCmdlets(PSCmdlet cmdlet, params string[] modulePaths)
         {
-            var getCmdletsCommand = String.Join(" + ",modulePaths.Select(mp => $"(Get-Command -Module (Import-Module '{mp}' -PassThru))"));
+            var getCmdletsCommand = String.Join(" + ", modulePaths.Select(mp => $"(Get-Command -Module (Import-Module '{mp}' -PassThru))"));
             return cmdlet?.RunScript<CommandInfo>(getCmdletsCommand) ?? RunScript<CommandInfo>(getCmdletsCommand);
         }
 

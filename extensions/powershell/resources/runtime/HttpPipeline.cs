@@ -12,30 +12,31 @@ namespace Microsoft.Rest.ClientRuntime
     using NextDelegate = System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>;
 
     using SignalDelegate = System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>;
-    using GetParameterDelegate = System.Func<string, System.Collections.Generic.Dictionary<string,object>, string, object>;
-    using SendAsyncStepDelegate  = System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>;
+    using GetParameterDelegate = System.Func<string, System.Collections.Generic.Dictionary<string, object>, string, object>;
+    using SendAsyncStepDelegate = System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>;
     using PipelineChangeDelegate = System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>;
     using ModuleLoadPipelineDelegate = System.Action<string, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>>;
-    using NewRequestPipelineDelegate = System.Action<System.Collections.Generic.Dictionary<string,object>, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>>;
+    using NewRequestPipelineDelegate = System.Action<System.Collections.Generic.Dictionary<string, object>, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>, System.Action<System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Func<System.Net.Http.HttpRequestMessage, System.Threading.CancellationToken, System.Action, System.Func<string, System.Threading.CancellationToken, System.Func<System.EventArgs>, System.Threading.Tasks.Task>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>, System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>>>;
 
-/*
-    public class DelegateBasedEventListener : IEventListener
-    {
-        private EventListenerDelegate _listener;
-        public DelegateBasedEventListener(EventListenerDelegate listener)
+    /*
+        public class DelegateBasedEventListener : IEventListener
         {
-            _listener = listener;
-        }
-        public CancellationToken Token => CancellationToken.None;
-        public System.Action Cancel => () => { };
+            private EventListenerDelegate _listener;
+            public DelegateBasedEventListener(EventListenerDelegate listener)
+            {
+                _listener = listener;
+            }
+            public CancellationToken Token => CancellationToken.None;
+            public System.Action Cancel => () => { };
 
 
-        public Task Signal(string id, CancellationToken token, GetEventData createMessage)
-        {
-            return _listener(id, token, () => createMessage());
+            public Task Signal(string id, CancellationToken token, GetEventData createMessage)
+            {
+                return _listener(id, token, () => createMessage());
+            }
         }
-    }
-*/
+    */
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     /// <summary>
     /// This is a necessary extension to the SendAsyncFactory to support the 'generic' delegate format.
     /// </summary>
@@ -46,21 +47,23 @@ namespace Microsoft.Rest.ClientRuntime
         /// (Provided to support out-of-module delgation for Azure Cmdlets)
         /// </summary>
         /// <param name="step">The Pipeline Step as a delegate</param>
-        public SendAsyncFactory(SendAsyncStepDelegate step) => this.implementation = (request, listener, next) => 
+        public SendAsyncFactory(SendAsyncStepDelegate step) => this.implementation = (request, listener, next) =>
             step(
                 request,
-                listener.Token, 
-                listener.Cancel, 
-                (id, token, getEventData) => listener.Signal(id, token, () => { 
-                    var data = EventDataConverter.ConvertFrom( getEventData() ) as EventData;
+                listener.Token,
+                listener.Cancel,
+                (id, token, getEventData) => listener.Signal(id, token, () =>
+                {
+                    var data = EventDataConverter.ConvertFrom(getEventData()) as EventData;
                     data.Id = id;
                     data.Cancel = listener.Cancel;
                     data.RequestMessage = request;
                     return data;
-                 }),
+                }),
                 (req, token, cancel, listenerDelegate) => next.SendAsync(req, listener));
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class HttpPipeline : ISendAsync
     {
         public HttpPipeline Append(SendAsyncStepDelegate item)

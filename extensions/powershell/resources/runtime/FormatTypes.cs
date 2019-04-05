@@ -6,12 +6,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Serializable]
     [XmlRoot(nameof(Configuration))]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class Configuration
     {
         [XmlElement("ViewDefinitions")]
         public ViewDefinitions ViewDefinitions { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class ViewDefinitions
     {
@@ -20,6 +22,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public List<View> Views { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class View
     {
@@ -31,6 +34,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public TableControl TableControl { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class ViewSelectedBy
     {
@@ -38,6 +42,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string TypeName { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableControl
     {
@@ -47,6 +52,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public TableRowEntries TableRowEntries { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableHeaders
     {
@@ -54,6 +60,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public List<TableColumnHeader> TableColumnHeaders { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableColumnHeader
     {
@@ -61,6 +68,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string Label { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableRowEntries
     {
@@ -68,6 +76,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public TableRowEntry TableRowEntry { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableRowEntry
     {
@@ -75,6 +84,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public TableColumnItems TableColumnItems { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableColumnItems
     {
@@ -82,6 +92,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public List<TableColumnItem> TableItems { get; set; }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [Serializable]
     public class TableColumnItem
     {

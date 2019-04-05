@@ -6,6 +6,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     using System.Threading.Tasks;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class LongRunningJobCancelledException : System.Exception
     {
         public LongRunningJobCancelledException(string message) : base(message)
@@ -14,6 +15,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class AsyncJob : Job, System.Management.Automation.ICommandRuntime2
     {
         const int MaxRecords = 1000;

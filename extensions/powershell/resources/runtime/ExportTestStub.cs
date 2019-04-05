@@ -10,6 +10,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsData.Export, "TestStub")]
     [DoNotExport]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ExportTestStub : PSCmdlet
     {
         [Parameter(Mandatory = true)]

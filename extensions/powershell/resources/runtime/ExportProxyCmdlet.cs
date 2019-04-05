@@ -9,6 +9,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsData.Export, "ProxyCmdlet")]
     [DoNotExport]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ExportProxyCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]

@@ -3,6 +3,7 @@
 namespace Microsoft.Rest
 {
     [AttributeUsage(AttributeTargets.Class)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class DescriptionAttribute : Attribute
     {
         public string Description { get; }
@@ -14,21 +15,25 @@ namespace Microsoft.Rest
     }
 
     [AttributeUsage(AttributeTargets.Class)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class DoNotExportAttribute : Attribute
     {
     }
 
     [AttributeUsage(AttributeTargets.Class)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class InternalExportAttribute : Attribute
     {
     }
 
     [AttributeUsage(AttributeTargets.Class)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class GeneratedAttribute : Attribute
     {
     }
 
     [AttributeUsage(AttributeTargets.Class)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ProfileAttribute : Attribute
     {
         public string[] Profiles { get; }
@@ -40,6 +45,7 @@ namespace Microsoft.Rest
     }
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class CategoryAttribute : Attribute
     {
         public ParameterCategory[] Categories { get; }

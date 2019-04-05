@@ -3,6 +3,7 @@ namespace Microsoft.Rest.ClientRuntime
 {
     using System;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     [System.ComponentModel.TypeConverter(typeof(EventDataConverter))]
     /// <summary>
     /// PowerShell-specific data on top of the llc# EventData
@@ -16,6 +17,7 @@ namespace Microsoft.Rest.ClientRuntime
     {
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     /// <summary>
     /// A PowerShell PSTypeConverter to adapt an <c>EventData</c> object that has been passed.
     /// Usually used between modules.

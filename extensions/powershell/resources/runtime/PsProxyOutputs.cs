@@ -8,6 +8,7 @@ using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class OutputTypeOutput
     {
         public PSTypeName[] OutputTypes { get; }
@@ -20,6 +21,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"'{ot}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class CmdletBindingOutput
     {
         public VariantGroup VariantGroup { get; }
@@ -38,6 +40,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ParameterOutput
     {
         public Parameter Parameter { get; }
@@ -64,6 +67,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class AliasOutput
     {
         public AliasAttribute Alias { get; }
@@ -76,6 +80,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => Alias != null ? $"{Indent}[Alias({Alias.AliasNames.Select(an => $"'{an}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ValidateNotNullOutput
     {
         public bool HasValidateNotNull { get; }
@@ -88,6 +93,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => HasValidateNotNull ? $"{Indent}[ValidateNotNull()]{Environment.NewLine}" : String.Empty;
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ArgumentCompleterOutput
     {
         public bool HasArgumentCompleter { get; }
@@ -102,6 +108,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => HasArgumentCompleter ? $"{Indent}[ArgumentCompleter([{ParameterType.ToPsType()}])]{Environment.NewLine}" : String.Empty;
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ParameterTypeOutput
     {
         public Type ParameterType { get; }
@@ -114,6 +121,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => $"{Indent}[{ParameterType.ToPsType()}]{Environment.NewLine}";
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ParameterNameOutput
     {
         public string ParameterName { get; }
@@ -128,6 +136,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString() => $"{Indent}${{{ParameterName}}}{(IsLast ? String.Empty : $",{Environment.NewLine}")}{Environment.NewLine}";
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class BeginOutput
     {
         public VariantGroup VariantGroup { get; }
@@ -170,6 +179,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ProcessOutput
     {
         public override string ToString() => $@"process {{
@@ -183,6 +193,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 ";
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class EndOutput
     {
         public override string ToString() => $@"end {{
@@ -195,6 +206,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 ";
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class HelpCommentOutput
     {
         public VariantGroup VariantGroup { get; }
@@ -215,6 +227,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 ";
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ParameterHelpOutput
     {
         public string HelpMessage { get; }
@@ -225,10 +238,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
         public override string ToString() => !String.IsNullOrEmpty(HelpMessage)
-            ? HelpMessage.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
+            ? HelpMessage.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
             : String.Empty;
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class PsProxyOutputExtensions
     {
         public const string NoParameters = "__NoParameters";

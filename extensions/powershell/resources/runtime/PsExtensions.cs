@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class PsExtensions
     {
         // https://stackoverflow.com/a/863944/294804

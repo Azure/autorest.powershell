@@ -8,6 +8,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     [Cmdlet(VerbsCommon.Set, "Psd1Export")]
     [DoNotExport]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class SetPsd1Export : PSCmdlet
     {
         [Parameter(Mandatory = true)]

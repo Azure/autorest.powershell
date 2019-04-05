@@ -7,6 +7,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     [Cmdlet(VerbsCommon.Get, "ScriptCmdlet")]
     [OutputType(typeof(string[]))]
     [DoNotExport]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class GetScriptCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true)]

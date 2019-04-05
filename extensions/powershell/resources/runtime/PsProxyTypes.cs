@@ -6,6 +6,7 @@ using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ProfileGroup
     {
         public string ProfileName { get; }
@@ -22,6 +23,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class VariantGroup
     {
         public string CmdletName { get; }
@@ -80,6 +82,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class Variant
     {
         public string CmdletName { get; }
@@ -117,6 +120,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class ParameterGroup
     {
         public string ParameterName { get; }
@@ -147,6 +151,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class Parameter
     {
         public string VariantName { get; }
@@ -166,6 +171,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class PsProxyTypeExtensions
     {
         public static bool IsValidDefaultParameterSetName(this string parameterSetName) =>
@@ -196,7 +202,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value)).ToArray();
         }
 
-        public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction 
+        public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction
             ? ((FunctionInfo)variant.Info).ScriptBlock.Attributes.ToArray()
             : variant.Metadata.CommandType.GetCustomAttributes(false).Cast<Attribute>().ToArray();
     }

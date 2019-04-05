@@ -1,5 +1,6 @@
 namespace Microsoft.Rest.ClientRuntime
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class AttachDebugger
     {
         internal static void Break()
