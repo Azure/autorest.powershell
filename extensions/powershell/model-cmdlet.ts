@@ -23,7 +23,7 @@ export class ModelCmdlet extends Class {
   // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
-    const variantName = `${state.project.prefix}${schema.details.csharp.name}Object_${schema.details.csharp.apiname}`;
+    const variantName = `${state.project.prefix}${schema.details.csharp.name}Object${schema.details.csharp.apiname ? `_${schema.details.csharp.apiname}` : ''}`;
     const name = `New${variantName}`;
     super(namespace, name, PSCmdlet);
     this.state = state;

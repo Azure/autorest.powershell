@@ -149,6 +149,8 @@ export class ModuleClass extends Class {
       yield `AfterCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
       yield Return(pip);
     });
+
+    this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The Name of this module ` }));
   }
 
   createAzureInitAndPipeline(namespace: Namespace) {
