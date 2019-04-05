@@ -67,7 +67,7 @@ export class JsonSerializableClass extends Class {
 
     pushTempVar();
     for (const prop of values(modelClass.ownedProperties)) {
-      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName);
+      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName, mode);
 
       if (prop.schema.readOnly) {
         serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));

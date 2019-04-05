@@ -82,13 +82,13 @@ export class Wildcard implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     try {
       const each = pushTempVar();
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serDict = ` /* GS01: ChangeThisToUse dotnet classes */global::System.Linq.Enumerable.Select( (/* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.IEnumerable<object>)${value}.Keys, (${each}) => new /* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.ToString(), ${this.leafType.serializeToNode(mediaType, `${value}[${each}]`, serializedName)}))`;
+          const serDict = ` /* GS01: ChangeThisToUse dotnet classes */global::System.Linq.Enumerable.Select( (/* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.IEnumerable<object>)${value}.Keys, (${each}) => new /* GS01: ChangeThisToUse dotnet classes */global::System.Collections.Generic.KeyValuePair<${System.String}, ${ClientRuntime.JsonNode}>( ${each}.ToString(), ${this.leafType.serializeToNode(mediaType, `${value}[${each}]`, serializedName, mode)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.JsonObject}(${serDict}) : null`);
         }
 
@@ -99,7 +99,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
     }
   }
   /** emits an expression serialize this to the value required by the container */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     return toExpression(`null /* serializeToContent (wildcard) doesn't support '${mediaType}' ${__filename}*/`);
   }
   /** emits an expression to deserialize content from a string */
@@ -112,7 +112,7 @@ export class Wildcard implements EnhancedTypeDeclaration {
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     const $this = this;
     try {
       const each = pushTempVar();
@@ -129,13 +129,13 @@ export class Wildcard implements EnhancedTypeDeclaration {
               const eachv = `${value}[${each}]`;
 
               yield If(And(IsNotNull(eachv), `${eachv} is ${$this.leafType.declaration} ${eachvalue}`),
-                `AddIf( ${$this.leafType.serializeToNode(mediaType, `${eachvalue}`, `$$$`)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`);
+                `AddIf( ${$this.leafType.serializeToNode(mediaType, `${eachvalue}`, `$$$`, mode)},(${item}) => ${innerContainer}.Add(${each} as string,${item} ) );`);
 
             });
           });
 
         case KnownMediaType.Xml:
-          return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf( ${this.leafType.serializeToNode(mediaType, `${each}.Value`, `$$$`)},${container}.Add );`.replace('"$$$"', `${each}.Key`)));
+          return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf( ${this.leafType.serializeToNode(mediaType, `${each}.Value`, `$$$`, mode)},${container}.Add );`.replace('"$$$"', `${each}.Key`)));
 
         case KnownMediaType.Header:
           const prefix = this.schema.extensions['x-ms-header-collection-prefix'];
@@ -196,11 +196,11 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   /** emits an expression serialize this to the value required by the container */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }
   /** emits an expression to deserialize content from a string */
@@ -214,7 +214,7 @@ export class UntypedWildcard implements EnhancedTypeDeclaration {
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
         return If(`${value}.Count > 0`, function* () {

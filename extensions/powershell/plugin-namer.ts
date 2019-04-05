@@ -37,7 +37,7 @@ export function getDeduplicatedSubjectPrefix(subjectPrefix: string, subject: str
 async function tweakModel(state: State): Promise<codemodel.Model> {
   // get the value 
   const isAzure = state.model.details.default.isAzure;
-  const shouldSanitize = !!await state.getValue('sanitize-names');
+  const shouldSanitize = await state.getValue('sanitize-names', false);
 
   // make sure recursively that every details field has csharp
   for (const { index, instance } of linq.visitor(state.model)) {

@@ -22,7 +22,7 @@ export class State extends ModelState<Model> {
     if (project) {
       this.project = project;
     }
-    return await super.init();
+    return await super.init(project);
   }
 
   path(...childPath: JsonPath) {

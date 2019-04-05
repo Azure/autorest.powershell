@@ -28,13 +28,13 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined;
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression;
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression;
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression;
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression;
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements;
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements;
 
   /** defaultOfType */
   readonly defaultOfType: Expression;

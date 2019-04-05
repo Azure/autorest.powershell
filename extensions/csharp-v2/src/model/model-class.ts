@@ -38,16 +38,16 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral, defaultValue: Expression): Expression {
     return this.featureImplementation.deserializeFromNode(mediaType, node, defaultValue);
   }
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
-    return this.featureImplementation.serializeToNode(mediaType, value, serializedName);
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    return this.featureImplementation.serializeToNode(mediaType, value, serializedName, mode);
   }
 
   get defaultOfType() {
     return toExpression(`null /* model class */`);
   }
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
-    return this.featureImplementation.serializeToContent(mediaType, value);
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
+    return this.featureImplementation.serializeToContent(mediaType, value, mode);
   }
 
   /** emits an expression to deserialize content from a string */
@@ -58,8 +58,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.featureImplementation.deserializeFromResponse(mediaType, content, defaultValue);
   }
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    return this.featureImplementation.serializeToContainerMember(mediaType, value, container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.featureImplementation.serializeToContainerMember(mediaType, value, container, serializedName, mode);
   }
 
   get isXmlAttribute(): boolean {

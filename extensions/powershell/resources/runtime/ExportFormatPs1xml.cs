@@ -24,7 +24,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             //https://stackoverflow.com/a/949285/294804
             var viewModels = Assembly.GetExecutingAssembly().GetExportedTypes()
                 .Select(t => (Type: t, Properties: t.GetProperties().Where(p => p.PropertyType.IsPsSimple()).ToArray()))
-                .Where(tp => tp.Type.IsClass 
+                .Where(tp => tp.Type.IsClass
                              && (tp.Type.Namespace.StartsWith(ModelNamespace) || tp.Type.Namespace.StartsWith(SupportNamespace))
                              && tp.Properties.Any())
                 .Select(tp => CreateViewModel(tp.Type, tp.Properties)).ToList();
@@ -41,8 +41,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private static View CreateViewModel(Type type, IEnumerable<PropertyInfo> properties)
         {
             var entries = properties.Select(p =>
-                (TableColumnHeader: new TableColumnHeader {Label = p.Name},
-                 TableColumnItem: new TableColumnItem {PropertyName = p.Name})).ToArray();
+                (TableColumnHeader: new TableColumnHeader { Label = p.Name },
+                 TableColumnItem: new TableColumnItem { PropertyName = p.Name })).ToArray();
 
             return new View
             {

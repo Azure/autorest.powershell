@@ -17,8 +17,7 @@ export async function createCommands(service: Host) {
 }
 
 async function commonParameters(state: State): Promise<Array<string>> {
-  const isAzure = !!await state.getValue('azure');
-  return isAzure ? [
+  return await state.getValue('azure', false) ? [
     // 'resourceGroupName',
     'subscriptionId'
   ] : [];
@@ -36,15 +35,14 @@ export function titleToAzureServiceName(title: string): string {
   return serviceName || titleCamelCase;
 }
 
-
 async function commandCreator(state: State): Promise<codemodel.Model> {
   const model = state.model;
 
   const isAzure = !!await state.getValue('azure');
 
-  const prefix = await state.getValue('prefix') || isAzure ? fail(`Configuration value 'prefix' is required (use '--prefix:<prefix>' or add to configuration file )`) : '';
-  var serviceName = await state.getValue('service-name') || fail(`Configuration value 'service-name' is required (use '--service-name:<name>' or add to configuration file )`);
-  const subjectPrefix = await state.getValue('subject-prefix') || isAzure ? fail(`Configuration value 'subject-prefix' is required (use '--subject-prefix:<prefix>' or add to configuration file )`) : '';
+  const prefix = await state.getValue('prefix');
+  var serviceName = await state.getValue('service-name');
+  const subjectPrefix = await state.getValue('subject-prefix');
 
   state.setValue('isAzure', isAzure);
   state.setValue('prefix', prefix);

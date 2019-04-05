@@ -148,11 +148,11 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
@@ -184,15 +184,15 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, "${serializedName}" ,${valueOf(container)}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${valueOf(container)}.Add );`;
 
       case KnownMediaType.Xml:
         // container : XElement
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, ${valueOf(container)}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, ${valueOf(container)}.Add );`;
 
       case KnownMediaType.Header:
         // container : HttpRequestHeaders

@@ -113,7 +113,7 @@ export class OperationMethod extends Method {
 
     for (const pp of pathParams) {
       path = path.replace(`{${pp.param.name}}`, `"
-        + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '')}
+        + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '', ClientRuntime.SerializationMode.None)}
         + "`);
     }
     path = path.startsWith('/') ? path.substr(1) : path;
@@ -133,7 +133,7 @@ export class OperationMethod extends Method {
       if ($this.state.project.storagePipeline) {
         if (queryParams.length > 0) {
           for (const qp of queryParams) {
-            yield `${qp.serializeToNode(KnownMediaType.QueryParameter, qp.param.name)}`;
+            yield `${qp.serializeToNode(KnownMediaType.QueryParameter, qp.param.name, ClientRuntime.SerializationMode.None)}`;
           }
           yield `var _tempUrl = ${$this.resourceUri}.AbsoluteUri;`;
           yield If(`queryParameters.Count > 0`, `_tempUrl = $"{_tempUrl}{((_tempUrl.Contains("?") && !_tempUrl.EndsWith("?")) ? "&" : "?")}{string.Join("&", queryParameters)}";`);
@@ -146,7 +146,7 @@ export class OperationMethod extends Method {
           initializer: System.Uri.new(`(
         "${baseUrl}${path}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name).value}`, `
+        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
         + "&"`
           )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
@@ -170,7 +170,7 @@ export class OperationMethod extends Method {
             // content length is set when the request body is set
             continue;
           }
-          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.name);
+          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.name, ClientRuntime.SerializationMode.None);
         }
         yield EOL;
       }
@@ -178,7 +178,7 @@ export class OperationMethod extends Method {
 
       if (bp) {
         yield `// set body content`;
-        yield `request.Content = ${bp.serializeToContent(bp.mediaType)};`;
+        yield `request.Content = ${bp.serializeToContent(bp.mediaType, ClientRuntime.SerializationMode.None)};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet, `_url`);
       }

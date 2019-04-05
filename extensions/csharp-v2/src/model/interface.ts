@@ -41,15 +41,15 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   }
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
-    return this.classImplementation.serializeToContent(mediaType, value);
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
+    return this.classImplementation.serializeToContent(mediaType, value, mode);
   }
 
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
-    return this.classImplementation.serializeToNode(mediaType, value, serializedName);
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    return this.classImplementation.serializeToNode(mediaType, value, serializedName, mode);
   }
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    return this.classImplementation.serializeToContainerMember(mediaType, value, container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.classImplementation.serializeToContainerMember(mediaType, value, container, serializedName, mode);
   }
 
   get isXmlAttribute(): boolean {

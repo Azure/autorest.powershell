@@ -122,8 +122,8 @@ async function nameStuffRight(state: State): Promise<codemodel.Model> {
   const model = state.model;
 
   // set the namespace for the service
-  const serviceNamespace = await state.getValue('namespace') || 'Sample.API';
-  const azure = await state.getValue('azure') || await state.getValue('azure-arm') || false;
+  const serviceNamespace = await state.getValue('namespace', "Sample.API");
+  const azure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
   const clientName = getPascalIdentifier(model.details.default.name);
 
   // set c# client details (name)

@@ -36,9 +36,9 @@ export class Project extends codeDomProject {
     await super.init();
 
     this.state = await new State(this.service).init(this);
-    this.apifolder = await this.state.getValue('api-folder') || '';
-    this.runtimefolder = await this.state.getValue('runtime-folder') || 'runtime';
-    this.azure = await this.state.getValue('azure') || await this.state.getValue('azure-arm') || false;
+    this.apifolder = await this.state.getValue('api-folder', '');
+    this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
+    this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);
 
     // add project namespace
     this.projectNamespace = this.state.model.details.csharp.namespace;
@@ -58,7 +58,7 @@ export class Project extends codeDomProject {
       'Microsoft.Rest': this.projectNamespace
     };
 
-    this.storagePipeline = await this.state.getValue('use-storage-pipeline') || false;
+    this.storagePipeline = await this.state.getValue('use-storage-pipeline', false);
     if (this.storagePipeline) {
       this.emitSignals = false;
       this.jsonSerialization = false;

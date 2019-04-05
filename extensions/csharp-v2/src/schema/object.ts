@@ -63,20 +63,20 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        return toExpression(`${value}?.ToJson(null)`);
+        return toExpression(`${value}?.ToJson(null, ${mode.value})`);
       }
       case KnownMediaType.Xml: {
-        return toExpression(`${value}?.ToXml(null)`);
+        return toExpression(`${value}?.ToXml(null, ${mode.value})`);
       }
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {
         return System.Net.Http.StringContent.new(
@@ -139,10 +139,10 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return `AddIf( null != ${value} ? (${ClientRuntime.JsonNode}) ${value}.ToJson(null) : null, "${serializedName}" ,${container}.Add );`;
+        return `AddIf( null != ${value} ? (${ClientRuntime.JsonNode}) ${value}.ToJson(null,${mode.value}) : null, "${serializedName}" ,${container}.Add );`;
 
       case KnownMediaType.Xml:
         // prefer specified XML name if available

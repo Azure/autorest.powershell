@@ -50,61 +50,7 @@ export async function powershell(service: Host) {
 }
 
 async function copyRequiredFiles(project: Project) {
-
-  const cache = new Array<any>();
-  const replacer = (key: string, value: any) => {
-    if (typeof value === 'object' && value !== null) {
-      if (cache.indexOf(value) !== -1) {
-        // Duplicate reference found
-        try {
-          // If this value does not reference a parent it can be deduped
-          return JSON.parse(JSON.stringify(value));
-        } catch (error) {
-          // discard key if value cannot be deduped
-          return;
-        }
-      }
-      // Store value in our collection
-      cache.push(value);
-    }
-    return value;
-  }
-
-  const transformOutput = async (input: string) => {
-    let rx = /\$\{(.*?)\}/g;
-    let output = input;
-
-    for (let match; match = rx.exec(input);) {
-      const text = match[0];
-      const inner = match[1];
-      let value = await project.state.getValue(inner);
-      if (value === null || value === undefined) {
-        // try as a safe eval execution.
-        try {
-          value = safeEval(inner, {
-            $config: await project.state.getValue(''),
-            $project: project,
-            $lib: {
-              path: require('path')
-            }
-          });
-        }
-        catch {
-          value = null;
-        }
-      }
-      if (value !== undefined && value !== null) {
-        if (typeof value === 'object') {
-          value = JSON.stringify(value, replacer, 2);
-        }
-        if (value === '{}') {
-          value = 'true';
-        }
-        output = output.replace(text, value);
-      }
-    }
-    return output;
-  };
+  const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); }
 
   // Project assets
   await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);

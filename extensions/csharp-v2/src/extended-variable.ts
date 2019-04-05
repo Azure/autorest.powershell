@@ -24,13 +24,13 @@ export interface EnhancedVariable extends Variable {
   deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression;
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression;
+  serializeToNode(mediaType: KnownMediaType, serializedName: string, mode: Expression): Expression;
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType): Expression;
+  serializeToContent(mediaType: KnownMediaType, mode: Expression): Expression;
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements;
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements;
 
   validatePresenceStatement(eventListener: Variable): OneOrMoreStatements;
   validationStatement(eventListener: Variable): OneOrMoreStatements;

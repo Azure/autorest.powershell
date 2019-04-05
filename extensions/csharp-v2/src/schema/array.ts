@@ -123,21 +123,21 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
 
     try {
       const each = pushTempVar();
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serArray = `global::System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName)}))`;
+          const serArray = `global::System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.XNodeArray}(${serArray}) : null`);
         }
 
         case KnownMediaType.Xml: {
           if (this.isWrapped) {
             const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
-            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name)}))`);
+            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
           } else {
             throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
@@ -148,7 +148,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '')})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
       }
     } finally {
       popTempVar();
@@ -157,14 +157,14 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     try {
       const each = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Json: {
           return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
-            `${ClientRuntime.XNodeArray.new(this.serializeToNode(mediaType, value, ''))}.ToString()`,
+            `${ClientRuntime.XNodeArray.new(this.serializeToNode(mediaType, value, '', mode))}.ToString()`,
             System.String.Empty
           ), System.Text.Encoding.UTF8);
         }
@@ -173,7 +173,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
           const defaultName = this.elementType.schema.details.csharp.name;
           return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
-            `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName)}).ToString()`,
+            `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName, mode)}).ToString()`,
             System.String.Empty
           ), System.Text.Encoding.UTF8);
         }
@@ -183,7 +183,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '')})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
       }
 
     } finally {
@@ -194,7 +194,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     try {
       const each = pushTempVar();
       const tmp = pushTempVar();
@@ -204,16 +204,16 @@ export class ArrayOf implements EnhancedTypeDeclaration {
           return If(`null != ${value}`, function* () {
             const t = new LocalVariable(tmp, dotnet.Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
             yield t.declarationStatement;
-            yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '')} ,${tmp}.Add);`);
+            yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '', mode)} ,${tmp}.Add);`);
             yield `${container}.Add("${serializedName}",${tmp});`;
           });
 
         case KnownMediaType.Xml:
           if (this.isWrapped) {
 
-            return `AddIf( ${System.Xml.Linq.XElement.new(`"{this.serializedName || serializedName}"`, `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName)}):null`)}, ${container}.Add); `;
+            return `AddIf( ${System.Xml.Linq.XElement.new(`"{this.serializedName || serializedName}"`, `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName, mode)}):null`)}, ${container}.Add); `;
           } else {
-            return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName)}, ${container}.Add);`));
+            return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}, ${container}.Add);`));
           }
       }
     } finally {

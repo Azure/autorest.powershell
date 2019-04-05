@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { items, keys, values, select } from '@microsoft.azure/codegen';
+import { items, keys, values, select, pascalCase, deconstruct, fixLeadingNumber } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
 
@@ -23,6 +23,9 @@ export async function tweakModelPlugin(service: Host) {
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
+  const title = pascalCase(fixLeadingNumber(deconstruct(await state.getValue('title', state.model.info.title))));
+  state.setValue('title', title);
+
   const model = state.model;
 
   const set = new Set<Schema>();
@@ -56,7 +59,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
-  if (await state.getValue('use-storage-pipeline')) {
+  if (await state.getValue('use-storage-pipeline', false)) {
     // we're going to create new models for the reponse headers ?
 
   } else {

@@ -49,16 +49,16 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     return this.implementation.deserializeFromResponse(mediaType, content, defaultValue);
   }
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
-    return this.implementation.serializeToNode(mediaType, value, serializedName);
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    return this.implementation.serializeToNode(mediaType, value, serializedName, mode);
   }
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
-    return this.implementation.serializeToContent(mediaType, value);
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
+    return this.implementation.serializeToContent(mediaType, value, mode);
   }
 
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.implementation.serializeToContainerMember(mediaType, value, container, serializedName, mode);
   }
 
   get isXmlAttribute(): boolean {

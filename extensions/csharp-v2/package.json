@@ -1,6 +1,6 @@
 {
   "name": "@microsoft.azure/autorest.csharp-v2",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "AutoRest CSharp V2 Code Generator",
   "directories": {
     "doc": "docs"
@@ -45,9 +45,9 @@
   },
   "dependencies": {
     "@microsoft.azure/codegen": "^1.0.0",
-    "@microsoft.azure/codegen-csharp": "^1.0.0",
-    "@microsoft.azure/autorest.codemodel-v3": "^1.0.0",
-    "@microsoft.azure/autorest-extension-base": "^1.0.0",
+    "@microsoft.azure/codegen-csharp": "^2.0.0",
+    "@microsoft.azure/autorest.codemodel-v3": "^2.0.0",
+    "@microsoft.azure/autorest-extension-base": "^2.0.0",
     "source-map-support": "0.5.9",
     "semver": "^5.5.1"
   }

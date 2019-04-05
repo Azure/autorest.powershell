@@ -27,7 +27,7 @@ export class Duration extends Primitive {
     return `System.Xml.XmlConvert.ToTimeSpan( ${tmpValue} )`;
   }
 
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
         return toExpression(`${ClientRuntime.JsonString.new(`System.Xml.XmlConvert.ToString(${value})`)}`);
@@ -36,7 +36,7 @@ export class Duration extends Primitive {
   }
 
 
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
 
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }

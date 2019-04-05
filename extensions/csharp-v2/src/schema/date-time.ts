@@ -28,7 +28,7 @@ export class DateTime extends Primitive {
   protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
@@ -52,15 +52,15 @@ export class DateTime extends Primitive {
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, "${serializedName}" ,${valueOf(container)}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${valueOf(container)}.Add );`;
 
       case KnownMediaType.Xml:
         // container : XElement
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, ${valueOf(container)}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, ${valueOf(container)}.Add );`;
 
       case KnownMediaType.Header:
         // container : HttpRequestHeaders
@@ -118,13 +118,13 @@ export class UnixTime extends Primitive {
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
-    return super.serializeToNode(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), serializedName);
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    return super.serializeToNode(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), serializedName, mode);
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
-    return super.serializeToContainerMember(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return super.serializeToContainerMember(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), container, serializedName, mode);
   }
 
   constructor(schema: Schema, public isRequired: boolean) {

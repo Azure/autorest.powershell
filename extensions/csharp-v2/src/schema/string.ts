@@ -60,11 +60,11 @@ export class String implements EnhancedTypeDeclaration {
     return toExpression(`null /* deserializeFromContainer doesn't support '${mediaType}' ${__filename}*/`);
   }
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral): Expression {
+  serializeToContent(mediaType: KnownMediaType, value: ExpressionOrLiteral, mode: Expression): Expression {
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string): Expression {
+  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
         return toExpression(`null != (((object)${value})?.ToString()) ? (${ClientRuntime.JsonNode}) new ${ClientRuntime.JsonString}(${value}.ToString()) : null`);
@@ -119,13 +119,13 @@ export class String implements EnhancedTypeDeclaration {
     return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string): OneOrMoreStatements {
+  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, "${serializedName}" ,${container}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${container}.Add );`;
 
       case KnownMediaType.Xml:
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName)}, ${container}.Add );`;
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, ${container}.Add );`;
 
       case KnownMediaType.Header:
         // container : HttpRequestHeaders

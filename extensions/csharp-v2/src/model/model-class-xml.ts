@@ -52,7 +52,7 @@ export class XmlSerializableClass extends Class {
     pushTempVar();
     for (const property of values(modelClass.schema.properties)) {
       const prop = modelClass.$<ModelProperty>(property.details.csharp.name);
-      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Xml, prop, container, prop.serializedName);
+      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Xml, prop, container, prop.serializedName, mode);
 
       if (property.details.csharp[HeaderProperty] === HeaderPropertyType.Header) {
         // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled

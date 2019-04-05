@@ -367,3 +367,7 @@ temp
 common/temp/**
 package-deps.json
 /common/config/rush/shrinkwrap.yaml
+
+/tests/output
+/tests/before
+/tests/new

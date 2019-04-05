@@ -45,17 +45,17 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression {
-    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName);
+  serializeToNode(mediaType: KnownMediaType, serializedName: string, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName, mode);
   }
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType): Expression {
-    return this.typeDeclaration.serializeToContent(mediaType, this);
+  serializeToContent(mediaType: KnownMediaType, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this, mode);
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
-    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName, mode);
   }
 
   public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
@@ -81,18 +81,18 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
   }
 
   /** emits an expression serialize this to the value required by the container */
-  serializeToNode(mediaType: KnownMediaType, serializedName: string): Expression {
-    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName);
+  serializeToNode(mediaType: KnownMediaType, serializedName: string, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName, mode);
   }
 
   /** emits an expression serialize this to a HttpContent */
-  serializeToContent(mediaType: KnownMediaType): Expression {
-    return this.typeDeclaration.serializeToContent(mediaType, this);
+  serializeToContent(mediaType: KnownMediaType, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this, mode);
   }
 
   /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string): OneOrMoreStatements {
-    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName);
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName, mode);
   }
 
   public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {

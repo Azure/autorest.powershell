@@ -33,7 +33,7 @@ export class State extends ModelState<codemodel.Model> {
     if (project) {
       this.project = project;
     }
-    return await super.init();
+    return await super.init(project);
   }
 
   path(...childPath: JsonPath) {
