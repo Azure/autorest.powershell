@@ -44,10 +44,10 @@
     "@microsoft.azure/codegen": "^1.0.0",
     "@microsoft.azure/codegen-csharp": "^2.0.0",
     "@microsoft.azure/autorest.codemodel-v3": "^2.0.0",
-    "@microsoft.azure/autorest.remodeler": "^1.0.0",
-    "@microsoft.azure/autorest.powershell": "^1.0.0",
+    "@microsoft.azure/autorest.remodeler": "^2.0.0",
+    "@microsoft.azure/autorest.powershell": "^2.0.0",
     "@microsoft.azure/autorest-extension-base": "^2.0.0",
-    "@microsoft.azure/autorest.csharp-v2": "^1.0.0",
+    "@microsoft.azure/autorest.csharp-v2": "^2.0.0",
     "@microsoft.azure/tasks": "^2.1.0",
     "source-map-support": "0.5.9"
   }
