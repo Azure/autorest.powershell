@@ -6,6 +6,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Threading;
 
     ///<summary>Represents the data in signaled event.</summary>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public partial class EventData
     {
         /// <summary>

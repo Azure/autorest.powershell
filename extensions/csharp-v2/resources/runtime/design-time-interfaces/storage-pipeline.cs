@@ -8,16 +8,19 @@ namespace Microsoft.Azure.HttpPipeline
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IPipelinePolicy
     {
         Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public enum PipelinePolicyOptions
     {
 
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public interface IPipelinePolicyFactory
     {
 

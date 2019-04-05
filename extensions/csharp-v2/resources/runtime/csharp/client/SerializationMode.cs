@@ -1,6 +1,7 @@
 namespace Microsoft.Rest.ClientRuntime
 {
     [System.Flags]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public enum SerializationMode
     {
         None = 0,

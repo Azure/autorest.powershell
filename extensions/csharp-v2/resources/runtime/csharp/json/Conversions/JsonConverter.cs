@@ -1,5 +1,6 @@
 ﻿namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public abstract class JsonConverter<T> : IJsonConverter
     {
         public abstract T FromJson(JsonNode node);

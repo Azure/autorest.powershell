@@ -6,6 +6,7 @@ namespace Carbon.Json
 {
     using Converters;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class JsonMember
     {
         private readonly TypeDetails type;

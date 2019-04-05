@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class XImmutableArray<T> : JsonArray, IEnumerable<JsonNode>
     {
         private readonly T[] values;
@@ -17,7 +18,7 @@ namespace Carbon.Json
             this.elementType = XHelper.GetElementType(this.elementCode);
         }
 
-        public override JsonNode this[int index] => 
+        public override JsonNode this[int index] =>
             XHelper.Create(elementType, elementCode, values[index]);
 
         public override JsonType? ElementType => elementType;

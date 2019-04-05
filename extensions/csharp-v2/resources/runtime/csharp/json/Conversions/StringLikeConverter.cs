@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class StringLikeConverter : IJsonConverter
     {
         private readonly Type type;
@@ -13,13 +14,14 @@ namespace Carbon.Json.Converters
             this.type = type ?? throw new ArgumentNullException(nameof(type));
             this.parseMethod = StringLikeHelper.GetParseMethod(type);
         }
-        
-        public object FromJson(JsonNode node) => 
+
+        public object FromJson(JsonNode node) =>
             parseMethod.Invoke(null, new[] { node.ToString() });
 
-        public JsonNode ToJson(object value) => new JsonString(value.ToString());        
+        public JsonNode ToJson(object value) => new JsonString(value.ToString());
     }
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class StringLikeHelper
     {
         private static readonly Type[] parseMethodParamaterTypes = new[] { typeof(string) };

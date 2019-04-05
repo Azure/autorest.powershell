@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class SerializationOptions
     {
         public static readonly SerializationOptions Default = new SerializationOptions();

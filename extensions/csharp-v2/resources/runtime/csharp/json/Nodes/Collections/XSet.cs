@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class XSet<T> : JsonArray, IEnumerable<JsonNode>
     {
         private readonly HashSet<T> values;

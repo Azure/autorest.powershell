@@ -1,6 +1,7 @@
 
 namespace Microsoft.Rest.ClientRuntime
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class Method
     {
         internal static System.Net.Http.HttpMethod Get = System.Net.Http.HttpMethod.Get;

@@ -6,6 +6,7 @@ namespace Carbon.Json.Parser
     using System.IO;
     using Internal.Extensions;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonTokenizer : IDisposable
     {
         private readonly StringBuilder sb = new StringBuilder();
@@ -33,13 +34,13 @@ namespace Carbon.Json.Parser
                 case '"': return ReadQuotedString();
 
                 // Symbols
-                case '['  : reader.Next(); return JsonToken.BracketOpen;  // Array start
-                case ']'  : reader.Next(); return JsonToken.BracketClose; // Array end
-                case ','  : reader.Next(); return JsonToken.Comma;        // Value seperator
-                case ':'  : reader.Next(); return JsonToken.Colon;        // Field value indicator
-                case '{'  : reader.Next(); return JsonToken.BraceOpen;    // Object start
-                case '}'  : reader.Next(); return JsonToken.BraceClose;   // Object end
-                case '\0' : reader.Next(); return JsonToken.Terminator;   // Stream terminiator
+                case '[': reader.Next(); return JsonToken.BracketOpen;  // Array start
+                case ']': reader.Next(); return JsonToken.BracketClose; // Array end
+                case ',': reader.Next(); return JsonToken.Comma;        // Value seperator
+                case ':': reader.Next(); return JsonToken.Colon;        // Field value indicator
+                case '{': reader.Next(); return JsonToken.BraceOpen;    // Object start
+                case '}': reader.Next(); return JsonToken.BraceClose;   // Object end
+                case '\0': reader.Next(); return JsonToken.Terminator;   // Stream terminiator
 
                 default: return ReadLiteral();
             }
@@ -113,8 +114,8 @@ namespace Carbon.Json.Parser
             if (!char.IsLetter(reader.Current))
             {
                 throw new ParserException(
-                   message  : $"Expected literal (number, boolean, or null). Was '{reader.Current}'.",
-                   location : reader.Location
+                   message: $"Expected literal (number, boolean, or null). Was '{reader.Current}'.",
+                   location: reader.Location
                );
             }
 

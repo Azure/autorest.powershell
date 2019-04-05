@@ -5,6 +5,7 @@ using System.Web;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class JsonWriter
     {
         const string indentation = "  ";  // 2 spaces

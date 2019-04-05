@@ -2,6 +2,7 @@
 
 namespace Carbon.Internal.Extensions
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class TypeExtensions
     {
         public static bool IsNullable(this Type type) =>

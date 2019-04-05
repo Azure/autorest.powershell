@@ -2,6 +2,7 @@
 
 namespace Carbon.Json.Converters
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed class JsonConverterAttribute : Attribute
     {
         public JsonConverterAttribute(Type type)

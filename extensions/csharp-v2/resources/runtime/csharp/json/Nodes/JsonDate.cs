@@ -4,6 +4,7 @@ namespace Carbon.Json
 {
     using Data;
 
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed partial class JsonDate : JsonNode, IEquatable<JsonDate>, IComparable<JsonDate>
     {
         public static bool AssumeUtcWhenKindIsUnspecified = true;
@@ -127,7 +128,7 @@ namespace Carbon.Json
         {
             return new JsonDate(value);
         }
-        
+
         public static implicit operator JsonDate(DateTime value)
         {
             return new JsonDate(value);

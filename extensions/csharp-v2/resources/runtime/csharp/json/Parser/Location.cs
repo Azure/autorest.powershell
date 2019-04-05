@@ -1,5 +1,6 @@
 ﻿namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public struct SourceLocation
     {
         private int line;

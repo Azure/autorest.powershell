@@ -2,6 +2,7 @@
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public sealed partial class JsonBoolean : JsonNode
     {
         public static readonly JsonBoolean True = new JsonBoolean(true);

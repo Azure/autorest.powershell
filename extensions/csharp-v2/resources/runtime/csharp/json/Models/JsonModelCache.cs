@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal static class JsonModelCache
     {
         private static readonly ConditionalWeakTable<Type, JsonModel> cache

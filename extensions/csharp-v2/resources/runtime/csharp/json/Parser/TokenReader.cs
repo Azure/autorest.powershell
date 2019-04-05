@@ -2,6 +2,7 @@
 
 namespace Carbon.Json.Parser
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     internal class TokenReader : IDisposable
     {
         private readonly JsonTokenizer tokenizer;

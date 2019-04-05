@@ -2,6 +2,7 @@
 
 namespace Carbon.Json
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("AutoRest", "${$project.autorestVersion}")]
     public class ConversionException : Exception
     {
         public ConversionException(string message)
