@@ -23,6 +23,7 @@ function DownloadModule ([bool]$predicate, [string]$path, [string]$moduleName, [
   }
 }
 
+$ProgressPreference = 'SilentlyContinue'
 $all = (@($Accounts.IsPresent, $PlatyPS.IsPresent, $Pester.IsPresent) | Select-Object -Unique | Measure-Object).Count -eq 1
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'

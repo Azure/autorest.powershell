@@ -8,6 +8,7 @@ if(-not $Isolated) {
   return
 }
 
+$ProgressPreference = 'SilentlyContinue'
 . (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$${$project.azure} -PlatyPS
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
