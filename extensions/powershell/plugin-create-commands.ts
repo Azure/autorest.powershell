@@ -329,6 +329,7 @@ async function inferCommandNames(operationId: string, state: State): Promise<Arr
     // OPERATION or OPERATION2 => OPERATION-GROUP, OPERATION2-GROUP
     // OPERATION by FILTER => OPERATION-GROUP_FILTER
     // OPERATION with FILTER => OPERATION-GROUP_FILTER
+    // OPERATION at FILTER => OPERATION-GROUP_FILTER
 
     switch (operation[1].toLowerCase()) {
       case 'or':
@@ -342,6 +343,7 @@ async function inferCommandNames(operationId: string, state: State): Promise<Arr
 
       case 'by':
       case 'with':
+      case 'at':
         // create one operation -- OPERATION-GROUP_filter
         return [getVariant(operation[0], group, operation.slice(2), state.model)];
     }
