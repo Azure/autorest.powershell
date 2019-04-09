@@ -1,0 +1,13 @@
+details:
+  default: 
+    title: TestService
+    prefix: az
+    azure: true
+    service-name: testservice
+    subject-prefix: ''
+
+info:
+  x-ms-metadata: 
+    name: foo
+
+schemas: 
