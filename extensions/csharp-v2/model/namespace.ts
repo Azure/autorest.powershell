@@ -67,6 +67,7 @@ export class ModelsNamespace extends Namespace {
     }
 
     const td = this.resolver.resolveTypeDeclaration(schema, required, state);
+
     if (!schema.details.csharp.skip) {
       if (td instanceof ObjectImplementation) {
         // it's a class object.

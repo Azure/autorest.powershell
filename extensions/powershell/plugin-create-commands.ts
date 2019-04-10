@@ -332,13 +332,14 @@ export /* @internal */ class Inferrer {
     if (vname.length > 64) {
       const names = deconstruct(vname);
       let newVName = '';
-      for (const each of names) {
-        newVName = newVName + each;
+      for (let i = 0; i < names.length; i++) {
+        newVName = pascalCase(names.slice(0, i));
         if (newVName.length > 60) {
           break;
         }
+
       }
-      vname = `${newVName}`;
+      vname = newVName;
     }
 
     // if we have an identical vname, let's add 'etc'

@@ -46,14 +46,14 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
     // to the suggested name, unless we have collisions
     // at which point, we're going to add a number (for now?)
     const details = schema.details.default;
-    let schemaName = details.name;
+    let schemaName = getPascalIdentifier(details.name);
     const apiName = (!thisApiversion) ? '' : getPascalIdentifier(`Api ${thisApiversion}`);
     const ns = (!thisApiversion) ? [] : ['.', apiName];
 
 
     let n = 1;
     while (thisNamespace.has(schemaName)) {
-      schemaName = `${details.name}_${n++}`;
+      schemaName = getPascalIdentifier(`${details.name}_${n++}`);
     }
     thisNamespace.add(schemaName);
 
@@ -65,8 +65,8 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         apiname: apiName,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
         name: getPascalIdentifier(schemaName),
-        namespace: pascalCase([serviceNamespace, '.', `Models`, ...ns]),  // objects have a namespace
-        fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${getPascalIdentifier(schemaName)}`,
+        namespace: pascalCase([serviceNamespace, '.', `Models`, '.', ...ns]),  // objects have a namespace
+        fullname: `${pascalCase([serviceNamespace, '.', `Models`, '.', ...ns])}.${getPascalIdentifier(schemaName)}`,
       };
     } else if (schema.type === JsonType.String && schema.details.default.enum) {
       // oh, it's an enum type
