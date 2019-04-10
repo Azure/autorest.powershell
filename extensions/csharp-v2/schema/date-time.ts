@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { System } from '@microsoft.azure/codegen-csharp';
+import { System, Ternery, IsNotNull, dotnet } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
 import { If } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
@@ -117,15 +117,52 @@ export class UnixTime extends Primitive {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
   }
 
-  /** emits an expression serialize this to the value required by the container */
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
-    return super.serializeToNode(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), serializedName, mode);
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        return this.isRequired ?
+          this.jsonType.new(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds))`).Cast(ClientRuntime.JsonNode) :
+          Ternery(IsNotNull(value), this.jsonType.new(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)??0)`).Cast(ClientRuntime.JsonNode), dotnet.Null);
+
+      case KnownMediaType.Xml:
+        return this.isRequired ?
+          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value})`) :
+          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
+
+      case KnownMediaType.QueryParameter:
+        if (this.isRequired) {
+          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+        } else {
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString()))`);
+        }
+
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+
+      case KnownMediaType.Cookie:
+      case KnownMediaType.Header:
+      case KnownMediaType.Text:
+      case KnownMediaType.UriParameter:
+        return toExpression(this.isRequired ?
+          `(${value}.ToString())` :
+          `(null == ${value} ? ${System.String.Empty} : ${value}.ToString())`
+        );
+    }
+    return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  /** emits the code required to serialize this into a container */
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-    return super.serializeToContainerMember(mediaType, new LiteralExpression(`((long)${value}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)`), container, serializedName, mode);
+  /** emits an expression serialize this to the value required by the container */
+  _serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    return super.serializeToNode(mediaType, new LiteralExpression(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds))`), serializedName, mode);
   }
+
+  get q(): string {
+    return this.isRequired ? '' : '?';
+  }
+
+  get longType(): string {
+    return this.isRequired ? 'long' : 'long?';
+  }
+
 
   constructor(schema: Schema, public isRequired: boolean) {
     super(schema);

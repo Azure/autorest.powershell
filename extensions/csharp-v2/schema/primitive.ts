@@ -66,7 +66,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
 
   abstract validateValue(eventListener: Variable, property: Variable): string;
-  private get baseType(): string {
+  protected get baseType(): string {
     return this.declaration.replace('?', '');
   }
 
