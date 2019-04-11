@@ -109,14 +109,24 @@ export class Remodeler {
       );
     }
 
+    if (type === undefined && original['x-ms-enum']) {
+      type = OpenAPI.JsonType.String;
+      this.modelState.warning(
+        `The schema '${name}' with an undefined type and an x-ms-enum extension is a bit ambigious. This has been auto-corrected to 'type:string'`,
+        [`UndefinedTypeWithSchema`],
+        /* todo: find source location for this node */
+      );
+    }
+
     if (type === undefined && original.properties) {
       // they have a properties, but didn't say type: object.
       type = OpenAPI.JsonType.Object;
-     /*  this.modelState.warning(
-        `The schema '${name}' with an undefined type and decalared properties is a bit ambigious. This has been auto-corrected to 'type:object'`,
-        [`UndefinedTypeWithSchema`],
-        /* todo: find source location for this node */
-      ); */
+      /*  this.modelState.warning(
+         `The schema '${name}' with an undefined type and decalared properties is a bit ambigious. This has been auto-corrected to 'type:object'`,
+         [`UndefinedTypeWithSchema`],
+         /* todo: find source location for this node * /
+       ); */
+
     }
     if (type === undefined && original.additionalProperties && !original.properties) {
       // they have a properties, but didn't say type: object.
