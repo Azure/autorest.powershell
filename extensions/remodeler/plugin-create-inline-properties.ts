@@ -80,7 +80,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         nameComponents: virtualProperty.nameComponents,
         nameOptions: virtualProperty.nameOptions,
         accessViaProperty: virtualProperty,
-        accessViaMember: virtualProperty.name,
+        accessViaMember: virtualProperty,
         accessViaSchema: parentSchema,
         description: virtualProperty.description,
         alias: []
@@ -142,7 +142,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
           nameComponents: components,
           nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
           accessViaProperty: privateProperty,
-          accessViaMember: inlinedProperty.name,
+          accessViaMember: inlinedProperty,
           accessViaSchema: schema,
           description: inlinedProperty.description,
           alias: []
@@ -167,7 +167,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
           nameComponents: components,
           nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
           accessViaProperty: privateProperty,
-          accessViaMember: inlinedProperty.name,
+          accessViaMember: inlinedProperty,
           accessViaSchema: schema,
           description: inlinedProperty.description,
           alias: []

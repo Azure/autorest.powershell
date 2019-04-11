@@ -25,6 +25,10 @@ function accessVirtualProperty(virtualProperty: VirtualProperty) {
   }
 }
 
+
+function getVirtualPropertyName(vp?: VirtualProperty) {
+  return vp ? vp.name : '';
+}
 export interface BackingField {
   field: Field;
   typeDeclaration: TypeDeclaration;
@@ -139,10 +143,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   private nested(virtualProperty: VirtualProperty): string {
     if (virtualProperty.accessViaProperty) {
       if (virtualProperty.accessViaProperty.accessViaProperty) {
-        return `/*a*/${virtualProperty.accessViaMember}./*b*/${this.nested(virtualProperty.accessViaProperty.accessViaProperty)}`;
+        return `/*a*/${getVirtualPropertyName(virtualProperty.accessViaMember)}./*b*/${this.nested(virtualProperty.accessViaProperty.accessViaProperty)}`;
       }
     }
-    return `/*c*/${virtualProperty.accessViaMember}`;
+    return `/*c*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
   private accessor(virtualProperty: VirtualProperty): string {
@@ -150,11 +154,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const prefix = virtualProperty.accessViaProperty.accessViaProperty ? this.nested(virtualProperty.accessViaProperty.accessViaProperty) : '';
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
       if (containingProperty) {
-        return `/*1*/${containingProperty.name}${prefix}/*4*/.${virtualProperty.accessViaMember}/*3*/`;
+        return `/*1*/${containingProperty.name}${prefix}/*4*/.${getVirtualPropertyName(virtualProperty.accessViaMember)}/*3*/`;
       }
     }
 
-    return `/*2*/${virtualProperty.accessViaMember}`;
+    return `/*2*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
   private createProperties() {

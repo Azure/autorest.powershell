@@ -207,7 +207,7 @@ export /* @internal */ class Inferrer {
     if (either) {
       // looks like we got two sets of operations from this.
       return [
-        ...this.inferCommand(either[0], group, suffix),
+        ...this.inferCommand([...either[0], ...either[1].slice(1)], group, suffix),
         ...this.inferCommand(either[1], group, suffix),
       ];
     }
