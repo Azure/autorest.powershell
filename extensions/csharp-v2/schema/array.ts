@@ -137,18 +137,18 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Xml: {
           if (this.isWrapped) {
             const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
-            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
+            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
           } else {
             throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`${value} != null && ${value}.Length > 0 ? "${value}=" + System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + (string.IsNullOrEmpty(each) ? System.Uri.EscapeDataString(each) : System.String.Empty))) : System.String.Empty`);
+          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${value}=" + global::System.Uri.EscapeDataString(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( System.Uri.EscapeDataString(each?.ToString()??${System.String.Empty}) ))) : ${System.String.Empty})`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(global::System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
       }
     } finally {
       popTempVar();
