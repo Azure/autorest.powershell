@@ -223,11 +223,11 @@ export /* @internal */ class Inferrer {
     for (let i = 0; i < operation.length; i++) {
       if (verbs.has(operation[i])) {
         // if the action is first
-        if (i == 0) {
+        if (i === 0) {
           // everything else is the subject
           return [this.getVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)]
         }
-        if (i == operation.length - 1) {
+        if (i === operation.length - 1) {
           // if it's last, the subject would be the first thing
           return [this.getVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)]
         }

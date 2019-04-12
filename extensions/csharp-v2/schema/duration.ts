@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, System } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
 import { Variable } from '@microsoft.azure/codegen-csharp';
 import { Schema } from '../code-model';
@@ -30,11 +30,16 @@ export class Duration extends Primitive {
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`${ClientRuntime.JsonString.new(`System.Xml.XmlConvert.ToString(${value})`)}`);
+        return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString(${value})`)}`);
+      case KnownMediaType.QueryParameter:
+        if (this.isRequired) {
+          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString(${value}))`);
+        } else {
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString(${value})))`);
+        }
     }
     return toExpression(`/* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
-
 
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
 
