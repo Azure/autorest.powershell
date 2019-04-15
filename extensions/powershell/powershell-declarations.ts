@@ -3,11 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { intersect } from '@microsoft.azure/codegen';
-import { Expression, TypeDeclaration, Parameter, ParameterModifier, Access, Modifier, dotnet, ClassType, Class, Constructor, Field, LambdaMethod, PartialMethod, LiteralExpression, StringExpression, valueOf, InitializedField, Method, Namespace, ImplementedProperty, Statements, MemberVariable, Variable, System, LocalVariable, Using, Return, LambdaProperty, LazyProperty, Property } from '@microsoft.azure/codegen-csharp';
-
 import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
-import { IInterface } from '@microsoft.azure/codegen-csharp';
+import { intersect } from '@microsoft.azure/codegen';
+import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace, TypeDeclaration } from '@microsoft.azure/codegen-csharp';
 
 const sma = new Namespace(`System.Management.Automation`);
 const rest = new Namespace(`Microsoft.Rest`);

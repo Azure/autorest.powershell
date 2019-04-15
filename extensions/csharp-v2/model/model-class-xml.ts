@@ -6,7 +6,7 @@
 import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codemodel-v3';
 import { EOL, items, values } from '@microsoft.azure/codegen';
 
-import { Access, Class, Constructor, dotnet, Expression, ExpressionOrLiteral, Field, If, InitializedField, IsDeclaration, Method, Modifier, Namespace, Not, OneOrMoreStatements, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery, TypeDeclaration, valueOf, Variable } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';

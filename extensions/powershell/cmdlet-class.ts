@@ -6,7 +6,7 @@
 import { command, getAllProperties, JsonType, KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values } from '@microsoft.azure/codegen';
 import {
-  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, ImplementedProperty, InitializedField, IsDeclaration,
+  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase
 } from '@microsoft.azure/codegen-csharp';
@@ -21,8 +21,8 @@ export class CmdletClass extends Class {
   public state: State;
   private readonly eventListener: EventListener;
   private readonly dropBodyParameter: boolean;
-  private invocationInfo!: ImplementedProperty;
-  correlationId!: InitializedField;
+  private invocationInfo!: Property;
+  correlationId!: Field;
   processRecordId!: Field;
   private readonly thingsToSerialize: Array<{ parameter: Parameter, td: EnhancedTypeDeclaration }>;
   private bodyParameter?: Expression;
@@ -81,13 +81,13 @@ export class CmdletClass extends Class {
 
     // add a private copy of invocation information for our own uses.
     const privateInvocationInfo = this.add(new Field("__invocationInfo", InvocationInfo, { description: 'A copy of the Invocation Info (necessary to allow asJob to clone this cmdlet)', access: Access.Private }));
-    this.invocationInfo = new ImplementedProperty('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
-    this.invocationInfo.getterStatements = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
-    this.invocationInfo.setterStatements = new Statements(privateInvocationInfo.assign(`value`));
+    this.invocationInfo = new Property('InvocationInformation', InvocationInfo, { description: 'Accessor for our copy of the InvocationInfo.' });
+    this.invocationInfo.get = Return(`${privateInvocationInfo.value} = ${privateInvocationInfo.value} ?? this.MyInvocation `);
+    this.invocationInfo.set = new Statements(privateInvocationInfo.assign(`value`));
     this.add(this.invocationInfo);
 
     if (this.state.project.azure) {
-      this.correlationId = this.add(new InitializedField("__correlationId", dotnet.String, `System.Guid.NewGuid().ToString()`, { description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
+      this.correlationId = this.add(new Field("__correlationId", dotnet.String, { initialValue: `System.Guid.NewGuid().ToString()`, description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
       this.processRecordId = this.add(new Field("__processRecordId", dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
     }
 
@@ -536,8 +536,9 @@ export class CmdletClass extends Class {
 
   private implementIEventListener() {
     const $this = this;
-    const cts = this.add(new InitializedField('_cancellationTokenSource', System.Threading.CancellationTokenSource, new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`), {
+    const cts = this.add(new Field('_cancellationTokenSource', System.Threading.CancellationTokenSource, {
       access: Access.Private,
+      initialValue: new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`),
       description: `The <see cref="${System.Threading.CancellationTokenSource}" /> for this operation.`
     }));
     this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Token`, System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="IEventListener" /> cancellation token.` }));
@@ -627,14 +628,14 @@ export class CmdletClass extends Class {
 
       if (parameter.details.csharp.apiversion) {
         // Api-version parameters for azure are a custom implementation
-        this.add(new ImplementedProperty(parameter.details.csharp.name, td, {
+        this.add(new Property(parameter.details.csharp.name, td, {
           getAccess: Access.Internal,
           setAccess: Access.Private,
           metadata: {
             parameterDefinition: parameter.details.csharp.httpParameter
           },
           description: parameter.details.csharp.description,
-          *getterStatements() {
+          *get() {
             const metadata = operation.extensions['x-ms-metadata'];
             const profiles = <Dictionary<string>>metadata.profiles || new Dictionary<string>();
 
@@ -660,9 +661,9 @@ export class CmdletClass extends Class {
         if (vps) {
           for (const vParam of vps.body) {
             const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, vParam.required, this.state);
-            const cmdletParameter = new ImplementedProperty(vParam.name, propertyType, {
-              getterStatements: new Statements(`return ${expandedBodyParameter.value}.${vParam.origin.name};`),
-              setterStatements: new Statements(`${expandedBodyParameter.value}.${vParam.origin.name} = value;`)
+            const cmdletParameter = new Property(vParam.name, propertyType, {
+              get: new Statements(`return ${expandedBodyParameter.value}.${vParam.origin.name};`),
+              set: new Statements(`${expandedBodyParameter.value}.${vParam.origin.name} = value;`)
             });
             const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));

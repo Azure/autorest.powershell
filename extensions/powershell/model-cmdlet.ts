@@ -7,7 +7,7 @@ import { JsonType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v
 import { escapeString, items, length, pascalCase, values } from '@microsoft.azure/codegen';
 
 import { Binary, Schema } from '@microsoft.azure/autorest.csharp-v2';
-import { Access, Attribute, Class, ImplementedProperty, InitializedField, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, } from '@microsoft.azure/codegen-csharp';
+import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, } from '@microsoft.azure/codegen-csharp';
 
 import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
 import { State } from './state';
@@ -20,7 +20,6 @@ let nn = 0;
 
 export class ModelCmdlet extends Class {
   public state: State;
-  // protected processRecord: Method;
 
   constructor(namespace: Namespace, schema: Schema, state: State, objectInitializer?: Partial<ModelCmdlet>) {
     const variantName = `${state.project.prefix}${schema.details.csharp.name}Object${schema.details.csharp.apiname ? `_${schema.details.csharp.apiname}` : ''}`;
@@ -32,7 +31,7 @@ export class ModelCmdlet extends Class {
     addClassAttributes(this, schema, variantName);
 
     const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, this.state);
-    const prop = this.add(new InitializedField(`_${schema.details.csharp.name.uncapitalize()}`, td, `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, { access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
+    const prop = this.add(new Field(`_${schema.details.csharp.name.uncapitalize()}`, td, { initialValue: `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
 
     const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(`WriteObject(${prop});`);
 
@@ -42,9 +41,9 @@ export class ModelCmdlet extends Class {
       for (const vProperty of [...vps.owned, ...vps.inherited, ...vps.inlined]) {
         if (!vProperty.property.schema.readOnly && !vProperty.private) {
           const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vProperty.property.schema, vProperty.property.details.csharp.required, this.state);
-          const cmdletParameter = new ImplementedProperty(vProperty.name, td, {
-            getterStatements: new Statements(`return ${prop.value}.${vProperty.name};`),
-            setterStatements: new Statements(`${prop.value}.${vProperty.name} = value;`)
+          const cmdletParameter = new Property(vProperty.name, td, {
+            get: new Statements(`return ${prop.value}.${vProperty.name};`),
+            set: new Statements(`${prop.value}.${vProperty.name} = value;`)
           });
           const desc = (vProperty.property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
           cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vProperty.property.details.csharp.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));

@@ -79,7 +79,11 @@ $working = @(
 $inputs = @(
     # ERROR Compiling
     
-    
+      # P1 Error Generating
+    "body-dictionary.json",
+    "body-formdata-urlencoded.json",
+    "report.json",
+    "complex-model.json"
     
     "model-flattening.json",
     "storage.json",
@@ -109,7 +113,7 @@ $azureInputs = @(
 )
 $n = 0;
 
-$working |% {
+$inputs |% {
  if( $n -le 90 ) {
     run-autorest $_
   }

@@ -6,7 +6,7 @@
 import { Access, Modifier, toExpression } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral, StringExpression } from '@microsoft.azure/codegen-csharp';
-import { InitializedField } from '@microsoft.azure/codegen-csharp';
+import { Field } from '@microsoft.azure/codegen-csharp';
 import { Interface } from '@microsoft.azure/codegen-csharp';
 import { Method } from '@microsoft.azure/codegen-csharp';
 import { Schema } from '../code-model';
@@ -87,7 +87,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
 
     // add known enum values
     for (const evalue of schemaWithFeatures.schema.details.csharp.enum.values) {
-      this.addField(new InitializedField(evalue.name, this, new StringExpression(evalue.value), { static: Modifier.Static, description: evalue.description }));
+      this.addField(new Field(evalue.name, this, { initialValue: new StringExpression(evalue.value), static: Modifier.Static, description: evalue.description }));
     }
 
     // add backingField

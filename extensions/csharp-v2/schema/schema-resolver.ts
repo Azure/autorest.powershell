@@ -82,6 +82,7 @@ export class SchemaDefinitionResolver {
                 case JsonType.String:
                 case JsonType.Boolean:
                 case JsonType.Number:
+                case JsonType.Integer:
                   // it's a primitive type (string/boolean/number)
                   // it should be a simple dictionary<string, t>
 
@@ -89,8 +90,9 @@ export class SchemaDefinitionResolver {
 
                 default:
                   // what? What kind of a monster are you?
-                  console.error(`NOT SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.csharp.name}`);
-                  throw new Error('Not Supported Yet. ');
+                  console.error(`WEIRD SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.csharp.name}`);
+                  // throw new Error('Not Supported Yet. ');
+                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
               }
             case 'undefined':
               break;
@@ -102,13 +104,6 @@ export class SchemaDefinitionResolver {
           // object with no properties?
         }
 
-        if (schema.additionalProperties) {
-          // this object *does* have properties.
-          // *AND* additionalProperties is set.
-          // Which means that this object should implement a dictionary too.
-          // (handled in model-class itself...)
-          console.error(`FYI : Has ADDITIONALPROPERTIES ${schema.details.csharp.name} : ${length(schema.properties)}`);
-        }
 
         return this.add(schema, new ObjectImplementation(schema));
 

@@ -5,7 +5,7 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, InitializedField, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, ImplementedProperty, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -191,10 +191,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
         const via = <VirtualProperty>virtualProperty.accessViaProperty;
-        this.add(new ImplementedProperty(virtualProperty.name, propertyType, {
+        this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
-          getterStatements: new Statements(`return ${parentField.field.name}.${via.name}; `),
-          setterStatements: propertyType.schema.readOnly ? undefined : new Statements(`${parentField.field.name}.${via.name} = value; `)
+          get: new Statements(`return ${parentField.field.name}.${via.name}; `),
+          set: propertyType.schema.readOnly ? undefined : new Statements(`${parentField.field.name}.${via.name} = value; `)
         }));
       }
 
@@ -205,10 +205,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           if (containingProperty) {
             const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
 
-            this.add(new ImplementedProperty(virtualProperty.name, propertyType, {
+            this.add(new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
-              getterStatements: new Statements(`return ${this.accessor(virtualProperty)}; `),
-              setterStatements: propertyType.schema.readOnly ? undefined : new Statements(`${this.accessor(virtualProperty)} = value; `)
+              get: new Statements(`return ${this.accessor(virtualProperty)}; `),
+              set: propertyType.schema.readOnly ? undefined : new Statements(`${this.accessor(virtualProperty)} = value; `)
             }));
           }
         }
@@ -220,9 +220,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     if (this.schema.additionalProperties) {
       if (this.schema.additionalProperties === true) {
         // we're going to implement IDictionary<string, object>
-        implementIDictionary(System.String, System.Object, this);
+        implementIDictionary(this, 'additionalProperties', System.String, System.Object);
       } else {
         // we're going to implement IDictionary<string, schema.additionalProperties>
+        implementIDictionary(this, 'additionalProperties', System.String, this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state));
       }
     }
   }
@@ -265,7 +266,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.modelInterface.interfaces.push(iface);
 
       // add a field for the inherited values
-      const backingField = this.addField(new InitializedField(`_${fieldName} `, td, `new ${className} ()`, { access: Access.Private, description: `Backing field for <see cref= "${this.fileName}" /> ` }));
+      const backingField = this.addField(new Field(`_${fieldName} `, td, { initialValue: `new ${className} ()`, access: Access.Private, description: `Backing field for <see cref= "${this.fileName}" /> ` }));
       this.backingFields.push({
         className,
         typeDeclaration: td,
