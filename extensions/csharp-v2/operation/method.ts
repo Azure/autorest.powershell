@@ -301,7 +301,7 @@ export class CallMethod extends Method {
             for (const { key: responseCode, value: responses } of items(opMethod.operation.responses)) {
               if (responseCode !== 'default') {
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(System.Net.HttpStatusCode[responseCode].value || `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, responses, eventListener));
               } else {
                 yield DefaultCase($this.responsesEmitter($this, opMethod, responses, eventListener));
               }
