@@ -55,6 +55,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                    || unwrappedType == typeof(PSCredential)
                    || unwrappedType == typeof(ScriptBlock)
                    || unwrappedType == typeof(DateTime)
+                   || unwrappedType == typeof(Uri)
                    || unwrappedType.HasImplicitConversion(typeof(string));
         }
 
