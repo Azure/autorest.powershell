@@ -56,7 +56,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     var allVariantNames = variantGroup.Variants.Select(vg => vg.VariantName).ToArray();
                     var parameterGroups = variantGroup.Variants
                         .SelectMany(v => v.ToParameters())
-                        .GroupBy(p => p.ParameterName)
+                        .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
                         .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames))
                         .ToList();
                     sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
