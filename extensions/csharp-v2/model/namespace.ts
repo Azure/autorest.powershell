@@ -86,12 +86,13 @@ export class ModelsNamespace extends Namespace {
       if (td instanceof EnumImplementation) {
         if (schema.details.csharp.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
-          if (ec.length > 0) {
-            return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
+          if (ec.length === 0) {
+            new EnumClass(td, state)
+            // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
           }
         }
 
-        return schema.details.csharp.typeDeclaration = new EnumClass(td, state);
+        return schema.details.csharp.typeDeclaration = td;
       }
     }
     return td;

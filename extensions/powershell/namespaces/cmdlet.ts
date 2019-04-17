@@ -17,20 +17,19 @@ export class CmdletNamespace extends Namespace {
   constructor(parent: Namespace, private state: State, objectInitializer?: Partial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
+  }
+
+  async init() {
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
 
     // generate cmdlet classes on top of the SDK
-    for (const { key: index, value: operation } of items(state.model.commands.operations)) {
-      this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', index)));
-
-      /* if (operation.details.powershell.hasBody) {
-        // make a copy that doesn't use the body parameter
-        this.addClass(new CmdletClass(this, operation, state.path('commands', 'operations', id), true));
-      } */
+    for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
+      this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
 
       for (const p of operation.parameters) {
-        state.project.modelCmdlets.addInputSchema(<Schema>p.schema);
+        this.state.project.modelCmdlets.addInputSchema(<Schema>p.schema);
       }
     }
+    return this;
   }
 }

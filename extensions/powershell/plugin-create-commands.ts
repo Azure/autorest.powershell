@@ -24,6 +24,7 @@ interface CommandVariant {
   subject: string;
   subjectPrefix: string;
   variant: string;
+  action: string;
 }
 
 
@@ -79,7 +80,6 @@ export /* @internal */ class Inferrer {
   subjectPrefix!: string;
   isAzure!: boolean;
 
-
   constructor(private state: State) {
   }
   async init() {
@@ -128,7 +128,7 @@ export /* @internal */ class Inferrer {
       for (const variant of await this.inferCommandNames(operation.operationId, this.state)) {
 
         // no common parameters (standard variations)
-        await this.addVariants(operation.parameters, operation, variant, this.state);
+        await this.addVariants(operation.parameters, operation, variant, '', this.state);
 
         // now see if we have parameters that can be made common
         const possibleCommon = values(operation.parameters).linq.where(parameter => commonCandidates.includes(parameter.name)).linq.toArray();
@@ -155,7 +155,7 @@ export /* @internal */ class Inferrer {
               return param;
             });
             // and shallow copy the parameter, into a new one, and overw
-            await this.addVariants(some, operation, variant, this.state);
+            await this.addVariants(some, operation, variant, `${combo.map(each => each.name).join('-')}-via-host`, this.state);
           }
         }
         // make some variants where subscriptionId and resourceGroupName are pulled from common module
@@ -175,7 +175,7 @@ export /* @internal */ class Inferrer {
         // simple operation, just an id with a single value
         // OPERATION => OPERATION-GROUP
         return [
-          this.getVariant(operation[0], deconstruct(group), suffix, this.state.model)
+          this.createCommandVariant(operation[0], deconstruct(group), suffix, this.state.model)
         ];
 
       case 2:
@@ -183,13 +183,13 @@ export /* @internal */ class Inferrer {
         if (verbs.has(operation[0])) {
           // [ACTION][SUBJECT]
           return [
-            this.getVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
+            this.createCommandVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
           ];
         }
         if (verbs.has(operation[1])) {
           // [SUBJECT][ACTION]
           return [
-            this.getVariant(operation[1], [...deconstruct(group), operation[0]], suffix, this.state.model)
+            this.createCommandVariant(operation[1], [...deconstruct(group), operation[0]], suffix, this.state.model)
           ];
 
         }
@@ -197,7 +197,7 @@ export /* @internal */ class Inferrer {
         // but now let's mention that we are doing that.
         this.state.warning(`Operation ${operation[0]}/${operation[1]} is inferred without finding action.`, [], {});
         return [
-          this.getVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
+          this.createCommandVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
         ];
 
     }
@@ -225,25 +225,24 @@ export /* @internal */ class Inferrer {
         // if the action is first
         if (i === 0) {
           // everything else is the subject
-          return [this.getVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)]
+          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)]
         }
         if (i === operation.length - 1) {
           // if it's last, the subject would be the first thing
-          return [this.getVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)]
+          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)]
         }
 
         // otherwise          
         // things before are part of the subject
         // things after the verb should be part of the suffix
-        return [this.getVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)]
+        return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)]
       }
     }
 
     // so couldn't tell what the action was.
     // fallback to the original behavior with a warning.
     this.state.warning(`Operation ${operation[0]}/${operation[1]} is inferred without finding action.`, [], {});
-    return [this.getVariant(operation[0], group ? [...deconstruct(group), ...operation.slice(1)] : operation.slice(1), [...suffix, ...operation.slice(1)], this.state.model)];
-
+    return [this.createCommandVariant(operation[0], group ? [...deconstruct(group), ...operation.slice(1)] : operation.slice(1), [...suffix, ...operation.slice(1)], this.state.model)];
   }
 
   async inferCommandNames(operationId: string, state: State): Promise<Array<CommandVariant>> {
@@ -262,7 +261,7 @@ export /* @internal */ class Inferrer {
 
     // instant match
     if (this.verbMap[method]) {
-      return [this.getVariant(method, [group], [], state.model)];
+      return [this.createCommandVariant(method, [group], [], state.model)];
     }
 
     // dig deeper.
@@ -303,7 +302,8 @@ export /* @internal */ class Inferrer {
     }
   }
 
-  isNameConflict(model: codemodel.Model, vname: string) {
+
+  isNameConflict(model: codemodel.Model, variant: CommandVariant, vname: string) {
     for (const each of values(model.commands.operations)) {
       if (each.details.default.name === vname) {
         return true;
@@ -312,8 +312,10 @@ export /* @internal */ class Inferrer {
     return false;
   }
 
-  async addCommandOperation(vname: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State): Promise<command.CommandOperation> {
+  // for tracking unique operation identities 
+  operationIdentities = new Set<string>();
 
+  async addCommandOperation(vname: string, parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State): Promise<command.CommandOperation> {
     let apiversion = '';
 
     for (const each of items(operation.responses)) {
@@ -325,7 +327,7 @@ export /* @internal */ class Inferrer {
       }
     }
 
-    vname = `${apiversion}${vname}`;
+    //vname = `${vname}${variant.variant}`
 
     // if vname is > 64 characters, let's trim it
     // after trimming it, make sure there aren't any other operation with a name that's exactly the same
@@ -337,16 +339,21 @@ export /* @internal */ class Inferrer {
         if (newVName.length > 60) {
           break;
         }
-
       }
       vname = newVName;
     }
 
     // if we have an identical vname, let's add 'etc'
-    while (this.isNameConflict(state.model, vname)) {
-      vname = `${vname}Etc`;
+    let fname = `${variant.verb}-${variant.subject}-${vname}`;
+    let n = 1;
+    while (this.operationIdentities.has(fname)) {
+      vname = `${vname.replace(/\d*$/g, '')}${n++}`;
+      fname = `${variant.verb}-${variant.subject}-${vname}`;
     }
+    this.operationIdentities.add(fname);
 
+    variant.variant = vname;
+    vname = pascalCase(vname);
     const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
 
     return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new command.CommandOperation(operation.operationId, {
@@ -382,15 +389,10 @@ export /* @internal */ class Inferrer {
     });
   }
 
-  async addVariants(parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, state: State) {
+  async addVariants(parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, vname: string, state: State) {
     // now synthesize parameter set variants multiplexed by the variants.
-
-    const [constants, params] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
-    const [requiredParameters, optionalParameters] = values(params).linq.bifurcate(parameter => parameter.required);
-
+    const [constants, requiredParameters] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
     const constantParameters = constants.map(each => `'${each.details.default.constantValue}'`);
-
-    const combos = combinations(optionalParameters);
 
     // the body parameter
     const body = operation.requestBody;
@@ -405,31 +407,18 @@ export /* @internal */ class Inferrer {
     // for each polymorphic body, we should do a separate variant that takes the polymorphic body type instead of the base type
     const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && body.schema.details.default.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
 
-    // the variant name
-    const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
-
-    // given the body property type, expand out body properties into parameters
-
     // wait! "update" should be "set" if it's a POST
     if (variant.verb === 'Update' && operation.method === http.HttpMethod.Put) {
       variant.verb = `Set`;
     }
 
-    // no optionals:
+    // create variant 
     state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-    await this.addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
-
-    // handle optional parameter variants
-    for (const combo of combos) {
-      const vname = pascalCase(deconstruct([variant.variant, ...requiredParameters.map(each => each.name), ...combo.map(each => each.name), bodyPropertyNames /*, operation.operationId*/]));
-      state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${combo.joinWith(each => each.name)} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-      await this.addVariant(vname, body, bodyParameterName, [...constants, ...requiredParameters, ...combo], operation, variant, state);
-    }
+    await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
   }
 
-  getVariant(action: string, subject: Array<string>, suffix: Array<string>, model: codemodel.Model): CommandVariant {
-
-    const verb = this.getVerb(action);
+  createCommandVariant(action: string, subject: Array<string>, variant: Array<string>, model: codemodel.Model): CommandVariant {
+    const verb = this.getPowerShellVerb(action);
     if (verb === 'Invoke') {
       // if the 'operation' name was  "post" -- it's kindof redundant.
       // so, only include the operation name in the group name if it's anything else
@@ -438,18 +427,17 @@ export /* @internal */ class Inferrer {
       }
     }
 
-    subject = [...removeSequentialDuplicates(subject.map(each => pluralizationService.singularize(each)))];
-
     return {
-      subject: pascalCase(subject),
-      variant: pascalCase(suffix),
+      subject: pascalCase([...removeSequentialDuplicates(subject.map(each => pluralizationService.singularize(each)))]),
+      variant: pascalCase(variant),
       verb,
-      subjectPrefix: model.details.default.subjectPrefix
+      subjectPrefix: model.details.default.subjectPrefix,
+      action
     };
   }
 
-  getVerb(operation: string): string {
-    const verb = this.verbMap[pascalCase(operation)];
+  getPowerShellVerb(action: string): string {
+    const verb = this.verbMap[pascalCase(action)];
     if (verb) {
       return verb;
     } else {

@@ -5,6 +5,7 @@
 
 import { Schema } from '../code-model';
 import { String } from './string';
+import { dotnet, toExpression } from '@microsoft.azure/codegen-csharp';
 
 export class EnumImplementation extends String {
   public isXmlAttribute: boolean = false;
@@ -13,6 +14,9 @@ export class EnumImplementation extends String {
     super(schema, isRequired);
   }
 
+  get defaultOfType() {
+    return this.isRequired ? toExpression(`((${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}${this.isRequired ? '' : '?'})"")`) : dotnet.Null;
+  }
 
-  get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}`; }
+  get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}${this.isRequired ? '' : '?'}`; }
 }

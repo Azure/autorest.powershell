@@ -7,7 +7,7 @@ import { JsonType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v
 import { escapeString, items, length, pascalCase, values } from '@microsoft.azure/codegen';
 
 import { Binary, Schema } from '@microsoft.azure/autorest.csharp-v2';
-import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, } from '@microsoft.azure/codegen-csharp';
+import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@microsoft.azure/codegen-csharp';
 
 import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
 import { State } from './state';
@@ -42,8 +42,8 @@ export class ModelCmdlet extends Class {
         if (!vProperty.property.schema.readOnly && !vProperty.private) {
           const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vProperty.property.schema, vProperty.property.details.csharp.required, this.state);
           const cmdletParameter = new Property(vProperty.name, td, {
-            get: new Statements(`return ${prop.value}.${vProperty.name};`),
-            set: new Statements(`${prop.value}.${vProperty.name} = value;`)
+            get: toExpression(`${prop.value}.${vProperty.name}`),
+            set: toExpression(`${prop.value}.${vProperty.name} = value`)
           });
           const desc = (vProperty.property.details.csharp.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
           cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vProperty.property.details.csharp.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));

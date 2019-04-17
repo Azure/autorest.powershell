@@ -147,7 +147,7 @@ export class Project extends codeDomProject {
     this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
     this.addNamespace(this.modelCmdlets = new ModelCmdletNamespace(this.serviceNamespace, this.state));
     // add cmdlet namespace
-    this.addNamespace(this.cmdlets = new CmdletNamespace(this.serviceNamespace, this.state));
+    this.addNamespace(this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init());
     this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas')));
 
     if (!this.skipModelCmdlets) {

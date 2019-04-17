@@ -15,7 +15,6 @@ import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
-import { OldProxyProperty } from './proxy-property';
 import { Schema } from '../code-model';
 import { access } from 'fs';
 
@@ -120,13 +119,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
 
     // handle parent interface implementation
-    this.handleAllOf();
+    if (!this.handleAllOf()) {
+      // handle the AdditionalProperties if used
+      this.handleAdditionalProperties();
+    }
 
     // create the properties for ths schema
     this.createProperties();
 
-    // handle the AdditionalProperties if used
-    this.handleAdditionalProperties();
 
     // add validation implementation
     this.addValidation();
@@ -193,8 +193,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const via = <VirtualProperty>virtualProperty.accessViaProperty;
         this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
-          get: new Statements(`return ${parentField.field.name}.${via.name}; `),
-          set: propertyType.schema.readOnly ? undefined : new Statements(`${parentField.field.name}.${via.name} = value; `)
+          get: toExpression(`${parentField.field.name}.${via.name}`),
+          set: propertyType.schema.readOnly ? undefined : toExpression(`${parentField.field.name}.${via.name} = value`)
         }));
       }
 
@@ -207,8 +207,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
             this.add(new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
-              get: new Statements(`return ${this.accessor(virtualProperty)}; `),
-              set: propertyType.schema.readOnly ? undefined : new Statements(`${this.accessor(virtualProperty)} = value; `)
+              get: toExpression(`${this.accessor(virtualProperty)}`),
+              set: propertyType.schema.readOnly ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
             }));
           }
         }
@@ -220,10 +220,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     if (this.schema.additionalProperties) {
       if (this.schema.additionalProperties === true) {
         // we're going to implement IDictionary<string, object>
-        implementIDictionary(this, 'additionalProperties', System.String, System.Object);
+        this.modelInterface.interfaces.push(implementIDictionary(this, 'additionalProperties', System.String, System.Object));
       } else {
         // we're going to implement IDictionary<string, schema.additionalProperties>
-        implementIDictionary(this, 'additionalProperties', System.String, this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state));
+        this.modelInterface.interfaces.push(implementIDictionary(this, 'additionalProperties', System.String, this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state)));
       }
     }
   }
@@ -246,27 +246,46 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
 
   }
-  private handleAllOf() {
 
+
+  private additionalPropertiesType(aSchema: Schema): TypeDeclaration | undefined {
+    if (aSchema.additionalProperties) {
+
+      if (aSchema.additionalProperties === true) {
+        return System.Object;
+
+      } else {
+        // we're going to implement IDictionary<string, schema.additionalProperties>
+        return this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema.additionalProperties, true, this.state);
+      }
+    } else
+      for (const each of aSchema.allOf) {
+        const r = this.additionalPropertiesType(each);
+        if (r) {
+          return r;
+        }
+      }
+    return undefined;
+  }
+
+  private handleAllOf() {
+    var hasAdditionalPropertiesInParent = false;
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.allOf)) {
-      // gs01: Critical -- pull thru parent allOf's!
       const aSchema = eachSchemaValue;
-
       const aState = this.state.path('allOf', eachSchemaIndex);
 
       const td = this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema, true, aState);
-      const className = (<ModelClass>aSchema.details.csharp.classImplementation).fullName;
+      const parentClass = (<ModelClass>aSchema.details.csharp.classImplementation);
+      const className = parentClass.fullName;
       const fieldName = camelCase(deconstruct(className.replace(/^.*\./, '')));
 
       // add the interface as a parent to our interface.
       const iface = <ModelInterface>aSchema.details.csharp.interfaceImplementation;
 
-      this.modelInterface.interfaces.push(iface);
-
       // add a field for the inherited values
-      const backingField = this.addField(new Field(`_${fieldName} `, td, { initialValue: `new ${className} ()`, access: Access.Private, description: `Backing field for <see cref= "${this.fileName}" /> ` }));
+      const backingField = this.addField(new Field(`_${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for <see cref= "${this.fileName}" /> ` }));
       this.backingFields.push({
         className,
         typeDeclaration: td,
@@ -275,19 +294,16 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
       this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
 
-      /*
-      // now, create proxy properties for the members
-      iface.allProperties.map((each) => {
-        // make sure we don't over expose read-only properties.
-        const p = this.add(new ProxyProperty(backingField, each, this.state, { description: `Inherited model < see cref = "${iface.name}" /> - ${ eachSchemaValue.details.csharp.description } ` }));
-        if (each.setAccess === Access.Internal) {
-          p.setterStatements = undefined;
-        }
-        return p;
-      });
-*/
+      this.modelInterface.interfaces.push(iface);
 
+      //
+      const addlPropType = this.additionalPropertiesType(aSchema);
+      if (addlPropType) {
+        implementIDictionary(this, '', System.String, addlPropType, backingField);
+        hasAdditionalPropertiesInParent = true
+      }
     }
+    return hasAdditionalPropertiesInParent;
   }
 
   private handleDiscriminator() {
