@@ -52,6 +52,13 @@ namespace Microsoft.Rest
 
     public enum ParameterCategory
     {
+
+        Path,
+        Query,
+        Header,
+        Cookie,
+        Body,
+
         Azure,
         Runtime
     }

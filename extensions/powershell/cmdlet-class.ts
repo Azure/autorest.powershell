@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { command, getAllProperties, JsonType, KnownMediaType, http } from '@microsoft.azure/autorest.codemodel-v3';
-import { Dictionary, escapeString, items, values, docComment, serialize } from '@microsoft.azure/codegen';
+import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
@@ -127,6 +127,18 @@ export class CmdletClass extends Class {
     const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`), { description: `The reference to the client API class.` }));
 
+    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Interrupts currently running code within the command.` })).add(function* () {
+      yield `((${ClientRuntime.IEventListener})this).Cancel();`;
+      yield `base.StopProcessing();`;
+    });
+
+    const $this = this;
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Performs clean-up after the command execution` })).add(function* () {
+      // gs01: remember what you were doing here to make it so these can be parallelized...
+      yield '';
+      yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+    });
+
     // debugging
     const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: `Wait for .NET debugger to attach` }));
     brk.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "Wait for .NET debugger to attach"`] }));
@@ -163,18 +175,6 @@ export class CmdletClass extends Class {
       defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
       defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
     }
-
-    this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Interrupts currently running code within the command.` })).add(function* () {
-      yield `((${ClientRuntime.IEventListener})this).Cancel();`;
-      yield `base.StopProcessing();`;
-    });
-
-    const $this = this;
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: `Performs clean-up after the command execution` })).add(function* () {
-      // gs01: remember what you were doing here to make it so these can be parallelized...
-      yield '';
-      yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
-    });
   }
 
   private isWritableCmdlet(operation: command.CommandOperation): boolean {
@@ -209,6 +209,7 @@ export class CmdletClass extends Class {
         if (operation.asjob) {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
           asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command as a job"`] }));
+          asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
         }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
@@ -722,6 +723,7 @@ export class CmdletClass extends Class {
             });
             const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+            cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             cmdletParameter.description = desc;
 
             if (propertyType.schema.details.csharp.enum !== undefined) {
@@ -786,6 +788,17 @@ export class CmdletClass extends Class {
           this.bodyParameter = regularCmdletParameter;
         }
         regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+
+        const httpParam = origin.details.csharp.httpParameter;
+        const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter'
+
+        const cat = values(operation.callGraph[0].parameters).linq.
+          where(each => !(each.details.csharp.constantValue)).linq.
+          first(each => each.details.csharp.uid === uid);
+
+        if (cat) {
+          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
+        }
 
         if (origin.details.csharp.completer) {
           // add the completer to this class and tag this parameter with the completer.
