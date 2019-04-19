@@ -262,6 +262,20 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
+  const operationIdentities = new Set<string>();
+  for (const operation of values(state.model.commands.operations)) {
+    const details = operation.details.csharp;
+
+    let fname = `${details.verb}-${details.subject}-${details.name}`;
+    let n = 1;
+
+    while (operationIdentities.has(fname)) {
+      details.name = `${details.name.replace(/\d*$/g, '')}${n++}`;
+      fname = `${details.verb}-${details.subject}-${details.name}`;
+    }
+    operationIdentities.add(fname);
+  }
+
   return state.model;
 }
 

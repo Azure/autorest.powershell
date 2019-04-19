@@ -1,80 +1,46 @@
-import { InitializedField } from '@microsoft.azure/codegen-csharp';
-import { Method } from '@microsoft.azure/codegen-csharp';
-import { Class } from '@microsoft.azure/codegen-csharp';
-import { TypeDeclaration } from '@microsoft.azure/codegen-csharp';
+import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression } from '@microsoft.azure/codegen-csharp';
 
-export function implementIDictionary(keyType: TypeDeclaration, valueType: TypeDeclaration, targetClass: Class) {
+export function implementIDictionary(targetClass: Class, name: String, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
+  const dictionaryInterfaceType = System.Collections.Generic.IDictionary(keyType, valueType);
 
+  // add the interface to the list of interfaces for the class
+  targetClass.interfaces.push(dictionaryInterfaceType);
 
-  // add a container for the dictionary
-  // targetClass.Add(new InitializedField)
+  // the backing field
+  const dictionaryType = System.Collections.Generic.Dictionary(keyType, valueType);
+  accessViaMember = accessViaMember || targetClass.add(new Field(`__${name}`, dictionaryInterfaceType, { initialValue: dictionaryType.new() }));
 
-  // hook up all the methods to the container
+  const indexer = targetClass.add(new Indexer(keyType, valueType, { get: toExpression(`${accessViaMember}["index"]`), set: toExpression(`${accessViaMember}["index"] = value`) }));
 
-  /*
-        public object this[string key] { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+  // the parameters used in methods.
+  const itemType = System.Collections.Generic.KeyValuePair(keyType, valueType);
+  const pKey = new Parameter('key', keyType);
+  const pValue = new Parameter('value', valueType);
+  const pItem = new Parameter('item', itemType);
+  const pItemArray = new Parameter('items', dotnet.Array(itemType));
+  const pIndex = new Parameter('index', dotnet.Int);
+  const pOutValue = new Parameter('value', valueType, { modifier: ParameterModifier.Out });
 
-        public ICollection<string> Keys => throw new System.NotImplementedException();
+  targetClass.add(new Property('Keys', System.Collections.Generic.ICollection(keyType), { get: toExpression(`${accessViaMember}.Keys`) }));
+  targetClass.add(new Property('Values', System.Collections.Generic.ICollection(valueType), { get: toExpression(`${accessViaMember}.Values`) }));
+  targetClass.add(new Property('Count', dotnet.Int, { get: toExpression(`${accessViaMember}.Count`) }));
+  targetClass.add(new Property('IsReadOnly', dotnet.Bool, { get: toExpression(`${accessViaMember}.IsReadOnly`) }));
 
-        public ICollection<object> Values => throw new System.NotImplementedException();
+  targetClass.add(new Method('Add', dotnet.Void, { parameters: [pKey, pValue], body: toExpression(`${accessViaMember}.Add( ${pKey}, ${pValue})`) }));
+  targetClass.add(new Method('Add', dotnet.Void, { parameters: [pItem], body: toExpression(`${accessViaMember}.Add( ${pItem})`) }));
+  targetClass.add(new Method('Clear', dotnet.Void, { body: toExpression(`${accessViaMember}.Clear()`) }));
 
-        public int Count => throw new System.NotImplementedException();
+  targetClass.add(new Method('Contains', dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Contains( ${pItem})`) }));
+  targetClass.add(new Method('ContainsKey', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.ContainsKey( ${pKey})`) }));
+  targetClass.add(new Method('CopyTo', dotnet.Void, { parameters: [pItemArray, pIndex], body: toExpression(`${accessViaMember}.CopyTo(${pItemArray},${pIndex})`) }));
 
-        public bool IsReadOnly => throw new System.NotImplementedException();
+  targetClass.add(new Method('GetEnumerator', System.Collections.Generic.IEnumerator(itemType), { body: toExpression(`${accessViaMember}.GetEnumerator()`) }));
+  targetClass.add(new Method('global::System.Collections.IEnumerable.GetEnumerator', System.Collections.IEnumerator, { body: toExpression(`${accessViaMember}.GetEnumerator()`), access: Access.Explicit }));
 
-        public void Add(string key, object value)
-        {
-            throw new System.NotImplementedException();
-        }
+  targetClass.add(new Method('Remove', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.Remove( ${pKey})`) }));
+  targetClass.add(new Method('Remove', dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Remove( ${pItem})`) }));
 
-        public void Add(KeyValuePair<string, object> item)
-        {
-            throw new System.NotImplementedException();
-        }
+  targetClass.add(new Method('TryGetValue', dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`) }));
 
-        public void Clear()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Contains(KeyValuePair<string, object> item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool ContainsKey(string key)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Remove(string key)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool TryGetValue(string key, out object value)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
-  */
+  return dictionaryInterfaceType;
 }

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, ImplementedProperty, InitializedField, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@microsoft.azure/codegen-csharp';
+import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@microsoft.azure/codegen-csharp';
 
 import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
 
@@ -67,8 +67,8 @@ export class ModuleClass extends Class {
 
   fPipeline = this.add(new Field('_pipeline', ClientRuntime.HttpPipeline, { access: Access.Private, description: `the ISendAsync pipeline instance` }));
   fPipelineWithProxy = this.add(new Field('_pipelineWithProxy', ClientRuntime.HttpPipeline, { access: Access.Private, description: `the ISendAsync pipeline instance (when proxy is enabled)` }));
-  fHandler = this.add(new InitializedField('_handler', System.Net.Http.HttpClientHandler, System.Net.Http.HttpClientHandler.new()));
-  fWebProxy = this.add(new InitializedField('_webProxy', System.Net.WebProxy, System.Net.WebProxy.new()));
+  fHandler = this.add(new Field('_handler', System.Net.Http.HttpClientHandler, { initialValue: System.Net.Http.HttpClientHandler.new() }));
+  fWebProxy = this.add(new Field('_webProxy', System.Net.WebProxy, { initialValue: System.Net.WebProxy.new() }));
 
   constructor(namespace: Namespace, private readonly state: State, objectInitializer?: Partial<ModuleClass>) {
     super(namespace, 'Module');
@@ -209,7 +209,7 @@ export class ModuleClass extends Class {
     const ProfileName = this.add(new Property('ProfileName', System.String, { description: `The name of the currently selected Azure profile` }));
 
     const moduleIdentity = this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The Name of this module ` }));
-    const currentProfile = this.add(new InitializedField('Profile', dotnet.String, System.String.Empty, { description: `The currently selected profile.` }));
+    const currentProfile = this.add(new Field('Profile', dotnet.String, { initialValue: System.String.Empty, description: `The currently selected profile.` }));
     const moduleResourceId = this.add(new LambdaProperty('ResourceId', dotnet.String, new StringExpression(this.state.project.moduleName), { description: `The ResourceID for this module (azure arm).` }));
 
     /* get parameter method (calls azAccounts) */

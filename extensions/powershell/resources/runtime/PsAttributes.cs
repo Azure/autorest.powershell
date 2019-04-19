@@ -52,6 +52,12 @@ namespace Microsoft.Rest
 
     public enum ParameterCategory
     {
+        // Note: Order is significant
+        Path = 0,
+        Query,
+        Header,
+        Cookie,
+        Body,
         Azure,
         Runtime
     }

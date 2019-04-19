@@ -41,7 +41,7 @@ export function dereference<T>(document: any, item: Refable<T>, stack = new Arra
     let node = document;
     const path = item.$ref;
     if (stack.indexOf(path) > -1) {
-      throw new Error(`Circular $ref in Model -- ${path} :: ${JSON.stringify(stack)} `);
+      throw new Error(`Circular $ref in Model -- ${path} :: ${JSON.stringify(stack)}`);
     }
     stack.push(path);
 

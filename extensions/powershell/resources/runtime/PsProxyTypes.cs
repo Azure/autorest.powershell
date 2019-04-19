@@ -67,8 +67,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var variantParamCountGroups = Variants
                     .Select(v => (
                         variant: v.VariantName,
-                        paramCount: v.CmdletOnlyParameters.Length,
-                        isSimple: v.CmdletOnlyParameters.All(p => p.Metadata.ParameterType.IsPsSimple())))
+                        paramCount: v.CmdletOnlyParameters.Count(p => p.IsMandatory),
+                        isSimple: v.CmdletOnlyParameters.Where(p => p.IsMandatory).All(p => p.Metadata.ParameterType.IsPsSimple())))
                     .GroupBy(vpc => vpc.isSimple)
                     .ToArray();
                 var variantParameterCounts = (variantParamCountGroups.Any(g => g.Key) ? variantParamCountGroups.Where(g => g.Key) : variantParamCountGroups).SelectMany(g => g).ToArray();
@@ -130,6 +130,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
         public string HelpMessage { get; }
+        public ParameterCategory OrderCategory { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
         {
@@ -144,6 +145,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             HelpMessage = Parameters.Select(p => p.ParameterAttribute.HelpMessage).FirstOrDefault(hm => !String.IsNullOrEmpty(hm));
+            OrderCategory = Parameters.SelectMany(p => p.Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories)).DefaultIfEmpty(ParameterCategory.Body).Min();
         }
     }
 
@@ -155,6 +157,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public Attribute[] Attributes { get; }
         public ParameterAttribute ParameterAttribute { get; }
+        public bool IsMandatory { get; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata)
         {
@@ -163,6 +166,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Metadata = metadata;
             Attributes = Metadata.Attributes.ToArray();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
+            IsMandatory = ParameterAttribute.Mandatory;
         }
     }
 
