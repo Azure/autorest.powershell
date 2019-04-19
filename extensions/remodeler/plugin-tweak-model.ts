@@ -176,6 +176,33 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
+  const enumsToSkip = new Set<string>();
+  // identify properties that are constants
+  for (const schema of values(model.schemas)) {
+    for (const property of values(schema.properties)) {
+      if (property.details.default.required && property.schema.enum.length === 1) {
+        // properties with an enum single value are constants
+        // add the constant value
+        property.details.default.constantValue = property.schema.enum[0];
+
+        // mark as skip the generation of this model
+        enumsToSkip.add(property.schema.details.default.uid);
+
+        // make it a string and keep its name
+        property.schema = new Schema(property.schema.details.default.name, { type: property.schema.type });
+      } else {
+        enumsToSkip.delete(property.schema.details.default.uid);
+      }
+    }
+  }
+
+  // mark enums that shouldn't be generated
+  for (const schema of values(model.schemas)) {
+    if (enumsToSkip.has(schema.details.default.uid)) {
+      schema.details.default.skip = true;
+    }
+  }
+
   for (const operation of values(model.http.operations)) {
     for (const { key: responseCode, value: responses } of items(operation.responses)) {
       for (const response of values(responses)) {
