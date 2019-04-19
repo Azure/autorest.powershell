@@ -167,20 +167,26 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     if (this.schema.details.csharp.virtualProperties) {
+
       /* Owned Properties */
-
-
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.owned)) {
         const actualProperty = virtualProperty.property;
         let n = 0;
-        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++));
+        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
+          initializer: actualProperty.details.csharp.constantValue
+        });
+
+        if (actualProperty.details.csharp.constantValue !== undefined) {
+          myProperty.setAccess = Access.Internal;
+        }
+
         if (virtualProperty.private) {
           // when properties are inlined, the container 
           myProperty.setAccess = Access.Internal;
           myProperty.getAccess = Access.Internal;
           this.pMap.set(virtualProperty, myProperty);
         }
-        this.ownedProperties.push(this.add(new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++))));
+        this.ownedProperties.push(this.add(myProperty));
       }
 
       /* Inherited properties. */
