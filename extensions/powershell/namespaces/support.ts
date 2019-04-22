@@ -19,7 +19,7 @@ export class SupportNamespace extends Namespace {
     this.apply(objectInitializer);
 
     const enumInfos = values(state.model.schemas)
-      .linq.where(each => each.details.csharp.enum !== undefined)
+      .linq.where(each => each.details.csharp.enum !== undefined && !each.details.csharp.skip)
       .linq.select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
       .linq.toArray();
 

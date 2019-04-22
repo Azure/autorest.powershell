@@ -20,11 +20,11 @@ export class Duration extends Primitive {
     super(schema);
   }
   get declaration(): string {
-    return `System.TimeSpan${this.isRequired ? '' : '?'}`;
+    return `global::System.TimeSpan${this.isRequired ? '' : '?'}`;
   }
 
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `System.Xml.XmlConvert.ToTimeSpan( ${tmpValue} )`;
+    return `global::System.Xml.XmlConvert.ToTimeSpan( ${tmpValue} )`;
   }
 
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
@@ -33,9 +33,9 @@ export class Duration extends Primitive {
         return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString(${value})`)}`);
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString(${value}))`);
+          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value}))`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString(${value})))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})))`);
         }
     }
     return toExpression(`/* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);

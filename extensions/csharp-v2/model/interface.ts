@@ -6,7 +6,7 @@
 import { items, } from '@microsoft.azure/codegen';
 import { KnownMediaType } from "@microsoft.azure/autorest.codemodel-v3"
 
-import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
@@ -88,7 +88,10 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     if (this.schema.details.csharp.virtualProperties) {
       for (const property of [...virtualProperties.owned]) {
         const actual = property.property;
-        this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Owned Property" }));
+        const p = this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Owned Property" }));
+        if (actual.details.csharp.constantValue !== undefined) {
+          p.setAccess = Access.Internal;
+        }
       }
 
       for (const property of [...virtualProperties.inlined]) {

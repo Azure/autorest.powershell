@@ -5,7 +5,7 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -167,20 +167,26 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     if (this.schema.details.csharp.virtualProperties) {
+
       /* Owned Properties */
-
-
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.owned)) {
         const actualProperty = virtualProperty.property;
         let n = 0;
-        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++));
+        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
+          initializer: actualProperty.details.csharp.constantValue ? new StringExpression(actualProperty.details.csharp.constantValue) : undefined
+        });
+
+        if (actualProperty.details.csharp.constantValue !== undefined) {
+          myProperty.setAccess = Access.Internal;
+        }
+
         if (virtualProperty.private) {
           // when properties are inlined, the container 
-          myProperty.setAccess = Access.Internal;
-          myProperty.getAccess = Access.Internal;
+          // myProperty.setAccess = Access.Internal;
+          // myProperty.getAccess = Access.Internal;
           this.pMap.set(virtualProperty, myProperty);
         }
-        this.ownedProperties.push(this.add(new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++))));
+        this.ownedProperties.push(this.add(myProperty));
       }
 
       /* Inherited properties. */
@@ -194,7 +200,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
           get: toExpression(`${parentField.field.name}.${via.name}`),
-          set: propertyType.schema.readOnly ? undefined : toExpression(`${parentField.field.name}.${via.name} = value`)
+          set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${parentField.field.name}.${via.name} = value`)
         }));
       }
 
@@ -208,7 +214,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             this.add(new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: propertyType.schema.readOnly ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
+              set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
             }));
           }
         }
