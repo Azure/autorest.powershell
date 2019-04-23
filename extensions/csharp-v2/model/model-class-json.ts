@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { KnownMediaType, HeaderProperty, HeaderPropertyType } from "@microsoft.azure/autorest.codemodel-v3"
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from "@microsoft.azure/autorest.codemodel-v3"
 import { items, values, EOL, } from '@microsoft.azure/codegen';
-import { Access, Modifier } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, StringExpression, Expression, System } from '@microsoft.azure/codegen-csharp';
 import { Class } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { IsDeclaration, toExpression } from '@microsoft.azure/codegen-csharp';
@@ -26,12 +26,14 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
+import { ObjectImplementation } from "../schema/object";
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
   private atj!: Method;
   private bfj!: Method;
   private afj!: Method;
+  private excludes: string;
 
   constructor(protected modelClass: ModelClass, objectInitializer?: Partial<JsonSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
@@ -57,12 +59,42 @@ export class JsonSerializableClass extends Class {
       description: `Deserializes a ${ClientRuntime.JsonObject} into a new instance of <see cref="${this.name}" />.`
     }));
 
+
     const serializeStatements = new Statements();
     const deserializeStatements = new Statements();
+    this.excludes = '';
+
+    if (this.modelClass.dictionaryImpl) {
+      const vType = this.modelClass.dictionaryImpl.valueType;
+      // we have to ensure that all the known wire-names are excluded on deserialization.
+      const exclusions = new Parameter('exclusions', System.Collections.Generic.HashSet(dotnet.String), { defaultInitializer: dotnet.Null })
+      deserializerConstructor.parameters.push(exclusions);
+
+      this.excludes = [...values(getAllProperties(this.modelClass.schema)).linq.select(each => each.serializedName).linq.select(each => new StringExpression(each))].join();
+      this.excludes = this.excludes ? `,${System.Collections.Generic.HashSet(dotnet.String).new()}{ ${this.excludes} }` : '';
+
+      if (this.modelClass.dictionaryImpl.ownsDictionary) {
+        // we have to implement the deserializer for it.
+
+        serializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.ToJson( this, ${container});`));
+
+        if (vType === System.Object) {
+          // wildcard style
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
+
+        } else if (vType instanceof ObjectImplementation) {
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, (j) => ${this.modelClass.fullName}.FromJson(j) ,${exclusions.value} );`));
+        } else {
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, null ,${exclusions.value} );`));
+        }
+      }
+    }
+
+
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
+      deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
     }
 
     pushTempVar();
@@ -74,7 +106,6 @@ export class JsonSerializableClass extends Class {
       } else {
         serializeStatements.add(serializeStatement);
       }
-
       deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, prop)));
     }
     popTempVar();
@@ -125,7 +156,7 @@ export class JsonSerializableClass extends Class {
     if (isp) {
       fromJson.description = fromJson.description + `\n Note: the ${this.modelClass.modelInterface} interface is polymorphic, and the precise model class that will get deserialized is determined at runtime based on the payload.`;
     }
-
+    const $excludes = this.excludes;
     fromJson.add(function* () {
 
       const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
@@ -144,7 +175,7 @@ export class JsonSerializableClass extends Class {
             }
           });
         }
-        yield Return($this.new(json));
+        yield Return($this.new(json, toExpression($excludes.substring(1))));
       } else {
         // just tell it to create the instance (providing that it's a JSonObject)
         yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
@@ -198,5 +229,4 @@ export class JsonSerializableClass extends Class {
       description: `<c>AfterFromJson</c> will be called after the json deserialization has finished, allowing customization of the object before it is returned. Implement this method in a partial class to enable this behavior `
     }));
   }
-
 }

@@ -5,18 +5,17 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation } from '../schema/object';
-import { implementIDictionary } from './idictionary';
 import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
 import { Schema } from '../code-model';
-import { access } from 'fs';
+import { DictionaryImplementation } from './model-class-dictionary';
 
 function accessVirtualProperty(virtualProperty: VirtualProperty) {
   if (virtualProperty.accessViaProperty) {
@@ -74,21 +73,20 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   }
 
   public isPolymorphic: boolean = false;
-  /* @internal */ public validateMethod?: Method;
-  /* @internal */ public discriminators: Map<string, ModelClass> = new Map<string, ModelClass>();
-  /* @internal */ public parentModelClasses: Array<ModelClass> = new Array<ModelClass>();
-  /* @internal */ public modelInterface!: ModelInterface;
   public get schema() { return this.featureImplementation.schema; }
-  /* @internal */ public state: State;
-  /* @internal */ public btj!: Method;
-  /* @internal */ public atj!: Method;
-  /* @internal */ public bfj!: Method;
-  /* @internal */ public afj!: Method;
-  /* @internal */ public backingFields = new Array<BackingField>();
-  /* @internal */ public featureImplementation: ObjectImplementation;
-  /* @internal */ public validationEventListener: Parameter = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
-  private jsonSerializer: JsonSerializableClass | undefined;
-  private xmlSerializer: XmlSerializableClass | undefined;
+
+  /* @internal */ validateMethod?: Method;
+  /* @internal */ discriminators: Map<string, ModelClass> = new Map<string, ModelClass>();
+  /* @internal */ parentModelClasses: Array<ModelClass> = new Array<ModelClass>();
+  /* @internal */ modelInterface!: ModelInterface;
+  /* @internal */  state: State;
+  /* @internal */  backingFields = new Array<BackingField>();
+  /* @internal */  featureImplementation: ObjectImplementation;
+  /* @internal */  validationEventListener: Parameter = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
+  /* @internal */  jsonSerializer?: JsonSerializableClass;
+  /* @internal */  xmlSerializer?: XmlSerializableClass;
+  /* @internal */  dictionaryImpl?: DictionaryImplementation;
+
   private readonly validationStatements = new Statements();
   public ownedProperties = new Array<ModelProperty>();
   private pMap = new Map<VirtualProperty, ModelProperty>();
@@ -121,7 +119,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // handle parent interface implementation
     if (!this.handleAllOf()) {
       // handle the AdditionalProperties if used
-      this.handleAdditionalProperties();
+      if (this.schema.additionalProperties) {
+        this.dictionaryImpl = new DictionaryImplementation(this).init();
+      }
     }
 
     // create the properties for ths schema
@@ -137,6 +137,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     if (this.state.project.jsonSerialization) {
       this.jsonSerializer = new JsonSerializableClass(this);
+    }
+
+    if (this.dictionaryImpl) {
+      // add in exception list for properties in this class and parents
+
     }
   }
 
@@ -167,20 +172,26 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     if (this.schema.details.csharp.virtualProperties) {
+
       /* Owned Properties */
-
-
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.owned)) {
         const actualProperty = virtualProperty.property;
         let n = 0;
-        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++));
+        const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
+          initializer: actualProperty.details.csharp.constantValue ? typeof actualProperty.details.csharp.constantValue === 'string' ? new StringExpression(actualProperty.details.csharp.constantValue) : new LiteralExpression(actualProperty.details.csharp.constantValue) : undefined
+        });
+
+        if (actualProperty.details.csharp.constantValue !== undefined) {
+          myProperty.setAccess = Access.Internal;
+        }
+
         if (virtualProperty.private) {
           // when properties are inlined, the container 
-          myProperty.setAccess = Access.Internal;
-          myProperty.getAccess = Access.Internal;
+          // myProperty.setAccess = Access.Internal;
+          // myProperty.getAccess = Access.Internal;
           this.pMap.set(virtualProperty, myProperty);
         }
-        this.ownedProperties.push(this.add(new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++))));
+        this.ownedProperties.push(this.add(myProperty));
       }
 
       /* Inherited properties. */
@@ -194,7 +205,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
           get: toExpression(`${parentField.field.name}.${via.name}`),
-          set: propertyType.schema.readOnly ? undefined : toExpression(`${parentField.field.name}.${via.name} = value`)
+          set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${parentField.field.name}.${via.name} = value`)
         }));
       }
 
@@ -208,7 +219,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             this.add(new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: propertyType.schema.readOnly ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
+              set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
             }));
           }
         }
@@ -216,17 +227,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
   }
 
-  private handleAdditionalProperties() {
-    if (this.schema.additionalProperties) {
-      if (this.schema.additionalProperties === true) {
-        // we're going to implement IDictionary<string, object>
-        this.modelInterface.interfaces.push(implementIDictionary(this, 'additionalProperties', System.String, System.Object));
-      } else {
-        // we're going to implement IDictionary<string, schema.additionalProperties>
-        this.modelInterface.interfaces.push(implementIDictionary(this, 'additionalProperties', System.String, this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state)));
-      }
-    }
-  }
 
   private addValidation() {
     if (!this.state.project.storagePipeline) {
@@ -299,7 +299,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       //
       const addlPropType = this.additionalPropertiesType(aSchema);
       if (addlPropType) {
-        implementIDictionary(this, '', System.String, addlPropType, backingField);
+        this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
         hasAdditionalPropertiesInParent = true
       }
     }

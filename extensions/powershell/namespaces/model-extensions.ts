@@ -23,7 +23,7 @@ export class ModelExtensionsNamespace extends Namespace {
   private subNamespaces = new Dictionary<Namespace>();
 
   public get outputFolder(): string {
-    return join(this.state.project.apiExtensionsFolder, 'Models');
+    return join(this.state.project.apiFolder, 'Models');
   }
   resolver = new SchemaDefinitionResolver();
 
@@ -65,7 +65,8 @@ export class ModelExtensionsNamespace extends Namespace {
         // 1. A partial class with the type converter attribute
         const model = new Class(ns, className, undefined, {
           partial: true,
-          description: td.schema.details.csharp.description
+          description: td.schema.details.csharp.description,
+          fileName: `${className}.PowerShell`
         });
         model.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
         model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
@@ -86,6 +87,7 @@ export class ModelExtensionsNamespace extends Namespace {
         // 3. A TypeConverter class
         const typeConverter = new Class(ns, converterClass, PSTypeConverter, {
           description: `A PowerShell PSTypeConverter to support converting to an instance of <see cref="${className}" />`,
+          fileName: `${className}.TypeConverter`
         });
         typeConverter.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
           override: Modifier.Override,

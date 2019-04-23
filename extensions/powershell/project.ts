@@ -42,7 +42,6 @@ export class Project extends codeDomProject {
   public psm1Internal!: string;
   public formatPs1xml!: string;
   public apiFolder!: string;
-  public apiExtensionsFolder!: string;
   public baseFolder!: string;
   public moduleFolder!: string;
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
@@ -122,7 +121,7 @@ export class Project extends codeDomProject {
     this.testFolder = await this.state.getValue('test-folder');
     this.runtimeFolder = await this.state.getValue('runtime-folder');
     this.apiFolder = await this.state.getValue('api-folder');
-    this.apiExtensionsFolder = await this.state.getValue('api-extensions-folder');
+
     this.binFolder = await this.state.getValue('bin-folder');
     this.objFolder = await this.state.getValue('obj-folder');
     this.exportsFolder = await this.state.getValue('exports-folder');

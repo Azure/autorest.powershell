@@ -12,7 +12,7 @@ import { ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@microsoft.azure/autorest.codemodel-v3';
 import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
 import { StringFormat } from '@microsoft.azure/autorest.codemodel-v3';
-import { dereference, Dereferenced, getExtensionProperties, Refable } from './common';
+import { dereference, Dereferenced, getExtensionProperties, Refable, isReference } from './common';
 import * as Interpretations from './interpretations';
 import * as OpenAPI from '@microsoft.azure/openapi';
 
@@ -249,8 +249,16 @@ export class Remodeler {
       if (original.additionalProperties === true || original.additionalProperties === false) {
         newSchema.additionalProperties = original.additionalProperties;
       } else {
-        const nested = this.refOrAdd(`${name}.Items`, this.dereference(original.additionalProperties), this.model.schemas, this.copySchema);
-        newSchema.additionalProperties = nested;
+        const addlPropSchema = this.refOrAdd(`${name}.AdditionalProperties`, this.dereference(original.additionalProperties), this.model.schemas, this.copySchema);
+        if (addlPropSchema.type === JsonType.Object && length(addlPropSchema.properties) === 0) {
+          // console.error(`${JSON.stringify(original.additionalProperties)}`);
+          // console.error(`${JSON.stringify(addlPropSchema)}`);
+          // this is an untyped dictionary.
+          newSchema.additionalProperties = true;
+        } else {
+          // the element type has properties (or is a primitive)
+          newSchema.additionalProperties = addlPropSchema;
+        }
       }
     }
 

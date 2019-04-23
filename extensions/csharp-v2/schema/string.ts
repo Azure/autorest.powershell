@@ -49,7 +49,7 @@ export class String implements EnhancedTypeDeclaration {
       switch (mediaType) {
         case KnownMediaType.Json:
           // node should be a JsonString
-          return toExpression(`${node} is ${ClientRuntime.JsonString} ${tmp} ? (string)${tmp} : ${defaultValue}`);
+          return toExpression(`${node} is ${ClientRuntime.JsonString} ${tmp} ? (${this.declaration})(${tmp}.ToString()) : ${defaultValue}`);
 
         case KnownMediaType.Xml:
           return toExpression(`${node} is ${System.Xml.Linq.XElement} ${tmp} ? (string)${tmp} : ${defaultValue}`);

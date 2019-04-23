@@ -20,7 +20,6 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
 
-
   get defaultOfType() {
     return toExpression(`null /* object */`);
   }
@@ -166,4 +165,5 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
 
   get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.interfaceName}`; }
   get classDeclaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}`; }
+
 }
