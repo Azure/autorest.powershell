@@ -44,55 +44,5 @@ export function implementIDictionary(targetClass: Class, name: String, keyType: 
 
   targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.TryGetValue`, dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Explicit }));
 
-  const isWildcard = valueType === System.Object;
-
-  if (isWildcard) {
-
-  } else {
-
-  }
-
-  // add serialization methods
-  /*
-  
-  internal void deserializeDictionary(JsonNode node) {
-    var ignoredWireValues = { 'name', 'yada', 'yada' }
-    if( node is JsonObject jsonObj ) {
-
-    }
-  }
-  */
-
   return dictionaryInterfaceType;
 }
-
-
-/*
-
-Serialization Scenarios:
- # untyped  (always resolves an empty object to this.)
- "additionalProperties": true
-
- # typed
- "additionalProperties": {
-    "$ref": "#/definitions/FieldDefinition"
-  },
-
-
-
-
-
-  additionalProperties: true => same as additionalProperties: { type: object }
-
- - member deserialize into a Dictionary<string,object>  // no polymorphism, key/value pair, nested objects are Dictionary<string,object>. (UNTYPED WILDCARD)
- - member deserialize into a Dictionary<string, T> // T can be a primitive-type or schema, supports polymorphism (TYPED WILDCARD)
-
- - container deserialize into a IDictionary<string, object>
- - container deserialize into a IDictionary<string, T>
-
- given a JsonNode,  IDictionary<String,object>,  and a list of filtered wire-names.   => untyped wildcard serialization
- given a JsonNode and an IDictionary<String,T> and a list of filtered wire-names  => type wildcard serialization
-
-deserialize container ( dictionary IDictionary<string,T>, filter: Array<string> )
-
-*/

@@ -84,25 +84,6 @@ export class DictionaryImplementation extends Class {
 
     targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.TryGetValue`, dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Explicit }));
 
-    const isWildcard = valueType === System.Object;
-
-    if (isWildcard) {
-
-    } else {
-
-    }
-
-    // add serialization methods
-    /*
-    
-    internal void deserializeDictionary(JsonNode node) {
-      var ignoredWireValues = { 'name', 'yada', 'yada' }
-      if( node is JsonObject jsonObj ) {
-  
-      }
-    }
-    */
-
     return dictionaryInterfaceType;
   }
 

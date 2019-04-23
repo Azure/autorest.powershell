@@ -59,7 +59,6 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   public serializedName: string;
   private typeDeclaration: EnhancedTypeDeclaration;
 
-  // constructor(property: Property, serializedName: string, state: State, objectInitializer?: Partial<ModelProperty>) {
   constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: Partial<ModelProperty>) {
     const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path("schema"));
     super(name, decl);
@@ -76,8 +75,6 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
       // for objects, the getter should auto-create a new object 
       this.get = toExpression(`(${this.get.value} = ${this.get.value} ?? new ${schema.details.csharp.fullname}())`);
     }
-    // DISABLED
-    // this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
   }
 
 
