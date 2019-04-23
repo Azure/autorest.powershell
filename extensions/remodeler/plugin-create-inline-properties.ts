@@ -240,7 +240,7 @@ function createVirtualParameters(operation: CommandOperation) {
       const vps = parameter.schema.details.default.virtualProperties;
       if (vps) {
         for (const property of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
-          if (property.private || property.property.schema.readOnly) {
+          if (property.private || property.property.schema.readOnly || property.property.details.default.constantValue !== undefined) {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
