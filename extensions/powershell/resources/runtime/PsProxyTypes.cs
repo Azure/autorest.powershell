@@ -180,14 +180,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var metadata = new CommandMetadata(info);
             var privateCmdletName = metadata.Name;
-            if (info.CommandType == CommandTypes.Function)
-            {
-                // Functions have multiple parameter sets, so we declare a variant per parameter set.
-                return info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata)).ToArray();
-            }
-
             var parts = privateCmdletName.Split('_');
-            return new[] { new Variant(parts[0], parts.Length > 1 ? parts[1] : NoParameters, info, metadata) };
+            return parts.Length > 1
+                ? new[] { new Variant(parts[0], parts[1], info, metadata) }
+                // Process multiple parameter sets, so we declare a variant per parameter set.
+                : info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata)).ToArray();
         }
 
         public static Parameter[] ToParameters(this Variant variant)
