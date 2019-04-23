@@ -62,7 +62,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if ((where && set) || (where && set && (select === undefined || select === 'command' || select === 'parameter'))) {
+  if ((where && set) || (where && set && (select === 'command' || select === 'parameter'))) {
     // just let the subject-prefix to be an empty string
     if ((set['parameter-name'] || set.hidden || set.subject || set["parameter-description"] || set.verb || set.variant || set['subject-prefix'] !== undefined)
       && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'])) {
