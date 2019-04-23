@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties, ModelState, schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { values, pascalCase, fixLeadingNumber, deconstruct, where } from '@microsoft.azure/codegen';
+import { values } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 type State = ModelState<codemodel.Model>;
@@ -13,25 +13,27 @@ type State = ModelState<codemodel.Model>;
 let directives: Array<any> = [];
 
 interface WhereCommandDirective {
+  select?: string;
   where: {
-    subject?: string;
+    'subject'?: string;
     'subject-prefix'?: string;
-    verb?: string;
-    variant?: string;
+    'verb'?: string;
+    'variant'?: string;
     'parameter-name'?: string;
   };
   set: {
-    subject?: string;
+    'subject'?: string;
     'subject-prefix'?: string;
-    verb?: string;
-    variant?: string;
-    hidden?: Boolean;
+    'verb'?: string;
+    'variant'?: string;
+    'hidden'?: Boolean;
     'parameter-name'?: string;
     'parameter-description'?: string;
   };
 }
 
 interface WhereEnumDirective {
+  select?: string;
   where: {
     'enum-name'?: string;
     'enum-value-name'?: string;
@@ -43,6 +45,7 @@ interface WhereEnumDirective {
 }
 
 interface WhereModelDirective {
+  select?: string;
   where: {
     'model-name'?: string;
     'property-name'?: string;
@@ -56,9 +59,10 @@ interface WhereModelDirective {
 
 function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const directive = it;
+  const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && set) {
+  if ((where && set) || (where && set && (select === 'command' || select === 'parameter'))) {
     // just let the subject-prefix to be an empty string
     if ((set['parameter-name'] || set.hidden || set.subject || set["parameter-description"] || set.verb || set.variant || set['subject-prefix'] !== undefined)
       && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'])) {
@@ -80,9 +84,10 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
 
 function isWhereModelDirective(it: any): it is WhereModelDirective {
   const directive = it;
+  const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && set) {
+  if ((where && set) || (where && set && (select === 'model' || select === 'property'))) {
     if ((set["model-name"] || set["property-description"] || set["property-name"])
       && (where['model-name'] || where['property-name'])) {
       let error = where['subject'] || where['subject-prefix'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
@@ -105,9 +110,10 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
 
 function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   const directive = it;
+  const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && set) {
+  if ((where && set) || (where && set && select === 'enum')) {
     if ((set["enum-name"] || set["enum-value-name"])
       && (where['enum-name'] || where['enum-value-name'])) {
       const setKeys = Object.keys(set);
@@ -119,7 +125,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
         ) ? `Incompatible selectors and modifiers. Make sure you are not using model, enum and command modifiers at the same time.` : '';
 
       if (error) {
-        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
+        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
       }
 
       return true;
@@ -146,6 +152,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
 
     if (isWhereCommandDirective(directive)) {
+      const selectType = directive.select;
       const subjectRegex = getParsedSelector(directive.where['subject']);
       const subjectPrefixRegex = getParsedSelector(directive.where['subject-prefix']);
       const verbRegex = getParsedSelector(directive.where.verb);
@@ -189,7 +196,14 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .linq.toArray();
       }
 
-      if (parameterRegex) {
+      if (parameterRegex && selectType === 'command') {
+        operations = values(operations)
+          .linq.where(operation => values(allVirtualParameters(operation.details.csharp.virtualParameters))
+            .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+          .linq.toArray();
+      }
+
+      if (parameterRegex && (selectType === undefined || selectType === 'parameter')) {
         const parameters = values(operations)
           .linq.selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
           .linq.where(parameter => !!`${parameter.name}`.match(parameterRegex))
@@ -251,6 +265,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
 
     if (isWhereModelDirective(directive)) {
+      const selectType = directive.select;
       const modelNameRegex = getParsedSelector(directive.where["model-name"]);
       const propertyNameRegex = getParsedSelector(directive.where["property-name"]);
 
@@ -267,7 +282,14 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .linq.toArray();
       }
 
-      if (propertyNameRegex) {
+      if (propertyNameRegex && selectType === 'model') {
+        models = values(models)
+          .linq.where(model => values(allVirtualProperties(model.details.csharp.virtualProperties))
+            .linq.any(property => !!`${property.name}`.match(propertyNameRegex)))
+          .linq.toArray();
+      }
+
+      if (propertyNameRegex && (selectType !== undefined || selectType === 'property')) {
         const properties = values(models)
           .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
           .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
