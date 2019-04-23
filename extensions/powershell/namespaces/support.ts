@@ -11,7 +11,7 @@ import { join } from 'path';
 
 export class SupportNamespace extends Namespace {
   public get outputFolder(): string {
-    return join(this.state.project.apiExtensionsFolder, 'Support');
+    return join(this.state.project.apiFolder, 'Support');
   }
 
   constructor(parent: Namespace, public state: State, objectInitializer?: Partial<SupportNamespace>) {
@@ -29,7 +29,8 @@ export class SupportNamespace extends Namespace {
       const enumClass = new Struct(this, enumInfo.details.name, undefined, {
         interfaces: [IArgumentCompleter],
         partial: true,
-        description: enumInfo.description || `Argument completer implementation for ${enumInfo.details.name}.`
+        description: enumInfo.description || `Argument completer implementation for ${enumInfo.details.name}.`,
+        fileName: `${enumInfo.details.name}.Completer`
       })
       const commandName = new Parameter("commandName", System.String, { description: "The name of the command that needs argument completion." });
       const parameterName = new Parameter("parameterName", System.String, { description: "The name of the parameter that needs argument completion." });

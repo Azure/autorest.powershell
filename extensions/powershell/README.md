@@ -61,7 +61,6 @@ internal-cmdlet-folder: $(current-folder)/internal
 test-folder: $(current-folder)/test
 runtime-folder: $(module-folder)/runtime
 api-folder: $(module-folder)/api
-api-extensions-folder: $(module-folder)/api-extensions
 bin-folder: $(current-folder)/bin
 obj-folder: $(current-folder)/obj
 exports-folder: $(current-folder)/exports
