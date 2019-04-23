@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, Schema, allVirtualParameters, allVirtualProperties, ModelState, schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { values, pascalCase, fixLeadingNumber, deconstruct, where, select } from '@microsoft.azure/codegen';
+import { values } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 type State = ModelState<codemodel.Model>;
