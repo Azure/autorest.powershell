@@ -5,7 +5,7 @@
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { deconstruct, values, removeProhibitedPrefix } from '@microsoft.azure/codegen';
+import { deconstruct, values, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
 type State = ModelState<codemodel.Model>;
@@ -23,20 +23,15 @@ export function getDeduplicatedSubjectPrefix(subjectPrefix: string, subject: str
   // It removes intersection with the subject from the subjectPrefix:
   //    ContainerServiceContainerService -> ContainerService, 
   //    AppConfigurationConfigurationService -> AppConfiguration
-
-  const deconstructedSubject = deconstruct(subject);
-  const endingsToMatch = [];
-  for (let i = 0; i < deconstructedSubject.length; i++) {
-    endingsToMatch.push(`${deconstructedSubject.slice(0, i + 1).join('')}$`);
-  }
-
-  const regex = new RegExp(`(.*)(${endingsToMatch.join('|')})`, 'g');
-  return subjectPrefix.replace(regex, '$1');
+  const p = [...removeSequentialDuplicates(deconstruct(subjectPrefix))];
+  const s = [...removeSequentialDuplicates(deconstruct(subject))];
+  const both = [...removeSequentialDuplicates([...p, ...s])];
+  return pascalCase(both.slice(0, -s.length));
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
   // get the value 
-  const isAzure = state.model.details.default.isAzure;
+  const isAzure = await state.getValue('azure', false);
   const shouldSanitize = await state.getValue('sanitize-names', false);
 
   // make sure recursively that every details field has csharp
@@ -169,5 +164,5 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
 
 function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
-  return `${verb}_${subjectPrefix}${subject}`;
+  return `${verb}-${subjectPrefix}${subject}`;
 }

@@ -91,7 +91,9 @@ export /* @internal */ class Inferrer {
     this.verbMap = await this.state.getValue('verb-mapping') || {};
     this.isAzure = await this.state.getValue('azure', false);
     this.prefix = await this.state.getValue('prefix');
-    this.serviceName = await this.state.getValue('service-name');
+    this.serviceName = titleToAzureServiceName(await this.state.getValue('service-name'));
+    this.state.setValue('service-name', this.serviceName);
+
     this.subjectPrefix = await this.state.getValue('subject-prefix');
 
     this.state.setValue('isAzure', this.isAzure);
