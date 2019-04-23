@@ -21,7 +21,6 @@ import { Numeric } from './integer';
 import { ObjectImplementation } from './object';
 import { String } from './string';
 import { Uuid } from './Uuid';
-import { UntypedWildcard, Wildcard } from './wildcard';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class SchemaDefinitionResolver {
@@ -48,63 +47,6 @@ export class SchemaDefinitionResolver {
         if (result) {
           return result;
         }
-
-        const propertyCount = length(schema.properties);
-
-        if (propertyCount === 0) {
-          // *this* object has no properties.
-          // so, if it has additionalProperties set, we should return some kind of a wildcard/dictionary.
-
-          switch (typeof (schema.additionalProperties)) {
-            case 'boolean':
-              if (schema.additionalProperties === true) {
-                // this should be a dictionary<string, any>
-                return new UntypedWildcard(schema);
-              }
-              // additionalProperties = false. No action necessary.
-              break;
-            case 'object':
-              const addlSchema = <Schema>schema.additionalProperties;
-              switch (addlSchema.type) {
-                case JsonType.Object:
-                  // it's some kind of object.
-                  if (length(addlSchema.properties) === 0) {
-                    // it's an untyped wildcard again.
-
-                    // we should not create a class for the nested object type
-                    addlSchema.details.csharp.skip = true;
-                    return new UntypedWildcard(schema);
-                  }
-                  // it has properties.
-                  // it's a specific kind of dictionary<string, addlSchema>
-                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
-
-                case JsonType.String:
-                case JsonType.Boolean:
-                case JsonType.Number:
-                case JsonType.Integer:
-                  // it's a primitive type (string/boolean/number)
-                  // it should be a simple dictionary<string, t>
-
-                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
-
-                default:
-                  // what? What kind of a monster are you?
-                  console.error(`WEIRD SUPPORTED: Object with additionalProperties that's not an object/string.boolean.number : { type: ${addlSchema.type} } --  ${schema.details.csharp.name}`);
-                  // throw new Error('Not Supported Yet. ');
-                  return new Wildcard(schema, this.resolveTypeDeclaration(addlSchema, true, state.path('additionalProperties')));
-              }
-            case 'undefined':
-              break;
-
-            default:
-              console.error(`NOT SUPPORTED: Object with additionalProperties: '${schema.additionalProperties}' --  ${schema.details.chsarp.name}`);
-              throw new Error('What does that even mean?');
-          }
-          // object with no properties?
-        }
-
-
         return this.add(schema, new ObjectImplementation(schema));
 
       case JsonType.String:
@@ -147,9 +89,11 @@ export class SchemaDefinitionResolver {
             if (schema.extensions['x-ms-enum']) {
               return new EnumImplementation(schema, required);
             }
+            /*
             if (schema.extensions['x-ms-header-collection-prefix']) {
               return new Wildcard(schema, new String(<any>{}, required));
             }
+            */
             // just a regular old string.
             return new String(schema, required);
 

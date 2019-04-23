@@ -158,35 +158,43 @@ namespace Microsoft.Rest.ClientRuntime
         /// <param name="dictionary">The dictionary to serailize</param>
         /// <param name="container">the container to serialize the dictionary into</param>
         /// <returns>the container</returns>
-        internal static JsonObject ToJson(System.Collections.IDictionary dictionary, JsonObject container)
+        internal static JsonObject ToJson<T>(System.Collections.Generic.IDictionary<string, T> dictionary, JsonObject container)
         {
             container = container ?? new JsonObject();
-
             if (dictionary != null && dictionary.Count > 0)
             {
-                foreach (System.Collections.DictionaryEntry each in dictionary)
+                foreach (var key in dictionary)
                 {
-                    var value = each.Value;
-
-                    if (null == value)
+                    // currently, we don't serialize null values. 
+                    if (null != key.Value)
                     {
-                        // currently, we don't serialize null values. 
+                        container.Add(key.Key, ToJsonValue(key.Value));
                         continue;
                     }
-                    container.Add(each.Key.ToString(), ToJsonValue(value));
                 }
             }
             return container;
         }
 
-        internal static T FromJson<T>(JsonObject json, T container) where T : System.Collections.IDictionary
+        internal static Func<JsonObject, System.Collections.Generic.IDictionary<string, V>> DeserializeDictionary<V>(Func<System.Collections.Generic.IDictionary<string, V>> dictionaryFactory)
         {
-            if( null == json) {
+            return (node) => FromJson<V>(node, dictionaryFactory(), (object)(DeserializeDictionary(dictionaryFactory)) as Func<JsonObject, V>);
+        }
+
+        internal static System.Collections.Generic.IDictionary<string, V> FromJson<V>(JsonObject json, System.Collections.Generic.IDictionary<string, V> container, System.Func<JsonObject, V> objectFactory, System.Collections.Generic.HashSet<string> excludes = null)
+        {
+            if (null == json)
+            {
                 return container;
             }
 
             foreach (var key in json.Keys)
             {
+                if (true == excludes?.Contains(key))
+                {
+                    continue;
+                }
+
                 var value = json[key];
                 try
                 {
@@ -202,20 +210,22 @@ namespace Microsoft.Rest.ClientRuntime
                         case JsonType.Binary:
                         case JsonType.Number:
                         case JsonType.String:
+                            container.Add(key, (V)value.ToValue());
+                            break;
                         case JsonType.Object:
-                            container.Add(key, value.ToValue());
+                            if (objectFactory != null)
+                            {
+                                var v = objectFactory(value as JsonObject);
+                                if (null != v)
+                                {
+                                    container.Add(key, v);
+                                }
+                            }
                             break;
                     }
                 }
                 catch
                 {
-                    // Hmm. 
-                    // One Last try to add it as a string representation?
-                    try {
-                        container.Add(key, value.ToString());
-                    } catch {
-                        // nope? Well, we tried. 
-                    }
                 }
             }
             return container;

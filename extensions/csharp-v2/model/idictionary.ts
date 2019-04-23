@@ -2,7 +2,9 @@ import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModi
 
 export function implementIDictionary(targetClass: Class, name: String, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
   const dictionaryInterfaceType = System.Collections.Generic.IDictionary(keyType, valueType);
-
+  const itemType = System.Collections.Generic.KeyValuePair(keyType, valueType);
+  const collectionInterfaceType = System.Collections.Generic.ICollection(itemType);
+  const enumerableInterfaceType = System.Collections.Generic.IEnumerable(itemType);
   // add the interface to the list of interfaces for the class
   targetClass.interfaces.push(dictionaryInterfaceType);
 
@@ -13,7 +15,7 @@ export function implementIDictionary(targetClass: Class, name: String, keyType: 
   const indexer = targetClass.add(new Indexer(keyType, valueType, { get: toExpression(`${accessViaMember}["index"]`), set: toExpression(`${accessViaMember}["index"] = value`) }));
 
   // the parameters used in methods.
-  const itemType = System.Collections.Generic.KeyValuePair(keyType, valueType);
+
   const pKey = new Parameter('key', keyType);
   const pValue = new Parameter('value', valueType);
   const pItem = new Parameter('item', itemType);
@@ -21,26 +23,76 @@ export function implementIDictionary(targetClass: Class, name: String, keyType: 
   const pIndex = new Parameter('index', dotnet.Int);
   const pOutValue = new Parameter('value', valueType, { modifier: ParameterModifier.Out });
 
-  targetClass.add(new Property('Keys', System.Collections.Generic.ICollection(keyType), { get: toExpression(`${accessViaMember}.Keys`) }));
-  targetClass.add(new Property('Values', System.Collections.Generic.ICollection(valueType), { get: toExpression(`${accessViaMember}.Values`) }));
-  targetClass.add(new Property('Count', dotnet.Int, { get: toExpression(`${accessViaMember}.Count`) }));
-  targetClass.add(new Property('IsReadOnly', dotnet.Bool, { get: toExpression(`${accessViaMember}.IsReadOnly`) }));
+  targetClass.add(new Property(`${dictionaryInterfaceType.declaration}.Keys`, System.Collections.Generic.ICollection(keyType), { get: toExpression(`${accessViaMember}.Keys`), getAccess: Access.Explicit }));
+  targetClass.add(new Property(`${dictionaryInterfaceType.declaration}.Values`, System.Collections.Generic.ICollection(valueType), { get: toExpression(`${accessViaMember}.Values`), getAccess: Access.Explicit }));
+  targetClass.add(new Property(`${collectionInterfaceType.declaration}.Count`, dotnet.Int, { get: toExpression(`${accessViaMember}.Count`), getAccess: Access.Explicit }));
+  targetClass.add(new Property(`${collectionInterfaceType.declaration}.IsReadOnly`, dotnet.Bool, { get: toExpression(`${accessViaMember}.IsReadOnly`), getAccess: Access.Explicit }));
 
-  targetClass.add(new Method('Add', dotnet.Void, { parameters: [pKey, pValue], body: toExpression(`${accessViaMember}.Add( ${pKey}, ${pValue})`) }));
-  targetClass.add(new Method('Add', dotnet.Void, { parameters: [pItem], body: toExpression(`${accessViaMember}.Add( ${pItem})`) }));
-  targetClass.add(new Method('Clear', dotnet.Void, { body: toExpression(`${accessViaMember}.Clear()`) }));
+  targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.Add`, dotnet.Void, { parameters: [pKey, pValue], body: toExpression(`${accessViaMember}.Add( ${pKey}, ${pValue})`), access: Access.Explicit }));
+  targetClass.add(new Method(`${collectionInterfaceType.declaration}.Add`, dotnet.Void, { parameters: [pItem], body: toExpression(`${accessViaMember}.Add( ${pItem})`), access: Access.Explicit }));
+  targetClass.add(new Method(`${collectionInterfaceType.declaration}.Clear`, dotnet.Void, { body: toExpression(`${accessViaMember}.Clear()`), access: Access.Explicit }));
 
-  targetClass.add(new Method('Contains', dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Contains( ${pItem})`) }));
-  targetClass.add(new Method('ContainsKey', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.ContainsKey( ${pKey})`) }));
-  targetClass.add(new Method('CopyTo', dotnet.Void, { parameters: [pItemArray, pIndex], body: toExpression(`${accessViaMember}.CopyTo(${pItemArray},${pIndex})`) }));
+  targetClass.add(new Method(`${collectionInterfaceType.declaration}.Contains`, dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Contains( ${pItem})`), access: Access.Explicit }));
+  targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.ContainsKey`, dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.ContainsKey( ${pKey})`), access: Access.Explicit }));
+  targetClass.add(new Method(`${collectionInterfaceType.declaration}.CopyTo`, dotnet.Void, { parameters: [pItemArray, pIndex], body: toExpression(`${accessViaMember}.CopyTo(${pItemArray},${pIndex})`), access: Access.Explicit }));
 
-  targetClass.add(new Method('GetEnumerator', System.Collections.Generic.IEnumerator(itemType), { body: toExpression(`${accessViaMember}.GetEnumerator()`) }));
+  targetClass.add(new Method(`${enumerableInterfaceType.declaration}.GetEnumerator`, System.Collections.Generic.IEnumerator(itemType), { body: toExpression(`${accessViaMember}.GetEnumerator()`), access: Access.Explicit }));
   targetClass.add(new Method('global::System.Collections.IEnumerable.GetEnumerator', System.Collections.IEnumerator, { body: toExpression(`${accessViaMember}.GetEnumerator()`), access: Access.Explicit }));
 
-  targetClass.add(new Method('Remove', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.Remove( ${pKey})`) }));
-  targetClass.add(new Method('Remove', dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Remove( ${pItem})`) }));
+  targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.Remove`, dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.Remove( ${pKey})`), access: Access.Explicit }));
+  targetClass.add(new Method(`${collectionInterfaceType.declaration}.Remove`, dotnet.Bool, { parameters: [pItem], body: toExpression(`${accessViaMember}.Remove( ${pItem})`), access: Access.Explicit }));
 
-  targetClass.add(new Method('TryGetValue', dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`) }));
+  targetClass.add(new Method(`${dictionaryInterfaceType.declaration}.TryGetValue`, dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Explicit }));
+
+  const isWildcard = valueType === System.Object;
+
+  if (isWildcard) {
+
+  } else {
+
+  }
+
+  // add serialization methods
+  /*
+  
+  internal void deserializeDictionary(JsonNode node) {
+    var ignoredWireValues = { 'name', 'yada', 'yada' }
+    if( node is JsonObject jsonObj ) {
+
+    }
+  }
+  */
 
   return dictionaryInterfaceType;
 }
+
+
+/*
+
+Serialization Scenarios:
+ # untyped  (always resolves an empty object to this.)
+ "additionalProperties": true
+
+ # typed
+ "additionalProperties": {
+    "$ref": "#/definitions/FieldDefinition"
+  },
+
+
+
+
+
+  additionalProperties: true => same as additionalProperties: { type: object }
+
+ - member deserialize into a Dictionary<string,object>  // no polymorphism, key/value pair, nested objects are Dictionary<string,object>. (UNTYPED WILDCARD)
+ - member deserialize into a Dictionary<string, T> // T can be a primitive-type or schema, supports polymorphism (TYPED WILDCARD)
+
+ - container deserialize into a IDictionary<string, object>
+ - container deserialize into a IDictionary<string, T>
+
+ given a JsonNode,  IDictionary<String,object>,  and a list of filtered wire-names.   => untyped wildcard serialization
+ given a JsonNode and an IDictionary<String,T> and a list of filtered wire-names  => type wildcard serialization
+
+deserialize container ( dictionary IDictionary<string,T>, filter: Array<string> )
+
+*/

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Access } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
+import { Access, isAnExpression, toExpression } from '@microsoft.azure/codegen-csharp';
 import { Expression, ExpressionOrLiteral } from '@microsoft.azure/codegen-csharp';
 import { BackedProperty } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
@@ -72,6 +72,10 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
     this.apply(objectInitializer);
     this.description = description;
     this.required = isRequired;
+    if (this.schema.type === JsonType.Object && isAnExpression(this.get) && schema.details.csharp.classImplementation) {
+      // for objects, the getter should auto-create a new object 
+      this.get = toExpression(`(${this.get.value} = ${this.get.value} ?? new ${schema.details.csharp.fullname}())`);
+    }
     // DISABLED
     // this.IsHeaderProperty = property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header;
   }

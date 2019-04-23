@@ -8,13 +8,14 @@ import { Dictionary, escapeString, items, values, docComment, serialize, pascalC
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration
 } from '@microsoft.azure/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
+import { Variable } from '@microsoft.azure/codegen-csharp/exports';
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
@@ -24,8 +25,11 @@ export class CmdletClass extends Class {
   private invocationInfo!: Property;
   correlationId!: Field;
   processRecordId!: Field;
-  private readonly thingsToSerialize: Array<{ parameter: Parameter, td: EnhancedTypeDeclaration }>;
-  private bodyParameter?: Expression;
+  defaultProfile!: Property;
+  private readonly thingsToSerialize: Array<Variable>;
+  private bodyParameter?: Variable;
+  private bodyParameterInfo?: { type: TypeDeclaration, valueType: TypeDeclaration };
+  private apProp?: Property;
   private operation: command.CommandOperation;
   private debugMode?: boolean;
   private variantName: string;
@@ -79,14 +83,14 @@ export class CmdletClass extends Class {
     // add constructors
     this.implementConstructors(this.operation);
 
-    // json serialization
-    this.implementSerialization(this.operation);
-
     // processRecord
     this.implementProcessRecord(this.operation);
 
     this.implementProcessRecordAsync(this.operation);
     this.debugMode = await this.state.getValue('debug', false);
+
+    // json serialization
+    this.implementSerialization(this.operation);
     return this;
   }
 
@@ -169,11 +173,11 @@ export class CmdletClass extends Class {
     proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     if (this.state.project.azure) {
-      const defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
-      defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
-      defaultProfile.add(new Attribute(ValidateNotNull));
-      defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
-      defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
+      this.defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: `The credentials, account, tenant, and subscription used for communication with Azure` }));
+      this.defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."`] }));
+      this.defaultProfile.add(new Attribute(ValidateNotNull));
+      this.defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
+      this.defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
     }
   }
 
@@ -287,6 +291,10 @@ export class CmdletClass extends Class {
     PAR.push(Using(`NoSynchronizationContext`, ``));
 
     PAR.add(function* () {
+      if ($this.apProp && $this.bodyParameter && $this.bodyParameterInfo) {
+        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
+      }
+
       // construct the call to the operation
       yield $this.eventListener.signal(Events.CmdletProcessRecordAsyncStart);
 
@@ -493,101 +501,46 @@ export class CmdletClass extends Class {
 
   private implementSerialization(operation: command.CommandOperation) {
     const $this = this;
-    // set up the declaration for the toJson method.
-    const container = new Parameter('container', ClientRuntime.JsonObject, { description: `The <see cref="${ClientRuntime.JsonObject}"/> container to serialize this object into. If the caller passes in <c>null</c>, a new instance will be created and returned to the caller.` });
-    const mode = new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/>.` });
-
-    const toJsonMethod = this.add(new Method('ToJson', ClientRuntime.JsonNode, {
-      parameters: [container, mode],
-      description: `Serializes the state of this cmdlet to a <see cref="${ClientRuntime.JsonNode}" /> object.`,
-      returnsDescription: `a serialized instance of <see cref="${this.name}" /> as a <see cref="${ClientRuntime.JsonNode}" />.`
-    }));
-    toJsonMethod.add(function* () {
-      yield `// serialization method`;
-      yield `container = ${container.use} ?? new ${ClientRuntime.JsonObject.declaration}();`;
-
-      for (const parameter of values(operation.parameters)) {
-        // const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true /*parameter.required*/, $this.state);
-        // if (!(parameter.details.csharp.constantValue)) {
-        // yield td.serializeToContainerMember(KnownMediaType.Json, parameter.details.csharp.name, container, parameter.details.csharp.name, mode);
-        // }
-      }
-
-      yield `return container;`;
-    });
-
-    // create the FromJson method
-    const node = new Parameter('node', ClientRuntime.JsonNode, { description: `a <see cref="${ClientRuntime.JsonNode}" /> to deserialize from.` });
-    const fromJson = this.addMethod(new Method('FromJson', this, {
-      parameters: [node],
-      static: Modifier.Static,
-      description: `Deserializes a <see cref="${ClientRuntime.JsonNode}" /> into a new instance of this class.`,
-      returnsDescription: `an instance of ${this.name}.`
-    }));
-    fromJson.add(function* () {
-      const json = IsDeclaration(node, ClientRuntime.JsonObject, 'json');
-      yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
-    });
-
-    // from/to json-string
-    const strJson = new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this cmdlet.' });
-    this.add(new LambdaMethod('FromJsonString', this, new LiteralExpression(`string.IsNullOrEmpty(${strJson.value}) ? null : ${fromJson.invoke(ClientRuntime.JsonObject.Parse(strJson)).toString()}`), {
-      parameters: [strJson],
-      static: Modifier.Static,
-      description: `Creates a new instance of this cmdlet, deserializing the content from a json string.`,
-      returnsDescription: `returns a new instance of the <see cref="${this.name}" /> cmdlet`
-    }));
-
     // clone
-    const clone = this.add(new Method('Clone', this, {
-      description: `Creates a duplicate instance of this cmdlet (via JSON serialization).`,
-      returnsDescription: `a duplicate instance of ${this.name}`,
-    }));
-    clone.add(function* () {
-      const i = new LocalVariable('clone', dotnet.Var, {
-        initializer: fromJson.invoke(new LiteralExpression(`this.${toJsonMethod.invoke(dotnet.Null, ClientRuntime.SerializationMode.IncludeAll).value}`))
-      });
-      yield i.declarationStatement;
-      yield `${i.value}.HttpPipelinePrepend = this.HttpPipelinePrepend;`;
-      yield `${i.value}.HttpPipelineAppend = this.HttpPipelineAppend;`;
+    if (operation.asjob) {
+      const clone = this.add(new Method('Clone', this, {
+        description: `Creates a duplicate instance of this cmdlet (via JSON serialization).`,
+        returnsDescription: `a duplicate instance of ${this.name}`,
+      }));
 
-      yield Return(i);
-    });
+      clone.add(function* () {
+        const i = new LocalVariable('clone', dotnet.Var, {
+          initializer: $this.new()
+        });
+        yield i.declarationStatement;
+
+        if ($this.state.project.azure) {
+          for (const f of [$this.correlationId, $this.processRecordId, $this.defaultProfile]) {
+            yield `${i.value}.${f} = this.${f};`;
+          }
+        }
+        for (const f of [$this.invocationInfo, 'Proxy', 'Pipeline', 'AsJob', 'Break', 'ProxyCredential', 'ProxyUseDefaultCredentials', 'HttpPipelinePrepend', 'HttpPipelineAppend',]) {
+          yield `${i.value}.${f} = this.${f};`;
+        }
+
+        for (const f of $this.thingsToSerialize) {
+          yield `${i.value}.${f} = this.${f};`;
+        }
+
+        // _name = this._name,
+        //_parametersBody = this._parametersBody,
+        //_resourceGroupName = this._resourceGroupName,
+        //_subscriptionId = this._subscriptionId,
+
+        yield Return(i);
+      });
+    }
   }
 
   private implementConstructors(operation: command.CommandOperation) {
     const $this = this;
     // default constructor
     this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
-
-    // deserialization constructor
-    const deserializerConstructor = this.add(new Constructor(this, {
-      parameters: [new Parameter('json', ClientRuntime.JsonObject, { description: `a <see cref="${ClientRuntime.JsonObject}" /> to deserialize from.` })],
-      access: Access.Internal,
-      description: `Constructor for deserialization.`
-
-    }));
-    deserializerConstructor.add(function* () {
-      yield `// deserialize the contents`;
-      /*
-      // for (const parameter of values(operation.parameters)) {
-      for (const each of $this.thingsToSerialize) {
-        const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true , $this.state);
-
-        // skip parameters that are handled elsewise.
-        if (parameter.details.csharp.constantValue || parameter.details.csharp.apiversion) {
-          continue;
-        }
-
-        const bp = $this.$<Property>(parameter.details.csharp.name);
-
-        // dont' serialize if it's a constant or host parameter.
-        // yield td.getDeserializePropertyStatement(KnownMediaType.Json, 'json', bp.backingName, parameter.details.csharp.name);
-        yield bp.assignPrivate(td.deserializeFromContainerMember(KnownMediaType.Json, 'json', parameter.details.csharp.name, bp));
-
-      }
-      */
-    });
   }
 
   private implementIEventListener() {
@@ -626,10 +579,17 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Information.value, function* () {
-          const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
-          yield data.declarationStatement;
-          yield `WriteInformation(data, new[] { data.Message });`;
+          if ($this.operation.asjob) {
+            yield `// When an operation supports asjob, Information messages must go thru verbose.`
+            yield `WriteVerbose($"INFORMATION: {(messageData().Message ?? ${System.String.Empty})}");`;
+          }
+          else {
+            const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
+            yield data.declarationStatement;
+            yield `WriteInformation(data, new[] { data.Message });`;
+          }
           yield Return();
+
         }),
         TerminalCase(Events.Debug.value, function* () {
           yield `WriteDebug($"{(messageData().Message ?? ${System.String.Empty})}");`;
@@ -675,7 +635,7 @@ export class CmdletClass extends Class {
           },
           description: parameter.details.csharp.description,
         }));
-
+        this.thingsToSerialize.push(hostParameter);
         // in the BeginProcessing, we should tell it to go get the value for this property from the common module
         this.$<Method>('BeginProcessing').add(hostParameter.assignPrivate(new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetParameter(this.MyInvocation, ${this.correlationId.value}, "${parameter.name}") as string`)));
         continue;
@@ -710,10 +670,14 @@ export class CmdletClass extends Class {
         // we're supposed to use parameters for the body parameter instead of a big object
         const expandedBodyParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           description: parameter.details.csharp.description,
+
           initializer: (parameter.schema.type === JsonType.Array) ? `null` : `new ${parameter.schema.details.csharp.fullname}()`,
           setAccess: Access.Private,
           getAccess: Access.Private,
         }));
+        this.thingsToSerialize.push(expandedBodyParameter);
+
+
         if (vps) {
           for (const vParam of vps.body) {
             const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /* vParam.required */ true, this.state);
@@ -734,41 +698,36 @@ export class CmdletClass extends Class {
           }
         }
 
-        // const vp = parameter.schema.details.csharp.virtualProperties;
-        // addPowershellParameters(this, <Schema>parameter.schema, expandedBodyParameter);
-        // if (vp) {
-        // virtualPropertiesToPowerShellParameters(this, [...vp.owned, ...vp.inherited, ...vp.inlined], expandedBodyParameter);
-        //}
+        if (parameter.schema.additionalProperties) {
+          // if there is an additional properties on this type
+          // add a hashtable parameter for additionalProperties
+          let apPropName = '';
+          let options = ['Properties', 'AdditionalProperties', 'MoreProperties', 'ExtendedProperties'];
+          for (const n of options) {
+            if (this.properties.find(each => each.name === n)) {
+              continue;
+            }
+            apPropName = n;
+            break;
+          }
+
+          this.apProp = this.add(new Property(apPropName, System.Collections.Hashtable));
+          this.apProp.add(new Attribute(ParameterAttribute, {
+            parameters: [`Mandatory = false`, `HelpMessage = "Additional Parameters"`]
+          }));
+          this.bodyParameterInfo = {
+            type: {
+              declaration: parameter.schema.details.csharp.fullname
+            },
+            valueType: parameter.schema.additionalProperties === true ? System.Object : this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema.additionalProperties, true, this.state)
+          };
+
+
+        }
 
         this.bodyParameter = expandedBodyParameter;
         continue;
       }
-
-      /*
-      // regular cmdlet parameter
-      const regularCmdletParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
-        metadata: {
-          parameterDefinition: parameter.details.csharp.httpParameter
-        },
-        description: parameter.details.csharp.description
-      }));
-
-      const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression(`HelpMessage = "${escapeString(parameter.details.csharp.description) || 'HELP MESSAGE MISSING'}"`)];
-      if (parameter.details.csharp.isBodyParameter) {
-        parameters.push(new LiteralExpression('ValueFromPipeline = true'));
-        this.bodyParameter = regularCmdletParameter;
-      }
-      regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
-
-      if (parameter.details.csharp.completer) {
-        // add the completer to this class and tag this parameter with the completer.
-        // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
-      }
-
-      if (td.schema.details.csharp.enum !== undefined) {
-        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
-      }
-      */
     }
 
     if (vps) {
@@ -781,6 +740,7 @@ export class CmdletClass extends Class {
           },
           description: vParam.description
         }));
+        this.thingsToSerialize.push(regularCmdletParameter);
 
         const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];
         if (origin.details.csharp.isBodyParameter) {
