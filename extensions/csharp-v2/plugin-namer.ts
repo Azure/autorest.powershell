@@ -65,8 +65,8 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         apiname: apiName,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
         name: getPascalIdentifier(schemaName),
-        namespace: pascalCase([serviceNamespace, '.', `Models`, '.', ...ns]),  // objects have a namespace
-        fullname: `${pascalCase([serviceNamespace, '.', `Models`, '.', ...ns])}.${getPascalIdentifier(schemaName)}`,
+        namespace: pascalCase([serviceNamespace, '.', `Models`, ...ns]),  // objects have a namespace
+        fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${getPascalIdentifier(schemaName)}`,
       };
     } else if (schema.type === JsonType.String && schema.details.default.enum) {
       // oh, it's an enum type

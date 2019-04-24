@@ -91,7 +91,9 @@ export /* @internal */ class Inferrer {
     this.verbMap = await this.state.getValue('verb-mapping') || {};
     this.isAzure = await this.state.getValue('azure', false);
     this.prefix = await this.state.getValue('prefix');
-    this.serviceName = await this.state.getValue('service-name');
+    this.serviceName = titleToAzureServiceName(await this.state.getValue('service-name'));
+    this.state.setValue('service-name', this.serviceName);
+
     this.subjectPrefix = await this.state.getValue('subject-prefix');
 
     this.state.setValue('isAzure', this.isAzure);
@@ -446,7 +448,7 @@ export /* @internal */ class Inferrer {
   }
 }
 
-// UNUSED
+// UNUSED: Moved to plugin-tweak-model.ts in remodeler
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
 export function titleToAzureServiceName(title: string): string {
   const titleCamelCase = pascalCase(deconstruct(title)).trim();
@@ -457,4 +459,3 @@ export function titleToAzureServiceName(title: string): string {
     .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
   return serviceName || titleCamelCase;
 }
-
