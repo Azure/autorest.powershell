@@ -65,7 +65,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
 
     if (set !== undefined) {
       const prohibitedSetters = ['property-name', 'property-description', ' model-name', 'enum-name', 'enum-value-name'];
-      error = getSetError(set, prohibitedSetters, 'command');
+      error += getSetError(set, prohibitedSetters, 'command');
     }
 
     if (error) {
@@ -101,7 +101,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
     const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
-    error = getSetError(set, prohibitedSetters, 'enum');
+    error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
     }
@@ -132,7 +132,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
     const prohibitedFilters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
-    error = getSetError(set, prohibitedSetters, 'enum');
+    error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
     }
