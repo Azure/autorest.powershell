@@ -17,6 +17,7 @@ import { generatePsm1Internal } from './generators/psm1.internal';
 import { generateNuspec } from './generators/nuspec';
 import { generateGitIgnore } from './generators/gitignore';
 import { generateGitAttributes } from './generators/gitattributes';
+import { generateReadme } from './generators/readme';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
@@ -27,10 +28,12 @@ export async function powershell(service: Host) {
     await project.writeFiles(async (filename, content) => project.state.writeFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
 
     await service.ProtectFiles(project.psd1);
+    await service.ProtectFiles(project.readme);
     await service.ProtectFiles(project.customFolder);
     await service.ProtectFiles(project.testFolder);
     await service.ProtectFiles(project.docsFolder);
     await service.ProtectFiles(project.examplesFolder);
+    await service.ProtectFiles(project.resourcesFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
@@ -42,6 +45,7 @@ export async function powershell(service: Host) {
     await generateNuspec(project);
     await generateGitIgnore(project);
     await generateGitAttributes(project);
+    await generateReadme(project);
 
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
