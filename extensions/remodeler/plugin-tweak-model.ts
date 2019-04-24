@@ -26,7 +26,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   const title = pascalCase(fixLeadingNumber(deconstruct(await state.getValue('title', state.model.info.title))));
   state.setValue('title', title);
 
-  const serviceName = await state.getValue('service-name', title);
+  const serviceName = await state.getValue('service-name', titleToAzureServiceName(title));
   state.setValue('service-name', serviceName);
 
   const model = state.model;
@@ -217,4 +217,15 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   }
 
   return model;
+}
+
+// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
+export function titleToAzureServiceName(title: string): string {
+  const titleCamelCase = pascalCase(deconstruct(title)).trim();
+  const serviceName = titleCamelCase
+    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+  return serviceName || titleCamelCase;
 }
