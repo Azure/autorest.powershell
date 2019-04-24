@@ -18,6 +18,7 @@ import { generateNuspec } from './generators/nuspec';
 import { generateGitIgnore } from './generators/gitignore';
 import { generateGitAttributes } from './generators/gitattributes';
 import { generateReadme } from './generators/readme';
+import { generateScriptCmdlets } from './generators/script-cmdlet';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
@@ -46,6 +47,8 @@ export async function powershell(service: Host) {
     await generateGitIgnore(project);
     await generateGitAttributes(project);
     await generateReadme(project);
+
+    await generateScriptCmdlets(project);
 
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);

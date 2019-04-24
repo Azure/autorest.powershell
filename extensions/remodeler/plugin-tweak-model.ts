@@ -26,6 +26,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   const title = pascalCase(fixLeadingNumber(deconstruct(await state.getValue('title', state.model.info.title))));
   state.setValue('title', title);
 
+  const serviceName = await state.getValue('service-name', title);
+  state.setValue('service-name', serviceName);
+
   const model = state.model;
 
   const set = new Set<Schema>();
