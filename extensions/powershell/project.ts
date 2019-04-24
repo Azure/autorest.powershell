@@ -28,12 +28,14 @@ export class Project extends codeDomProject {
   public exportsFolder!: string;
   public docsFolder!: string;
   public examplesFolder!: string;
+  public resourcesFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
   public csproj!: string;
   public nuspec!: string;
   public gitIgnore!: string;
   public gitAttributes!: string;
+  public readme!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -128,6 +130,7 @@ export class Project extends codeDomProject {
     this.docsFolder = await this.state.getValue('docs-folder');
     this.dependencyModuleFolder = await this.state.getValue('dependency-module-folder');
     this.examplesFolder = await this.state.getValue('examples-folder');
+    this.resourcesFolder = await this.state.getValue('resources-folder');
 
     // File paths
     this.csproj = await this.state.getValue('csproj');
@@ -140,6 +143,7 @@ export class Project extends codeDomProject {
     this.nuspec = await this.state.getValue('nuspec');
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
+    this.readme = `${this.baseFolder}/readme.md`;
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
