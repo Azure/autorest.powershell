@@ -66,3 +66,85 @@ command:
 ```
 
 ~~~        
+
+The generated cmdlets will look something like:
+
+``` powershell
+
+<#
+.Synopsis
+different get resource command
+.Description
+different get resource command
+.Link
+
+#>
+function Get-Resource_Otherstyle {
+[OutputType('Microsoft.Azure.Resources.Api20191712.Resource')]
+[CmdletBinding()]
+param(
+  [Parameter(Mandatory)]
+  [System.String]
+  # This is my parameter, there are many like it, but this one is my own
+  ${Foo},
+
+  [Parameter()]
+  [cheezy]
+  ${Bar},
+
+  [Parameter(DontShow)]
+  [System.Management.Automation.SwitchParameter]
+  # Wait for .NET debugger to attach
+  ${Break},
+  
+  [Parameter(DontShow)]
+  [ValidateNotNull()]
+  [Times.Wire.Search.Runtime.SendAsyncStep[]
+  # SendAsync Pipeline Steps to be appended to the front of the pipeline
+  ${HttpPipelineAppend},
+  
+  [Parameter(DontShow)]
+  [ValidateNotNull()]
+  [Times.Wire.Search.Runtime.SendAsyncStep[]]
+  # SendAsync Pipeline Steps to be prepended to the front of the pipeline
+  ${HttpPipelinePrepend},
+  
+  [Parameter(DontShow)]
+  [System.Uri]
+  # The URI for the proxy server to use
+  ${Proxy},
+  
+  [Parameter(DontShow)]
+  [ValidateNotNull()]
+  [System.Management.Automation.PSCredential]
+  # Credentials for a proxy server to use for the remote call
+  ${ProxyCredential},
+  
+  [Parameter(DontShow)]
+  [System.Management.Automation.SwitchParameter]
+  # Use the default credentials for the proxy
+  ${ProxyUseDefaultCredentials}
+)
+  process {
+    try {
+      # do something with your custom parameters
+      # $PSBoundParameters.Add("Filter", "appId eq '$ApplicationId'") | Out-Null
+      # $PSBoundParameters.Remove("ApplicationId") | Out-Null
+  
+      # Examples
+      # To call a specific variant in the private module
+      # TimesNewswire.private\Get-Resource_SomeVariant @PSBoundParameters
+  
+      # To call back to the same public module (and call the exported cmdlet)
+      # TimesNewswire\Get-Resource @PSBoundParameters
+  
+      # To call something in the internal module
+      # TimesNewswire.internal\Get-Resource @PSBoundParameters
+  
+    } catch {
+      throw
+    }
+  }
+}
+
+```
