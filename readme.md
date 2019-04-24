@@ -3,7 +3,7 @@
 
 ## Using the released version of `autorest.powershell`
 
-See [Using AutoRest PowerShell ](docs/using-autorest-powershell) for examples, etc.
+See [Using AutoRest PowerShell ](docs/using-autorest-powershell.md) for examples, etc.
 
 
 # Contributing
