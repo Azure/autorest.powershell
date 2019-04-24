@@ -32,16 +32,50 @@ interface WhereCommandDirective {
   hide?: boolean;
 }
 
-interface WhereEnumDirective {
-  select?: string;
-  where: {
-    'enum-name'?: string;
-    'enum-value-name'?: string;
-  };
-  set: {
-    'enum-name'?: string;
-    'enum-value-name'?: string;
-  };
+function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedFilters) {
+    if (whereObject[each] !== undefined) {
+      error += `Can't filter by ${each} when selecting command. `
+    }
+  }
+
+  return error;
+}
+
+function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedSetters) {
+    if (setObject[each] !== undefined) {
+      error += `Can't set ${each} when a ${selectionType} is selected. `
+    }
+  }
+
+  return error;
+}
+
+function isWhereCommandDirective(it: any): it is WhereCommandDirective {
+  const directive = it;
+  const select = directive.select;
+  const where = directive.where;
+  const set = directive.set;
+  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter')) {
+    const prohibitedFilters = ['model-name', 'property-name', 'enum-name', 'enum-value-name'];
+    let error = getFilterError(where, prohibitedFilters, 'command');
+
+    if (set !== undefined) {
+      const prohibitedSetters = ['property-name', 'property-description', ' model-name', 'enum-name', 'enum-value-name'];
+      error = getSetError(set, prohibitedSetters, 'command');
+    }
+
+    if (error) {
+      throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 interface WhereModelDirective {
@@ -57,76 +91,53 @@ interface WhereModelDirective {
   };
 }
 
-function isWhereCommandDirective(it: any): it is WhereCommandDirective {
+function isWhereModelDirective(it: any): it is WhereModelDirective {
   const directive = it;
-  const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter')) {
-    let error = where['model-name'] ? `Can't select model and command at the same time.` : ``;
-    error += where['property-name'] ? `Can't select property and command at the same time.` : ``;
-    error += set['property-name'] ? `Can't set a property-name when a command is selected.` : ``;
-    error += set['property-description'] ? `Can't set a property-description when a command is selected.` : ``;
-    error += set['model-name'] ? `Can't set a model-name when a command is selected.` : ``;
 
+
+  if (where && set && (where['model-name'] || where['property-name'] || directive.select === 'model')) {
+    const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
+    let error = getFilterError(where, prohibitedFilters, 'enum');
+    const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
+    error = getSetError(set, prohibitedSetters, 'enum');
+    if (error) {
+      throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
+    }
+
+    return true;
+
+  }
+  return false;
+}
+
+interface WhereEnumDirective {
+  select?: string;
+  where: {
+    'enum-name'?: string;
+    'enum-value-name'?: string;
+  };
+  set: {
+    'enum-name'?: string;
+    'enum-value-name'?: string;
+  };
+}
+
+function isWhereEnumDirective(it: any): it is WhereEnumDirective {
+  const directive = it;
+  const where = directive.where;
+  const set = directive.set;
+  if (where && set && (where['enum-name'] || where['enum-value-name'] || directive.select === 'enum')) {
+    const prohibitedFilters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
+    let error = getFilterError(where, prohibitedFilters, 'enum');
+    const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
+    error = getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
     }
 
     return true;
-  }
-
-  return false;
-}
-
-function isWhereModelDirective(it: any): it is WhereModelDirective {
-  const directive = it;
-  const select = directive.select;
-  const where = directive.where;
-  const set = directive.set;
-  if ((where && set) || (where && set && (select === 'model' || select === 'property'))) {
-    if ((set["model-name"] || set["property-description"] || set["property-name"])
-      && (where['model-name'] || where['property-name'])) {
-      let error = where['subject'] || where['subject-prefix'] || where['verb'] || where['variant'] ? `Can't select model and command at the same time.` : ``;
-      error += where['parameter-name'] ? `Can't select a parameter and command at the same time.` : ``;
-      error += set['subject'] ? `Can't set command subject when a model is selected.` : ``;
-      error += set['subject-prefix'] ? `Can't set command subject-prefix when a model is selected.` : ``;
-      error += set['verb'] ? `Can't set command verb when a model is selected.` : ``;
-      error += set['variant'] ? `Can't set command variant when a model is selected.` : ``;
-      error += directive.hide ? `Can't hide a command when a model is selected.` : ``;
-      error += set['variant'] ? `Can't set a variant name when a model is selected.` : ``;
-      if (error) {
-        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
-      }
-
-      return true;
-    }
-  }
-  return false;
-}
-
-function isWhereEnumDirective(it: any): it is WhereEnumDirective {
-  const directive = it;
-  const select = directive.select;
-  const where = directive.where;
-  const set = directive.set;
-  if ((where && set) || (where && set && select === 'enum')) {
-    if ((set["enum-name"] || set["enum-value-name"])
-      && (where['enum-name'] || where['enum-value-name'])) {
-      const setKeys = Object.keys(set);
-      const whereKeys = Object.keys(where);
-      let error =
-        (
-          setKeys.filter(each => each !== 'enum-name' && each !== 'enum-value-name').length > 0 ||
-          whereKeys.filter(each => each !== 'enum-name' && each !== 'enum-value-name').length > 0
-        ) ? `Incompatible selectors and modifiers. Make sure you are not using model, enum and command modifiers at the same time.` : '';
-
-      if (error) {
-        throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
-      }
-
-      return true;
-    }
   }
   return false;
 }
@@ -144,17 +155,17 @@ export async function cosmeticModifier(service: Host) {
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
   for (const directive of directives) {
-    const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
+    const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? isNotRegex(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
 
     if (isWhereCommandDirective(directive)) {
       const selectType = directive.select;
-      const subjectRegex = getParsedSelector(directive.where['subject']);
-      const subjectPrefixRegex = getParsedSelector(directive.where['subject-prefix']);
-      const verbRegex = getParsedSelector(directive.where.verb);
-      const variantRegex = getParsedSelector(directive.where.variant);
-      const parameterRegex = getParsedSelector(directive.where["parameter-name"]);
+      const subjectRegex = getPatternToMatch(directive.where['subject']);
+      const subjectPrefixRegex = getPatternToMatch(directive.where['subject-prefix']);
+      const verbRegex = getPatternToMatch(directive.where.verb);
+      const variantRegex = getPatternToMatch(directive.where.variant);
+      const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
 
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
       const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set["subject-prefix"] : undefined;
@@ -263,8 +274,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
     if (isWhereModelDirective(directive)) {
       const selectType = directive.select;
-      const modelNameRegex = getParsedSelector(directive.where["model-name"]);
-      const propertyNameRegex = getParsedSelector(directive.where["property-name"]);
+      const modelNameRegex = getPatternToMatch(directive.where["model-name"]);
+      const propertyNameRegex = getPatternToMatch(directive.where["property-name"]);
 
       const modelNameReplacer = directive.set["model-name"];
       const propertyNameReplacer = directive.set["property-name"];
@@ -317,8 +328,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
 
     if (isWhereEnumDirective(directive)) {
-      const enumNameRegex = getParsedSelector(directive.where["enum-name"]);
-      const enumValueNameRegex = getParsedSelector(directive.where["enum-value-name"]);
+      const enumNameRegex = getPatternToMatch(directive.where["enum-name"]);
+      const enumValueNameRegex = getPatternToMatch(directive.where["enum-value-name"]);
 
       const enumNameReplacer = directive.set["enum-name"];
       const enumValueNameReplacer = directive.set["enum-value-name"];
