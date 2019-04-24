@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, ModelState, allVirtualParameters } from '@microsoft.azure/autorest.codemodel-v3';
 import { values, items } from '@microsoft.azure/codegen';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
@@ -11,11 +11,13 @@ type State = ModelState<codemodel.Model>;
 
 
 interface RemoveCommandDirective {
+  select?: string;
   where: {
-    subject?: string;
-    subjectPrefix?: string;
-    verb?: string;
-    variant?: string;
+    'subject'?: string;
+    'subject-prefix'?: string;
+    'verb'?: string;
+    'variant'?: string;
+    'parameter-name'?: string;
   };
   remove: Boolean;
 }
@@ -26,7 +28,7 @@ function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
   const directive = <RemoveCommandDirective>it;
   const where = directive.where;
   const remove = directive.remove;
-  if (where && remove && (where.subject || where.verb || where.variant || where.subjectPrefix)) {
+  if (where && remove && (where.subject || where.verb || where.variant || where["subject-prefix"] || where["parameter-name"])) {
     return true;
   }
 
@@ -45,15 +47,17 @@ export async function structuralModifier(service: Host) {
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
   for (const directive of directives) {
-    const getParsedSelector = (selector: string | undefined): RegExp | undefined => {
+    const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? isNotRegex(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
 
     if (isRemoveCommandDirective(directive)) {
-      const subjectRegex = getParsedSelector(directive.where.subject);
-      const subjectPrefixRegex = getParsedSelector(directive.where.subjectPrefix);
-      const verbRegex = getParsedSelector(directive.where.verb);
-      const variantRegex = getParsedSelector(directive.where.variant);
+      const selectType = directive.select;
+      const subjectRegex = getPatternToMatch(directive.where.subject);
+      const subjectPrefixRegex = getPatternToMatch(directive.where["subject-prefix"]);
+      const verbRegex = getPatternToMatch(directive.where.verb);
+      const variantRegex = getPatternToMatch(directive.where.variant);
+      const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
 
       // select all operations
       const operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
@@ -92,10 +96,20 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
       }
 
+      if (parameterRegex && selectType === 'command') {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
+            .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
       for (const key of operationsToRemoveKeys) {
         const operationInfo = state.model.commands.operations[key].details.default;
         state.message({
-          Channel: Channel.Verbose, Text: `Removed command ${operationInfo.verb}-${operationInfo.name ? `${operationInfo.subjectPrefix}${operationInfo.subject}_${operationInfo.name}` : `${operationInfo.subjectPrefix}${operationInfo.subject}`}`
+          Channel: Channel.Verbose, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
         });
 
         delete state.model.commands.operations[key];
