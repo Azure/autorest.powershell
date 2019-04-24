@@ -1,6 +1,4 @@
-
 # Contributing
-
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.microsoft.com.
@@ -13,13 +11,11 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-
 ### Autorest plugin configuration
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 #### PowerShell
-
 > Requires
 ``` yaml 
 use-extension:
@@ -43,7 +39,6 @@ azure: false
 > Names
 ``` yaml
 prefix: ''
-service-name: $(title)
 subject-prefix: ''
 module-name: $(service-name)
 dll-name: $(module-name).private
@@ -85,7 +80,7 @@ nuspec: $(current-folder)/$(module-name).nuspec
 # Pipeline Configuration
 ``` yaml
 pipeline:
-# --- extension remodeler --- 
+# --- extension remodeler ---
 
   # "Shake the tree", and normalize the model
   remodeler:
@@ -99,7 +94,7 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
-# --- extension powershell --- 
+# --- extension powershell ---
 
   # creates high-level commands
   create-commands:
@@ -120,7 +115,7 @@ pipeline:
     input: csnamer 
 
   cosmetic-modifier:
-    input: psnamer  
+    input: psnamer
 
   add-azure-completers:
     input: cosmetic-modifier

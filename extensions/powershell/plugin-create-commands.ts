@@ -448,7 +448,7 @@ export /* @internal */ class Inferrer {
   }
 }
 
-// UNUSED
+// UNUSED: Moved to plugin-tweak-model.ts in remodeler
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
 export function titleToAzureServiceName(title: string): string {
   const titleCamelCase = pascalCase(deconstruct(title)).trim();
@@ -459,4 +459,3 @@ export function titleToAzureServiceName(title: string): string {
     .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
   return serviceName || titleCamelCase;
 }
-
