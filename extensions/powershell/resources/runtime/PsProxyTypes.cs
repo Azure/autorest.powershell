@@ -91,18 +91,20 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string PrivateCmdletName { get; }
         public bool IsInternal { get; }
         public bool IsDoNotExport { get; }
+        public bool HasParameterSets { get; }
 
         public Attribute[] Attributes { get; }
         public Parameter[] Parameters { get; }
         public Parameter[] CmdletOnlyParameters { get; }
         public string[] Profiles { get; }
 
-        public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata)
+        public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata, bool hasParameterSets = false)
         {
             CmdletName = cmdletName;
             VariantName = variantName;
             Info = info;
             Metadata = metadata;
+            HasParameterSets = hasParameterSets;
             IsFunction = Info.CommandType == CommandTypes.Function;
             PrivateModuleName = Info.Source;
             PrivateCmdletName = Metadata.Name;
@@ -184,13 +186,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return parts.Length > 1
                 ? new[] { new Variant(parts[0], parts[1], info, metadata) }
                 // Process multiple parameter sets, so we declare a variant per parameter set.
-                : info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata)).ToArray();
+                : info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata, true)).ToArray();
         }
 
         public static Parameter[] ToParameters(this Variant variant)
         {
             var parameters = variant.Metadata.Parameters.AsEnumerable();
-            if (variant.IsFunction)
+            if (variant.HasParameterSets)
             {
                 parameters = parameters.Where(p => p.Value.ParameterSets.ContainsKey(variant.VariantName));
             }
