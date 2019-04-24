@@ -19,7 +19,7 @@ AutoRest does not generate authentication code for the module. Authentication is
 `
   }
 
-  md.append('Generated', `# ${project.moduleName}
+  md.prepend('Generated', `# ${project.moduleName}
 This directory contains the PowerShell module for the ${project.serviceName} service.
 
 ---
