@@ -16,11 +16,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter]
         public SwitchParameter IncludeDoNotExport { get; set; }
 
+        [Parameter]
+        public SwitchParameter AsAlias { get; set; }
+
         protected override void ProcessRecord()
         {
-            WriteObject(GetScriptCmdlets(this, ScriptFolder)
+            var functionInfos = GetScriptCmdlets(this, ScriptFolder)
                 .Where(fi => IncludeDoNotExport || !fi.ScriptBlock.Attributes.OfType<DoNotExportAttribute>().Any())
-                .Select(fi => fi.Name), true);
+                .ToArray();
+            var aliases = functionInfos.SelectMany(i => i.ScriptBlock.Attributes).ToAliasNames();
+            var names = functionInfos.Select(fi => fi.Name).Distinct();
+            var output = (AsAlias ? aliases : names).DefaultIfEmpty("''").ToArray();
+            WriteObject(output, true);
         }
     }
 }

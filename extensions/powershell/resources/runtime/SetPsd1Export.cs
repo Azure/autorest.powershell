@@ -19,8 +19,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string Psd1Path { get; set; }
 
         private const string CmdletsToExport = "CmdletsToExport";
+        private const string AliasesToExport = "AliasesToExport";
         private const string RegionExportStart = "# region exports";
-        private const string ExportHeader = "  " + CmdletsToExport + " = ";
+        private const string CmdletsHeader = "  " + CmdletsToExport + " = ";
+        private const string AliasesHeader = "  " + AliasesToExport + " = ";
         private const string RegionExportEnd = "# endregion";
 
         protected override void ProcessRecord()
@@ -48,18 +50,28 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 startRegionIndex = tableEndIndex.Value;
             }
 
-            var exportIndex = startRegionIndex.Value + 1;
-            var hasExportLine = psd1Lines[exportIndex].StartsWith(ExportHeader);
-            if (!hasExportLine)
+            var cmdletsIndex = startRegionIndex.Value + 1;
+            var hasCmdletsLine = psd1Lines[cmdletsIndex].StartsWith(CmdletsHeader);
+            if (!hasCmdletsLine)
             {
-                psd1Lines.Insert(exportIndex, String.Empty);
+                psd1Lines.Insert(cmdletsIndex, String.Empty);
             }
 
-            var exportList = GetScriptCmdlets(ExportsFolder).Select(sc => sc.Name).Distinct().ToList();
-            exportList.Add("*");
-            psd1Lines[exportIndex] = $"{ExportHeader}{exportList.ToPsList()}";
+            var functionInfos = GetScriptCmdlets(ExportsFolder).ToArray();
+            var cmdlets = functionInfos.Select(sc => sc.Name).Distinct().Append("*").ToArray();
+            psd1Lines[cmdletsIndex] = $"{CmdletsHeader}{cmdlets.ToPsList()}";
 
-            var endRegionIndex = exportIndex + 1;
+            var aliasesIndex = cmdletsIndex + 1;
+            var hasAliasesLine = psd1Lines[aliasesIndex].StartsWith(AliasesHeader);
+            if (!hasAliasesLine)
+            {
+                psd1Lines.Insert(aliasesIndex, String.Empty);
+            }
+
+            var aliases = functionInfos.SelectMany(i => i.ScriptBlock.Attributes).ToAliasNames().Append("*").ToArray();
+            psd1Lines[aliasesIndex] = $"{AliasesHeader}{aliases.ToPsList()}";
+
+            var endRegionIndex = aliasesIndex + 1;
             var hasEndRegionLine = psd1Lines[endRegionIndex].StartsWith(RegionExportEnd);
             if (!hasEndRegionLine)
             {
