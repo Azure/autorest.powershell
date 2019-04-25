@@ -20,6 +20,7 @@ pluralizationService.addWord('database', 'databases');
 
 
 interface CommandVariant {
+  alias: Array<string>;
   verb: string;
   subject: string;
   subjectPrefix: string;
@@ -372,7 +373,8 @@ export /* @internal */ class Inferrer {
           subject: variant.subject,
           subjectPrefix: variant.subjectPrefix,
           verb: variant.verb,
-          name: vname
+          name: vname,
+          alias: variant.alias
         }
       },
       operationId: operation.operationId,
@@ -430,6 +432,7 @@ export /* @internal */ class Inferrer {
     }
 
     return {
+      alias: [],
       subject: pascalCase([...removeSequentialDuplicates(subject.map(each => pluralizationService.singularize(each)))]),
       variant: pascalCase(variant),
       verb,
