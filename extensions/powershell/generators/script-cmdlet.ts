@@ -88,7 +88,7 @@ ${command.link || ""}
         if (command.output) {
           yield `[OutputType('${getType(command.output)}')]`;
         }
-        yield command.writeable ? `[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]` : `[CmdletBinding()]`
+        yield command.writeable ? `[CmdletBinding(PositionalBinding=$false, SupportsShouldProcess, ConfirmImpact='Medium')]` : `[CmdletBinding(PositionalBinding=$false)]`
         yield `param(`;
 
         if (command.parameters) {
