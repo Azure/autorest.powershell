@@ -112,7 +112,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Parameters = this.ToParameters();
             IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
             IsDoNotExport = Attributes.OfType<DoNotExportAttribute>().Any();
-            CmdletOnlyParameters = Parameters.Where(p => !p.Metadata.Attributes.OfType<CategoryAttribute>().Any(a =>
+            CmdletOnlyParameters = Parameters.Where(p => !p.Attributes.OfType<CategoryAttribute>().Any(a =>
                 a.Categories.Contains(ParameterCategory.Azure) ||
                 a.Categories.Contains(ParameterCategory.Runtime))).ToArray();
             Profiles = Attributes.OfType<ProfileAttribute>().SelectMany(pa => pa.Profiles).ToArray();
