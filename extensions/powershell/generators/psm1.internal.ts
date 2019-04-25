@@ -26,7 +26,7 @@ export async function generatePsm1Internal(project: Project) {
   Export-ModuleMember`);
   psm1.append('LoadScripts', `
   Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
-  Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot)`);
+  Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot) -Alias (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot -AsAlias)`);
   psm1.trim();
   project.state.writeFile(project.psm1Internal, `${psm1}`, undefined, 'source-file-powershell');
 }

@@ -49,6 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     var sb = new StringBuilder();
                     sb.Append(variantGroup.ToHelpCommentOutput());
                     sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
+                    sb.Append(variantGroup.Aliases.ToAliasOutput());
                     sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
                     sb.Append(variantGroup.ToCmdletBindingOutput());
 
@@ -68,7 +69,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                         {
                             sb.Append(parameter.ToParameterOutput(variantGroup.HasMultipleVariants, parameterGroup.HasAllVariants));
                         }
-                        sb.Append(parameterGroup.Alias.ToAliasOutput());
+                        sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
                         sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                         sb.Append(parameterGroup.ToArgumentCompleterOutput());
                         sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());

@@ -67,14 +67,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class AliasOutput
     {
-        public AliasAttribute Alias { get; }
+        public string[] Aliases { get; }
+        public bool IncludeIndent { get; }
 
-        public AliasOutput(AliasAttribute alias)
+        public AliasOutput(string[] aliases, bool includeIndent = false)
         {
-            Alias = alias;
+            Aliases = aliases;
+            IncludeIndent = includeIndent;
         }
 
-        public override string ToString() => Alias != null ? $"{Indent}[Alias({Alias.AliasNames.Select(an => $"'{an}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => Aliases?.Any() ?? false ? $"{(IncludeIndent ? Indent : String.Empty)}[Alias({Aliases.Select(an => $"'{an}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
     internal class ValidateNotNullOutput
@@ -259,7 +261,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static ParameterOutput ToParameterOutput(this Parameter parameter, bool hasMultipleVariantsInVariantGroup, bool hasAllVariantsInParameterGroup) => new ParameterOutput(parameter, hasMultipleVariantsInVariantGroup, hasAllVariantsInParameterGroup);
 
-        public static AliasOutput ToAliasOutput(this AliasAttribute alias) => new AliasOutput(alias);
+        public static AliasOutput ToAliasOutput(this string[] aliases, bool includeIndent = false) => new AliasOutput(aliases, includeIndent);
 
         public static ValidateNotNullOutput ToValidateNotNullOutput(this bool hasValidateNotNull) => new ValidateNotNullOutput(hasValidateNotNull);
 

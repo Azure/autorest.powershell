@@ -22,8 +22,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static IEnumerable<CommandInfo> GetModuleCmdlets(PSCmdlet cmdlet, params string[] modulePaths)
         {
-            var getCmdletsCommand = String.Join(" + ",modulePaths.Select(mp => $"(Get-Command -Module (Import-Module '{mp}' -PassThru))"));
-            return cmdlet?.RunScript<CommandInfo>(getCmdletsCommand) ?? RunScript<CommandInfo>(getCmdletsCommand);
+            var getCmdletsCommand = String.Join(" + ", modulePaths.Select(mp => $"(Get-Command -Module (Import-Module '{mp}' -PassThru))"));
+            return (cmdlet?.RunScript<CommandInfo>(getCmdletsCommand) ?? RunScript<CommandInfo>(getCmdletsCommand))
+                .Where(ci => ci.CommandType != CommandTypes.Alias);
         }
 
         public static IEnumerable<CommandInfo> GetModuleCmdlets(params string[] modulePaths)

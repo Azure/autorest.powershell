@@ -61,6 +61,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static string ToPsList(this IEnumerable<string> items) => String.Join(", ", items.Select(i => $"'{i}'"));
 
+        public static IEnumerable<string> ToAliasNames(this IEnumerable<Attribute> attributes) => attributes.OfType<AliasAttribute>().SelectMany(aa => aa.AliasNames).Distinct();
+
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T : class
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
 

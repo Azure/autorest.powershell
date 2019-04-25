@@ -27,6 +27,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string CmdletName { get; }
         public Variant[] Variants { get; }
 
+        public string[] Aliases { get; }
         public PSTypeName[] OutputTypes { get; }
         public bool SupportsShouldProcess { get; }
         public string DefaultParameterSetName { get; }
@@ -43,6 +44,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             CmdletName = cmdletName;
             Variants = variants;
+            Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.Metadata.SupportsShouldProcess);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
@@ -128,7 +130,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasAllVariants { get; }
         public Type ParameterType { get; }
 
-        public AliasAttribute Alias { get; }
+        public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
         public string HelpMessage { get; }
@@ -143,7 +145,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
             ParameterType = Parameters.Select(p => p.Metadata.ParameterType).First();
 
-            Alias = Parameters.SelectMany(p => p.Attributes.OfType<AliasAttribute>()).FirstOrDefault();
+            Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             HelpMessage = Parameters.Select(p => p.ParameterAttribute.HelpMessage).FirstOrDefault(hm => !String.IsNullOrEmpty(hm));

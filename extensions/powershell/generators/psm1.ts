@@ -102,7 +102,7 @@ export async function generatePsm1(project: Project) {
 
   if($exportsPath) {
     Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
-    Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath)
+    Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath) -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)
   }`);
 
   psm1.append('Finalization', `
