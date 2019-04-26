@@ -7,6 +7,8 @@ import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases,
 import { items, keys, values, select, pascalCase, deconstruct, fixLeadingNumber } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
+import { OAuthFlows } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/security-scheme';
+import { parentPort } from 'worker_threads';
 
 export const HeaderProperty = 'HeaderProperty';
 export enum HeaderPropertyType {
@@ -61,6 +63,17 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       }
     }
   }
+
+  // schemas that have parents and implement properties that are in the parent schemas
+  // will have the property dropped in the child schema
+  for (const schema of values(model.schemas)) {
+    if (schema.allOf.length > 0) {
+      if (!dropDuplicatePropertiesInChildSchemas(schema, state)) {
+        throw new Error("Schemas are in conflict.");
+      }
+    }
+  }
+
 
   if (await state.getValue('use-storage-pipeline', false)) {
     // we're going to create new models for the reponse headers ?
@@ -217,6 +230,39 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   }
 
   return model;
+}
+
+function dropDuplicatePropertiesInChildSchemas(schema: Schema, state: State, map: Map<string, Property> = new Map()) {
+  let success = true;
+  for (const parent of schema.allOf) {
+    // handle parents first
+    if (!dropDuplicatePropertiesInChildSchemas(parent, state, map)) {
+      return false;
+    };
+  }
+  for (const { key: id, value: property } of items(schema.properties)) {
+    // see if it's in the parent.
+    const pProp = map.get(property.serializedName)
+    if (pProp) {
+      // if the parent prop is the same type as the child prop
+      // we're going to drop the child property.
+      if (pProp.schema.type === property.schema.type) {
+        // if it's an object type, it has to be the exact same schema type too
+        if (pProp.schema.type != JsonType.Object || pProp.schema === property.schema) {
+          state.verbose(`Property '${property.serializedName}' in '${schema.details.default.name}' has a property the same as the parent, and is dropping the duplicate.`, {});
+          delete schema.properties[id];
+        } else {
+          const conflict = `Property '${property.serializedName}' in '${schema.details.default.name}' has a conflict with a parent schema (allOf ${schema.allOf.joinWith(each => each.details.default.name)}.`
+          state.error(conflict, [], {});
+          success = false;
+        }
+      }
+    }
+    else {
+      map.set(property.serializedName, property);
+    }
+  }
+  return success;
 }
 
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
