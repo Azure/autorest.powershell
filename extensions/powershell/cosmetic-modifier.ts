@@ -30,6 +30,7 @@ interface WhereCommandDirective {
     'parameter-name'?: string;
     'parameter-description'?: string;
   };
+  'clear-alias': boolean;
   hide?: boolean;
 }
 
@@ -60,7 +61,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter')) {
+  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['remove-alias'])) {
     const prohibitedFilters = ['model-name', 'property-name', 'enum-name', 'enum-value-name'];
     let error = getFilterError(where, prohibitedFilters, 'command');
 
@@ -162,6 +163,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
     if (isWhereCommandDirective(directive)) {
       const selectType = directive.select;
+      const clearAlias = directive["clear-alias"];
       const subjectRegex = getPatternToMatch(directive.where['subject']);
       const subjectPrefixRegex = getPatternToMatch(directive.where['subject-prefix']);
       const verbRegex = getPatternToMatch(directive.where.verb);
@@ -234,6 +236,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             });
           }
 
+          if (clearAlias) {
+            parameter.alias = [];
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from parameter ${parameter.name}.`
+            });
+          }
+
           if (alias) {
             parameter.alias = Array.isArray(alias) ? parameter.alias.concat(alias) : (parameter.alias.indexOf(alias) === -1) ? parameter.alias.concat(alias) : parameter.alias;
             state.message({
@@ -272,6 +281,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
             state.message({
               Channel: Channel.Verbose, Text: modificationMessage
+            });
+          }
+
+          if (clearAlias) {
+            operation.details.csharp.alias = [];
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from command ${newCommandName}.`
             });
           }
 
