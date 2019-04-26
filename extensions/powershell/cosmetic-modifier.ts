@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { values } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
@@ -22,6 +22,7 @@ interface WhereCommandDirective {
     'parameter-name'?: string;
   };
   set?: {
+    'alias': Array<string> | string;
     'subject'?: string;
     'subject-prefix'?: string;
     'verb'?: string;
@@ -65,7 +66,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
 
     if (set !== undefined) {
       const prohibitedSetters = ['property-name', 'property-description', ' model-name', 'enum-name', 'enum-value-name'];
-      error = getSetError(set, prohibitedSetters, 'command');
+      error += getSetError(set, prohibitedSetters, 'command');
     }
 
     if (error) {
@@ -101,7 +102,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
     const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
-    error = getSetError(set, prohibitedSetters, 'enum');
+    error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
     }
@@ -132,7 +133,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
     const prohibitedFilters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
-    error = getSetError(set, prohibitedSetters, 'enum');
+    error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
     }
@@ -167,6 +168,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const variantRegex = getPatternToMatch(directive.where.variant);
       const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
 
+      const alias = (directive.set !== undefined) ? directive.set.alias : undefined;
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
       const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set["subject-prefix"] : undefined;
       const verbReplacer = (directive.set !== undefined) ? directive.set.verb : undefined;
@@ -232,6 +234,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             });
           }
 
+          if (alias) {
+            parameter.alias = Array.isArray(alias) ? parameter.alias.concat(alias) : (parameter.alias.indexOf(alias) === -1) ? parameter.alias.concat(alias) : parameter.alias;
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${alias} to parameter ${parameter.name}.`
+            });
+          }
         }
 
       } else if (operations) {
@@ -264,6 +272,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
             state.message({
               Channel: Channel.Verbose, Text: modificationMessage
+            });
+          }
+
+          if (alias) {
+            operation.details.csharp.alias = Array.isArray(alias) ? operation.details.csharp.alias.concat(alias) : (operation.details.csharp.alias.indexOf(alias) === -1) ? operation.details.csharp.alias.concat(alias) : operation.details.csharp.alias;
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${alias} to command ${newCommandName}.`
             });
           }
         }

@@ -693,6 +693,10 @@ export class CmdletClass extends Class {
             if (propertyType.schema.details.csharp.enum !== undefined) {
               cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${propertyType.declaration})`] }));
             }
+            // add aliases if there is any
+            if (vParam.alias.length > 0) {
+              cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
+            }
 
             this.add(cmdletParameter);
           }
@@ -749,6 +753,11 @@ export class CmdletClass extends Class {
         }
         regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
+        // add aliases if there is any
+        if (vParam.alias.length > 0) {
+          regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
+        }
+
         const httpParam = origin.details.csharp.httpParameter;
         const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter'
 
@@ -790,6 +799,11 @@ export class CmdletClass extends Class {
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
+
+    // add alias attribute if there is any aliases for this cmdlet
+    if (operation.details.csharp.alias.length > 0) {
+      this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => "\"" + x + "\"") }));
+    }
 
     // set to hold the output types
     const outputTypes = new Set<string>();
