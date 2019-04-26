@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items, } from '@microsoft.azure/codegen';
-import { KnownMediaType } from "@microsoft.azure/autorest.codemodel-v3"
+import { values } from '@microsoft.azure/codegen';
+import { KnownMediaType, VirtualProperty } from "@microsoft.azure/autorest.codemodel-v3"
 
-import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, Property, Modifier } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelInterfaceProperty } from './interface-property';
 import { ModelClass } from './model-class';
-import { TypeContainer } from '@microsoft.azure/codegen-csharp/dist/type-container';
+import { TypeContainer, IInterface } from '@microsoft.azure/codegen-csharp/dist/type-container';
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): Schema {
@@ -72,6 +72,39 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     // return this.classImplementation.hasHeaderProperties; 
     return false;
   }
+
+  private containsProperty(properties: Array<Property>, property: Property, ignoreType: boolean = false): boolean {
+    const arrayProperty = values(properties).linq.first(p => p.name === property.name);
+    if (arrayProperty !== undefined) {
+      return ignoreType || (arrayProperty.type.declaration === property.type.declaration);
+    }
+    return false;
+  }
+
+  public reevaluateProperties() {
+    const parentProperties = values(this.interfaces).linq.selectMany(i => i.allProperties).linq.toArray();
+    // Parent properties that have the same name and type
+    const duplicateProperties = values(this.properties).linq.where(p => this.containsProperty(parentProperties, p)).linq.toArray();
+    for (const duplicateProperty of duplicateProperties) {
+      this.properties.forEach((p, index) => {
+        if (p === duplicateProperty) {
+          this.properties.splice(index, 1);
+          this.state.warning(`The property '${p.name}' from '${this.name}' was removed since it already exists in an implemented interface.`, [`DuplicateInterfaceMember`]);
+        }
+      });
+    }
+    // Parent properties that have the same name but different type
+    const differentTypeProperties = values(this.properties).linq.where(p => this.containsProperty(parentProperties, p, true)).linq.toArray();
+    for (const differentTypeProperty of differentTypeProperties) {
+      this.properties.forEach((p, index) => {
+        if (p === differentTypeProperty) {
+          this.properties[index].new = Modifier.New;
+          this.state.warning(`The property '${p.name}' from '${this.name}' has access modifier 'new' since it already exists in an implemented interface but declared as different type '${p.type.declaration}'.`, [`DuplicateInterfaceMemberDifferentType`]);
+        }
+      });
+    }
+  }
+
   constructor(parent: TypeContainer, schema: Schema, public classImplementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
     super(parent, `I${schema.details.csharp.name}`);
     this.partial = true;
@@ -107,7 +140,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
       if (this.state.project.xmlSerialization) {
         this.interfaces.push(ClientRuntime.IXmlSerializable);
       }
+      this.reevaluateProperties();
     }
-
   }
 }

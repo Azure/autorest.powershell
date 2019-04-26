@@ -25,6 +25,7 @@ export class DictionaryImplementation extends Class {
         this.ownsDictionary = true;
         this.valueType = this.schema.additionalProperties === true ? System.Object : this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state)
         this.modelClass.modelInterface.interfaces.push(this.implementIDictionary(this, 'additionalProperties', System.String, this.valueType));
+        this.modelClass.modelInterface.reevaluateProperties();
       }
     }
 

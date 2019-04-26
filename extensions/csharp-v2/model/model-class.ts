@@ -295,6 +295,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
 
       this.modelInterface.interfaces.push(iface);
+      this.modelInterface.reevaluateProperties();
 
       //
       const addlPropType = this.additionalPropertiesType(aSchema);
