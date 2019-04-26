@@ -10,11 +10,6 @@ import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
 type State = ModelState<codemodel.Model>;
 
-// well-known parameters to singularize
-const namesToSingularize = new Set<string>([
-  'Tags'
-]);
-
 export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
@@ -63,13 +58,25 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
       const virtualParameters = [...allVirtualParameters(operation.details.csharp.virtualParameters)]
       for (const parameter of virtualParameters) {
-        // save previous name as alias
-        const prevName = parameter.name;
+        let prevName = parameter.name;
         const otherParametersNames = values(virtualParameters)
           .linq.select(each => each.name)
           .linq.where(name => name !== parameter.name)
           .linq.toArray();
 
+        // first try to singularize the parameter
+        const singularName = singularize(parameter.name);
+        if (prevName != singularName) {
+          parameter.name = singularName;
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to singular ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+        }
+
+        // save the name again to compare in case it was modified
+        prevName = parameter.name;
+
+        // now remove the subject from the beginning of the parameter
+        // to reduce naming redundancy
+        // e.g. get-vm -vmname ---> get-vm -name
         const sanitizedName = removeProhibitedPrefix(
           parameter.name,
           operation.details.csharp.subject,
@@ -81,21 +88,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             parameter.alias = [];
           }
 
+          // saved the prev name as alias
           parameter.alias.push(parameter.name);
 
           // change name
           parameter.name = sanitizedName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
-        } else if (namesToSingularize.has(parameter.name) && isAzure) {
-          if (parameter.alias === undefined) {
-            parameter.alias = [];
-          }
-
-          parameter.alias.push(parameter.name);
-
-          // change name
-          parameter.name = singularize(parameter.name);
-          state.message({ Channel: Channel.Verbose, Text: `Well-Know Azure parameter rename -> Changed parameter-name ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+          state.message({ Channel: Channel.Verbose, Text: `                         -> And, added alias '${prevName}'` });
         }
       }
     }
@@ -104,42 +103,42 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const virtualProperties = [...allVirtualProperties(schema.details.csharp.virtualProperties)];
 
       for (const property of virtualProperties) {
-        // save previous name as alias
+        let prevName = property.name;
         const otherPropertiesNames = values(virtualProperties)
           .linq.select(each => each.name)
           .linq.where(name => name !== property.name)
           .linq.toArray();
 
+        // first try to singularize the property
+        const singularName = singularize(property.name);
+        if (prevName != singularName) {
+          property.name = singularName;
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.details.csharp.name}` });
+        }
+
+        // save the name again to compare in case it was modified
+        prevName = property.name;
+
+        // now remove the model=name from the beginning of the property-name
+        // to reduce naming redundancy
         const sanitizedName = removeProhibitedPrefix(
           property.name,
           schema.details.csharp.name,
           otherPropertiesNames
         );
 
-        if (property.name !== sanitizedName) {
-          // apply alias
-          const prevName = property.name;
+        if (prevName !== sanitizedName) {
           if (property.alias === undefined) {
             property.alias = [];
           }
 
+          // saved the prev name as alias
           property.alias.push(property.name);
 
           // change name
           property.name = sanitizedName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
-        } else if (namesToSingularize.has(property.name) && isAzure) {
-          // apply alias
-          const prevName = property.name;
-          if (property.alias === undefined) {
-            property.alias = [];
-          }
-
-          property.alias.push(prevName);
-
-          // change name
-          property.name = singularize(property.name);
-          state.message({ Channel: Channel.Verbose, Text: `Well-Know Azure property-rename -> Changed property-name ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Verbose, Text: `                        -> And, added alias '${prevName}'` });
         }
       }
     }
