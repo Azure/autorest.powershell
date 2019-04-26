@@ -61,7 +61,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['remove-alias'])) {
+  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['clear-alias'])) {
     const prohibitedFilters = ['model-name', 'property-name', 'enum-name', 'enum-value-name'];
     let error = getFilterError(where, prohibitedFilters, 'command');
 
