@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
@@ -390,20 +390,20 @@ export class CmdletClass extends Class {
               // the schema should be the error information.
               // this supports both { error { message, code} } and { message, code} 
 
-              let props = getAllProperties(each.schema);
-              const errorProperty = values(props).linq.first(p => p.details.csharp.name === 'error');
+              let props = getAllPublicVirtualProperties(each.schema.details.csharp.virtualProperties);
+              const errorProperty = values(props).linq.first(p => p.property.details.csharp.name === 'error');
               let ep = '';
               if (errorProperty) {
-                props = getAllProperties(errorProperty.schema);
-                ep = `${errorProperty.details.csharp.name}?.`;
+                props = getAllPublicVirtualProperties(errorProperty.property.schema.details.csharp.virtualProperties);
+                ep = `${errorProperty.name}?.`
               }
 
-              const codeProp = values(props).linq.first(p => p.details.csharp.name === 'code');
-              const messageProp = values(props).linq.first(p => p.details.csharp.name === 'message');
+              const codeProp = values(props).linq.first(p => p.name.toLowerCase() === 'code');
+              const messageProp = values(props).linq.first(p => p.name.toLowerCase() === 'message');
 
               if (codeProp && messageProp) {
-                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response).${ep}${codeProp.details.csharp.name};` });
-                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response).${ep}${messageProp.details.csharp.name};` });
+                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response).${ep}${codeProp.name};` });
+                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response).${ep}${messageProp.name};` });
                 yield lcode.declarationStatement;
                 yield lmessage.declarationStatement;
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
@@ -438,19 +438,28 @@ export class CmdletClass extends Class {
                     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response`) });
                     yield result.declarationStatement;
                     // write out the current contents
-                    yield `WriteObject(${result.value}.${valueProperty.details.csharp.name},true);`;
-                    const nextLinkName = `${result.value}.${nextLinkProperty.details.csharp.name}`;
-                    yield (If(`${nextLinkName} != null`,
-                      If(`responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage `, function* () {
-                        yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
-                        yield $this.eventListener.signal(Events.FollowingNextLink);
-                        yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-                      })
-                    ));
+                    const vp = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.details.csharp.name);
+                    if (vp) {
+                      yield `WriteObject(${result.value}.${vp.name},true);`;
+                    }
+                    const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.details.csharp.name);
+                    if (nl) {
+                      const nextLinkName = `${result.value}.${nl.name}`;
+                      yield (If(`${nextLinkName} != null`,
+                        If(`responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage `, function* () {
+                          yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
+                          yield $this.eventListener.signal(Events.FollowingNextLink);
+                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                        })
+                      ));
+                    }
                     return;
                   } else if (valueProperty) {
                     // it's just a nested array
-                    yield `WriteObject((await response).${valueProperty.details.csharp.name}, true);`;
+                    const p = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.details.csharp.name);
+                    if (p) {
+                      yield `WriteObject((await response).${p.name}, true);`;
+                    }
                     return;
                   }
                   break;
@@ -467,10 +476,10 @@ export class CmdletClass extends Class {
 
             yield `// (await response) // should be ${$this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
 
-            const props = getAllProperties(schema);
+            const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
             if (props.length === 1) {
               // let's unroll this and write out the single property
-              yield `WriteObject((await response).${props[0].details.csharp.name});`;
+              yield `WriteObject((await response).${props[0].name});`;
               return;
             }
 
