@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -10,8 +11,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public string ProfileName { get; }
         public Variant[] Variants { get; }
-
-        private const string NoProfiles = "__NoProfiles";
         public string ProfileFolder { get; }
 
         public ProfileGroup(Variant[] variants, string profileName = NoProfiles)
@@ -25,6 +24,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class VariantGroup
     {
         public string CmdletName { get; }
+        public string ProfileName { get; }
         public Variant[] Variants { get; }
 
         public string[] Aliases { get; }
@@ -40,9 +40,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string FileName { get; }
         public string FilePath { get; }
 
-        public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, bool isTest = false)
+        public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false)
         {
             CmdletName = cmdletName;
+            ProfileName = profileName;
             Variants = variants;
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
@@ -133,7 +134,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
-        public string HelpMessage { get; }
         public ParameterCategory OrderCategory { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
@@ -148,7 +148,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
-            HelpMessage = Parameters.Select(p => p.ParameterAttribute.HelpMessage).FirstOrDefault(hm => !String.IsNullOrEmpty(hm));
             OrderCategory = Parameters.SelectMany(p => p.Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories)).DefaultIfEmpty(ParameterCategory.Body).Min();
         }
     }
@@ -176,6 +175,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal static class PsProxyTypeExtensions
     {
+        public const string NoProfiles = "__NoProfiles";
+
         public static bool IsValidDefaultParameterSetName(this string parameterSetName) =>
             !String.IsNullOrEmpty(parameterSetName)
             && parameterSetName != AllParameterSets;

@@ -5,6 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -57,10 +58,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var pa = Parameter.ParameterAttribute;
             var psnText = HasMultipleVariantsInVariantGroup && !HasAllVariantsInParameterGroup ? $"ParameterSetName='{Parameter.VariantName}'" : String.Empty;
             var positionText = pa.Position != Int32.MinValue ? $"Position={pa.Position}" : String.Empty;
-            var mandatoryText = pa.Mandatory ? "Mandatory" : String.Empty;
+            var mandatoryText = Parameter.IsMandatory ? "Mandatory" : String.Empty;
             var dontShowText = pa.DontShow ? "DontShow" : String.Empty;
             var vfpText = pa.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
-            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText }.JoinIgnoreEmpty(ItemSeparator);
+            var helpText = $"HelpMessage='{pa.HelpMessage.ToPsStringLiteral()}'";
+            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, helpText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
@@ -232,6 +234,42 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
+    internal class ProfileOutput
+    {
+        public string ProfileName { get; }
+
+        public ProfileOutput(string profileName)
+        {
+            ProfileName = profileName;
+        }
+
+        public override string ToString() => ProfileName != NoProfiles ? $"[{typeof(ProfileAttribute).ToPsAttributeType()}('{ProfileName}')]{Environment.NewLine}" : String.Empty;
+    }
+
+    internal class DescriptionOutput
+    {
+        public string Description { get; }
+
+        public DescriptionOutput(string description)
+        {
+            Description = description;
+        }
+
+        public override string ToString() => !String.IsNullOrEmpty(Description) ? $"[{typeof(DescriptionAttribute).ToPsAttributeType()}('{Description.ToPsStringLiteral()}')]{Environment.NewLine}" : String.Empty;
+    }
+
+    internal class ParameterCategoryOutput
+    {
+        public ParameterCategory Category { get; }
+
+        public ParameterCategoryOutput(ParameterCategory category)
+        {
+            Category = category;
+        }
+
+        public override string ToString() => $"{Indent}[{typeof(CategoryAttribute).ToPsAttributeType()}('{Category}')]{Environment.NewLine}";
+    }
+
     internal static class PsProxyOutputExtensions
     {
         public const string NoParameters = "__NoParameters";
@@ -251,7 +289,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
         }
 
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''");
+        public static string ToPsAttributeType(this Type type) => type.ToPsType().RemoveEnd("Attribute");
+
+        // https://stackoverflow.com/a/5284606/294804
+        private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
+
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''")?.Replace("\r\n", " ")?.Replace("\n", " ");
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 
@@ -280,5 +323,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
 
         public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
+
+        public static ProfileOutput ToProfileOutput(this string profileName) => new ProfileOutput(profileName);
+
+        public static DescriptionOutput ToDescriptionOutput(this string description) => new DescriptionOutput(description);
+
+        public static ParameterCategoryOutput ToParameterCategoryOutput(this ParameterCategory category) => new ParameterCategoryOutput(category);
     }
 }

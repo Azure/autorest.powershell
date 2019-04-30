@@ -42,7 +42,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var variantGroups = profileGroup.Variants
                     .GroupBy(v => new { v.CmdletName, v.IsInternal })
                     .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(),
-                        Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, profileGroup.ProfileFolder)));
+                        Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, profileGroup.ProfileFolder),
+                        profileGroup.ProfileName));
 
                 foreach (var variantGroup in variantGroups)
                 {
@@ -52,6 +53,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(variantGroup.Aliases.ToAliasOutput());
                     sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
                     sb.Append(variantGroup.ToCmdletBindingOutput());
+                    sb.Append(variantGroup.ProfileName.ToProfileOutput());
+                    sb.Append(variantGroup.Description.ToDescriptionOutput());
 
                     sb.Append("param(");
                     var allVariantNames = variantGroup.Variants.Select(vg => vg.VariantName).ToArray();
@@ -72,8 +75,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                         sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
                         sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                         sb.Append(parameterGroup.ToArgumentCompleterOutput());
+                        sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
                         sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
-                        sb.Append(parameterGroup.HelpMessage.ToParameterHelpOutput());
                         sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
                     }
                     sb.Append($"){Environment.NewLine}{Environment.NewLine}");
