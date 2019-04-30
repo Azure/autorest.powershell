@@ -61,7 +61,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var mandatoryText = Parameter.IsMandatory ? "Mandatory" : String.Empty;
             var dontShowText = pa.DontShow ? "DontShow" : String.Empty;
             var vfpText = pa.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
-            var helpText = $"HelpMessage='{pa.HelpMessage.ToPsStringLiteral()}'";
+            var helpMessage = pa.HelpMessage.ToPsStringLiteral();
+            var helpText = !String.IsNullOrEmpty(helpMessage) ? $"HelpMessage='{helpMessage}'" : String.Empty;
             var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, helpText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
