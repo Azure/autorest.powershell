@@ -12,7 +12,7 @@ export async function generatePsm1Custom(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1Custom) || '');
   const dllPath = relative(project.customFolder, project.dll);
   const internalPath = relative(project.customFolder, project.psm1Internal);
-  psm1.append('Initialization', `
+  psm1.prepend('Generated', `
   # Load the private module dll
   $null = Import-Module -PassThru -Name (Join-Path $PSScriptRoot '${dllPath}')
 
@@ -23,10 +23,13 @@ export async function generatePsm1Custom(project: Project) {
   }
 
   # Export nothing to clear implicit exports
-  Export-ModuleMember`);
-  psm1.append('LoadScripts', `
+  Export-ModuleMember
+
+  # Export script cmdlets
   Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
   Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot) -Alias (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot -AsAlias)`);
+  psm1.removeRegion('Initialization');
+  psm1.removeRegion('LoadScripts');
   psm1.trim();
   project.state.writeFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
 }

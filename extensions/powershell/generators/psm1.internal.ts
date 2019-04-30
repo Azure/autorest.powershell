@@ -7,26 +7,24 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
+import { getProfileExportScript } from './psm1'
 
 export async function generatePsm1Internal(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1Internal) || '');
   const dllPath = relative(project.internalFolder, project.dll);
-  const customPath = relative(project.internalFolder, project.psm1Custom);
-  psm1.append('Initialization', `
+  psm1.prepend('Generated', `
   # Load the private module dll
   $null = Import-Module -PassThru -Name (Join-Path $PSScriptRoot '${dllPath}')
 
-  # Load the custom module
-  #$customModulePath = Join-Path $PSScriptRoot '${customPath}'
-  #if(Test-Path $customModulePath) {
-    #$null = Import-Module -Name $customModulePath
-  #}
+  # Get the private module's instance
+  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 
   # Export nothing to clear implicit exports
-  Export-ModuleMember`);
-  psm1.append('LoadScripts', `
-  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
-  Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot) -Alias (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot -AsAlias)`);
+  Export-ModuleMember
+${getProfileExportScript('$PSScriptRoot')}`);
+
+  psm1.removeRegion('Initialization');
+  psm1.removeRegion('LoadScripts');
   psm1.trim();
   project.state.writeFile(project.psm1Internal, `${psm1}`, undefined, 'source-file-powershell');
 }

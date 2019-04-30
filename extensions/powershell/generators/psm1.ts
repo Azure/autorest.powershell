@@ -10,25 +10,10 @@ import { join, relative } from 'path';
 
 export async function generatePsm1(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
-  psm1.append('Initialization', `
-  # Get this module's instance
-  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
-
-  # Load the private module dll
-  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
-
-  # Load the custom module
-  $customModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
-  if(Test-Path $customModulePath) {
-    $null = Import-Module -Name $customModulePath
-  }
-
-  # Export nothing to clear implicit exports
-  Export-ModuleMember`);
-
+  let azureInitialize = ''
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
-    psm1.append('AzureInitialization', `
+    azureInitialize = `
   # Load required Az.Accounts module
   $accountsName = 'Az.Accounts'
   $accountsModule = Get-Module -Name $accountsName
@@ -74,12 +59,42 @@ export async function generatePsm1(project: Project) {
   $instance.ArgumentCompleter = $VTable.ArgumentCompleter
 
   # The name of the currently selected Azure profile
-  $instance.ProfileName = $VTable.ProfileName`);
+  $instance.ProfileName = $VTable.ProfileName
+`;
   }
 
-  psm1.append('LoadExports', `
+  psm1.prepend('Generated', `
+  # Load the private module dll
+  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
+
+  # Get the private module's instance
+  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
+${azureInitialize}
+  # Load the custom module
+  $customModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
+  if(Test-Path $customModulePath) {
+    $null = Import-Module -Name $customModulePath
+  }
+
+  # Export nothing to clear implicit exports
+  Export-ModuleMember
+${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
+  # Finalize initialization of this module
+  $instance.Init();
+  Write-Information "Loaded Module '$($instance.Name)'"`);
+
+  psm1.removeRegion('Initialization');
+  psm1.removeRegion('AzureInitialization');
+  psm1.removeRegion('LoadExports');
+  psm1.removeRegion('Finalization');
+  psm1.trim();
+  project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
+}
+
+export function getProfileExportScript(exportFolderScript: string): string {
+  return `
   # Export proxy cmdlet scripts
-  $exportsPath = Join-Path $PSScriptRoot '${project.exportsFolder}'
+  $exportsPath = ${exportFolderScript}
   $directories = Get-ChildItem -Directory -Path $exportsPath
   $profileDirectory = $null
   if($instance.ProfileName) {
@@ -103,13 +118,6 @@ export async function generatePsm1(project: Project) {
   if($exportsPath) {
     Get-ChildItem -Path $exportsPath -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
     Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath) -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)
-  }`);
-
-  psm1.append('Finalization', `
-  # Finalize initialization of this module
-  $instance.Init();
-  Write-Information "Loaded Module '$($instance.Name)'"`);
-
-  psm1.trim();
-  project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
+  }
+`;
 }
