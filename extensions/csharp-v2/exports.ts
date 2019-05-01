@@ -7,3 +7,4 @@ export * from './schema/object';
 export * from './project';
 export * from './schema/schema-resolver';
 export * from './schema/extended-type-declaration';
+export * from './schema/enum';

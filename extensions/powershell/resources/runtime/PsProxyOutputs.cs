@@ -105,7 +105,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterType = parameterGroup.ParameterType;
         }
 
-        public override string ToString() => HasArgumentCompleter ? $"{Indent}[ArgumentCompleter([{ParameterType.ToPsType()}])]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => HasArgumentCompleter ? $"{Indent}[ArgumentCompleter([{ParameterType.Unwrap().ToPsType()}])]{Environment.NewLine}" : String.Empty;
     }
 
     internal class ParameterTypeOutput

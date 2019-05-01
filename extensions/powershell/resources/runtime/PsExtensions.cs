@@ -13,7 +13,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         // https://stackoverflow.com/a/4452598/294804
         // https://stackoverflow.com/a/28701974/294804
         // Note: This will unwrap nested collections, but we don't generate nested collections.
-        private static Type Unwrap(this Type type)
+        public static Type Unwrap(this Type type)
         {
             if (type.IsArray)
             {
