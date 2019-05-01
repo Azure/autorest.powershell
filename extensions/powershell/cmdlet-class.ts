@@ -10,7 +10,7 @@ import {
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration
 } from '@microsoft.azure/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
@@ -699,8 +699,10 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             cmdletParameter.description = desc;
 
-            if (propertyType.schema.details.csharp.enum !== undefined) {
-              cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${propertyType.declaration})`] }));
+            const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+            const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
+            if (isEnum || hasEnum) {
+              cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
             }
             // add aliases if there is any
             if (vParam.alias.length > 0) {
@@ -783,8 +785,10 @@ export class CmdletClass extends Class {
           // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
         }
 
-        if (td.schema.details.csharp.enum !== undefined) {
-          regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${td.declaration})`] }));
+        const isEnum = td.schema.details.csharp.enum !== undefined;
+        const hasEnum = td instanceof ArrayOf && td.elementType instanceof EnumImplementation;
+        if (isEnum || hasEnum) {
+          regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>td).elementType.declaration : td.declaration})`] }));
         }
       }
     }

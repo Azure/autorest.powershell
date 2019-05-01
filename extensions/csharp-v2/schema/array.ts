@@ -24,7 +24,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return toExpression(`null /* arrayOf */`);
   }
 
-  constructor(public schema: Schema, public isRequired: boolean, protected elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
+  constructor(public schema: Schema, public isRequired: boolean, public elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
   }
 
   protected get isWrapped(): boolean {
