@@ -8,14 +8,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal static class PsHelpers
     {
-        public static IEnumerable<T> RunScript<T>(string script) where T: class
+        public static IEnumerable<T> RunScript<T>(string script)
             => Pwsh.Create().AddScript(script).Invoke<T>();
 
         public static void RunScript(string script)
             => RunScript<PSObject>(script);
 
-        public static IEnumerable<T> RunScript<T>(CommandInvocationIntrinsics cii, string script) where T : class
-            => cii.NewScriptBlock(script).Invoke().Select(o => o?.BaseObject as T).Where(m => m != null);
+        public static IEnumerable<T> RunScript<T>(CommandInvocationIntrinsics cii, string script)
+            => cii.InvokeScript(script).Select(o => o?.BaseObject).Where(o => o != null).OfType<T>();
 
         public static void RunScript(CommandInvocationIntrinsics cii, string script)
             => RunScript<PSObject>(cii, script);
