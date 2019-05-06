@@ -58,6 +58,10 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     return toExpression(`default(${this.declaration})`);
   }
 
+  get convertObjectMethod() {
+    return `(v)=> global::System.Convert.ChangeType(v, typeof(${this.baseType}))`
+  }
+
   constructor(public schema: Schema) {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */

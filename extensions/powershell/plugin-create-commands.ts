@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, } from '@microsoft.azure/autorest.codemodel-v3';
+import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService, fail, removeSequentialDuplicates } from '@microsoft.azure/codegen';
 import { Schema } from '@microsoft.azure/autorest.csharp-v2';
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
@@ -124,44 +124,12 @@ export /* @internal */ class Inferrer {
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
 
-    // parameter names that are candidates to be changed to pull the value from the common module
-    const commonCandidates = this.commonParameters;
-
     for (const operation of values(model.http.operations)) {
       for (const variant of await this.inferCommandNames(operation.operationId, this.state)) {
-
         // no common parameters (standard variations)
         await this.addVariants(operation.parameters, operation, variant, '', this.state);
 
-        // now see if we have parameters that can be made common
-        const possibleCommon = values(operation.parameters).linq.where(parameter => commonCandidates.includes(parameter.name)).linq.toArray();
-        if (possibleCommon.length > 0) {
-          // yes! make some combos that include the common parameters
-          const combos = combinations(possibleCommon);
-          for (const combo of combos) {
-            // now, take the operation parameters, and find the ones where that are in our set of combo,
-            const some = operation.parameters.map(param => {
-              if (combo.includes(param)) {
-                const newParam = {
-                  ...param,
-                  details: {
-                    ...param.details,
-                    default: {
-                      ...param.details.default,
-                      originalHttpParameter: param,
-                      fromHost: true
-                    }
-                  }
-                };
-                return <http.HttpOperationParameter><any>newParam;
-              }
-              return param;
-            });
-            // and shallow copy the parameter, into a new one, and overw
-            await this.addVariants(some, operation, variant, `${combo.map(each => each.name).join('-')}-via-host`, this.state);
-          }
-        }
-        // make some variants where subscriptionId and resourceGroupName are pulled from common module
+
       }
     }
     return model;
@@ -419,6 +387,13 @@ export /* @internal */ class Inferrer {
     // create variant 
     state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
+
+    const [pathParams, otherParams] = values(requiredParameters).linq.bifurcate(each => each.in === ParameterLocation.Path);
+    if (pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
+      // we have an operation that has path parameters, a good canididate for piping for identity.
+      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+    }
+
   }
 
   createCommandVariant(action: string, subject: Array<string>, variant: Array<string>, model: codemodel.Model): CommandVariant {

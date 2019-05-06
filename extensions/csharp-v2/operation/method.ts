@@ -38,12 +38,16 @@ export class OperationMethod extends Method {
   public resourceUri!: Parameter;
   public callbacks = new Array<CallbackParameter>();
 
-  constructor(protected parent: Class, public operation: HttpOperation, protected state: State, objectInitializer?: Partial<OperationMethod>) {
-    super(operation.details.csharp.name, System.Threading.Tasks.Task());
+  protected callName: string;
+
+  constructor(protected parent: Class, public operation: HttpOperation, public viaIdentity: boolean, protected state: State, objectInitializer?: Partial<OperationMethod>) {
+    super(viaIdentity ? `${operation.details.csharp.name}ViaIdentity` : operation.details.csharp.name, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
     this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
+    const $this = this;
 
+    this.callName = `${operation.details.csharp.name}_Call`;
     this.push(Using(`NoSynchronizationContext`, ``));
 
     if (this.state.project.storagePipeline) {
@@ -58,16 +62,35 @@ export class OperationMethod extends Method {
     }
 
     // add parameters
-    this.methodParameters = this.operation.parameters.map((value, index) => {
-      const p = <OperationParameter>this.addParameter(new OperationParameter(this, value, this.state.path('parameters', index)));
-      if (value.details.csharp.constantValue) {
+    this.methodParameters = [];
 
+    const identity = new Parameter('identity', System.String);
+    if (this.viaIdentity) {
+      this.addParameter(identity);
+    }
+
+    for (var index = 0; index < this.operation.parameters.length; index++) {
+      const value = this.operation.parameters[index];
+
+      const p = new OperationParameter(this, value, this.state.path('parameters', index));
+
+      if (value.details.csharp.constantValue) {
         const constTd = state.project.modelsNamespace.resolveTypeDeclaration(value.schema, true, state);
         p.defaultInitializer = constTd.deserializeFromString(KnownMediaType.UriParameter, new StringExpression(`${value.details.csharp.constantValue}`), toExpression(constTd.defaultOfType));
-        // p.defaultInitializer = `${value.details.csharp.constantValue}`;
       }
-      return p;
-    });
+
+      // don't add path parameters  when we're in identity mode
+      if (!this.viaIdentity || value.in !== ParameterLocation.Path) {
+        this.addParameter(p);
+      } else {
+        this.add(function* () {
+
+          yield ``;
+        })
+      }
+      this.methodParameters.push(p);
+    }
+
 
     this.description = this.operation.details.csharp.description;
 
@@ -105,6 +128,7 @@ export class OperationMethod extends Method {
     baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
     let path = this.operation.path;
+    let rx = path;
 
     const headerParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Header);
     const pathParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Path);
@@ -112,22 +136,32 @@ export class OperationMethod extends Method {
     const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
     for (const pp of pathParams) {
-      path = path.replace(`{${pp.param.name}}`, `"
+      rx = rx.replace(`{${pp.param.name}}`, `(?<${pp.param.name}>[^/]+)`);
+
+      if (this.viaIdentity) {
+        path = path.replace(`{${pp.param.name}}`, `"
+        + ${pp.name}
+        + "`);
+      } else {
+        path = path.replace(`{${pp.param.name}}`, `"
         + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '', ClientRuntime.SerializationMode.None)}
         + "`);
+      }
     }
+    rx = `"^${rx}$"`;
+
     path = path.startsWith('/') ? path.substr(1) : path;
     path = path.replace(/\s*\+ ""/gm, '');
 
     const bp = this.bodyParameter;
     // add method implementation...
-    const $this = this;
+
     this.add(function* () {
       const eventListener = new EventListener($this.contextParameter, $this.state.project.emitSignals);
 
       yield EOL;
 
-      yield `// construct URL`;
+
 
       let url: LocalVariable;
       if ($this.state.project.storagePipeline) {
@@ -142,6 +176,22 @@ export class OperationMethod extends Method {
           yield `var _url = ${System.Uri.new(`${$this.resourceUri}.AbsoluteUri`)};`;
         }
       } else {
+
+        if ($this.viaIdentity) {
+          yield `// verify that Identity format is an exact match for uri`;
+          yield EOL;
+
+          const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
+          yield match.declarationStatement;
+          yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
+          yield EOL;
+          yield `// replace URI parameters with values from identity`
+          for (const pp of pathParams) {
+            yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
+          }
+        }
+
+        yield `// construct URL`;
         url = new LocalVariable('_url', dotnet.Var, {
           initializer: System.Uri.new(`(
         "${baseUrl}${path}"
@@ -194,16 +244,7 @@ export class OperationMethod extends Method {
       this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     }
 
-    if (this.state.project.storagePipeline) {
-      if (returnFromCall) {
-        this.add(`return await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
-      } else {
-        this.add(`await this.${this.name}_Call(${this.senderParameter.use},${this.contextParameter.use},request,${this.callbacks.joinWith(each => each.use, ',')});`);
-      }
-
-    } else {
-      this.add(`await this.${this.name}_Call(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
-    }
+    this.add(`await this.${this.callName}(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
 
     // remove constant parameters and make them locals instead.
     this.insert(`// Constant Parameters`);

@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items } from '@microsoft.azure/codegen';
+import { items, values, length } from '@microsoft.azure/codegen';
 import { Class, Namespace } from '@microsoft.azure/codegen-csharp';
 
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
+import { ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
 
 export class ApiClass extends Class {
 
@@ -27,8 +28,15 @@ export class ApiClass extends Class {
       // code-dom doesn't store references from the child to the parent, so as long as the definitions work without modification, it looks like we can.
 
       // we'll do that work in the OM and expose them as public properties.
-      const operationMethod = new OperationMethod(this, operation, state.path('components', 'operations', operationIndex));
+      const operationMethod = new OperationMethod(this, operation, false, state.path('components', 'operations', operationIndex));
       this.addMethod(operationMethod);
+      if ([...values(operation.parameters).linq.select(each => each.in === ParameterLocation.Path)].length > 0) {
+        // method has parameters in the path, so it could support '...ViaIdentity' 
+        const identityMethod = new OperationMethod(this, operation, true, state.path('components', 'operations', operationIndex));
+        identityMethod.emitCall(false);
+        this.addMethod(identityMethod);
+
+      }
 
       // check if this exact method is been created before (because _call and _validate have less specific parameters than the api) 
       const cm = new CallMethod(this, operationMethod, state.path('components', 'operations', operationIndex));

@@ -18,6 +18,7 @@ const carbon = new Namespace('Carbon.Json');
 const jsonNode = new ClassType(carbon, 'JsonNode');
 const jsonArray = new ClassType(carbon, 'JsonArray');
 const jsonObject = new ClassType(carbon, 'JsonObject');
+const jsonType = new ClassType(carbon, 'JsonType');
 
 export const ClientRuntime = intersect(clientRuntimeNamespace, {
   AttachDebugger: new ClassType(clientRuntimeNamespace, 'AttachDebugger'),
@@ -78,6 +79,16 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonNumber: new ClassType(carbon, `JsonNumber`),
   JsonArray: intersect(jsonArray, {
     Parse: (expression: ExpressionOrLiteral) => toExpression(`${jsonArray}.Parse(${toExpression(expression)})`)
+  }),
+  JsonType: intersect(jsonType, {
+    Null: new LiteralExpression(`${jsonType.declaration}.Null`),
+    Object: new LiteralExpression(`${jsonType.declaration}.Object`),
+    Array: new LiteralExpression(`${jsonType.declaration}.Array`),
+    Binary: new LiteralExpression(`${jsonType.declaration}.Binary`),
+    Boolean: new LiteralExpression(`${jsonType.declaration}.Boolean`),
+    Date: new LiteralExpression(`${jsonType.declaration}.Date`),
+    Number: new LiteralExpression(`${jsonType.declaration}.Number`),
+    String: new LiteralExpression(`${jsonType.declaration}.String`)
   }),
   XNodeArray: new ClassType(carbon, `XNodeArray`)
 });

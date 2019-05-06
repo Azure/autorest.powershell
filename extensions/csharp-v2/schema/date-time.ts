@@ -28,6 +28,10 @@ export class DateTime extends Primitive {
   protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
+
+  get convertObjectMethod() {
+    return `(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , System.Xml.XmlDateTimeSerializationMode.Unspecified)`
+  }
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:

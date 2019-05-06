@@ -22,6 +22,9 @@ export class String implements EnhancedTypeDeclaration {
   get defaultOfType() {
     return toExpression(`null`);
   }
+  get convertObjectMethod() {
+    return `global::System.Convert.ToString`;
+  }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {

@@ -46,6 +46,47 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
+  // we're going to create a schema that represents the distinct sum 
+  // of all operation PATH parameters
+  const universalId = new Schema(`${serviceName}Identity`, {
+    type: JsonType.Object, description: "Resource Identity", details: {
+      default: {
+        uid: 'universal-parameter-type'
+      }
+    }
+  });
+  model.schemas['universal-parameter-type'] = universalId;
+  universalId.properties["id"] = new Property("id", {
+    schema: new Schema("_identity_type_", { type: JsonType.String, description: "Resource identity path" }),
+    description: 'Resource identity path', serializedName: "id", details: {
+      default: {
+        description: 'Resource identity path',
+        name: 'id',
+        required: false,
+        uid: `universal-parameter:id`
+      }
+    }
+  });
+
+  for (const operation of values(model.http.operations)) {
+    for (const param of operation.parameters.filter(each => each.in === ParameterLocation.Path)) {
+      const name = param.details.default.name;
+      if (!universalId.properties[name]) {
+        universalId.properties[name] = new Property(name, {
+          schema: param.schema, description: param.description, serializedName: name, details: {
+            default: {
+              description: param.description,
+              name: name,
+              required: false,
+              uid: `universal-parameter:${name}`
+            }
+          }
+        });
+      }
+    }
+  }
+
+
   // remove schemas that are referenced elsewhere previously.
   for (const each of removes.values()) {
     delete model.schemas[each];

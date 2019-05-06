@@ -27,6 +27,10 @@ export class Duration extends Primitive {
     return `global::System.Xml.XmlConvert.ToTimeSpan( ${tmpValue} )`;
   }
 
+  get convertObjectMethod() {
+    return `(v) => v is global::System.TimeSpan _v ? _v : global::System.Xml.XmlConvert.ToTimeSpan( v.ToString() )`
+  }
+
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:

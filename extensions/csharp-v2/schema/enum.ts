@@ -18,5 +18,10 @@ export class EnumImplementation extends String {
     return this.isRequired ? toExpression(`((${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}${this.isRequired ? '' : '?'})"")`) : dotnet.Null;
   }
 
+  get convertObjectMethod() {
+    return `v => (${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name})v.ToString()`;
+  }
+
+
   get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}${this.isRequired ? '' : '?'}`; }
 }

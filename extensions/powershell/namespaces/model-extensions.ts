@@ -3,11 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { items, values, Dictionary } from '@microsoft.azure/codegen';
-import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return } from '@microsoft.azure/codegen-csharp';
-import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation } from '@microsoft.azure/autorest.csharp-v2';
+import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective } from '@microsoft.azure/codegen-csharp';
+import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
 import { join } from 'path';
+
+import { Variable } from '@microsoft.azure/codegen-csharp/exports';
 
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
@@ -16,6 +18,7 @@ class ApiVersionModelExtensionsNamespace extends Namespace {
   constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: Partial<ModelExtensionsNamespace>) {
     super(apiVersion);
     this.apply(objectInitializer);
+    this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
   }
 }
 
@@ -30,7 +33,11 @@ export class ModelExtensionsNamespace extends Namespace {
   constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelExtensionsNamespace>) {
     super('Models', parent);
     this.apply(objectInitializer);
+    this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
+    this.subNamespaces[this.fullName] = this;
+
     const $this = this;
+    const resolver = (s: Schema) => this.resolver.resolveTypeDeclaration(s, true, state)
 
     // Add typeconverters to model classes (partial)
     for (const schema of values(schemas)) {
@@ -58,9 +65,12 @@ export class ModelExtensionsNamespace extends Namespace {
         // 2. A partial interface with the type converter attribute
         const modelInterface = new Interface(ns, interfaceName, {
           partial: true,
-          description: td.schema.details.csharp.description
+          description: td.schema.details.csharp.description,
+          fileName: `${interfaceName}.PowerShell` // make sure that the interface ends up in the same file as the class.
         });
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
+
+
 
         // 1. A partial class with the type converter attribute
         const model = new Class(ns, className, undefined, {
@@ -80,6 +90,9 @@ export class ModelExtensionsNamespace extends Namespace {
           description: `Serializes this instance to a json string.`,
           returnsDescription: `a <see cref="System.String" /> containing this model serialized to JSON text.`
         }));
+
+        const hashDeseralizer = new DeserializerPartialClass(model, modelInterface, System.Collections.IDictionary, 'Dictionary', schema, resolver).init();
+        const psDeseralizer = new DeserializerPartialClass(model, modelInterface, PSObject, 'PSObject', schema, resolver).init();
 
         // + static <interfaceType> FromJsonString(string json);
         // + string ToJsonString()
@@ -138,26 +151,34 @@ export class ModelExtensionsNamespace extends Namespace {
           returnsDescription: `<c>true</c> if the instance could be converted to a <see cref="${className}" /> type, otherwise <c>false</c> `
         })).add(function* () {
           yield If(`null == sourceValue`, Return(dotnet.True));
-          yield Try(function* () {
-            yield If(`sourceValue.GetType() == typeof(${PSObject.declaration})`, function* () {
-              yield `// does it have the properties we need`;
-            });
-            yield ElseIf(`sourceValue.GetType() == typeof(${System.Collections.Hashtable.declaration})`, function* () {
-              yield `// a hashtable?`;
-            });
 
-            yield Else(function* () {
-              yield `// object `;
-            });
-            // is the source a PSType or a hashtable?
+          const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
+          yield t.declarationStatement;
 
-            // is the source a string? has a ToJson?
-            // try deserializing, and validate. if successful, return true
+          if (schema.details.default.uid === 'universal-parameter-type') {
+            yield `// for 'universal-parameter-type' we allow string conversion too.`
+            yield If(`${t.value} == typeof(${System.String})`, Return(dotnet.True))
+          }
 
-            // does it have the same members as I do?
-
+          yield If(IsAssignableFrom(PSObject, t), function* () {
+            yield `// we say yest to PSObjects`;
+            yield Return(dotnet.True);
           });
-          yield Catch(undefined, `// Unable to use JSON pattern`);
+          yield If(IsAssignableFrom(System.Collections.IDictionary, t), function* () {
+            yield `// we say yest to Hashtables/dictionaries`;
+            yield Return(dotnet.True);
+          });
+
+          yield Try(If(`null != sourceValue.ToJsonString()`, Return(dotnet.True)));
+          yield Catch(undefined, `// Not one of our objects`);
+
+          yield Try(function* () {
+            const t = new LocalVariable('text', dotnet.String, { initializer: `sourceValue.ToString()?.Trim()` });
+            yield t.declarationStatement;
+            yield Return(`${dotnet.True} == ${t.value}?.StartsWith("{") && ${dotnet.True} == ${t.value}?.EndsWith("}") && ${ClientRuntime.JsonNode.Parse(t)}.Type == ${ClientRuntime.JsonType.Object}`);
+          });
+          yield Catch(undefined, `// Doesn't look like it can be treated as JSON`);
+
           yield Return(dotnet.False);
         });
 
@@ -174,37 +195,26 @@ export class ModelExtensionsNamespace extends Namespace {
           // null begets null
           yield If(`null == sourceValue`, Return(dotnet.Null));
 
+          const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
+          yield t.declarationStatement;
+
+          if (schema.details.default.uid === 'universal-parameter-type') {
+            yield `// for 'universal-parameter-type' support direct string to id type conversion.`
+            yield If(`${t.value} == typeof(${System.String})`, function* () {
+              yield Return(`new ${className} { Id = sourceValue }`);
+            });
+          }
+
+          // if the type can be assigned directly, do that 
+          yield If(IsAssignableFrom(td, t), Return(`sourceValue`));
+
+
           // try using json first (either from string or toJsonString())
-          yield Try(`${className}.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());`);
+          yield Try(Return(`${className}.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());`));
           yield Catch(undefined, `// Unable to use JSON pattern`);
 
-          yield Try(function* () {
-            yield `return new ${className}`;
-            yield `{`;
-            const props = td.schema.details.csharp.virtualProperties || {
-              owned: [],
-              inlined: [],
-              inherited: []
-            };
-            const all = [...props.owned, ...props.inherited];
-            // loop thru members...
-            for (const member of values(all)) {
-              // if it's a primitive field
-              const memTD = $this.resolver.resolveTypeDeclaration(<Schema>member.property.schema, true, state);
-              if (memTD instanceof ObjectImplementation) {
-                // it's an object, try the typeconverter
-                // todo: fix this! We don't have the proper acess to generate the right code for this at this point.
-                // yield `${member.accessViaMember} = ${member.property.schema.details.csharp.fullname}TypeConverter.ConvertFrom(sourceValue.${member.accessViaMember}),`;
-              } else {
-                // just assign it.
-                // yield `${member.accessViaMember} = sourceValue.${member.accessViaMember},`;
-              }
-              // otherwise use the field's typeconverter
-
-            }
-            yield `};`;
-          });
-          yield Catch(undefined, ``);
+          yield If(IsAssignableFrom(PSObject, t), Return(`${className}.DeserializeFromPSObject(sourceValue)`));
+          yield If(IsAssignableFrom(System.Collections.IDictionary, t), Return(`${className}.DeserializeFromDictionary(sourceValue)`));
 
           // null if not successful
           yield Return(dotnet.Null);
@@ -212,5 +222,7 @@ export class ModelExtensionsNamespace extends Namespace {
         );
       }
     }
+
+
   }
 }

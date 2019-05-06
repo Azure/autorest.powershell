@@ -39,6 +39,8 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** defaultOfType */
   readonly defaultOfType: Expression;
 
+  readonly convertObjectMethod: string // "global::System.Convert.ToString";
+
   /** is a value for this required */
   isRequired: boolean;
 

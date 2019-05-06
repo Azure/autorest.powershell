@@ -82,6 +82,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         accessViaProperty: virtualProperty,
         accessViaMember: virtualProperty,
         accessViaSchema: parentSchema,
+        originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
         alias: []
       });
@@ -119,6 +120,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         nameOptions: getNameOptions(schema.details.default.name, [name]),
         private: true,
         description: property.description || '',
+        originalContainingSchema: schema,
         alias: []
       };
       virtualProperties.owned.push(privateProperty);
@@ -144,6 +146,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty,
           accessViaSchema: schema,
+          originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: []
         });
@@ -169,6 +172,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty,
           accessViaSchema: schema,
+          originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: []
         });
@@ -191,6 +195,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       nameComponents: [name],
       nameOptions: [name],
       description: property.description || '',
+      originalContainingSchema: schema,
       alias: []
     });
   }

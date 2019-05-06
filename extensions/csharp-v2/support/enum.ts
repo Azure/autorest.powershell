@@ -29,7 +29,9 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   get schema(): Schema {
     return this.implementation.schema;
   }
-
+  get convertObjectMethod() {
+    return this.implementation.convertObjectMethod;
+  }
 
   get defaultOfType() {
     return toExpression(`null /* enum value */`);
