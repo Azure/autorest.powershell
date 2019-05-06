@@ -64,6 +64,8 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         apiversion: thisApiversion,
         apiname: apiName,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
+        internalInterfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal'])), // objects have an ineternal interfaceName for setting private members. 
+        fullInternalInterfaceName: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal']))}`,
         name: getPascalIdentifier(schemaName),
         namespace: pascalCase([serviceNamespace, '.', `Models`, ...ns]),  // objects have a namespace
         fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${getPascalIdentifier(schemaName)}`,
@@ -92,6 +94,7 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
       schema.details.csharp = <SchemaDetails>{
         ...details,
         interfaceName: '<INVALID_INTERFACE>',
+        internalInterfaceName: '<INVALID_INTERFACE>',
         name: schemaName,
         namespace: '<INVALID_NAMESPACE>',
         fullname: '<INVALID_FULLNAME>'

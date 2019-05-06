@@ -22,6 +22,10 @@ export class Char extends Primitive {
     return `char${this.isRequired ? '' : ' ?'}`;
   }
 
+  get convertObjectMethod() {
+    return `global::System.Convert.Char`;
+  }
+
   validateValue(eventListener: Variable, property: Variable): string {
     return `
 ${this.validateEnum(property)}

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
-  LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration
+  LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
@@ -33,6 +33,7 @@ export class CmdletClass extends Class {
   private operation: command.CommandOperation;
   private debugMode?: boolean;
   private variantName: string;
+  private isViaIdentity: boolean;
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -50,6 +51,8 @@ export class CmdletClass extends Class {
 
     this.interfaces.push(ClientRuntime.IEventListener);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
+
+    this.isViaIdentity = this.state.project.azure && variantName.endsWith('ViaIdentity');
 
   }
 
@@ -318,37 +321,46 @@ export class CmdletClass extends Class {
       // find each parameter to the method, and find out where the value is going to come from.
       const operationParameters =
         values(apiCall.parameters).linq.
-          where(each => !(each.details.csharp.constantValue)).linq.
+          // filter out constants and path parameters when using piping for identity
+          where(each => !(each.details.csharp.constantValue) /* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).linq.
+
           select(p => {
-            return values($this.properties).linq.
-              where(each => each.metadata.parameterDefinition).linq.
-              first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid);
+            return {
+              name: p.details.csharp.name,
+              param: values($this.properties).linq.
+                where(each => each.metadata.parameterDefinition).linq.
+                first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid),
+              isPathParam: $this.isViaIdentity && p.in === ParameterLocation.Path
+            }
+
           }).linq.
           select(each => {
-            if (each) {
+            if (each.param) {
 
-              const httpParam = (<http.HttpOperationParameter>(each.metadata.parameterDefinition));
+              const httpParam = (<http.HttpOperationParameter>(each.param.metadata.parameterDefinition));
               if (httpParam.required) {
                 return {
-                  name: each,
-                  expression: each
+                  name: each.param,
+                  expression: each.param,
+                  isPathParam: each.isPathParam
                 }
               }
 
               const httpParamTD = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<Schema>httpParam.schema), httpParam.required, $this.state);
               return {
-                name: each,
-                expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.value}") ? ${each.value} : ${httpParamTD.defaultOfType}`)
+                name: each.param,
+                expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
+                isPathParam: each.isPathParam
               };
 
             }
 
-            return { name: '', expression: dotnet.Null };
+            return { name: each.name, expression: dotnet.Null, isPathParam: each.isPathParam };
           }).linq.toArray();
 
       // is there a body parameter we should include?
       if ($this.bodyParameter) {
-        operationParameters.push({ name: 'body', expression: $this.bodyParameter });
+        operationParameters.push({ name: 'body', expression: $this.bodyParameter, isPathParam: false });
       }
 
       // create the response handlers
@@ -438,11 +450,11 @@ export class CmdletClass extends Class {
                     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(`await response`) });
                     yield result.declarationStatement;
                     // write out the current contents
-                    const vp = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.details.csharp.name);
+                    const vp = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
                     if (vp) {
                       yield `WriteObject(${result.value}.${vp.name},true);`;
                     }
-                    const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.details.csharp.name);
+                    const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.serializedName);
                     if (nl) {
                       const nextLinkName = `${result.value}.${nl.name}`;
                       yield (If(`${nextLinkName} != null`,
@@ -456,7 +468,7 @@ export class CmdletClass extends Class {
                     return;
                   } else if (valueProperty) {
                     // it's just a nested array
-                    const p = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.details.csharp.name);
+                    const p = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
                     if (p) {
                       yield `WriteObject((await response).${p.name}, true);`;
                     }
@@ -497,10 +509,61 @@ export class CmdletClass extends Class {
 
       yield Try(function* () {
         // make the call.
-        yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
-        yield `await this.${$this.$<Property>('Client').invokeMethod(apiCall.details.csharp.name, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-        yield $this.eventListener.signal(Events.CmdletAfterAPICall);
 
+        const actualCall = function* () {
+          yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
+          if ($this.isViaIdentity) {
+            const idOpParams = operationParameters.filter(each => !each.isPathParam);
+            yield If(`InputObject?.Id == null`, `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+            yield Else(function* () {
+              yield `// try to call with PATH parameters from Input Object`
+              const idschema = values($this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+              if (idschema) {
+                const props = [...values(idschema.properties)];
+
+                const idOpParams = operationParameters.map(each => {
+                  if (!each.isPathParam) {
+                    return each.expression;
+                  }
+                  const match = props.find(p => p.serializedName === each.name);
+                  if (match) {
+                    //const vp = getVirtualPropertyFromPropertyName(idschema.details.csharp.virtualProperties, match.details.csharp.name);
+                    //if (vp) {
+                    //                      return toExpression(`InputObject.${vp.name}`);
+                    //                  }
+                    let i = idschema;
+
+
+
+                    // match up vp name
+                    const vp = getAllPublicVirtualProperties(i.details.csharp.virtualProperties).find(pp => pp.property.serializedName === each.name);
+                    if (vp) {
+                      return toExpression(`InputObject.${vp.name}`);
+                    }
+                    // fall back!
+                    return toExpression(`InputObject.${match.details.csharp.name}`);
+                  }
+
+                  return toExpression(`InputObject.${each.name}`);
+                });
+                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...idOpParams, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+
+              }
+
+
+            });
+          } else {
+            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+          }
+          yield $this.eventListener.signal(Events.CmdletAfterAPICall);
+        };
+
+        if ($this.state.project.azure && operationParameters.find(each => each.expression && each.expression.value === 'SubscriptionId') && $this.operation.details.csharp.verb.toLowerCase() === 'get') {
+          yield `foreach( var SubscriptionId in this.SubscriptionId )`
+          yield BlockStatement(actualCall);
+        } else {
+          yield actualCall;
+        }
       });
       yield Finally(function* () {
         yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);
@@ -746,15 +809,42 @@ export class CmdletClass extends Class {
     }
 
     if (vps) {
+      if (this.isViaIdentity) {
+        // add in the pipeline parameter for the identity
+
+        const idschema = values(this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+        const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
+        const idParam = this.add(new BackedProperty("InputObject", idtd, {
+          description: "Identity Parameter"
+        }));
+        const parameters = [new LiteralExpression(`Mandatory = true`), new LiteralExpression(`HelpMessage = "Identity Parameter"`), new LiteralExpression('ValueFromPipeline = true')];
+        idParam.add(new Attribute(ParameterAttribute, { parameters }));
+        idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+      }
       for (const vParam of vps.operation) {
         const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /*parameter.required*/ true, this.state);
         const origin = <IParameter>vParam.origin;
-        const regularCmdletParameter = this.add(new BackedProperty(vParam.name, td, {
-          metadata: {
-            parameterDefinition: origin.details.csharp.httpParameter
-          },
-          description: vParam.description
-        }));
+
+        const regularCmdletParameter = (this.state.project.azure && vParam.name === "SubscriptionId" && operation.details.csharp.verb.toLowerCase() === 'get') ?
+
+          // special case for subscription id 
+          this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
+            metadata: {
+              parameterDefinition: origin.details.csharp.httpParameter
+            },
+            description: vParam.description
+          })) :
+
+          // everything else 
+          this.add(new BackedProperty(vParam.name, td, {
+            metadata: {
+              parameterDefinition: origin.details.csharp.httpParameter
+            },
+            description: vParam.description
+          }));
+
+
+
         this.thingsToSerialize.push(regularCmdletParameter);
 
         const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];

@@ -7,4 +7,6 @@ export * from './schema/object';
 export * from './project';
 export * from './schema/schema-resolver';
 export * from './schema/extended-type-declaration';
+export * from './model/model-class-serializer';
 export * from './schema/enum';
+

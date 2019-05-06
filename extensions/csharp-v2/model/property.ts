@@ -66,7 +66,7 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
     this.serializedName = serializedName;
     this.schema = schema;
     if (this.schema.readOnly) {
-      this.setAccess = Access.Internal;
+      this.set = undefined;
     }
     this.apply(objectInitializer);
     this.description = description;

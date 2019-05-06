@@ -21,6 +21,9 @@ export class ByteArray implements EnhancedTypeDeclaration {
     return `byte[]`;
   }
 
+  get convertObjectMethod() {
+    return `i => i`;
+  }
   get defaultOfType() {
     return toExpression(`null /* byte array */`);
   }

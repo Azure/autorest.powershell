@@ -46,6 +46,16 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return `${this.elementType.declaration}[]`;
   }
 
+  get convertObjectMethod() {
+    try {
+      const v = pushTempVar();
+      const i = pushTempVar();
+      return `${v} => System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${i}=>${this.elementType.convertObjectMethod}(${i}))`
+    } finally {
+      popTempVar();
+    }
+  }
+
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {

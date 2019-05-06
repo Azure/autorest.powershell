@@ -24,6 +24,11 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
     return toExpression(`null /* object */`);
   }
 
+
+  get convertObjectMethod() {
+    return `${this.schema.details.csharp.fullname}TypeConverter.ConvertFrom`;
+  }
+
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {

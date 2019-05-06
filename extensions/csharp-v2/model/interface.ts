@@ -6,12 +6,11 @@
 import { items, } from '@microsoft.azure/codegen';
 import { KnownMediaType } from "@microsoft.azure/autorest.codemodel-v3"
 
-import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, InterfaceProperty } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { ModelInterfaceProperty } from './interface-property';
 import { ModelClass } from './model-class';
 import { TypeContainer } from '@microsoft.azure/codegen-csharp/dist/type-container';
 
@@ -24,6 +23,9 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     return this.classImplementation.defaultOfType;
   }
 
+  get convertObjectMethod() {
+    return this.classImplementation.convertObjectMethod;
+  }
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     return this.classImplementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
   }
@@ -72,13 +74,20 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     // return this.classImplementation.hasHeaderProperties; 
     return false;
   }
-  constructor(parent: TypeContainer, schema: Schema, public classImplementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
-    super(parent, `I${schema.details.csharp.name}`);
+  constructor(parent: TypeContainer, interfaceName: string, public classImplementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
+    super(parent, interfaceName);
     this.partial = true;
     this.apply(objectInitializer);
-    const implData = (schema.details.csharp = schema.details.csharp || {});
-    implData.interfaceImplementation = this;
-    this.description = `${schema.details.csharp.description}`;
+  }
+
+  get isInternal(): boolean {
+    return this.accessModifier === Access.Internal;
+  }
+
+  init() {
+    const implData = (this.schema.details.csharp = this.schema.details.csharp || {});
+    //implData.interfaceImplementation = this;
+    this.description = `${this.schema.details.csharp.description}`;
 
     const virtualProperties = this.schema.details.csharp.virtualProperties || {
       owned: [],
@@ -86,28 +95,48 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
       inlined: []
     };
     if (this.schema.details.csharp.virtualProperties) {
+
       for (const property of [...virtualProperties.owned]) {
+        if (property.private && !this.isInternal) {
+          continue;
+        }
+
         const actual = property.property;
-        const p = this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Owned Property" }));
-        if (actual.details.csharp.constantValue !== undefined) {
+        const isRequired = actual.details.csharp.required;
+        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))
+        const p = this.add(new InterfaceProperty(property.name, pType, {
+          description: "Owned Property",
+          setAccess: !this.isInternal && actual.schema.readOnly ? Access.Internal : Access.Public
+        }));
+        if (!this.isInternal && actual.details.csharp.constantValue !== undefined) {
           p.setAccess = Access.Internal;
         }
       }
 
       for (const property of [...virtualProperties.inlined]) {
         const actual = property.property;
-        this.add(new ModelInterfaceProperty(property.name, <Schema>actual.schema, actual.details.csharp.required, state.path('properties'), { description: "Inlined Property" }));
-      }
-    }
-    // mark it as json serializable
-    if (!schema.details.csharp.isHeaderModel) {
-      if (this.state.project.jsonSerialization) {
-        this.interfaces.push(ClientRuntime.IJsonSerializable);
-      }
-      if (this.state.project.xmlSerialization) {
-        this.interfaces.push(ClientRuntime.IXmlSerializable);
+        const isRequired = actual.details.csharp.required;
+        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))
+
+        this.add(new InterfaceProperty(property.name, pType, {
+          description: "Inlined Property",
+          setAccess: !this.isInternal && actual.schema.readOnly ? Access.Internal : Access.Public
+        }));
       }
     }
 
+    if (!this.isInternal) {
+      // mark it as json serializable
+      if (!this.schema.details.csharp.isHeaderModel) {
+        if (this.state.project.jsonSerialization) {
+          this.interfaces.push(ClientRuntime.IJsonSerializable);
+        }
+        if (this.state.project.xmlSerialization) {
+          this.interfaces.push(ClientRuntime.IXmlSerializable);
+        }
+      }
+    }
+    return this;
   }
+
 }

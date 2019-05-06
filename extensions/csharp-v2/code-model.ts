@@ -14,7 +14,10 @@ export interface SchemaDetails extends schema.SchemaDetails {
   typeDeclaration?: EnhancedTypeDeclaration;
   classImplementation?: ModelClass;
   interfaceImplementation?: ModelInterface;
+  internalInterfaceImplementation?: ModelInterface;
   interfaceName?: string;
+  internalInterfaceName?: string;
+  fullInternalInterfaceName?: string;
   fullname?: string;
 }
 
