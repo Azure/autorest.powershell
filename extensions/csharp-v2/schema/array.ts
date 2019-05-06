@@ -50,7 +50,8 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     try {
       const v = pushTempVar();
       const i = pushTempVar();
-      return `${v} => System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${i}=>${this.elementType.convertObjectMethod}(${i}))`
+      // return `${v} => System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${i}=>${this.elementType.convertObjectMethod}(${i}))`
+      return `${v} => System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${this.elementType.convertObjectMethod})`
     } finally {
       popTempVar();
     }
