@@ -234,8 +234,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         }));
         if (virtualProperty.private) {
           // when properties are inlined, the container accessor can be internalized. I think.
-          vp.setAccess = Access.Internal;
-          vp.getAccess = Access.Internal;
+          // vp.setAccess = Access.Internal;
+          //vp.getAccess = Access.Internal;
         }
         if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
 
@@ -336,7 +336,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const iface = <ModelInterface>aSchema.details.csharp.interfaceImplementation;
 
       // add a field for the inherited values
-      const backingField = this.addField(new Field(`_${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for Inherited model <see cref= "${td.declaration}" /> ` }));
+      const backingField = this.addField(new Field(`__${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for Inherited model <see cref= "${td.declaration}" /> ` }));
       this.backingFields.push({
         className,
         typeDeclaration: td,

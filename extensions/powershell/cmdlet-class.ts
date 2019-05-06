@@ -527,6 +527,20 @@ export class CmdletClass extends Class {
                   }
                   const match = props.find(p => p.serializedName === each.name);
                   if (match) {
+                    //const vp = getVirtualPropertyFromPropertyName(idschema.details.csharp.virtualProperties, match.details.csharp.name);
+                    //if (vp) {
+                    //                      return toExpression(`InputObject.${vp.name}`);
+                    //                  }
+                    let i = idschema;
+
+
+
+                    // match up vp name
+                    const vp = getAllPublicVirtualProperties(i.details.csharp.virtualProperties).find(pp => pp.property.serializedName === each.name);
+                    if (vp) {
+                      return toExpression(`InputObject.${vp.name}`);
+                    }
+                    // fall back!
                     return toExpression(`InputObject.${match.details.csharp.name}`);
                   }
 
