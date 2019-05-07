@@ -135,6 +135,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
         public ParameterCategory OrderCategory { get; }
+        public bool IsMandatory { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
         {
@@ -149,6 +150,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             OrderCategory = Parameters.SelectMany(p => p.Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories)).DefaultIfEmpty(ParameterCategory.Body).Min();
+            IsMandatory = HasAllVariants && Parameters.First().IsMandatory;
         }
     }
 
