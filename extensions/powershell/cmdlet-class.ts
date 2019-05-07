@@ -52,7 +52,7 @@ export class CmdletClass extends Class {
     this.interfaces.push(ClientRuntime.IEventListener);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
-    this.isViaIdentity = this.state.project.azure && variantName.endsWith('ViaIdentity');
+    this.isViaIdentity = this.state.project.azure && variantName.indexOf('ViaIdentity') > 0;
 
   }
 
