@@ -63,6 +63,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                         .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
                         .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames))
                         .OrderBy(pg => pg.OrderCategory)
+                        .ThenByDescending(pg => pg.IsMandatory)
                         .ToList();
                     sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
                     foreach (var parameterGroup in parameterGroups)
