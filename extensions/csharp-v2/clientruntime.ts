@@ -93,7 +93,3 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   XNodeArray: new ClassType(carbon, `XNodeArray`)
 });
 
-export const StoragePipeline = {
-  Pipeline: new ClassType('Microsoft.Azure.HttpPipeline', 'Pipeline'),
-  CancelContext: new ClassType('Microsoft.Azure.HttpPipeline', 'CancelContext'),
-};

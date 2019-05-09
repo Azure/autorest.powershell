@@ -21,7 +21,7 @@ import { Switch } from '@microsoft.azure/codegen-csharp';
 import { Try } from '@microsoft.azure/codegen-csharp';
 import { Using } from '@microsoft.azure/codegen-csharp';
 import { Local, LocalVariable, Variable } from '@microsoft.azure/codegen-csharp';
-import { ClientRuntime, StoragePipeline } from '../clientruntime';
+import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
@@ -49,17 +49,6 @@ export class OperationMethod extends Method {
 
     this.callName = `${operation.details.csharp.name}_Call`;
     this.push(Using(`NoSynchronizationContext`, ``));
-
-    if (this.state.project.storagePipeline) {
-      // add resourceUri parameter
-      this.resourceUri = this.addParameter(new Parameter('resourceUri', System.Uri));
-
-      // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('pipeline', StoragePipeline.Pipeline));
-
-      // add context parameter
-      this.contextParameter = this.addParameter(new Parameter('context', StoragePipeline.CancelContext));
-    }
 
     // add parameters
     this.methodParameters = [];
@@ -116,19 +105,32 @@ export class OperationMethod extends Method {
       }
     }
 
-    if (!this.state.project.storagePipeline) {
-      // add eventhandler parameter
-      this.contextParameter = this.addParameter(new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive events.` }));
+    // add eventhandler parameter
+    this.contextParameter = this.addParameter(new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive events.` }));
 
-      // add optional parameter for sender
-      this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
-    }
+    // add optional parameter for sender
+    this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
+
+    // if there are  more than a single server, 
+    // how is that handled?
+    const server = this.operation.servers[0];
+
+    let baseUrl = `${server.url}`;
+
     // todo: parameterized uris
-    let baseUrl = `${this.operation.servers[0].url}`;
+    // parameterize uri?
+    for (const { key: name, value: variable } of items(server.variables)) {
+      // key - parameter name
+      // variable.default - default if not specified
+      // variable.enum -- limited choices. 
+    }
+
+
     baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
     let path = this.operation.path;
     let rx = path;
+
 
     const headerParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Header);
     const pathParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Path);
@@ -164,47 +166,36 @@ export class OperationMethod extends Method {
 
 
       let url: LocalVariable;
-      if ($this.state.project.storagePipeline) {
-        if (queryParams.length > 0) {
-          for (const qp of queryParams) {
-            yield `${qp.serializeToNode(KnownMediaType.QueryParameter, qp.param.name, ClientRuntime.SerializationMode.None)}`;
-          }
-          yield `var _tempUrl = ${$this.resourceUri}.AbsoluteUri;`;
-          yield If(`queryParameters.Count > 0`, `_tempUrl = $"{_tempUrl}{((_tempUrl.Contains("?") && !_tempUrl.EndsWith("?")) ? "&" : "?")}{string.Join("&", queryParameters)}";`);
-          yield `var _url =${System.Uri.new(`_tempUrl`)};`;
-        } else {
-          yield `var _url = ${System.Uri.new(`${$this.resourceUri}.AbsoluteUri`)};`;
+
+
+      if ($this.viaIdentity) {
+        yield `// verify that Identity format is an exact match for uri`;
+        yield EOL;
+
+        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
+        yield match.declarationStatement;
+        yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
+        yield EOL;
+        yield `// replace URI parameters with values from identity`
+        for (const pp of pathParams) {
+          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
         }
-      } else {
+      }
 
-        if ($this.viaIdentity) {
-          yield `// verify that Identity format is an exact match for uri`;
-          yield EOL;
-
-          const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
-          yield match.declarationStatement;
-          yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
-          yield EOL;
-          yield `// replace URI parameters with values from identity`
-          for (const pp of pathParams) {
-            yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
-          }
-        }
-
-        yield `// construct URL`;
-        url = new LocalVariable('_url', dotnet.Var, {
-          initializer: System.Uri.new(`(
+      yield `// construct URL`;
+      url = new LocalVariable('_url', dotnet.Var, {
+        initializer: System.Uri.new(`(
         "${baseUrl}${path}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
         + "&"`
-          )}
+        )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
-        });
-        yield url.declarationStatement;
+      });
+      yield url.declarationStatement;
 
-        yield EOL;
-      }
+      yield EOL;
+
       yield eventListener.signal(ClientRuntime.Events.URLCreated, `_url`);
       yield EOL;
 
@@ -308,16 +299,12 @@ export class CallMethod extends Method {
     const $this = this;
     // add parameters
     // request, listener, sender
-    if (this.state.project.storagePipeline) {
-      this.addParameter(opMethod.senderParameter);
-      this.addParameter(opMethod.contextParameter);
-    }
     const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: `the prepared HttpRequestMessage to send.` }));
     opMethod.callbacks.forEach(each => this.addParameter(each));
-    if (!this.state.project.storagePipeline) {
-      this.addParameter(opMethod.contextParameter);
-      this.addParameter(opMethod.senderParameter);
-    }
+
+    this.addParameter(opMethod.contextParameter);
+    this.addParameter(opMethod.senderParameter);
+
     // add statements to this method
     this.add(function* () {
       const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals);
@@ -327,10 +314,6 @@ export class CallMethod extends Method {
       yield Try(function* () {
 
         const responder = function* () {
-          if ($this.state.project.storagePipeline) {
-            // set the response object in the responder.
-            yield response.assign(`response`);
-          }
           // TODO: omit generating _contentType var if it will never be used
           // const contentType = new LocalVariable('_contentType', dotnet.Var, { initializer: `_response.Content.Headers.ContentType?.MediaType` });
           const contentType = Local('_contentType', `${response}.Content.Headers.ContentType?.MediaType`);
@@ -360,13 +343,7 @@ export class CallMethod extends Method {
 
         // try statements
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
-        if ($this.state.project.storagePipeline) {
-          yield `await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use},  ${opMethod.contextParameter.value}.CancellationToken, new Microsoft.Azure.Storage.Shared.DeserializerPolicyFactory(async response =>{
-${new Statements(responder()).implementation}
-}));`;
-        } else {
-          yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value});`;
-        }
+        yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value});`;
 
         yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
         const EOL = 'EOL';
@@ -493,11 +470,6 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
             });
           });
         }
-
-        if (!$this.state.project.storagePipeline) {
-          yield responder();
-        }
-
       });
 
       yield Finally(function* () {
@@ -561,88 +533,6 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
     }
   }
 
-  private *responseHandlerForStoragePipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
-    if (callbackParameter) {
-      const headerClassType = callbackParameter.headerType && callbackParameter.headerType.schema.details.csharp.classImplementation ? callbackParameter.headerType.schema.details.csharp.classImplementation.fullName : '';
-      const contentDeserialize = callbackParameter.responseType ?
-        callbackParameter.responseType.deserializeFromString(knownMediaType(mimetype), toExpression(`await _response.Content.ReadAsStringAsync()`), toExpression('null')) :
-        null;
-
-      if (contentDeserialize) {
-        // we have a content deserializer
-        if (this.state.project.storagePipeline) {
-          if (callbackParameter.headerType) {
-            yield `${eachResponse.details.csharp.name}(_response, (${contentDeserialize}), new ${headerClassType}().ReadHeaders(_response.Headers));`;
-          } else {
-            yield `${eachResponse.details.csharp.name}(_response, (${contentDeserialize}));`;
-          }
-          return;
-        } else {
-
-          if (callbackParameter.headerType) {
-            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}), new ${headerClassType}().ReadHeaders(_response.Headers));`;
-          } else {
-            yield `await ${eachResponse.details.csharp.name}(_response, (${contentDeserialize}));`;
-          }
-          return;
-        }
-      }
-
-      if (parseMediaType(mimetype)) {
-        // this media type isn't directly supported by deserialization
-        // we can return a stream to the consumer instead
-        if (this.state.project.storagePipeline) {
-          // when we're using the storage pipeline model
-          // we're going to return the response.
-
-          if (callbackParameter.headerType) {
-            yield `// call back with the deserialized header object before we give the whole response back`;
-            yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
-          }
-
-          // switch the response type.
-          this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
-
-          yield `result = _response;`;
-          yield `_response = null; // ensure that it's not disposed in finally`;
-
-          // make sure this method returns null at the end
-          this.returnNull = true;
-          /*
-                    // oh, and let's remove the parameter that we would have used
-                    for (const ppp of [this.parameters, this.opMethod.parameters, this.opMethod.callbacks]) {
-                      ppp.find((p, i, a) => {
-                        if (p && p.name === eachResponse.details.csharp.name) {
-                          a.splice(i, 1);
-                        }
-                        return false;
-                      });
-                    }
-          */
-
-          return;
-        }
-
-        yield `/* not deserializing ${mimetype} */`;
-        return;
-
-      } else {
-        // oh, we don't actually have a body response at all.
-        // header content should be deserialized into the appropriate type if possible.
-
-        if (callbackParameter.headerType) {
-          yield `// call back with the deserialized header object`;
-          yield `${eachResponse.details.csharp.name}(_response, new ${headerClassType}().ReadHeaders(_response.Headers));`;
-        } else {
-          yield `/* no body or header response */`;
-        }
-        return;
-      }
-    }
-    // hmm. not a supported serialization type.
-    // do we handle this like a stream response?
-    // return `await ${eachResponse.details.csharp.name}(new ${ClientRuntime.fullName}.Response(){ RequestMessage = request,ResponseMessage = _response }); `;
-  }
 
   private * responseHandlerForNormalPipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     const callbackParameters = new Array<ExpressionOrLiteral>();
@@ -672,9 +562,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
   }
 
   private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
-    return this.state.project.storagePipeline ?
-      this.responseHandlerForStoragePipeline(mimetype, eachResponse, callbackParameter) :
-      this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
+    return this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
   }
 }
 

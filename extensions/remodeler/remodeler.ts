@@ -452,8 +452,12 @@ export class Remodeler {
         // glob all the json responses and xml responses into categories.
         // todo: make consolodation configurable.
 
-        const [jsons, more] = items(responseObject.content).linq.bifurcate(each => isMediaTypeJson(each.key));
-        const [xmls, rest] = values(more).linq.bifurcate(each => isMediaTypeXml(each.key));
+        const [binary, serializable] = items(responseObject.content).linq.bifurcate(each => isBinaryStream(this.dereference(each.value.schema).instance));
+
+        const [jsons, more] = values(serializable).linq.bifurcate(each => isMediaTypeJson(each.key));
+        const [xmls, remaining] = values(more).linq.bifurcate(each => isMediaTypeXml(each.key));
+
+        const rest = [...binary, ...remaining];
 
         if (jsons.length > 0) {
           const schema = jsons[0].value.schema;
@@ -791,4 +795,9 @@ export class Remodeler {
     }
     return this.model;
   }
+}
+
+
+export function isBinaryStream(schema?: OpenAPI.Schema): boolean {
+  return !!schema && (schema.format === 'file' || schema.format === 'binary' || schema.format === 'stream');
 }

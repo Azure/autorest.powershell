@@ -280,22 +280,19 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
 
   private addValidation() {
-    if (!this.state.project.storagePipeline) {
-      if (this.validationStatements.implementation.trim()) {
-        // we do have something to valdiate!
+    if (this.validationStatements.implementation.trim()) {
+      // we do have something to valdiate!
 
-        // add the IValidates implementation to this object.
-        this.interfaces.push(ClientRuntime.IValidates);
-        this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
-          async: Modifier.Async,
-          parameters: [this.validationEventListener],
-          description: `Validates that this object meets the validation criteria.`,
-          returnsDescription: `A < see cref = "${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
-        }));
-        this.validateMethod.add(this.validationStatements);
-      }
+      // add the IValidates implementation to this object.
+      this.interfaces.push(ClientRuntime.IValidates);
+      this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
+        async: Modifier.Async,
+        parameters: [this.validationEventListener],
+        description: `Validates that this object meets the validation criteria.`,
+        returnsDescription: `A < see cref = "${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
+      }));
+      this.validateMethod.add(this.validationStatements);
     }
-
   }
 
 

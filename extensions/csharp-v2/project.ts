@@ -14,7 +14,7 @@ import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './support/namespace';
 
 export class Project extends codeDomProject {
-  public storagePipeline: boolean = false;
+
   public jsonSerialization: boolean = true;
   public xmlSerialization: boolean = false;
   public defaultPipeline: boolean = true;
@@ -58,13 +58,7 @@ export class Project extends codeDomProject {
       'Microsoft.Rest': this.projectNamespace
     };
 
-    this.storagePipeline = await this.state.getValue('use-storage-pipeline', false);
-    if (this.storagePipeline) {
-      this.emitSignals = false;
-      this.jsonSerialization = false;
-      this.xmlSerialization = true;
-      this.defaultPipeline = false;
-    }
+
 
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
 

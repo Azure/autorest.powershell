@@ -129,11 +129,34 @@ pipeline:
   llcsharp:
     input: cosmetic-modifier
 
-  # the default emitter will emit everything (no processing) from the inputs listed here.
-  default/emitter:
-    input:
-     - llcsharp
-     - powershell
+  llcsharp/transform:
+    input: llcsharp
+    scope: scope-here
+
+  powershell/transform:
+    input:  powershell
+    scope: scope-here
+
+  llcsharp/emitter:
+    input: transform
+    scope: scope-here
+    output-artifact: source-file-csharp
+
+  powershell/emitter:
+    input: transform
+    scope: scope-here
+    output-artifact: source-file-csharp
+
+scope-here:
+  is-object: false
+  output-artifact:
+    - source-file-csharp
+    - source-file-csproj
+    - source-file-powershell
+    - source-file-other
+    - binary-file
+    - preserved-files
+
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
@@ -148,7 +171,16 @@ output-artifact:
   - source-file-csproj
   - source-file-powershell
   - source-file-other
+  - binary-file
+  - preserved-files  
   
+directive: 
+  - reason: FixFromXML
+    from: source-file-csharp
+    where: $
+    transform: return $.replace( /FromXml/g , 'FromJson');
+
+
 ```
 
 The following verb-mapping is used as an aid to infer cmdlet-verbs. Every entry maps an operationId-method to a PowerShell cmdlet-verb. The operationId-method is the identifier that comes after the underscore in the operationId. For example:

@@ -133,41 +133,26 @@ export class CallbackParameter extends Parameter {
 
   constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
 
-    if (state.project.storagePipeline) {
-      // storage pipline style (callback happens inside the pipeline)
-      if (responseType && responseType.declaration !== System.IO.Stream.declaration) {
-        if (headerType) {
-          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType, headerType));
-        } else {
-          super(name, System.Action(System.Net.Http.HttpResponseMessage, responseType));
-        }
+
+    // regular pipeline style. (callback happens after the pipline is called)
+    if (responseType) {
+      if (headerType) {
+        // both
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
       } else {
-        if (headerType) {
-          super(name, System.Action(System.Net.Http.HttpResponseMessage, headerType));
-        } else {
-          super(name, System.Action(System.Net.Http.HttpResponseMessage));
-        }
+        // just response
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task()));
       }
     } else {
-      // regular pipeline style. (callback happens after the pipline is called)
-      if (responseType) {
-        if (headerType) {
-          // both
-          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
-        } else {
-          // just response
-          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task()));
-        }
+      if (headerType) {
+        // just headers
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
       } else {
-        if (headerType) {
-          // just headers
-          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
-        } else {
-          // no content?
-          super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task()));
-        }
+        // no content?
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task()));
       }
     }
+
     this.responseType = responseType;
     this.headerType = headerType;
     this.apply(objectInitializer);

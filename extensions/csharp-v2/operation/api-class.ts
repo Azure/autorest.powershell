@@ -44,11 +44,9 @@ export class ApiClass extends Class {
         this.addMethod(cm);
       }
 
-      if (!this.state.project.storagePipeline) {
-        const vm = new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationIndex));
-        if (!this.hasMethodWithSameDeclaration(vm)) {
-          this.addMethod(vm);
-        }
+      const vm = new ValidationMethod(this, operationMethod, state.path('components', 'operations', operationIndex));
+      if (!this.hasMethodWithSameDeclaration(vm)) {
+        this.addMethod(vm);
       }
     }
   }
