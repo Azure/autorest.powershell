@@ -8,7 +8,7 @@ import { Dictionary, escapeString, items, values, docComment, serialize, pascalC
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
@@ -52,7 +52,7 @@ export class CmdletClass extends Class {
     this.interfaces.push(ClientRuntime.IEventListener);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
-    this.isViaIdentity = this.state.project.azure && variantName.indexOf('ViaIdentity') > 0;
+    this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
 
   }
 
@@ -512,46 +512,64 @@ export class CmdletClass extends Class {
 
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
+          const idOpParams = operationParameters.filter(each => !each.isPathParam);
+          const idschema = values($this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+
           if ($this.isViaIdentity) {
-            const idOpParams = operationParameters.filter(each => !each.isPathParam);
-            yield If(`InputObject?.Id == null`, `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
-            yield Else(function* () {
+            const identityFromPathParams = function* () {
               yield `// try to call with PATH parameters from Input Object`
-              const idschema = values($this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+
               if (idschema) {
                 const props = [...values(idschema.properties)];
 
                 const idOpParams = operationParameters.map(each => {
                   if (!each.isPathParam) {
-                    return each.expression;
+                    return {
+                      name: undefined,
+                      value: valueOf(each.expression)
+                    };
                   }
                   const match = props.find(p => p.serializedName === each.name);
                   if (match) {
-                    //const vp = getVirtualPropertyFromPropertyName(idschema.details.csharp.virtualProperties, match.details.csharp.name);
-                    //if (vp) {
-                    //                      return toExpression(`InputObject.${vp.name}`);
-                    //                  }
+                    const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>match.schema, true, $this.state).defaultOfType;
                     let i = idschema;
-
-
-
                     // match up vp name
                     const vp = getAllPublicVirtualProperties(i.details.csharp.virtualProperties).find(pp => pp.property.serializedName === each.name);
                     if (vp) {
-                      return toExpression(`InputObject.${vp.name}`);
+                      return {
+                        name: `InputObject.${vp.name}`,
+                        value: `InputObject.${vp.name} ?? ${defaultOfType}`
+                      }
                     }
                     // fall back!
-                    return toExpression(`InputObject.${match.details.csharp.name}`);
+
+                    return {
+                      name: `InputObject.${match.details.csharp.name}`,
+                      value: `InputObject.${match.details.csharp.name} ?? ${defaultOfType}`
+                    };
                   }
 
-                  return toExpression(`InputObject.${each.name}`);
+                  return {
+                    name: `InputObject.${each.name}`,
+                    value: `InputObject.${each.name}`
+                  };
                 });
-                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...idOpParams, ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                for (const opParam of idOpParams) {
+                  if (opParam.name) {
+                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`)
+                  }
+                }
+                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
 
               }
+            };
 
-
-            });
+            if (idschema && values(idschema.properties).linq.first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
+              yield If(`InputObject?.Id == null`, `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+              yield Else(identityFromPathParams);
+            } else {
+              yield identityFromPathParams;
+            }
           } else {
             yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
           }

@@ -56,17 +56,6 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   });
   model.schemas['universal-parameter-type'] = universalId;
-  universalId.properties["id"] = new Property("id", {
-    schema: new Schema("_identity_type_", { type: JsonType.String, description: "Resource identity path" }),
-    description: 'Resource identity path', serializedName: "id", details: {
-      default: {
-        description: 'Resource identity path',
-        name: 'id',
-        required: false,
-        uid: `universal-parameter:id`
-      }
-    }
-  });
 
   for (const operation of values(model.http.operations)) {
     for (const param of operation.parameters.filter(each => each.in === ParameterLocation.Path)) {
@@ -86,6 +75,19 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
+  if (await state.getValue('azure', false)) {
+    universalId.properties["id"] = new Property("id", {
+      schema: new Schema("_identity_type_", { type: JsonType.String, description: "Resource identity path" }),
+      description: 'Resource identity path', serializedName: "id", details: {
+        default: {
+          description: 'Resource identity path',
+          name: 'id',
+          required: false,
+          uid: `universal-parameter:resource identity`
+        }
+      }
+    });
+  }
 
   // remove schemas that are referenced elsewhere previously.
   for (const each of removes.values()) {

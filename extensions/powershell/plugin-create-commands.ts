@@ -389,7 +389,9 @@ export /* @internal */ class Inferrer {
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
     const [pathParams, otherParams] = values(requiredParameters).linq.bifurcate(each => each.in === ParameterLocation.Path);
-    if (pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
+    const dvi = await state.getValue('disable-via-identity', false);
+
+    if (!dvi && pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
       // we have an operation that has path parameters, a good canididate for piping for identity.
       await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
     }
