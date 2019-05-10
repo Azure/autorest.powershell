@@ -109,7 +109,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         const isRequired = actual.details.csharp.required;
         const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))
         const p = this.add(new InterfaceProperty(property.name, pType, {
-          description: "Owned Property",
+          description: actual.details.csharp.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
         if (!this.isInternal && actual.details.csharp.constantValue !== undefined) {
@@ -125,7 +125,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         const internalSet = !this.isInternal && (actual.schema.readOnly || actual.details.csharp.constantValue);
 
         this.add(new InterfaceProperty(property.name, pType, {
-          description: "Inlined Property",
+          description: actual.details.csharp.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
       }
