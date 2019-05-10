@@ -157,10 +157,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   private nested(virtualProperty: VirtualProperty, internal: boolean): string {
     if (virtualProperty.accessViaProperty) {
       if (virtualProperty.accessViaProperty.accessViaProperty) {
-        return `/*a*/${getVirtualPropertyName(virtualProperty.accessViaMember)}./*b*/${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
+        return `${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
       }
     }
-    return `/*c*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
+    return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
   private accessor(virtualProperty: VirtualProperty, internal: boolean = false): string {
@@ -168,11 +168,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const prefix = virtualProperty.accessViaProperty.accessViaProperty ? this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal) : '';
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
       if (containingProperty && virtualProperty.accessViaMember) {
-        return `/*1*/((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix})/*4*/.${getVirtualPropertyName(virtualProperty.accessViaMember)}/*3*/`;
+        return `((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
       }
     }
-
-    return `/*2*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
+    return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
   private createProperties() {
@@ -195,6 +194,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (actualProperty.details.csharp.constantValue !== undefined) {
           myProperty.setAccess = Access.Internal;
+          myProperty.set = undefined;
         }
 
         if (virtualProperty.private) {
@@ -237,6 +237,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           // vp.setAccess = Access.Internal;
           //vp.getAccess = Access.Internal;
         }
+
+        if (virtualProperty.property.details.csharp.constantValue !== undefined) {
+          vp.setAccess = Access.Internal;
+          vp.set = undefined;
+        }
+
         if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
 
           this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
@@ -270,6 +276,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
                 get: vp.get,
                 set: toExpression(`${this.accessor(virtualProperty)} = value`)
               }));
+            }
+
+            if (virtualProperty.property.details.csharp.constantValue !== undefined) {
+              vp.setAccess = Access.Internal;
+              vp.set = undefined;
             }
 
           }
