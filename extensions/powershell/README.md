@@ -100,15 +100,15 @@ pipeline:
   create-commands:
     input: tweakcodemodelazure # brings the code-model-v3 with it.
 
-  structural-modifier:
-    input: create-commands
-
   create-virtual-properties:
-    input: structural-modifier
+    input: create-commands
+  
+  structural-modifier:
+    input: create-virtual-properties
 
   # Choose names for everything in c#
   csnamer:
-    input: create-virtual-properties # and the generated c# files
+    input: structural-modifier # and the generated c# files
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:
