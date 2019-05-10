@@ -31,6 +31,7 @@ class Host {
   async ListInputs(artifactType?: string): Promise<string[]> {
     return this.inputs;
   }
+
   async ProtectFiles(path: string): Promise<void> {
 
   }
