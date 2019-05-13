@@ -515,11 +515,13 @@ export class CmdletClass extends Class {
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
           const idschema = values($this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
 
+
           if ($this.isViaIdentity) {
             const identityFromPathParams = function* () {
               yield `// try to call with PATH parameters from Input Object`
 
               if (idschema) {
+                const allVPs = getAllPublicVirtualProperties(idschema.details.csharp.virtualProperties);
                 const props = [...values(idschema.properties)];
 
                 const idOpParams = operationParameters.map(each => {
@@ -529,12 +531,12 @@ export class CmdletClass extends Class {
                       value: valueOf(each.expression)
                     };
                   }
-                  const match = props.find(p => p.serializedName === each.name);
+                  const match = props.find(p => p.serializedName.toLowerCase() === `${each.name}`.toLowerCase());
                   if (match) {
+
                     const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>match.schema, true, $this.state).defaultOfType;
-                    let i = idschema;
                     // match up vp name
-                    const vp = getAllPublicVirtualProperties(i.details.csharp.virtualProperties).find(pp => pp.property.serializedName === each.name);
+                    const vp = allVPs.find(pp => pp.property.serializedName === each.name) || allVPs.find(pp => pp.property.serializedName.toLowerCase() === `${each.name}`.toLowerCase());
                     if (vp) {
                       return {
                         name: `InputObject.${vp.name}`,
