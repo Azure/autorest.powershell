@@ -833,7 +833,7 @@ export class CmdletClass extends Class {
             const cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
               set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
-              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : undefined
+              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
             });
             const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
