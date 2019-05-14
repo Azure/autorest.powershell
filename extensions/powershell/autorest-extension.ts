@@ -5,11 +5,10 @@
 
 import { AutoRestExtension, } from '@microsoft.azure/autorest-extension-base';
 
-import { cosmeticModifier } from './cosmetic-modifier';
+import { applyModifiers } from './modifiers';
 import { createCommands } from './plugin-create-commands';
 import { namer } from './plugin-namer';
 import { powershell } from './plugin-powershell';
-import { structuralModifier } from './structural-modifier';
 import { addCompleter } from './plugin-add-azure-completers'
 
 export async function initializePlugins(pluginHost: AutoRestExtension) {
@@ -17,7 +16,6 @@ export async function initializePlugins(pluginHost: AutoRestExtension) {
   pluginHost.Add('powershell', powershell);
   pluginHost.Add('create-commands', createCommands);
   pluginHost.Add('psnamer', namer);
-  pluginHost.Add('cosmetic-modifier', cosmeticModifier);
-  pluginHost.Add('structural-modifier', structuralModifier);
+  pluginHost.Add('modifiers', applyModifiers);
   pluginHost.Add('add-azure-completers', addCompleter);
 }
