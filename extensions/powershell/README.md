@@ -102,23 +102,20 @@ pipeline:
 
   create-virtual-properties:
     input: create-commands
-  
-  structural-modifier:
-    input: create-virtual-properties
-
+    
   # Choose names for everything in c#
   csnamer:
-    input: structural-modifier # and the generated c# files
+    input: create-virtual-properties # and the generated c# files
 
   # ensures that names/descriptions are properly set for powershell
   psnamer:
     input: csnamer 
 
-  cosmetic-modifier:
+  modifiers:
     input: psnamer
 
   add-azure-completers:
-    input: cosmetic-modifier
+    input: modifiers
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
@@ -127,7 +124,7 @@ pipeline:
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
   llcsharp:
-    input: cosmetic-modifier
+    input: modifiers
 
   llcsharp/transform:
     input: llcsharp
