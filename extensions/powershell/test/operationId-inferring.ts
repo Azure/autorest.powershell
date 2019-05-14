@@ -62,6 +62,7 @@ class Host {
 
     const inferrer = await new pp.Inferrer(model).init();
 
+    /*
     for (const id of ids) {
       const q = await inferrer.inferCommandNames(id, model);
 
@@ -71,7 +72,7 @@ class Host {
           `${each.verb}-${each.subject}`
       });
     }
-
+*/
     // aio.writeFile("c:/tmp/output.yaml", serialize(results));
 
     //const names = await aio.readFile(`${__dirname}/../../test/resources/inferred-names.txt`);
