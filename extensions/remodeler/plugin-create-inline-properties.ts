@@ -43,7 +43,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
 
   // this is bad. This would happen when we have a circular reference in the tree.
   if (schema.details.default.inline === 'inprogress') {
-    console.error(`Note: model  ${schema.details.default.name} has a circular reference, and we're skipping inlining.\n  ${stack.join(' => ')}`);
+    console.error(`Note: model ${schema.details.default.name} has a circular reference, and we're skipping inlining.\n  ${stack.join(' => ')}`);
     // mark it as 'not-inlining'
     schema.details.default.inline = 'no';
     return false;
@@ -196,7 +196,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       nameOptions: [name],
       description: property.description || '',
       originalContainingSchema: schema,
-      alias: []
+      alias: [],
     });
   }
 

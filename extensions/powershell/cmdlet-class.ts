@@ -525,18 +525,20 @@ export class CmdletClass extends Class {
                 const props = [...values(idschema.properties)];
 
                 const idOpParams = operationParameters.map(each => {
+                  const pascalName = pascalCase(`${each.name}`);
+
                   if (!each.isPathParam) {
                     return {
                       name: undefined,
                       value: valueOf(each.expression)
                     };
                   }
-                  const match = props.find(p => p.serializedName.toLowerCase() === `${each.name}`.toLowerCase());
+                  const match = props.find(p => pascalCase(p.serializedName) === pascalName);
                   if (match) {
 
                     const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>match.schema, true, $this.state).defaultOfType;
                     // match up vp name
-                    const vp = allVPs.find(pp => pp.property.serializedName === each.name) || allVPs.find(pp => pp.property.serializedName.toLowerCase() === `${each.name}`.toLowerCase());
+                    const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
                     if (vp) {
                       return {
                         name: `InputObject.${vp.name}`,
@@ -545,15 +547,16 @@ export class CmdletClass extends Class {
                     }
                     // fall back!
 
+                    console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.details.csharp.name)}').`);
                     return {
-                      name: `InputObject.${match.details.csharp.name}`,
-                      value: `InputObject.${match.details.csharp.name} ?? ${defaultOfType}`
+                      name: `InputObject.${pascalCase(match.details.csharp.name)}`,
+                      value: `InputObject.${pascalCase(match.details.csharp.name)} ?? ${defaultOfType}`
                     };
                   }
-
+                  console.error(`Unable to match idenity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
                   return {
-                    name: `InputObject.${each.name}`,
-                    value: `InputObject.${each.name}`
+                    name: `InputObject.${pascalName}`,
+                    value: `InputObject.${pascalName}`
                   };
                 });
                 for (const opParam of idOpParams) {

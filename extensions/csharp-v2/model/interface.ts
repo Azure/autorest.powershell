@@ -85,6 +85,8 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   }
 
   init() {
+    (<any>this).init = () => { }; // only allow a single init!
+
     const implData = (this.schema.details.csharp = this.schema.details.csharp || {});
     //implData.interfaceImplementation = this;
     this.description = `${this.schema.details.csharp.description}`;
