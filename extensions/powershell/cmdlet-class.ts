@@ -17,6 +17,9 @@ import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csharp';
 
+const PropertiesRequiringNew = new Set(['Host', 'Events']);
+
+
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
   public state: State;
@@ -829,7 +832,8 @@ export class CmdletClass extends Class {
             const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /* vParam.required */ true, this.state);
             const cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
-              set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`)
+              set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
+              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : undefined
             });
             const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
