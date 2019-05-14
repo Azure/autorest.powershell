@@ -298,8 +298,6 @@ export /* @internal */ class Inferrer {
       }
     }
 
-    //vname = `${vname}${variant.variant}`
-
     // if vname is > 64 characters, let's trim it
     // after trimming it, make sure there aren't any other operation with a name that's exactly the same
     if (vname.length > 64) {

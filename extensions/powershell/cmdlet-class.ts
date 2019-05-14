@@ -8,14 +8,14 @@ import { Dictionary, escapeString, items, values, docComment, serialize, pascalC
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
-import { Variable } from '@microsoft.azure/codegen-csharp/exports';
+import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csharp';
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
@@ -34,6 +34,8 @@ export class CmdletClass extends Class {
   private debugMode?: boolean;
   private variantName: string;
   private isViaIdentity: boolean;
+  private hasStreamOutput: boolean;
+  private outFileParameter?: Property;
 
   constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -48,6 +50,7 @@ export class CmdletClass extends Class {
     this.state = state;
     this.thingsToSerialize = new Array();
     this.variantName = variantName;
+    this.hasStreamOutput = false;
 
     this.interfaces.push(ClientRuntime.IEventListener);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
@@ -78,6 +81,13 @@ export class CmdletClass extends Class {
 
     // construct the class
     this.addClassAttributes(this.operation, this.variantName);
+    if (this.hasStreamOutput) {
+      this.outFileParameter = this.add(new Property('OutFile', System.String, { attributes: [], description: `Path to write output file to.` }));
+      this.outFileParameter.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "Path to write output file to"`] }));
+      this.outFileParameter.add(new Attribute(ValidateNotNull));
+      this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+    }
+
     this.addPowershellParameters(this.operation);
 
     // implement IEventListener
@@ -94,6 +104,8 @@ export class CmdletClass extends Class {
 
     // json serialization
     this.implementSerialization(this.operation);
+
+
     return this;
   }
 
@@ -381,6 +393,15 @@ export class CmdletClass extends Class {
           parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType }), { description: `the header result as a <see cref="${each.details.csharp.headerType}" /> from the remote call` }));
         }
 
+        const override = `override${pascalCase(each.details.csharp.name)}`;
+        const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.details.csharp.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
+        const overrideResponseMethod = new PartialMethod(override, dotnet.Void, {
+          parameters: [...parameters, returnNow],
+          description: `<c>${override}</c> will be called before the regular ${each.details.csharp.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
+          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+        });
+        $this.add(overrideResponseMethod);
+
         const responseMethod = new Method(`${each.details.csharp.name}`, System.Threading.Tasks.Task(), {
           access: Access.Private,
           parameters,
@@ -390,7 +411,14 @@ export class CmdletClass extends Class {
         });
         responseMethod.push(Using(`NoSynchronizationContext`, ``));
 
+
         responseMethod.add(function* () {
+          const skip = Local("_returnNow", `${System.Threading.Tasks.Task(dotnet.Bool).declaration}.FromResult(${dotnet.False})`);
+          yield skip.declarationStatement;
+          yield `${overrideResponseMethod.invoke(...parameters, `ref ${skip.value}`)};`;
+          yield `// if ${override} has returned true, then return right away.`
+          yield If(And(IsNotNull(skip), `await ${skip}`), Return());
+
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
             yield `// Error Response : ${each.responseCode}`;
@@ -486,7 +514,30 @@ export class CmdletClass extends Class {
             }
             // we expect to get back some data from this call.
 
-            yield `// (await response) // should be ${$this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state).declaration}`;
+            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state);
+            yield `// (await response) // should be ${rType.declaration}`;
+            if ($this.hasStreamOutput && rType.declaration === System.IO.Stream.declaration && $this.outFileParameter) {
+              const outfile = $this.outFileParameter;
+              // this is a stream output. write to outfile
+              const stream = Local('stream', 'await response');
+              yield Using(stream.declarationExpression, function* () {
+                const provider = Local('provider');
+                provider.initializer = undefined;
+
+                const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
+                yield paths.declarationStatement;
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+                const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
+                yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
+              });
+
+              yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")`, function* () {
+                // no return type. Let's just return ... true?
+                yield `WriteObject(true);`;
+              })
+              return;
+            }
 
             const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
             if (props.length === 1) {
@@ -944,6 +995,12 @@ export class CmdletClass extends Class {
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
 
+
+          if (typeDeclaration.declaration === System.IO.Stream.declaration) {
+            // if this is a stream, skip the output type.
+            this.hasStreamOutput = true;
+          }
+
           let type = '';
           if (typeDeclaration instanceof ArrayOf) {
             type = typeDeclaration.elementTypeDeclaration;
@@ -955,7 +1012,10 @@ export class CmdletClass extends Class {
             type = typeDeclaration.declaration;
           }
 
-          outputTypes.add(`typeof(${type})`);
+          // check if this is a stream output
+          if (type)
+
+            outputTypes.add(`typeof(${type})`);
         }
       }
     }

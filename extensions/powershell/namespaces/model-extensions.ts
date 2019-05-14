@@ -9,8 +9,6 @@ import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
 import { join } from 'path';
 
-import { Variable } from '@microsoft.azure/codegen-csharp/exports';
-
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return `${this.baseFolder}/${this.apiVersion.replace(/.*\./g, '')}`;

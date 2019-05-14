@@ -470,7 +470,10 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
             });
           });
         }
+        yield responder();
       });
+
+
 
       yield Finally(function* () {
         yield '// finally statements';
