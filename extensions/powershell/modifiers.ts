@@ -5,7 +5,7 @@
 
 import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { values } from '@microsoft.azure/codegen';
+import { values, items } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 type State = ModelState<codemodel.Model>;
@@ -33,27 +33,16 @@ interface WhereCommandDirective {
   'clear-alias': boolean;
   hide?: boolean;
 }
-
-function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
-  let error = '';
-  for (const each of prohibitedFilters) {
-    if (whereObject[each] !== undefined) {
-      error += `Can't filter by ${each} when selecting command. `
-    }
-  }
-
-  return error;
-}
-
-function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
-  let error = '';
-  for (const each of prohibitedSetters) {
-    if (setObject[each] !== undefined) {
-      error += `Can't set ${each} when a ${selectionType} is selected. `
-    }
-  }
-
-  return error;
+interface RemoveCommandDirective {
+  select?: string;
+  where: {
+    'subject'?: string;
+    'subject-prefix'?: string;
+    'verb'?: string;
+    'variant'?: string;
+    'parameter-name'?: string;
+  };
+  remove: Boolean;
 }
 
 function isWhereCommandDirective(it: any): it is WhereCommandDirective {
@@ -61,7 +50,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['clear-alias'])) {
+  if (directive.remove === undefined && where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['clear-alias'])) {
     const prohibitedFilters = ['model-name', 'property-name', 'enum-name', 'enum-value-name'];
     let error = getFilterError(where, prohibitedFilters, 'command');
 
@@ -79,6 +68,18 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
 
   return false;
 }
+
+function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
+  const directive = <RemoveCommandDirective>it;
+  const where = directive.where;
+  const remove = directive.remove;
+  if (where && remove && (where.subject || where.verb || where.variant || where["subject-prefix"] || where["parameter-name"] || directive.select === 'command') && directive.select !== 'parameter') {
+    return true;
+  }
+
+  return false;
+}
+
 
 interface WhereModelDirective {
   select?: string;
@@ -144,11 +145,32 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   return false;
 }
 
+function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedFilters) {
+    if (whereObject[each] !== undefined) {
+      error += `Can't filter by ${each} when selecting command. `
+    }
+  }
 
-export async function cosmeticModifier(service: Host) {
+  return error;
+}
+
+function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedSetters) {
+    if (setObject[each] !== undefined) {
+      error += `Can't set ${each} when a ${selectionType} is selected. `
+    }
+  }
+
+  return error;
+}
+
+export async function applyModifiers(service: Host) {
   directives = values(await service.GetValue('directive'))
     .linq.select(directive => directive)
-    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive))
+    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .linq.toArray();
 
   return processCodeModel(tweakModel, service);
@@ -402,6 +424,73 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         }
       }
 
+      continue;
+    }
+
+
+    if (isRemoveCommandDirective(directive)) {
+      const selectType = directive.select;
+      const subjectRegex = getPatternToMatch(directive.where.subject);
+      const subjectPrefixRegex = getPatternToMatch(directive.where["subject-prefix"]);
+      const verbRegex = getPatternToMatch(directive.where.verb);
+      const variantRegex = getPatternToMatch(directive.where.variant);
+      const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
+
+      // select all operations
+      const operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
+      let operationsToRemoveKeys = new Set<number>();
+      if (subjectRegex) {
+        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subject}`.match(subjectRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = matchingKeys;
+      }
+
+      if (subjectPrefixRegex) {
+        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subjectPrefix}`.match(subjectPrefixRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      if (verbRegex) {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => !!`${operation.value.details.default.verb}`.match(verbRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      if (variantRegex) {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => !!`${operation.value.details.default.name}`.match(variantRegex))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      if (parameterRegex && selectType === 'command') {
+        const matchingKeys = new Set(items(operations)
+          .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
+            .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+          .linq.select(operation => operation.key)
+          .linq.toArray());
+
+        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
+      }
+
+      for (const key of operationsToRemoveKeys) {
+        const operationInfo = state.model.commands.operations[key].details.default;
+        state.message({
+          Channel: Channel.Verbose, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
+        });
+
+        delete state.model.commands.operations[key];
+      }
       continue;
     }
   }
