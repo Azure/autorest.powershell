@@ -125,7 +125,7 @@ export /* @internal */ class Inferrer {
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
 
     for (const operation of values(model.http.operations)) {
-      for (const variant of await this.inferCommandNames(operation.operationId, this.state)) {
+      for (const variant of await this.inferCommandNames(operation, this.state)) {
         // no common parameters (standard variations)
         await this.addVariants(operation.parameters, operation, variant, '', this.state);
 
@@ -216,12 +216,14 @@ export /* @internal */ class Inferrer {
     return [this.createCommandVariant(operation[0], group ? [...deconstruct(group), ...operation.slice(1)] : operation.slice(1), [...suffix, ...operation.slice(1)], this.state.model)];
   }
 
-  async inferCommandNames(operationId: string, state: State): Promise<Array<CommandVariant>> {
+  async inferCommandNames(op: http.HttpOperation, state: State): Promise<Array<CommandVariant>> {
+    const operationId = op.operationId;
+
     let [group, method] = operationId.split('_', 2);
     if (!method) {
       // no group given.
       method = group;
-      group = '';
+      group = pascalCase(op.tags) || ''
     }
 
     let groupWords = deconstruct(group);

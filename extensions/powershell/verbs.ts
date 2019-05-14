@@ -340,6 +340,7 @@ export const verbs = new Set([
   "babysit",
   "bachelor",
   "back",
+  "backup",
   "backbite",
   "backcross",
   "backdate",
