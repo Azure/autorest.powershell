@@ -1,6 +1,6 @@
 # AutoRest PowerShell Generator - Usage
 
-NOTE: If you are using a locally compiled version, see instructions in [Development](./development)
+NOTE: If you are using a locally compiled version, see instructions in [Development](./development.md)
 
 ## Requirements
 
@@ -43,5 +43,5 @@ At a bare minimum, you can generate a powershell module from the
 # Examples:
 
 Check out some examples:
- - Simple usage: [XCKD](./usage-simple) 
+ - Simple usage: [XKCD](./usage-simple.md) 
 
