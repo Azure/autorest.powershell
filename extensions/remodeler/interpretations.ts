@@ -48,7 +48,7 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
         xmse.values.map((each) => {
           return {
             description: each.description || '',
-            name: (each.name !== undefined) ? getValidEnumValueName(each.name) : `${getValidEnumValueName(each.value)}`,
+            name: `${getValidEnumValueName((each.name !== undefined) ? each.name : each.value)}`,
             value: each.value
           };
         }) :
