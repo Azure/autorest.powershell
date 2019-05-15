@@ -7,6 +7,7 @@ import { EnumDetails, ModelState, components } from '@microsoft.azure/autorest.c
 
 import { clone, getExtensionProperties } from './common';
 import * as OpenAPI from '@microsoft.azure/openapi';
+import { getPascalIdentifier } from '@microsoft.azure/codegen';
 
 interface XMSEnum {
   modelAsString?: boolean;
@@ -47,14 +48,14 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
         xmse.values.map((each) => {
           return {
             description: each.description || '',
-            name: each.name || `${each.value}`,
+            name: `${getValidEnumValueName((each.name !== undefined) ? each.name : each.value)}`,
             value: each.value
           };
         }) :
         original.enum.map(each => {
           return {
             description: '',
-            name: each,
+            name: getValidEnumValueName(each),
             value: each
           };
         }),
@@ -62,6 +63,48 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
     };
   }
   return undefined;
+}
+
+export function getValidEnumValueName(originalString: string): string {
+  return !originalString.match(/[A-Za-z0-9]/g) ?
+    getPascalIdentifier(originalString.split('').map(x => specialCharacterMapping[x]).join(' '))
+    : originalString;
+}
+
+// ref: https://www.w3schools.com/charsets/ref_html_ascii.asp
+const specialCharacterMapping: { [character: string]: string } = {
+  '!': 'exclamation mark',
+  '"': 'quotation mark',
+  '#': 'number sign',
+  '$': 'dollar sign',
+  '%': 'percent sign',
+  '&': 'ampersand',
+  '\'': 'apostrophe',
+  '(': 'left parenthesis',
+  ')': 'right parenthesis',
+  '*': 'asterisk',
+  '+': 'plus sign',
+  ',': 'comma',
+  '-': 'hyphen',
+  '.': 'period',
+  '/': 'slash',
+  ':': 'colon',
+  ';': 'semicolon',
+  '<': 'less-than',
+  '=': 'equals-to',
+  '>': 'greater-than',
+  '?': 'question mark',
+  '@': 'at sign',
+  '[': 'left square bracket',
+  '\\': 'backslash',
+  ']': 'right square bracket',
+  '^': 'caret',
+  '_': 'underscore',
+  '`': 'grave accent',
+  '{': 'left curly brace',
+  '|': 'vertical bar',
+  '}': 'right curly brace',
+  '~': 'tilde'
 }
 
 export function getKnownFormatType() {
