@@ -151,10 +151,7 @@ export class OperationMethod extends Method {
 
       yield EOL;
 
-
-
       let urlV: LocalVariable;
-
 
       if ($this.viaIdentity) {
         yield `// verify that Identity format is an exact match for uri`;
