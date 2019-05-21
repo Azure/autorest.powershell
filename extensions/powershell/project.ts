@@ -103,7 +103,8 @@ export class Project extends codeDomProject {
     this.platyPsVersionMinimum = '0.14.0';
 
     // Flags
-    this.skipModelCmdlets = await this.state.getValue('skip-model-cmdlets');
+    // this.skipModelCmdlets = await this.state.getValue('skip-model-cmdlets');
+    this.skipModelCmdlets = true;
     this.azure = this.model.details.default.isAzure;
 
     // Names

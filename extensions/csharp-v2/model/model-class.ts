@@ -12,7 +12,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation } from '../schema/object';
 import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
-import { XmlSerializableClass } from './model-class-xml';
+// import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
@@ -90,7 +90,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   /* @internal */  featureImplementation: ObjectImplementation;
   /* @internal */  validationEventListener: Parameter = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
   /* @internal */  jsonSerializer?: JsonSerializableClass;
-  /* @internal */  xmlSerializer?: XmlSerializableClass;
+  // /* @internal */  xmlSerializer?: XmlSerializableClass;
   /* @internal */  dictionaryImpl?: DictionaryImplementation;
 
   private readonly validationStatements = new Statements();
