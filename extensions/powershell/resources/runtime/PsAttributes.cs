@@ -53,7 +53,8 @@ namespace Microsoft.Rest
     public enum ParameterCategory
     {
         // Note: Order is significant
-        Path = 0,
+        Uri = 0,
+        Path = 1,
         Query,
         Header,
         Cookie,

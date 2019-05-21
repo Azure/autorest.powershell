@@ -73,13 +73,11 @@ export class OperationMethod extends Method {
         this.addParameter(p);
       } else {
         this.add(function* () {
-
           yield ``;
         })
       }
       this.methodParameters.push(p);
     }
-
 
     this.description = this.operation.details.csharp.description;
 
@@ -111,49 +109,39 @@ export class OperationMethod extends Method {
     // add optional parameter for sender
     this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
 
-    // if there are  more than a single server, 
-    // how is that handled?
-    const server = this.operation.servers[0];
-
-    let baseUrl = `${server.url}`;
-
-    // todo: parameterized uris
-    // parameterize uri?
-    for (const { key: name, value: variable } of items(server.variables)) {
-      // key - parameter name
-      // variable.default - default if not specified
-      // variable.enum -- limited choices. 
-    }
+    let rx = this.operation.path;
+    let url = `${this.operation.baseUrl}${this.operation.path.startsWith('/') ? this.operation.path.substr(1) : this.operation.path}`;
 
 
-    baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-
-    let path = this.operation.path;
-    let rx = path;
-
+    const serverParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Uri);
 
     const headerParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Header);
     const pathParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Path);
     const queryParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Query);
     const cookieParams = this.methodParameters.filter(each => each.param.in === ParameterLocation.Cookie);
 
+    // replace any server params in the uri
+    for (const pp of serverParams) {
+      url = url.replace(`{${pp.param.name}}`, `"
+        + ${pp.name}
+        + "`);
+    }
+
     for (const pp of pathParams) {
       rx = rx.replace(`{${pp.param.name}}`, `(?<${pp.param.name}>[^/]+)`);
 
       if (this.viaIdentity) {
-        path = path.replace(`{${pp.param.name}}`, `"
+        url = url.replace(`{${pp.param.name}}`, `"
         + ${pp.name}
         + "`);
       } else {
-        path = path.replace(`{${pp.param.name}}`, `"
+        url = url.replace(`{${pp.param.name}}`, `"
         + ${pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '', ClientRuntime.SerializationMode.None)}
         + "`);
       }
     }
     rx = `"^${rx}$"`;
-
-    path = path.startsWith('/') ? path.substr(1) : path;
-    path = path.replace(/\s*\+ ""/gm, '');
+    url = url.replace(/\s*\+ ""/gm, '');
 
     const bp = this.bodyParameter;
     // add method implementation...
@@ -165,7 +153,7 @@ export class OperationMethod extends Method {
 
 
 
-      let url: LocalVariable;
+      let urlV: LocalVariable;
 
 
       if ($this.viaIdentity) {
@@ -183,25 +171,25 @@ export class OperationMethod extends Method {
       }
 
       yield `// construct URL`;
-      url = new LocalVariable('_url', dotnet.Var, {
+      urlV = new LocalVariable('_url', dotnet.Var, {
         initializer: System.Uri.new(`(
-        "${baseUrl}${path}"
+        "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
         + "&"`
         )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
       });
-      yield url.declarationStatement;
+      yield urlV.declarationStatement;
 
       yield EOL;
 
-      yield eventListener.signal(ClientRuntime.Events.URLCreated, `_url`);
+      yield eventListener.signal(ClientRuntime.Events.URLCreated, urlV.value);
       yield EOL;
 
       yield `// generate request object `;
-      yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${$this.operation.method.capitalize()}, _url`)};`;
-      yield eventListener.signal(ClientRuntime.Events.RequestCreated, `_url`);
+      yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${$this.operation.method.capitalize()}, ${urlV.value}`)};`;
+      yield eventListener.signal(ClientRuntime.Events.RequestCreated, urlV.value);
       yield EOL;
 
       if (headerParams.length > 0) {
@@ -215,13 +203,13 @@ export class OperationMethod extends Method {
         }
         yield EOL;
       }
-      yield eventListener.signal(ClientRuntime.Events.HeaderParametersAdded, `_url`);
+      yield eventListener.signal(ClientRuntime.Events.HeaderParametersAdded, urlV.value);
 
       if (bp) {
         yield `// set body content`;
         yield `request.Content = ${bp.serializeToContent(bp.mediaType, ClientRuntime.SerializationMode.None)};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
-        yield eventListener.signal(ClientRuntime.Events.BodyContentSet, `_url`);
+        yield eventListener.signal(ClientRuntime.Events.BodyContentSet, urlV.value);
       }
 
       yield `// make the call `;

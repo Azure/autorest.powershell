@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { components } from '@microsoft.azure/autorest.codemodel-v3';
+import { components, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
 import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@microsoft.azure/autorest.codemodel-v3';
 import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '@microsoft.azure/codegen';
 import { isMediaTypeJson, isMediaTypeXml } from '@microsoft.azure/autorest.codemodel-v3';
@@ -15,6 +15,7 @@ import { StringFormat } from '@microsoft.azure/autorest.codemodel-v3';
 import { dereference, Dereferenced, getExtensionProperties, Refable, isReference } from './common';
 import * as Interpretations from './interpretations';
 import * as OpenAPI from '@microsoft.azure/openapi';
+import { ImplementationLocation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 
 const xmsMetadata = 'x-ms-metadata';
 const TODO_UNIMPLEMENTED = undefined;
@@ -394,7 +395,13 @@ export class Remodeler {
       original.path = original.path.substring(0, query);
     }
     const operationName = original.operation.operationId || name;
-    const newOperation = new HttpOperation(operationName, original.path, original.method, {
+
+    // get the server entry
+    const servers = Interpretations.getServers(original.operation.servers, original.pathItem.servers, this.oai.servers);
+    const server = servers[0];
+    const baseUrl = `${server.url}`;
+
+    const newOperation = new HttpOperation(operationName, baseUrl, original.path, original.method, {
       pathDescription: original.pathItem.description,
       pathSummary: original.pathItem.summary,
       pathExtensions: getExtensionProperties(original.pathItem),
@@ -403,7 +410,7 @@ export class Remodeler {
       extensions: getExtensionProperties(original.operation),
       operationId: original.operation.operationId,
       path: original.path,
-      servers: Interpretations.getServers(original.operation.servers, original.pathItem.servers, this.oai.servers),
+      servers: servers,
       externalDocs: Interpretations.getExternalDocs(original.operation.externalDocs),
       tags: original.operation.tags ? [...original.operation.tags] : [],
       summary: original.operation.summary,
@@ -418,6 +425,21 @@ export class Remodeler {
     });
 
     this.addOrThrow(targetDictionary, name, newOperation);
+
+    // and add parameterized host params if necessary
+    for (const { key: parameterName, value: value } of items(server.variables)) {
+      if (parameterName) {
+        newOperation.parameters.push(new HttpOperationParameter(parameterName, ParameterLocation.Uri, ImplementationLocation.Method, {
+          schema: new Schema(`host${parameterName}`, { type: JsonType.String, description: "Host parameter type" }),
+          description: value.description,
+          details: {
+            default: {
+              serverParameter: value
+            }
+          }
+        }));
+      }
+    }
 
     if (original.operation.parameters) {
       for (const parameterName of original.operation.parameters) {
