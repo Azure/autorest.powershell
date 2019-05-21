@@ -192,7 +192,14 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const variantRegex = getPatternToMatch(directive.where.variant);
       const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
 
-      const alias = (directive.set !== undefined) ? directive.set.alias : undefined;
+      const alias =
+        (directive.set !== undefined) ?
+          (directive.set.alias !== undefined) ?
+            !Array.isArray(directive.set.alias) ?
+              [directive.set.alias]
+              : directive.set.alias
+            : undefined
+          : undefined;
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
       const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set["subject-prefix"] : undefined;
       const verbReplacer = (directive.set !== undefined) ? directive.set.verb : undefined;
@@ -314,7 +321,19 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           }
 
           if (alias) {
-            operation.details.csharp.alias = Array.isArray(alias) ? operation.details.csharp.alias.concat(alias) : (operation.details.csharp.alias.indexOf(alias) === -1) ? operation.details.csharp.alias.concat(alias) : operation.details.csharp.alias;
+            const getParsedAlias = (rawAlias: string) => {
+              return rawAlias.replace('${verb}', operation.details.csharp.verb)
+                .replace('${subject-prefix}', operation.details.csharp.subjectPrefix)
+                .replace('${subject}', operation.details.csharp.subject)
+                .replace('${variant}', operation.details.csharp.name);
+            }
+
+            alias.forEach((element, index) => {
+              alias[index] = getParsedAlias(element);
+            });
+
+            operation.details.csharp.alias = [...new Set([...operation.details.csharp.alias, ...alias])];
+
             state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${alias} to command ${newCommandName}.`
             });

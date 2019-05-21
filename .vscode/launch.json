@@ -12,6 +12,18 @@
       "port": 9229,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "protocol": "inspector",
+      "request": "launch",
+      "name": "run tests",
+      "program": "${workspaceRoot}/extensions/remodeler/node_modules/mocha/bin/_mocha",
+      "args": [
+        "dist/test/enum-naming.js",
+        "--timeout=2000000"
+      ],
+      "cwd": "${workspaceRoot}/extensions/remodeler"
     }
   ]
 }
