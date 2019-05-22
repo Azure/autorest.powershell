@@ -63,6 +63,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static IEnumerable<string> ToAliasNames(this IEnumerable<Attribute> attributes) => attributes.OfType<AliasAttribute>().SelectMany(aa => aa.AliasNames).Distinct();
 
+        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) where T : class => properties[name]?.Value as T;
+
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T : class
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
 

@@ -43,5 +43,14 @@ Get-ChildItem function: | Where-Object {{ ($currentFunctions -notcontains $_) -a
 
         public static IEnumerable<FunctionInfo> GetScriptCmdlets(string scriptFolder)
             => GetScriptCmdlets(null, scriptFolder);
+
+        public static IEnumerable<PSObject> GetCmdletHelp(PSCmdlet cmdlet, IEnumerable<string> cmdletNames)
+        {
+            var namesList = cmdletNames.ToPsList();
+            var getCmdletHelpCommand = $@"
+{namesList} | ForEach-Object {{ Get-Help -Name $_ -Full }}
+";
+            return cmdlet?.RunScript<PSObject>(getCmdletHelpCommand) ?? RunScript<PSObject>(getCmdletHelpCommand);
+        }
     }
 }
