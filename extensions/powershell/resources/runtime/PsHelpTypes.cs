@@ -1,114 +1,237 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Xml.Serialization;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    public class CmdletHelpInfo
+    internal class PsHelpInfo
     {
         public string CmdletName { get; }
+        public string ModuleName { get; }
         public string Synopsis { get; }
         public string Description { get; }
-        //public string ProfileName { get; }
-        //public Variant[] Variants { get; }
+        public string AlertText { get; }
+        public string Category { get; }
+        public PsHelpLinkInfo OnlineVersion { get; }
+        public PsHelpLinkInfo[] RelatedLinks { get; }
 
-        //public string[] Aliases { get; }
-        //public PSTypeName[] OutputTypes { get; }
-        //public bool SupportsShouldProcess { get; }
-        //public string DefaultParameterSetName { get; }
-        //public bool HasMultipleVariants { get; }
+        public PsHelpTypeInfo[] InputTypes { get; }
+        public PsHelpTypeInfo[] OutputTypes { get; }
+        public PsHelpExampleInfo[] Examples { get; }
+
+        public PsParameterHelpInfo[] Parameters { get; }
+        public PsHelpSyntaxInfo[] Syntax { get; }
+
+        public object Component { get; }
+        public object Functionality { get; }
+        public object PsSnapIn { get; }
+        public object Role { get; }
         
-        //public bool IsGenerated { get; }
 
-        public CmdletHelpInfo(PSMemberInfoCollection<PSPropertyInfo> properties)
+        public PsHelpInfo(PSObject helpObject)
         {
-            CmdletName = properties.GetProperty<string>("Name");
-            Synopsis = properties.GetProperty<string>("Synopsis");
-            Description = String.Join(Environment.NewLine, properties.GetProperty<PSObject[]>("description").Select(dl => dl.Properties.GetProperty<string>("Text")));
+            CmdletName = helpObject.GetProperty<string>("Name").EmptyAsNull() ?? helpObject.GetNestedProperty<string>("details", "name");
+            ModuleName = helpObject.GetProperty<string>("ModuleName");
+            Synopsis = helpObject.GetProperty<string>("Synopsis");
+            Description = helpObject.GetProperty<PSObject[]>("description").ToDescriptionText().EmptyAsNull() ?? 
+                          helpObject.GetNestedProperty<PSObject[]>("details", "description").ToDescriptionText();
+            AlertText = helpObject.GetNestedProperty<PSObject[]>("alertSet", "alert").ToDescriptionText();
+            Category = helpObject.GetProperty<string>("Category");
+
+            var links = helpObject.GetNestedProperty<PSObject[]>("relatedLinks", "navigationLink").Select(nl => nl.ToLinkInfo()).ToArray();
+            OnlineVersion = links.FirstOrDefault(l => l.Text.ToLowerInvariant().StartsWith("online version:"));
+            RelatedLinks = links.Where(l => !l.Text.ToLowerInvariant().StartsWith("online version:")).ToArray();
+
+            //// navigationLink can be either a single item or an array of items.
+            //OutputTypeNames = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").Select(rv => rv.GetNestedProperty<string>("type", "name")).ToArray();
+            //OutputTypeNames = OutputTypeNames.Any() ? OutputTypeNames : new []{ helpObject.GetNestedProperty<string>("returnValues", "returnValue", "type", "name") };
+
+            InputTypes = helpObject.GetNestedProperty<PSObject[]>("inputTypes", "inputType").Select(it => it.ToTypeInfo()).ToArray();
+            OutputTypes = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").Select(rv => rv.ToTypeInfo()).ToArray();
+            Examples = helpObject.GetNestedProperty<PSObject[]>("examples", "example").Select(e => e.ToExampleInfo()).ToArray();
+
+            Parameters = helpObject.GetNestedProperty<PSObject[]>("parameters", "parameter").Select(p => p.ToPsParameterHelpInfo()).ToArray();
+            Syntax = helpObject.GetNestedProperty<PSObject[]>("syntax", "syntaxItem").Select(si => si.ToSyntaxInfo()).ToArray();
+
+            Component = helpObject.GetProperty<object>("Component");
+            Functionality = helpObject.GetProperty<object>("Functionality");
+            PsSnapIn = helpObject.GetProperty<object>("PSSnapIn");
+            Role = helpObject.GetProperty<object>("Role");
         }
     }
 
-    public static class HelpTypesExtensions
+    internal class PsHelpTypeInfo
     {
-        public static CmdletHelpInfo ToCmdletHelpInfo(this PSMemberInfoCollection<PSPropertyInfo> properties) => new CmdletHelpInfo(properties);
+        public string Name { get; }
+        public string Description { get; }
+
+        public PsHelpTypeInfo(PSObject typeObject)
+        {
+            Name = typeObject.GetNestedProperty<string>("type", "name");
+            Description = typeObject.GetProperty<PSObject[]>("description").ToDescriptionText();
+        }
     }
 
-    //[Serializable]
-    //public class ViewDefinitions
-    //{
-    //    //https://stackoverflow.com/a/10518657/294804
-    //    [XmlElement("View")]
-    //    public List<View> Views { get; set; }
-    //}
+    internal class PsHelpLinkInfo
+    {
+        public string Uri { get; }
+        public string Text { get; }
 
-    //[Serializable]
-    //public class View
-    //{
-    //    [XmlElement(nameof(Name))]
-    //    public string Name { get; set; }
-    //    [XmlElement(nameof(ViewSelectedBy))]
-    //    public ViewSelectedBy ViewSelectedBy { get; set; }
-    //    [XmlElement(nameof(TableControl))]
-    //    public TableControl TableControl { get; set; }
-    //}
+        public PsHelpLinkInfo(PSObject linkObject)
+        {
+            Uri = linkObject.GetProperty<string>("uri");
+            Text = linkObject.GetProperty<string>("linkText");
+        }
+    }
 
-    //[Serializable]
-    //public class ViewSelectedBy
-    //{
-    //    [XmlElement(nameof(TypeName))]
-    //    public string TypeName { get; set; }
-    //}
+    internal class PsHelpSyntaxInfo
+    {
+        public string CmdletName { get; }
+        public PsParameterHelpInfo[] Parameters { get; }
 
-    //[Serializable]
-    //public class TableControl
-    //{
-    //    [XmlElement(nameof(TableHeaders))]
-    //    public TableHeaders TableHeaders { get; set; }
-    //    [XmlElement(nameof(TableRowEntries))]
-    //    public TableRowEntries TableRowEntries { get; set; }
-    //}
+        public PsHelpSyntaxInfo(PSObject syntaxObject)
+        {
+            CmdletName = syntaxObject.GetProperty<string>("name");
+            Parameters = syntaxObject.GetProperty<PSObject[]>("parameter").Select(p => p.ToPsParameterHelpInfo()).ToArray();
+        }
+    }
 
-    //[Serializable]
-    //public class TableHeaders
-    //{
-    //    [XmlElement("TableColumnHeader")]
-    //    public List<TableColumnHeader> TableColumnHeaders { get; set; }
-    //}
+    internal class PsHelpExampleInfo
+    {
+        public string Title { get; }
+        public string Code { get; }
+        public string Remarks { get; }
 
-    //[Serializable]
-    //public class TableColumnHeader
-    //{
-    //    [XmlElement(nameof(Label))]
-    //    public string Label { get; set; }
-    //}
+        public PsHelpExampleInfo(PSObject exampleObject)
+        {
+            Title = exampleObject.GetProperty<string>("title");
+            Code = exampleObject.GetProperty<string>("code");
+            Remarks = exampleObject.GetProperty<PSObject[]>("remarks").ToDescriptionText();
+        }
+    }
 
-    //[Serializable]
-    //public class TableRowEntries
-    //{
-    //    [XmlElement(nameof(TableRowEntry))]
-    //    public TableRowEntry TableRowEntry { get; set; }
-    //}
+    internal class PsParameterHelpInfo
+    {
+        public string DefaultValueAsString { get; }
+        public bool SupportsGlobbing { get; }
+        public string Name { get; }
+        public string TypeName { get; }
+        public string SupportsPipelineInput { get; }
+        public string PositionText { get; }
+        public bool IsRequired { get; }
 
-    //[Serializable]
-    //public class TableRowEntry
-    //{
-    //    [XmlElement(nameof(TableColumnItems))]
-    //    public TableColumnItems TableColumnItems { get; set; }
-    //}
+        public PsParameterHelpInfo(PSObject parameterHelpObject)
+        {
+            DefaultValueAsString = parameterHelpObject.GetProperty<string>("defaultValue");
+            SupportsGlobbing = Convert.ToBoolean(parameterHelpObject.GetProperty<string>("globbing").ToLowerInvariant());
+            Name = parameterHelpObject.GetProperty<string>("name");
+            TypeName = parameterHelpObject.GetProperty<string>("parameterValue").EmptyAsNull() ?? parameterHelpObject.GetNestedProperty<string>("type", "name");
+            SupportsPipelineInput = parameterHelpObject.GetProperty<string>("pipelineInput");
+            PositionText = parameterHelpObject.GetProperty<string>("position");
+            IsRequired = Convert.ToBoolean(parameterHelpObject.GetProperty<string>("required").ToLowerInvariant());
+        }
+    }
 
-    //[Serializable]
-    //public class TableColumnItems
-    //{
-    //    [XmlElement("TableColumnItem")]
-    //    public List<TableColumnItem> TableItems { get; set; }
-    //}
+    internal class MarkdownHelpInfo
+    {
+        public string ExternalHelpFile { get; }
+        public string ModuleName { get; }
+        public string OnlineVersion { get; }
+        public Version Schema { get; }
 
-    //[Serializable]
-    //public class TableColumnItem
-    //{
-    //    [XmlElement(nameof(PropertyName))]
-    //    public string PropertyName { get; set; }
-    //}
+        public string CmdletName { get; }
+        public string[] Aliases { get; }
+
+        public MarkdownSyntaxHelpInfo[] SyntaxInfos { get; }
+        public MarkdownExampleHelpInfo[] Examples { get; }
+        public MarkdownParameterHelpInfo[] Parameters { get; }
+
+        public string[] Inputs { get; }
+        public string[] Outputs { get; }
+
+        public string[] RelatedLinks { get; }
+
+        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string externalHelpFile = "")
+        {
+            ExternalHelpFile = String.IsNullOrEmpty(externalHelpFile) ? String.Empty : $"external help file: {externalHelpFile}";
+            ModuleName = $@"Module Name: {"${$project.moduleName}"}";
+            OnlineVersion = $"online version: {helpInfo.OnlineVersion?.Uri?.EmptyAsNull() ?? variantGroup.Link}";
+            Schema = Version.Parse("2.0.0");
+
+            CmdletName = variantGroup.CmdletName;
+            Aliases = variantGroup.Aliases;
+
+            var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.Definition?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries) ??
+                              variantGroup.Variants.Select(v => v.Info.Definition.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
+            var parameterSetNames = variantGroup.Variants.Select(v => v.VariantName).ToArray();
+            var defaultParameterSet = variantGroup.DefaultParameterSetName;
+            SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
+
+            Examples = helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray();
+
+        }
+    }
+
+    internal class MarkdownSyntaxHelpInfo
+    {
+        public bool IsDefault { get; }
+        public string ParameterSetName { get; }
+        public string SyntaxText { get; }
+
+        public MarkdownSyntaxHelpInfo(string parameterSetName, string syntaxText, bool isDefault)
+        {
+            ParameterSetName = parameterSetName;
+            SyntaxText = syntaxText;
+            IsDefault = isDefault;
+        }
+    }
+
+    internal class MarkdownExampleHelpInfo
+    {
+        public string Name { get; }
+        public string Code { get; }
+        public string Description { get; }
+
+        public MarkdownExampleHelpInfo(string name, string code, string description)
+        {
+            Name = name;
+            Code = code;
+            Description = description;
+        }
+    }
+
+    internal class MarkdownParameterHelpInfo
+    {
+        public string Name { get; }
+        public string Description { get; }
+        public Type Type { get; }
+        public string[] ParameterSetNames { get; }
+        public string[] Aliases { get; }
+
+        public bool IsRequired { get; }
+        public string Position { get; }
+        public string DefaultValue { get; }
+        public bool AcceptsPipelineByValue { get; }
+        public bool AcceptsPipelineByPropertyName { get; }
+        public bool AcceptsWildcardCharacters { get; }
+
+        public MarkdownParameterHelpInfo()
+        {
+
+        }
+    }
+
+    internal static class HelpTypesExtensions
+    {
+        public static PsHelpInfo ToPsHelpInfo(this PSObject helpObject) => new PsHelpInfo(helpObject);
+        public static PsParameterHelpInfo ToPsParameterHelpInfo(this PSObject parameterHelpObject) => new PsParameterHelpInfo(parameterHelpObject);
+
+        public static string ToDescriptionText(this PSObject[] descriptionObject) => String.Join(Environment.NewLine, descriptionObject.Select(dl => dl.GetProperty<string>("Text")));
+        public static PsHelpTypeInfo ToTypeInfo(this PSObject typeObject) => new PsHelpTypeInfo(typeObject);
+        public static PsHelpExampleInfo ToExampleInfo(this PSObject exampleObject) => new PsHelpExampleInfo(exampleObject);
+        public static PsHelpLinkInfo ToLinkInfo(this PSObject linkObject) => new PsHelpLinkInfo(linkObject);
+        public static PsHelpSyntaxInfo ToSyntaxInfo(this PSObject syntaxObject) => new PsHelpSyntaxInfo(syntaxObject);
+
+        public static MarkdownExampleHelpInfo ToExampleHelpInfo(this PsHelpExampleInfo exampleInfo) => new MarkdownExampleHelpInfo(exampleInfo.Title, exampleInfo.Code, exampleInfo.Remarks);
+    }
 }

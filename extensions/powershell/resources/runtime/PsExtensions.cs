@@ -63,7 +63,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static IEnumerable<string> ToAliasNames(this IEnumerable<Attribute> attributes) => attributes.OfType<AliasAttribute>().SelectMany(aa => aa.AliasNames).Distinct();
 
-        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) where T : class => properties[name]?.Value as T;
+        public static T GetNestedProperty<T>(this PSObject psObject, params string[] names) => psObject.Properties.GetNestedProperty<T>(names);
+
+        public static T GetNestedProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, params string[] names)
+        {
+            var lastName = names.Last();
+            return names.Take(names.Length - 1).Aggregate(properties, (p, n) => p.GetProperty<PSObject>(n).Properties).GetProperty<T>(lastName);
+        }
+
+        public static T GetProperty<T>(this PSObject psObject, string name) => psObject.Properties.GetProperty<T>(name);
+
+        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) => properties?[name]?.Value is T result ? result : default(T);
 
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T : class
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);

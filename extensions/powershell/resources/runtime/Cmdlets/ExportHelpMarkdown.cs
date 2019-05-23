@@ -52,13 +52,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(va => new VariantGroup(va.First().CmdletName, va, String.Empty))
                 .ToArray();
 
+            var helpInfos = HelpInfo.Select(hi => hi.ToPsHelpInfo()).ToArray();
 
-            foreach (var psPropertyInfo in HelpInfo.SelectMany(h => h.Properties))
-            {
-                Console.Write("name: " + psPropertyInfo.Name);
-                Console.Write("\tvalue: " + psPropertyInfo.Value);
-                Console.WriteLine("\tmemberType: " + psPropertyInfo.MemberType);
-            }
+
+            //foreach (var psPropertyInfo in HelpInfo.SelectMany(h => h.Properties))
+            //{
+            //    Console.Write("name: " + psPropertyInfo.Name);
+            //    Console.Write("\tvalue: " + psPropertyInfo.Value);
+            //    Console.WriteLine("\tmemberType: " + psPropertyInfo.MemberType);
+            //}
 
 
 
