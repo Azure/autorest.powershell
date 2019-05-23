@@ -75,16 +75,28 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) => properties?[name]?.Value is T result ? result : default(T);
 
-        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script) where T : class
+        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script)
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
 
         public static void RunScript(this PSCmdlet cmdlet, string script)
             => cmdlet.RunScript<PSObject>(script);
 
-        public static IEnumerable<T> RunScript<T>(this EngineIntrinsics engineIntrinsics, string script) where T : class
+        public static IEnumerable<T> RunScript<T>(this EngineIntrinsics engineIntrinsics, string script)
             => PsHelpers.RunScript<T>(engineIntrinsics.InvokeCommand, script);
 
         public static void RunScript(this EngineIntrinsics engineIntrinsics, string script)
             => engineIntrinsics.RunScript<PSObject>(script);
+
+        public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, ScriptBlock block)
+            => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, block.ToString());
+
+        public static void RunScript(this PSCmdlet cmdlet, ScriptBlock block)
+            => cmdlet.RunScript<PSObject>(block.ToString());
+
+        public static IEnumerable<T> RunScript<T>(this EngineIntrinsics engineIntrinsics, ScriptBlock block)
+            => PsHelpers.RunScript<T>(engineIntrinsics.InvokeCommand, block.ToString());
+
+        public static void RunScript(this EngineIntrinsics engineIntrinsics, ScriptBlock block)
+            => engineIntrinsics.RunScript<PSObject>(block.ToString());
     }
 }

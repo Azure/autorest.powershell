@@ -4,12 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName } from '@microsoft.azure/codegen';
+import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 type State = ModelState<codemodel.Model>;
 
+
+function getPluralizationService(): EnglishPluralizationService {
+  const result = new EnglishPluralizationService();
+  result.addWord('Database', 'Databases');
+  result.addWord('database', 'databases');
+  return result;
+}
+
+export function singularize(word: string): string {
+  return getPluralizationService().singularize(word);
+}
 
 export async function createInlinedPropertiesPlugin(service: Host) {
   return processCodeModel(createVirtuals, service);
@@ -29,9 +40,9 @@ function getNameOptions(typeName: string, components: Array<string>) {
   return [...result.values()];
 }
 
-const threshold = 24;
 
-function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
+
+function createVirtualProperties(schema: Schema, stack = new Array<string>(), threshold = 30) {
   // did we already inline this objecct
   if (schema.details.default.inline === 'yes') {
     return true;
@@ -62,7 +73,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
   // First we should run thru the properties in parent classes and create inliners for each property they have.
   for (const parentSchema of values(schema.allOf)) {
     // make sure that the parent is done.
-    createVirtualProperties(parentSchema, [...stack, `${schema.details.default.name}`]);
+    createVirtualProperties(parentSchema, [...stack, `${schema.details.default.name}`], threshold);
 
     const parentProperties = parentSchema.details.default.virtualProperties || {
       owned: [],
@@ -89,14 +100,17 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
     }
   }
 
-  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each => each.schema.type === JsonType.Object && !each.schema.additionalProperties && length(each.schema.properties) > 0);
+  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each =>
+    each.schema.type === JsonType.Object &&       // is it an object 
+    getAllProperties(each.schema).length > 0    // does it have properties (or inherit properties)
+  );
 
   // run thru the properties in this class.
   for (const property of objectProperties) {
-    const name = property.details.default.name;
+    const propertyName = property.details.default.name;
 
     // for each object member, make sure that it's inlined it's children that it can.
-    createVirtualProperties(property.schema, [...stack, `${schema.details.default.name}::${name}`]);
+    createVirtualProperties(property.schema, [...stack, `${schema.details.default.name}::${propertyName}`], threshold);
 
     // this happens if there is a circular reference.
     // this means that this class should not attempt any inlining of that property at all .
@@ -108,16 +122,21 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
       inherited: [],
       inlined: [],
     }
+
+    const allNotRequired = values(getAllPublicVirtualProperties()).linq.all(each => !each.property.details.default.required);
+
     const childCount = length(virtualChildProperties.owned) + length(virtualChildProperties.inherited) + length(virtualChildProperties.inlined);
-    if (canInline && property.schema.required && (childCount < threshold || name === 'properties')) {
+    if (canInline && (property.details.default.required || allNotRequired) && (childCount < threshold || propertyName === 'properties')) {
+
+
       // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
       // create a private property for the inlined ones to use.
       const privateProperty = {
-        name: getPascalIdentifier(name),
+        name: getPascalIdentifier(propertyName),
         propertySchema: schema,
         property,
-        nameComponents: [getPascalIdentifier(name)],
-        nameOptions: getNameOptions(schema.details.default.name, [name]),
+        nameComponents: [getPascalIdentifier(propertyName)],
+        nameOptions: getNameOptions(schema.details.default.name, [propertyName]),
         private: true,
         description: property.description || '',
         originalContainingSchema: schema,
@@ -133,10 +152,9 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
 
+        const proposedName = getPascalIdentifier(`${propertyName === 'properties' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
 
-        const proposedName = getPascalIdentifier(`${name === 'properties' ? '' : getPascalIdentifier(name)} ${inlinedProperty.name}`);
-
-        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
+        const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
@@ -162,7 +180,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
 
 
         const proposedName = getPascalIdentifier(inlinedProperty.name);
-        const components = [...removeSequentialDuplicates([name, ...inlinedProperty.nameComponents, proposedName])];
+        const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
@@ -210,7 +228,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>()) {
   }
 
   const usedNames = new Set(inlined.keys());
-  for (const each of virtualProperties.inlined) {
+  for (const each of virtualProperties.inlined.sort((a, b) => a.nameOptions.length - b.nameOptions.length)) {
     const ct = inlined.get(each.name);
     if (ct && ct > 1) {
       each.name = selectName(each.nameOptions, usedNames);
@@ -290,6 +308,8 @@ async function createVirtuals(state: State): Promise<codemodel.Model> {
     Individual models can change the $THRESHOLD for generate
   */
 
+  const threshold = await state.getValue('inlining-threshold', 24);
+
   for (const schema of values(state.model.schemas)) {
     if (schema.type === JsonType.Object) {
 
@@ -298,7 +318,7 @@ async function createVirtuals(state: State): Promise<codemodel.Model> {
         continue;
       }
       // we have an object, let's process it.
-      createVirtualProperties(schema);
+      createVirtualProperties(schema, undefined, threshold);
     }
   }
 
