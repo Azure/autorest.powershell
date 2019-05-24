@@ -57,11 +57,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(variantGroup.Description.ToDescriptionOutput());
 
                     sb.Append("param(");
-                    var allVariantNames = variantGroup.Variants.Select(vg => vg.VariantName).ToArray();
-                    var parameterGroups = variantGroup.Variants
-                        .SelectMany(v => v.ToParameters())
-                        .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
-                        .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames))
+                    var parameterGroups = variantGroup.Variants.ToParameterGroups()
                         .OrderBy(pg => pg.OrderCategory)
                         .ThenByDescending(pg => pg.IsMandatory)
                         .ToList();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -115,9 +116,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Parameters = this.ToParameters();
             IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
             IsDoNotExport = Attributes.OfType<DoNotExportAttribute>().Any();
-            CmdletOnlyParameters = Parameters.Where(p => !p.Attributes.OfType<CategoryAttribute>().Any(a =>
-                a.Categories.Contains(ParameterCategory.Azure) ||
-                a.Categories.Contains(ParameterCategory.Runtime))).ToArray();
+            CmdletOnlyParameters = Parameters.Where(p => !p.Categories.Any(c => c == ParameterCategory.Azure || c == ParameterCategory.Runtime)).ToArray();
             Profiles = Attributes.OfType<ProfileAttribute>().SelectMany(pa => pa.Profiles).ToArray();
         }
     }
@@ -135,7 +134,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
         public ParameterCategory OrderCategory { get; }
+        public bool DontShow { get; }
         public bool IsMandatory { get; }
+        public bool SupportsWildcards { get; }
+        public bool IsInputType { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
         {
@@ -149,8 +151,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
-            OrderCategory = Parameters.SelectMany(p => p.Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories)).DefaultIfEmpty(ParameterCategory.Body).Min();
+            OrderCategory = Parameters.SelectMany(p => p.Categories).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
+            DontShow = Parameters.All(p => p.DontShow);
             IsMandatory = HasAllVariants && Parameters.First().IsMandatory;
+            SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
+            IsInputType = Parameters.Any(p => p.ValueFromPipeline || p.ValueFromPipelineByPropertyName);
         }
     }
 
@@ -161,7 +166,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ParameterMetadata Metadata { get; }
 
         public Attribute[] Attributes { get; }
+        public ParameterCategory[] Categories { get; }
+        public PSDefaultValueAttribute DefaultValue { get; }
         public ParameterAttribute ParameterAttribute { get; }
+        public bool SupportsWildcards { get; }
+
+        public bool ValueFromPipeline { get; }
+        public bool ValueFromPipelineByPropertyName { get; }
+        public string HelpMessage { get; }
+        public int? Position { get; }
+        public bool DontShow { get; }
         public bool IsMandatory { get; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata)
@@ -169,8 +183,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             VariantName = variantName;
             ParameterName = parameterName;
             Metadata = metadata;
+
             Attributes = Metadata.Attributes.ToArray();
+            Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
+            DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
+            SupportsWildcards = Attributes.OfType<ParameterAttribute>().Any();
+
+            ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
+            ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
+            HelpMessage = ParameterAttribute.HelpMessage;
+            Position = ParameterAttribute.Position == Int32.MinValue ? (int?)null : ParameterAttribute.Position;
+            DontShow = ParameterAttribute.DontShow;
             IsMandatory = ParameterAttribute.Mandatory;
         }
     }
@@ -207,5 +231,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction 
             ? ((FunctionInfo)variant.Info).ScriptBlock.Attributes.ToArray()
             : variant.Metadata.CommandType.GetCustomAttributes(false).Cast<Attribute>().ToArray();
+
+        public static IEnumerable<ParameterGroup> ToParameterGroups(this Variant[] variants)
+        {
+            var allVariantNames = variants.Select(vg => vg.VariantName).ToArray();
+            return variants
+                .SelectMany(v => v.Parameters)
+                .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
+                .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
+        }
     }
 }

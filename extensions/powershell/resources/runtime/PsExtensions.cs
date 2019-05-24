@@ -73,7 +73,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static T GetProperty<T>(this PSObject psObject, string name) => psObject.Properties.GetProperty<T>(name);
 
-        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) => properties?[name]?.Value is T result ? result : default(T);
+        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name) => properties[name]?.Value is T result ? result : default(T);
 
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script)
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
