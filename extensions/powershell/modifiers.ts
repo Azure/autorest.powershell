@@ -328,14 +328,14 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 .replace('${variant}', operation.details.csharp.name);
             }
 
-            alias.forEach((element, index) => {
-              alias[index] = getParsedAlias(element);
-            });
+            const parsedAlias = new Array<string>();
+            for (const each of alias) {
+              parsedAlias.push(getParsedAlias(each));
+            }
 
-            operation.details.csharp.alias = [...new Set([...operation.details.csharp.alias, ...alias])];
-
+            operation.details.csharp.alias = [...new Set([...operation.details.csharp.alias, ...parsedAlias])];
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${alias} to command ${newCommandName}.`
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${parsedAlias} to command ${newCommandName}.`
             });
           }
         }
