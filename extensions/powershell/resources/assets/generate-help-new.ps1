@@ -8,15 +8,52 @@ if(-not $Isolated) {
   return
 }
 
-$WarningPreference = 'SilentlyContinue'
-$docsPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
-$null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
+$exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
+if(-not (Test-Path $exportsFolder)) {
+  Write-Error "Exports folder '$exportsFolder' was not found."
+}
+
+$directories = Get-ChildItem -Directory -Path $exportsFolder
+$hasProfiles = ($directories | Measure-Object).Count -gt 0
+if(-not $hasProfiles) {
+  $directories = $exportsFolder
+}
+
+$docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
+$null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
 
 $modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot '${$project.psd1}')
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 
+Import-Module -Name (Join-Path $PSScriptRoot '${$project.dll}')
 Import-Module -Name $modulePath
+$instance = [${$project.serviceNamespace.moduleClass.declaration}]::Instance
+$moduleDescription = (Get-Module -Name $moduleName).Description
+
+foreach($directory in $directories)
+{
+  if($hasProfiles) {
+    Select-AzProfile -Name $directory.Name
+  }
+  # Reload module per profile
+  Import-Module -Name $modulePath -Force
+
+  $cmdletNames = Get-ScriptCmdlet -ScriptFolder $directory.FullName
+  $cmdletHelpInfo = $cmdletNames | ForEach-Object { Get-Help -Name $_ -Full }
+  $cmdletFunctionInfo = Get-ScriptCmdlet -ScriptFolder $directory.FullName -AsFunctionInfo
+
+  $docsPath = Join-Path $docsFolder $directory.Name
+  $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
+
+  Export-HelpMarkdown -ModuleName $moduleName -ModuleDescription $moduleDescription -FunctionInfo $cmdletFunctionInfo -HelpInfo $cmdletHelpInfo -DocsFolder $docsPath
+}
+
+
+
+
+
+
 
 
 # $ProgressPreference = 'SilentlyContinue'

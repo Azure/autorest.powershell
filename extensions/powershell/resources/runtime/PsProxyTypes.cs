@@ -223,7 +223,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var parameters = variant.Metadata.Parameters.AsEnumerable();
             if (variant.HasParameterSets)
             {
-                parameters = parameters.Where(p => p.Value.ParameterSets.ContainsKey(variant.VariantName));
+                parameters = parameters.Where(p => p.Value.ParameterSets.Keys.Any(k => k == variant.VariantName || k == AllParameterSets));
             }
             return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value)).ToArray();
         }

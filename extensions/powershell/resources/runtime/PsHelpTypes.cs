@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
@@ -36,28 +37,28 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletName = helpObject.GetProperty<string>("Name").NullIfEmpty() ?? helpObject.GetNestedProperty<string>("details", "name");
             ModuleName = helpObject.GetProperty<string>("ModuleName");
             Synopsis = helpObject.GetProperty<string>("Synopsis");
-            Description = helpObject.GetProperty<PSObject[]>("description").ToDescriptionText().NullIfEmpty() ?? 
-                          helpObject.GetNestedProperty<PSObject[]>("details", "description").ToDescriptionText();
-            AlertText = helpObject.GetNestedProperty<PSObject[]>("alertSet", "alert").ToDescriptionText();
+            Description = helpObject.GetProperty<PSObject[]>("description").EmptyIfNull().ToDescriptionText().NullIfEmpty() ??
+                          helpObject.GetNestedProperty<PSObject[]>("details", "description").EmptyIfNull().ToDescriptionText();
+            AlertText = helpObject.GetNestedProperty<PSObject[]>("alertSet", "alert").EmptyIfNull().ToDescriptionText();
             Category = helpObject.GetProperty<string>("Category");
             HasCommonParameters = helpObject.GetProperty<string>("CommonParameters").ToNullableBool();
             HasWorkflowCommonParameters = helpObject.GetProperty<string>("WorkflowCommonParameters").ToNullableBool();
 
-            var links = helpObject.GetNestedProperty<PSObject[]>("relatedLinks", "navigationLink").Select(nl => nl.ToLinkInfo()).ToArray();
-            OnlineVersion = links.FirstOrDefault(l => l.Text.ToLowerInvariant().StartsWith("online version:"));
-            RelatedLinks = links.Where(l => !l.Text.ToLowerInvariant().StartsWith("online version:")).ToArray();
+            var links = helpObject.GetNestedProperty<PSObject[]>("relatedLinks", "navigationLink").EmptyIfNull().Select(nl => nl.ToLinkInfo()).ToArray();
+            OnlineVersion = links.FirstOrDefault(l => l.Text?.ToLowerInvariant().StartsWith("online version:") ?? links.Length == 1);
+            RelatedLinks = links.Where(l => !l.Text?.ToLowerInvariant().StartsWith("online version:") ?? links.Length != 1).ToArray();
 
             //// navigationLink can be either a single item or an array of items.
             //OutputTypeNames = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").Select(rv => rv.GetNestedProperty<string>("type", "name")).ToArray();
             //OutputTypeNames = OutputTypeNames.Any() ? OutputTypeNames : new []{ helpObject.GetNestedProperty<string>("returnValues", "returnValue", "type", "name") };
 
-            InputTypes = helpObject.GetNestedProperty<PSObject[]>("inputTypes", "inputType").Select(it => it.ToTypeInfo()).ToArray();
-            OutputTypes = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").Select(rv => rv.ToTypeInfo()).ToArray();
-            Examples = helpObject.GetNestedProperty<PSObject[]>("examples", "example").Select(e => e.ToExampleInfo()).ToArray();
-            Aliases = helpObject.GetProperty<string>("aliases").Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            InputTypes = helpObject.GetNestedProperty<PSObject[]>("inputTypes", "inputType").EmptyIfNull().Select(it => it.ToTypeInfo()).ToArray();
+            OutputTypes = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").EmptyIfNull().Select(rv => rv.ToTypeInfo()).ToArray();
+            Examples = helpObject.GetNestedProperty<PSObject[]>("examples", "example").EmptyIfNull().Select(e => e.ToExampleInfo()).ToArray();
+            Aliases = helpObject.GetProperty<string>("aliases").EmptyIfNull().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            Parameters = helpObject.GetNestedProperty<PSObject[]>("parameters", "parameter").Select(p => p.ToPsParameterHelpInfo()).ToArray();
-            Syntax = helpObject.GetNestedProperty<PSObject[]>("syntax", "syntaxItem").Select(si => si.ToSyntaxInfo()).ToArray();
+            Parameters = helpObject.GetNestedProperty<PSObject[]>("parameters", "parameter").EmptyIfNull().Select(p => p.ToPsParameterHelpInfo()).ToArray();
+            Syntax = helpObject.GetNestedProperty<PSObject[]>("syntax", "syntaxItem").EmptyIfNull().Select(si => si.ToSyntaxInfo()).ToArray();
 
             Component = helpObject.GetProperty<object>("Component");
             Functionality = helpObject.GetProperty<object>("Functionality");
@@ -75,7 +76,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PsHelpTypeInfo(PSObject typeObject)
         {
             Name = typeObject.GetNestedProperty<string>("type", "name");
-            Description = typeObject.GetProperty<PSObject[]>("description").ToDescriptionText();
+            Description = typeObject.GetProperty<PSObject[]>("description").EmptyIfNull().ToDescriptionText();
         }
     }
 
@@ -99,7 +100,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PsHelpSyntaxInfo(PSObject syntaxObject)
         {
             CmdletName = syntaxObject.GetProperty<string>("name");
-            Parameters = syntaxObject.GetProperty<PSObject[]>("parameter").Select(p => p.ToPsParameterHelpInfo()).ToArray();
+            Parameters = syntaxObject.GetProperty<PSObject[]>("parameter").EmptyIfNull().Select(p => p.ToPsParameterHelpInfo()).ToArray();
         }
     }
 
@@ -113,14 +114,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             Title = exampleObject.GetProperty<string>("title");
             Code = exampleObject.GetProperty<string>("code");
-            Remarks = exampleObject.GetProperty<PSObject[]>("remarks").ToDescriptionText();
+            Remarks = exampleObject.GetProperty<PSObject[]>("remarks").EmptyIfNull().ToDescriptionText();
         }
     }
 
     internal class PsParameterHelpInfo
     {
         public string DefaultValueAsString { get; }
-        
+
         public string Name { get; }
         public string TypeName { get; }
         public string Description { get; }
@@ -139,11 +140,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultValueAsString = parameterHelpObject.GetProperty<string>("defaultValue");
             Name = parameterHelpObject.GetProperty<string>("name");
             TypeName = parameterHelpObject.GetProperty<string>("parameterValue").NullIfEmpty() ?? parameterHelpObject.GetNestedProperty<string>("type", "name");
-            Description = parameterHelpObject.GetProperty<PSObject[]>("Description").ToDescriptionText();
+            Description = parameterHelpObject.GetProperty<PSObject[]>("Description").EmptyIfNull().ToDescriptionText();
             SupportsPipelineInput = parameterHelpObject.GetProperty<string>("pipelineInput");
             PositionText = parameterHelpObject.GetProperty<string>("position");
-            ParameterSetNames = parameterHelpObject.GetProperty<string>("parameterSetName").Split(", ",StringSplitOptions.RemoveEmptyEntries);
-            Aliases = parameterHelpObject.GetProperty<string>("aliases").Split(", ", StringSplitOptions.RemoveEmptyEntries);
+            ParameterSetNames = parameterHelpObject.GetProperty<string>("parameterSetName").EmptyIfNull().Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+            Aliases = parameterHelpObject.GetProperty<string>("aliases").EmptyIfNull().Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
 
             SupportsGlobbing = parameterHelpObject.GetProperty<string>("globbing").ToNullableBool();
             IsRequired = parameterHelpObject.GetProperty<string>("required").ToNullableBool();
@@ -157,7 +158,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static PsHelpInfo ToPsHelpInfo(this PSObject helpObject) => new PsHelpInfo(helpObject);
         public static PsParameterHelpInfo ToPsParameterHelpInfo(this PSObject parameterHelpObject) => new PsParameterHelpInfo(parameterHelpObject);
 
-        public static string ToDescriptionText(this PSObject[] descriptionObject) => String.Join(Environment.NewLine, descriptionObject.Select(dl => dl.GetProperty<string>("Text")));
+        public static string ToDescriptionText(this IEnumerable<PSObject> descriptionObject) => descriptionObject != null
+            ? String.Join(Environment.NewLine, descriptionObject.Select(dl => dl.GetProperty<string>("Text").EmptyIfNull())).NullIfWhiteSpace()
+            : null;
         public static PsHelpTypeInfo ToTypeInfo(this PSObject typeObject) => new PsHelpTypeInfo(typeObject);
         public static PsHelpExampleInfo ToExampleInfo(this PSObject exampleObject) => new PsHelpExampleInfo(exampleObject);
         public static PsHelpLinkInfo ToLinkInfo(this PSObject linkObject) => new PsHelpLinkInfo(linkObject);

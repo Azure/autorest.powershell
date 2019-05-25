@@ -10,14 +10,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     [DoNotExport]
     public class ExportHelpMarkdown : PSCmdlet
     {
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string FilePath { get; set; }
-
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string ScriptFolder { get; set; }
-
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public string ModuleName { get; set; }
@@ -28,15 +20,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public FunctionInfo[] FunctionInfo { get; set; }
+        public PSObject[] FunctionInfo { get; set; }
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public PSObject[] HelpInfo { get; set; }
 
-
-        //private const string ModelNamespace = @"${$project.modelsExtensions.fullName}";
-        //private const string SupportNamespace = @"${$project.supportNamespace.fullName}";
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
+        public string DocsFolder { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -46,14 +38,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             //var names = functionInfos.Select(fi => fi.Name).Distinct();
             //var helpObjects = GetCmdletHelp(this, names);
 
-
-            var variantGroups = FunctionInfo
+            var variantGroups = FunctionInfo.Select(fi => fi.BaseObject).Cast<FunctionInfo>()
                 .Select(fi => fi.ToVariants())
                 .Select(va => new VariantGroup(va.First().CmdletName, va, String.Empty))
                 .ToArray();
 
             var helpInfos = HelpInfo.Select(hi => hi.ToPsHelpInfo()).ToArray();
 
+            var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi)).ToArray();
 
             //foreach (var psPropertyInfo in HelpInfo.SelectMany(h => h.Properties))
             //{

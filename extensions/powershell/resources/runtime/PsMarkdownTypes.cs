@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Management.Automation;
+using System.Reflection;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -35,8 +37,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Synopsis = helpInfo.Synopsis.NullIfEmpty() ?? variantGroup.Description;
             Description = helpInfo.Description.NullIfEmpty() ?? variantGroup.Description;
 
-            var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.Definition?.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries) ??
-                              variantGroup.Variants.Select(v => v.Info.Definition.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
+            var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ??
+                              variantGroup.Variants.Select(v => v.Info.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
             var parameterSetNames = variantGroup.Variants.Select(v => v.VariantName).ToArray();
             var defaultParameterSet = variantGroup.DefaultParameterSetName;
             SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
@@ -46,9 +48,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             //    phi => phi.Name, pg => pg.ParameterName, (phi, pg) => new MarkdownParameterHelpInfo(phi, pg)).ToArray();
 
             var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
-            Parameters = parameterGroups
-                .Join(helpInfo.Parameters,pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
-                .ToArray();
+            Parameters = parameterGroups.Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg)).ToArray();
 
             Inputs = helpInfo.InputTypes.Select(it => it.Name).ToArray().NullIfEmpty() ??
                      parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
@@ -126,5 +126,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal static class MarkdownTypesExtensions
     {
         public static MarkdownExampleHelpInfo ToExampleHelpInfo(this PsHelpExampleInfo exampleInfo) => new MarkdownExampleHelpInfo(exampleInfo.Title, exampleInfo.Code, exampleInfo.Remarks);
+
+        public static string GetSyntax(this CommandInfo commandInfo)
+            => typeof(CommandInfo).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(pi => pi.Name == "Syntax")?.GetValue(commandInfo) as string;
     }
 }
