@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
+import { KnownMediaType, knownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
 import { camelCase, deconstruct, nameof } from '@microsoft.azure/codegen';
 import { Expression, ExpressionOrLiteral, toExpression, valueOf, System } from '@microsoft.azure/codegen-csharp';
 import { If } from '@microsoft.azure/codegen-csharp';
@@ -29,17 +29,23 @@ export class ByteArray implements EnhancedTypeDeclaration {
   }
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
-    switch (mediaType) {
-      case KnownMediaType.Xml: {
-        const xTmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
-        return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.Value, out var ${xTmp}) ? System.Convert.FromBase64String(${xTmp}) : ${defaultValue}`);
-      }
+    try {
+      const tmp = pushTempVar();
 
-      case KnownMediaType.Header: {
-        const tmp = `__${camelCase(['header', ...deconstruct(serializedName)])}`;
-        return toExpression(`System.Linq.Enumerable.FirstOrDefault(${serializedName}) is string ${tmp} ? System.Convert.FromBase64String(${tmp}) : ${defaultValue}`);
-
+      switch (mediaType) {
+        case KnownMediaType.Xml: {
+          return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.Value, out var ${tmp}) ? System.Convert.FromBase64String(${tmp}) : ${defaultValue}`);
+        }
+        case KnownMediaType.Json: {
+          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonString}>("${serializedName}"), out var ${tmp}) ?  System.Convert.FromBase64String( (string)${tmp} ) : null`);
+        }
+        case KnownMediaType.Header: {
+          //const tmp = `__${camelCase(['header', ...deconstruct(serializedName)])}`;
+          return toExpression(`System.Linq.Enumerable.FirstOrDefault(${serializedName}) is string ${tmp} ? System.Convert.FromBase64String(${tmp}) : ${defaultValue}`);
+        }
       }
+    } finally {
+      popTempVar();
     }
     return toExpression(`null /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -78,6 +84,11 @@ export class ByteArray implements EnhancedTypeDeclaration {
         case KnownMediaType.Xml: {
           return `AddIf( null != ${value} ? ${System.Xml.Linq.XElement.new(serializedName, System.Convert.ToBase64String(value))}  : null, ${container}.Add);`
         }
+
+        case KnownMediaType.Json: {
+          return `AddIf( null != ${value} ? ${System.Convert.ToBase64String(value)} : null ,(v)=> ${container}.Add( "${serializedName}",v) );`;
+        }
+
         case KnownMediaType.Header: {
           return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", ${System.Convert.ToBase64String(value)});`);
         }
