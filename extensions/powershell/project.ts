@@ -12,8 +12,20 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
 import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
+
+export interface Metadata {
+  authors: string,
+  owners: string,
+  requireLicenseAcceptance: boolean,
+  description: string,
+  copyright: string,
+  tags: string,
+  companyName: string,
+  licenseUrl: string,
+  projectUrl: string
+}
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -62,6 +74,7 @@ export class Project extends codeDomProject {
   public accountsVersionMinimum!: string;
   public platyPsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
+  public metadata!: Metadata;
   public state!: State;
   get model() { return <codemodel.Model>this.state.model };
 
@@ -145,6 +158,21 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/readme.md`;
+
+    //Metadata
+    let defaultMetadata: Metadata = {
+      authors: '',
+      owners: '',
+      requireLicenseAcceptance: false,
+      description: '',
+      copyright: '',
+      tags: '',
+      companyName: '',
+      licenseUrl: '',
+      projectUrl: ''
+    };
+    let metadataFromConfig = await this.state.getValue<Metadata>('metadata', defaultMetadata);
+    this.metadata = Object.assign(defaultMetadata, metadataFromConfig);
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));

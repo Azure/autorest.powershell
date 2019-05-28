@@ -7,12 +7,14 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateNuspec(project: Project) {
-  const authorsOwners = project.azure ? 'Microsoft Corporation' : '';
-  const licenseUrl = project.azure ? `https://aka.ms/azps-license` : '';
-  const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : '';
-  const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : '';
-  const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : '';
-  const tags = project.azure ? 'Azure ResourceManager ARM AppConfiguration PSModule' : '';
+  const authors = project.azure ? 'Microsoft Corporation' : project.metadata.authors;
+  const owners = project.azure ? 'Microsoft Corporation' : project.metadata.owners;
+  const licenseUrl = project.azure ? `https://aka.ms/azps-license` : project.metadata.licenseUrl;
+  const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : project.metadata.projectUrl;
+  const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : project.metadata.description;
+  const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : project.metadata.copyright;
+  const tags = project.azure ? 'Azure ResourceManager ARM AppConfiguration PSModule' : project.metadata.tags;
+  const requireLicenseAcceptance = project.azure ? true : project.metadata.requireLicenseAcceptance;
   const dependencies = project.azure ? `
     <dependencies>
       <dependency id="Az.Accounts" version="${project.accountsVersionMinimum}" />
@@ -23,9 +25,9 @@ export async function generateNuspec(project: Project) {
   <metadata>
     <id>${project.moduleName}</id>
     <version>${project.moduleVersion}</version>
-    <authors>${authorsOwners}</authors>
-    <owners>${authorsOwners}</owners>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <authors>${authors}</authors>
+    <owners>${owners}</owners>
+    <requireLicenseAcceptance>${requireLicenseAcceptance}</requireLicenseAcceptance>
     <licenseUrl>${licenseUrl}</licenseUrl>
     <projectUrl>${projectUrl}</projectUrl>
     <description>${description}</description>

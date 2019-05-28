@@ -16,13 +16,13 @@ export async function generatePsd1(project: Project) {
     yield indent(`RootModule = '${project.psm1}'`);
     yield indent(`ModuleVersion = '${project.moduleVersion}'`);
     yield indent(`CompatiblePSEditions = 'Core', 'Desktop'`);
-    const author = project.azure ? 'Microsoft Corporation' : '';
+    const author = project.azure ? 'Microsoft Corporation' : project.metadata.authors;
     yield indent(`Author = '${author}'`);
-    const companyName = project.azure ? 'Microsoft Corporation' : '';
+    const companyName = project.azure ? 'Microsoft Corporation' : project.metadata.companyName;
     yield indent(`CompanyName = '${companyName}'`);
-    const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : '';
+    const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : project.metadata.copyright;
     yield indent(`Copyright = '${copyright}'`);
-    const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : '';
+    const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : project.metadata.description;
     yield indent(`Description = '${description}'`);
     yield indent(`PowerShellVersion = '5.1'`);
     yield indent(`DotNetFrameworkVersion = '4.7.2'`);
