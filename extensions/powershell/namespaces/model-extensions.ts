@@ -195,12 +195,13 @@ export class ModelExtensionsNamespace extends Namespace {
 
           const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
           yield t.declarationStatement;
-
-          if (schema.details.default.uid === 'universal-parameter-type') {
-            yield `// for 'universal-parameter-type' support direct string to id type conversion.`
-            yield If(`${t.value} == typeof(${System.String})`, function* () {
-              yield Return(`new ${className} { Id = sourceValue }`);
-            });
+          if ($this.state.project.azure) {
+            if (schema.details.default.uid === 'universal-parameter-type') {
+              yield `// for 'universal-parameter-type' support direct string to id type conversion.`
+              yield If(`${t.value} == typeof(${System.String})`, function* () {
+                yield Return(`new ${className} { Id = sourceValue }`);
+              });
+            }
           }
 
           // if the type can be assigned directly, do that 
