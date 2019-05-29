@@ -427,7 +427,11 @@ export class CmdletClass extends Class {
             yield `// Error Response : ${each.responseCode}`;
             const unexpected = function* () {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
-              yield `WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}\\nBody: {await responseMessage.Content.ReadAsStringAsync()}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              if (each.details.csharp.responseType) {
+                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              } else {
+                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException(responseMessage), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              }
             }
             if (each.schema) {
               // the schema should be the error information.
@@ -642,6 +646,10 @@ export class CmdletClass extends Class {
           yield actualCall;
         }
       });
+      const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
+      yield Catch(ure, function* () {
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+      })
       yield Finally(function* () {
         yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);
       });
