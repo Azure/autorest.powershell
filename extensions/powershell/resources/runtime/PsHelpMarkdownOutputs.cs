@@ -13,17 +13,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HelpInfo = helpInfo;
         }
 
-        public override string ToString()
-        {
-            var externalHelp = !String.IsNullOrEmpty(HelpInfo.ExternalHelpFilename) ? $"external help file: {HelpInfo.ExternalHelpFilename}{Environment.NewLine}" : String.Empty;
-            return $@"---{externalHelp}
+        public override string ToString() => $@"---
+external help file:{(!String.IsNullOrEmpty(HelpInfo.ExternalHelpFilename) ? $" {HelpInfo.ExternalHelpFilename}" : String.Empty)}
 Module Name: {HelpInfo.ModuleName}
 online version: {HelpInfo.OnlineVersion}
 schema: {HelpInfo.Schema.ToString(3)}
 ---
 
 ";
-        }
     }
 
     internal class HelpSyntaxOutput

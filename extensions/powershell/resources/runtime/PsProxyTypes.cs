@@ -49,8 +49,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Variants = variants;
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
-            SupportsShouldProcess = Variants.Any(v => v.Metadata.SupportsShouldProcess);
-            SupportsPaging = Variants.Any(v => v.Metadata.SupportsPaging);
+            SupportsShouldProcess = Variants.Any(v => v.SupportsShouldProcess);
+            SupportsPaging = Variants.Any(v => v.SupportsPaging);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
@@ -92,16 +92,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string VariantName { get; }
         public CommandInfo Info { get; }
         public CommandMetadata Metadata { get; }
+        public bool HasParameterSets { get; }
         public bool IsFunction { get; }
         public string PrivateModuleName { get; }
         public string PrivateCmdletName { get; }
-        public bool IsInternal { get; }
-        public bool IsDoNotExport { get; }
-        public bool HasParameterSets { get; }
+        public bool SupportsShouldProcess { get; }
+        public bool SupportsPaging { get; }
 
         public Attribute[] Attributes { get; }
         public Parameter[] Parameters { get; }
         public Parameter[] CmdletOnlyParameters { get; }
+        public bool IsInternal { get; }
+        public bool IsDoNotExport { get; }
         public string[] Profiles { get; }
 
         public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata, bool hasParameterSets = false)
@@ -114,6 +116,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsFunction = Info.CommandType == CommandTypes.Function;
             PrivateModuleName = Info.Source;
             PrivateCmdletName = Metadata.Name;
+            SupportsShouldProcess = Metadata.SupportsShouldProcess;
+            SupportsPaging = Metadata.SupportsPaging;
+
             Attributes = this.ToAttributes();
             Parameters = this.ToParameters();
             IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
@@ -148,7 +153,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             AllVariantNames = allVariantNames;
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
-            ParameterType = Parameters.Select(p => p.Metadata.ParameterType).First();
+            ParameterType = Parameters.Select(p => p.ParameterType).First();
 
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
@@ -166,6 +171,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string VariantName { get; }
         public string ParameterName { get; }
         public ParameterMetadata Metadata { get; }
+        public Type ParameterType { get; }
 
         public Attribute[] Attributes { get; }
         public ParameterCategory[] Categories { get; }
@@ -185,6 +191,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             VariantName = variantName;
             ParameterName = parameterName;
             Metadata = metadata;
+            ParameterType = Metadata.ParameterType;
 
             Attributes = Metadata.Attributes.ToArray();
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
@@ -206,8 +213,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public const string NoProfiles = "__NoProfiles";
 
         public static bool IsValidDefaultParameterSetName(this string parameterSetName) =>
-            !String.IsNullOrEmpty(parameterSetName)
-            && parameterSetName != AllParameterSets;
+            !String.IsNullOrEmpty(parameterSetName) && parameterSetName != AllParameterSets;
 
         public static Variant[] ToVariants(this CommandInfo info)
         {

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Reflection;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -40,16 +40,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Synopsis = helpInfo.Synopsis.NullIfEmpty() ?? variantGroup.Description;
             Description = helpInfo.Description.NullIfEmpty() ?? variantGroup.Description;
 
-            var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ??
-                              variantGroup.Variants.Select(v => v.Info.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
-            var parameterSetNames = variantGroup.Variants.Select(v => v.VariantName).ToArray();
+            //var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ??
+            //                  variantGroup.Variants.Select(v => v.Info.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
+            //var parameterSetNames = variantGroup.Variants.Select(v => v.VariantName).ToArray();
+            //var defaultParameterSet = variantGroup.DefaultParameterSetName;
+            //SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
             var defaultParameterSet = variantGroup.DefaultParameterSetName;
-            SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
+            SyntaxInfos = variantGroup.Variants.Select(v => new MarkdownSyntaxHelpInfo(v, v.VariantName == defaultParameterSet)).ToArray();
 
             Examples = helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() ??
                        new []{ new MarkdownExampleHelpInfo("Example 1", @"PS C:\> {{ Add example code here }}", @"{{ Add example description here }}") };
-            //Parameters = helpInfo.Parameters.Join(variantGroup.Variants.ToParameterGroups(),
-            //    phi => phi.Name, pg => pg.ParameterName, (phi, pg) => new MarkdownParameterHelpInfo(phi, pg)).ToArray();
 
             var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
             Parameters = parameterGroups
@@ -69,15 +69,59 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class MarkdownSyntaxHelpInfo
     {
+        public Variant Variant { get; }
         public bool IsDefault { get; }
         public string ParameterSetName { get; }
         public string SyntaxText { get; }
 
-        public MarkdownSyntaxHelpInfo(string parameterSetName, string syntaxText, bool isDefault)
+        public MarkdownSyntaxHelpInfo(Variant variant, bool isDefault)
         {
-            ParameterSetName = parameterSetName;
-            SyntaxText = syntaxText;
+            Variant = variant;
             IsDefault = isDefault;
+            ParameterSetName = Variant.VariantName;
+            SyntaxText = CreateSyntaxFormat();
+        }
+
+        //https://github.com/PowerShell/platyPS/blob/a607a926bfffe1e1a1e53c19e0057eddd0c07611/src/Markdown.MAML/Renderer/Markdownv2Renderer.cs#L29-L32
+        private const int SyntaxLineWidth = 110;
+        private string CreateSyntaxFormat()
+        {
+            var parameterStrings = Variant.Parameters
+                .Where(p => !p.DontShow)
+                //https://stackoverflow.com/a/6461526/294804
+                .OrderByDescending(p => p.IsMandatory).ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
+                .Select(p =>
+                {
+                    var leftOptional = !p.IsMandatory ? "[" : String.Empty;
+                    var leftPositional = p.Position != null ? "[" : String.Empty;
+                    var rightPositional = p.Position != null ? "]" : String.Empty;
+                    var type = p.ParameterType != typeof(SwitchParameter) ? $" <{p.ParameterType.Name}>" : String.Empty;
+                    var rightOptional = !p.IsMandatory ? "]" : String.Empty;
+                    return $" {leftOptional}{leftPositional}-{p.ParameterName}{rightPositional}{type}{rightOptional}";
+                });
+            if (Variant.SupportsShouldProcess)
+            {
+                parameterStrings = parameterStrings.Append(" [-Confirm]").Append(" [-WhatIf]");
+            }
+            if (Variant.SupportsPaging)
+            {
+                parameterStrings = parameterStrings.Append(" [-First <UInt64>]").Append(" [-IncludeTotalCount]").Append(" [-Skip <UInt64>]");
+            }
+            parameterStrings = parameterStrings.Append(" [<CommonParameters>]");
+
+            var lines = new List<string>(20);
+            return parameterStrings.Aggregate(Variant.CmdletName, (current, ps) =>
+            {
+                var combined = current + ps;
+                if (combined.Length <= SyntaxLineWidth) return combined;
+
+                lines.Add(current);
+                return ps;
+            }, last =>
+            {
+                lines.Add(last);
+                return String.Join(Environment.NewLine, lines);
+            });
         }
     }
 
@@ -141,9 +185,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public static MarkdownExampleHelpInfo ToExampleHelpInfo(this PsHelpExampleInfo exampleInfo) => new MarkdownExampleHelpInfo(exampleInfo.Title, exampleInfo.Code, exampleInfo.Remarks);
 
-        public static string GetSyntax(this CommandInfo commandInfo)
-            => typeof(CommandInfo).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(pi => pi.Name == "Syntax")?.GetValue(commandInfo) as string;
-
         public static MarkdownParameterHelpInfo[] SupportsShouldProcessParameters =
         {
             new MarkdownParameterHelpInfo
@@ -155,12 +196,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 DefaultValue = "None",
                 HasAllParameterSets = true,
                 ParameterSetNames = new [] { "(All)" },
-                Aliases = new [] { "cf" },
-                IsRequired = false,
-                IsDynamic = false,
-                AcceptsPipelineByValue = false,
-                AcceptsPipelineByPropertyName = false,
-                AcceptsWildcardCharacters = false
+                Aliases = new [] { "cf" }
             },
             new MarkdownParameterHelpInfo
             {
@@ -171,12 +207,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 DefaultValue = "None",
                 HasAllParameterSets = true,
                 ParameterSetNames = new [] { "(All)" },
-                Aliases = new [] { "wi" },
-                IsRequired = false,
-                IsDynamic = false,
-                AcceptsPipelineByValue = false,
-                AcceptsPipelineByPropertyName = false,
-                AcceptsWildcardCharacters = false
+                Aliases = new [] { "wi" }
             }
         };
 
@@ -191,12 +222,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 DefaultValue = "None",
                 HasAllParameterSets = true,
                 ParameterSetNames = new [] { "(All)" },
-                Aliases = new string[0],
-                IsRequired = false,
-                IsDynamic = false,
-                AcceptsPipelineByValue = false,
-                AcceptsPipelineByPropertyName = false,
-                AcceptsWildcardCharacters = false
+                Aliases = new string[0]
             },
             new MarkdownParameterHelpInfo
             {
@@ -207,12 +233,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 DefaultValue = "None",
                 HasAllParameterSets = true,
                 ParameterSetNames = new [] { "(All)" },
-                Aliases = new string[0],
-                IsRequired = false,
-                IsDynamic = false,
-                AcceptsPipelineByValue = false,
-                AcceptsPipelineByPropertyName = false,
-                AcceptsWildcardCharacters = false
+                Aliases = new string[0]
             },
             new MarkdownParameterHelpInfo
             {
@@ -223,12 +244,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 DefaultValue = "None",
                 HasAllParameterSets = true,
                 ParameterSetNames = new [] { "(All)" },
-                Aliases = new string[0],
-                IsRequired = false,
-                IsDynamic = false,
-                AcceptsPipelineByValue = false,
-                AcceptsPipelineByPropertyName = false,
-                AcceptsWildcardCharacters = false
+                Aliases = new string[0]
             }
         };
     }

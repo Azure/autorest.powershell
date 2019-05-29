@@ -107,7 +107,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append($"### {alias}{Environment.NewLine}{Environment.NewLine}");
                 }
 
-                sb.Append($"## NOTES{Environment.NewLine}{Environment.NewLine}");
+                // Removed NOTES since we don't have support for it.
+                //sb.Append($"## NOTES{Environment.NewLine}{Environment.NewLine}");
+
                 sb.Append($"## RELATED LINKS{Environment.NewLine}{Environment.NewLine}");
                 foreach (var relatedLink in markdownInfo.RelatedLinks)
                 {
@@ -118,33 +120,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             }
 
             WriteModulePage(markdownInfos);
-
-
-            //foreach (var psPropertyInfo in HelpInfo.SelectMany(h => h.Properties))
-            //{
-            //    Console.Write("name: " + psPropertyInfo.Name);
-            //    Console.Write("\tvalue: " + psPropertyInfo.Value);
-            //    Console.WriteLine("\tmemberType: " + psPropertyInfo.MemberType);
-            //}
-
-
-
-
-
-            //var viewModels = Assembly.GetExecutingAssembly().GetExportedTypes()
-            //    .Select(t => (Type: t, Properties: t.GetProperties().Where(p => p.PropertyType.IsPsSimple()).ToArray()))
-            //    .Where(tp => tp.Type.IsClass
-            //                 && (tp.Type.Namespace.StartsWith(ModelNamespace) || tp.Type.Namespace.StartsWith(SupportNamespace))
-            //                 && tp.Properties.Any())
-            //    .Select(tp => CreateViewModel(tp.Type, tp.Properties)).ToList();
-            //var ps1xml = new Configuration
-            //{
-            //    ViewDefinitions = new ViewDefinitions
-            //    {
-            //        Views = viewModels
-            //    }
-            //};
-            //File.WriteAllText(FilePath, ps1xml.ToXmlString());
         }
 
         private void WriteModulePage(MarkdownHelpInfo[] markdownInfos)
