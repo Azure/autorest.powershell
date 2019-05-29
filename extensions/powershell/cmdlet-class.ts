@@ -768,7 +768,7 @@ export class CmdletClass extends Class {
 
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
-      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true, this.state);
 
       if (parameter.details.csharp.constantValue) {
         // this parameter has a constant value -- SKIP IT
@@ -829,7 +829,7 @@ export class CmdletClass extends Class {
 
         if (vps) {
           for (const vParam of vps.body) {
-            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /* vParam.required */ true, this.state);
+            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, true, this.state);
             const cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
               set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
