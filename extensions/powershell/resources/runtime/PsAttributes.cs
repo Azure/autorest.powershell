@@ -62,4 +62,23 @@ namespace Microsoft.Rest
         Azure,
         Runtime
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class OriginAttribute : Attribute
+    {
+        public PropertyOrigin Origin { get; }
+
+        public OriginAttribute(PropertyOrigin origin)
+        {
+            Origin = origin;
+        }
+    }
+
+
+    public enum PropertyOrigin
+    {
+        Owned,
+        Inherited,
+        Inlined
+    }
 }
