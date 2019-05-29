@@ -29,7 +29,8 @@ $moduleName = $modulePsd1.BaseName
 Import-Module -Name (Join-Path $PSScriptRoot '${$project.dll}')
 Import-Module -Name $modulePath
 $instance = [${$project.serviceNamespace.moduleClass.declaration}]::Instance
-$moduleDescription = (Get-Module -Name $moduleName).Description
+# $moduleDescription = (Get-Module -Name $moduleName).Description
+$moduleInfo = Get-Module -Name $moduleName
 
 foreach($directory in $directories)
 {
@@ -46,7 +47,7 @@ foreach($directory in $directories)
   $docsPath = Join-Path $docsFolder $directory.Name
   $null = New-Item -ItemType Directory -Force -Path $docsPath -ErrorAction SilentlyContinue
 
-  Export-HelpMarkdown -ModuleName $moduleName -ModuleDescription $moduleDescription -FunctionInfo $cmdletFunctionInfo -HelpInfo $cmdletHelpInfo -DocsFolder $docsPath
+  Export-HelpMarkdown -ModuleInfo $moduleInfo -FunctionInfo $cmdletFunctionInfo -HelpInfo $cmdletHelpInfo -DocsFolder $docsPath
 }
 
 

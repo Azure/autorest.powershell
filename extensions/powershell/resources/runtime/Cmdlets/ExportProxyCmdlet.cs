@@ -36,57 +36,52 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     .GroupBy(pv => pv.profile)
                     .Select(pvg => new ProfileGroup(pvg.Select(pv => pv.variant).ToArray(), pvg.Key))
                 : new[] { new ProfileGroup(variants) };
+            var variantGroups = profileGroups.SelectMany(pg => pg.Variants
+                .GroupBy(v => new { v.CmdletName, v.IsInternal })
+                .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(),
+                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName)));
 
-            foreach (var profileGroup in profileGroups)
+            foreach (var variantGroup in variantGroups)
             {
-                var variantGroups = profileGroup.Variants
-                    .GroupBy(v => new { v.CmdletName, v.IsInternal })
-                    .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(),
-                        Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, profileGroup.ProfileFolder),
-                        profileGroup.ProfileName));
+                var sb = new StringBuilder();
+                sb.Append(variantGroup.ToHelpCommentOutput());
+                sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
+                sb.Append(variantGroup.Aliases.ToAliasOutput());
+                sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
+                sb.Append(variantGroup.ToCmdletBindingOutput());
+                sb.Append(variantGroup.ProfileName.ToProfileOutput());
+                sb.Append(variantGroup.Description.ToDescriptionOutput());
 
-                foreach (var variantGroup in variantGroups)
+                sb.Append("param(");
+                var parameterGroups = variantGroup.Variants.ToParameterGroups()
+                    .OrderBy(pg => pg.OrderCategory)
+                    .ThenByDescending(pg => pg.IsMandatory)
+                    .ToList();
+                sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
+                foreach (var parameterGroup in parameterGroups)
                 {
-                    var sb = new StringBuilder();
-                    sb.Append(variantGroup.ToHelpCommentOutput());
-                    sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
-                    sb.Append(variantGroup.Aliases.ToAliasOutput());
-                    sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
-                    sb.Append(variantGroup.ToCmdletBindingOutput());
-                    sb.Append(variantGroup.ProfileName.ToProfileOutput());
-                    sb.Append(variantGroup.Description.ToDescriptionOutput());
-
-                    sb.Append("param(");
-                    var parameterGroups = variantGroup.Variants.ToParameterGroups()
-                        .OrderBy(pg => pg.OrderCategory)
-                        .ThenByDescending(pg => pg.IsMandatory)
-                        .ToList();
-                    sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
-                    foreach (var parameterGroup in parameterGroups)
+                    var parameters = parameterGroup.HasAllVariants ? parameterGroup.Parameters.Take(1) : parameterGroup.Parameters;
+                    foreach (var parameter in parameters)
                     {
-                        var parameters = parameterGroup.HasAllVariants ? parameterGroup.Parameters.Take(1) : parameterGroup.Parameters;
-                        foreach (var parameter in parameters)
-                        {
-                            sb.Append(parameter.ToParameterOutput(variantGroup.HasMultipleVariants, parameterGroup.HasAllVariants));
-                        }
-                        sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
-                        sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
-                        sb.Append(parameterGroup.ToArgumentCompleterOutput());
-                        sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
-                        sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
-                        sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
+                        sb.Append(parameter.ToParameterOutput(variantGroup.HasMultipleVariants, parameterGroup.HasAllVariants));
                     }
-                    sb.Append($"){Environment.NewLine}{Environment.NewLine}");
-
-                    sb.Append(variantGroup.ToBeginOutput());
-                    sb.Append(variantGroup.ToProcessOutput());
-                    sb.Append(variantGroup.ToEndOutput());
-
-                    sb.Append($"}}{Environment.NewLine}");
-
-                    Directory.CreateDirectory(variantGroup.OutputFolder);
-                    File.WriteAllText(variantGroup.FilePath, sb.ToString());
+                    sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
+                    sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
+                    sb.Append(parameterGroup.ToArgumentCompleterOutput());
+                    sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
+                    sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
+                    sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
                 }
+                sb.Append($"){Environment.NewLine}{Environment.NewLine}");
+
+                sb.Append(variantGroup.ToBeginOutput());
+                sb.Append(variantGroup.ToProcessOutput());
+                sb.Append(variantGroup.ToEndOutput());
+
+                sb.Append($"}}{Environment.NewLine}");
+
+                Directory.CreateDirectory(variantGroup.OutputFolder);
+                File.WriteAllText(variantGroup.FilePath, sb.ToString());
             }
         }
     }

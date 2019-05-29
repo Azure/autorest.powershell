@@ -7,7 +7,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal class MarkdownHelpInfo
     {
-        public string ExternalHelpFile { get; }
+        public string ExternalHelpFilename { get; }
         public string ModuleName { get; }
         public string OnlineVersion { get; }
         public Version Schema { get; }
@@ -25,11 +25,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Outputs { get; }
         public string[] RelatedLinks { get; }
 
-        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string externalHelpFile = "")
+        public bool SupportsShouldProcess { get; }
+        public bool SupportsPaging { get; }
+
+        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string externalHelpFilename = "")
         {
-            ExternalHelpFile = String.IsNullOrEmpty(externalHelpFile) ? String.Empty : $"external help file: {externalHelpFile}";
-            ModuleName = $@"Module Name: {"${$project.moduleName}"}";
-            OnlineVersion = $"online version: {helpInfo.OnlineVersion?.Uri?.NullIfEmpty() ?? variantGroup.Link}";
+            ExternalHelpFilename = externalHelpFilename;
+            ModuleName = helpInfo.ModuleName;
+            OnlineVersion = helpInfo.OnlineVersion?.Uri?.NullIfEmpty() ?? variantGroup.Link;
             Schema = Version.Parse("2.0.0");
 
             CmdletName = variantGroup.CmdletName;
@@ -43,18 +46,24 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var defaultParameterSet = variantGroup.DefaultParameterSetName;
             SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
 
-            Examples = helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray();
+            Examples = helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() ??
+                       new []{ new MarkdownExampleHelpInfo("Example 1", @"PS C:\> {{ Add example code here }}", @"{{ Add example description here }}") };
             //Parameters = helpInfo.Parameters.Join(variantGroup.Variants.ToParameterGroups(),
             //    phi => phi.Name, pg => pg.ParameterName, (phi, pg) => new MarkdownParameterHelpInfo(phi, pg)).ToArray();
 
             var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
-            Parameters = parameterGroups.Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg)).ToArray();
+            Parameters = parameterGroups
+                .Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
+                .OrderBy(phi => phi.Name).ToArray();
 
             Inputs = helpInfo.InputTypes.Select(it => it.Name).ToArray().NullIfEmpty() ??
                      parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
             Outputs = helpInfo.OutputTypes.Select(ot => ot.Name).ToArray().NullIfEmpty() ??
                       variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray();
             RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
+
+            SupportsShouldProcess = variantGroup.SupportsShouldProcess;
+            SupportsPaging = variantGroup.SupportsPaging;
         }
     }
 
@@ -88,20 +97,24 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class MarkdownParameterHelpInfo
     {
-        public string Name { get; }
-        public string Description { get; }
-        public Type Type { get; }
-        public string Position { get; }
-        public string DefaultValue { get; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public Type Type { get; set; }
+        public string Position { get; set; }
+        public string DefaultValue { get; set; }
 
-        public string[] ParameterSetNames { get; }
-        public string[] Aliases { get; }
+        public bool HasAllParameterSets { get; set; }
+        public string[] ParameterSetNames { get; set; }
+        public string[] Aliases { get; set; }
 
-        public bool IsRequired { get; }
-        public bool IsDynamic { get; }
-        public bool AcceptsPipelineByValue { get; }
-        public bool AcceptsPipelineByPropertyName { get; }
-        public bool AcceptsWildcardCharacters { get; }
+        public bool IsRequired { get; set; }
+        public bool IsDynamic { get; set; }
+        public bool AcceptsPipelineByValue { get; set; }
+        public bool AcceptsPipelineByPropertyName { get; set; }
+        public bool AcceptsWildcardCharacters { get; set; }
+
+        // For use by common parameters that have no backing data in the objects themselves.
+        public MarkdownParameterHelpInfo() { }
 
         public MarkdownParameterHelpInfo(PsParameterHelpInfo parameterHelpInfo, ParameterGroup parameterGroup)
         {
@@ -109,10 +122,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var firstParameter = parameterGroup.Parameters.First();
             Description = parameterHelpInfo.Description.NullIfEmpty() ?? firstParameter.ParameterAttribute.HelpMessage;
             Type = parameterGroup.ParameterType;
-            Position = parameterHelpInfo.PositionText.NullIfEmpty() ?? firstParameter.Position?.ToString() ?? "Named";
+            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? firstParameter.Position?.ToString() ?? "Named";
             DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? firstParameter.DefaultValue?.Value?.ToString() ?? "None";
 
-            ParameterSetNames = parameterHelpInfo.ParameterSetNames.NullIfEmpty() ?? parameterGroup.AllVariantNames;
+            HasAllParameterSets = parameterGroup.HasAllVariants;
+            ParameterSetNames = parameterHelpInfo.ParameterSetNames.NullIfEmpty() ?? parameterGroup.Parameters.Select(p => p.VariantName).ToArray();
             Aliases = parameterHelpInfo.Aliases.NullIfEmpty() ?? parameterGroup.Aliases;
 
             IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.IsMandatory;
@@ -129,5 +143,93 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static string GetSyntax(this CommandInfo commandInfo)
             => typeof(CommandInfo).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault(pi => pi.Name == "Syntax")?.GetValue(commandInfo) as string;
+
+        public static MarkdownParameterHelpInfo[] SupportsShouldProcessParameters =
+        {
+            new MarkdownParameterHelpInfo
+            {
+                Name = "Confirm",
+                Description ="Prompts you for confirmation before running the cmdlet.",
+                Type = typeof(SwitchParameter),
+                Position = "Named",
+                DefaultValue = "None",
+                HasAllParameterSets = true,
+                ParameterSetNames = new [] { "(All)" },
+                Aliases = new [] { "cf" },
+                IsRequired = false,
+                IsDynamic = false,
+                AcceptsPipelineByValue = false,
+                AcceptsPipelineByPropertyName = false,
+                AcceptsWildcardCharacters = false
+            },
+            new MarkdownParameterHelpInfo
+            {
+                Name = "WhatIf",
+                Description ="Shows what would happen if the cmdlet runs. The cmdlet is not run.",
+                Type = typeof(SwitchParameter),
+                Position = "Named",
+                DefaultValue = "None",
+                HasAllParameterSets = true,
+                ParameterSetNames = new [] { "(All)" },
+                Aliases = new [] { "wi" },
+                IsRequired = false,
+                IsDynamic = false,
+                AcceptsPipelineByValue = false,
+                AcceptsPipelineByPropertyName = false,
+                AcceptsWildcardCharacters = false
+            }
+        };
+
+        public static MarkdownParameterHelpInfo[] SupportsPagingParameters =
+        {
+            new MarkdownParameterHelpInfo
+            {
+                Name = "First",
+                Description ="Gets only the first 'n' objects.",
+                Type = typeof(ulong),
+                Position = "Named",
+                DefaultValue = "None",
+                HasAllParameterSets = true,
+                ParameterSetNames = new [] { "(All)" },
+                Aliases = new string[0],
+                IsRequired = false,
+                IsDynamic = false,
+                AcceptsPipelineByValue = false,
+                AcceptsPipelineByPropertyName = false,
+                AcceptsWildcardCharacters = false
+            },
+            new MarkdownParameterHelpInfo
+            {
+                Name = "IncludeTotalCount",
+                Description ="Reports the number of objects in the data set (an integer) followed by the objects. If the cmdlet cannot determine the total count, it returns \"Unknown total count\".",
+                Type = typeof(SwitchParameter),
+                Position = "Named",
+                DefaultValue = "None",
+                HasAllParameterSets = true,
+                ParameterSetNames = new [] { "(All)" },
+                Aliases = new string[0],
+                IsRequired = false,
+                IsDynamic = false,
+                AcceptsPipelineByValue = false,
+                AcceptsPipelineByPropertyName = false,
+                AcceptsWildcardCharacters = false
+            },
+            new MarkdownParameterHelpInfo
+            {
+                Name = "Skip",
+                Description ="Ignores the first 'n' objects and then gets the remaining objects.",
+                Type = typeof(ulong),
+                Position = "Named",
+                DefaultValue = "None",
+                HasAllParameterSets = true,
+                ParameterSetNames = new [] { "(All)" },
+                Aliases = new string[0],
+                IsRequired = false,
+                IsDynamic = false,
+                AcceptsPipelineByValue = false,
+                AcceptsPipelineByPropertyName = false,
+                AcceptsWildcardCharacters = false
+            }
+        };
     }
 }

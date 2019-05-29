@@ -31,6 +31,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Aliases { get; }
         public PSTypeName[] OutputTypes { get; }
         public bool SupportsShouldProcess { get; }
+        public bool SupportsPaging { get; }
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
         public string Description { get; }
@@ -49,6 +50,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.Metadata.SupportsShouldProcess);
+            SupportsPaging = Variants.Any(v => v.Metadata.SupportsPaging);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
@@ -188,7 +190,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
-            SupportsWildcards = Attributes.OfType<ParameterAttribute>().Any();
+            SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
