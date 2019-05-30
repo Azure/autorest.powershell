@@ -90,6 +90,7 @@ interface WhereModelDirective {
     'property-name'?: string;
   };
   set: {
+    'suppress-format'?: boolean;
     'format-table'?: {
       'properties'?: Array<string>;
       'exclude-properties'?: Array<string>;
@@ -116,35 +117,35 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
     let modelSelectNameConflict = [];
     let modelSelectNameType = '';
     if (where['model-name']) {
-      modelSelectNameType = where['model-name'];
+      modelSelectNameType = 'model-name';
       if (where['model-fullname']) {
-        modelSelectNameConflict.push(where['model-fullname']);
+        modelSelectNameConflict.push('model-fullname');
       }
 
       if (where['model-namespace']) {
-        modelSelectNameConflict.push(where['model-namespace']);
+        modelSelectNameConflict.push('model-namespace');
       }
     } else if (where['model-fullname']) {
-      modelSelectNameType = where['model-fullname'];
+      modelSelectNameType = 'model-fullname';
       if (where['model-name']) {
-        modelSelectNameConflict.push(where['model-name']);
+        modelSelectNameConflict.push('model-name');
       }
 
       if (where['model-namespace']) {
-        modelSelectNameConflict.push(where['model-namespace']);
+        modelSelectNameConflict.push('model-namespace');
       }
     } else if (where['model-namespace']) {
-      modelSelectNameType = where['model-namespace'];
+      modelSelectNameType = 'model-namespace';
       if (where['model-fullname']) {
-        modelSelectNameConflict.push(where['model-fullname']);
+        modelSelectNameConflict.push('model-fullname');
       }
 
       if (where['model-name']) {
-        modelSelectNameConflict.push(where['model-name']);
+        modelSelectNameConflict.push('model-name');
       }
     }
 
-    if (modelSelectNameConflict) {
+    if (modelSelectNameConflict.length > 0) {
       error += `Can't select ${modelSelectNameType} and ${modelSelectNameConflict} at the same time`;
     }
 
@@ -398,6 +399,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const propertyNameReplacer = directive.set["property-name"];
       const propertyDescriptionReplacer = directive.set["property-description"];
       const formatTable = directive.set["format-table"];
+      const suppressFormat = directive.set["suppress-format"];
 
       // select all models
       let models = values(state.model.schemas).linq.toArray();
@@ -448,7 +450,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
       } else if (models) {
         for (const model of models) {
-          if (formatTable) {
+
+          if (suppressFormat) {
+            model.details.csharp.suppressFormat = true;
+          }
+
+          if (formatTable !== undefined && !suppressFormat) {
             const properties = allVirtualProperties(model.details.csharp.virtualProperties);
             const propertiesToExclude = formatTable["exclude-properties"];
             const propertiesToInclude = formatTable.properties;
@@ -489,15 +496,18 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             }
 
             if (propertiesToInclude) {
-              let index = 0;
+              const indexes = new Dictionary<number>();
+              for (const item of items(propertiesToInclude)) {
+                indexes[item.value.toLowerCase()] = item.key;
+              }
+
               for (const property of properties) {
                 if (propertiesToInclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
                   if (property.format === undefined) {
                     property.format = {};
                   }
 
-                  property.format.index = index;
-                  index++;
+                  property.format.index = indexes[property.name.toLowerCase()];
                 } else {
                   property.format = { suppressFormat: true };
                 }
@@ -511,13 +521,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 }
               }
             }
-
-            const prevName = model.details.csharp.name;
-            model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
-            state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
-            });
           }
+
+          const prevName = model.details.csharp.name;
+          model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
+          state.message({
+            Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
+          });
         }
       }
 
