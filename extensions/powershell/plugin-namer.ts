@@ -14,14 +14,31 @@ export async function namer(service: Host) {
   return processCodeModel(tweakModel, service);
 }
 
-export function getDeduplicatedSubjectPrefix(subjectPrefix: string, subject: string): string {
-  // It removes intersection with the subject from the subjectPrefix:
-  //    ContainerServiceContainerService -> ContainerService, 
-  //    AppConfigurationConfigurationService -> AppConfiguration
-  const p = [...removeSequentialDuplicates(deconstruct(subjectPrefix))];
-  const s = [...removeSequentialDuplicates(deconstruct(subject))];
-  const both = [...removeSequentialDuplicates([...p, ...s])];
-  return pascalCase(both.slice(0, -s.length));
+export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { subjectPrefix: string; subject: string } {
+  // dedup parts
+  const dedupedPrefix = [...removeSequentialDuplicates(deconstruct(subjectPrefix))];
+  const dedupedSubject = [...removeSequentialDuplicates(deconstruct(subject))];
+
+  // dedup the noun
+  const dedupedMerge = [...removeSequentialDuplicates([...dedupedPrefix, ...dedupedSubject])];
+
+  // figure out what belongs to the subject
+  const reversedFinalSubject = new Array<string>();
+  for (let mCount = dedupedMerge.length - 1, sCount = dedupedSubject.length - 1; sCount >= 0 && mCount >= 0; mCount-- , sCount--) {
+    if (dedupedMerge[mCount] !== dedupedSubject[sCount]) {
+      break;
+    }
+
+    reversedFinalSubject.push(<string>dedupedMerge.pop());
+  }
+
+  // what's left belongs to the prefix
+  const finalPrefix = new Array<string>();
+  for (const each of dedupedMerge) {
+    finalPrefix.push(each)
+  }
+
+  return { subjectPrefix: pascalCase(finalPrefix), subject: pascalCase(reversedFinalSubject.reverse()) };
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
@@ -40,18 +57,19 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     for (const operation of values(state.model.commands.operations)) {
       // clean the noun (i.e. subjectPrefix + subject)
       const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
-      const newSubjectPrefix = getDeduplicatedSubjectPrefix(operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
-      if (prevSubjectPrefix !== newSubjectPrefix) {
+      const prevSubject = operation.details.csharp.subject;
+      const dedupedNounParts = getDeduplicatedNoun(operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
+      if (prevSubjectPrefix !== dedupedNounParts.subjectPrefix || prevSubject !== dedupedNounParts.subject) {
         const verb = operation.details.csharp.verb;
-        const subject = operation.details.csharp.subject;
         const variantName = operation.details.csharp.name;
-        const prevCmdletName = getCmdletName(verb, prevSubjectPrefix, subject);
-        operation.details.csharp.subjectPrefix = newSubjectPrefix;
-        const newCmdletName = getCmdletName(verb, operation.details.csharp.subjectPrefix, subject);
+        const prevCmdletName = getCmdletName(verb, prevSubjectPrefix, prevSubject);
+        operation.details.csharp.subjectPrefix = dedupedNounParts.subjectPrefix;
+        operation.details.csharp.subject = dedupedNounParts.subject;
+        const newCmdletName = getCmdletName(verb, operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
         state.message(
           {
             Channel: Channel.Verbose,
-            Text: `Sanitized cmdlet-name -> Changed cmdlet-name from ${prevCmdletName} to ${newCmdletName}: {subjectPrefix: ${newSubjectPrefix}, subject: ${subject}${variantName ? `, variant: ${variantName}}` : '}'}`
+            Text: `Sanitized cmdlet-name -> Changed cmdlet-name from ${prevCmdletName} to ${newCmdletName}: {subjectPrefix: ${operation.details.csharp.subjectPrefix}, subject: ${operation.details.csharp.subject}${variantName ? `, variant: ${variantName}}` : '}'}`
           }
         );
       }

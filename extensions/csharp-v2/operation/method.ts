@@ -320,7 +320,7 @@ export class CallMethod extends Method {
             if (!opMethod.operation.responses.default) {
               // if no default, we need one that handles the rest of the stuff.
               yield TerminalDefaultCase(function* () {
-                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response.StatusCode);`;
+                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response);`;
               });
             }
           });

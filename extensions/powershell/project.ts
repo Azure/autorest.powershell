@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { deconstruct, pascalCase, Dictionary } from '@microsoft.azure/codegen';
-import { SchemaDefinitionResolver } from '@microsoft.azure/autorest.csharp-v2';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from './state';
 import { Project as codeDomProject } from '@microsoft.azure/codegen-csharp';
 import { SupportNamespace } from './namespaces/support'
@@ -12,8 +12,39 @@ import { ModelExtensionsNamespace } from './namespaces/model-extensions'
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
 import { ServiceNamespace } from './namespaces/service'
 import { CmdletNamespace } from './namespaces/cmdlet'
-import { Host } from '@microsoft.azure/autorest-extension-base';
-import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
+import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
+import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@microsoft.azure/autorest.codemodel-v3';
+
+export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
+
+export interface Metadata {
+  authors: string,
+  owners: string,
+  requireLicenseAcceptance: boolean,
+  description: string,
+  copyright: string,
+  tags: string,
+  companyName: string,
+  licenseUrl: string,
+  projectUrl: string
+}
+
+export class PSSwitch extends Boolean {
+  get declaration(): string {
+    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
+  }
+
+}
+
+export class PSSchemaResolver extends SchemaDefinitionResolver {
+
+  resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
+    if (schema && schema.type === JsonType.Boolean) {
+      return new PSSwitch(schema, required);
+    }
+    return super.resolveTypeDeclaration(schema, required, state);
+  }
+}
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -62,6 +93,7 @@ export class Project extends codeDomProject {
   public accountsVersionMinimum!: string;
   public platyPsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
+  public metadata!: Metadata;
   public state!: State;
   get model() { return <codemodel.Model>this.state.model };
 
@@ -75,7 +107,7 @@ export class Project extends codeDomProject {
     await super.init();
     this.state = await new State(this.service).init(this);
 
-    this.schemaDefinitionResolver = new SchemaDefinitionResolver();
+    this.schemaDefinitionResolver = new PSSchemaResolver();
 
     this.projectNamespace = this.state.model.details.csharp.namespace;
 
@@ -145,6 +177,21 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/readme.md`;
+
+    //Metadata
+    let defaultMetadata: Metadata = {
+      authors: '',
+      owners: '',
+      requireLicenseAcceptance: false,
+      description: '',
+      copyright: '',
+      tags: '',
+      companyName: '',
+      licenseUrl: '',
+      projectUrl: ''
+    };
+    let metadataFromConfig = await this.state.getValue<Metadata>('metadata', defaultMetadata);
+    this.metadata = Object.assign(defaultMetadata, metadataFromConfig);
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));

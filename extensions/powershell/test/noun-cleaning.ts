@@ -5,54 +5,46 @@
 
 import { suite, test } from "mocha-typescript";
 import * as assert from "assert";
-import { getDeduplicatedSubjectPrefix } from "../plugin-namer";
+import { getDeduplicatedNoun } from "../plugin-namer";
 
 @suite class TestNounCleaning {
 
   @test async "deduplicate information from the cmdlet noun"() {
     const subjectPrefix1 = 'AppConfiguration';
     const subject1 = 'ConfigurationStore';
-    const expectedPrefix1 = 'App';
+    const expectedNounParts1 = { subject: 'ConfigurationStore', subjectPrefix: 'App' };
+    const actual1 = getDeduplicatedNoun(subjectPrefix1, subject1);
+    assert.deepStrictEqual(actual1, expectedNounParts1);
 
-    const actual1 = getDeduplicatedSubjectPrefix(subjectPrefix1, subject1);
-    assert.strictEqual(actual1, expectedPrefix1);
 
     const subjectPrefix2 = 'AppConfiguration';
     const subject2 = 'ConfigurationStoreKey';
-    const expectedPrefix2 = 'App';
-
-    const actual2 = getDeduplicatedSubjectPrefix(subjectPrefix2, subject2);
-    assert.strictEqual(actual2, expectedPrefix2);
-
+    const expectedNounParts2 = { subject: 'ConfigurationStoreKey', subjectPrefix: 'App' };
+    const actual2 = getDeduplicatedNoun(subjectPrefix2, subject2);
+    assert.deepStrictEqual(actual2, expectedNounParts2);
 
     const subjectPrefix3 = 'ContainerService';
     const subject3 = 'ContainerService';
-    const expectedPrefix3 = '';
-
-    const actual3 = getDeduplicatedSubjectPrefix(subjectPrefix3, subject3);
-    assert.strictEqual(actual3, expectedPrefix3);
-
+    const expectedNounParts3 = { subject: 'ContainerService', subjectPrefix: '' };
+    const actual3 = getDeduplicatedNoun(subjectPrefix3, subject3);
+    assert.deepStrictEqual(actual3, expectedNounParts3);
 
     const subjectPrefix4 = 'ContainerService';
     const subject4 = 'ContainerServiceSomething';
-    const expectedPrefix4 = '';
+    const expectedNounParts4 = { subject: 'ContainerServiceSomething', subjectPrefix: '' };
+    const actual4 = getDeduplicatedNoun(subjectPrefix4, subject4);
+    assert.deepStrictEqual(actual4, expectedNounParts4);
 
-    const actual4 = getDeduplicatedSubjectPrefix(subjectPrefix4, subject4);
-    assert.strictEqual(actual4, expectedPrefix4);
-
-
-    const subjectPrefix5 = 'MySomeBarSomethingFoo';
-    const subject5 = 'SomeBarSomethingFoo';
-    const expectedPrefix5 = 'My';
-
-    const actual5 = getDeduplicatedSubjectPrefix(subjectPrefix5, subject5);
-    assert.strictEqual(actual5, expectedPrefix5);
+    const subjectPrefix5 = 'WebFoo';
+    const subject5 = 'BarFooBarBlah';
+    const expectedNounParts5 = { subject: 'FooBarBlah', subjectPrefix: 'Web' };
+    const actual5 = getDeduplicatedNoun(subjectPrefix5, subject5);
+    assert.deepStrictEqual(actual5, expectedNounParts5);
 
     const subjectPrefix6 = 'Hi';
     const subject6 = 'HelloHiHolaHallo';
-    const expectedPrefix6 = 'Hi';
-
-    const actual6 = getDeduplicatedSubjectPrefix(subjectPrefix6, subject6);
-    assert.strictEqual(actual6, expectedPrefix6);
+    const expectedNounParts6 = { subject: 'HelloHiHolaHallo', subjectPrefix: 'Hi' };
+    const actual6 = getDeduplicatedNoun(subjectPrefix6, subject6);
+    assert.deepStrictEqual(actual6, expectedNounParts6);
   }
 }

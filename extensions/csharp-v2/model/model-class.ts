@@ -5,7 +5,7 @@
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -14,6 +14,7 @@ import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 // import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
+import { PropertyOriginAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 
@@ -221,6 +222,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             set: myProperty.assignPrivate(`value`)
           }));
         }
+
+        if (this.state.getValue('powershell')) {
+          myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+        }
       }
 
       /* Inherited properties. */
@@ -258,6 +263,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
           }));
         }
+
+        if (this.state.getValue('powershell')) {
+          vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
+        }
       }
 
       /* Inlined properties. */
@@ -288,9 +297,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               vp.set = undefined;
             }
 
+
+            if (this.state.getValue('powershell')) {
+              vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
+            }
           }
         }
       }
+
     }
   }
 

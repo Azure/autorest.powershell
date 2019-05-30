@@ -427,7 +427,11 @@ export class CmdletClass extends Class {
             yield `// Error Response : ${each.responseCode}`;
             const unexpected = function* () {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
-              yield `WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"The service encountered an unexpected result: {responseMessage.StatusCode}\\nBody: {await responseMessage.Content.ReadAsStringAsync()}"), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              if (each.details.csharp.responseType) {
+                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              } else {
+                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException(responseMessage), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+              }
             }
             if (each.schema) {
               // the schema should be the error information.
@@ -642,6 +646,10 @@ export class CmdletClass extends Class {
           yield actualCall;
         }
       });
+      const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
+      yield Catch(ure, function* () {
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+      })
       yield Finally(function* () {
         yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);
       });
@@ -768,7 +776,7 @@ export class CmdletClass extends Class {
 
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
-      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, /*parameter.required*/ true, this.state);
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true, this.state);
 
       if (parameter.details.csharp.constantValue) {
         // this parameter has a constant value -- SKIP IT
@@ -829,7 +837,7 @@ export class CmdletClass extends Class {
 
         if (vps) {
           for (const vParam of vps.body) {
-            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /* vParam.required */ true, this.state);
+            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, true, this.state);
             const cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
               set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
