@@ -86,7 +86,7 @@ namespace Microsoft.Rest
         Inlined
     }
 
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class FormatTableAttribute : Attribute
     {
         public int Index { get; set; } = -1;
