@@ -143,7 +143,7 @@ Locale: en-US
 
     internal static class PsHelpOutputExtensions
     {
-        public static string ReplaceSentenceEndWithNewline(this string text) => text.Replace(".  ", $".{Environment.NewLine}").Replace(". ", $".{Environment.NewLine}");
+        public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}")?.Replace(". ", $".{Environment.NewLine}");
 
         public const string ExampleNameHeader = "### ";
         public const string ExampleCodeHeader = "```powershell";
