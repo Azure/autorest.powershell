@@ -22,9 +22,6 @@ export async function generatePsm1Internal(project: Project) {
   # Export nothing to clear implicit exports
   Export-ModuleMember
 ${getProfileExportScript('$PSScriptRoot')}`);
-
-  psm1.removeRegion('Initialization');
-  psm1.removeRegion('LoadScripts');
   psm1.trim();
   project.state.writeFile(project.psm1Internal, `${psm1}`, undefined, 'source-file-powershell');
 }

@@ -110,4 +110,8 @@ Set-Psd1Export -ExportsFolder $exportsFolder -Psd1Path $psd1
 $formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
 Export-FormatPs1xml -FilePath $formatPs1xml
 
+$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
+$null = New-Item -ItemType Directory -Force -Path $examplesFolder
+Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
+
 Write-Host -ForegroundColor Green '-------------Done-------------'

@@ -74,7 +74,6 @@ namespace Microsoft.Rest
         }
     }
 
-
     public enum PropertyOrigin
     {
         Owned,
