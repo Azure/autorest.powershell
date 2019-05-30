@@ -5,7 +5,7 @@
 
 import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@microsoft.azure/autorest.codemodel-v3';
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { values, items } from '@microsoft.azure/codegen';
+import { values, items, Dictionary, pascalCase } from '@microsoft.azure/codegen';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 type State = ModelState<codemodel.Model>;
@@ -85,9 +85,18 @@ interface WhereModelDirective {
   select?: string;
   where: {
     'model-name'?: string;
+    'model-fullname'?: string;
+    'model-namespace'?: string;
     'property-name'?: string;
   };
   set: {
+    'suppress-format'?: boolean;
+    'format-table'?: {
+      'properties'?: Array<string>;
+      'exclude-properties'?: Array<string>;
+      'labels'?: { [name: string]: string };
+      'width'?: { [name: string]: number };
+    };
     'model-name'?: string;
     'property-name'?: string;
     'property-description'?: string;
@@ -100,11 +109,46 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
   const set = directive.set;
 
 
-  if (where && set && (where['model-name'] || where['property-name'] || directive.select === 'model')) {
+  if (where && set && (where['model-name'] || where['model-fullname'] || where['model-namespace'] || where['property-name'] || directive.select === 'model')) {
     const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description'];
     error += getSetError(set, prohibitedSetters, 'enum');
+    let modelSelectNameConflict = [];
+    let modelSelectNameType = '';
+    if (where['model-name']) {
+      modelSelectNameType = 'model-name';
+      if (where['model-fullname']) {
+        modelSelectNameConflict.push('model-fullname');
+      }
+
+      if (where['model-namespace']) {
+        modelSelectNameConflict.push('model-namespace');
+      }
+    } else if (where['model-fullname']) {
+      modelSelectNameType = 'model-fullname';
+      if (where['model-name']) {
+        modelSelectNameConflict.push('model-name');
+      }
+
+      if (where['model-namespace']) {
+        modelSelectNameConflict.push('model-namespace');
+      }
+    } else if (where['model-namespace']) {
+      modelSelectNameType = 'model-namespace';
+      if (where['model-fullname']) {
+        modelSelectNameConflict.push('model-fullname');
+      }
+
+      if (where['model-name']) {
+        modelSelectNameConflict.push('model-name');
+      }
+    }
+
+    if (modelSelectNameConflict.length > 0) {
+      error += `Can't select ${modelSelectNameType} and ${modelSelectNameConflict} at the same time`;
+    }
+
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}.Reason: ${error}.`);
     }
@@ -347,11 +391,15 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     if (isWhereModelDirective(directive)) {
       const selectType = directive.select;
       const modelNameRegex = getPatternToMatch(directive.where["model-name"]);
+      const modelFullNameRegex = getPatternToMatch(directive.where["model-fullname"]);
+      const modelNamespaceRegex = getPatternToMatch(directive.where["model-namespace"]);
       const propertyNameRegex = getPatternToMatch(directive.where["property-name"]);
 
       const modelNameReplacer = directive.set["model-name"];
       const propertyNameReplacer = directive.set["property-name"];
       const propertyDescriptionReplacer = directive.set["property-description"];
+      const formatTable = directive.set["format-table"];
+      const suppressFormat = directive.set["suppress-format"];
 
       // select all models
       let models = values(state.model.schemas).linq.toArray();
@@ -359,6 +407,20 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         models = values(models)
           .linq.where(model =>
             !!`${model.details.csharp.name}`.match(modelNameRegex))
+          .linq.toArray();
+      }
+
+      if (modelFullNameRegex) {
+        models = values(models)
+          .linq.where(model =>
+            !!`${model.details.csharp.fullname}`.match(modelFullNameRegex))
+          .linq.toArray();
+      }
+
+      if (modelNamespaceRegex) {
+        models = values(models)
+          .linq.where(model =>
+            !!`${model.details.csharp.namespace}`.match(modelNamespaceRegex))
           .linq.toArray();
       }
 
@@ -388,6 +450,79 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
       } else if (models) {
         for (const model of models) {
+
+          if (suppressFormat) {
+            model.details.csharp.suppressFormat = true;
+          }
+
+          if (formatTable !== undefined && !suppressFormat) {
+            const properties = allVirtualProperties(model.details.csharp.virtualProperties);
+            const propertiesToExclude = formatTable["exclude-properties"];
+            const propertiesToInclude = formatTable.properties;
+            const labels = formatTable.labels;
+            const widths = formatTable.width;
+            if (labels) {
+              const parsedLabels = new Dictionary<string>();
+              for (const label of items(labels)) {
+                parsedLabels[label.key.toLowerCase()] = pascalCase(label.value);
+              }
+
+              for (const property of properties) {
+                if (Object.keys(parsedLabels).includes(property.name.toLowerCase())) {
+                  if (property.format === undefined) {
+                    property.format = {};
+                  }
+
+                  property.format.label = parsedLabels[property.name.toLowerCase()];
+                }
+              }
+            }
+
+            if (widths) {
+              const parsedWidths = new Dictionary<number>();
+              for (const w of items(widths)) {
+                parsedWidths[w.key.toLowerCase()] = w.value;
+              }
+
+              for (const property of properties) {
+                if (Object.keys(parsedWidths).includes(property.name.toLowerCase())) {
+                  if (property.format === undefined) {
+                    property.format = {};
+                  }
+
+                  property.format.width = parsedWidths[property.name.toLowerCase()];
+                }
+              }
+            }
+
+            if (propertiesToInclude) {
+              const indexes = new Dictionary<number>();
+              for (const item of items(propertiesToInclude)) {
+                indexes[item.value.toLowerCase()] = item.key;
+              }
+
+              for (const property of properties) {
+                if (propertiesToInclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
+                  if (property.format === undefined) {
+                    property.format = {};
+                  }
+
+                  property.format.index = indexes[property.name.toLowerCase()];
+                } else {
+                  property.format = { suppressFormat: true };
+                }
+              }
+            }
+
+            if (propertiesToExclude) {
+              for (const property of properties) {
+                if (propertiesToExclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
+                  property.format = { suppressFormat: true };
+                }
+              }
+            }
+          }
+
           const prevName = model.details.csharp.name;
           model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
           state.message({

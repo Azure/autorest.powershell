@@ -28,6 +28,11 @@ namespace Microsoft.Rest
     {
     }
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
+    public class DoNotFormat : Attribute
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Class)]
     public class ProfileAttribute : Attribute
     {
@@ -79,5 +84,13 @@ namespace Microsoft.Rest
         Owned,
         Inherited,
         Inlined
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class FormatTableAttribute : Attribute
+    {
+        public int Index { get; set; } = -1;
+        public string Label { get; set; }
+        public int Width { get; set; } = -1;
     }
 }
