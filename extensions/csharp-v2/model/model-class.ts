@@ -14,7 +14,7 @@ import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 // import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
-import { PropertyOriginAttribute } from '../csharp-declarations';
+import { PropertyOriginAttribute, DoNotFormatAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 
@@ -182,10 +182,30 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
   private createProperties() {
     // generate a protected backing field for each
-    // and then expand the nested properties into this class forwarding to the member.
+    // and then expand the nested properties into this class forwarding to the member.  
 
     // add properties
     if (this.schema.details.csharp.virtualProperties) {
+      const addFormatAttributesToProperty = (property: Property, virtualProperty: VirtualProperty) => {
+        if (virtualProperty.format) {
+          if (virtualProperty.format.suppressFormat) {
+            property.add(new Attribute(DoNotFormatAttribute));
+          } else {
+            const parameters = [];
+            if (virtualProperty.format.index) {
+              parameters.push(`Index = ${virtualProperty.format.index}`)
+            }
+
+            if (virtualProperty.format.label) {
+              parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`)
+            }
+
+            if (virtualProperty.format.width) {
+              parameters.push(`Width = ${virtualProperty.format.width}`)
+            }
+          }
+        }
+      }
 
       /* Owned Properties */
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.owned)) {
@@ -225,6 +245,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (this.state.getValue('powershell')) {
           myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+          addFormatAttributesToProperty(myProperty, virtualProperty);
         }
       }
 
@@ -266,6 +287,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (this.state.getValue('powershell')) {
           vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
+          addFormatAttributesToProperty(vp, virtualProperty);
         }
       }
 
@@ -300,6 +322,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
             if (this.state.getValue('powershell')) {
               vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
+              addFormatAttributesToProperty(vp, virtualProperty);
             }
           }
         }
@@ -307,7 +330,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     }
   }
-
 
   private addValidation() {
     if (this.validationStatements.implementation.trim()) {
@@ -324,7 +346,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.validateMethod.add(this.validationStatements);
     }
   }
-
 
   private additionalPropertiesType(aSchema: Schema): TypeDeclaration | undefined {
     if (aSchema.additionalProperties) {
