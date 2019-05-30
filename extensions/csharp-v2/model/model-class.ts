@@ -14,7 +14,7 @@ import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 // import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
-import { PropertyOriginAttribute, DoNotFormatAttribute } from '../csharp-declarations';
+import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 
@@ -107,6 +107,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.state = state;
     this.apply(objectInitializer);
 
+    if (this.state.getValue('powershell') && this.schema.details.csharp.suppressFormat) {
+      this.add(new Attribute(DoNotFormatAttribute));
+    }
+
     // must be a partial class
     this.partial = true;
 
@@ -192,17 +196,19 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             property.add(new Attribute(DoNotFormatAttribute));
           } else {
             const parameters = [];
-            if (virtualProperty.format.index) {
+            if (virtualProperty.format.index !== undefined) {
               parameters.push(`Index = ${virtualProperty.format.index}`)
             }
 
-            if (virtualProperty.format.label) {
+            if (virtualProperty.format.label !== undefined) {
               parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`)
             }
 
-            if (virtualProperty.format.width) {
+            if (virtualProperty.format.width !== undefined) {
               parameters.push(`Width = ${virtualProperty.format.width}`)
             }
+
+            property.add(new Attribute(FormatTableAttribute, { parameters }));
           }
         }
       }
