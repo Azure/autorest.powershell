@@ -11,25 +11,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="runtime\Cmdlets\ExportHelpMarkdown.cs" />
-    <Compile Include="runtime\Cmdlets\ExportFormatPs1xml.cs" />
-    <Compile Include="runtime\Cmdlets\ExportExampleStub.cs" />
-    <Compile Include="runtime\PsHelpMarkdownOutputs.cs" />
-    <Compile Include="runtime\PsMarkdownTypes.cs" />
-    <Compile Include="runtime\PsHelpTypes.cs" />
-    <Compile Include="runtime\PsFormatTypes.cs" />
-    <Compile Include="runtime\Cmdlets\GetScriptCmdlet.cs" />
-    <Compile Include="runtime\Cmdlets\ExportProxyCmdlet.cs" />
-    <Compile Include="runtime\Cmdlets\ExportTestStub.cs" />
-    <Compile Include="runtime\PsHelpers.cs" />
-    <Compile Include="runtime\PsAttributes.cs" />
-    <Compile Include="runtime\PsExtensions.cs" />
-    <Compile Include="runtime\PsProxyOutputs.cs" />
-    <Compile Include="runtime\PsProxyTypes.cs" />
-    <Compile Include="runtime\Cmdlets\SetPsd1Export.cs" />
-    <Compile Include="runtime\CollectionExtensions.cs" />
-    <Compile Include="runtime\StringExtensions.cs" />
-    <Compile Include="runtime\XmlExtensions.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportExampleStub.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsMarkdownTypes.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsHelpTypes.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsFormatTypes.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\GetScriptCmdlet.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportProxyCmdlet.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportTestStub.cs" />
+    <Compile Include="runtime\BuildTime\PsHelpers.cs" />
+    <Compile Include="runtime\BuildTime\PsAttributes.cs" />
+    <Compile Include="runtime\BuildTime\PsExtensions.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsProxyOutputs.cs" />
+    <Compile Include="runtime\BuildTime\Models\PsProxyTypes.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\SetPsd1Export.cs" />
+    <Compile Include="runtime\BuildTime\CollectionExtensions.cs" />
+    <Compile Include="runtime\BuildTime\StringExtensions.cs" />
+    <Compile Include="runtime\BuildTime\XmlExtensions.cs" />
   </ItemGroup>
 
 </Project>
