@@ -13,6 +13,7 @@
   <ItemGroup>
     <Compile Include="runtime\Cmdlets\ExportHelpMarkdown.cs" />
     <Compile Include="runtime\Cmdlets\ExportFormatPs1xml.cs" />
+    <Compile Include="runtime\Cmdlets\ExportExampleStub.cs" />
     <Compile Include="runtime\PsHelpMarkdownOutputs.cs" />
     <Compile Include="runtime\PsMarkdownTypes.cs" />
     <Compile Include="runtime\PsHelpTypes.cs" />

@@ -127,38 +127,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 default:
                     return default(T);
             }
-            //switch (properties[name]?.Value)
-            //{
-            //    case PSObject psObject when psObject.BaseObject is PSCustomObject && psObject.ImmediateBaseObject.IsTypeOrArrayOfType<T>():
-            //        if (typeof(T).IsArray && psObject.ImmediateBaseObject.GetType().IsArray)
-            //        {
-            //            return (T)psObject.ImmediateBaseObject;
-            //        }
-            //        if (typeof(T).IsArray && !psObject.ImmediateBaseObject.GetType().IsArray)
-            //        {
-            //            var array = Array.CreateInstance(typeof(T).GetElementType(), 1);
-            //            array.SetValue(psObject.ImmediateBaseObject, 0);
-            //            return (T)(object)array;
-            //        }
-            //        return result;
-            //    case PSObject psObject when psObject.BaseObject.IsTypeOrArrayOfType<T>():
-            //        return result;
-            //    case T result:
-            //        return result;
-            //    default:
-            //        return default;
-            //}
-            //switch (properties[name]?.Value)
-            //{
-            //    case PSObject psObject when psObject.BaseObject is PSCustomObject && psObject.ImmediateBaseObject is T result:
-            //        return result;
-            //    case PSObject psObject when psObject.BaseObject is T result:
-            //        return result;
-            //    case T result:
-            //        return result;
-            //    default:
-            //        return default;
-            //}
         }
 
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script)

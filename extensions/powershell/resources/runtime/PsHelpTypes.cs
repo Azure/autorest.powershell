@@ -48,10 +48,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             OnlineVersion = links.FirstOrDefault(l => l.Text?.ToLowerInvariant().StartsWith("online version:") ?? links.Length == 1);
             RelatedLinks = links.Where(l => !l.Text?.ToLowerInvariant().StartsWith("online version:") ?? links.Length != 1).ToArray();
 
-            //// navigationLink can be either a single item or an array of items.
-            //OutputTypeNames = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").Select(rv => rv.GetNestedProperty<string>("type", "name")).ToArray();
-            //OutputTypeNames = OutputTypeNames.Any() ? OutputTypeNames : new []{ helpObject.GetNestedProperty<string>("returnValues", "returnValue", "type", "name") };
-
             InputTypes = helpObject.GetNestedProperty<PSObject[]>("inputTypes", "inputType").EmptyIfNull().Select(it => it.ToTypeInfo()).ToArray();
             OutputTypes = helpObject.GetNestedProperty<PSObject[]>("returnValues", "returnValue").EmptyIfNull().Select(rv => rv.ToTypeInfo()).ToArray();
             Examples = helpObject.GetNestedProperty<PSObject[]>("examples", "example").EmptyIfNull().Select(e => e.ToExampleInfo()).ToArray();

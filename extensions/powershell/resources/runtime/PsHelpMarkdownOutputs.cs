@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Management.Automation;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -54,10 +55,10 @@ schema: {HelpInfo.Schema.ToString(3)}
             ExampleInfo = exampleInfo;
         }
 
-        public override string ToString() => $@"### {ExampleInfo.Name}
-```powershell
+        public override string ToString() => $@"{ExampleNameHeader}{ExampleInfo.Name}
+{ExampleCodeHeader}
 {ExampleInfo.Code}
-```
+{ExampleCodeFooter}
 
 {ExampleInfo.Description.ReplaceSentenceEndWithNewline()}
 
@@ -143,6 +144,10 @@ Locale: en-US
     internal static class PsHelpOutputExtensions
     {
         public static string ReplaceSentenceEndWithNewline(this string text) => text.Replace(".  ", $".{Environment.NewLine}").Replace(". ", $".{Environment.NewLine}");
+
+        public const string ExampleNameHeader = "### ";
+        public const string ExampleCodeHeader = "```powershell";
+        public const string ExampleCodeFooter = "```";
 
         public static HelpMetadataOutput ToHelpMetadataOutput(this MarkdownHelpInfo helpInfo) => new HelpMetadataOutput(helpInfo);
 

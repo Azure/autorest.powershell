@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownTypesExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -28,7 +32,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsShouldProcess { get; }
         public bool SupportsPaging { get; }
 
-        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string externalHelpFilename = "")
+        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string examplesFolder, string externalHelpFilename = "")
         {
             ExternalHelpFilename = externalHelpFilename;
             ModuleName = helpInfo.ModuleName;
@@ -40,16 +44,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Synopsis = helpInfo.Synopsis.NullIfEmpty() ?? variantGroup.Description;
             Description = helpInfo.Description.NullIfEmpty() ?? variantGroup.Description;
 
-            //var syntaxTexts = variantGroup.Variants.FirstOrDefault(v => v.HasParameterSets)?.Info?.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) ??
-            //                  variantGroup.Variants.Select(v => v.Info.GetSyntax()?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToArray();
-            //var parameterSetNames = variantGroup.Variants.Select(v => v.VariantName).ToArray();
-            //var defaultParameterSet = variantGroup.DefaultParameterSetName;
-            //SyntaxInfos = syntaxTexts.Zip(parameterSetNames, (st, psn) => new MarkdownSyntaxHelpInfo(psn, st, psn == defaultParameterSet)).ToArray();
             var defaultParameterSet = variantGroup.DefaultParameterSetName;
             SyntaxInfos = variantGroup.Variants.Select(v => new MarkdownSyntaxHelpInfo(v, v.VariantName == defaultParameterSet)).ToArray();
 
-            Examples = helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() ??
-                       new []{ new MarkdownExampleHelpInfo("Example 1", @"PS C:\> {{ Add example code here }}", @"{{ Add example description here }}") };
+            Examples = GetExamplesFromMarkdown(examplesFolder).NullIfEmpty() 
+                       ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() 
+                       ?? DefaultExampleHelpInfos;
 
             var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
             Parameters = parameterGroups
@@ -64,6 +64,33 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             SupportsShouldProcess = variantGroup.SupportsShouldProcess;
             SupportsPaging = variantGroup.SupportsPaging;
+        }
+
+        private MarkdownExampleHelpInfo[] GetExamplesFromMarkdown(string examplesFolder)
+        {
+            var filePath = Path.Combine(examplesFolder, $"{CmdletName}.md");
+            if (!Directory.Exists(examplesFolder) || !File.Exists(filePath)) return null;
+
+            var lines = File.ReadAllLines(filePath);
+            var nameIndices = lines.Select((l, i) => l.StartsWith(ExampleNameHeader) ? i : -1).Where(i => i != -1).ToArray();
+            //https://codereview.stackexchange.com/a/187148/68772
+            var indexCountGroups = nameIndices.Skip(1).Append(lines.Length).Zip(nameIndices, (next, current) => (NameIndex: current, LineCount: next - current));
+            var exampleGroups = indexCountGroups.Select(icg => lines.Skip(icg.NameIndex).Take(icg.LineCount).ToArray());
+            return exampleGroups.Select(eg =>
+            {
+                var name = eg.First().Replace(ExampleNameHeader, String.Empty);
+                var codeStartIndex = eg.Select((l, i) => l.StartsWith(ExampleCodeHeader) ? (int?)i : null).FirstOrDefault(i => i.HasValue);
+                var codeEndIndex = eg.Select((l, i) => l.StartsWith(ExampleCodeFooter) ? (int?)i : null).FirstOrDefault(i => i.HasValue && i != codeStartIndex);
+                var code = codeStartIndex.HasValue && codeEndIndex.HasValue
+                    ? String.Join(Environment.NewLine, eg.Skip(codeStartIndex.Value + 1).Take(codeEndIndex.Value - (codeStartIndex.Value + 1)))
+                    : String.Empty;
+                var descriptionStartIndex = (codeEndIndex ?? 0) + 1;
+                descriptionStartIndex = String.IsNullOrWhiteSpace(eg[descriptionStartIndex]) ? descriptionStartIndex + 1 : descriptionStartIndex;
+                var descriptionEndIndex = eg.Length - 1;
+                descriptionEndIndex = String.IsNullOrWhiteSpace(eg[descriptionEndIndex]) ? descriptionEndIndex - 1 : descriptionEndIndex;
+                var description = String.Join(Environment.NewLine, eg.Skip(descriptionStartIndex).Take((descriptionEndIndex + 1) - descriptionStartIndex));
+                return new MarkdownExampleHelpInfo(name, code, description);
+            }).ToArray();
         }
     }
 
@@ -184,6 +211,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal static class MarkdownTypesExtensions
     {
         public static MarkdownExampleHelpInfo ToExampleHelpInfo(this PsHelpExampleInfo exampleInfo) => new MarkdownExampleHelpInfo(exampleInfo.Title, exampleInfo.Code, exampleInfo.Remarks);
+
+        public static MarkdownExampleHelpInfo[] DefaultExampleHelpInfos =
+        {
+            new MarkdownExampleHelpInfo("Example 1: {{ Add title here }}", $@"PS C:\> {{{{ Add code here }}}}{Environment.NewLine}{Environment.NewLine}{{{{ Add output here }}}}", @"{{ Add description here }}"),
+            new MarkdownExampleHelpInfo("Example 2: {{ Add title here }}", $@"PS C:\> {{{{ Add code here }}}}{Environment.NewLine}{Environment.NewLine}{{{{ Add output here }}}}", @"{{ Add description here }}")
+        };
 
         public static MarkdownParameterHelpInfo[] SupportsShouldProcessParameters =
         {

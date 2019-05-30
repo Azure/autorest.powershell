@@ -11,14 +11,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     [DoNotExport]
     public class ExportHelpMarkdown : PSCmdlet
     {
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string ModuleName { get; set; }
-
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string ModuleDescription { get; set; }
-
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public PSModuleInfo ModuleInfo { get; set; }
@@ -35,6 +27,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string DocsFolder { get; set; }
 
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
+        public string ExamplesFolder { get; set; }
+
         protected override void ProcessRecord()
         {
             Directory.CreateDirectory(DocsFolder);
@@ -43,7 +39,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(va => new VariantGroup(va.First().CmdletName, va, String.Empty))
                 .ToArray();
             var helpInfos = HelpInfo.Select(hi => hi.ToPsHelpInfo()).ToArray();
-            var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi)).ToArray();
+            var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi, ExamplesFolder)).ToArray();
 
             foreach (var markdownInfo in markdownInfos)
             {
@@ -106,9 +102,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 {
                     sb.Append($"### {alias}{Environment.NewLine}{Environment.NewLine}");
                 }
-
-                // Removed NOTES since we don't have support for it.
-                //sb.Append($"## NOTES{Environment.NewLine}{Environment.NewLine}");
 
                 sb.Append($"## RELATED LINKS{Environment.NewLine}{Environment.NewLine}");
                 foreach (var relatedLink in markdownInfo.RelatedLinks)
