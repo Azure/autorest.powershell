@@ -82,11 +82,6 @@ ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
   # Finalize initialization of this module
   $instance.Init();
   Write-Information "Loaded Module '$($instance.Name)'"`);
-
-  psm1.removeRegion('Initialization');
-  psm1.removeRegion('AzureInitialization');
-  psm1.removeRegion('LoadExports');
-  psm1.removeRegion('Finalization');
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }

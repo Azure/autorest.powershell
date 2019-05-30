@@ -19,11 +19,19 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter]
         public SwitchParameter AsAlias { get; set; }
 
+        [Parameter]
+        public SwitchParameter AsFunctionInfo { get; set; }
+
         protected override void ProcessRecord()
         {
             var functionInfos = GetScriptCmdlets(this, ScriptFolder)
                 .Where(fi => IncludeDoNotExport || !fi.ScriptBlock.Attributes.OfType<DoNotExportAttribute>().Any())
                 .ToArray();
+            if (AsFunctionInfo)
+            {
+                WriteObject(functionInfos, true);
+                return;
+            }
             var aliases = functionInfos.SelectMany(i => i.ScriptBlock.Attributes).ToAliasNames();
             var names = functionInfos.Select(fi => fi.Name).Distinct();
             var output = (AsAlias ? aliases : names).DefaultIfEmpty("''").ToArray();
