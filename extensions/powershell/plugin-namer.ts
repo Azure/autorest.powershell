@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
 import { deconstruct, values, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@microsoft.azure/codegen';
 import * as linq from '@microsoft.azure/linq';
 import { singularize } from './name-inferrer';
+import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 type State = ModelState<codemodel.Model>;
 
 export async function namer(service: Host) {
@@ -93,26 +94,28 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         prevName = parameter.name;
 
         // now remove the subject from the beginning of the parameter
-        // to reduce naming redundancy
+        // to reduce naming redundancy, but just for path parameters
         // e.g. get-vm -vmname ---> get-vm -name
-        const sanitizedName = removeProhibitedPrefix(
-          parameter.name,
-          operation.details.csharp.subject,
-          otherParametersNames
-        );
+        if ((parameter.origin as any).in === ParameterLocation.Path) {
+          const sanitizedName = removeProhibitedPrefix(
+            parameter.name,
+            operation.details.csharp.subject,
+            otherParametersNames
+          );
 
-        if (prevName !== sanitizedName) {
-          if (parameter.alias === undefined) {
-            parameter.alias = [];
+          if (prevName !== sanitizedName) {
+            if (parameter.alias === undefined) {
+              parameter.alias = [];
+            }
+
+            // saved the prev name as alias
+            parameter.alias.push(parameter.name);
+
+            // change name
+            parameter.name = sanitizedName;
+            state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+            state.message({ Channel: Channel.Verbose, Text: `                         -> And, added alias '${prevName}'` });
           }
-
-          // saved the prev name as alias
-          parameter.alias.push(parameter.name);
-
-          // change name
-          parameter.name = sanitizedName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
-          state.message({ Channel: Channel.Verbose, Text: `                         -> And, added alias '${prevName}'` });
         }
       }
     }
