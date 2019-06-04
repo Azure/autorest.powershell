@@ -59,6 +59,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         [XmlElement(nameof(Label))]
         public string Label { get; set; }
+        [XmlElement(nameof(Width))]
+        public int? Width { get; set; }
+
+        //https://stackoverflow.com/a/4095225/294804
+        public bool ShouldSerializeWidth() => Width.HasValue;
     }
 
     [Serializable]
