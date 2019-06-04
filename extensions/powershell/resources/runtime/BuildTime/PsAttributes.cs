@@ -59,7 +59,7 @@ namespace Microsoft.Rest
     {
         // Note: Order is significant
         Uri = 0,
-        Path = 1,
+        Path,
         Query,
         Header,
         Cookie,
@@ -81,8 +81,9 @@ namespace Microsoft.Rest
 
     public enum PropertyOrigin
     {
+        // Note: Order is significant
+        Inherited = 0,
         Owned,
-        Inherited,
         Inlined
     }
 
