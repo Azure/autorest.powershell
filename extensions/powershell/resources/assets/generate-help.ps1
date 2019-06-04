@@ -16,7 +16,7 @@ if(-not (Test-Path $exportsFolder)) {
 $directories = Get-ChildItem -Directory -Path $exportsFolder
 $hasProfiles = ($directories | Measure-Object).Count -gt 0
 if(-not $hasProfiles) {
-  $directories = $exportsFolder
+  $directories = Get-Item -Path $exportsFolder
 }
 
 $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
