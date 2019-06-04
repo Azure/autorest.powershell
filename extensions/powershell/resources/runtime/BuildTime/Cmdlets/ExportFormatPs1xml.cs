@@ -17,17 +17,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private const string ModelNamespace = @"${$project.modelsExtensions.fullName}";
         private const string SupportNamespace = @"${$project.supportNamespace.fullName}";
+        private static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
 
         protected override void ProcessRecord()
         {
-            //https://stackoverflow.com/a/79738/294804
-            //https://stackoverflow.com/a/949285/294804
-            var viewModels = Assembly.GetExecutingAssembly().GetExportedTypes()
-                .Select(t => (Type: t, Properties: t.GetProperties().Where(p => p.PropertyType.IsPsSimple()).ToArray()))
-                .Where(tp => tp.Type.IsClass
-                             && (tp.Type.Namespace.StartsWith(ModelNamespace) || tp.Type.Namespace.StartsWith(SupportNamespace))
-                             && tp.Properties.Any())
-                .Select(tp => CreateViewModel(tp.Type, tp.Properties)).ToList();
+            var viewModels = GetFilteredViewParameters().Select(CreateViewModel).ToList();
             var ps1xml = new Configuration
             {
                 ViewDefinitions = new ViewDefinitions
@@ -38,18 +32,37 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             File.WriteAllText(FilePath, ps1xml.ToXmlString());
         }
 
-        private static View CreateViewModel(Type type, IEnumerable<PropertyInfo> properties)
+        private static IEnumerable<ViewParameters> GetFilteredViewParameters()
         {
-            var entries = properties.Select(p =>
-                (TableColumnHeader: new TableColumnHeader { Label = p.Name },
-                 TableColumnItem: new TableColumnItem { PropertyName = p.Name })).ToArray();
+            //https://stackoverflow.com/a/79738/294804
+            //https://stackoverflow.com/a/949285/294804
+            var types = Assembly.GetExecutingAssembly().GetExportedTypes()
+                .Where(t => t.IsClass
+                            && (t.Namespace.StartsWith(ModelNamespace) || t.Namespace.StartsWith(SupportNamespace))
+                            && !t.GetCustomAttributes<DoNotFormatAttribute>().Any());
+            return types.Select(t => new ViewParameters(t, t.GetProperties()
+                .Select(p => new PropertyFormat(p))
+                .Where(pf => !pf.Property.GetCustomAttributes<DoNotFormatAttribute>().Any()
+                             && (!IsAzure || pf.Property.Name != "Id")
+                             && (pf.FormatTable != null || (pf.Origin != PropertyOrigin.Inlined && pf.Property.PropertyType.IsPsSimple())))
+                .OrderByDescending(pf => pf.Index.HasValue)
+                .ThenBy(pf => pf.Index)
+                .ThenByDescending(pf => pf.Origin.HasValue)
+                .ThenBy(pf => pf.Origin))).Where(vp => vp.Properties.Any());
+        }
+
+        private static View CreateViewModel(ViewParameters viewParameters)
+        {
+            var entries = viewParameters.Properties.Select(pf =>
+                (TableColumnHeader: new TableColumnHeader { Label = pf.Label, Width = pf.Width },
+                 TableColumnItem: new TableColumnItem { PropertyName = pf.Property.Name })).ToArray();
 
             return new View
             {
-                Name = type.FullName,
+                Name = viewParameters.Type.FullName,
                 ViewSelectedBy = new ViewSelectedBy
                 {
-                    TypeName = type.FullName
+                    TypeName = viewParameters.Type.FullName
                 },
                 TableControl = new TableControl
                 {
