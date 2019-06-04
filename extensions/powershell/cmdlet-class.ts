@@ -124,14 +124,11 @@ export class CmdletClass extends Class {
           ops = `${ops}\n [METADATA]\n${serialize(m)}`
         }
 
-        const details = {
-          verb: this.operation.details.csharp.verb,
-          subject: this.operation.details.csharp.subject,
-          subjectPrefix: this.operation.details.csharp.subjectPrefix,
-          variant: this.operation.details.csharp.name
-        }
-
-        ops = `${ops}\n [DETAILS]\n${serialize(details)}`;
+        ops = `${ops}\n [DETAILS]`;
+        ops = `${ops}\n verb: ${this.operation.details.csharp.verb}`;
+        ops = `${ops}\n subjectPrefix: ${this.operation.details.csharp.subjectPrefix}`;
+        ops = `${ops}\n subject: ${this.operation.details.csharp.subject}`;
+        ops = `${ops}\n variant: ${this.operation.details.csharp.name}`;
       }
     }
 
