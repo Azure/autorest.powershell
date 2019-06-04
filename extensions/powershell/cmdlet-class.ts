@@ -123,8 +123,18 @@ export class CmdletClass extends Class {
         if (m) {
           ops = `${ops}\n [METADATA]\n${serialize(m)}`
         }
+
+        const details = {
+          verb: this.operation.details.csharp.verb,
+          subject: this.operation.details.csharp.subject,
+          subjectPrefix: this.operation.details.csharp.subjectPrefix,
+          variant: this.operation.details.csharp.name
+        }
+
+        ops = `${ops}\n [DETAILS]\n${serialize(details)}`;
       }
     }
+
     return ops ? `${header}\n${docComment(xmlize('remarks', ops))}` : header;
   }
 
