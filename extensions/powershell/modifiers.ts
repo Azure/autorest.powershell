@@ -598,49 +598,40 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .linq.toArray());
 
         if (subjectRegex) {
-          const matchingKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.subject}`.match(subjectRegex))
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.subject}`.match(subjectRegex) && operationsToRemoveKeys.has(operation.key))
             .linq.select(operation => operation.key)
             .linq.toArray());
-
-          operationsToRemoveKeys = new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key)));
         }
 
-        if (subjectPrefixRegex) {
-          const matchingKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.subjectPrefix}`.match(subjectPrefixRegex))
+        if (subjectPrefixRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.subjectPrefix}`.match(subjectPrefixRegex) && operationsToRemoveKeys.has(operation.key))
             .linq.select(operation => operation.key)
             .linq.toArray());
-
-          operationsToRemoveKeys = new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key)));
         }
 
-        if (verbRegex) {
-          const matchingKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex))
+        if (verbRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex) && operationsToRemoveKeys.has(operation.key))
             .linq.select(operation => operation.key)
             .linq.toArray());
-
-          operationsToRemoveKeys = new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key)));
         }
 
-        if (variantRegex) {
-          const matchingKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex))
+        if (variantRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex) && operationsToRemoveKeys.has(operation.key))
             .linq.select(operation => operation.key)
             .linq.toArray());
-
-          operationsToRemoveKeys = new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key)));
         }
 
-        if (parameterRegex && selectType === 'command') {
-          const matchingKeys = new Set(items(state.model.commands.operations)
+        if (parameterRegex && selectType === 'command' && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
             .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
               .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+            .linq.where(operation => operationsToRemoveKeys.has(operation.key))
             .linq.select(operation => operation.key)
             .linq.toArray());
-
-          operationsToRemoveKeys = new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key)));
         }
 
         for (const key of operationsToRemoveKeys) {
