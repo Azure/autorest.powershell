@@ -212,7 +212,8 @@ function getSetError(setObject: any, prohibitedSetters: Array<string>, selection
 }
 
 export async function applyModifiers(service: Host) {
-  directives = values(await service.GetValue('directive'))
+  const allDirectives = await service.GetValue('directive');
+  directives = values(allDirectives)
     .linq.select(directive => directive)
     .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .linq.toArray();
@@ -590,61 +591,59 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const variantRegex = getPatternToMatch(directive.where.variant);
       const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
 
-      // select all operations
-      const operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
-      let operationsToRemoveKeys = new Set<number>();
-      if (subjectRegex) {
-        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subject}`.match(subjectRegex))
+      if (subjectRegex || subjectPrefixRegex || verbRegex || variantRegex || (parameterRegex && selectType === 'command')) {
+        // select all operations first then reduce by finding the intersection with selectors
+        let operationsToRemoveKeys = new Set(items(state.model.commands.operations)
           .linq.select(operation => operation.key)
           .linq.toArray());
 
-        operationsToRemoveKeys = matchingKeys;
+        if (subjectRegex) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.subject}`.match(subjectRegex) && operationsToRemoveKeys.has(operation.key))
+            .linq.select(operation => operation.key)
+            .linq.toArray());
+        }
+
+        if (subjectPrefixRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.subjectPrefix}`.match(subjectPrefixRegex) && operationsToRemoveKeys.has(operation.key))
+            .linq.select(operation => operation.key)
+            .linq.toArray());
+        }
+
+        if (verbRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex) && operationsToRemoveKeys.has(operation.key))
+            .linq.select(operation => operation.key)
+            .linq.toArray());
+        }
+
+        if (variantRegex && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex) && operationsToRemoveKeys.has(operation.key))
+            .linq.select(operation => operation.key)
+            .linq.toArray());
+        }
+
+        if (parameterRegex && selectType === 'command' && operationsToRemoveKeys.size > 0) {
+          operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+            .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
+              .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+            .linq.where(operation => operationsToRemoveKeys.has(operation.key))
+            .linq.select(operation => operation.key)
+            .linq.toArray());
+        }
+
+        for (const key of operationsToRemoveKeys) {
+          const operationInfo = state.model.commands.operations[key].details.csharp;
+          state.message({
+            Channel: Channel.Verbose, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
+          });
+
+          delete state.model.commands.operations[key];
+        }
       }
 
-      if (subjectPrefixRegex) {
-        const matchingKeys = new Set(items(operations).linq.where(operation => !!`${operation.value.details.default.subjectPrefix}`.match(subjectPrefixRegex))
-          .linq.select(operation => operation.key)
-          .linq.toArray());
-
-        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
-      }
-
-      if (verbRegex) {
-        const matchingKeys = new Set(items(operations)
-          .linq.where(operation => !!`${operation.value.details.default.verb}`.match(verbRegex))
-          .linq.select(operation => operation.key)
-          .linq.toArray());
-
-        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
-      }
-
-      if (variantRegex) {
-        const matchingKeys = new Set(items(operations)
-          .linq.where(operation => !!`${operation.value.details.default.name}`.match(variantRegex))
-          .linq.select(operation => operation.key)
-          .linq.toArray());
-
-        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
-      }
-
-      if (parameterRegex && selectType === 'command') {
-        const matchingKeys = new Set(items(operations)
-          .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
-            .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
-          .linq.select(operation => operation.key)
-          .linq.toArray());
-
-        operationsToRemoveKeys = operationsToRemoveKeys.size !== 0 ? new Set([...operationsToRemoveKeys].filter(key => matchingKeys.has(key))) : matchingKeys;
-      }
-
-      for (const key of operationsToRemoveKeys) {
-        const operationInfo = state.model.commands.operations[key].details.default;
-        state.message({
-          Channel: Channel.Verbose, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
-        });
-
-        delete state.model.commands.operations[key];
-      }
       continue;
     }
   }
