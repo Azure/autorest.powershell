@@ -70,7 +70,7 @@ export async function createCommands(service: Host) {
   // return processCodeModel(commandCreator, service);
   return processCodeModel(async (state) => {
     return await (await new Inferrer(state).init()).createCommands();
-  }, service);
+  }, service, 'createCommands');
 }
 
 export /* @internal */ class Inferrer {

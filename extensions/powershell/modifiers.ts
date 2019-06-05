@@ -218,7 +218,7 @@ export async function applyModifiers(service: Host) {
     .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .linq.toArray();
 
-  return processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service, 'modifiers');
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {

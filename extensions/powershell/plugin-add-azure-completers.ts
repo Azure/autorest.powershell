@@ -23,7 +23,7 @@ const locationNames = new Set<string>([
 ]);
 
 export async function addCompleter(service: Host) {
-  return processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service, 'add-azure-completers');
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
