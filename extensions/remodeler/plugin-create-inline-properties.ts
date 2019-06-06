@@ -23,7 +23,7 @@ export function singularize(word: string): string {
 }
 
 export async function createInlinedPropertiesPlugin(service: Host) {
-  return processCodeModel(createVirtuals, service);
+  return processCodeModel(createVirtuals, service, 'create-virtual-properties');
 }
 
 function getNameOptions(typeName: string, components: Array<string>) {
