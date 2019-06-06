@@ -15,7 +15,7 @@ import { SchemaDefinitionResolver } from './schema/schema-resolver';
 type State = ModelState<codemodel.Model>;
 
 export async function csnamer(service: Host) {
-  return processCodeModel(nameStuffRight, service);
+  return processCodeModel(nameStuffRight, service, `csnamer`);
 }
 
 function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceNamespace: string) {

@@ -12,7 +12,7 @@ import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-mod
 type State = ModelState<codemodel.Model>;
 
 export async function namer(service: Host) {
-  return processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service, 'psnamer');
 }
 
 export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { subjectPrefix: string; subject: string } {
