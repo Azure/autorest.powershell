@@ -20,6 +20,9 @@ if(-not $hasProfiles) {
 }
 
 $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
+if(Test-Path $docsFolder) {
+  $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+}
 $null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
 $examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
 
