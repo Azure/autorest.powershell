@@ -225,7 +225,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
   for (const directive of directives) {
     const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
-      return selector ? isNotRegex(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
+      return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
 
     if (isWhereCommandDirective(directive)) {
@@ -298,6 +298,25 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           const prevName = parameter.name;
           parameter.name = parameterReplacer ? parameterRegex ? parameter.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.name;
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
+          if (clearAlias) {
+            parameter.alias = [];
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from parameter ${parameter.name}.`
+            });
+          }
+
+          if (alias) {
+            const parsedAlias = new Array<string>();
+            for (const each of alias) {
+              parsedAlias.push(hasSpecialChars(each) ? parameter.name.replace(parameterRegex, each) : each);
+            }
+
+            parameter.alias = [...new Set([...parameter.alias, ...parsedAlias])];
+            state.message({
+              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${parsedAlias} to parameter ${parameter.name}.`
+            });
+          }
+
           if (parameterReplacer) {
             state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed parameter-name from ${prevName} to ${parameter.name}.`
@@ -307,20 +326,6 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           if (paramDescriptionReplacer) {
             state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Set parameter-description from parameter ${parameter.name}.`
-            });
-          }
-
-          if (clearAlias) {
-            parameter.alias = [];
-            state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from parameter ${parameter.name}.`
-            });
-          }
-
-          if (alias) {
-            parameter.alias = Array.isArray(alias) ? parameter.alias.concat(alias) : (parameter.alias.indexOf(alias) === -1) ? parameter.alias.concat(alias) : parameter.alias;
-            state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${alias} to parameter ${parameter.name}.`
             });
           }
         }
@@ -665,6 +670,6 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   return state.model;
 }
 
-function isNotRegex(str: string): boolean {
-  return /^[a-zA-Z0-9]+$/.test(str);
+function hasSpecialChars(str: string): boolean {
+  return !/^[a-zA-Z0-9]+$/.test(str);
 }
