@@ -437,7 +437,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .linq.toArray();
       }
 
-      if (propertyNameRegex && (selectType !== undefined || selectType === 'property')) {
+      if (propertyNameRegex && (selectType === undefined || selectType === 'property')) {
         const properties = values(models)
           .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
           .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
