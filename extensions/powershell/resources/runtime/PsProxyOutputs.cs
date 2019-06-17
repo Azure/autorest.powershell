@@ -204,21 +204,34 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class HelpCommentOutput
     {
         public VariantGroup VariantGroup { get; }
-
         public HelpCommentOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
         }
 
-        public override string ToString() => $@"<#
+        public override string ToString()
+        {
+            var result = $@"<#
 .Synopsis
 {VariantGroup.Description}
 .Description
 {VariantGroup.Description}
+";
+            var parameterHelp = VariantGroup.Variants
+                .SelectMany(variant => variant.CmdletOnlyParameters)
+                .Select(parameter => $".Parameter {parameter.ParameterName} {Environment.NewLine}{parameter.ParameterAttribute.HelpMessage}")
+                .ToList();
+            if (parameterHelp.Any())
+            {
+                result += string.Join(Environment.NewLine, parameterHelp);
+            }
+            result += $@"
 .Link
 {VariantGroup.Link}
 #>
 ";
+            return result;
+        }
     }
 
     internal class ParameterHelpOutput
@@ -231,7 +244,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
         public override string ToString() => !String.IsNullOrEmpty(HelpMessage)
-            ? HelpMessage.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
+            ? HelpMessage.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
             : String.Empty;
     }
 
