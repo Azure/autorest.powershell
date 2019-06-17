@@ -308,7 +308,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           if (alias) {
             const parsedAlias = new Array<string>();
             for (const each of alias) {
-              parsedAlias.push(hasSpecialChars(each) ? parameter.name.replace(parameterRegex, each) : each);
+              parsedAlias.push(hasSpecialChars(each) ? prevName.replace(parameterRegex, each) : each);
             }
 
             parameter.alias = [...new Set([...parameter.alias, ...parsedAlias])];
