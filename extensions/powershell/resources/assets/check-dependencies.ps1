@@ -1,4 +1,4 @@
-param([switch]$Isolated, [switch]$Accounts, [switch]$PlatyPS, [switch]$Pester)
+param([switch]$Isolated, [switch]$Accounts [switch]$Pester)
 $ErrorActionPreference = 'Stop'
 
 if(-not $Isolated) {
@@ -24,7 +24,7 @@ function DownloadModule ([bool]$predicate, [string]$path, [string]$moduleName, [
 }
 
 $ProgressPreference = 'SilentlyContinue'
-$all = (@($Accounts.IsPresent, $PlatyPS.IsPresent, $Pester.IsPresent) | Select-Object -Unique | Measure-Object).Count -eq 1
+$all = (@($Accounts.IsPresent, $Pester.IsPresent) | Select-Object -Unique | Measure-Object).Count -eq 1
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
 if(Test-Path -Path $localModulesPath) {
@@ -32,5 +32,4 @@ if(Test-Path -Path $localModulesPath) {
 }
 
 DownloadModule -predicate ($all -or $Accounts) -path $localModulesPath -moduleName 'Az.Accounts' -versionMinimum '${$project.accountsVersionMinimum}'
-DownloadModule -predicate ($all -or $PlatyPS) -path $localModulesPath -moduleName 'platyPS' -versionMinimum '${$project.platyPsVersionMinimum}'
 DownloadModule -predicate ($all -or $Pester) -path $localModulesPath -moduleName 'Pester' -versionMinimum ''
