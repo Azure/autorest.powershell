@@ -1,4 +1,4 @@
-param([switch]$Isolated, [switch]$Accounts [switch]$Pester)
+param([switch]$Isolated, [switch]$Accounts, [switch]$Pester)
 $ErrorActionPreference = 'Stop'
 
 if(-not $Isolated) {
