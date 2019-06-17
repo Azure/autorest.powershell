@@ -63,6 +63,72 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static IEnumerable<string> ToAliasNames(this IEnumerable<Attribute> attributes) => attributes.OfType<AliasAttribute>().SelectMany(aa => aa.AliasNames).Distinct();
 
+        public static bool IsArrayAndElementTypeIsT<T>(this object item)
+        {
+            var itemType = item.GetType();
+            var tType = typeof(T);
+            return itemType.IsArray && !tType.IsArray && tType.IsAssignableFrom(itemType.GetElementType());
+        }
+
+        public static bool IsTArrayAndElementTypeIsItem<T>(this object item)
+        {
+            var itemType = item.GetType();
+            var tType = typeof(T);
+            return !itemType.IsArray && tType.IsArray && (tType.GetElementType()?.IsAssignableFrom(itemType) ?? false);
+        }
+
+        public static bool IsTypeOrArrayOfType<T>(this object item) => item is T || item.IsArrayAndElementTypeIsT<T>() || item.IsTArrayAndElementTypeIsItem<T>();
+
+        public static T NormalizeArrayType<T>(this object item)
+        {
+            if (item is T result)
+            {
+                return result;
+            }
+
+            if (item.IsArrayAndElementTypeIsT<T>())
+            {
+                var array = (T[])Convert.ChangeType(item, typeof(T[]));
+                return array.FirstOrDefault();
+            }
+
+            if (item.IsTArrayAndElementTypeIsItem<T>())
+            {
+                var tType = typeof(T);
+                var array = Array.CreateInstance(tType.GetElementType(), 1);
+                array.SetValue(item, 0);
+                return (T)Convert.ChangeType(array, tType);
+            }
+
+            return default(T);
+        }
+
+        public static T GetNestedProperty<T>(this PSObject psObject, params string[] names) => psObject.Properties.GetNestedProperty<T>(names);
+
+        public static T GetNestedProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, params string[] names)
+        {
+            var lastName = names.Last();
+            var nestedProperties = names.Take(names.Length - 1).Aggregate(properties, (p, n) => p?.GetProperty<PSObject>(n)?.Properties);
+            return nestedProperties != null ? nestedProperties.GetProperty<T>(lastName) : default(T);
+        }
+
+        public static T GetProperty<T>(this PSObject psObject, string name) => psObject.Properties.GetProperty<T>(name);
+
+        public static T GetProperty<T>(this PSMemberInfoCollection<PSPropertyInfo> properties, string name)
+        {
+            switch (properties[name]?.Value)
+            {
+                case PSObject psObject when psObject.BaseObject is PSCustomObject && psObject.ImmediateBaseObject.IsTypeOrArrayOfType<T>():
+                    return psObject.ImmediateBaseObject.NormalizeArrayType<T>();
+                case PSObject psObject when psObject.BaseObject.IsTypeOrArrayOfType<T>():
+                    return psObject.BaseObject.NormalizeArrayType<T>();
+                case object value when value.IsTypeOrArrayOfType<T>():
+                    return value.NormalizeArrayType<T>();
+                default:
+                    return default(T);
+            }
+        }
+
         public static IEnumerable<T> RunScript<T>(this PSCmdlet cmdlet, string script)
             => PsHelpers.RunScript<T>(cmdlet.InvokeCommand, script);
 

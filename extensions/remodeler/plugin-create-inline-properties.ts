@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, XML, Property, VirtualProperty, VirtualParameter, resolveParameterNames, resolvePropertyNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@microsoft.azure/codegen';
 import { Host } from '@microsoft.azure/autorest-extension-base';
 import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
@@ -23,7 +23,7 @@ export function singularize(word: string): string {
 }
 
 export async function createInlinedPropertiesPlugin(service: Host) {
-  return processCodeModel(createVirtuals, service);
+  return processCodeModel(createVirtuals, service, 'create-virtual-properties');
 }
 
 function getNameOptions(typeName: string, components: Array<string>) {
@@ -275,7 +275,6 @@ function createVirtualParameters(operation: CommandOperation) {
             schema: property.property.schema,
             origin: property,
             alias: []
-
           });
         }
       }

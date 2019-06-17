@@ -50,33 +50,34 @@ class Host {
 }
 
 @suite class Testing {
-
-  @test async 'Do tests work'() {
-    const ids = (await aio.readFile(`${__dirname}/../../test/resources/operations/operation-ids.txt`)).split(/\r\n|\r|\n/);
-    const config = deserialize(await aio.readFile(`${__dirname}/../../test/resources/operations/config.yaml`), 'config.yaml');
-    const input = (await aio.readFile(`${__dirname}/../../test/resources/operations/model.yaml`));
-
-    const results = new Dictionary<Array<string>>();
-
-    const model = await new ModelState<codemodel.Model>(new Host(input, config)).init();
-
-    const inferrer = await new pp.Inferrer(model).init();
-
-    /*
-    for (const id of ids) {
-      const q = await inferrer.inferCommandNames(id, model);
-
-      results[id] = q.map(each => {
-        return each.variant ?
-          `${each.verb}-${each.subject}_${each.variant}` :
-          `${each.verb}-${each.subject}`
-      });
+  /*
+    @test async 'Do tests work'() {
+      const ids = (await aio.readFile(`${__dirname}/../../test/resources/operations/operation-ids.txt`)).split(/\r\n|\r|\n/);
+      const config = deserialize(await aio.readFile(`${__dirname}/../../test/resources/operations/config.yaml`), 'config.yaml');
+      const input = (await aio.readFile(`${__dirname}/../../test/resources/operations/model.yaml`));
+  
+      const results = new Dictionary<Array<string>>();
+  
+      const model = await new ModelState<codemodel.Model>(new Host(input, config)).init();
+  
+      const inferrer = await new pp.Inferrer(model).init();
+  
+      /*
+      for (const id of ids) {
+        const q = await inferrer.inferCommandNames(id, model);
+  
+        results[id] = q.map(each => {
+          return each.variant ?
+            `${each.verb}-${each.subject}_${each.variant}` :
+            `${each.verb}-${each.subject}`
+        });
+      }
+  * /
+      // aio.writeFile("c:/tmp/output.yaml", serialize(results));
+  
+      //const names = await aio.readFile(`${__dirname}/../../test/resources/inferred-names.txt`);
+  
+      assert.equal(true, true, 'Sure do!');
     }
-*/
-    // aio.writeFile("c:/tmp/output.yaml", serialize(results));
-
-    //const names = await aio.readFile(`${__dirname}/../../test/resources/inferred-names.txt`);
-
-    assert.equal(true, true, 'Sure do!');
-  }
+    */
 }

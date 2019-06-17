@@ -1,9 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
+    internal class ViewParameters
+    {
+        public Type Type { get; }
+        public IEnumerable<PropertyFormat> Properties { get; }
+
+        public ViewParameters(Type type, IEnumerable<PropertyFormat> properties)
+        {
+            Type = type;
+            Properties = properties;
+        }
+    }
+
+    internal class PropertyFormat
+    {
+        public PropertyInfo Property { get; }
+        public FormatTableAttribute FormatTable { get; }
+
+        public int? Index { get; }
+        public string Label { get; }
+        public int? Width { get; }
+        public PropertyOrigin? Origin { get; }
+
+        public PropertyFormat(PropertyInfo propertyInfo)
+        {
+            Property = propertyInfo;
+            FormatTable = Property.GetCustomAttributes<FormatTableAttribute>().FirstOrDefault();
+            var origin = Property.GetCustomAttributes<OriginAttribute>().FirstOrDefault();
+
+            Index = FormatTable?.HasIndex ?? false ? (int?)FormatTable.Index : null;
+            Label = FormatTable?.Label ?? propertyInfo.Name;
+            Width = FormatTable?.HasWidth ?? false ? (int?)FormatTable.Width : null;
+            // If we have an index, we don't want to use Origin.
+            Origin = FormatTable?.HasIndex ?? false ? null : origin?.Origin;
+        }
+    }
+
     [Serializable]
     [XmlRoot(nameof(Configuration))]
     public class Configuration
@@ -59,6 +97,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         [XmlElement(nameof(Label))]
         public string Label { get; set; }
+        [XmlElement(nameof(Width))]
+        public int? Width { get; set; }
+
+        //https://stackoverflow.com/a/4095225/294804
+        public bool ShouldSerializeWidth() => Width.HasValue;
     }
 
     [Serializable]

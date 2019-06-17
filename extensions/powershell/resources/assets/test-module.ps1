@@ -25,3 +25,5 @@ Import-Module -Name $modulePath
 
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 Invoke-Pester -Script @{ Path = $testFolder } -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
+
+Write-Host -ForegroundColor Green '-------------Done-------------'

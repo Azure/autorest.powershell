@@ -15,7 +15,7 @@ const xmsPageable = 'x-ms-pageable';
 // Additional tweaks the code model to adjust things so that the code will generate better.
 
 export async function tweakModelAzurePlugin(service: Host) {
-  return processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service, 'tweakcodemodel');
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {

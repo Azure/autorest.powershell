@@ -24,6 +24,10 @@ export class CmdletNamespace extends Namespace {
 
     // generate cmdlet classes on top of the SDK
     for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
+      // skip ViaIdentity for set-* cmdlets.
+      if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
+        continue;
+      }
       this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
 
       for (const p of operation.parameters) {

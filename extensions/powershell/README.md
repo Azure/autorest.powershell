@@ -126,21 +126,21 @@ pipeline:
   llcsharp:
     input: modifiers
 
-  llcsharp/transform:
+  llcsharp/text-transform:
     input: llcsharp
     scope: scope-here
 
-  powershell/transform:
+  powershell/text-transform:
     input:  powershell
     scope: scope-here
 
   llcsharp/emitter:
-    input: transform
+    input: text-transform
     scope: scope-here
     output-artifact: source-file-csharp
 
   powershell/emitter:
-    input: transform
+    input: text-transform
     scope: scope-here
     output-artifact: source-file-csharp
 
@@ -175,7 +175,7 @@ directive:
   - reason: FixFromXML
     from: source-file-csharp
     where: $
-    transform: return $.replace( /FromXml/g , 'FromJson');
+    text-transform: return $.replace( /FromXml/g , 'FromJson');
 
 
 ```

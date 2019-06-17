@@ -55,13 +55,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public override string ToString()
         {
-            var pa = Parameter.ParameterAttribute;
             var psnText = HasMultipleVariantsInVariantGroup && !HasAllVariantsInParameterGroup ? $"ParameterSetName='{Parameter.VariantName}'" : String.Empty;
-            var positionText = pa.Position != Int32.MinValue ? $"Position={pa.Position}" : String.Empty;
+            var positionText = Parameter.Position != null ? $"Position={Parameter.Position}" : String.Empty;
             var mandatoryText = Parameter.IsMandatory ? "Mandatory" : String.Empty;
-            var dontShowText = pa.DontShow ? "DontShow" : String.Empty;
-            var vfpText = pa.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
-            var helpMessage = pa.HelpMessage.ToPsStringLiteral();
+            var dontShowText = Parameter.DontShow ? "DontShow" : String.Empty;
+            var vfpText = Parameter.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
+            var helpMessage = Parameter.HelpMessage.ToPsStringLiteral();
             var helpText = !String.IsNullOrEmpty(helpMessage) ? $"HelpMessage='{helpMessage}'" : String.Empty;
             var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, helpText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";

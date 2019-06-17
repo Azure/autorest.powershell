@@ -21,7 +21,7 @@ type State = ModelState<codemodel.Model>;
 // tweaks the code model to adjust things so that the code will generate better.
 
 export async function tweakModelPlugin(service: Host) {
-  return processCodeModel(tweakModel, service);
+  return processCodeModel(tweakModel, service, 'remodeler');
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
