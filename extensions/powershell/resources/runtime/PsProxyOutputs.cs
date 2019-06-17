@@ -221,6 +221,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .SelectMany(variant => variant.CmdletOnlyParameters)
                 .Select(parameter => $".Parameter {parameter.ParameterName} {Environment.NewLine}{parameter.ParameterAttribute.HelpMessage}")
                 .ToList();
+                
             if (parameterHelp.Any())
             {
                 result += string.Join(Environment.NewLine, parameterHelp);
