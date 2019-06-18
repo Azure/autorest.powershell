@@ -55,9 +55,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
                 .OrderBy(phi => phi.Name).ToArray();
 
-            Inputs = helpInfo.InputTypes.Select(it => it.Name).ToArray().NullIfEmpty() ??
+            Inputs = helpInfo.InputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(it => it.Name).ToArray().NullIfEmpty() ??
                      parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
-            Outputs = helpInfo.OutputTypes.Select(ot => ot.Name).ToArray().NullIfEmpty() ??
+            Outputs = helpInfo.OutputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(ot => ot.Name).ToArray().NullIfEmpty() ??
                       variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray();
             RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
 

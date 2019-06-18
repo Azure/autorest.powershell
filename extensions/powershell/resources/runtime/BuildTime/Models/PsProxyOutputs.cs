@@ -203,21 +203,34 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class HelpCommentOutput
     {
         public VariantGroup VariantGroup { get; }
+        public Type[] Inputs { get; }
+        public Type[] Outputs { get; }
 
-        public HelpCommentOutput(VariantGroup variantGroup)
+        public HelpCommentOutput(VariantGroup variantGroup, Type[] inputs, Type[] outputs)
         {
             VariantGroup = variantGroup;
+            Inputs = inputs;
+            Outputs = outputs;
         }
 
-        public override string ToString() => $@"<#
+        public override string ToString()
+        {
+            var inputs = String.Join(String.Empty, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}{Environment.NewLine}"));
+            var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
+            var outputs = String.Join(String.Empty, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}{Environment.NewLine}"));
+            var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
+            return $@"<#
 .Synopsis
 {VariantGroup.Description}
 .Description
 {VariantGroup.Description}
+.Example
+To view examples, please use the -Online parameter with Get-Help or navigate to: {VariantGroup.Link}{inputsText}{outputsText}
 .Link
 {VariantGroup.Link}
 #>
 ";
+        }
     }
 
     internal class ParameterHelpOutput
@@ -320,7 +333,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
-        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
+        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, Type[] inputs, Type[] outputs) => new HelpCommentOutput(variantGroup, inputs, outputs);
 
         public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
 

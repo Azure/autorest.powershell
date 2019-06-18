@@ -26,26 +26,35 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 throw new ArgumentException($"Exports folder '{ExportsFolder}' does not exist");
             }
 
-            var directories = Directory.GetDirectories(ExportsFolder);
-            if (!directories.Any())
+            var exportDirectories = Directory.GetDirectories(ExportsFolder);
+            if (!exportDirectories.Any())
             {
-                directories = new[] { ExportsFolder };
+                exportDirectories = new[] { ExportsFolder };
             }
 
             var exampleText = String.Join(String.Empty, DefaultExampleHelpInfos.Select(ehi => ehi.ToHelpExampleOutput()));
-            foreach (var directory in directories)
+            foreach (var exportDirectory in exportDirectories)
             {
                 var outputFolder = OutputFolder;
-                if (directory != ExportsFolder)
+                if (exportDirectory != ExportsFolder)
                 {
-                    outputFolder = Path.Combine(OutputFolder, Path.GetFileName(directory));
+                    outputFolder = Path.Combine(OutputFolder, Path.GetFileName(exportDirectory));
                     Directory.CreateDirectory(outputFolder);
                 }
 
-                var filePaths = GetScriptCmdlets(directory).Select(fi => Path.Combine(outputFolder, $"{fi.Name}.md")).Where(f => !File.Exists(f));
-                foreach (var filePath in filePaths)
+                var cmdletFilePaths = GetScriptCmdlets(exportDirectory).Select(fi => Path.Combine(outputFolder, $"{fi.Name}.md")).ToArray();
+                var currentExamplesFilePaths = Directory.GetFiles(outputFolder).ToArray();
+                // Remove examples of non-existing cmdlets
+                var removedCmdletFilePaths = currentExamplesFilePaths.Except(cmdletFilePaths);
+                foreach (var removedCmdletFilePath in removedCmdletFilePaths)
                 {
-                    File.WriteAllText(filePath, exampleText);
+                    File.Delete(removedCmdletFilePath);
+                }
+                
+                // Only create example stubs if they don't exist
+                foreach (var cmdletFilePath in cmdletFilePaths.Except(currentExamplesFilePaths))
+                {
+                    File.WriteAllText(cmdletFilePath, exampleText);
                 }
             }
         }

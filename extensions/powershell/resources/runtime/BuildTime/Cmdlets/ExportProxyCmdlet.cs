@@ -43,8 +43,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             foreach (var variantGroup in variantGroups)
             {
+                var parameterGroups = variantGroup.Variants.ToParameterGroups()
+                    .OrderBy(pg => pg.OrderCategory)
+                    .ThenByDescending(pg => pg.IsMandatory)
+                    .ToList();
+                var inputs = parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType).ToArray();
+                var outputs = variantGroup.OutputTypes.Select(ot => ot.Type).ToArray();
+
                 var sb = new StringBuilder();
-                sb.Append(variantGroup.ToHelpCommentOutput());
+                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
@@ -53,10 +60,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 sb.Append(variantGroup.Description.ToDescriptionOutput());
 
                 sb.Append("param(");
-                var parameterGroups = variantGroup.Variants.ToParameterGroups()
-                    .OrderBy(pg => pg.OrderCategory)
-                    .ThenByDescending(pg => pg.IsMandatory)
-                    .ToList();
                 sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
                 foreach (var parameterGroup in parameterGroups)
                 {
@@ -70,6 +73,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(parameterGroup.ToArgumentCompleterOutput());
                     sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
+                    sb.Append(parameterGroup.Description.ToParameterHelpOutput());
                     sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
                 }
                 sb.Append($"){Environment.NewLine}{Environment.NewLine}");
