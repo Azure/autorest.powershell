@@ -215,9 +215,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public override string ToString()
         {
-            var inputs = String.Join(String.Empty, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}{Environment.NewLine}"));
+            var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
             var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
-            var outputs = String.Join(String.Empty, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}{Environment.NewLine}"));
+            var outputs = String.Join(Environment.NewLine, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}"));
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
             return $@"<#
 .Synopsis
