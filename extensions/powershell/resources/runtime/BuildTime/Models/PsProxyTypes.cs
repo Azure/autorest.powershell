@@ -136,6 +136,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] AllVariantNames { get; }
         public bool HasAllVariants { get; }
         public Type ParameterType { get; }
+        public string Description { get; }
 
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
@@ -154,6 +155,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             AllVariantNames = allVariantNames;
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
             ParameterType = Parameters.Select(p => p.ParameterType).First();
+            Description = Parameters.Select(p => p.HelpMessage).First();
 
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
