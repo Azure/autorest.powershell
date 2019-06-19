@@ -14,6 +14,7 @@
     <Compile Include="runtime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportExampleStub.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportPsd1.cs" />
     <Compile Include="runtime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
     <Compile Include="runtime\BuildTime\Models\PsMarkdownTypes.cs" />
     <Compile Include="runtime\BuildTime\Models\PsHelpTypes.cs" />
@@ -26,7 +27,6 @@
     <Compile Include="runtime\BuildTime\PsExtensions.cs" />
     <Compile Include="runtime\BuildTime\Models\PsProxyOutputs.cs" />
     <Compile Include="runtime\BuildTime\Models\PsProxyTypes.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\SetPsd1Export.cs" />
     <Compile Include="runtime\BuildTime\CollectionExtensions.cs" />
     <Compile Include="runtime\BuildTime\StringExtensions.cs" />
     <Compile Include="runtime\BuildTime\XmlExtensions.cs" />

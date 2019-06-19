@@ -35,7 +35,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             // https://stackoverflow.com/a/40969712/294804
             var getCmdletsCommand = $@"
 $currentFunctions = Get-ChildItem function:
-Get-ChildItem -Path '{scriptFolder}' -Recurse -Filter '*.ps1' -File | ForEach-Object {{ . $_.FullName }}
+Get-ChildItem -Path '{scriptFolder}' -Recurse -Include '*.ps1' -File | ForEach-Object {{ . $_.FullName }}
 Get-ChildItem function: | Where-Object {{ ($currentFunctions -notcontains $_) -and $_.CmdletBinding }}
 ";
             return cmdlet?.RunScript<FunctionInfo>(getCmdletsCommand) ?? RunScript<FunctionInfo>(getCmdletsCommand);
