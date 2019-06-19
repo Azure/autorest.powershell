@@ -74,7 +74,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     .Select(v => (
                         variant: v.VariantName,
                         paramCount: v.CmdletOnlyParameters.Count(p => p.IsMandatory),
-                        isSimple: v.CmdletOnlyParameters.Where(p => p.IsMandatory).All(p => p.Metadata.ParameterType.IsPsSimple())))
+                        isSimple: v.CmdletOnlyParameters.Where(p => p.IsMandatory).All(p => p.ParameterType.IsPsSimple())))
                     .GroupBy(vpc => vpc.isSimple)
                     .ToArray();
                 var variantParameterCounts = (variantParamCountGroups.Any(g => g.Key) ? variantParamCountGroups.Where(g => g.Key) : variantParamCountGroups).SelectMany(g => g).ToArray();
@@ -193,9 +193,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             VariantName = variantName;
             ParameterName = parameterName;
             Metadata = metadata;
-            ParameterType = Metadata.ParameterType;
 
             Attributes = Metadata.Attributes.ToArray();
+            ParameterType = Attributes.OfType<ExportAsAttribute>().FirstOrDefault()?.Type ?? Metadata.ParameterType;
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
