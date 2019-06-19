@@ -152,6 +152,8 @@ namespace Microsoft.Rest.ClientRuntime
             return new JsonString(value.ToString());
         }
 
+        internal static JsonObject ToJson<T>(System.Collections.Generic.Dictionary<string, T> dictionary, JsonObject container) => ToJson((System.Collections.Generic.IDictionary<string, T>)dictionary, container);
+
         /// <summary>
         /// Serializes a dictionary into a JsonObject container.
         /// </summary>
@@ -180,6 +182,9 @@ namespace Microsoft.Rest.ClientRuntime
         {
             return (node) => FromJson<V>(node, dictionaryFactory(), (object)(DeserializeDictionary(dictionaryFactory)) as Func<JsonObject, V>);
         }
+
+        internal static System.Collections.Generic.IDictionary<string, V> FromJson<V>(JsonObject json, System.Collections.Generic.Dictionary<string, V> container, System.Func<JsonObject, V> objectFactory, System.Collections.Generic.HashSet<string> excludes = null) => FromJson(json, (System.Collections.Generic.IDictionary<string, V>)container, objectFactory, excludes);
+
 
         internal static System.Collections.Generic.IDictionary<string, V> FromJson<V>(JsonObject json, System.Collections.Generic.IDictionary<string, V> container, System.Func<JsonObject, V> objectFactory, System.Collections.Generic.HashSet<string> excludes = null)
         {

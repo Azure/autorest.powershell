@@ -144,6 +144,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
 
   /** emits the code required to serialize this into a container */
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    // const v = (<any>value).valuePrivate || value;
     switch (mediaType) {
       case KnownMediaType.Json:
         return `AddIf( null != ${value} ? (${ClientRuntime.JsonNode}) ${value}.ToJson(null,${mode.value}) : null, "${serializedName}" ,${container}.Add );`;

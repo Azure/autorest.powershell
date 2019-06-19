@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from "@microsoft.azure/autorest.codemodel-v3"
 import { items, values, EOL, Initializer, } from '@microsoft.azure/codegen';
-import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@microsoft.azure/codegen-csharp';
 import { Class } from '@microsoft.azure/codegen-csharp';
 import { Constructor } from '@microsoft.azure/codegen-csharp';
 import { IsDeclaration, toExpression } from '@microsoft.azure/codegen-csharp';
@@ -13,7 +13,7 @@ import { Method, PartialMethod } from '@microsoft.azure/codegen-csharp';
 import { Parameter } from '@microsoft.azure/codegen-csharp';
 import { ParameterModifier } from '@microsoft.azure/codegen-csharp';
 import { TerminalCase } from '@microsoft.azure/codegen-csharp';
-import { If, Not } from '@microsoft.azure/codegen-csharp';
+import { If, Not, ForEach } from '@microsoft.azure/codegen-csharp';
 import { Return } from '@microsoft.azure/codegen-csharp';
 import { Statements } from '@microsoft.azure/codegen-csharp';
 import { Switch } from '@microsoft.azure/codegen-csharp';
@@ -96,8 +96,28 @@ export class DeserializerPartialClass extends SerializationPartialClass {
       yield If(returnNow, `return;`);
 
       yield $this.deserializeStatements;
+
+      if ($this.hasAadditionalProperties($this.schema)) {
+        // this type has an additional properties dictionary
+        yield `// this type is a dictionary; copy elements from source to here.`
+        yield `CopyFrom(${$this.contentParameter.value});`;
+      }
+
       yield `${$this.afterDeserialize.name}(${$this.contentParameter});`;
     });
+  }
+
+  private hasAadditionalProperties(aSchema: Schema): boolean {
+    if (aSchema.additionalProperties) {
+      return true;
+    } else
+      for (const each of aSchema.allOf) {
+        const r = this.hasAadditionalProperties(each);
+        if (r) {
+          return r;
+        }
+      }
+    return false;
   }
 
   get deserializeStatements() {
@@ -105,13 +125,14 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 
     return function* () {
       yield '// actually deserialize '
+
       for (const virtualProperty of $this.allVirtualProperties) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
         const type = $this.resolver(<Schema>virtualProperty.property.schema);
 
         const cvt = type.convertObjectMethod;
-
-        yield `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this).${virtualProperty.name} = ${$this.contentParameter}.GetValueForProperty(nameof(this.${virtualProperty.name}),this.${virtualProperty.name}, ${cvt});`
+        const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
+        yield `${t}.${virtualProperty.name} = ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`
       }
     }
   }

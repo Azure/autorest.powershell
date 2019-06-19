@@ -120,6 +120,12 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
       }
 
       for (const property of [...virtualProperties.inlined]) {
+
+        // don't publicly expose the 'private' properties.
+        if (property.private && !this.isInternal) {
+          continue;
+        }
+
         const actual = property.property;
         const isRequired = actual.details.csharp.required;
         const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))

@@ -2,7 +2,7 @@ namespace Microsoft.Rest.ClientRuntime
 {
     internal static class DictionaryExtensions
     {
-        internal static void HashTableToDictionary<T, V>(System.Collections.Hashtable hashtable, T dictionary) where T : System.Collections.Generic.IDictionary<string, V>, new()
+        internal static void HashTableToDictionary<V>(System.Collections.Hashtable hashtable, System.Collections.Generic.IDictionary<string, V> dictionary)
         {
             foreach (var each in hashtable.Keys)
             {
@@ -12,7 +12,7 @@ namespace Microsoft.Rest.ClientRuntime
                 {
                     if (value is System.Collections.Hashtable nested)
                     {
-                        HashTableToDictionary<T, V>(nested, new T());
+                        HashTableToDictionary<V>(nested, new System.Collections.Generic.Dictionary<string, V>());
                     }
                     else
                     {

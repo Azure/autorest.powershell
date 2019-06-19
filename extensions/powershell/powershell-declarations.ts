@@ -41,6 +41,7 @@ export const InternalExportAttribute: TypeDeclaration = new ClassType(rest, `Int
 export const GeneratedAttribute: TypeDeclaration = new ClassType(rest, `Generated`);
 export const ProfileAttribute: TypeDeclaration = new ClassType(rest, `Profile`);
 export const CategoryAttribute: TypeDeclaration = new ClassType(rest, `Category`);
+export const ExportAsAttribute: TypeDeclaration = new ClassType(rest, `ExportAs`);
 export const ParameterCategory: TypeDeclaration = new ClassType(rest, `ParameterCategory`);
 
 export function ErrorCategory(category: string): Expression {

@@ -299,18 +299,40 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
       /* Inlined properties. */
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.inlined)) {
+        if (virtualProperty.private) {
+          // continue;
+          // can't remove it, it has to be either public or internally implemented.
+        }
+
         if (virtualProperty.accessViaProperty) {
           const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
           if (containingProperty) {
 
             const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
+            const ii = this.schema.details.csharp.internalInterfaceImplementation || `I${this.name}`;
+            // const vp = (virtualProperty.private) ?
+            /* // 'private'  inlined property
+            this.add(new Property(`${ii}.${virtualProperty.name}`, propertyType, {
+              description: virtualProperty.property.details.csharp.description,
+              get: toExpression(`${this.accessor(virtualProperty)}`),
+              set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`),
 
-            const vp = this.add(new Property(virtualProperty.name, propertyType, {
+              getAccess: Access.Explicit,
+              setAccess: Access.Explicit,
+            })) :*/
+
+            // regular inlined property
+            const vp = new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
               set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
-            }));
-            if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
+            });
+
+            if (!virtualProperty.private) {
+              this.add(vp);
+            };
+
+            if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
               this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
                 description: `Internal Acessors for ${virtualProperty.name}`,
                 getAccess: Access.Explicit,
@@ -324,6 +346,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               vp.setAccess = Access.Internal;
               vp.set = undefined;
             }
+
 
 
             if (this.state.getValue('powershell')) {

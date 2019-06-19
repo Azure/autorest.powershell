@@ -55,6 +55,17 @@ namespace Microsoft.Rest
         }
     }
 
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class ExportAsAttribute : Attribute
+    {
+        public Type Type { get; set; }
+
+        public ExportAsAttribute(Type type)
+        {
+            Type = type;
+        }
+    }
+
     public enum ParameterCategory
     {
         // Note: Order is significant

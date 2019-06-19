@@ -73,19 +73,21 @@ export class JsonSerializableClass extends Class {
       this.excludes = [...values(getAllProperties(this.modelClass.schema)).linq.select(each => each.serializedName).linq.select(each => new StringExpression(each))].join();
       this.excludes = this.excludes ? `,${System.Collections.Generic.HashSet(dotnet.String).new()}{ ${this.excludes} }` : '';
 
+      const ap = `((${ClientRuntime}.IAssociativeArray<${vType.declaration}>)this).AdditionalProperties`;
+
       if (this.modelClass.dictionaryImpl.ownsDictionary) {
         // we have to implement the deserializer for it.
 
-        serializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.ToJson( this, ${container});`));
+        serializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.ToJson( ${ap}, ${container});`));
 
         if (vType === System.Object) {
           // wildcard style
-          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
 
         } else if (vType instanceof ObjectImplementation) {
-          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, (j) => ${this.modelClass.fullName}.FromJson(j) ,${exclusions.value} );`));
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${this.modelClass.fullName}.FromJson(j) ,${exclusions.value} );`));
         } else {
-          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, this, null ,${exclusions.value} );`));
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, null ,${exclusions.value} );`));
         }
       }
     }
@@ -99,7 +101,7 @@ export class JsonSerializableClass extends Class {
 
     pushTempVar();
     for (const prop of values(modelClass.ownedProperties)) {
-      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop, container, prop.serializedName, mode);
+      const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop.valuePrivate, container, prop.serializedName, mode);
 
       if (prop.schema.readOnly) {
         serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));

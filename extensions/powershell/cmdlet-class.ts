@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
-import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase } from '@microsoft.azure/codegen';
+import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase, length } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
@@ -317,7 +317,8 @@ export class CmdletClass extends Class {
 
     PAR.add(function* () {
       if ($this.apProp && $this.bodyParameter && $this.bodyParameterInfo) {
-        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
+        // yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
+        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
       }
 
       // construct the call to the operation
@@ -841,39 +842,55 @@ export class CmdletClass extends Class {
         }));
         this.thingsToSerialize.push(expandedBodyParameter);
 
+        for (const vParam of vps.body) {
+          const vSchema = vParam.schema;
+          let propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
 
-        if (vps) {
-          for (const vParam of vps.body) {
-            const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, true, this.state);
-            const cmdletParameter = new Property(vParam.name, propertyType, {
-              get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
-              set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
-              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
-            });
-            const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
-            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
-            cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            cmdletParameter.description = desc;
 
-            const isEnum = propertyType.schema.details.csharp.enum !== undefined;
-            const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-            if (isEnum || hasEnum) {
-              cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+          const cmdletParameter = new Property(vParam.name, propertyType, {
+            get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+            set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
+            new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
+          });
+
+          if (vSchema.additionalProperties) {
+            // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary. 
+            // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
+            // if it's a standalone dictionary, we can just use hashtable instead 
+            if (length(vSchema.properties) === 0) {
+              // it's a pure dictionary
+              // add an attribute for changing the exported type.
+              cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+            } else {
+              // it's a hybrid. We need to add an additional property that puts its items into the target container
+
             }
-            // add aliases if there is any
-            if (vParam.alias.length > 0) {
-              cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
-            }
 
-            this.add(cmdletParameter);
           }
+
+          const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
+          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+          cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+          cmdletParameter.description = desc;
+
+          const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
+          if (isEnum || hasEnum) {
+            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+          }
+          // add aliases if there is any
+          if (vParam.alias.length > 0) {
+            cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
+          }
+
+          this.add(cmdletParameter);
         }
 
         if (parameter.schema.additionalProperties) {
           // if there is an additional properties on this type
           // add a hashtable parameter for additionalProperties
           let apPropName = '';
-          let options = ['Properties', 'AdditionalProperties', 'MoreProperties', 'ExtendedProperties'];
+          let options = ['AdditionalProperties', 'MoreProperties', 'ExtendedProperties', 'Properties'];
           for (const n of options) {
             if (this.properties.find(each => each.name === n)) {
               continue;
@@ -892,8 +909,6 @@ export class CmdletClass extends Class {
             },
             valueType: parameter.schema.additionalProperties === true ? System.Object : this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema.additionalProperties, true, this.state)
           };
-
-
         }
 
         this.bodyParameter = expandedBodyParameter;
@@ -901,80 +916,97 @@ export class CmdletClass extends Class {
       }
     }
 
-    if (vps) {
-      if (this.isViaIdentity) {
-        // add in the pipeline parameter for the identity
+    if (this.isViaIdentity) {
+      // add in the pipeline parameter for the identity
 
-        const idschema = values(this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
-        const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
-        const idParam = this.add(new BackedProperty("InputObject", idtd, {
-          description: "Identity Parameter"
+      const idschema = values(this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
+      const idParam = this.add(new BackedProperty("InputObject", idtd, {
+        description: "Identity Parameter"
+      }));
+      const parameters = [new LiteralExpression(`Mandatory = true`), new LiteralExpression(`HelpMessage = "Identity Parameter"`), new LiteralExpression('ValueFromPipeline = true')];
+      idParam.add(new Attribute(ParameterAttribute, { parameters }));
+      idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+    }
+    for (const vParam of vps.operation) {
+      const vSchema = vParam.schema;
+      let propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
+
+
+
+      const origin = <IParameter>vParam.origin;
+
+      const regularCmdletParameter = (this.state.project.azure && vParam.name === "SubscriptionId" && operation.details.csharp.verb.toLowerCase() === 'get') ?
+
+        // special case for subscription id 
+        this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
+          metadata: {
+            parameterDefinition: origin.details.csharp.httpParameter
+          },
+          description: vParam.description
+        })) :
+
+        // everything else 
+        this.add(new BackedProperty(vParam.name, propertyType, {
+          metadata: {
+            parameterDefinition: origin.details.csharp.httpParameter
+          },
+          description: vParam.description
         }));
-        const parameters = [new LiteralExpression(`Mandatory = true`), new LiteralExpression(`HelpMessage = "Identity Parameter"`), new LiteralExpression('ValueFromPipeline = true')];
-        idParam.add(new Attribute(ParameterAttribute, { parameters }));
-        idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+
+      if (vSchema.additionalProperties) {
+        // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary. 
+        // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
+        // if it's a standalone dictionary, we can just use hashtable instead 
+        if (length(vSchema.properties) === 0) {
+          // it's a pure dictionary
+          // change the property type to hashtable.
+          // add an attribute to change the exported type.
+          regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+        } else {
+          // it's a hybrid. We need to add an additional property that puts its items into the target container
+
+        }
+
       }
-      for (const vParam of vps.operation) {
-        const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vParam.schema, /*parameter.required*/ true, this.state);
-        const origin = <IParameter>vParam.origin;
 
-        const regularCmdletParameter = (this.state.project.azure && vParam.name === "SubscriptionId" && operation.details.csharp.verb.toLowerCase() === 'get') ?
+      this.thingsToSerialize.push(regularCmdletParameter);
 
-          // special case for subscription id 
-          this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
-            metadata: {
-              parameterDefinition: origin.details.csharp.httpParameter
-            },
-            description: vParam.description
-          })) :
+      const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];
+      if (origin.details.csharp.isBodyParameter) {
+        parameters.push(new LiteralExpression('ValueFromPipeline = true'));
+        this.bodyParameter = regularCmdletParameter;
+      }
+      regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
-          // everything else 
-          this.add(new BackedProperty(vParam.name, td, {
-            metadata: {
-              parameterDefinition: origin.details.csharp.httpParameter
-            },
-            description: vParam.description
-          }));
+      // add aliases if there is any
+      if (vParam.alias.length > 0) {
+        regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
+      }
 
+      const httpParam = origin.details.csharp.httpParameter;
+      const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter'
 
+      const cat = values(operation.callGraph[0].parameters).linq.
+        where(each => !(each.details.csharp.constantValue)).linq.
+        first(each => each.details.csharp.uid === uid);
 
-        this.thingsToSerialize.push(regularCmdletParameter);
+      if (cat) {
+        regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
+      }
 
-        const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];
-        if (origin.details.csharp.isBodyParameter) {
-          parameters.push(new LiteralExpression('ValueFromPipeline = true'));
-          this.bodyParameter = regularCmdletParameter;
-        }
-        regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+      if (origin.details.csharp.completer) {
+        // add the completer to this class and tag this parameter with the completer.
+        // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
+      }
 
-        // add aliases if there is any
-        if (vParam.alias.length > 0) {
-          regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => "\"" + x + "\"") }))
-        }
-
-        const httpParam = origin.details.csharp.httpParameter;
-        const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter'
-
-        const cat = values(operation.callGraph[0].parameters).linq.
-          where(each => !(each.details.csharp.constantValue)).linq.
-          first(each => each.details.csharp.uid === uid);
-
-        if (cat) {
-          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
-        }
-
-        if (origin.details.csharp.completer) {
-          // add the completer to this class and tag this parameter with the completer.
-          // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
-        }
-
-        const isEnum = td.schema.details.csharp.enum !== undefined;
-        const hasEnum = td instanceof ArrayOf && td.elementType instanceof EnumImplementation;
-        if (isEnum || hasEnum) {
-          regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>td).elementType.declaration : td.declaration})`] }));
-        }
+      const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
+      if (isEnum || hasEnum) {
+        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
+
   }
 
   private addClassAttributes(operation: command.CommandOperation, variantName: string) {
