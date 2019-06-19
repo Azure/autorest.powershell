@@ -53,9 +53,9 @@ export class OperationMethod extends Method {
     // add parameters
     this.methodParameters = [];
 
-    const _identity = new Parameter('_identity', System.String);
+    const identity = new Parameter('identity', System.String);
     if (this.viaIdentity) {
-      this.addParameter(_identity);
+      this.addParameter(identity);
     }
 
     for (var index = 0; index < this.operation.parameters.length; index++) {
@@ -132,7 +132,7 @@ export class OperationMethod extends Method {
 
       if (this.viaIdentity) {
         url = url.replace(`{${pp.param.name}}`, `"
-        + ${pp.name}
+        + rest_${pp.name}
         + "`);
       } else {
         url = url.replace(`{${pp.param.name}}`, `"
@@ -157,13 +157,13 @@ export class OperationMethod extends Method {
         yield `// verify that Identity format is an exact match for uri`;
         yield EOL;
 
-        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${_identity.value})`);
+        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
         yield match.declarationStatement;
         yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
         yield EOL;
         yield `// replace URI parameters with values from identity`
         for (const pp of pathParams) {
-          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
+          yield `var rest_${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
         }
       }
 
@@ -172,7 +172,7 @@ export class OperationMethod extends Method {
         initializer: System.Uri.new(`(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
+        + ${pp.serializeToNode(KnownMediaType.QueryParameter, `${pp.param.name}`, ClientRuntime.SerializationMode.None).value}`, `
         + "&"`
         )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
