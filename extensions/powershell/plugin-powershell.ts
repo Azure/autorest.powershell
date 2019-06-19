@@ -9,7 +9,6 @@ import { Host } from '@microsoft.azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State } from './state';
-import { generatePsd1 } from './generators/psd1';
 import { generatePsm1 } from './generators/psm1';
 import { generateCsproj } from './generators/csproj';
 import { generatePsm1Custom } from './generators/psm1.custom';
@@ -39,7 +38,6 @@ export async function powershell(service: Host) {
     // wait for all the generation to be done
     await copyRequiredFiles(project);
     await generateCsproj(project);
-    await generatePsd1(project);
     await generatePsm1(project);
     await generatePsm1Custom(project);
     await generatePsm1Internal(project);

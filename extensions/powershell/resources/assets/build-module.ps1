@@ -100,15 +100,16 @@ $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
 Export-ProxyCmdlet -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder
 
+$formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
+Export-FormatPs1xml -FilePath $formatPs1xml
+
+$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
+$customFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}'
+Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1
+
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testFolder
 Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
-
-$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
-Set-Psd1Export -ExportsFolder $exportsFolder -Psd1Path $psd1
-
-$formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
-Export-FormatPs1xml -FilePath $formatPs1xml
 
 $examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $examplesFolder

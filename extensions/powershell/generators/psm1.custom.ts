@@ -26,7 +26,7 @@ export async function generatePsm1Custom(project: Project) {
   Export-ModuleMember
 
   # Export script cmdlets
-  Get-ChildItem -Path $PSScriptRoot -Recurse -Filter '*.ps1' -File | ForEach-Object { . $_.FullName }
+  Get-ChildItem -Path $PSScriptRoot -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
   Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot) -Alias (Get-ScriptCmdlet -ScriptFolder $PSScriptRoot -AsAlias)`);
   psm1.trim();
   project.state.writeFile(project.psm1Custom, `${psm1}`, undefined, 'source-file-powershell');
