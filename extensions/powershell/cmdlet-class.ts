@@ -19,6 +19,45 @@ import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csh
 
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
+export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+
+  let pt = <any>pType;
+  while (pt.elementType) {
+    switch (pt.elementType.schema.type) {
+      case JsonType.Object:
+        if (pt.elementType.schema.details.csharp.interfaceImplementation) {
+          pt = pt.elementType.schema.details.csharp.interfaceImplementation;
+        } else {
+          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          pt = { declaration: `${pt.elementType.schema.details.csharp.Namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
+        }
+        break;
+
+      case JsonType.Array:
+        pt = pt.elementType;
+        break;
+
+      default:
+        pt = pt.elementType;
+        break;
+    }
+  }
+
+  const ptypes = [`typeof(${pt.declaration})`];
+  if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
+    ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+  }
+
+  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}\n`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}\n`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }\n`),
+    ]
+  }));
+}
 
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
@@ -869,8 +908,12 @@ export class CmdletClass extends Class {
           }
 
           const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
+
           cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
           cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+
+          addInfoAttribute(cmdletParameter, propertyType, true, false, desc, 'body');
+
           cmdletParameter.description = desc;
 
           const isEnum = propertyType.schema.details.csharp.enum !== undefined;
@@ -978,6 +1021,8 @@ export class CmdletClass extends Class {
         this.bodyParameter = regularCmdletParameter;
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+
+      addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
 
       // add aliases if there is any
       if (vParam.alias.length > 0) {

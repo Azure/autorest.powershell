@@ -159,42 +159,48 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
   addInfoAttribute(p: Property, pType: TypeDeclaration, isRequired: boolean, internalSet: boolean, description: string, serializedName: string) {
     if (!this.isInternal) {
-      let pt = <any>pType;
-      while (pt.elementType) {
-        switch (pt.elementType.schema.type) {
-          case JsonType.Object:
-            if (pt.elementType.schema.details.csharp.interfaceImplementation) {
-              pt = pt.elementType.schema.details.csharp.interfaceImplementation;
-            } else {
-              // arg! it's not done yet. Hope it's not polymorphic itself. 
-              pt = { declaration: `${pt.elementType.schema.details.csharp.Namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
-            }
-            break;
-
-          case JsonType.Array:
-            pt = pt.elementType;
-            break;
-
-          default:
-            pt = pt.elementType;
-            break;
-        }
-      }
-
-      const ptypes = [`typeof(${pt.declaration})`];
-      if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
-        ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
-      }
-
-      p.add(new Attribute(ClientRuntime.InfoAttribute, {
-        parameters: [
-          new LiteralExpression(`\nRequired = ${isRequired}`),
-          new LiteralExpression(`\nReadOnly = ${internalSet}`),
-          new LiteralExpression(`\nDescription = ${new StringExpression(description).value}\n`),
-          new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}\n`),
-          new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '')} }\n`),
-        ]
-      }));
+      return addInfoAttribute(p, pType, isRequired, internalSet, description, serializedName);
     }
   }
 }
+
+export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+
+  let pt = <any>pType;
+  while (pt.elementType) {
+    switch (pt.elementType.schema.type) {
+      case JsonType.Object:
+        if (pt.elementType.schema.details.csharp.interfaceImplementation) {
+          pt = pt.elementType.schema.details.csharp.interfaceImplementation;
+        } else {
+          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          pt = { declaration: `${pt.elementType.schema.details.csharp.Namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
+        }
+        break;
+
+      case JsonType.Array:
+        pt = pt.elementType;
+        break;
+
+      default:
+        pt = pt.elementType;
+        break;
+    }
+  }
+
+  const ptypes = [`typeof(${pt.declaration})`];
+  if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
+    ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+  }
+
+  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}\n`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}\n`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }\n`),
+    ]
+  }));
+}
+
