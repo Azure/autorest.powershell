@@ -29,7 +29,7 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
           pt = pt.elementType.schema.details.csharp.interfaceImplementation;
         } else {
           // arg! it's not done yet. Hope it's not polymorphic itself. 
-          pt = { declaration: `${pt.elementType.schema.details.csharp.Namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
+          pt = { declaration: `${pt.elementType.schema.details.csharp.namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
         }
         break;
 
@@ -52,9 +52,9 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
     parameters: [
       new LiteralExpression(`\nRequired = ${isRequired}`),
       new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
-      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}\n`),
-      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}\n`),
-      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }\n`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
     ]
   }));
 }
