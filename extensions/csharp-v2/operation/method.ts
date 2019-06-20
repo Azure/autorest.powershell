@@ -172,7 +172,7 @@ export class OperationMethod extends Method {
         initializer: System.Uri.new(`(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.QueryParameter, `${pp.param.name}`, ClientRuntime.SerializationMode.None).value}`, `
+        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
         + "&"`
         )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
