@@ -524,6 +524,7 @@ export class Remodeler {
 
   copyHeader = (headerName: string, original: OpenAPI.Header): Header => {
     return new Header({
+      key: headerName,
       deprecated: original.deprecated || false,
       description: Interpretations.getDescription('', original),
       allowReserved: original.allowReserved ? true : false,

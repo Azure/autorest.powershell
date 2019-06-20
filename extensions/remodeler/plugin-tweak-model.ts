@@ -131,11 +131,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       for (const responses of values(operation.responses)) {
         for (const response of responses) {
           // for a given response, find the possible models that can be returned from the service
-          /* for (const header of values(response.headers)) {
+          for (const header of values(response.headers)) {
 
             if (!response.schema) {
               // no response schema? can we fake one?
-              service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
+              // service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
+              continue;
             }
 
             // if the method response has a schema and it's an object, we're going to add our properties to the schema object.
@@ -150,11 +151,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             if (isSchemaObject(response.schema)) {
               const property = response.schema.properties[header.key];
               if (!property) {
-                service.Message({ Channel: Channel.Debug, Text: `Adding header property ${header.key} to model ${response.schema.details.default.name}` });
+                state.message({ Channel: Channel.Debug, Text: `Adding header property '${header.key}' to model ${response.schema.details.default.name}` });
 
                 // create a property for the header value
                 const newProperty = new Property(header.key, { schema: header.schema, description: header.description });
                 newProperty.details.default.name = header.key;
+
                 // mark it that it's a header-only property
                 newProperty.details.default[HeaderProperty] = HeaderPropertyType.Header;
 
@@ -163,9 +165,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
               } else {
                 // there is a property with this name already.
                 // was this previously declared as a header only property?
-                if (!property.details[HeaderProperty]) {
+                if (!property.details.default[HeaderProperty]) {
 
-                  service.Message({ Channel: Channel.Debug, Text: `Property ${header.key} in model ${response.schema.details.default.name} can also come from the header.` });
+                  state.message({ Channel: Channel.Debug, Text: `Property ${header.key} in model ${response.schema.details.default.name} can also come from the header.` });
                   // no.. There is duplication between header and body property. Probably because of etags.
                   // tell it to be a header-and-body property.
                   property.details.default[HeaderProperty] = HeaderPropertyType.HeaderAndBody;
@@ -173,9 +175,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 }
               }
             }
-            
           }
-          */
         }
       }
     }
@@ -196,10 +196,10 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
 
     // move well-known hearder parameters into details, and we can process them in the generator how we please.
-    operation.details.default.headerparameters = values(operation.parameters).linq.where(p => p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name)).linq.toArray();
+    // operation.details.default.headerparameters = values(operation.parameters).linq.where(p => p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name)).linq.toArray();
 
-    //
-    operation.parameters = values(operation.parameters).linq.where(p => !(p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name))).linq.toArray();
+    // remove if-match and if-none-match parameters from the operation itself.
+    // operation.parameters = values(operation.parameters).linq.where(p => !(p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name))).linq.toArray();
 
   }
 
@@ -219,8 +219,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       // and make sure that all our polymorphic parents have a reference to this type.
       for (const parent of getPolymorphicBases(schema)) {
 
-        parent.details.polymorphicChildren = parent.details.polymorphicChildren || new Array<Schema>();
-        parent.details.polymorphicChildren.push(schema);
+        parent.details.default.polymorphicChildren = parent.details.default.polymorphicChildren || new Array<Schema>();
+        parent.details.default.polymorphicChildren.push(schema);
       }
     }
   }

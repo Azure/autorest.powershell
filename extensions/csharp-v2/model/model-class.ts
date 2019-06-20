@@ -118,11 +118,15 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // DISABLED
     //this.hasHeaderProperties = values(this.schema.properties).linq.any(property => property.details.csharp[HeaderProperty] === HeaderPropertyType.Header || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header);
 
+    this.handleDiscriminator();
+
     // create an interface for this model class
     if (!this.schema.details.csharp.interfaceImplementation) {
       (this.schema.details.csharp.interfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.interfaceName || `I${this.schema.details.csharp.name}`, this, this.state)).init();
     }
     this.interfaces.push(this.modelInterface);
+
+
 
     if (!this.schema.details.csharp.internalInterfaceImplementation) {
       (this.schema.details.csharp.internalInterfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.internalInterfaceName || `I${this.schema.details.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal })).init();
@@ -130,7 +134,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     this.interfaces.push(this.internalModelInterface);
 
-    this.handleDiscriminator();
+
 
     // add default constructor
     this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
