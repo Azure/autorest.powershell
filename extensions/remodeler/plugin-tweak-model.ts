@@ -228,7 +228,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   // identify parameters that are constants
   for (const operation of values(model.http.operations)) {
     for (const parameter of values(operation.parameters)) {
-      if (parameter.schema.enum.length === 1) {
+      if (parameter.required && parameter.schema.enum.length === 1) {
         // parameters with an enum single value are constants
         parameter.details.default.constantValue = parameter.schema.enum[0];
       }
