@@ -2,6 +2,7 @@
 $ErrorActionPreference = "Stop" 
 
 $script:description = new-object -type System.Collections.Stack
+$script:context = new-object -type System.Collections.Stack
 $script:operation = new-object -type System.Collections.Stack
 $script:count = 0
 
@@ -13,7 +14,7 @@ function mock-http(
     $script:count = $script:count +1
     
     # DESCRIPTION+OPERATION+URI + COUNT:RESULT
-    $rqkey = "$script:description+$script:operation+$($request.RequestUri)+$script:count"
+    $rqkey = "$script:description+$script:context+$script:operation+$($request.RequestUri)+$script:count"
 
     switch( $TestMode ) {
         'live' {
@@ -147,9 +148,6 @@ function serialize-response($response) {
     }    
     return (convertto-json $obj)
 }
-
-$script:mock = ${function:mock-http}
-
 function Describe(
     [Parameter(Mandatory = $true, Position = 0)]
     [string] $Name,
@@ -170,6 +168,25 @@ function Describe(
     }
 }
 
+function Context(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string] $Name,
+
+    [Alias('Tags')]
+    [string[]] $Tag=@(),
+
+    [Parameter(Position = 1)]
+    [ValidateNotNull()]
+    [ScriptBlock] $Fixture = $(Throw "No test script block is provided. (Have you put the open curly brace on the next line?)"))
+{ 
+    $script:context.Push( $Name ) 
+    try {
+        return pester\Context -Name $Name -Tag $Tag -Fixture $fixture
+    } 
+    finally {
+        $script:context.Pop()
+    }
+}
 function It {
     [CmdletBinding(DefaultParameterSetName = 'Normal')]
     param(
@@ -189,6 +206,9 @@ function It {
         [Switch] $Skip
     )
     $script:operation.Push( $Name )
+
+    # reset the count for each 'it'
+    $script:count = 0
 
     try {
         if( $skip ) {
@@ -227,4 +247,4 @@ if( $global:TestMode -eq $null )   {
     }
 }
 
-$PSDefaultParameterValues["*:HttpPipelineAppend"] = $script:mock
+$PSDefaultParameterValues["*:HttpPipelineAppend"] = ${function:mock-http}
