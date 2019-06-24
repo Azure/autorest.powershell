@@ -15,7 +15,8 @@ namespace Microsoft.Rest.ClientRuntime
 
         internal static void AddIf<T>(T value, System.Action<T> addMethod)
         {
-            if (null != value)
+            // if value is present (and it's not just an empty JSON Object)
+            if (null != value && (value as Carbon.Json.JsonObject)?.Keys.Count != 0)
             {
                 addMethod(value);
             }
@@ -23,7 +24,8 @@ namespace Microsoft.Rest.ClientRuntime
 
         internal static void AddIf<T>(T value, string serializedName, System.Action<string, T> addMethod)
         {
-            if (null != value)
+            // if value is present (and it's not just an empty JSON Object)
+            if (null != value && (value as Carbon.Json.JsonObject)?.Keys.Count != 0)
             {
                 addMethod(serializedName, value);
             }
