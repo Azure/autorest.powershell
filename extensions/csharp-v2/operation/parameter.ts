@@ -28,6 +28,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
     const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(param.schema, param.required, state.path('schema'));
     super(param.details.csharp.name, typeDeclaration);
     this.param = param;
+    this.name = `rr_${this.name}`; // To avoid internal collision 
     this.typeDeclaration = typeDeclaration;
     this.apply(objectInitializer);
     this.description = param.details.csharp.description || '';
