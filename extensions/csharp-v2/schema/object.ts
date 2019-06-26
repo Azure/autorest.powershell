@@ -133,6 +133,9 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json: {
+        if (this.schema.details.csharp.hasHeaders) {
+          return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)}.ReadHeaders(_response.Headers))`);
+        }
         return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
       }
       case KnownMediaType.Xml: {

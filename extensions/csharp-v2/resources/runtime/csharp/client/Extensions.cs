@@ -2,6 +2,13 @@ namespace Microsoft.Rest.ClientRuntime
 {
     internal static partial class Extensions
     {
+
+        public static T ReadHeaders<T>(this T instance, global::System.Net.Http.Headers.HttpResponseHeaders headers) where T : class
+        {
+            (instance as IHeaderSerializable)?.ReadHeaders(headers);
+            return instance;
+        }
+
         internal static bool If<T>(T input, out T output)
         {
             if (null == input)

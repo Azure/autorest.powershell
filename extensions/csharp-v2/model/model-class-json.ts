@@ -101,6 +101,9 @@ export class JsonSerializableClass extends Class {
 
     pushTempVar();
     for (const prop of values(modelClass.ownedProperties)) {
+      if (prop.details.csharp.HeaderProperty === 'Header') {
+        continue;
+      }
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop.valuePrivate, container, prop.serializedName, mode);
 
       if (prop.schema.readOnly) {

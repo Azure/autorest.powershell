@@ -41,6 +41,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),
+  IHeaderSerializable: new Interface(clientRuntimeNamespace, 'IHeaderSerializable'),
   SerializationMode: intersect(serializationMode, {
     None: new LiteralExpression(`${serializationMode.declaration}.None`),
     IncludeAll: new LiteralExpression(`${serializationMode.declaration}.IncludeAll`),

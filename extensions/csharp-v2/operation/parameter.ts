@@ -132,8 +132,6 @@ export class CallbackParameter extends Parameter {
   headerType: (EnhancedTypeDeclaration) | null;
 
   constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
-
-
     // regular pipeline style. (callback happens after the pipline is called)
     if (responseType) {
       if (headerType) {

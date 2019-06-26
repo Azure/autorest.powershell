@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
+import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 
 import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
 import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@microsoft.azure/codegen-csharp';
@@ -12,18 +12,10 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation } from '../schema/object';
 import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
-// import { XmlSerializableClass } from './model-class-xml';
 import { ModelProperty } from './property';
 import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
-
-function accessVirtualProperty(virtualProperty: VirtualProperty) {
-  if (virtualProperty.accessViaProperty) {
-
-  }
-}
-
 
 function getVirtualPropertyName(vp?: VirtualProperty) {
   return vp ? vp.name : '';
@@ -97,7 +89,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   private readonly validationStatements = new Statements();
   public ownedProperties = new Array<ModelProperty>();
   private pMap = new Map<VirtualProperty, ModelProperty>();
-  // DISABLED
+
   // public hasHeaderProperties: boolean;
 
   constructor(namespace: Namespace, schemaWithFeatures: ObjectImplementation, state: State, objectInitializer?: Partial<ModelClass>) {
@@ -114,10 +106,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // must be a partial class
     this.partial = true;
 
-    // get all the header properties for this model
-    // DISABLED
-    //this.hasHeaderProperties = values(this.schema.properties).linq.any(property => property.details.csharp[HeaderProperty] === HeaderPropertyType.Header || property.details.csharp[HeaderProperty] === HeaderPropertyType.Header);
-
     this.handleDiscriminator();
 
     // create an interface for this model class
@@ -126,15 +114,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     }
     this.interfaces.push(this.modelInterface);
 
-
-
     if (!this.schema.details.csharp.internalInterfaceImplementation) {
       (this.schema.details.csharp.internalInterfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.internalInterfaceName || `I${this.schema.details.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal })).init();
     }
 
     this.interfaces.push(this.internalModelInterface);
-
-
 
     // add default constructor
     this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
@@ -150,21 +134,15 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     // create the properties for ths schema
     this.createProperties();
 
-
     // add validation implementation
     this.addValidation();
 
     // add header properties for this model.
     // DISABLED.
-    // this.addHeaderProperties();
+    this.addHeaderDeserializer();
 
     if (this.state.project.jsonSerialization) {
       this.jsonSerializer = new JsonSerializableClass(this);
-    }
-
-    if (this.dictionaryImpl) {
-      // add in exception list for properties in this class and parents
-
     }
   }
 
@@ -227,6 +205,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
           initializer: actualProperty.details.csharp.constantValue ? typeof actualProperty.details.csharp.constantValue === 'string' ? new StringExpression(actualProperty.details.csharp.constantValue) : new LiteralExpression(actualProperty.details.csharp.constantValue) : undefined
         });
+        myProperty.details = virtualProperty.property.details;
 
         if (actualProperty.details.csharp.constantValue !== undefined) {
           myProperty.setAccess = Access.Internal;
@@ -273,11 +252,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
           set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
         }));
-        if (virtualProperty.private) {
-          // when properties are inlined, the container accessor can be internalized. I think.
-          // vp.setAccess = Access.Internal;
-          //vp.getAccess = Access.Internal;
-        }
 
         if (virtualProperty.property.details.csharp.constantValue !== undefined) {
           vp.setAccess = Access.Internal;
@@ -313,17 +287,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           if (containingProperty) {
 
             const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
-            const ii = this.schema.details.csharp.internalInterfaceImplementation || `I${this.name}`;
-            // const vp = (virtualProperty.private) ?
-            /* // 'private'  inlined property
-            this.add(new Property(`${ii}.${virtualProperty.name}`, propertyType, {
-              description: virtualProperty.property.details.csharp.description,
-              get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`),
-
-              getAccess: Access.Explicit,
-              setAccess: Access.Explicit,
-            })) :*/
 
             // regular inlined property
             const vp = new Property(virtualProperty.name, propertyType, {
@@ -350,8 +313,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               vp.setAccess = Access.Internal;
               vp.set = undefined;
             }
-
-
 
             if (this.state.getValue('powershell')) {
               vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
@@ -433,7 +394,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const addlPropType = this.additionalPropertiesType(aSchema);
       if (addlPropType) {
         this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
-        hasAdditionalPropertiesInParent = true
+        hasAdditionalPropertiesInParent = true;
       }
     }
     return hasAdditionalPropertiesInParent;
@@ -469,49 +430,27 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
     }
   }
-  private addHeaderProperties() {
-    // add from headers method if class or any of the parents pulls in header values.
-    // FromHeaders( headers IEnumerable<KeyValuePair<string, IEnumerable<string>>> ) { ... }
-    /*
-        const headerProperties = values(this.properties).linq.where(p => (<ModelProperty>p).IsHeaderProperty);
-    
-        
-        if (this.hasHeaderProperties) {
-          // add header deserializer method
-          const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
-    
-          const readHeaders = new Method('ReadHeaders', this, {
-            access: Access.Internal,
-            parameters: [headers],
-            *body() {
-              for (const hp of headerProperties) {
-                const hparam = <ModelProperty>hp;
-                if (hparam.serializedName === 'x-ms-meta') {
-                  yield `${ hparam.backingName } = System.Linq.Enumerable.ToDictionary(System.Linq.Enumerable.Where(${ valueOf(headers) }, header => header.Key.StartsWith("x-ms-meta-")), header => header.Key.Substring(10), header => System.Linq.Enumerable.FirstOrDefault(header.Value)); `;
-                } else {
-                  const values = `__${ camelCase(['header', ...deconstruct(hparam.serializedName)]) } Values`;
-                  yield If(`${ valueOf(headers) }.TryGetValues("${hparam.serializedName}", out var ${ values })`, `${ hparam.assignPrivate(hparam.deserializeFromContainerMember(KnownMediaType.Header, headers, values)) } `);
-                }
-              }
-              yield `return this; `;
-            }
-          }).addTo(this);
-        }
-        const hasNonHeaderProperties = values(this.properties).linq.any(p => !(<ModelProperty>p).IsHeaderProperty);
-    
-        if (this.state.project.jsonSerialization) {
-          this.jsonSerializer = new JsonSerializableClass(this);
-        }
-    
-        if (hasNonHeaderProperties) {
-          if (this.state.project.xmlSerialization) {
-            this.xmlSerializer = new XmlSerializableClass(this);
-          }
-          // if (this.state.project.jsonSerialization) {
-          // this.jsonSerializer = new JsonSerializableClass(this);
-          // }
-        }
-        */
+  private addHeaderDeserializer() {
+    const avp = getAllVirtualProperties(this.schema.details.csharp.virtualProperties);
+    const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
+    const readHeaders = new Method(`${ClientRuntime.IHeaderSerializable}.ReadHeaders`, undefined, {
+      access: Access.Explicit,
+      parameters: [headers],
+    });
+
+    let used = false;
+
+    for (const headerProperty of values(avp).linq.where(each => each.property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.details.csharp[HeaderProperty] === HeaderPropertyType.Header)) {
+      used = true;
+      const t = `((${headerProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
+      const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
+      const td = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>headerProperty.property.schema, false, this.state.path("schema"));
+      readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values, td.defaultOfType)};`));
+    }
+    if (used) {
+      this.interfaces.push(ClientRuntime.IHeaderSerializable);
+      this.add(readHeaders);
+    }
   }
 
   public validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {

@@ -58,6 +58,7 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   public schema: Schema;
   public serializedName: string;
   private typeDeclaration: EnhancedTypeDeclaration;
+  public details: any;
 
   constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: Partial<ModelProperty>) {
     const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path("schema"));

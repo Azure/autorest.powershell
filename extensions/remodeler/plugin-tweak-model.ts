@@ -149,6 +149,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             // work with schemas that have objects only.
 
             if (isSchemaObject(response.schema)) {
+              response.schema.details.default.hasHeaders = true;
               const property = response.schema.properties[header.key];
               if (!property) {
                 state.message({ Channel: Channel.Debug, Text: `Adding header property '${header.key}' to model ${response.schema.details.default.name}` });
@@ -156,6 +157,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 // create a property for the header value
                 const newProperty = new Property(header.key, { schema: header.schema, description: header.description });
                 newProperty.details.default.name = header.key;
+                newProperty.details.default.required = false;
 
                 // mark it that it's a header-only property
                 newProperty.details.default[HeaderProperty] = HeaderPropertyType.Header;

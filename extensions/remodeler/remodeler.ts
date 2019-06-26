@@ -487,8 +487,8 @@ export class Remodeler {
 
           newOperation.responses[responseCode].push(new NewResponse(responseCode, responseObject.description, jsons.map(v => v.key), {
             extensions: getExtensionProperties(responseObject),
-            headers: this.copyHeaders(name, responseObject.headers),
-            headerSchema: this.createHeaderSchema(name, responseCode, responseObject.headers),
+            headers: this.copyHeaders(operationName, responseObject.headers),
+            //  headerSchema: this.createHeaderSchema(operationName, responseCode, responseObject.headers),
             schema: schema ? this.refOrAdd(`.${name}.${responseCode}.${mediaType}`, this.dereference(schema), this.model.schemas, this.copySchema) : undefined
           }));
         }
@@ -499,8 +499,8 @@ export class Remodeler {
 
           newOperation.responses[responseCode].push(new NewResponse(responseCode, responseObject.description, xmls.map(v => v.key), {
             extensions: getExtensionProperties(responseObject),
-            headers: this.copyHeaders(name, responseObject.headers),
-            headerSchema: this.createHeaderSchema(name, responseCode, responseObject.headers),
+            headers: this.copyHeaders(operationName, responseObject.headers),
+            // headerSchema: this.createHeaderSchema(operationName, responseCode, responseObject.headers),
             schema: schema ? this.refOrAdd(`.${name}.${responseCode}.${mediaType}`, this.dereference(schema), this.model.schemas, this.copySchema) : undefined
           }));
         }
@@ -554,7 +554,7 @@ export class Remodeler {
 
       for (const each of keys(original)) {
         const header = this.dereference(original[each]);
-        const propertyName = Interpretations.getName(header.name || `${each}`, header.instance);
+        const propertyName = Interpretations.getName(`${each}`, header.instance);
 
         const propertySchema = this.dereference(<Refable<OpenAPI.Schema>>header.instance.schema);
         const newPropSchema = this.refOrAdd(`${containerName[0] === '.' ? containerName : `.${containerName}`}.${propertyName}`, propertySchema, this.model.schemas, this.copySchema);
@@ -562,7 +562,7 @@ export class Remodeler {
         newPropSchema.extensions = getExtensionProperties(header.instance);
 
         newSchema.properties[propertyName] = new Property(propertyName, {
-          serializedName: header.name || `${each}`,
+          serializedName: `${each}`,
           description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), header.instance),
           schema: newPropSchema,
           extensions: getExtensionProperties(header.instance),

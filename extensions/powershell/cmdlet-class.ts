@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase, length } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
@@ -1040,6 +1040,8 @@ export class CmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
       }
 
+
+
       if (origin.details.csharp.completer) {
         // add the completer to this class and tag this parameter with the completer.
         // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
@@ -1050,6 +1052,27 @@ export class CmdletClass extends Class {
       if (isEnum || hasEnum) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
+    }
+    const ifmatch = this.properties.find((v, i, p) => v.name.toLowerCase() === 'ifmatch');
+    if (ifmatch) {
+      //this.properties[9].type.schema.details.csharp.virtualProperties.owned[1]
+      const q = this.properties.find((v, i, p) => {
+        const pp = <any>v;
+        if (pp.type.schema) {
+          const etag = getAllVirtualProperties(pp.type.schema.details.csharp.virtualProperties).find(each => each.property.serializedName.toLowerCase() === 'etag');
+          if (etag) {
+            const et = `this.${v.name}.${etag.name}`;
+            ifmatch.get = toExpression(`${ifmatch.get}?? ${et}`);
+            const pattr = ifmatch.attributes.find(attr => attr.type === ParameterAttribute);
+            if (pattr) {
+              pattr.parameters = pattr.parameters.map((p) => valueOf(p).startsWith('Mandatory') ? toExpression('Mandatory = false') : p);
+            }
+          }
+          return true;
+        }
+        return false;
+      });
+      debugger;
     }
 
   }

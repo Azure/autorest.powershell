@@ -527,8 +527,9 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
 
     if (callbackParameter.responseType) {
       // hande the body response
-      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(`_response`), toExpression('null'));
+      let r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(`_response`), toExpression('null'));
       if (r) {
+
         callbackParameters.push(r);
       }
 
