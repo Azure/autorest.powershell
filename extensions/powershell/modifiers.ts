@@ -447,6 +447,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           property.name = propertyNameReplacer ? propertyNameRegex ? property.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.name;
           property.description = propertyDescriptionReplacer ? propertyDescriptionReplacer : property.description;
 
+          if (!property.name) {
+            state.message({ Channel: Channel.Error, Text: `Directive '${directive.where['model-name'] || directive.where['model-fullname']}/${directive.where['property-name']}' attempted to change '${prevName}' to '' ` });
+          }
           if (propertyNameRegex) {
             state.message({
               Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed property-name from ${prevName} to ${property.name}.`
