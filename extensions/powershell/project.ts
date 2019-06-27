@@ -130,7 +130,7 @@ export class Project extends codeDomProject {
     // Values
     this.moduleVersion = await this.state.getValue('module-version');
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
-    this.accountsVersionMinimum = '1.4.0';
+    this.accountsVersionMinimum = '1.6.0';
 
     // Flags
     // this.skipModelCmdlets = await this.state.getValue('skip-model-cmdlets');
