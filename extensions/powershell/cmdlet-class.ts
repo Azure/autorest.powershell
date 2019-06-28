@@ -566,25 +566,34 @@ export class CmdletClass extends Class {
               }
               // ok, let's see if the response type
             }
+            const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
+            const outValue = (props.length === 1) ? `(await response).${props[0].name}` : `(await response)`;
+
+
             // we expect to get back some data from this call.
 
             const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state);
             yield `// (await response) // should be ${rType.declaration}`;
-            if ($this.hasStreamOutput && rType.declaration === System.IO.Stream.declaration && $this.outFileParameter) {
+            if ($this.hasStreamOutput && $this.outFileParameter) {
               const outfile = $this.outFileParameter;
-              // this is a stream output. write to outfile
-              const stream = Local('stream', 'await response');
-              yield Using(stream.declarationExpression, function* () {
-                const provider = Local('provider');
-                provider.initializer = undefined;
+              const provider = Local('provider');
+              provider.initializer = undefined;
+              const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
+              yield paths.declarationStatement;
+              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
 
-                const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
-                yield paths.declarationStatement;
-                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-                const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
-                yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
-              });
+              if (rType.declaration === System.IO.Stream.declaration) {
+                // this is a stream output. write to outfile
+                const stream = Local('stream', 'await response');
+                yield Using(stream.declarationExpression, function* () {
+                  const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
+                  yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
+                });
+              } else {
+                // assuming byte array output (via outValue)
+                yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${outValue});`;
+              }
 
               yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")`, function* () {
                 // no return type. Let's just return ... true?
@@ -593,17 +602,11 @@ export class CmdletClass extends Class {
               return;
             }
 
-            const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
-            if (props.length === 1) {
-              // let's unroll this and write out the single property
-              yield `WriteObject((await response).${props[0].name});`;
-              return;
-            }
-
-            // more than one property, let's just return the result object
-            yield `WriteObject(await response);`;
+            //  let's just return the result object (or unwrapped result object)
+            yield `WriteObject(${outValue});`;
             return;
           }
+
           yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")`, function* () {
             // no return type. Let's just return ... true?
             yield `WriteObject(true);`;
@@ -908,13 +911,42 @@ export class CmdletClass extends Class {
           }
 
           const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
-
-          cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
-          cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-
-          addInfoAttribute(cmdletParameter, propertyType, true, false, desc, 'body');
-
           cmdletParameter.description = desc;
+
+          // check if this parameter is a byte array, which would indicate that it should really be a file input 
+          if (cmdletParameter.type.declaration === dotnet.Binary.declaration) {
+            // set the generated parameter to internal
+            cmdletParameter.setAccess = Access.Internal;
+            cmdletParameter.getAccess = Access.Internal;
+
+            // create a InputFileXXX for the parameter
+            const ifname = vParam.name.toLowerCase() === 'value' ? "InputFile" : pascalCase([vParam.name, 'Input', 'File']);
+
+            const inputFileParameter = new Property(ifname, dotnet.String, {
+              // get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+              set: function* () {
+                const outfile = $this.outFileParameter;
+                const provider = Local('provider');
+                provider.initializer = undefined;
+                const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(value, out ${provider.declarationExpression})`);
+                yield paths.declarationStatement;
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid input path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );`);
+                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple input paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );`);
+                yield cmdletParameter.assign(`global::System.IO.File.ReadAllBytes(${paths.value}[0])`);
+              },
+              description: `Input File for ${cmdletParameter.name} (${escapeString(desc)})`
+            });
+
+            inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc)})"`)] }));
+            inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+
+            $this.add(inputFileParameter);
+          } else {
+            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
+            cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
+            addInfoAttribute(cmdletParameter, propertyType, true, false, desc, 'body');
+
+          }
 
           const isEnum = propertyType.schema.details.csharp.enum !== undefined;
           const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
@@ -1101,6 +1133,7 @@ export class CmdletClass extends Class {
       this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => "\"" + x + "\"") }));
     }
 
+    let shouldAddPassThru = false;
     // set to hold the output types
     const outputTypes = new Set<string>();
     for (const httpOperation of values(operation.callGraph)) {
@@ -1114,34 +1147,35 @@ export class CmdletClass extends Class {
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
             this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
 
-
-          if (typeDeclaration.declaration === System.IO.Stream.declaration) {
+          if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
             // if this is a stream, skip the output type.
             this.hasStreamOutput = true;
-          }
-
-          let type = '';
-          if (typeDeclaration instanceof ArrayOf) {
-            type = typeDeclaration.elementTypeDeclaration;
-          } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-            const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
-            const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
-            type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+            shouldAddPassThru = true;
+            outputTypes.add(`typeof(${dotnet.Bool})`);
           } else {
-            type = typeDeclaration.declaration;
+
+            let type = '';
+            if (typeDeclaration instanceof ArrayOf) {
+              type = typeDeclaration.elementTypeDeclaration;
+            } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+              const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
+              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+              type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+            } else {
+              type = typeDeclaration.declaration;
+            }
+            // check if this is a stream output
+            if (type) {
+              outputTypes.add(`typeof(${type})`);
+            }
           }
-
-          // check if this is a stream output
-          if (type)
-
-            outputTypes.add(`typeof(${type})`);
         }
       }
     }
 
     // if any response does not return,
     // the cmdlet should have a PassThru parameter
-    const shouldAddPassThru: boolean = values(operation.callGraph)
+    shouldAddPassThru = shouldAddPassThru || values(operation.callGraph)
       .linq.selectMany(httpOperation => items(httpOperation.responses))
       .linq.selectMany(responsesItem => responsesItem.value)
       .linq.any(value => value.schema === undefined);
