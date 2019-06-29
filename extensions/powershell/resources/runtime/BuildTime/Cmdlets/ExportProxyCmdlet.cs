@@ -43,7 +43,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             foreach (var variantGroup in variantGroups)
             {
-                var parameterGroups = variantGroup.Variants.ToParameterGroups()
+                var parameterGroups = variantGroup.ParameterGroups
                     .OrderBy(pg => pg.OrderCategory)
                     .ThenByDescending(pg => pg.IsMandatory)
                     .ToList();
@@ -51,7 +51,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var outputs = variantGroup.OutputTypes.Select(ot => ot.Type).ToArray();
 
                 var sb = new StringBuilder();
-                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs));
+                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs, parameterGroups.ToArray()));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());

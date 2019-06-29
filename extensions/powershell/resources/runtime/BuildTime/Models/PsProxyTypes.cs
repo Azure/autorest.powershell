@@ -28,6 +28,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string CmdletName { get; }
         public string ProfileName { get; }
         public Variant[] Variants { get; }
+        public ParameterGroup[] ParameterGroups { get; }
 
         public string[] Aliases { get; }
         public PSTypeName[] OutputTypes { get; }
@@ -48,6 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletName = cmdletName;
             ProfileName = profileName;
             Variants = variants;
+            ParameterGroups = Variants.ToParameterGroups().ToArray();
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.SupportsShouldProcess);
@@ -147,6 +149,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool IsMandatory { get; }
         public bool SupportsWildcards { get; }
         public bool IsComplexInterface { get; }
+        public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
 
         public int? FirstPosition { get; }
         public PSDefaultValueAttribute DefaultValue { get; }
@@ -173,6 +176,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsMandatory = HasAllVariants && firstParameter.IsMandatory;
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
             IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
+            ComplexInterfaceInfo = Parameters.Where(p => p.IsComplexInterface).Select(p => p.ComplexInterfaceInfo).FirstOrDefault();
 
             FirstPosition = firstParameter.Position;
             DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
@@ -201,6 +205,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public int? Position { get; }
         public bool DontShow { get; }
         public bool IsMandatory { get; }
+
+        public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
         public bool IsComplexInterface { get; }
         public string HelpMessage { get; }
 
@@ -223,9 +229,44 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Position = ParameterAttribute.Position == Int32.MinValue ? (int?)null : ParameterAttribute.Position;
             DontShow = ParameterAttribute.DontShow;
             IsMandatory = ParameterAttribute.Mandatory;
+
+            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(ParameterName, ParameterType);
             //IsComplexInterface = InfoAttribute?.PossibleTypes.Any(pt => pt.IsInterface && pt.GetProperties(BindingFlags.SetProperty).Any(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>().Any())) ?? false;
-            IsComplexInterface = InfoAttribute?.PossibleTypes.Where(pt => pt.IsInterface).SelectMany(pt => pt.GetProperties(BindingFlags.SetProperty).SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>())).Any() ?? false;
-            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}See NOTES for {ParameterType.Name} property information." : String.Empty)}";
+            //IsComplexInterface = InfoAttribute?.PossibleTypes.Where(pt => pt.IsInterface).SelectMany(pt => pt.GetProperties(BindingFlags.SetProperty).SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>())).Any() ?? false;
+            IsComplexInterface = ComplexInterfaceInfo?.IsComplexInterface ?? false;
+            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}See NOTES section for {ParameterName} parameter for property information." : String.Empty)}";
+        }
+    }
+
+    internal class ComplexInterfaceInfo
+    {
+        public InfoAttribute InfoAttribute { get; }
+
+        public string Name { get; }
+        public Type Type { get; }
+        public bool Required { get; }
+        public bool ReadOnly { get; }
+        public string Description { get; }
+        
+        public ComplexInterfaceInfo[] NestedInfos { get; }
+        public bool IsComplexInterface { get; }
+
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute)
+        {
+            Name = name;
+            Type = type;
+            InfoAttribute = infoAttribute;
+
+            Required = InfoAttribute.Required;
+            ReadOnly = InfoAttribute.ReadOnly;
+            Description = InfoAttribute.Description.ToPsSingleLine();
+
+            NestedInfos = InfoAttribute.PossibleTypes
+                .SelectMany(pt => pt.GetProperties()
+                    .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
+                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType))))
+                .Where(cii => !cii.ReadOnly).ToArray();
+            IsComplexInterface = NestedInfos.Any();
         }
     }
 
@@ -269,5 +310,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
+
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type) => new ComplexInterfaceInfo(name, type, infoAttribute);
     }
 }

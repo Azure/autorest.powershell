@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management.Automation;
 using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownTypesExtensions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpOutputExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -50,7 +51,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                        ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() 
                        ?? DefaultExampleHelpInfos;
 
-            var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
+            var parameterGroups = variantGroup.ParameterGroups.Where(pg => !pg.DontShow).ToArray();
             Parameters = parameterGroups
                 .Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
                 .OrderBy(phi => phi.Name).ToArray();
@@ -116,15 +117,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Where(p => !p.DontShow)
                 //https://stackoverflow.com/a/6461526/294804
                 .OrderByDescending(p => p.IsMandatory).ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
-                .Select(p =>
-                {
-                    var leftOptional = !p.IsMandatory ? "[" : String.Empty;
-                    var leftPositional = p.Position != null ? "[" : String.Empty;
-                    var rightPositional = p.Position != null ? "]" : String.Empty;
-                    var type = p.ParameterType != typeof(SwitchParameter) ? $" <{p.ParameterType.Name}>" : String.Empty;
-                    var rightOptional = !p.IsMandatory ? "]" : String.Empty;
-                    return $" {leftOptional}{leftPositional}-{p.ParameterName}{rightPositional}{type}{rightOptional}";
-                });
+                .Select(p => p.ToPropertySyntaxOutput().ToString());
             if (Variant.SupportsShouldProcess)
             {
                 parameterStrings = parameterStrings.Append(" [-Confirm]").Append(" [-WhatIf]");
