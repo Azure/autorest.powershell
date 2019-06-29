@@ -103,6 +103,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append($"### {alias}{Environment.NewLine}{Environment.NewLine}");
                 }
 
+                sb.Append($"## NOTES{Environment.NewLine}{Environment.NewLine}");
+
                 sb.Append($"## RELATED LINKS{Environment.NewLine}{Environment.NewLine}");
                 foreach (var relatedLink in markdownInfo.RelatedLinks)
                 {

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\csharp-v2\resources\runtime\csharp\client\InfoAttribute.cs" Link="InfoAttribute.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportExampleStub.cs" />

@@ -189,11 +189,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public MarkdownParameterHelpInfo(PsParameterHelpInfo parameterHelpInfo, ParameterGroup parameterGroup)
         {
             Name = parameterGroup.ParameterName;
-            var firstParameter = parameterGroup.Parameters.First();
-            Description = parameterHelpInfo.Description.NullIfEmpty() ?? firstParameter.ParameterAttribute.HelpMessage;
+            Description = parameterHelpInfo.Description.NullIfEmpty() ?? parameterGroup.Description;
             Type = parameterGroup.ParameterType;
-            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? firstParameter.Position?.ToString() ?? "Named";
-            DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? firstParameter.DefaultValue?.Value?.ToString() ?? "None";
+            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? parameterGroup.FirstPosition?.ToString() ?? "Named";
+            DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? parameterGroup.DefaultValue?.Value?.ToString() ?? "None";
 
             HasAllParameterSets = parameterGroup.HasAllVariants;
             ParameterSetNames = parameterHelpInfo.ParameterSetNames.NullIfEmpty() ?? parameterGroup.Parameters.Select(p => p.VariantName).ToArray();
@@ -201,8 +200,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.IsMandatory;
             IsDynamic = parameterHelpInfo.IsDynamic ?? false;
-            AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? firstParameter.ValueFromPipeline;
-            AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? firstParameter.ValueFromPipelineByPropertyName;
+            AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? parameterGroup.ValueFromPipeline;
+            AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? parameterGroup.ValueFromPipelineByPropertyName;
             AcceptsWildcardCharacters = parameterGroup.SupportsWildcards;
         }
     }

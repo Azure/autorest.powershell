@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
 
@@ -145,6 +146,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool DontShow { get; }
         public bool IsMandatory { get; }
         public bool SupportsWildcards { get; }
+        public bool IsComplexInterface { get; }
+
+        public int? FirstPosition { get; }
+        public PSDefaultValueAttribute DefaultValue { get; }
+        public bool ValueFromPipeline { get; }
+        public bool ValueFromPipelineByPropertyName { get; }
         public bool IsInputType { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
@@ -154,17 +161,24 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             AllVariantNames = allVariantNames;
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
-            ParameterType = Parameters.Select(p => p.ParameterType).First();
-            Description = Parameters.Select(p => p.HelpMessage).First();
+            var firstParameter = Parameters.First();
+            ParameterType = firstParameter.ParameterType;
+            Description = firstParameter.HelpMessage;
 
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             OrderCategory = Parameters.SelectMany(p => p.Categories).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
-            IsMandatory = HasAllVariants && Parameters.First().IsMandatory;
+            IsMandatory = HasAllVariants && firstParameter.IsMandatory;
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
-            IsInputType = Parameters.Any(p => p.ValueFromPipeline || p.ValueFromPipelineByPropertyName);
+            IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
+
+            FirstPosition = firstParameter.Position;
+            DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
+            ValueFromPipeline = Parameters.Any(p => p.ValueFromPipeline);
+            ValueFromPipelineByPropertyName = Parameters.Any(p => p.ValueFromPipelineByPropertyName);
+            IsInputType = ValueFromPipeline || ValueFromPipelineByPropertyName;
         }
     }
 
@@ -180,13 +194,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PSDefaultValueAttribute DefaultValue { get; }
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
+        public InfoAttribute InfoAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
-        public string HelpMessage { get; }
         public int? Position { get; }
         public bool DontShow { get; }
         public bool IsMandatory { get; }
+        public bool IsComplexInterface { get; }
+        public string HelpMessage { get; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata)
         {
@@ -200,13 +216,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
+            InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
-            HelpMessage = ParameterAttribute.HelpMessage;
             Position = ParameterAttribute.Position == Int32.MinValue ? (int?)null : ParameterAttribute.Position;
             DontShow = ParameterAttribute.DontShow;
             IsMandatory = ParameterAttribute.Mandatory;
+            //IsComplexInterface = InfoAttribute?.PossibleTypes.Any(pt => pt.IsInterface && pt.GetProperties(BindingFlags.SetProperty).Any(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>().Any())) ?? false;
+            IsComplexInterface = InfoAttribute?.PossibleTypes.Where(pt => pt.IsInterface).SelectMany(pt => pt.GetProperties(BindingFlags.SetProperty).SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>())).Any() ?? false;
+            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}See NOTES for {ParameterType.Name} property information." : String.Empty)}";
         }
     }
 

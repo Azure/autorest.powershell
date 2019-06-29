@@ -74,9 +74,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($@"{Indent}FormatsToProcess = {formatList}");
 
             var functionInfos = GetScriptCmdlets(ExportsFolder).ToArray();
-            var cmdletsList = functionInfos.Select(sc => sc.Name).Distinct().Append("*").ToPsList();
+            var cmdletsList = functionInfos.Select(fi => fi.Name).Distinct().Append("*").ToPsList();
             sb.AppendLine($@"{Indent}CmdletsToExport = {cmdletsList}");
-            var aliasesList = functionInfos.SelectMany(i => i.ScriptBlock.Attributes).ToAliasNames().Append("*").ToPsList();
+            var aliasesList = functionInfos.SelectMany(fi => fi.ScriptBlock.Attributes).ToAliasNames().Append("*").ToPsList();
             sb.AppendLine($@"{Indent}AliasesToExport = {aliasesList}");
 
             sb.AppendLine($@"{Indent}PrivateData = @{{");
