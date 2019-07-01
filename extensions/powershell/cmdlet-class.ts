@@ -8,7 +8,7 @@ import { Dictionary, escapeString, items, values, docComment, serialize, pascalC
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod
+  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute } from './powershell-declarations';
@@ -292,6 +292,11 @@ export class CmdletClass extends Class {
           const asjob = $this.add(new Property('AsJob', SwitchParameter, { description: `when specified, runs this cmdlet as a PowerShell job` }));
           asjob.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command as a job"`] }));
           asjob.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+
+          const nowait = $this.add(new Property('NoWait', SwitchParameter, { description: `when specified, will make the remote call, and return an AsyncOperationResponse, letting the remote operation continue asynchronously.` }));
+          nowait.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Run the command asynchronously"`] }));
+          nowait.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+
         }
 
         const work: OneOrMoreStatements = operation.asjob ? function* () {
@@ -790,11 +795,14 @@ export class CmdletClass extends Class {
     signalMethod.add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
-      yield Switch(id, [
+      // if the 
+
+      const sw = Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
           yield `WriteVerbose($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
         }),
+
         TerminalCase(Events.Warning.value, function* () {
           yield `WriteWarning($"{(messageData().Message ?? ${System.String.Empty})}");`;
           yield Return();
@@ -821,6 +829,47 @@ export class CmdletClass extends Class {
           yield Return();
         }),
       ]);
+
+      if ($this.operation.asjob) {
+        // if we support -AsJob, we support -NoWait
+        sw.add(Case(Events.DelayBeforePolling.value, function* () {
+          yield If(`true == MyInvocation?.BoundParameters?.ContainsKey("NoWait")`, function* () {
+            yield 'var data = messageData();';
+            yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
+            yield '{';
+            yield '    var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");';
+            yield '    var location = response.GetFirstHeader(@"Location");';
+            yield '    var uri = global::System.String.IsNullOrEmpty(asyncOperation) ? global::System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;';
+            yield `    WriteObject(new ${ClientRuntime}.PowerShell.AsyncOperationResponse { Target = uri });`;
+
+            yield '    // do nothing more. ';
+            yield '    data.Cancel();';
+            yield '    return;';
+            yield '}';
+          });
+        }));
+      }
+      /*
+            case Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Events.DelayBeforePolling:
+{
+var data = messageData();
+if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response) {
+var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");
+var location = response.GetFirstHeader(@"Location");
+
+var uri = global:: System.String.IsNullOrEmpty(asyncOperation) ? global :: System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;
+WriteObject(new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.PowerShell.AsyncOperationResponse { Target = uri });
+
+// do nothing more.
+data.Cancel();
+}
+
+return;
+}
+*/
+
+      // the whole switch statement
+      yield sw;
 
       if ($this.state.project.azure) {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
@@ -910,9 +959,9 @@ export class CmdletClass extends Class {
           });
 
           if (vSchema.additionalProperties) {
-            // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary. 
+            // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
             // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
-            // if it's a standalone dictionary, we can just use hashtable instead 
+            // if it's a standalone dictionary, we can just use hashtable instead
             if (length(vSchema.properties) === 0) {
               // it's a pure dictionary
               // add an attribute for changing the exported type.
@@ -927,7 +976,7 @@ export class CmdletClass extends Class {
           const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
           cmdletParameter.description = desc;
 
-          // check if this parameter is a byte array, which would indicate that it should really be a file input 
+          // check if this parameter is a byte array, which would indicate that it should really be a file input
           if (cmdletParameter.type.declaration === dotnet.Binary.declaration) {
             // set the generated parameter to internal
             cmdletParameter.setAccess = Access.Internal;
@@ -1028,7 +1077,7 @@ export class CmdletClass extends Class {
 
       const regularCmdletParameter = (this.state.project.azure && vParam.name === "SubscriptionId" && operation.details.csharp.verb.toLowerCase() === 'get') ?
 
-        // special case for subscription id 
+        // special case for subscription id
         this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
           metadata: {
             parameterDefinition: origin.details.csharp.httpParameter
@@ -1036,7 +1085,7 @@ export class CmdletClass extends Class {
           description: vParam.description
         })) :
 
-        // everything else 
+        // everything else
         this.add(new BackedProperty(vParam.name, propertyType, {
           metadata: {
             parameterDefinition: origin.details.csharp.httpParameter
@@ -1045,9 +1094,9 @@ export class CmdletClass extends Class {
         }));
 
       if (vSchema.additionalProperties) {
-        // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary. 
+        // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
         // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
-        // if it's a standalone dictionary, we can just use hashtable instead 
+        // if it's a standalone dictionary, we can just use hashtable instead
         if (length(vSchema.properties) === 0) {
           // it's a pure dictionary
           // change the property type to hashtable.
