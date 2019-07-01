@@ -11,4 +11,12 @@ namespace Microsoft.Rest.ClientRuntime
         public string Description { get; set; } = "";
         public string SerializedName { get; set; } = "";
     }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class CompleterInfoAttribute : Attribute
+    {
+        public string Script { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
 }

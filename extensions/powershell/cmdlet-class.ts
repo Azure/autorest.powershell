@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase, length } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
@@ -18,6 +18,18 @@ import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-mod
 import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csharp';
 
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
+
+export function addCompleterInfo(targetProperty: Property, parameter: VirtualParameter) {
+  if (parameter.completerInfo && parameter.completerInfo.script) {
+    targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
+      parameters: [
+        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || 'completer-name-missing').value}`),
+        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || 'completer-description-missing').value}`),
+        new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
+      ]
+    }));
+  }
+}
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
 
@@ -57,6 +69,8 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
       new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
     ]
   }));
+
+
 }
 
 export class CmdletClass extends Class {
@@ -945,6 +959,7 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             addInfoAttribute(cmdletParameter, propertyType, true, false, desc, 'body');
+            addCompleterInfo(cmdletParameter, vParam);
 
           }
 
@@ -1055,6 +1070,7 @@ export class CmdletClass extends Class {
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
 
       addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
+      addCompleterInfo(regularCmdletParameter, vParam);
 
       // add aliases if there is any
       if (vParam.alias.length > 0) {
