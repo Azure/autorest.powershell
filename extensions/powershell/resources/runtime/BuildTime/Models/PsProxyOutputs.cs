@@ -266,6 +266,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
             var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
                 .Where(pg => pg.IsComplexInterface)
+                .OrderBy(pg => pg.ParameterName)
                 .Select(pg => ToComplexInterfaceNote(pg.ComplexInterfaceInfo, String.Empty)));
             var complexParameterHeader = $"COMPLEX PARAMETER PROPERTIES{Environment.NewLine}To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.{Environment.NewLine}{Environment.NewLine}";
             var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{complexParameterHeader}{notes}" : String.Empty;

@@ -263,7 +263,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             NestedInfos = InfoAttribute.PossibleTypes
                 .SelectMany(pt => pt.GetProperties()
                     .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
-                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType))))
+                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType))
+                        .OrderByDescending(cii => cii.Required)))
                 .Where(cii => !cii.ReadOnly).ToArray();
             IsComplexInterface = NestedInfos.Any();
         }
