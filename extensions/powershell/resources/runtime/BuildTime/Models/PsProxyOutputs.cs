@@ -215,49 +215,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterGroups = parameterGroups;
         }
 
-        private static string ToComplexInterfaceNote(ComplexInterfaceInfo complexInterfaceInfo, string currentIndent)
-        {
-            string RenderProperty(ComplexInterfaceInfo info, string indent) => $"{indent}{info.ToPropertySyntaxOutput()}: {info.Description}";
-
-            //var sb = new StringBuilder();
-            //sb.AppendLine(RenderProperty(complexInterfaceInfo, currentIndent));
-            //foreach (var nestedInfo in complexInterfaceInfo.NestedInfos)
-            //{
-            //    var nestedIndent = $"{currentIndent}{HalfIndent}";
-            //    var infoText = nestedInfo.IsComplexInterface
-            //        ? ToComplexInterfaceNote(nestedInfo, nestedIndent)
-            //        : RenderProperty(nestedInfo, nestedIndent);
-            //    sb.AppendLine(infoText);
-            //}
-
-            ////var nested = complexInterfaceInfo.NestedInfos.Select(ni =>
-            ////{
-            ////    var nestedIndent = $"{currentIndent}{HalfIndent}";
-            ////    return ni.IsComplexInterface
-            ////        ? ToComplexInterfaceNote(ni, nestedIndent)
-            ////        : RenderProperty(ni, nestedIndent);
-            ////});
-            ////var nestedText = String.Join(Environment.NewLine, nested);
-            ////sb.Append(nestedText);
-            //return sb.ToString();
-
-
-            //var lines = new[] {RenderProperty(complexInterfaceInfo, currentIndent)};
-
-
-            var nested = complexInterfaceInfo.NestedInfos.Select(ni =>
-            {
-                var nestedIndent = $"{currentIndent}{HalfIndent}";
-                return ni.IsComplexInterface
-                    ? ToComplexInterfaceNote(ni, nestedIndent)
-                    : RenderProperty(ni, nestedIndent);
-            })
-            .Prepend(RenderProperty(complexInterfaceInfo, currentIndent));
-            //var nestedText = String.Join(Environment.NewLine, nested);
-            //sb.Append(nestedText);
-            return String.Join(Environment.NewLine, nested);
-        }
-
         public override string ToString()
         {
             var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
@@ -267,7 +224,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
                 .Where(pg => pg.IsComplexInterface)
                 .OrderBy(pg => pg.ParameterName)
-                .Select(pg => ToComplexInterfaceNote(pg.ComplexInterfaceInfo, String.Empty)));
+                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput(String.Empty)));
             var complexParameterHeader = $"COMPLEX PARAMETER PROPERTIES{Environment.NewLine}To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.{Environment.NewLine}{Environment.NewLine}";
             var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{complexParameterHeader}{notes}" : String.Empty;
             return $@"<#
@@ -462,5 +419,19 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this Parameter parameter) => new PropertySyntaxOutput(parameter);
 
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this ComplexInterfaceInfo complexInterfaceInfo) => new PropertySyntaxOutput(complexInterfaceInfo);
+
+        public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent)
+        {
+            string RenderProperty(ComplexInterfaceInfo info, string indent) => $"{indent}{info.ToPropertySyntaxOutput()}: {info.Description}";
+
+            var nested = complexInterfaceInfo.NestedInfos.Select(ni =>
+            {
+                var nestedIndent = $"{currentIndent}{HalfIndent}";
+                return ni.IsComplexInterface
+                    ? ni.ToNoteOutput(nestedIndent)
+                    : RenderProperty(ni, nestedIndent);
+            }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent));
+            return String.Join(Environment.NewLine, nested);
+        }
     }
 }

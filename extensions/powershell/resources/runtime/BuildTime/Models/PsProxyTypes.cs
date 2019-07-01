@@ -264,8 +264,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .SelectMany(pt => pt.GetProperties()
                     .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
                         .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType))
-                        .OrderByDescending(cii => cii.Required)))
-                .Where(cii => !cii.ReadOnly).ToArray();
+                        .Where(cii => !cii.ReadOnly)
+                        .OrderByDescending(cii => cii.Required))).ToArray();
+            // https://stackoverflow.com/a/503359/294804
+            var associativeArrayInnerType = Type.GetInterfaces()
+                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAssociativeArray<>))
+                ?.GetTypeInfo().GetGenericArguments().First();
+            if (associativeArrayInnerType != null)
+            {
+                var anyInfo = new InfoAttribute {Description = "This indicates any property can be added to this object." };
+                NestedInfos = NestedInfos.Prepend(anyInfo.ToComplexInterfaceInfo("(Any)", associativeArrayInnerType)).ToArray();
+            }
             IsComplexInterface = NestedInfos.Any();
         }
     }
