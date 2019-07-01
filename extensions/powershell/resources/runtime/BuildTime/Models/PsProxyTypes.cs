@@ -230,11 +230,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DontShow = ParameterAttribute.DontShow;
             IsMandatory = ParameterAttribute.Mandatory;
 
-            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(ParameterName, ParameterType);
-            //IsComplexInterface = InfoAttribute?.PossibleTypes.Any(pt => pt.IsInterface && pt.GetProperties(BindingFlags.SetProperty).Any(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>().Any())) ?? false;
-            //IsComplexInterface = InfoAttribute?.PossibleTypes.Where(pt => pt.IsInterface).SelectMany(pt => pt.GetProperties(BindingFlags.SetProperty).SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>())).Any() ?? false;
+            var complexParameterName = ParameterName.ToUpperInvariant();
+            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(complexParameterName, ParameterType, true);
             IsComplexInterface = ComplexInterfaceInfo?.IsComplexInterface ?? false;
-            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}See NOTES section for {ParameterName} parameter for property information." : String.Empty)}";
+            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}To construct, see NOTES section for {complexParameterName} properties and create a hash table." : String.Empty)}";
         }
     }
 
@@ -251,13 +250,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
-        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute)
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required)
         {
             Name = name;
             Type = type;
             InfoAttribute = infoAttribute;
 
-            Required = InfoAttribute.Required;
+            Required = required ?? InfoAttribute.Required;
             ReadOnly = InfoAttribute.ReadOnly;
             Description = InfoAttribute.Description.ToPsSingleLine();
 
@@ -311,6 +310,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
 
-        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type) => new ComplexInterfaceInfo(name, type, infoAttribute);
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null) => new ComplexInterfaceInfo(name, type, infoAttribute, required);
     }
 }

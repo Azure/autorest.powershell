@@ -5,7 +5,6 @@ using System.Linq;
 using System.Management.Automation;
 using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownTypesExtensions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpOutputExtensions;
-using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {

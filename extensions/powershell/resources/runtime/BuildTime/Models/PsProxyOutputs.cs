@@ -267,7 +267,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
                 .Where(pg => pg.IsComplexInterface)
                 .Select(pg => ToComplexInterfaceNote(pg.ComplexInterfaceInfo, String.Empty)));
-            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{notes}" : String.Empty;
+            var complexParameterHeader = $"COMPLEX PARAMETER PROPERTIES{Environment.NewLine}To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.{Environment.NewLine}{Environment.NewLine}";
+            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{complexParameterHeader}{notes}" : String.Empty;
             return $@"<#
 .Synopsis
 {VariantGroup.Description}
@@ -367,7 +368,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
             var leftOptional = !IsMandatory ? "[" : String.Empty;
             var leftPositional = Position != null ? "[" : String.Empty;
             var rightPositional = Position != null ? "]" : String.Empty;
-            var type = ParameterType != typeof(SwitchParameter) ? $" <{ParameterType.Name}>" : String.Empty;
+            var type = ParameterType != typeof(SwitchParameter) ? $" <{ParameterType.ToSyntaxTypeName()}>" : String.Empty;
             var rightOptional = !IsMandatory ? "]" : String.Empty;
             var space = IncludeSpace ? " " : String.Empty;
             var dash = IncludeDash ? "-" : String.Empty;
@@ -392,8 +393,9 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public static string ToPsType(this Type type)
         {
             var regex = new Regex(@"^(.*)`{1}\d+(.*)$");
-            var match = regex.Match(type.ToString());
-            return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : type.ToString();
+            var typeText = type.ToString();
+            var match = regex.Match(typeText);
+            return match.Success ? $"{match.Groups[1]}{match.Groups[2]}" : typeText;
         }
 
         public static string ToPsAttributeType(this Type type) => type.ToPsType().RemoveEnd("Attribute");
@@ -406,6 +408,23 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''")?.Replace("‘", "''")?.Replace("’", "''")?.ToPsSingleLine() ?? String.Empty;
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
+
+        // https://stackoverflow.com/a/41961738/294804
+        public static string ToSyntaxTypeName(this Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return $"{type.GetGenericArguments().First().ToSyntaxTypeName()}?";
+            }
+
+            if (type.IsGenericType)
+            {
+                var genericTypes = String.Join(ItemSeparator, type.GetGenericArguments().Select(ToSyntaxTypeName));
+                return $"{type.Name.Split('`').First()}<{genericTypes}>";
+            }
+
+            return type.Name;
+        }
 
         public static OutputTypeOutput ToOutputTypeOutput(this IEnumerable<PSTypeName> outputTypes) => new OutputTypeOutput(outputTypes);
 
