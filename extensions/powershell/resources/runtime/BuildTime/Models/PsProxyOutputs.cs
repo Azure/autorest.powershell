@@ -290,6 +290,29 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public override string ToString() => $"{Indent}[{typeof(CategoryAttribute).ToPsAttributeType()}('{Category}')]{Environment.NewLine}";
     }
 
+    internal class InfoOutput
+    {
+        public InfoAttribute Info { get; }
+
+        public InfoOutput(InfoAttribute info)
+        {
+            Info = info;
+        }
+
+        public override string ToString()
+        {
+            var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
+            var requiredText = Info.Required ? "Required" : String.Empty;
+            var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
+            var possibleTypesText = Info.PossibleTypes.Any() 
+                ? $"PossibleTypes=({Info.PossibleTypes.Select(pt => $"[{pt.ToPsType()}]").JoinIgnoreEmpty(ItemSeparator)})"
+                : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;
+            var propertyText = new[] { serializedNameText, requiredText, readOnlyText, possibleTypesText, descriptionText }.JoinIgnoreEmpty(ItemSeparator);
+            return $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}";
+        }
+    }
+
     internal class PropertySyntaxOutput
     {
         public string ParameterName { get; }
@@ -421,19 +444,20 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this ComplexInterfaceInfo complexInterfaceInfo) => new PropertySyntaxOutput(complexInterfaceInfo);
 
-        public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent = "", bool includeDashes = false, bool includeBackticks = false)
+        public static InfoOutput ToInfoOutput(this InfoAttribute info) => new InfoOutput(info);
+
+        public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent = "", bool includeDashes = false, bool includeBackticks = false, bool isFirst = true)
         {
-            var dash = includeDashes ? "- " : String.Empty;
-            var backtick = includeBackticks ? "`" : String.Empty;
-            string RenderProperty(ComplexInterfaceInfo info, string indent) => $"{indent}{dash}{backtick}{info.ToPropertySyntaxOutput()}{backtick}: {info.Description}";
+            string RenderProperty(ComplexInterfaceInfo info, string indent, bool dash, bool backtick) => 
+                $"{indent}{(dash ? "- " : String.Empty)}{(backtick ? "`" : String.Empty)}{info.ToPropertySyntaxOutput()}{(backtick ? "`" : String.Empty)}: {info.Description}";
 
             var nested = complexInterfaceInfo.NestedInfos.Select(ni =>
             {
                 var nestedIndent = $"{currentIndent}{HalfIndent}";
                 return ni.IsComplexInterface
-                    ? ni.ToNoteOutput(nestedIndent, includeDashes, includeBackticks)
-                    : RenderProperty(ni, nestedIndent);
-            }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent));
+                    ? ni.ToNoteOutput(nestedIndent, includeDashes, includeBackticks, false)
+                    : RenderProperty(ni, nestedIndent, includeDashes, includeBackticks);
+            }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent, !isFirst && includeDashes, !isFirst && includeBackticks));
             return String.Join(Environment.NewLine, nested);
         }
     }

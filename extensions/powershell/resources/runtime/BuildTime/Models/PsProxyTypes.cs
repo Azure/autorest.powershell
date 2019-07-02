@@ -150,6 +150,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public bool IsComplexInterface { get; }
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
+        public InfoAttribute InfoAttribute { get; }
 
         public int? FirstPosition { get; }
         public PSDefaultValueAttribute DefaultValue { get; }
@@ -177,6 +178,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
             IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
             ComplexInterfaceInfo = Parameters.Where(p => p.IsComplexInterface).Select(p => p.ComplexInterfaceInfo).FirstOrDefault();
+            InfoAttribute = Parameters.Select(p => p.InfoAttribute).FirstOrDefault();
 
             FirstPosition = firstParameter.Position;
             DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
