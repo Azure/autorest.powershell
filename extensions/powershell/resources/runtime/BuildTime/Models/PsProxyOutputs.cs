@@ -224,9 +224,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
                 .Where(pg => pg.IsComplexInterface)
                 .OrderBy(pg => pg.ParameterName)
-                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput(String.Empty)));
-            var complexParameterHeader = $"COMPLEX PARAMETER PROPERTIES{Environment.NewLine}To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.{Environment.NewLine}{Environment.NewLine}";
-            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{complexParameterHeader}{notes}" : String.Empty;
+                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput()));
+            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
             return $@"<#
 .Synopsis
 {VariantGroup.Description}
@@ -346,6 +345,8 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public const string ItemSeparator = ", ";
 
+        public static readonly string ComplexParameterHeader = $"COMPLEX PARAMETER PROPERTIES{Environment.NewLine}To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.{Environment.NewLine}{Environment.NewLine}";
+
         public static string ToPsBool(this bool value) => $"${value.ToString().ToLowerInvariant()}";
 
         public static string ToPsType(this Type type)
@@ -420,15 +421,17 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this ComplexInterfaceInfo complexInterfaceInfo) => new PropertySyntaxOutput(complexInterfaceInfo);
 
-        public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent)
+        public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent = "", bool includeDashes = false, bool includeBackticks = false)
         {
-            string RenderProperty(ComplexInterfaceInfo info, string indent) => $"{indent}{info.ToPropertySyntaxOutput()}: {info.Description}";
+            var dash = includeDashes ? "- " : String.Empty;
+            var backtick = includeBackticks ? "`" : String.Empty;
+            string RenderProperty(ComplexInterfaceInfo info, string indent) => $"{indent}{dash}{backtick}{info.ToPropertySyntaxOutput()}{backtick}: {info.Description}";
 
             var nested = complexInterfaceInfo.NestedInfos.Select(ni =>
             {
                 var nestedIndent = $"{currentIndent}{HalfIndent}";
                 return ni.IsComplexInterface
-                    ? ni.ToNoteOutput(nestedIndent)
+                    ? ni.ToNoteOutput(nestedIndent, includeDashes, includeBackticks)
                     : RenderProperty(ni, nestedIndent);
             }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent));
             return String.Join(Environment.NewLine, nested);

@@ -26,6 +26,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public string[] Inputs { get; }
         public string[] Outputs { get; }
+        public ComplexInterfaceInfo[] ComplexInterfaceInfos { get; }
         public string[] RelatedLinks { get; }
 
         public bool SupportsShouldProcess { get; }
@@ -59,6 +60,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                      parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
             Outputs = helpInfo.OutputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(ot => ot.Name).ToArray().NullIfEmpty() ??
                       variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray();
+
+            ComplexInterfaceInfos = parameterGroups.Where(pg => pg.IsComplexInterface).OrderBy(pg => pg.ParameterName).Select(pg => pg.ComplexInterfaceInfo).ToArray();
             RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
 
             SupportsShouldProcess = variantGroup.SupportsShouldProcess;
