@@ -252,7 +252,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
-        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required)
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes)
         {
             Name = name;
             Type = type;
@@ -262,17 +262,20 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ReadOnly = InfoAttribute.ReadOnly;
             Description = InfoAttribute.Description.ToPsSingleLine();
 
-            NestedInfos = InfoAttribute.PossibleTypes
+            var unwrappedType = Type.Unwrap();
+            var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
+            (seenTypes ?? (seenTypes = new List<Type>())).Add(unwrappedType);
+            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[]{} :
+                InfoAttribute.PossibleTypes
                 .SelectMany(pt => pt.GetProperties()
                     .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
-                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType))
-                        .Where(cii => !cii.ReadOnly)
-                        .OrderByDescending(cii => cii.Required))).ToArray();
+                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType, seenTypes: seenTypes))))
+                .Where(cii => !cii.ReadOnly).OrderByDescending(cii => cii.Required).ToArray();
             // https://stackoverflow.com/a/503359/294804
             var associativeArrayInnerType = Type.GetInterfaces()
                 .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAssociativeArray<>))
                 ?.GetTypeInfo().GetGenericArguments().First();
-            if (associativeArrayInnerType != null)
+            if (!hasBeenSeen && associativeArrayInnerType != null)
             {
                 var anyInfo = new InfoAttribute {Description = "This indicates any property can be added to this object." };
                 NestedInfos = NestedInfos.Prepend(anyInfo.ToComplexInterfaceInfo("(Any)", associativeArrayInnerType)).ToArray();
@@ -322,6 +325,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
 
-        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null) => new ComplexInterfaceInfo(name, type, infoAttribute, required);
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null) => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes);
     }
 }

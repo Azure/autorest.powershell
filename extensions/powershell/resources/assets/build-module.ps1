@@ -98,19 +98,24 @@ if(Test-Path $internalFolder) {
 }
 $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
+Write-Host -ForegroundColor Green 'Creating exports...'
 Export-ProxyCmdlet -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder
 
+Write-Host -ForegroundColor Green 'Creating format.ps1xml...'
 $formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
 Export-FormatPs1xml -FilePath $formatPs1xml
 
+Write-Host -ForegroundColor Green 'Creating psd1...'
 $psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
 $customFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}'
 Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1
 
+Write-Host -ForegroundColor Green 'Creating test stubs...'
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testFolder
 Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
 
+Write-Host -ForegroundColor Green 'Creating example stubs...'
 $examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $examplesFolder
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
