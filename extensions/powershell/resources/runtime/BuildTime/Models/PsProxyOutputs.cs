@@ -97,14 +97,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public bool HasArgumentCompleter { get; }
         public Type ParameterType { get; }
+        public CompleterInfoAttribute CompleterInfoAttribute { get; }
 
         public ArgumentCompleterOutput(ParameterGroup parameterGroup)
         {
             HasArgumentCompleter = parameterGroup.HasArgumentCompleter;
             ParameterType = parameterGroup.ParameterType;
+            CompleterInfoAttribute = parameterGroup.CompleterInfoAttribute;
         }
 
-        public override string ToString() => HasArgumentCompleter ? $"{Indent}[ArgumentCompleter([{ParameterType.Unwrap().ToPsType()}])]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => HasArgumentCompleter
+            ? $"{Indent}[ArgumentCompleter({(CompleterInfoAttribute != null ? $"{{{CompleterInfoAttribute.Script.ToPsSingleLine("; ")}}}" : $"[{ParameterType.Unwrap().ToPsType()}]")})]{Environment.NewLine}"
+            : String.Empty;
     }
 
     internal class ParameterTypeOutput
@@ -385,7 +389,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         // https://stackoverflow.com/a/5284606/294804
         private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
 
-        public static string ToPsSingleLine(this string value) => value?.Replace("<br>", " ")?.Replace("\r\n", " ")?.Replace("\n", " ") ?? String.Empty;
+        public static string ToPsSingleLine(this string value, string replacer = " ") => value?.Replace("<br>", replacer)?.Replace("\r\n", replacer)?.Replace("\n", replacer) ?? String.Empty;
 
         public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''")?.Replace("‘", "''")?.Replace("’", "''")?.ToPsSingleLine() ?? String.Empty;
 
