@@ -4,6 +4,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownTypesExtensions;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -101,6 +102,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 foreach (var alias in markdownInfo.Aliases)
                 {
                     sb.Append($"### {alias}{Environment.NewLine}{Environment.NewLine}");
+                }
+
+                sb.Append($"## NOTES{Environment.NewLine}{Environment.NewLine}");
+                if (markdownInfo.ComplexInterfaceInfos.Any())
+                {
+                    sb.Append($"### {ComplexParameterHeader}");
+                }
+                foreach (var complexInterfaceInfo in markdownInfo.ComplexInterfaceInfos)
+                {
+                    sb.Append($"#### {complexInterfaceInfo.ToNoteOutput(includeDashes: true, includeBackticks: true)}{Environment.NewLine}{Environment.NewLine}");
                 }
 
                 sb.Append($"## RELATED LINKS{Environment.NewLine}{Environment.NewLine}");

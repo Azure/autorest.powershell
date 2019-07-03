@@ -43,7 +43,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             foreach (var variantGroup in variantGroups)
             {
-                var parameterGroups = variantGroup.Variants.ToParameterGroups()
+                var parameterGroups = variantGroup.ParameterGroups
                     .OrderBy(pg => pg.OrderCategory)
                     .ThenByDescending(pg => pg.IsMandatory)
                     .ToList();
@@ -51,7 +51,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var outputs = variantGroup.OutputTypes.Select(ot => ot.Type).ToArray();
 
                 var sb = new StringBuilder();
-                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs));
+                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs, parameterGroups.ToArray()));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
@@ -72,6 +72,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                     sb.Append(parameterGroup.ToArgumentCompleterOutput());
                     sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
+                    sb.Append(parameterGroup.InfoAttribute?.ToInfoOutput().ToString() ?? String.Empty);
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
                     sb.Append(parameterGroup.Description.ToParameterHelpOutput());
                     sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));

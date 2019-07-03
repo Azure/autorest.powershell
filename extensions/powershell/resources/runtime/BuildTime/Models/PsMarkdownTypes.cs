@@ -26,6 +26,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public string[] Inputs { get; }
         public string[] Outputs { get; }
+        public ComplexInterfaceInfo[] ComplexInterfaceInfos { get; }
         public string[] RelatedLinks { get; }
 
         public bool SupportsShouldProcess { get; }
@@ -50,7 +51,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                        ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() 
                        ?? DefaultExampleHelpInfos;
 
-            var parameterGroups = variantGroup.Variants.ToParameterGroups().Where(pg => !pg.DontShow).ToArray();
+            var parameterGroups = variantGroup.ParameterGroups.Where(pg => !pg.DontShow).ToArray();
             Parameters = parameterGroups
                 .Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
                 .OrderBy(phi => phi.Name).ToArray();
@@ -59,6 +60,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                      parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
             Outputs = helpInfo.OutputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(ot => ot.Name).ToArray().NullIfEmpty() ??
                       variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray();
+
+            ComplexInterfaceInfos = parameterGroups.Where(pg => pg.IsComplexInterface).OrderBy(pg => pg.ParameterName).Select(pg => pg.ComplexInterfaceInfo).ToArray();
             RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
 
             SupportsShouldProcess = variantGroup.SupportsShouldProcess;
@@ -116,15 +119,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Where(p => !p.DontShow)
                 //https://stackoverflow.com/a/6461526/294804
                 .OrderByDescending(p => p.IsMandatory).ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
-                .Select(p =>
-                {
-                    var leftOptional = !p.IsMandatory ? "[" : String.Empty;
-                    var leftPositional = p.Position != null ? "[" : String.Empty;
-                    var rightPositional = p.Position != null ? "]" : String.Empty;
-                    var type = p.ParameterType != typeof(SwitchParameter) ? $" <{p.ParameterType.Name}>" : String.Empty;
-                    var rightOptional = !p.IsMandatory ? "]" : String.Empty;
-                    return $" {leftOptional}{leftPositional}-{p.ParameterName}{rightPositional}{type}{rightOptional}";
-                });
+                .Select(p => p.ToPropertySyntaxOutput().ToString());
             if (Variant.SupportsShouldProcess)
             {
                 parameterStrings = parameterStrings.Append(" [-Confirm]").Append(" [-WhatIf]");
@@ -189,11 +184,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public MarkdownParameterHelpInfo(PsParameterHelpInfo parameterHelpInfo, ParameterGroup parameterGroup)
         {
             Name = parameterGroup.ParameterName;
-            var firstParameter = parameterGroup.Parameters.First();
-            Description = parameterHelpInfo.Description.NullIfEmpty() ?? firstParameter.ParameterAttribute.HelpMessage;
+            Description = parameterHelpInfo.Description.NullIfEmpty() ?? parameterGroup.Description;
             Type = parameterGroup.ParameterType;
-            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? firstParameter.Position?.ToString() ?? "Named";
-            DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? firstParameter.DefaultValue?.Value?.ToString() ?? "None";
+            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? parameterGroup.FirstPosition?.ToString() ?? "Named";
+            DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? parameterGroup.DefaultValue?.Value?.ToString() ?? "None";
 
             HasAllParameterSets = parameterGroup.HasAllVariants;
             ParameterSetNames = parameterHelpInfo.ParameterSetNames.NullIfEmpty() ?? parameterGroup.Parameters.Select(p => p.VariantName).ToArray();
@@ -201,8 +195,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.IsMandatory;
             IsDynamic = parameterHelpInfo.IsDynamic ?? false;
-            AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? firstParameter.ValueFromPipeline;
-            AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? firstParameter.ValueFromPipelineByPropertyName;
+            AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? parameterGroup.ValueFromPipeline;
+            AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? parameterGroup.ValueFromPipelineByPropertyName;
             AcceptsWildcardCharacters = parameterGroup.SupportsWildcards;
         }
     }

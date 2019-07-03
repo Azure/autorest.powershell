@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyOutputExtensions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
 
@@ -27,6 +28,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string CmdletName { get; }
         public string ProfileName { get; }
         public Variant[] Variants { get; }
+        public ParameterGroup[] ParameterGroups { get; }
 
         public string[] Aliases { get; }
         public PSTypeName[] OutputTypes { get; }
@@ -47,6 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletName = cmdletName;
             ProfileName = profileName;
             Variants = variants;
+            ParameterGroups = Variants.ToParameterGroups().ToArray();
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.SupportsShouldProcess);
@@ -145,6 +148,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool DontShow { get; }
         public bool IsMandatory { get; }
         public bool SupportsWildcards { get; }
+        public bool IsComplexInterface { get; }
+        public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
+        public InfoAttribute InfoAttribute { get; }
+
+        public int? FirstPosition { get; }
+        public PSDefaultValueAttribute DefaultValue { get; }
+        public bool ValueFromPipeline { get; }
+        public bool ValueFromPipelineByPropertyName { get; }
         public bool IsInputType { get; }
 
         public ParameterGroup(string parameterName, Parameter[] parameters, string[] allVariantNames)
@@ -154,17 +165,26 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             AllVariantNames = allVariantNames;
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
-            ParameterType = Parameters.Select(p => p.ParameterType).First();
-            Description = Parameters.Select(p => p.HelpMessage).First();
+            var firstParameter = Parameters.First();
+            ParameterType = firstParameter.ParameterType;
+            Description = firstParameter.HelpMessage;
 
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             OrderCategory = Parameters.SelectMany(p => p.Categories).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
-            IsMandatory = HasAllVariants && Parameters.First().IsMandatory;
+            IsMandatory = HasAllVariants && firstParameter.IsMandatory;
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
-            IsInputType = Parameters.Any(p => p.ValueFromPipeline || p.ValueFromPipelineByPropertyName);
+            IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
+            ComplexInterfaceInfo = Parameters.Where(p => p.IsComplexInterface).Select(p => p.ComplexInterfaceInfo).FirstOrDefault();
+            InfoAttribute = Parameters.Select(p => p.InfoAttribute).FirstOrDefault();
+
+            FirstPosition = firstParameter.Position;
+            DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
+            ValueFromPipeline = Parameters.Any(p => p.ValueFromPipeline);
+            ValueFromPipelineByPropertyName = Parameters.Any(p => p.ValueFromPipelineByPropertyName);
+            IsInputType = ValueFromPipeline || ValueFromPipelineByPropertyName;
         }
     }
 
@@ -180,13 +200,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PSDefaultValueAttribute DefaultValue { get; }
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
+        public InfoAttribute InfoAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
-        public string HelpMessage { get; }
         public int? Position { get; }
         public bool DontShow { get; }
         public bool IsMandatory { get; }
+
+        public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
+        public bool IsComplexInterface { get; }
+        public string HelpMessage { get; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata)
         {
@@ -200,13 +224,63 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
+            InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
-            HelpMessage = ParameterAttribute.HelpMessage;
             Position = ParameterAttribute.Position == Int32.MinValue ? (int?)null : ParameterAttribute.Position;
             DontShow = ParameterAttribute.DontShow;
             IsMandatory = ParameterAttribute.Mandatory;
+
+            var complexParameterName = ParameterName.ToUpperInvariant();
+            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(complexParameterName, ParameterType, true);
+            IsComplexInterface = ComplexInterfaceInfo?.IsComplexInterface ?? false;
+            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}To construct, see NOTES section for {complexParameterName} properties and create a hash table." : String.Empty)}";
+        }
+    }
+
+    internal class ComplexInterfaceInfo
+    {
+        public InfoAttribute InfoAttribute { get; }
+
+        public string Name { get; }
+        public Type Type { get; }
+        public bool Required { get; }
+        public bool ReadOnly { get; }
+        public string Description { get; }
+        
+        public ComplexInterfaceInfo[] NestedInfos { get; }
+        public bool IsComplexInterface { get; }
+
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes)
+        {
+            Name = name;
+            Type = type;
+            InfoAttribute = infoAttribute;
+
+            Required = required ?? InfoAttribute.Required;
+            ReadOnly = InfoAttribute.ReadOnly;
+            Description = InfoAttribute.Description.ToPsSingleLine();
+
+            var unwrappedType = Type.Unwrap();
+            var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
+            (seenTypes ?? (seenTypes = new List<Type>())).Add(unwrappedType);
+            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[]{} :
+                InfoAttribute.PossibleTypes
+                .SelectMany(pt => pt.GetProperties()
+                    .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
+                        .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType, seenTypes: seenTypes))))
+                .Where(cii => !cii.ReadOnly).OrderByDescending(cii => cii.Required).ToArray();
+            // https://stackoverflow.com/a/503359/294804
+            var associativeArrayInnerType = Type.GetInterfaces()
+                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAssociativeArray<>))
+                ?.GetTypeInfo().GetGenericArguments().First();
+            if (!hasBeenSeen && associativeArrayInnerType != null)
+            {
+                var anyInfo = new InfoAttribute {Description = "This indicates any property can be added to this object." };
+                NestedInfos = NestedInfos.Prepend(anyInfo.ToComplexInterfaceInfo("(Any)", associativeArrayInnerType)).ToArray();
+            }
+            IsComplexInterface = NestedInfos.Any();
         }
     }
 
@@ -250,5 +324,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .GroupBy(p => p.ParameterName, StringComparer.InvariantCultureIgnoreCase)
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
+
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null) => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes);
     }
 }
