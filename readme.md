@@ -8,8 +8,7 @@ See [Using AutoRest PowerShell ](docs/using-autorest-powershell.md) for examples
 
 # Contributing
 
-For instructions on cloning/building/etc, see [Development](docs/development)
-
+For instructions on cloning/building/etc, see [Development](docs/development.md)
 
 ## Contributor License Agreement Requirements
 

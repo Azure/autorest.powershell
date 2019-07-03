@@ -53,9 +53,9 @@ export class OperationMethod extends Method {
     // add parameters
     this.methodParameters = [];
 
-    const identity = new Parameter('identity', System.String);
+    const _identity = new Parameter('_identity', System.String);
     if (this.viaIdentity) {
-      this.addParameter(identity);
+      this.addParameter(_identity);
     }
 
     for (var index = 0; index < this.operation.parameters.length; index++) {
@@ -157,7 +157,7 @@ export class OperationMethod extends Method {
         yield `// verify that Identity format is an exact match for uri`;
         yield EOL;
 
-        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
+        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${_identity.value})`);
         yield match.declarationStatement;
         yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
         yield EOL;
