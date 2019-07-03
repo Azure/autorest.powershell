@@ -141,6 +141,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Type ParameterType { get; }
         public string Description { get; }
 
+        public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public bool HasArgumentCompleter { get; }
@@ -169,9 +170,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterType = firstParameter.ParameterType;
             Description = firstParameter.HelpMessage;
 
+            CompleterInfoAttribute = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault();
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
-            HasArgumentCompleter = Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
+            HasArgumentCompleter = CompleterInfoAttribute != null || Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
             OrderCategory = Parameters.SelectMany(p => p.Categories).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
             IsMandatory = HasAllVariants && firstParameter.IsMandatory;
@@ -201,6 +203,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
         public InfoAttribute InfoAttribute { get; }
+        public CompleterInfoAttribute CompleterInfoAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -225,6 +228,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
             InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault();
+            CompleterInfoAttribute = Attributes.OfType<CompleterInfoAttribute>().FirstOrDefault();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
