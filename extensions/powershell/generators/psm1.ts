@@ -78,7 +78,7 @@ ${azureInitialize}
 
   # Export nothing to clear implicit exports
   Export-ModuleMember
-${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
+${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, project.azure)}
   # Finalize initialization of this module
   $instance.Init();
   Write-Information "Loaded Module '$($instance.Name)'"`);
@@ -86,7 +86,10 @@ ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
 
-export function getProfileExportScript(exportFolderScript: string): string {
+export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
+  const defaultParameterValues = isAzure ? `
+    $cmdletNames | ForEach-Object { $global:PSDefaultParameterValues["$_\`:SubscriptionId"] = { (Get-AzContext).Subscription.Id } }` : ``;
+
   return `
   # Export proxy cmdlet scripts
   $exportsPath = ${exportFolderScript}
@@ -112,7 +115,8 @@ export function getProfileExportScript(exportFolderScript: string): string {
 
   if($exportsPath) {
     Get-ChildItem -Path $exportsPath -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
-    Export-ModuleMember -Function (Get-ScriptCmdlet -ScriptFolder $exportsPath) -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)
+    $cmdletNames = Get-ScriptCmdlet -ScriptFolder $exportsPath
+    Export-ModuleMember -Function $cmdletNames -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)${defaultParameterValues}
   }
 `;
 }
