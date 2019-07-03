@@ -1,4 +1,4 @@
-param([switch]$Isolated)
+param([switch]$Isolated, [switch]$Live, [switch]$Record, [switch]$Playback)
 $ErrorActionPreference = 'Stop'
 
 if(-not $Isolated) {
@@ -22,6 +22,14 @@ $moduleName = $modulePsd1.BaseName
 
 Import-Module -Name Pester
 Import-Module -Name $modulePath
+
+$TestMode = 'playback'
+if($Live) {
+  $TestMode = 'live'
+}
+if($Record) {
+  $TestMode = 'record'
+}
 
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 Invoke-Pester -Script @{ Path = $testFolder } -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
