@@ -239,4 +239,4 @@ if($global:TestMode -eq $null) {
   }
 }
 
-$PSDefaultParameterValues["*:HttpPipelineAppend"] = ${function:mock-http}
+$PSDefaultParameterValues["*:HttpPipelineAppend"] = { ${function:mock-http} }
