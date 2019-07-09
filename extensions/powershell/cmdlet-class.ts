@@ -11,13 +11,21 @@ import {
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csharp';
 
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
+
+export function createStepper(p: Expression) {
+  return toExpression(`${System.Linq.Enumerable.declaration}.Select<${ClientRuntime.SendAsyncStep.declaration},${ClientRuntime.SendAsyncStep.declaration}>(${p.value}, step =>
+    (r, c, n) => {
+      ${DefaultRunspace.value} = ${DefaultRunspace.value} ?? ${RunspaceFactory.declaration}.CreateRunspace();
+      return step(r, c, n);
+    })`);
+}
 
 export function addCompleterInfo(targetProperty: Property, parameter: VirtualParameter) {
   if (parameter.completerInfo && parameter.completerInfo.script) {
@@ -227,12 +235,12 @@ export class CmdletClass extends Class {
     brk.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     // Cmdlet Parameters for pipeline manipulations.
-    const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be prepended to the front of the pipeline` }));
+    const prepend = this.add(new Property('HttpPipelinePrepend', ClientRuntime.SendAsyncSteps, { attributes: [], description: `SendAsync Pipeline Steps to be prepended to the front of the pipeline` }));
     prepend.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline"`] }));
     prepend.add(new Attribute(ValidateNotNull));
     prepend.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
-    const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncStep, { attributes: [], description: `SendAsync Pipeline Steps to be appended to the front of the pipeline` }));
+    const append = this.add(new Property('HttpPipelineAppend', ClientRuntime.SendAsyncSteps, { attributes: [], description: `SendAsync Pipeline Steps to be appended to the front of the pipeline` }));
     append.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `DontShow = true`, `HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline"`] }));
     append.add(new Attribute(ValidateNotNull));
     append.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
@@ -391,10 +399,10 @@ export class CmdletClass extends Class {
       } else {
         yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo})`));
       }
+      createStepper($this.$<Property>('HttpPipelinePrepend'));
 
-
-      yield pipeline.invokeMethod('Prepend', $this.$<Property>('HttpPipelinePrepend'));
-      yield pipeline.invokeMethod('Append', $this.$<Property>('HttpPipelineAppend'));
+      yield If(IsNotNull($this.$<Property>('HttpPipelinePrepend')), pipeline.invokeMethod('Prepend', createStepper($this.$<Property>('HttpPipelinePrepend'))));
+      yield If(IsNotNull($this.$<Property>('HttpPipelineAppend')), pipeline.invokeMethod('Append', createStepper($this.$<Property>('HttpPipelineAppend'))));
 
       yield `// get the client instance`;
       const apiCall = operation.callGraph[0];
@@ -851,22 +859,22 @@ export class CmdletClass extends Class {
       }
       /*
             case Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Events.DelayBeforePolling:
-{
-var data = messageData();
-if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response) {
-var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");
-var location = response.GetFirstHeader(@"Location");
-
-var uri = global:: System.String.IsNullOrEmpty(asyncOperation) ? global :: System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;
-WriteObject(new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.PowerShell.AsyncOperationResponse { Target = uri });
-
-// do nothing more.
-data.Cancel();
-}
-
-return;
-}
-*/
+  {
+  var data = messageData();
+  if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response) {
+  var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");
+  var location = response.GetFirstHeader(@"Location");
+  
+  var uri = global:: System.String.IsNullOrEmpty(asyncOperation) ? global :: System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;
+  WriteObject(new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.PowerShell.AsyncOperationResponse { Target = uri });
+  
+  // do nothing more.
+  data.Cancel();
+  }
+  
+  return;
+  }
+  */
 
       // the whole switch statement
       yield sw;
@@ -1007,7 +1015,7 @@ return;
           } else {
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            addInfoAttribute(cmdletParameter, propertyType, true, false, desc, 'body');
+            addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, 'body');
             addCompleterInfo(cmdletParameter, vParam);
 
           }

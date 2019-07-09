@@ -133,13 +133,13 @@ $\{Break\},
 
 [Parameter(DontShow)]
 [ValidateNotNull()]
-[${ClientRuntime.SendAsyncStep}
+[${ClientRuntime.SendAsyncSteps}
 # SendAsync Pipeline Steps to be appended to the front of the pipeline
 $\{HttpPipelineAppend\},
 
 [Parameter(DontShow)]
 [ValidateNotNull()]
-[${ClientRuntime.SendAsyncStep}]
+[${ClientRuntime.SendAsyncSteps}]
 # SendAsync Pipeline Steps to be prepended to the front of the pipeline
 $\{HttpPipelinePrepend\},
 

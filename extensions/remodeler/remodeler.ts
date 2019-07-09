@@ -200,6 +200,11 @@ export class Remodeler {
       newSchema.enum = [...original.enum];
     }
 
+    // skip generation for 'api-version' models
+    if (/^api-?version$/g.exec(schemaDefaultName)) {
+      newSchema.details.default.skip = true;
+    }
+
     newSchema.details.default.name = schemaDefaultName;
     newSchema.details.default.enum = Interpretations.getEnumDefinition(original);
 

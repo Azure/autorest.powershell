@@ -51,7 +51,8 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   }),
   HttpPipeline: new ClassType(clientRuntimeNamespace, 'HttpPipeline'),
   HttpClientFactory: new ClassType(clientRuntimeNamespace, 'HttpClientFactory'),
-  SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
+  SendAsyncStep: new ClassType(clientRuntimeNamespace, 'SendAsyncStep'),
+  SendAsyncSteps: new ClassType(clientRuntimeNamespace, 'SendAsyncStep[]'),
   EventData: new ClassType(clientRuntimeNamespace, 'EventData'),
   EventListener: new ClassType(clientRuntimeNamespace, 'EventListener'),
   Events: intersect(events, {

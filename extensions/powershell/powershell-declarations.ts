@@ -9,6 +9,8 @@ import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace,
 
 const sma = new Namespace(`System.Management.Automation`);
 const rest = new Namespace(`Microsoft.Rest`);
+export const DefaultRunspace = new LiteralExpression(`${sma}.Runspaces.Runspace.DefaultRunspace`);
+export const RunspaceFactory = new ClassType(new Namespace('System.Management.Automation.Runspaces'), 'RunspaceFactory');
 
 export const PSCmdlet = new Class(new Namespace('System.Management.Automation'), 'PSCmdlet');
 export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
