@@ -24,8 +24,12 @@ export class SupportNamespace extends Namespace {
       .linq.toArray();
 
     for (const enumInfo of enumInfos) {
-      const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
+      if (state.project.azure && /^api-?version$/i.exec(enumInfo.details.name)) {
+        continue;
+      }
 
+
+      const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
       const enumClass = new Struct(this, enumInfo.details.name, undefined, {
         interfaces: [IArgumentCompleter],
         partial: true,

@@ -83,6 +83,10 @@ export class ModelsNamespace extends Namespace {
         return <ModelInterface>schema.details.csharp.interfaceImplementation;
       }
 
+      if (state.project.azure && /^api-?version$/i.exec(schema.details.csharp.name)) {
+        return td;
+      }
+
       if (td instanceof EnumImplementation) {
         if (schema.details.csharp.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);

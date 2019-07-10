@@ -201,7 +201,7 @@ export class Remodeler {
     }
 
     // skip generation for 'api-version' models
-    if (/^api-?version$/g.exec(schemaDefaultName)) {
+    if (/^api-?version$/i.exec(schemaDefaultName)) {
       newSchema.details.default.skip = true;
     }
 

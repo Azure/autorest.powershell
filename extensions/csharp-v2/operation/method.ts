@@ -228,7 +228,7 @@ export class OperationMethod extends Method {
       const p = this.parameters[i];
       if (p && p.defaultInitializer) {
         this.parameters.splice(i, 1);
-        this.insert(new LocalVariable(p.name, p.type, { initializer: p.defaultInitializer }));
+        this.insert(new LocalVariable(p.name, dotnet.Var, { initializer: p.defaultInitializer }));
       }
     }
   }
