@@ -81,9 +81,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var key = System.Linq.Enumerable.FirstOrDefault(dictionary.Keys, each => System.String.Equals(each.ToString(), propertyName, System.StringComparison.CurrentCultureIgnoreCase));
                 return key == null ? defaultValue : (T)converter(dictionary[key]);
             }
-            catch
+#if DEBUG
+            catch (System.Exception E)
             {
+                System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
+#else 
+            catch 
+            {
+            }            
+#endif
             return defaultValue;
         }
         internal static T GetValueForProperty<T>(this System.Collections.IDictionary dictionary, string propertyName, T defaultValue, System.Func<object, object> converter)
@@ -93,9 +100,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var key = System.Linq.Enumerable.FirstOrDefault(dictionary.Keys.OfType<object>(), each => System.String.Equals(each.ToString(), propertyName, System.StringComparison.CurrentCultureIgnoreCase));
                 return key == null ? defaultValue : (T)converter(dictionary[key]);
             }
-            catch
+#if DEBUG
+            catch (System.Exception E)
             {
+                System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
+#else 
+            catch 
+            {
+            }            
+#endif
             return defaultValue;
         }
 
@@ -106,9 +120,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var property = System.Linq.Enumerable.FirstOrDefault(psObject.Properties, each => System.String.Equals(each.Name.ToString(), propertyName, System.StringComparison.CurrentCultureIgnoreCase));
                 return property == null ? defaultValue : (T)converter(property.Value);
             }
-            catch
+#if DEBUG
+            catch (System.Exception E)
             {
+                System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
+#else 
+            catch 
+            {
+            }            
+#endif            
             return defaultValue;
         }
     }

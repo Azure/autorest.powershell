@@ -3,8 +3,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     using System.Management.Automation;
     using System.Management.Automation.Host;
     using System.Threading;
+    using System.Linq;
 
-    public class AsyncCommandRuntime : System.Management.Automation.ICommandRuntime2, System.IDisposable
+    internal interface IAsyncCommandRuntimeExtensions
+    {
+        Microsoft.Rest.ClientRuntime.SendAsyncStep Wrap(Microsoft.Rest.ClientRuntime.SendAsyncStep func);
+        System.Collections.Generic.IEnumerable<Microsoft.Rest.ClientRuntime.SendAsyncStep> Wrap(System.Collections.Generic.IEnumerable<Microsoft.Rest.ClientRuntime.SendAsyncStep> funcs);
+
+        T ExecuteSync<T>(System.Func<T> step);
+    }
+
+    public class AsyncCommandRuntime : System.Management.Automation.ICommandRuntime2, IAsyncCommandRuntimeExtensions, System.IDisposable
     {
         private ICommandRuntime2 originalCommandRuntime;
         private System.Threading.Thread originalThread;
@@ -755,7 +764,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
             }
             while (!ProcessRecordAsyncTask.IsCompleted);
-            if( ProcessRecordAsyncTask.IsFaulted ) {
+            if (ProcessRecordAsyncTask.IsFaulted)
+            {
                 // don't unwrap a Aggregate Exception -- we'll lose the stack trace of the actual exception.
                 // if(  ProcessRecordAsyncTask.Exception is System.AggregateException aggregate ) {
                 //   throw aggregate.InnerException;
@@ -763,10 +773,42 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 throw ProcessRecordAsyncTask.Exception;
             }
         }
+        public Microsoft.Rest.ClientRuntime.SendAsyncStep Wrap(Microsoft.Rest.ClientRuntime.SendAsyncStep func) => func.Target.GetType().Name != "Closure" ? func : (p1, p2, p3) => ExecuteSync<System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>>(() => func(p1, p2, p3));
+        public System.Collections.Generic.IEnumerable<Microsoft.Rest.ClientRuntime.SendAsyncStep> Wrap(System.Collections.Generic.IEnumerable<Microsoft.Rest.ClientRuntime.SendAsyncStep> funcs) => funcs?.Select(Wrap);
+
+        public T ExecuteSync<T>(System.Func<T> step)
+        {
+            // if we are on the original thread, just call straight thru.
+            if (this.originalThread == System.Threading.Thread.CurrentThread)
+            {
+                return step();
+            }
+
+            T result = default(T);
+            try
+            {
+                // wait for our turn to talk to the main thread
+                WaitOurTurn();
+                // set the function to run
+                runOnMainThread = () => { result = step(); };
+                // tell the main thread to go ahead
+                readyToRun.Set();
+                // wait for the result (or cancellation!)
+                WaitForCompletion();
+                // return
+                return result;
+            }
+            catch (System.OperationCanceledException exception)
+            {
+                // maybe don't even worry?
+                throw exception;
+            }
+        }
 
         public void Dispose()
         {
-            if( cmdlet != null ) {
+            if (cmdlet != null)
+            {
                 cmdlet.CommandRuntime = this.originalCommandRuntime;
                 cmdlet = null;
             }

@@ -37,11 +37,18 @@ namespace Microsoft.Rest.ClientRuntime
                 { Code = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("code"), out var c) ? (string)c : (string)StatusCode.ToString(); }
                 { message = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("message"), out var m) ? (string)m : (string)Message; }
             }
+#if DEBUG
+            catch(System.Exception E)
+            {
+                System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
+            }
+#else 
             catch
             {
                 // couldn't get the code/message from the body response. 
                 // we'll create one below.
             }
+#endif
             if (string.IsNullOrEmpty(message))
             {
                 if (StatusCode >= System.Net.HttpStatusCode.BadRequest && StatusCode < System.Net.HttpStatusCode.InternalServerError)

@@ -26,7 +26,7 @@ namespace Carbon.Json
                 items.Add(name, value);
             }
         }
-
+        
         internal T NullableProperty<T>(string propertyName) where T : JsonNode
         {
             if (this.TryGetValue(propertyName, out JsonNode value))
@@ -113,6 +113,31 @@ namespace Carbon.Json
                 }
             }
             return output;
+        }
+        internal T[] ArrayProperty<T>(string propertyName, Func<JsonNode, T> deserializer)
+        {
+            var array = this.PropertyT<JsonArray>(propertyName);
+            if (array != null)
+            {
+                var output = new T[array.Count];
+                for (var i = 0; i < output.Length; i++)
+                {
+                    output[i] = deserializer(array[i]);
+                }
+                return output;
+            }
+             return new T[0];
+        }
+        internal void IterateArrayProperty(string propertyName, Action<JsonNode> deserializer)
+        {
+            var array = this.PropertyT<JsonArray>(propertyName);
+            if (array != null)
+            {
+                for (var i = 0; i < array.Count; i++)
+                {
+                    deserializer(array[i]);
+                }
+            }
         }
 
         internal Dictionary<string, T> DictionaryProperty<T>(string propertyName, ref Dictionary<string, T> output, Func<JsonNode, T> deserializer)
