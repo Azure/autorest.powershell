@@ -71,7 +71,7 @@ namespace Microsoft.Rest.ClientRuntime
           "Authorization",
         };
 
-        public static Dictionary<string, string> ForceResponseHeaders = new Dictionary<string, string>();
+        public Dictionary<string, string> ForceResponseHeaders = new Dictionary<string, string>();
 
         internal static XImmutableArray<string> Removed = new XImmutableArray<string>(new string[] { "[Filtered]" });
 
@@ -185,6 +185,7 @@ namespace Microsoft.Rest.ClientRuntime
 
             foreach (var frh in ForceResponseHeaders)
             {
+                response.Headers.Remove(frh.Key);
                 response.Headers.TryAddWithoutValidation(frh.Key, frh.Value);
             }
 
