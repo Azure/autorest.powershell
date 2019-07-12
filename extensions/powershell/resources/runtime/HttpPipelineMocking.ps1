@@ -1,44 +1,33 @@
 $ErrorActionPreference = "Stop"
 
 # get the recording path
-if ($null -eq $global:TestRecordingFile) {
-  $script:TestRecordingFile = "$PSScriptRoot/recording.json"
-}
-else {
-  $script:TestRecordingFile = $global:TestRecordingFile
+if (-not $TestRecordingFile) {
+  $TestRecordingFile = Join-Path $PSScriptRoot 'recording.json'
 }
 
-# normalize the recording path
-$script:TestRecordingFile = resolve-path -ea 0 $script:TestRecordingFile
-if ( -not $script:TestRecordingFile) { $script:TestRecordingFile = $Error[0].TargetObject } 
+# create the Http Pipeline Recorder
+$Mock = New-Object -Type Microsoft.Rest.ClientRuntime.PipelineMock $TestRecordingFile
 
-# is the file there? 
-if (Test-Path $TestRecordingFile) {
-  Write-Debug "Loading responses from $TestRecordingFile"
-}
-else {
-  if ('playback' -eq $TestMode ) {
-    Write-Error "Recording file '$TestRecordingFile' is not present. Unable to continue in 'playback' mode."
-  }
-}
-
-# create the Http Pipeline Recorder  
-$script:Mock = new-object -type Microsoft.Rest.ClientRuntime.PipelineMock  $script:TestRecordingFile
-
-# set the recorder to the appropriate mode (default to 'live' )
-switch ($global:TestMode ) {
+# set the recorder to the appropriate mode (default to 'live')
+Write-Host -ForegroundColor Green "Running '$TestMode' mode..."
+switch ($TestMode) {
   'record' {
-    $script:Mock.SetRecord();
+    Write-Host -ForegroundColor Green "Recording to $TestRecordingFile"
+    $Mock.SetRecord()
   }
   'playback' {
-    $script:Mock.SetPlayback();
+    if (-not (Test-Path $TestRecordingFile)) {
+      Write-Error "Recording file '$TestRecordingFile' is not present. Unable to continue in 'playback' mode."
+    }
+    Write-Host -ForegroundColor Green "Using recording $TestRecordingFile"
+    $Mock.SetPlayback()
   }
   default: {
-    $script:Mock.SetLive();
+    $Mock.SetLive()
   }
 }
 
-# overrides for Pester Describe/Context/It 
+# overrides for Pester Describe/Context/It
 
 function Describe(
   [Parameter(Mandatory = $true, Position = 0)]
@@ -51,12 +40,12 @@ function Describe(
   [ValidateNotNull()]
   [ScriptBlock] $Fixture = $(Throw "No test script block is provided. (Have you put the open curly brace on the next line?)")
 ) {
-  $script:Mock.PushDescription($Name)
+  $Mock.PushDescription($Name)
   try {
     return pester\Describe -Name $Name -Tag $Tag -Fixture $fixture
   }
   finally {
-    $script:Mock.PopDescription()
+    $Mock.PopDescription()
   }
 }
 
@@ -71,12 +60,12 @@ function Context(
   [ValidateNotNull()]
   [ScriptBlock] $Fixture = $(Throw "No test script block is provided. (Have you put the open curly brace on the next line?)")
 ) {
-  $script:Mock.PushContext($Name)
+  $Mock.PushContext($Name)
   try {
     return pester\Context -Name $Name -Tag $Tag -Fixture $fixture
   }
   finally {
-    $script:Mock.PopContext()
+    $Mock.PopContext()
   }
 }
 
@@ -98,7 +87,7 @@ function It {
     [Alias('Ignore')]
     [Switch] $Skip
   )
-  $script:Mock.PushScenario($Name)
+  $Mock.PushScenario($Name)
 
   try {
     if ($skip) {
@@ -110,9 +99,9 @@ function It {
     return pester\It -Name $Name -Test $Test -TestCases $TestCases
   }
   finally {
-    $null = $script:Mock.PopScenario()
+    $null = $Mock.PopScenario()
   }
 }
 
 # set the HttpPipelineAppend for all the cmdlets
-$PSDefaultParameterValues["*:HttpPipelineAppend"] = $script:Mock
+$PSDefaultParameterValues["*:HttpPipelineAppend"] = $Mock
