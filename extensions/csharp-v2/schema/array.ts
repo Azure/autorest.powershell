@@ -50,11 +50,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     try {
       const v = pushTempVar();
       const i = pushTempVar();
-      // return `${v} => System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${i}=>${this.elementType.convertObjectMethod}(${i}))`
-      // `v is string ? new string[] { v} : ...`
-
-      return `${v} is string || !(${v} is global::System.Collections.IEnumerable) ? new ${this.declaration} { ${this.elementType.convertObjectMethod}(${v}) } :  System.Linq.Enumerable.ToArray( System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${this.elementType.convertObjectMethod}))`
-      // return `${v} => System.Linq.Enumerable.ToArray( System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${this.elementType.convertObjectMethod}))`
+      return `${v} => ${v} is string || !(${v} is global::System.Collections.IEnumerable) ? new ${this.declaration} { (${this.elementType.declaration}) ${this.elementType.convertObjectMethod}(${v}) } :  System.Linq.Enumerable.ToArray( System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${this.elementType.convertObjectMethod}))`
     } finally {
       popTempVar();
       popTempVar();
