@@ -1,5 +1,7 @@
 namespace Microsoft.Rest.ClientRuntime
 {
+    using System.Linq;
+
     internal static partial class Extensions
     {
 
@@ -44,7 +46,7 @@ namespace Microsoft.Rest.ClientRuntime
         /// <param name="response">the HttpResponseMessage to fetch a header from</param>
         /// <param name="headerName">the header name</param>
         /// <returns>the first header value as a string from an HttpReponseMessage. string.empty if there is no header value matching</returns>
-        internal static string GetFirstHeader(this System.Net.Http.HttpResponseMessage response, string headerName) => response.Headers.TryGetValues(headerName, out var values) ? System.Linq.Enumerable.FirstOrDefault(values) : string.Empty;
+        internal static string GetFirstHeader(this System.Net.Http.HttpResponseMessage response, string headerName) => response.Headers.FirstOrDefault(each => headerName == each.Key).Value.FirstOrDefault() ?? string.Empty;
 
         /// <summary>
         /// Sets the Synchronization Context to null, and returns an IDisposable that when disposed, 

@@ -339,8 +339,9 @@ export class CallMethod extends Method {
           yield originalUri;
           yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
-            yield `// get the delay before polling.`;
-            yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`RetryAfter`)).value}, out int delay)`, `delay = 30;`);
+            yield `// get the delay before polling. (default to 30 seconds if not present)`;
+            yield `int delay = ${response.value}.Headers.RetryAfter.Delta?.Seconds ?? 30;`
+            // yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`Retry-After`)).value}, out int delay)`, `delay = 30;`);
 
             yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, `$"Delaying {delay} seconds before polling."`, response.value);
 
