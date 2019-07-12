@@ -29,12 +29,18 @@ function Prompt {
   ']> '
 }
 
-if($Code) {
-  $vscodeDirectory = New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot '.vscode')
-  $launchJson = Join-Path $vscodeDirectory 'launch.json'
+# where we would find the launch.json file
+$vscodeDirectory = New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot '.vscode')
+$launchJson = Join-Path $vscodeDirectory 'launch.json'
+
+# if there is a launch.json file, let's just assume -Code, and update the file
+if(($Code) -or (test-Path $launchJson) ) {
   $launchContent = '{ "version": "0.2.0", "configurations":[{ "name":"Attach to PowerShell", "type":"coreclr", "request":"attach", "processId":"' + ([System.Diagnostics.Process]::GetCurrentProcess().Id) + '", "justMyCode":false }] }'
   Set-Content -Path $launchJson -Value $launchContent
-  code $PSScriptRoot
+  if($Code) {
+    # only launch vscode if they say -code
+    code $PSScriptRoot
+  }
 }
 
 Import-Module -Name $modulePath

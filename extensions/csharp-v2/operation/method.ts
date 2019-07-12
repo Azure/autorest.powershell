@@ -53,7 +53,7 @@ export class OperationMethod extends Method {
     // add parameters
     this.methodParameters = [];
 
-    const identity = new Parameter('identity', System.String);
+    const identity = new Parameter('viaIdentity', System.String);
     if (this.viaIdentity) {
       this.addParameter(identity);
     }

@@ -21,6 +21,7 @@ switch ($TestMode) {
     }
     Write-Host -ForegroundColor Green "Using recording $TestRecordingFile"
     $Mock.SetPlayback()
+    $Mock.ForceResponseHeaders["RetryAfter"] = "0";
   }
   default: {
     $Mock.SetLive()

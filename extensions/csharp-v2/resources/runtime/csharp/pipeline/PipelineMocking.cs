@@ -71,6 +71,8 @@ namespace Microsoft.Rest.ClientRuntime
           "Authorization",
         };
 
+        public static Dictionary<string, string> ForceResponseHeaders = new Dictionary<string, string>();
+
         internal static XImmutableArray<string> Removed = new XImmutableArray<string>(new string[] { "[Filtered]" });
 
         internal static IEnumerable<KeyValuePair<string, JsonNode>> FilterHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers) => headers.Select(header => new KeyValuePair<string, JsonNode>(header.Key, Blacklist.Contains(header.Key) ? Removed : new XImmutableArray<string>(header.Value.ToArray())));
@@ -181,6 +183,11 @@ namespace Microsoft.Rest.ClientRuntime
                 response.Headers.TryAddWithoutValidation(each.Key, each.Value.ToArrayOf<string>());
             }
 
+            foreach (var frh in ForceResponseHeaders)
+            {
+                response.Headers.TryAddWithoutValidation(frh.Key, frh.Value);
+            }
+
             foreach (var each in respMessage.Property("ContentHeaders"))
             {
                 response.Content.Headers.TryAddWithoutValidation(each.Key, each.Value.ToArrayOf<string>());
@@ -209,7 +216,7 @@ namespace Microsoft.Rest.ClientRuntime
         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback, ISendAsync next)
         {
             counter++;
-            var rqkey = $"{Description}+{Context}+{Scenario}+{request.RequestUri}+{counter}";
+            var rqkey = $"{Description}+{Context}+{Scenario}+${request.Method.Method}+{request.RequestUri}+{counter}";
 
             switch (Mode)
             {
