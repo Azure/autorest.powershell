@@ -14,6 +14,7 @@ switch ($TestMode) {
   'record' {
     Write-Host -ForegroundColor Green "Recording to $TestRecordingFile"
     $Mock.SetRecord()
+    $null = erase -ea 0 $TestRecordingFile
   }
   'playback' {
     if (-not (Test-Path $TestRecordingFile)) {
