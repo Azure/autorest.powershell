@@ -59,7 +59,11 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
 
   get convertObjectMethod() {
-    return `(v)=> global::System.Convert.ChangeType(v, typeof(${this.baseType}))`
+    const v = pushTempVar();
+    const result = `(${v})=> (${this.baseType}) global::System.Convert.ChangeType(${v}, typeof(${this.baseType}))`
+    popTempVar();
+
+    return result;
   }
 
   constructor(public schema: Schema) {

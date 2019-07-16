@@ -19,7 +19,7 @@ export class EnumImplementation extends String {
   }
 
   get convertObjectMethod() {
-    return `v => (${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name})v.ToString()`;
+    return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}.CreateFrom`;
   }
 
 

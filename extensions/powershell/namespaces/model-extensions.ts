@@ -35,7 +35,7 @@ export class ModelExtensionsNamespace extends Namespace {
     this.subNamespaces[this.fullName] = this;
 
     const $this = this;
-    const resolver = (s: Schema) => this.resolver.resolveTypeDeclaration(s, true, state)
+    const resolver = (s: Schema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state)
 
     // Add typeconverters to model classes (partial)
     for (const schema of values(schemas)) {
@@ -180,7 +180,7 @@ export class ModelExtensionsNamespace extends Namespace {
           yield Return(dotnet.False);
         });
 
-        typeConverter.add(new Method('ConvertFrom', dotnet.Object, {
+        typeConverter.add(new Method('ConvertFrom', modelInterface, {
           static: Modifier.Static,
           parameters: [
             new Parameter('sourceValue', dotnet.Dynamic, {

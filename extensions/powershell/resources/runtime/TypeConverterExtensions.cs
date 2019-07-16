@@ -7,6 +7,56 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal static class TypeConverterExtensions
     {
+        internal static T[] SelectToArray<T>(object source, System.Func<object, object> converter)
+        {
+            // null begets null
+            if (source == null)
+            {
+                return null;
+            }
+
+            // single values and strings are just encapsulated in the array.
+            if (source is string || !(source is System.Collections.IEnumerable))
+            {
+                try
+                {
+                    return new T[] { (T)converter(source) };
+                }
+#if DEBUG
+                catch (System.Exception E)
+                {
+                    System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
+                }
+#else
+                catch 
+                {
+                    // silent conversion fail
+                }            
+#endif
+                return new T[0]; // empty result if couldn't convert.
+            }
+
+            var result = new System.Collections.Generic.List<T>();
+            foreach (var each in (System.Collections.IEnumerable)source)
+            {
+                try
+                {
+                    result.Add((T)converter(source));
+                }
+#if DEBUG
+                catch (System.Exception E)
+                {
+                    System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
+                }
+#else
+                catch 
+                {
+                    // silent conversion fail
+                }            
+#endif
+            }
+            return result.ToArray();
+        }
 
         internal static System.Collections.Generic.IEnumerable<object> GetPropertyKeys<K, V>(this System.Collections.Generic.IDictionary<K, V> dictionary)
         {
@@ -74,7 +124,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
 
 
-        internal static T GetValueForProperty<T, K, V>(this System.Collections.Generic.IDictionary<K, V> dictionary, string propertyName, T defaultValue, System.Func<object, object> converter)
+        internal static T GetValueForProperty<T, K, V>(this System.Collections.Generic.IDictionary<K, V> dictionary, string propertyName, T defaultValue, System.Func<object, T> converter)
         {
             try
             {
@@ -86,14 +136,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
-#else 
+#else
             catch 
             {
             }            
 #endif
             return defaultValue;
         }
-        internal static T GetValueForProperty<T>(this System.Collections.IDictionary dictionary, string propertyName, T defaultValue, System.Func<object, object> converter)
+        internal static T GetValueForProperty<T>(this System.Collections.IDictionary dictionary, string propertyName, T defaultValue, System.Func<object, T> converter)
         {
             try
             {
@@ -105,7 +155,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
-#else 
+#else
             catch 
             {
             }            
@@ -113,7 +163,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return defaultValue;
         }
 
-        internal static T GetValueForProperty<T>(this System.Management.Automation.PSObject psObject, string propertyName, T defaultValue, System.Func<object, object> converter)
+        internal static T GetValueForProperty<T>(this System.Management.Automation.PSObject psObject, string propertyName, T defaultValue, System.Func<object, T> converter)
         {
             try
             {
@@ -125,11 +175,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
-#else 
+#else
             catch 
             {
             }            
-#endif            
+#endif
             return defaultValue;
         }
     }

@@ -1176,7 +1176,6 @@ export class CmdletClass extends Class {
         }
         return false;
       });
-      debugger;
     }
 
   }

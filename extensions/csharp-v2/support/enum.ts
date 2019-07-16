@@ -136,6 +136,14 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
       parameters: [new Parameter('value', dotnet.String, { description: `the value to convert to an instance of <see cref="${this.name}" />.` })]
     })).add(`return new ${this.name}(value);`);
 
+    // add static creation 
+    this.addMethod(new Method(`CreateFrom`, dotnet.Object, {
+      static: Modifier.Static,
+      access: Access.Internal,
+      description: `Conversion from arbitrary object to ${this.name}`,
+      parameters: [new Parameter('value', dotnet.Object, { description: `the value to convert to an instance of <see cref="${this.name}" />.` })]
+    })).add(`return new ${this.name}(System.Convert.ToString(value));`);
+
     // add implicit operator(thistype)
     this.addMethod(new Operator(`implicit operator string`, {
       static: Modifier.Static,

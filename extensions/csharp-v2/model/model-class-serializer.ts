@@ -30,7 +30,7 @@ import { ObjectImplementation } from "../schema/object";
 import { Schema } from "../code-model";
 
 export class SerializationPartialClass extends Initializer {
-  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializationPartialClass>) {
+  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializationPartialClass>) {
     super();
     this.apply(objectInitializer);
   }
@@ -68,7 +68,7 @@ export class SerializationPartialClass extends Initializer {
 export class DeserializerPartialClass extends SerializationPartialClass {
   private beforeDeserialize!: Method;
   private afterDeserialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema) => EnhancedTypeDeclaration, objectInitializer?: Partial<DeserializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<DeserializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }
@@ -128,11 +128,18 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 
       for (const virtualProperty of $this.allVirtualProperties) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
-        const type = $this.resolver(<Schema>virtualProperty.property.schema);
+        const type = $this.resolver(<Schema>virtualProperty.property.schema, virtualProperty.property.details.default.required);
 
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
-        yield `${t}.${virtualProperty.name} = ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`
+
+
+        const tt = type ? `(${type.declaration})` : '';
+        // const tt = virtualProperty.property.schema.details.csharp.typeDeclaration.declaration;
+
+
+
+        yield `${t}.${virtualProperty.name} = ${tt} ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`
       }
     }
   }
@@ -174,7 +181,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 export class SerializerPartialClass extends SerializationPartialClass {
   private beforeSerialize!: Method;
   private afterSerialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }
