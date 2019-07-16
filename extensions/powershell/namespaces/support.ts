@@ -23,7 +23,16 @@ export class SupportNamespace extends Namespace {
       .linq.select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
       .linq.toArray();
 
+    const done = new Set<string>();
+
+
     for (const enumInfo of enumInfos) {
+      if (done.has(enumInfo.details.name)) {
+        continue;
+      }
+
+      done.add(enumInfo.details.name);
+
       if (state.project.azure && /^api-?version$/i.exec(enumInfo.details.name)) {
         continue;
       }
