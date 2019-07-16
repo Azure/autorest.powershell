@@ -704,7 +704,7 @@ export class CmdletClass extends Class {
             };
 
             if (idschema && values(idschema.properties).linq.first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
-              yield If(`InputObject?.Id == null`, `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+              yield If(`InputObject?.Id != null`, `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
               yield Else(identityFromPathParams);
             } else {
               yield identityFromPathParams;
