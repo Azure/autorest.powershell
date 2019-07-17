@@ -20,29 +20,29 @@ export class DateTime extends Primitive {
   public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
   get declaration(): string {
-    return `System.DateTime${this.isRequired ? '' : '?'}`;
+    return `global::System.DateTime${this.isRequired ? '' : '?'}`;
   }
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
+    return `global::System.DateTime.TryParse((string)${tmpValue}, global::System.Globalization.CultureInfo.InvariantCulture, global::System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
   protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `System.DateTime.TryParse((string)${tmpValue}, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
+    return `global::System.DateTime.TryParse((string)${tmpValue}, global::System.Globalization.CultureInfo.InvariantCulture, global::System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
   }
 
   get convertObjectMethod() {
-    return `(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , System.Xml.XmlDateTimeSerializationMode.Unspecified)`
+    return `(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified)`
   }
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
-          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`) :
-          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)) : null`);
+          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`) :
+          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)) : null`);
 
       case KnownMediaType.Xml:
         return this.isRequired ?
-          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`) :
-          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)) : null`);
+          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`) :
+          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)) : null`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.QueryParameter:
@@ -50,8 +50,8 @@ export class DateTime extends Primitive {
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
         return toExpression(this.isRequired ?
-          `${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)` :
-          `(null == ${value} ? ${System.String.Empty} : ${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture))`
+          `${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
+          `(null == ${value} ? ${System.String.Empty} : ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
         );
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
@@ -69,20 +69,20 @@ export class DateTime extends Primitive {
       case KnownMediaType.Header:
         // container : HttpRequestHeaders
         return this.isRequired ?
-          `${valueOf(container)}.Add("${serializedName}",${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture));` :
-          If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture));`);
+          `${valueOf(container)}.Add("${serializedName}",${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture));` :
+          If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture));`);
 
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}..ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `${serializedName}={${value}..ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
 
       case KnownMediaType.UriParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -135,9 +135,9 @@ export class UnixTime extends Primitive {
 
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(${value}.ToString())`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString()))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(${value}.ToString()))`);
         }
 
       // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
@@ -177,6 +177,6 @@ export class UnixTime extends Primitive {
   }
 
   get declaration(): string {
-    return `System.DateTime${this.isRequired ? '' : '?'}`;
+    return `global::System.DateTime${this.isRequired ? '' : '?'}`;
   }
 }
