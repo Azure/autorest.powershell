@@ -270,7 +270,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
             (seenTypes ?? (seenTypes = new List<Type>())).Add(unwrappedType);
             NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[]{} :
-                InfoAttribute.PossibleTypes
+                unwrappedType.GetInterfaces()
+                .Concat(InfoAttribute.PossibleTypes)
                 .SelectMany(pt => pt.GetProperties()
                     .SelectMany(pi => pi.GetCustomAttributes(true).OfType<InfoAttribute>()
                         .Select(ia => ia.ToComplexInterfaceInfo(pi.Name, pi.PropertyType, seenTypes: seenTypes))))
