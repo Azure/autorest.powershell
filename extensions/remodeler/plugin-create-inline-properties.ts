@@ -95,7 +95,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         accessViaSchema: parentSchema,
         originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
-        alias: []
+        alias: [],
+        required: virtualProperty.required
       });
     }
   }
@@ -140,7 +141,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         private: true,
         description: property.description || '',
         originalContainingSchema: schema,
-        alias: []
+        alias: [],
+        required: property.details.default.required
       };
       virtualProperties.owned.push(privateProperty);
 
@@ -166,7 +168,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
           accessViaSchema: schema,
           originalContainingSchema: schema,
           description: inlinedProperty.description,
-          alias: []
+          alias: [],
+          required: inlinedProperty.required && privateProperty.required
         });
       }
 
@@ -192,7 +195,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
           accessViaSchema: schema,
           originalContainingSchema: schema,
           description: inlinedProperty.description,
-          alias: []
+          alias: [],
+          required: inlinedProperty.required && privateProperty.required
         });
       }
     } else {
@@ -215,6 +219,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
       description: property.description || '',
       originalContainingSchema: schema,
       alias: [],
+      required: property.details.default.required
     });
   }
 
@@ -271,7 +276,7 @@ function createVirtualParameters(operation: CommandOperation) {
             name: property.name,
             description: property.property.details.default.description,
             nameOptions: property.nameOptions,
-            required: property.property.details.default.required,
+            required: property.required,
             schema: property.property.schema,
             origin: property,
             alias: []
