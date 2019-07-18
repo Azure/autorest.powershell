@@ -501,10 +501,14 @@ export class CmdletClass extends Class {
             const unexpected = function* () {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
               if (each.details.csharp.responseType) {
-                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+                yield `var ex = new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response);`;
+
               } else {
-                yield `WriteError(new global::System.Management.Automation.ErrorRecord(new ${ClientRuntime.name}.RestException(responseMessage), responseMessage.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+                yield `var ex = new ${ClientRuntime.name}.RestException(responseMessage);`
               }
+              yield `var err = new global::System.Management.Automation.ErrorRecord(ex, ex.Code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} });`;
+              yield If(`ex.Action != null`, `err.ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action };`);
+              yield `WriteError(err);`;
             }
             if (each.schema) {
               // the schema should be the error information.

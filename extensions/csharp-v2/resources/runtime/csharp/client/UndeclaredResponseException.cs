@@ -19,6 +19,7 @@ namespace Microsoft.Rest.ClientRuntime
         public string RequestId { get; protected set; }
 
         public override string Message => message;
+        public string Action { get; protected set; }
 
         public RestException(System.Net.Http.HttpResponseMessage response)
         {
@@ -36,6 +37,7 @@ namespace Microsoft.Rest.ClientRuntime
                 var json = Microsoft.Rest.ClientRuntime.Json.JsonNode.Parse(ResponseBody) as Microsoft.Rest.ClientRuntime.Json.JsonObject;
                 { Code = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("code"), out var c) ? (string)c : (string)StatusCode.ToString(); }
                 { message = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("message"), out var m) ? (string)m : (string)Message; }
+                { Action = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("action"), out var a) ? (string)a : (string)Action; }
             }
 #if DEBUG
             catch(System.Exception E)
