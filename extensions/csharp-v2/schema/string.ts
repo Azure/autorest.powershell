@@ -26,6 +26,11 @@ export class String implements EnhancedTypeDeclaration {
     return `global::System.Convert.ToString`;
   }
 
+  get isNullable(): boolean {
+    return true;
+  }
+
+
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json: {

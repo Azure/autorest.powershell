@@ -24,6 +24,9 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
     return toExpression(`null /* object */`);
   }
 
+  get isNullable(): boolean {
+    return true;
+  }
 
   get convertObjectMethod() {
     return `${this.schema.details.csharp.fullname}TypeConverter.ConvertFrom`;

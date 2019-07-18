@@ -9,6 +9,9 @@ import { dotnet, toExpression } from '@microsoft.azure/codegen-csharp';
 
 export class EnumImplementation extends String {
   public isXmlAttribute: boolean = false;
+  get isNullable(): boolean {
+    return !this.isRequired;
+  }
 
   constructor(schema: Schema, isRequired: boolean) {
     super(schema, isRequired);

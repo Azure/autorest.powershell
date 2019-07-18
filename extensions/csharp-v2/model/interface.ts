@@ -58,6 +58,8 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     return this.classImplementation.isXmlAttribute;
   }
 
+  public isNullable: boolean = true;
+
   get isRequired(): boolean {
     return this.classImplementation.isRequired;
   }
@@ -98,47 +100,47 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     };
     if (this.schema.details.csharp.virtualProperties) {
 
-      for (const property of [...virtualProperties.owned]) {
-        if (property.private && !this.isInternal) {
+      for (const virtualProperty of [...virtualProperties.owned]) {
+        if (virtualProperty.private && !this.isInternal) {
           continue;
         }
 
-        const actual = property.property;
+        const modelProperty = virtualProperty.property;
 
-        const internalSet = !!(!this.isInternal && (actual.schema.readOnly || actual.details.csharp.constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.details.csharp.readOnly || modelProperty.details.csharp.constantValue));
 
-        const isRequired = !!actual.details.csharp.required;
-        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))
-        const p = this.add(new InterfaceProperty(property.name, pType, {
-          description: actual.details.csharp.description,
+        const isRequired = !!modelProperty.details.csharp.required;
+        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>modelProperty.schema, isRequired, this.state.path('schema'))
+        const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
+          description: modelProperty.details.csharp.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
 
-        this.addInfoAttribute(p, pType, isRequired, internalSet, actual.details.csharp.description, actual.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.details.csharp.description, modelProperty.serializedName);
 
-        if (!this.isInternal && actual.details.csharp.constantValue !== undefined) {
+        if (!this.isInternal && modelProperty.details.csharp.constantValue !== undefined) {
           p.setAccess = Access.Internal;
         }
       }
 
-      for (const property of [...virtualProperties.inlined]) {
+      for (const virtualProperty of [...virtualProperties.inlined]) {
 
         // don't publicly expose the 'private' properties.
-        if (property.private && !this.isInternal) {
+        if (virtualProperty.private && !this.isInternal) {
           continue;
         }
 
-        const actual = property.property;
-        const isRequired = !!actual.details.csharp.required;
-        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actual.schema, isRequired, this.state.path('schema'))
+        const modelProperty = virtualProperty.property;
+        const isRequired = !!modelProperty.details.csharp.required;
+        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>modelProperty.schema, isRequired, this.state.path('schema'))
 
-        const internalSet = !!(!this.isInternal && (actual.schema.readOnly || actual.details.csharp.constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.details.csharp.readOnly || modelProperty.details.csharp.constantValue));
 
-        const p = this.add(new InterfaceProperty(property.name, pType, {
-          description: actual.details.csharp.description,
+        const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
+          description: modelProperty.details.csharp.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
-        this.addInfoAttribute(p, pType, isRequired, internalSet, actual.details.csharp.description, actual.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.details.csharp.description, modelProperty.serializedName);
 
       }
     }

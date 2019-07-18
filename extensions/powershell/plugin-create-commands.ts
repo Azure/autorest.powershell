@@ -371,7 +371,7 @@ export /* @internal */ class Inferrer {
     const bodyParameterName = operation.requestBody ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
 
     // all the properties in the body parameter
-    const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.schema.readOnly).linq.toArray() : [];
+    const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.details.default.readOnly).linq.toArray() : [];
 
     // smash body property names together
     const bodyPropertyNames = bodyProperties.joinWith(each => each.details.default.name);

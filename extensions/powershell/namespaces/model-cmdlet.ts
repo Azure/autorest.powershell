@@ -50,7 +50,7 @@ export class ModelCmdletNamespace extends Namespace {
       if (this.inputModels.indexOf(schema) === -1) {
         this.inputModels.push(schema);
         for (const p of values(schema.properties)) {
-          if (!p.schema.readOnly && !p.details.csharp.HeaderProperty && !p.schema.additionalProperties) {
+          if (!p.details.csharp.readOnly && !p.details.csharp.HeaderProperty && !p.schema.additionalProperties) {
             this.addInputSchema(p.schema);
           }
         }

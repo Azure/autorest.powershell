@@ -67,6 +67,10 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     return this.implementation.isXmlAttribute;
   }
 
+  get isNullable(): boolean {
+    return this.implementation.isNullable;
+  }
+
   get isRequired(): boolean {
     return this.implementation.isRequired;
   }

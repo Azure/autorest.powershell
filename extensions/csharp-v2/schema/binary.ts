@@ -20,6 +20,7 @@ export class Binary implements EnhancedTypeDeclaration {
   get convertObjectMethod() {
     return `i=>i`;
   }
+  public isNullable: boolean = true;
 
   get defaultOfType() {
     return toExpression(`null /* binary type */`);
