@@ -67,6 +67,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
               description: param.description,
               name: name,
               required: false,
+              readOnly: false,
               uid: `universal-parameter:${name}`
             }
           }
@@ -83,6 +84,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           description: 'Resource identity path',
           name: 'id',
           required: false,
+          readOnly: false,
           uid: `universal-parameter:resource identity`
         }
       }

@@ -579,6 +579,7 @@ export class Remodeler {
               description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), header.instance),
               name: Interpretations.getName(propertyName, propertySchema.instance),
               required: false,
+              readOnly: false,
               HeaderProperty: 'Header',
             }
           }
