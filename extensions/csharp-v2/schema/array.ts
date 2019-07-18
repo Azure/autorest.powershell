@@ -20,6 +20,7 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute: boolean = false;
+  public isNullable: boolean = true;
   get defaultOfType() {
     return toExpression(`null /* arrayOf */`);
   }

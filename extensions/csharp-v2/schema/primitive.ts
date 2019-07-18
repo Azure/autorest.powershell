@@ -53,6 +53,9 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   abstract isXmlAttribute: boolean;
   abstract declaration: string;
   abstract jsonType: ClassType;
+  get isNullable(): boolean {
+    return !this.isRequired;
+  }
 
   get defaultOfType() {
     return toExpression(`default(${this.declaration})`);

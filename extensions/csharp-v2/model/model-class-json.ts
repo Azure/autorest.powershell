@@ -106,7 +106,7 @@ export class JsonSerializableClass extends Class {
       }
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop.valuePrivate, container, prop.serializedName, mode);
 
-      if (prop.schema.readOnly) {
+      if (prop.details.csharp.readOnly) {
         serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
       } else {
         serializeStatements.add(serializeStatement);

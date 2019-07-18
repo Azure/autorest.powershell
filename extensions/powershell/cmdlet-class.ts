@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
 import { Dictionary, escapeString, items, values, docComment, serialize, pascalCase, length } from '@microsoft.azure/codegen';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
@@ -958,9 +958,12 @@ export class CmdletClass extends Class {
           const vSchema = vParam.schema;
           let propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
 
+          // we need to know if the actual underlying property is actually nullable.
+          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, (<VirtualProperty>vParam.origin).property.details.csharp.required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
-            get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+            get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+            // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
             set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
@@ -1014,7 +1017,7 @@ export class CmdletClass extends Class {
           } else {
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc)}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, 'body');
+            addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<VirtualProperty>vParam.origin).property.serializedName);
             addCompleterInfo(cmdletParameter, vParam);
 
           }

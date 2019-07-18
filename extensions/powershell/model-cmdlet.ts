@@ -39,7 +39,7 @@ export class ModelCmdlet extends Class {
     if (vps) {
       // adds the parameters to the cmdlet and adds to the method to set the value from the parameter.
       for (const vProperty of [...vps.owned, ...vps.inherited, ...vps.inlined]) {
-        if (!vProperty.property.schema.readOnly && !vProperty.private) {
+        if (!vProperty.property.details.csharp.readOnly && !vProperty.private) {
           const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vProperty.property.schema, vProperty.property.details.csharp.required, this.state);
           const cmdletParameter = new Property(vProperty.name, td, {
             get: toExpression(`${prop.value}.${vProperty.name}`),

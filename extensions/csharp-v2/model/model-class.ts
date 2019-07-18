@@ -65,6 +65,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     return this.featureImplementation.isXmlAttribute;
   }
 
+  public isNullable: boolean = true;
+
   get isRequired(): boolean {
     return this.featureImplementation.isRequired;
   }
@@ -205,6 +207,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
           initializer: actualProperty.details.csharp.constantValue ? typeof actualProperty.details.csharp.constantValue === 'string' ? new StringExpression(actualProperty.details.csharp.constantValue) : new LiteralExpression(actualProperty.details.csharp.constantValue) : undefined
         });
+
+        if (actualProperty.details.csharp.readOnly) {
+          myProperty.set = undefined;
+        }
         myProperty.details = virtualProperty.property.details;
 
         if (actualProperty.details.csharp.constantValue !== undefined) {
@@ -250,7 +256,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
           get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
-          set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
+          set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
         }));
 
         if (virtualProperty.property.details.csharp.constantValue !== undefined) {
@@ -292,7 +298,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             const vp = new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.details.csharp.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: (propertyType.schema.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
+              set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
             });
 
             if (!virtualProperty.private) {

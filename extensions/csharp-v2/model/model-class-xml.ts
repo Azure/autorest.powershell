@@ -58,7 +58,7 @@ export class XmlSerializableClass extends Class {
         // it's a header only property. Don't serialize unless the mode has SerializationMode.IncludeHeaders enabled
         serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeHeaders})`, serializeStatement));
       } else {
-        if (property.schema.readOnly) {
+        if (property.details.csharp.readOnly) {
           serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
         } else {
           serializeStatements.add(serializeStatement);

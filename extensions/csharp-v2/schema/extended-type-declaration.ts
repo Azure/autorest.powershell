@@ -50,6 +50,8 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** the underlying schema for this type declarartion. */
   schema: Schema;
 
+  isNullable: boolean;
+
   /** emits the code required to validate that this is set to a value */
   validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements;
 

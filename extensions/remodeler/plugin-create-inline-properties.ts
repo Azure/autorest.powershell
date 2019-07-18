@@ -96,7 +96,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
         alias: [],
-        required: virtualProperty.required
+        required: virtualProperty.required,
       });
     }
   }
@@ -142,7 +142,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         description: property.description || '',
         originalContainingSchema: schema,
         alias: [],
-        required: property.details.default.required
+        required: property.details.default.required,
       };
       virtualProperties.owned.push(privateProperty);
 
@@ -169,7 +169,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
           originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: [],
-          required: inlinedProperty.required && privateProperty.required
+          required: inlinedProperty.required && privateProperty.required,
         });
       }
 
@@ -267,18 +267,18 @@ function createVirtualParameters(operation: CommandOperation) {
       // the client will make a hidden body parameter for this, and we're expected to fill it.
       const vps = parameter.schema.details.default.virtualProperties;
       if (vps) {
-        for (const property of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
-          if (property.private || property.property.schema.readOnly || property.property.details.default.constantValue !== undefined || property.property.details.default.HeaderProperty === 'Header') {
+        for (const virtualProperty of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
+          if (virtualProperty.private || virtualProperty.property.details.default.readOnly || virtualProperty.property.details.default.constantValue !== undefined || virtualProperty.property.details.default.HeaderProperty === 'Header') {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
           virtualParameters.body.push({
-            name: property.name,
-            description: property.property.details.default.description,
-            nameOptions: property.nameOptions,
-            required: property.required,
-            schema: property.property.schema,
-            origin: property,
+            name: virtualProperty.name,
+            description: virtualProperty.property.details.default.description,
+            nameOptions: virtualProperty.nameOptions,
+            required: virtualProperty.required,
+            schema: virtualProperty.property.schema,
+            origin: virtualProperty,
             alias: []
           });
         }

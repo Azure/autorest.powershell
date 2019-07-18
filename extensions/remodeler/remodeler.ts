@@ -284,6 +284,7 @@ export class Remodeler {
               description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), property),
               name: Interpretations.getName(propertyName, propertySchema.instance),
               required: original.required ? original.required.indexOf(propertyName) > -1 : false,
+              readOnly: !!property.readOnly || !!newPropSchema.readOnly
             }
           }
         });
@@ -578,6 +579,7 @@ export class Remodeler {
               description: Interpretations.getDescription(Interpretations.getDescription('', newPropSchema), header.instance),
               name: Interpretations.getName(propertyName, propertySchema.instance),
               required: false,
+              readOnly: false,
               HeaderProperty: 'Header',
             }
           }

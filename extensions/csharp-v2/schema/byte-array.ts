@@ -24,6 +24,9 @@ export class ByteArray implements EnhancedTypeDeclaration {
   get convertObjectMethod() {
     return `i => i`;
   }
+
+  public isNullable = true;
+
   get defaultOfType() {
     return toExpression(`null /* byte array */`);
   }
