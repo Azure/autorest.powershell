@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
@@ -7,5 +8,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public static T[] NullIfEmpty<T>(this T[] collection) => (collection?.Any() ?? false) ? collection : null;
         public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> collection) => collection ?? Enumerable.Empty<T>();
+
+        // https://stackoverflow.com/a/4158364/294804
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> collection, Func<TSource, TKey> selector) =>
+            collection.GroupBy(selector).Select(group => group.First());
     }
 }

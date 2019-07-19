@@ -1,4 +1,4 @@
-﻿param([switch]$Isolated)
+﻿param([switch]$Isolated, [switch]$IncludeGeneralParameters, [switch]$UseExpandedFormat)
 $ErrorActionPreference = 'Stop'
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
@@ -17,7 +17,7 @@ $null = Import-Module -Name $dll
 $exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
 $resourcesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.resourcesFolder)}'
 
-Export-CmdletSurface -CmdletFolder $exportsFolder -OutputFolder $resourcesFolder
+Export-CmdletSurface -CmdletFolder $exportsFolder -OutputFolder $resourcesFolder -IncludeGeneralParameters $IncludeGeneralParameters.IsPresent -UseExpandedFormat $UseExpandedFormat.IsPresent
 Write-Host -ForegroundColor Green "CmdletSurface file(s) created in '$resourcesFolder'"
 
 Export-ModelSurface -OutputFolder $resourcesFolder
