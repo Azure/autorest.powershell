@@ -20,7 +20,7 @@ $resourcesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFo
 Export-CmdletSurface -CmdletFolder $exportsFolder -OutputFolder $resourcesFolder -IncludeGeneralParameters $IncludeGeneralParameters.IsPresent -UseExpandedFormat $UseExpandedFormat.IsPresent
 Write-Host -ForegroundColor Green "CmdletSurface file(s) created in '$resourcesFolder'"
 
-Export-ModelSurface -OutputFolder $resourcesFolder
+Export-ModelSurface -OutputFolder $resourcesFolder -UseExpandedFormat $UseExpandedFormat.IsPresent
 Write-Host -ForegroundColor Green "ModelSurface file created in '$resourcesFolder'"
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
