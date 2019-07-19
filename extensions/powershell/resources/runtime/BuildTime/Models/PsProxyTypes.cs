@@ -300,6 +300,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var metadata = new CommandMetadata(info);
             var privateCmdletName = metadata.Name;
+            var canonicalParts = privateCmdletName.Split('!');
+            privateCmdletName = canonicalParts.Length > 1 ? canonicalParts[0] : privateCmdletName;
             var parts = privateCmdletName.Split('_');
             return parts.Length > 1
                 ? new[] { new Variant(parts[0], parts[1], info, metadata) }
