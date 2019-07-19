@@ -299,7 +299,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static Variant[] ToVariants(this CommandInfo info)
         {
             var metadata = new CommandMetadata(info);
-            var privateCmdletName = metadata.Name;
+            var privateCmdletName = metadata.Name.Split('!').First();
             var parts = privateCmdletName.Split('_');
             return parts.Length > 1
                 ? new[] { new Variant(parts[0], parts[1], info, metadata) }
