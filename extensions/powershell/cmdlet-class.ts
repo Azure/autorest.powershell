@@ -1259,9 +1259,9 @@ export class CmdletClass extends Class {
 
     this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
     if (shouldAddPassThru) {
-      const messageAndDescription = `When specified, PassThru will force the cmdlet return a 'bool' given that there isn't a return type by default.`;
-      const passThru = this.add(new Property('PassThru', SwitchParameter, { description: messageAndDescription }));
-      passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "${messageAndDescription}"`] }));
+      const passThru = this.add(new Property('PassThru', SwitchParameter, { description: `When specified, forces the cmdlet return a 'bool' given that there isn't a return type by default.` }));
+      passThru.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', `HelpMessage = "Returns true when the command succeeds"`] }));
+      passThru.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
     }
 
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }))

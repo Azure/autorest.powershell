@@ -26,6 +26,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class VariantGroup
     {
         public string CmdletName { get; }
+        public string CmdletVerb { get; }
+        public string CmdletNoun { get; }
         public string ProfileName { get; }
         public Variant[] Variants { get; }
         public ParameterGroup[] ParameterGroups { get; }
@@ -47,6 +49,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false)
         {
             CmdletName = cmdletName;
+            var cmdletNameParts = CmdletName.Split('-');
+            CmdletVerb = cmdletNameParts.First();
+            CmdletNoun = cmdletNameParts.Last();
             ProfileName = profileName;
             Variants = variants;
             ParameterGroups = Variants.ToParameterGroups().ToArray();

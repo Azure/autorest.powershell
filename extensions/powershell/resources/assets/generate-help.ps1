@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
 if(-not $Isolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
-  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path -Isolated
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
   return
 }
 
