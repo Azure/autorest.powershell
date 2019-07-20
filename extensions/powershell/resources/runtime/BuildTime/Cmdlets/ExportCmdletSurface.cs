@@ -78,11 +78,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(vgg => (
                     CmdletNoun: vgg.Key,
                     CmdletVerbs: vgg.Select(vg => vg.CmdletVerb).OrderBy(cv => cv).ToArray(),
-                    ParameterGroups: vgg.SelectMany(vg => vg.ParameterGroups).DistinctBy(p => p.ParameterName).ToArray()))
+                    ParameterGroups: vgg.SelectMany(vg => vg.ParameterGroups).DistinctBy(p => p.ParameterName).ToArray(),
+                    OutputTypes: vgg.SelectMany(vg => vg.OutputTypes).Select(ot => ot.Type).DistinctBy(t => t.Name).Select(t => t.ToSyntaxTypeName()).ToArray()))
                 .OrderBy(vg => vg.CmdletNoun);
             foreach (var condensedGroup in condensedGroups)
             {
-                sb.Append($"### {condensedGroup.CmdletNoun} [{String.Join(", ", condensedGroup.CmdletVerbs)}]{Environment.NewLine}");
+                sb.Append($"### {condensedGroup.CmdletNoun} [{String.Join(", ", condensedGroup.CmdletVerbs)}] `{String.Join(", ", condensedGroup.OutputTypes)}`{Environment.NewLine}");
                 var parameterGroups = condensedGroup.ParameterGroups
                     .Where(pg => !pg.DontShow && (IncludeGeneralParameters || (pg.OrderCategory != ParameterCategory.Azure && pg.OrderCategory != ParameterCategory.Runtime)))
                     .OrderBy(pg => pg.OrderCategory)
