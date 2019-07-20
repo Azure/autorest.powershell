@@ -60,9 +60,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var mandatoryText = Parameter.IsMandatory ? "Mandatory" : String.Empty;
             var dontShowText = Parameter.DontShow ? "DontShow" : String.Empty;
             var vfpText = Parameter.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
+            var vfpbpnText = Parameter.ValueFromPipelineByPropertyName ? "ValueFromPipelineByPropertyName" : String.Empty;
             var helpMessage = Parameter.HelpMessage.ToPsStringLiteral();
             var helpText = !String.IsNullOrEmpty(helpMessage) ? $"HelpMessage='{helpMessage}'" : String.Empty;
-            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, helpText }.JoinIgnoreEmpty(ItemSeparator);
+            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, vfpbpnText, helpText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
