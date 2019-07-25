@@ -502,7 +502,6 @@ export class CmdletClass extends Class {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
               if (each.details.csharp.responseType) {
                 yield `var ex = new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response);`;
-
               } else {
                 yield `var ex = new ${ClientRuntime.name}.RestException(responseMessage);`
               }
@@ -524,14 +523,23 @@ export class CmdletClass extends Class {
 
               const codeProp = values(props).linq.first(p => p.name.toLowerCase() === 'code');
               const messageProp = values(props).linq.first(p => p.name.toLowerCase() === 'message');
+              const actionProp = values(props).linq.first(p => p.name.toLowerCase() === 'action');
 
               if (codeProp && messageProp) {
-                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response).${ep}${codeProp.name};` });
-                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response).${ep}${messageProp.name};` });
+                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
+                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response)?.${ep}${messageProp.name}` });
+                const laction = actionProp == null ? null : new LocalVariable('action', dotnet.Var, { initializer: `(await response)?.${ep}${actionProp.name}` });
                 yield lcode.declarationStatement;
                 yield lmessage.declarationStatement;
+                if (laction) { yield laction.declarationStatement; }
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(`WriteError(new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`)
+                yield Else(function* () {
+                  yield `var err = new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} });`;
+                  if (laction) {
+                    yield If(IsNotNull(laction), `err.ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction} };`);
+                  }
+                  yield `WriteError(err);`;
+                });
                 return;
               } else {
                 yield unexpected;
