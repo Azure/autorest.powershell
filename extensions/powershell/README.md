@@ -86,12 +86,12 @@ pipeline:
   remodeler:
     input: openapi-document/multi-api/identity     # the plugin where we get inputs from
   
-  remodeler/transform: 
-    input: remodeler 
+  # remodeler/transform: 
+  #    input: remodeler 
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
-    input: remodeler/transform
+    input: remodeler # /transform
 
   # Specific things for Azure
   tweakcodemodelazure:
