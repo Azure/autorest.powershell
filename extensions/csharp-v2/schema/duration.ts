@@ -19,6 +19,11 @@ export class Duration extends Primitive {
   constructor(public schema: Schema, public isRequired: boolean) {
     super(schema);
   }
+
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
+
   get declaration(): string {
     return `global::System.TimeSpan${this.isRequired ? '' : '?'}`;
   }
@@ -37,9 +42,9 @@ export class Duration extends Primitive {
         return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString(${value})`)}`);
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value}))`);
+          return toExpression(`"${serializedName}=" + ${this.encode}(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value}))`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})))`);
         }
     }
     return toExpression(`/* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);

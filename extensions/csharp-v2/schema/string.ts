@@ -30,6 +30,9 @@ export class String implements EnhancedTypeDeclaration {
     return true;
   }
 
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     switch (mediaType) {
@@ -81,10 +84,11 @@ export class String implements EnhancedTypeDeclaration {
         return toExpression(`null != (${value}?.ToString()) ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
       case KnownMediaType.QueryParameter:
+
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value})`);
+          return toExpression(`"${serializedName}=" + ${this.encode}(${value})`);
         } else {
-          return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${valueOf(value)}))`);
+          return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${valueOf(value)}))`);
         }
 
       case KnownMediaType.Cookie:
@@ -92,9 +96,9 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
         if (this.isRequired) {
-          return toExpression(`System.Uri.EscapeDataString(${value})`);
+          return toExpression(`${this.encode}(${value})`);
         }
-        return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : System.Uri.EscapeDataString(${value}) )`);
+        return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : ${this.encode}(${value}) )`);
 
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
