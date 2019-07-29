@@ -167,16 +167,31 @@ export class OperationMethod extends Method {
         }
       }
 
+      yield `// Construct Query URL string.`
+      if (queryParams.length > 0) {
+        yield Local("queryParamString", queryParams.joinWith(pp => `
+         ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
+        + "&" + `));
+      } else {
+        yield Local("queryParamString", System.String.Empty);
+      }
+
+      yield EOL;
+
+      yield `// Remove extra query delimiters`
+      yield Local("re", `${System.Text.RegularExpressions.Regex.new(`"&{2,}"`).value}`).declarationStatement;
+      yield Local("queryParamStringCleaned", `re.Replace(queryParamString, "&")`);
+
+      yield EOL;
+
       yield `// construct URL`;
       urlV = new LocalVariable('_url', dotnet.Var, {
         initializer: System.Uri.new(`(
         "${url}"
-        ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${pp.serializeToNode(KnownMediaType.QueryParameter, pp.param.name, ClientRuntime.SerializationMode.None).value}`, `
-        + "&"`
-        )}
-        ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
+        ${queryParams.length > 0 ? '+ "?"' : ''} 
+        + queryParamStringCleaned).TrimEnd('?','&').Replace("?&", "?")`.replace(/\s*\+ ""/gm, ''))
       });
+
       yield urlV.declarationStatement;
 
       yield EOL;
