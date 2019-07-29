@@ -132,12 +132,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
-
-
         const tt = type ? `(${type.declaration})` : '';
-        // const tt = virtualProperty.property.schema.details.csharp.typeDeclaration.declaration;
-
-
 
         yield `${t}.${virtualProperty.name} = ${tt} ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`
       }

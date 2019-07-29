@@ -11,7 +11,7 @@ import {
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case
 } from '@microsoft.azure/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '@microsoft.azure/autorest.csharp-v2';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory } from './powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from './powershell-declarations';
 import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
@@ -968,6 +968,10 @@ export class CmdletClass extends Class {
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 
+          if (vParam.schema.type === JsonType.Array) {
+            cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
+          }
+
           if (vSchema.additionalProperties) {
             // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
             // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
@@ -1019,7 +1023,6 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<VirtualProperty>vParam.origin).property.serializedName);
             addCompleterInfo(cmdletParameter, vParam);
-
           }
 
           const isEnum = propertyType.schema.details.csharp.enum !== undefined;
@@ -1127,6 +1130,9 @@ export class CmdletClass extends Class {
         this.bodyParameter = regularCmdletParameter;
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
+      if (vParam.schema.type === JsonType.Array) {
+        regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
+      }
 
       addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
       addCompleterInfo(regularCmdletParameter, vParam);

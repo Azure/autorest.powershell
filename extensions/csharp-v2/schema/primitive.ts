@@ -57,6 +57,10 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     return !this.isRequired;
   }
 
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
+
   get defaultOfType() {
     return toExpression(`default(${this.declaration})`);
   }
@@ -177,9 +181,9 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
 
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString())`);
+          return toExpression(`"${serializedName}=" + ${this.encode}(${value}.ToString())`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + System.Uri.EscapeDataString(${value}.ToString()))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
       // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);

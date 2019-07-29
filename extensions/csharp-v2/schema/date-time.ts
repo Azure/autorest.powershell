@@ -19,6 +19,10 @@ export class DateTime extends Primitive {
   // public DateFormat = new StringExpression('yyyy-MM-dd');
   public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
+
   get declaration(): string {
     return `global::System.DateTime${this.isRequired ? '' : '?'}`;
   }
@@ -114,6 +118,11 @@ export class UnixTime extends Primitive {
 
   private EpochDate = System.DateTime.new('1970', '1', '1', '0', '0', '0', System.DateTimeKind.Utc);
 
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
+
+
   protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
     return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
   }
@@ -135,9 +144,9 @@ export class UnixTime extends Primitive {
 
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + global::System.Uri.EscapeDataString(${value}.ToString())`);
+          return toExpression(`"${serializedName}=" + ${this.encode}(${value}.ToString())`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + global::System.Uri.EscapeDataString(${value}.ToString()))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
       // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);

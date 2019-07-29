@@ -40,13 +40,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 ``` yaml 
 enable-multi-api: true
-load-priority: 1001
-```
-
-``` yaml 
-use-extension:
-#  "@microsoft.azure/autorest.remodeler": "$(this-folder)/extensions/remodeler"
-#  "@microsoft.azure/autorest.csharp-v2": "$(this-folder)/extensions/csharp-v2"
-  "@microsoft.azure/autorest.powershell": "$(this-folder)/extensions/powershell"
+powershell-testing: true
+require: "$(this-folder)/extensions/powershell/readme.md"
 ```
 

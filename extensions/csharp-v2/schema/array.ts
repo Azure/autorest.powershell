@@ -47,6 +47,10 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return `${this.elementType.declaration}[]`;
   }
 
+  get encode(): string {
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+  }
+
   get convertObjectMethod() {
     try {
       const v = pushTempVar();
@@ -157,11 +161,11 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${value}=" + global::System.Uri.EscapeDataString(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( System.Uri.EscapeDataString(each?.ToString()??${System.String.Empty}) ))) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${value}=" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( ${this.encode}(each?.ToString()??${System.String.Empty}) ))) : ${System.String.Empty})`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? global::System.Uri.EscapeDataString(global::System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
       }
     } finally {
       popTempVar();
@@ -196,7 +200,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
-          return toExpression(`(null != ${value} ? System.Uri.EscapeDataString(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value} ? ${this.encode}(System.Linq.Enumerable.Aggregate(${value}, (current,each)=> current + "," + ${this.elementType.serializeToNode(mediaType, 'each', '', mode)})) : ${System.String.Empty})`);
       }
 
     } finally {

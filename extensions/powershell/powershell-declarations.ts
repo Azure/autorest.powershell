@@ -18,6 +18,7 @@ export const PSCredential: TypeDeclaration = new ClassType(sma, `PSCredential`);
 export const PSObject: TypeDeclaration = new ClassType(sma, `PSObject`);
 export const CmdletAttribute: TypeDeclaration = new ClassType(sma, `Cmdlet`);
 export const ParameterAttribute: TypeDeclaration = new ClassType(sma, `Parameter`);
+export const AllowEmptyCollectionAttribute: TypeDeclaration = new ClassType(sma, `AllowEmptyCollection`);
 export const InvocationInfo: TypeDeclaration = new ClassType(sma, `InvocationInfo`);
 export const PSTypeConverter: Class = new Class(sma, `PSTypeConverter`);
 export const ValidateNotNull: TypeDeclaration = new ClassType(sma, `ValidateNotNull`);

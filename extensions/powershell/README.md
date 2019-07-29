@@ -17,8 +17,8 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 #### PowerShell
 > Requires
-``` yaml 
-use-extension:
+``` yaml !$(powershell-testing)
+use-extension: 
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
 ```
@@ -85,10 +85,13 @@ pipeline:
   # "Shake the tree", and normalize the model
   remodeler:
     input: openapi-document/multi-api/identity     # the plugin where we get inputs from
+  
+  # remodeler/transform: 
+  #    input: remodeler 
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
-    input: remodeler
+    input: remodeler # /transform
 
   # Specific things for Azure
   tweakcodemodelazure:
