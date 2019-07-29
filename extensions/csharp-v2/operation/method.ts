@@ -33,7 +33,6 @@ import { Ternery } from '@microsoft.azure/codegen-csharp';
 
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
   const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
-  console.error(`${pp.name}/${paramName}/${pp.param.extensions['x-ms-skip-url-encoding']}`);
   return pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
 
