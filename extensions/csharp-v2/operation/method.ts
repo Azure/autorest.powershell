@@ -31,8 +31,9 @@ import { ClassType, dotnet, System } from '@microsoft.azure/codegen-csharp';
 import { Ternery } from '@microsoft.azure/codegen-csharp';
 
 
-function removeEncoding(pp: OperationParameter, kmt: KnownMediaType): string {
-  const up = pp.typeDeclaration.serializeToNode(kmt, pp, '', ClientRuntime.SerializationMode.None).value;
+function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
+  const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
+  console.error(`${pp.name}/${paramName}/${pp.param.extensions['x-ms-skip-url-encoding']}`);
   return pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
 
@@ -141,13 +142,8 @@ export class OperationMethod extends Method {
         + ${pp.name}
         + "`);
       } else {
-        // sad hack -- remove encoding for parameters that ask not to.
-        let up = pp.typeDeclaration.serializeToNode(KnownMediaType.UriParameter, pp, '', ClientRuntime.SerializationMode.None).value;
-        if (pp.param.extensions['x-ms-skip-url-encoding']) {
-          up = up.replace('global::System.Uri.EscapeDataString', '');
-        }
         url = url.replace(`{${pp.param.name}}`, `"
-        + ${removeEncoding(pp, KnownMediaType.UriParameter)}
+        + ${removeEncoding(pp, '', KnownMediaType.UriParameter)}
         + "`);
       }
     }
@@ -183,7 +179,7 @@ export class OperationMethod extends Method {
         initializer: System.Uri.new(`(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${removeEncoding(pp, KnownMediaType.QueryParameter)}`, `
+        + ${removeEncoding(pp, pp.param.name, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
         ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
