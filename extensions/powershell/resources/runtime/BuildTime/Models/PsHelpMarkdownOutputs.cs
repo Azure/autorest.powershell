@@ -110,6 +110,8 @@ Dynamic: {ParameterInfo.IsDynamic}
     {
         public PSModuleInfo ModuleInfo { get; }
 
+        private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
+
         public ModulePageMetadataOutput(PSModuleInfo moduleInfo)
         {
             ModuleInfo = moduleInfo;
@@ -118,7 +120,7 @@ Dynamic: {ParameterInfo.IsDynamic}
         public override string ToString() => $@"---
 Module Name: {ModuleInfo.Name}
 Module Guid: {ModuleInfo.Guid}
-Download Help Link: https://docs.microsoft.com/en-us/powershell/module/{ModuleInfo.Name.ToLowerInvariant()}
+Download Help Link: {HelpLinkPrefix}{ModuleInfo.Name.ToLowerInvariant()}
 Help Version: 1.0.0.0
 Locale: en-US
 ---

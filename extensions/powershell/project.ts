@@ -94,6 +94,7 @@ export class Project extends codeDomProject {
   public dependencyModuleFolder!: string;
   public metadata!: Metadata;
   public state!: State;
+  public helpLinkPrefix!: string;
   get model() { return <codemodel.Model>this.state.model };
 
   constructor(protected service: Host, objectInitializer?: Partial<Project>) {
@@ -131,9 +132,9 @@ export class Project extends codeDomProject {
     this.moduleVersion = await this.state.getValue('module-version');
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.accountsVersionMinimum = '1.6.0';
+    this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
 
     // Flags
-    // this.skipModelCmdlets = await this.state.getValue('skip-model-cmdlets');
     this.skipModelCmdlets = true;
     this.azure = this.model.details.default.isAzure;
 

@@ -34,6 +34,7 @@ load-priority: 1001
 module-version: 0.1.0
 skip-model-cmdlets: false
 azure: false
+help-link-prefix: https://docs.microsoft.com/en-us/powershell/module/
 ```
 
 > Names
