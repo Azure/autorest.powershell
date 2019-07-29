@@ -18,7 +18,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 #### PowerShell
 > Requires
 ``` yaml !$(powershell-testing)
-use-extension:
+use-extension: 
   "@microsoft.azure/autorest.remodeler": "beta"
   "@microsoft.azure/autorest.csharp-v2": "beta"
 ```
