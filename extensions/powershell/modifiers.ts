@@ -228,7 +228,8 @@ export async function applyModifiers(service: Host) {
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
-  for (const directive of directives) {
+  // only look at directives without the `transform` node.
+  for (const directive of directives.filter(each => !each.transform)) {
     const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
