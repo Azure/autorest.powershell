@@ -343,6 +343,51 @@ export class CallMethod extends Method {
           yield `// this operation supports x-ms-long-running-operation`;
           const originalUri = Local('_originalUri', new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`));
           yield originalUri;
+
+          yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
+          const fsv = $this.opMethod.operation.details.csharp.lro['final-state-via'];
+          let finalUri: LocalVariable;
+
+          switch (fsv) {
+            case 'original-uri':
+              // perform a final GET on the original URI.
+              finalUri = originalUri;
+              break;
+
+            case 'location':
+              // perform a final GET on the uri in Location header
+              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
+              yield finalUri;
+              break;
+
+            case 'azure-asyncoperation':
+            case 'azure-async-operation':
+              // perform a final GET on the uri in Azure-AsyncOperation header
+              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
+              yield finalUri;
+              break;
+
+            default:
+              // depending on the type of request, fall back to the appropriate behavior
+              switch ($this.opMethod.operation.method.toLowerCase()) {
+                case 'post':
+                case 'delete':
+                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
+                  yield finalUri;
+                  break;
+                case 'patch':
+                case 'put':
+                  // perform a final GET on the original URI.
+                  finalUri = originalUri;
+                  break;
+              }
+
+              break;
+
+          }
+
+
+
           yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
             yield `// get the delay before polling. (default to 30 seconds if not present)`;
@@ -418,45 +463,20 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
             yield '// check for terminal status code';
             yield If(new LiteralExpression(`${response.value}.StatusCode != ${System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${System.Net.HttpStatusCode[202].value} `), function* () {
               yield `// we're done polling, do a request on final target?`;
-              yield `// declared final-state-via: ${$this.opMethod.operation.details.csharp.lro['final-state-via']}`;
-              const fsv = $this.opMethod.operation.details.csharp.lro['final-state-via'];
 
               switch (fsv) {
                 case 'original-uri':
-                  // perform a final GET on the original URI.
-                  yield $this.finalGet(originalUri, reqParameter, response);
-                  break;
-
-                case 'location':
-                  // perform a final GET on the uri in Location header
-                  yield $this.finalGet(response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)), reqParameter, response);
-                  break;
-
                 case 'azure-asyncoperation':
                 case 'azure-async-operation':
-                  // perform a final GET on the uri in Azure-AsyncOperation header
-                  yield $this.finalGet(response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)), reqParameter, response);
+                case 'location':
+                  // perform a final GET on the specified final URI.
+                  yield $this.finalGet(finalUri, reqParameter, response);
                   break;
 
                 default:
-                  // depending on the type of request, fall back to the appropriate behavior
-                  const finalLocation = new LocalVariable('finalLocation', dotnet.Var, { initializer: response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)) });
-                  switch ($this.opMethod.operation.method.toLowerCase()) {
-                    case 'post':
-                    case 'delete':
-                      // if the location header was passed in, we're going to do a get on that.
-                      yield `// final get on the the Location header, if present`;
-                      yield finalLocation;
-                      If(`string.IsNullOrWhiteSpace(${finalLocation})`, function* () {
-                        yield $this.finalGet(finalLocation, reqParameter, response);
-                      });
-                      break;
-                    case 'patch':
-                    case 'put':
-                      yield `// final get on the original URI`;
-                      yield $this.finalGet(originalUri, reqParameter, response);
-                      break;
-                  }
+                  yield If(`!string.IsNullOrWhiteSpace(${finalUri})`, function* () {
+                    yield $this.finalGet(finalUri, reqParameter, response);
+                  });
                   break;
               }
             });
