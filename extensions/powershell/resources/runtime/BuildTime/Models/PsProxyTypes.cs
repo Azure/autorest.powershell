@@ -46,6 +46,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string FileName { get; }
         public string FilePath { get; }
 
+        private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
+
         public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false)
         {
             CmdletName = cmdletName;
@@ -63,7 +65,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasMultipleVariants = Variants.Length > 1;
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
-            Link = $@"https://docs.microsoft.com/en-us/powershell/module/{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
+            Link = $@"{HelpLinkPrefix}{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
 
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
