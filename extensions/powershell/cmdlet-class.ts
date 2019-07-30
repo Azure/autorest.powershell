@@ -498,16 +498,20 @@ export class CmdletClass extends Class {
           if (each.details.csharp.isErrorResponse) {
             // this should write an error to the error channel.
             yield `// Error Response : ${each.responseCode}`;
+
+
             const unexpected = function* () {
               yield `// Unrecognized Response. Create an error record based on what we have.`;
-              if (each.details.csharp.responseType) {
-                yield `var ex = new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response);`;
-              } else {
-                yield `var ex = new ${ClientRuntime.name}.RestException(responseMessage);`
-              }
-              yield `var err = new global::System.Management.Automation.ErrorRecord(ex, ex.Code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} });`;
-              yield If(`ex.Action != null`, `err.ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action };`);
-              yield `WriteError(err);`;
+              const ex = (each.details.csharp.responseType) ?
+                Local("ex", `new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response)`) :
+                Local("ex", `new ${ClientRuntime.name}.RestException(responseMessage)`);
+
+              yield ex.declarationStatement;
+
+              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
+{ 
+  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
+});`;
             }
             if (each.schema) {
               // the schema should be the error information.
@@ -528,18 +532,18 @@ export class CmdletClass extends Class {
               if (codeProp && messageProp) {
                 const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
                 const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response)?.${ep}${messageProp.name}` });
-                const laction = actionProp == null ? null : new LocalVariable('action', dotnet.Var, { initializer: `(await response)?.${ep}${actionProp.name}` });
-                yield lcode.declarationStatement;
-                yield lmessage.declarationStatement;
-                if (laction) { yield laction.declarationStatement; }
+                const laction = actionProp ? new LocalVariable('action', dotnet.Var, { initializer: `(await response)?.${ep}${actionProp.name} ?? ${System.String.Empty}` }) : undefined;
+                yield lcode;
+                yield lmessage;
+                yield laction;
+
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(function* () {
-                  yield `var err = new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} });`;
-                  if (laction) {
-                    yield If(IsNotNull(laction), `err.ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction} };`);
-                  }
-                  yield `WriteError(err);`;
-                });
+                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+{
+  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
+});`
+
+                );
                 return;
               } else {
                 yield unexpected;
@@ -868,24 +872,6 @@ export class CmdletClass extends Class {
           });
         }));
       }
-      /*
-            case Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.Events.DelayBeforePolling:
-  {
-  var data = messageData();
-  if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response) {
-  var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");
-  var location = response.GetFirstHeader(@"Location");
-  
-  var uri = global:: System.String.IsNullOrEmpty(asyncOperation) ? global :: System.String.IsNullOrEmpty(location) ? response.RequestMessage.RequestUri.AbsoluteUri : location : asyncOperation;
-  WriteObject(new Microsoft.Azure.PowerShell.Cmdlets.KeyVault.Runtime.PowerShell.AsyncOperationResponse { Target = uri });
-  
-  // do nothing more.
-  data.Cancel();
-  }
-  
-  return;
-  }
-  */
 
       // the whole switch statement
       yield sw;
