@@ -175,13 +175,13 @@ export class OperationMethod extends Method {
 
       yield `// construct URL`;
       urlV = new LocalVariable('_url', dotnet.Var, {
-        initializer: System.Uri.new(`(
+        initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.name, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
-        ).TrimEnd('?','&')`.replace(/\s*\+ ""/gm, ''))
+        ,"\\\\?&*$|&*$|(\\\\?)&|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
       });
       yield urlV.declarationStatement;
 
