@@ -288,8 +288,7 @@ function createVirtualParameters(operation: CommandOperation) {
         name: parameter.details.default.name,
         nameOptions: [parameter.details.default.name],
         description: parameter.details.default.description,
-        // required: true, /* if it's present in the variant, it's required  */
-        required: parameter.required, /* NEW: parameters pick up requiredness from the original operation. */
+        required: parameter.details.default.isBodyParameter ? true : parameter.required,
         schema: parameter.schema,
         origin: parameter,
         alias: []
