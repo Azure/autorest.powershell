@@ -14,11 +14,17 @@ function getPluralizationService(): EnglishPluralizationService {
 }
 
 export function singularize(word: string): string {
-  return getPluralizationService().singularize(word);
+
+  return word;
+
+  //return getPluralizationService().singularize(word);
 }
 
 function getSingularizedValue(name: string): string {
-  return pascalCase([singularize(name)]);
+
+  return name;
+  // return pascalCase(name);
+  // return pascalCase([singularize(name)]);
 }
 
 const cmdVerbMapGetVerb: { [verb: string]: string | Array<string> } = {
@@ -246,8 +252,8 @@ export function getCommandName(operationId: string, onMessage: (message: Message
   const opIdValues = operationId.split('_', 2);
 
   // OperationId can be specified without '_' (Underscore), Verb will retrieved by the below logic for non-approved verbs.
-  let cmdNoun = opIdValues.length === 2 ? getSingularizedValue(opIdValues[0]) : '';
-  let cmdVerb = opIdValues.length === 2 ? opIdValues[1] : getSingularizedValue(operationId);
+  let cmdNoun = opIdValues.length === 2 ? opIdValues[0] : '';
+  let cmdVerb = opIdValues.length === 2 ? opIdValues[1] : operationId;
   let cmdVerbs: Array<string> = [cmdVerb];
   const variant = operationId;
 
@@ -331,13 +337,13 @@ export function getCommandName(operationId: string, onMessage: (message: Message
     }
   }
   // Singularize command noun
-  if (cmdNoun) {
-    cmdNoun = getSingularizedValue(cmdNoun);
-  }
+  // if (cmdNoun) {
+  //   cmdNoun = getSingularizedValue(cmdNoun);
+  // }
 
   return cmdVerbs.map(v => {
     let verb = pascalCase([v]);
-    if (!cmdNoun) { verb = getSingularizedValue(verb); }
+    //   if (!cmdNoun) { verb = getSingularizedValue(verb); }
     onMessage({ Channel: Channel.Verbose, Text: `Operation '${operationId}': Using noun '${cmdNoun}' and verb '${verb}'.` });
     return { noun: cmdNoun, verb, variant };
   });
