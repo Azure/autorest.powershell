@@ -482,7 +482,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             if (labels) {
               const parsedLabels = new Dictionary<string>();
               for (const label of items(labels)) {
-                parsedLabels[label.key.toLowerCase()] = pascalCase(label.value);
+                parsedLabels[label.key.toLowerCase()] = label.value;
               }
 
               for (const property of properties) {
