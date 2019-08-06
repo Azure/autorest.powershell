@@ -181,7 +181,7 @@ export class OperationMethod extends Method {
         + ${removeEncoding(pp, pp.param.name, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
-        ,"\\\\?&*$|&*$|(\\\\?)&|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
+        ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
       });
       yield urlV.declarationStatement;
 
