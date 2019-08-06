@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { items, values, Dictionary } from '@microsoft.azure/codegen';
-import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective } from '@microsoft.azure/codegen-csharp';
+import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@microsoft.azure/codegen-csharp';
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
@@ -68,14 +68,28 @@ export class ModelExtensionsNamespace extends Namespace {
         });
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
 
-
-
         // 1. A partial class with the type converter attribute
         const model = new Class(ns, className, undefined, {
           partial: true,
           description: td.schema.details.csharp.description,
           fileName: `${className}.PowerShell`
         });
+
+        // if the model is supposed to be use 'by-reference' we should create an I*Reference interface for that
+        // and add that interface to the extension class
+        if (schema.details.csharp.byReference) {
+          const referenceInterface = new Interface(ns, `${interfaceName}Reference`, {
+            partial: true,
+            description: `Reference for model ${fullname}`,
+            fileName: `${interfaceName}.PowerShell` // make sure that the interface ends up in the same file as the class.
+          });
+
+          referenceInterface.add(new InterfaceProperty("Id", dotnet.String, { setAccess: Access.Internal }));
+
+          model.interfaces.push(referenceInterface);
+        }
+
+
         model.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
         model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
           static: Modifier.Static,

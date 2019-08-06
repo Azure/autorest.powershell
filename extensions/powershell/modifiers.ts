@@ -219,7 +219,7 @@ function getSetError(setObject: any, prohibitedSetters: Array<string>, selection
 export async function applyModifiers(service: Host) {
   const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives)
-    .linq.select(directive => directive)
+    // .linq.select(directive => directive)
     .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .linq.toArray();
 
