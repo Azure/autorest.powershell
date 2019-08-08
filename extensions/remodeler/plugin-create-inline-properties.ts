@@ -116,7 +116,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
     // this happens if there is a circular reference.
     // this means that this class should not attempt any inlining of that property at all .
     const canInline =
-      (!property.schema.details.default['do-not-inline']) &&
+      (!property.schema.details.default['skip-inline']) &&
       (!property.schema.details.default.byReference) &&
       (!property.schema.additionalProperties) &&
       property.schema.details.default.inline === 'yes';
