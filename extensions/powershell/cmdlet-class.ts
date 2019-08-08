@@ -966,6 +966,12 @@ export class CmdletClass extends Class {
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 
+          if (vParam.schema.details.csharp.byReference) {
+            // this parameter's schema is marked as 'by-reference' which means we should 
+            // tag it with an ExportAs attribute for the I*Reference type.
+            cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.details.csharp.referenceInterface})`] }));
+          }
+
           if (vParam.schema.type === JsonType.Array) {
             cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
           }
