@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { codemodel, JsonType, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties } from '@microsoft.azure/autorest.codemodel-v3';
 import { keys, length, values } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
@@ -144,6 +144,16 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           // mark it so that we can add profile support in the method generation
           parameter.details.default.apiversion = true;
         }
+      }
+    }
+  }
+
+  // when make-sub-resources-byreference is specified, mark models with a writable id as byref.
+  if (state.getValue('azure', false) && state.getValue('make-sub-resources-byreference')) {
+    for (const each of values(model.schemas)) {
+      const props = getAllProperties(each);
+      if (props.find(prop => prop.serializedName === 'id' && !prop.details.default.readOnly)) {
+        each.details.default.byReference = true;
       }
     }
   }
