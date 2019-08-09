@@ -149,7 +149,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   }
 
   // when make-sub-resources-byreference is specified, mark models with a writable id as byref.
-  if (state.getValue('azure', false) && state.getValue('make-sub-resources-byreference')) {
+  if (await state.getValue('azure', false) && await state.getValue('make-sub-resources-byreference', false)) {
 
     for (const schema of values(model.schemas)) {
       // find schemas that have an 'id' and are not readonly
