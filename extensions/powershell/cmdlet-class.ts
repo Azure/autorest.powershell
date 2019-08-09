@@ -973,6 +973,9 @@ export class CmdletClass extends Class {
           }
 
           if (vParam.schema.type === JsonType.Array) {
+            if (vParam.schema.items && vParam.schema.items.details.csharp.byReference) {
+              cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.items.details.csharp.referenceInterface}[])`] }));
+            }
             cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
           }
 

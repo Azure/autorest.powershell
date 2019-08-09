@@ -84,7 +84,7 @@ export class ModelExtensionsNamespace extends Namespace {
         // if the model is supposed to be use 'by-reference' we should create an I*Reference interface for that
         // and add that interface to the extension class
         if (schema.details.csharp.byReference) {
-          const refInterface = `${interfaceName}Reference`;
+          const refInterface = `${interfaceName}_Reference`;
           schema.details.csharp.referenceInterface = `${ns.fullName}.${refInterface}`;
 
           const referenceInterface = new Interface(ns, refInterface, {
