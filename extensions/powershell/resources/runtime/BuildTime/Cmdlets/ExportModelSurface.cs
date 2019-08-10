@@ -26,25 +26,24 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var types = Assembly.GetExecutingAssembly().GetExportedTypes()
                 .Where(t => t.IsClass && (t.Namespace.StartsWith(ModelNamespace) || t.Namespace.StartsWith(SupportNamespace)));
-            var sb = UseExpandedFormat ? ExpandedFormat(types) : CondensedFormat(types);
+            var typeInfos = types.Select(t => new ModelTypeInfo {
+                Type = t,
+                TypeName = t.Name,
+                Properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => !p.GetIndexParameters().Any()).OrderBy(p => p.Name).ToArray(),
+                NamespaceGroup = t.Namespace.Split('.').LastOrDefault().EmptyIfNull()
+            }).Where(tp => tp.Properties.Any());
+            var sb = UseExpandedFormat ? ExpandedFormat(typeInfos) : CondensedFormat(typeInfos);
             Directory.CreateDirectory(OutputFolder);
             File.WriteAllText(Path.Combine(OutputFolder, "ModelSurface.md"), sb.ToString());
         }
 
-        private static StringBuilder ExpandedFormat(IEnumerable<Type> types)
+        private static StringBuilder ExpandedFormat(IEnumerable<ModelTypeInfo> typeInfos)
         {
             var sb = new StringBuilder();
-            var typeGroups = types.Select(t => (
-                    TypeName: t.Name,
-                    Properties: t.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(p => p.Name).ToArray(),
-                    NamespaceGroup: t.Namespace.Split('.').LastOrDefault().EmptyIfNull()
-                )).Where(tp => tp.Properties.Any())
-                .OrderBy(tp => tp.TypeName)
-                .ThenBy(tp => tp.NamespaceGroup);
-            foreach (var typeGroup in typeGroups)
+            foreach (var typeInfo in typeInfos.OrderBy(tp => tp.TypeName).ThenBy(tp => tp.NamespaceGroup))
             {
-                sb.Append($"### {typeGroup.TypeName} [{typeGroup.NamespaceGroup}]{Environment.NewLine}");
-                foreach (var property in typeGroup.Properties)
+                sb.Append($"### {typeInfo.TypeName} [{typeInfo.NamespaceGroup}]{Environment.NewLine}");
+                foreach (var property in typeInfo.Properties)
                 {
                     sb.Append($"  - {property.Name} `{property.PropertyType.ToSyntaxTypeName()}`{Environment.NewLine}");
                 }
@@ -54,16 +53,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return sb;
         }
 
-        private static StringBuilder CondensedFormat(IEnumerable<Type> types)
+        private static StringBuilder CondensedFormat(IEnumerable<ModelTypeInfo> typeInfos)
         {
             var sb = new StringBuilder();
-            var typeGroups = types.Select(t => (
-                    TypeName: t.Name,
-                    Properties: t.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(p => p.Name).ToArray(),
-                    NamespaceGroup: t.Namespace.Split('.').LastOrDefault().EmptyIfNull()
-                )).Where(tp => tp.Properties.Any())
+            var typeGroups = typeInfos
                 .GroupBy(tp => tp.TypeName)
                 .Select(tpg => (
+                    Type: tpg.First().Type,
                     TypeName: tpg.Key,
                     Properties: tpg.SelectMany(tp => tp.Properties).DistinctBy(p => p.Name).OrderBy(p => p.Name).ToArray(),
                     NamespaceGroups: tpg.Select(tp => tp.NamespaceGroup).OrderBy(ng => ng).ToArray()
@@ -71,15 +67,38 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .OrderBy(tc => tc.TypeName);
             foreach (var typeGroup in typeGroups)
             {
-                sb.Append($"### {typeGroup.TypeName} [{String.Join(", ", typeGroup.NamespaceGroups)}]{Environment.NewLine}");
+                var aType = GetAssociativeType(typeGroup.Type);
+                var aText = aType != null ? $@" \<{aType.ToSyntaxTypeName()}\>" : String.Empty;
+                sb.Append($"### {typeGroup.TypeName}{aText} [{String.Join(", ", typeGroup.NamespaceGroups)}]{Environment.NewLine}");
                 foreach (var property in typeGroup.Properties)
                 {
-                    sb.Append($"  - {property.Name} `{property.PropertyType.ToSyntaxTypeName()}`{Environment.NewLine}");
+                    var propertyAType = GetAssociativeType(property.PropertyType);
+                    var propertyAText = propertyAType != null ? $" <{propertyAType.ToSyntaxTypeName()}>" : String.Empty;
+                    var enumNames = GetEnumFieldNames(property.PropertyType.Unwrap());
+                    var enumNamesText = enumNames.Any() ? $" **{{{String.Join(", ", enumNames)}}}**" : String.Empty;
+                    sb.Append($"  - {property.Name} `{property.PropertyType.ToSyntaxTypeName()}{propertyAText}`{enumNamesText}{Environment.NewLine}");
                 }
                 sb.AppendLine();
             }
 
             return sb;
+        }
+
+        //https://stackoverflow.com/a/4963190/294804
+        private static Type GetAssociativeType(Type type) =>
+            type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAssociativeArray<>))?.GetGenericArguments().First();
+
+        private static string[] GetEnumFieldNames(Type type) =>
+            type.IsValueType && !type.IsPrimitive
+                ? type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.FieldType == type).Select(p => p.Name).ToArray()
+                : new string[] { };
+
+        private class ModelTypeInfo
+        {
+            public Type Type { get; set; }
+            public string TypeName { get; set; }
+            public PropertyInfo[] Properties { get; set; }
+            public string NamespaceGroup { get; set; }
         }
     }
 }

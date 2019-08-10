@@ -60,7 +60,7 @@ schema: {HelpInfo.Schema.ToString(3)}
 {ExampleInfo.Code}
 {ExampleCodeFooter}
 
-{ExampleInfo.Description.ReplaceSentenceEndWithNewline()}
+{ExampleInfo.Description.ToDescriptionFormat()}
 
 ";
     }
@@ -87,7 +87,7 @@ schema: {HelpInfo.Schema.ToString(3)}
                 : false.ToString();
 
             return $@"### -{ParameterInfo.Name}
-{ParameterInfo.Description.ReplaceSentenceEndWithNewline()}
+{ParameterInfo.Description.ToDescriptionFormat()}
 
 ```yaml
 Type: {ParameterInfo.Type.FullName}
@@ -138,14 +138,16 @@ Locale: en-US
         }
 
         public override string ToString() => $@"### [{HelpInfo.CmdletName}]({HelpInfo.CmdletName}.md)
-{HelpInfo.Description.ReplaceSentenceEndWithNewline()}
+{HelpInfo.Description.ToDescriptionFormat()}
 
 ";
     }
 
     internal static class PsHelpOutputExtensions
     {
+        public static string EscapeAngleBrackets(this string text) => text?.Replace("<", @"\<")?.Replace(">", @"\>");
         public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}")?.Replace(". ", $".{Environment.NewLine}");
+        public static string ToDescriptionFormat(this string text) => text?.EscapeAngleBrackets()?.ReplaceSentenceEndWithNewline();
 
         public const string ExampleNameHeader = "### ";
         public const string ExampleCodeHeader = "```powershell";
