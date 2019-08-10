@@ -31,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 TypeName = t.Name,
                 Properties = t.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => !p.GetIndexParameters().Any()).OrderBy(p => p.Name).ToArray(),
                 NamespaceGroup = t.Namespace.Split('.').LastOrDefault().EmptyIfNull()
-            }).Where(tp => tp.Properties.Any());
+            }).Where(mti => mti.Properties.Any());
             var sb = UseExpandedFormat ? ExpandedFormat(typeInfos) : CondensedFormat(typeInfos);
             Directory.CreateDirectory(OutputFolder);
             File.WriteAllText(Path.Combine(OutputFolder, "ModelSurface.md"), sb.ToString());
@@ -40,7 +40,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private static StringBuilder ExpandedFormat(IEnumerable<ModelTypeInfo> typeInfos)
         {
             var sb = new StringBuilder();
-            foreach (var typeInfo in typeInfos.OrderBy(tp => tp.TypeName).ThenBy(tp => tp.NamespaceGroup))
+            foreach (var typeInfo in typeInfos.OrderBy(mti => mti.TypeName).ThenBy(mti => mti.NamespaceGroup))
             {
                 sb.Append($"### {typeInfo.TypeName} [{typeInfo.NamespaceGroup}]{Environment.NewLine}");
                 foreach (var property in typeInfo.Properties)
@@ -57,17 +57,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var sb = new StringBuilder();
             var typeGroups = typeInfos
-                .GroupBy(tp => tp.TypeName)
-                .Select(tpg => (
-                    Type: tpg.First().Type,
-                    TypeName: tpg.Key,
-                    Properties: tpg.SelectMany(tp => tp.Properties).DistinctBy(p => p.Name).OrderBy(p => p.Name).ToArray(),
-                    NamespaceGroups: tpg.Select(tp => tp.NamespaceGroup).OrderBy(ng => ng).ToArray()
+                .GroupBy(mti => mti.TypeName)
+                .Select(tig => (
+                    Types: tig.Select(mti => mti.Type).ToArray(),
+                    TypeName: tig.Key,
+                    Properties: tig.SelectMany(mti => mti.Properties).DistinctBy(p => p.Name).OrderBy(p => p.Name).ToArray(),
+                    NamespaceGroups: tig.Select(mti => mti.NamespaceGroup).OrderBy(ng => ng).ToArray()
                 ))
-                .OrderBy(tc => tc.TypeName);
+                .OrderBy(tg => tg.TypeName);
             foreach (var typeGroup in typeGroups)
             {
-                var aType = GetAssociativeType(typeGroup.Type);
+                var aType = typeGroup.Types.Select(GetAssociativeType).FirstOrDefault(t => t != null);
                 var aText = aType != null ? $@" \<{aType.ToSyntaxTypeName()}\>" : String.Empty;
                 sb.Append($"### {typeGroup.TypeName}{aText} [{String.Join(", ", typeGroup.NamespaceGroups)}]{Environment.NewLine}");
                 foreach (var property in typeGroup.Properties)
