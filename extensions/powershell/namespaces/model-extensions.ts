@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { items, values, Dictionary } from '@microsoft.azure/codegen';
-import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective } from '@microsoft.azure/codegen-csharp';
+import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@microsoft.azure/codegen-csharp';
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '@microsoft.azure/autorest.csharp-v2';
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
 import { join } from 'path';
+
 
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
@@ -21,6 +22,11 @@ class ApiVersionModelExtensionsNamespace extends Namespace {
 }
 
 export class ModelExtensionsNamespace extends Namespace {
+  CreateReferenceType(): Class {
+    const rt = new Class(this, "ReferenceType");
+    rt.add(new Property("Id", dotnet.String, { setAccess: Access.Internal }));
+    return rt;
+  }
   private subNamespaces = new Dictionary<Namespace>();
 
   public get outputFolder(): string {
@@ -68,14 +74,34 @@ export class ModelExtensionsNamespace extends Namespace {
         });
         modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
 
-
-
         // 1. A partial class with the type converter attribute
         const model = new Class(ns, className, undefined, {
           partial: true,
           description: td.schema.details.csharp.description,
           fileName: `${className}.PowerShell`
         });
+
+        // if the model is supposed to be use 'by-reference' we should create an I*Reference interface for that
+        // and add that interface to the extension class
+        if (schema.details.csharp.byReference) {
+          const refInterface = `${interfaceName}_Reference`;
+          schema.details.csharp.referenceInterface = `${ns.fullName}.${refInterface}`;
+
+          const referenceInterface = new Interface(ns, refInterface, {
+            partial: true,
+            description: `Reference for model ${fullname}`,
+            fileName: `${interfaceName}.PowerShell` // make sure that the interface ends up in the same file as the class.
+          });
+          referenceInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
+          referenceInterface.add(new InterfaceProperty("Id", dotnet.String, { setAccess: Access.Internal }));
+          model.interfaces.push(referenceInterface);
+
+          // add it to the generic reference type.
+          // referenceType = referenceType || this.CreateReferenceType();
+          // referenceType.interfaces.push(referenceInterface);
+        }
+
+
         model.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
         model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
           static: Modifier.Static,
@@ -153,8 +179,8 @@ export class ModelExtensionsNamespace extends Namespace {
           const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
           yield t.declarationStatement;
 
-          if (schema.details.default.uid === 'universal-parameter-type') {
-            yield `// for 'universal-parameter-type' we allow string conversion too.`
+          if (schema.details.default.uid === 'universal-parameter-type' || schema.details.csharp.byReference) {
+            yield `// we allow string conversion too.`
             yield If(`${t.value} == typeof(${System.String})`, Return(dotnet.True))
           }
 
@@ -195,18 +221,22 @@ export class ModelExtensionsNamespace extends Namespace {
 
           const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
           yield t.declarationStatement;
-          if ($this.state.project.azure) {
-            if (schema.details.default.uid === 'universal-parameter-type') {
-              yield `// for 'universal-parameter-type' support direct string to id type conversion.`
-              yield If(`${t.value} == typeof(${System.String})`, function* () {
-                yield Return(`new ${className} { Id = sourceValue }`);
-              });
-            }
+
+          if (($this.state.project.azure && schema.details.default.uid === 'universal-parameter-type') || schema.details.csharp.byReference) {
+            yield `// support direct string to id type conversion.`
+            yield If(`${t.value} == typeof(${System.String})`, function* () {
+              yield Return(`new ${className} { Id = sourceValue }`);
+            });
+          }
+
+          if (schema.details.csharp.byReference) {
+            yield `// if Id is present with by-reference schemas, just return the type with Id `
+            yield Try(Return(`new ${className} { Id = sourceValue.Id }`));
+            yield Catch(undefined, `// Not an Id reference parameter`);
           }
 
           // if the type can be assigned directly, do that 
           yield If(IsAssignableFrom(td, t), Return(`sourceValue`));
-
 
           // try using json first (either from string or toJsonString())
           yield Try(Return(`${className}.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());`));
@@ -217,11 +247,8 @@ export class ModelExtensionsNamespace extends Namespace {
 
           // null if not successful
           yield Return(dotnet.Null);
-        }
-        );
+        });
       }
     }
-
-
   }
 }

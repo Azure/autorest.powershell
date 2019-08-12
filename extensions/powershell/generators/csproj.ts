@@ -47,5 +47,13 @@ ${release}
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);${removeCd(project.resourcesFolder)}/**</DefaultItemExcludes>
+  </PropertyGroup>
+
 </Project>`, undefined, 'source-file-csharp');
+}
+
+function removeCd(path: string): string {
+  return path.startsWith('./') ? path.replace('./', '') : path;
 }

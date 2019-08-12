@@ -78,6 +78,18 @@ format-ps1xml: $(current-folder)/$(module-name).format.ps1xml
 nuspec: $(current-folder)/$(module-name).nuspec
 ```
 
+``` yaml
+declare-directive:
+  no-inline: >-
+    (() => {
+      return {
+        from: "code-model-v3", 
+        where: (Array.isArray($) ? $ : [$]).map( each => `$.schemas[?(/^${each}$/i.exec(@.details.default.name))]`),
+        transform: "$.details.default['skip-inline'] = true;"
+      };
+    })()
+```
+
 # Pipeline Configuration
 ``` yaml
 pipeline:
@@ -87,12 +99,13 @@ pipeline:
   remodeler:
     input: openapi-document/multi-api/identity     # the plugin where we get inputs from
   
-  # remodeler/transform: 
-  #    input: remodeler 
+  # allow developer to do transformations on the code model. 
+  remodeler/new-transform: 
+    input: remodeler 
 
   # Make some interpretations about what some things in the model mean
   tweakcodemodel:
-    input: remodeler # /transform
+    input: remodeler/new-transform
 
   # Specific things for Azure
   tweakcodemodelazure:

@@ -219,7 +219,7 @@ function getSetError(setObject: any, prohibitedSetters: Array<string>, selection
 export async function applyModifiers(service: Host) {
   const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives)
-    .linq.select(directive => directive)
+    // .linq.select(directive => directive)
     .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .linq.toArray();
 
@@ -228,7 +228,8 @@ export async function applyModifiers(service: Host) {
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
-  for (const directive of directives) {
+  // only look at directives without the `transform` node.
+  for (const directive of directives.filter(each => !each.transform)) {
     const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
     }
@@ -481,7 +482,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             if (labels) {
               const parsedLabels = new Dictionary<string>();
               for (const label of items(labels)) {
-                parsedLabels[label.key.toLowerCase()] = pascalCase(label.value);
+                parsedLabels[label.key.toLowerCase()] = label.value;
               }
 
               for (const property of properties) {
