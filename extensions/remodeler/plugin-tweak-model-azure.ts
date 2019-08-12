@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { codemodel, JsonType, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties, HttpMethod, schema } from '@microsoft.azure/autorest.codemodel-v3';
 import { keys, length, values } from '@microsoft.azure/codegen';
 
 import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
@@ -143,6 +143,28 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
           // mark it so that we can add profile support in the method generation
           parameter.details.default.apiversion = true;
+        }
+      }
+    }
+  }
+
+  // when make-sub-resources-byreference is specified, mark models with a writable id as byref.
+  if (await state.getValue('azure', false) && await state.getValue('make-sub-resources-byreference', false)) {
+
+    for (const schema of values(model.schemas)) {
+      // find schemas that have an 'id' and are not readonly
+      if (values(getAllProperties(schema)).linq.any(prop => prop.serializedName === 'id' && !prop.details.default.readOnly)) {
+
+        // look thru the operations, and the PUT methods 
+        for (const op of values(model.http.operations).linq.where(o => o.method === HttpMethod.Put)) {
+
+          // see if any of the responses have the same schema as we are looking for 
+          if (values(op.responses).linq.any(rsps => values(rsps).linq.any(resp => !!resp.schema && resp.schema.details.default.uid === schema.details.default.uid))) {
+
+            // tell it not to inline that 
+            schema.details.default.byReference = true;
+          }
+
         }
       }
     }

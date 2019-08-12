@@ -37,10 +37,10 @@ export class ByteArray implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Xml: {
-          return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.Value, out var ${tmp}) ? System.Convert.FromBase64String(${tmp}) : ${defaultValue}`);
+          return toExpression(`If( ${valueOf(container)}?.Element("${serializedName}")?.Value, out var ${tmp}) ? System.Convert.FromBase64String(${tmp}.Replace("_","/").Replace("-","+").PadRight(  ${tmp}.Length  + ${tmp}.Length * 3 % 4, '=')) : ${defaultValue}`);
         }
         case KnownMediaType.Json: {
-          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonString}>("${serializedName}"), out var ${tmp}) ?  System.Convert.FromBase64String( (string)${tmp} ) : null`);
+          return toExpression(`If( ${valueOf(container)}?.PropertyT<${ClientRuntime.JsonString}>("${serializedName}"), out var ${tmp}) ?  System.Convert.FromBase64String( ((string)${tmp}).Replace("_","/").Replace("-","+").PadRight(  ((string)${tmp}).Length  + ((string)${tmp}).Length * 3 % 4, '=') ) : null`);
         }
         case KnownMediaType.Header: {
           //const tmp = `__${camelCase(['header', ...deconstruct(serializedName)])}`;
