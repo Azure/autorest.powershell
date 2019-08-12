@@ -47,7 +47,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var sb = new StringBuilder();
                 sb.Append(markdownInfo.ToHelpMetadataOutput());
                 sb.Append($"# {markdownInfo.CmdletName}{Environment.NewLine}{Environment.NewLine}");
-                sb.Append($"## SYNOPSIS{Environment.NewLine}{markdownInfo.Synopsis.ReplaceSentenceEndWithNewline()}{Environment.NewLine}{Environment.NewLine}");
+                sb.Append($"## SYNOPSIS{Environment.NewLine}{markdownInfo.Synopsis.ToDescriptionFormat()}{Environment.NewLine}{Environment.NewLine}");
 
                 sb.Append($"## SYNTAX{Environment.NewLine}{Environment.NewLine}");
                 var hasMultipleParameterSets = markdownInfo.SyntaxInfos.Length > 1;
@@ -56,7 +56,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(syntaxInfo.ToHelpSyntaxOutput(hasMultipleParameterSets));
                 }
 
-                sb.Append($"## DESCRIPTION{Environment.NewLine}{markdownInfo.Description.ReplaceSentenceEndWithNewline()}{Environment.NewLine}{Environment.NewLine}");
+                sb.Append($"## DESCRIPTION{Environment.NewLine}{markdownInfo.Description.ToDescriptionFormat()}{Environment.NewLine}{Environment.NewLine}");
 
                 sb.Append($"## EXAMPLES{Environment.NewLine}{Environment.NewLine}");
                 foreach(var exampleInfo in markdownInfo.Examples)
@@ -131,7 +131,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var sb = new StringBuilder();
             sb.Append(ModuleInfo.ToModulePageMetadataOutput());
             sb.Append($"# {ModuleInfo.Name} Module{Environment.NewLine}");
-            sb.Append($"## Description{Environment.NewLine}{ModuleInfo.Description.ReplaceSentenceEndWithNewline()}{Environment.NewLine}{Environment.NewLine}");
+            sb.Append($"## Description{Environment.NewLine}{ModuleInfo.Description.ToDescriptionFormat()}{Environment.NewLine}{Environment.NewLine}");
 
             sb.Append($"## {ModuleInfo.Name} Cmdlets{Environment.NewLine}");
             foreach (var markdownInfo in markdownInfos)
