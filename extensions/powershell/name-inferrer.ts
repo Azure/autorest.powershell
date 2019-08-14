@@ -338,7 +338,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
   return cmdVerbs.map(v => {
     let verb = pascalCase([v]);
     if (!cmdNoun) { verb = getSingularizedValue(verb); }
-    onMessage({ Channel: Channel.Verbose, Text: `Operation '${operationId}': Using noun '${cmdNoun}' and verb '${verb}'.` });
+    onMessage({ Channel: Channel.Debug, Text: `Operation '${operationId}': Using noun '${cmdNoun}' and verb '${verb}'.` });
     return { noun: cmdNoun, verb, variant };
   });
 }

@@ -193,7 +193,7 @@ directive:
   - reason: FixFromXML
     from: source-file-csharp
     where: $
-    text-transform: return $.replace( /FromXml/g , 'FromJson');
+    transform: return $.replace( /FromXml/g , 'FromJson');
 
 
 ```

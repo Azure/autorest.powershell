@@ -310,7 +310,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           if (clearAlias) {
             parameter.alias = [];
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from parameter ${parameter.name}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Cleared aliases from parameter ${parameter.name}.`
             });
           }
 
@@ -322,19 +322,19 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
             parameter.alias = [...new Set([...parameter.alias, ...parsedAlias])];
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${parsedAlias} to parameter ${parameter.name}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Added alias ${parsedAlias} to parameter ${parameter.name}.`
             });
           }
 
           if (parameterReplacer) {
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed parameter-name from ${prevName} to ${parameter.name}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Changed parameter-name from ${prevName} to ${parameter.name}.`
             });
           }
 
           if (paramDescriptionReplacer) {
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Set parameter-description from parameter ${parameter.name}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Set parameter-description from parameter ${parameter.name}.`
             });
           }
         }
@@ -368,14 +368,14 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
             let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
             state.message({
-              Channel: Channel.Verbose, Text: modificationMessage
+              Channel: Channel.Debug, Text: modificationMessage
             });
           }
 
           if (clearAlias) {
             operation.details.csharp.alias = [];
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Cleared aliases from command ${newCommandName}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Cleared aliases from command ${newCommandName}.`
             });
           }
 
@@ -394,7 +394,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
             operation.details.csharp.alias = [...new Set([...operation.details.csharp.alias, ...parsedAlias])];
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Added alias ${parsedAlias} to command ${newCommandName}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Added alias ${parsedAlias} to command ${newCommandName}.`
             });
           }
         }
@@ -461,7 +461,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           }
           if (propertyNameRegex) {
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed property-name from ${prevName} to ${property.name}.`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Changed property-name from ${prevName} to ${property.name}.`
             });
           }
         }
@@ -544,7 +544,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           const prevName = model.details.csharp.name;
           model.details.csharp.name = modelNameReplacer ? modelNameRegex ? model.details.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.details.csharp.name;
           state.message({
-            Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
+            Channel: Channel.Debug, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.details.csharp.name}.`
           });
         }
       }
@@ -582,7 +582,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
               .linq.select(each => each.details.csharp.name)
               .linq.toArray();
             state.message({
-              Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed enum-value-name from ${prevName} to ${enumValue.name}. Enum: ${JSON.stringify(enumNames, null, 2)}`
+              Channel: Channel.Debug, Text: `[DIRECTIVE] Changed enum-value-name from ${prevName} to ${enumValue.name}. Enum: ${JSON.stringify(enumNames, null, 2)}`
             });
           }
         }
@@ -591,7 +591,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           const prevName = each.details.csharp.name;
           each.details.csharp.name = enumNameReplacer ? enumNameRegex ? each.details.csharp.name.replace(enumNameRegex, enumNameReplacer) : enumNameReplacer : prevName;
           state.message({
-            Channel: Channel.Verbose, Text: `[DIRECTIVE] Changed enum-name from ${prevName} to ${each.details.csharp.name}.`
+            Channel: Channel.Debug, Text: `[DIRECTIVE] Changed enum-name from ${prevName} to ${each.details.csharp.name}.`
           });
         }
       }
@@ -654,7 +654,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         for (const key of operationsToRemoveKeys) {
           const operationInfo = state.model.commands.operations[key].details.csharp;
           state.message({
-            Channel: Channel.Verbose, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
+            Channel: Channel.Debug, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
           });
 
           delete state.model.commands.operations[key];

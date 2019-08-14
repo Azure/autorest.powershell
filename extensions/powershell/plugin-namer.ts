@@ -69,7 +69,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         const newCmdletName = getCmdletName(verb, operation.details.csharp.subjectPrefix, operation.details.csharp.subject);
         state.message(
           {
-            Channel: Channel.Verbose,
+            Channel: Channel.Debug,
             Text: `Sanitized cmdlet-name -> Changed cmdlet-name from ${prevCmdletName} to ${newCmdletName}: {subjectPrefix: ${operation.details.csharp.subjectPrefix}, subject: ${operation.details.csharp.subject}${variantName ? `, variant: ${variantName}}` : '}'}`
           }
         );
@@ -87,7 +87,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         const singularName = singularize(parameter.name);
         if (prevName != singularName) {
           parameter.name = singularName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to singular ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+          state.message({ Channel: Channel.Debug, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to singular ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
         }
 
         // save the name again to compare in case it was modified
@@ -113,8 +113,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
             // change name
             parameter.name = sanitizedName;
-            state.message({ Channel: Channel.Verbose, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
-            state.message({ Channel: Channel.Verbose, Text: `                         -> And, added alias '${prevName}'` });
+            state.message({ Channel: Channel.Debug, Text: `Sanitized parameter-name -> Changed parameter-name from ${prevName} to ${parameter.name} from command ${operation.verb}-${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}` });
+            state.message({ Channel: Channel.Debug, Text: `                         -> And, added alias '${prevName}'` });
           }
         }
       }
@@ -134,7 +134,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         const singularName = singularize(property.name);
         if (prevName != singularName) {
           property.name = singularName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.details.csharp.name}` });
         }
 
         // save the name again to compare in case it was modified
@@ -158,8 +158,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
           // change name
           property.name = sanitizedName;
-          state.message({ Channel: Channel.Verbose, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
-          state.message({ Channel: Channel.Verbose, Text: `                        -> And, added alias '${prevName}'` });
+          state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
+          state.message({ Channel: Channel.Debug, Text: `                        -> And, added alias '${prevName}'` });
         }
       }
     }

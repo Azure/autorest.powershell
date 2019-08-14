@@ -1210,7 +1210,7 @@ export class CmdletClass extends Class {
       this.add(new Attribute(InternalExportAttribute));
       const noun = `${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`
       const cmdletName = `${operation.details.csharp.verb}-${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
-      this.state.message({ Channel: Channel.Verbose, Text: `[DIRECTIVE] Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
+      this.state.message({ Channel: Channel.Debug, Text: `[DIRECTIVE] Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));

@@ -103,17 +103,17 @@ export /* @internal */ class Inferrer {
     const model = this.state.model;
 
     this.state.message({
-      Channel: Channel.Verbose, Text: `[CMDLET-PREFIX] => '${model.details.default.prefix}'`
+      Channel: Channel.Debug, Text: `[CMDLET-PREFIX] => '${model.details.default.prefix}'`
     });
 
     model.details.default.serviceName = this.serviceName;
     this.state.message({
-      Channel: Channel.Verbose, Text: `[SERVICE-NAME] => '${model.details.default.serviceName}'`
+      Channel: Channel.Debug, Text: `[SERVICE-NAME] => '${model.details.default.serviceName}'`
     });
 
     model.details.default.subjectPrefix = this.subjectPrefix;
     this.state.message({
-      Channel: Channel.Verbose, Text: `[SUBJECT-PREFIX] => '${model.details.default.subjectPrefix}'`
+      Channel: Channel.Debug, Text: `[SUBJECT-PREFIX] => '${model.details.default.subjectPrefix}'`
     });
 
     return this;
@@ -385,7 +385,7 @@ export /* @internal */ class Inferrer {
     }
 
     // create variant 
-    state.message({ Channel: Channel.Verbose, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
+    state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
     const [pathParams, otherParams] = values(requiredParameters).linq.bifurcate(each => each.in === ParameterLocation.Path);
