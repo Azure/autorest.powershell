@@ -1,5 +1,7 @@
 # powershell Release Notes [9/27/2018] (powershell version `1.0.123`)
 
+# changes coming.
+
 ## What's New
 - All runtime code is now generated in the same namespace as the project itself (no more `Carbon.Json` and `Microsoft.Rest.ClientRuntime` namespaces) -- this will make it so you can have multiple generated code sets in the same project if necessary. 
 - runtime code is a marked lot more `internal` than it was; `public` is  only used where it must.
