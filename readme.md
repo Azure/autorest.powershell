@@ -39,8 +39,8 @@ cumbersome.
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 ``` yaml 
-enable-multi-api: true
 powershell-testing: true
+pipeline-model: v3
 require: "$(this-folder)/extensions/powershell/readme.md"
 ```
 

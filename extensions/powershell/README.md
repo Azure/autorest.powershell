@@ -25,9 +25,10 @@ use-extension:
 
 > Multi-Api Mode
 ``` yaml
-enable-multi-api: true
-load-priority: 1001
+pipeline-model: v3
+
 ```
+
 
 > Values
 ``` yaml
