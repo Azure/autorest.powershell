@@ -362,10 +362,19 @@ export class CallMethod extends Method {
 
             case 'azure-asyncoperation':
             case 'azure-async-operation':
-              // perform a final GET on the uri in Azure-AsyncOperation header
-              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
-              yield finalUri;
-              break;
+              // depending on the type of request, do the appropriate behavior
+              switch ($this.opMethod.operation.method.toLowerCase()) {
+                case 'post':
+                case 'delete':
+                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
+                  yield finalUri;
+                  break;
+                case 'patch':
+                case 'put':
+                  // perform a final GET on the original URI.
+                  finalUri = originalUri;
+                  break;
+              }
 
             default:
               // depending on the type of request, fall back to the appropriate behavior
