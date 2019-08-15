@@ -141,6 +141,12 @@ namespace Microsoft.Rest.ClientRuntime
                 return ToJsonValue(vValue) ?? TryToJsonValue(vValue) ?? new JsonString(vValue.ToString());
             }
 
+            // dictionaries are objects that should be able to serialize
+            if (value is System.Collections.Generic.IDictionary<string, object> dictionary)
+            {
+                return Microsoft.Rest.ClientRuntime.JsonSerializable.ToJson(dictionary, null);
+            }
+
             // enumerable collections are handled like arrays (again, fallback to ToJson()/ToJsonString() or literal JsonString) 
             if (value is System.Collections.IEnumerable enumerableValue)
             {
