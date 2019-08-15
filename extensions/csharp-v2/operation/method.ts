@@ -375,6 +375,7 @@ export class CallMethod extends Method {
                   finalUri = originalUri;
                   break;
               }
+              break;
 
             default:
               // depending on the type of request, fall back to the appropriate behavior
