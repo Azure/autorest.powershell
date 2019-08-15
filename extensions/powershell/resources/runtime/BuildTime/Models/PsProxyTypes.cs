@@ -58,7 +58,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Variants = variants;
             ParameterGroups = Variants.ToParameterGroups().ToArray();
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
-            OutputTypes = Variants.SelectMany(v => v.Info.OutputType).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
+            OutputTypes = Variants.SelectMany(v => v.Info.OutputType).Where(ot => ot.Type != null).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.SupportsShouldProcess);
             SupportsPaging = Variants.Any(v => v.SupportsPaging);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
