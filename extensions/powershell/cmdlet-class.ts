@@ -62,10 +62,15 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
         break;
     }
   }
-
-  const ptypes = [`typeof(${pt.declaration})`];
-  if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
-    ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+  const ptypes = new Array<string>();
+  if (pt.schema && pt.schema && pt.schema.details.csharp.byReference) {
+    ptypes.push(`typeof(${pt.schema.details.csharp.namespace}.${pt.schema.details.csharp.interfaceName}_Reference)`)
+    // do we need polymorphic types for by-resource ? Don't think so.
+  } else {
+    ptypes.push(`typeof(${pt.declaration})`);
+    if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
+      ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+    }
   }
 
   targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
