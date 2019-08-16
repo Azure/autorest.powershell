@@ -534,13 +534,10 @@ export class CmdletClass extends Class {
                 str += '// props ' + element.name + ' ' + element.accessViaMember + ' ' + element.accessViaProperty + "\n";
               });
 
-
               yield str;
               yield ('// codeProp = ' + codeProp);
               yield ('// messageProp = ' + messageProp);
               yield ('// errrorProperty = ' + errorProperty);
-
-
 
               if (codeProp && messageProp) {
                 const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
