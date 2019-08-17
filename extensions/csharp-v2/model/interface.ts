@@ -173,10 +173,16 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
     switch (pt.elementType.schema.type) {
       case JsonType.Object:
         if (pt.elementType.schema.details.csharp.interfaceImplementation) {
-          pt = pt.elementType.schema.details.csharp.interfaceImplementation;
+          pt = {
+            declaration: pt.elementType.schema.details.csharp.interfaceImplementation.declaration,
+            schema: pt.elementType.schema,
+          };
         } else {
           // arg! it's not done yet. Hope it's not polymorphic itself. 
-          pt = { declaration: `${pt.elementType.schema.details.csharp.namespace}.${pt.elementType.schema.details.csharp.interfaceName}` }
+          pt = {
+            declaration: `${pt.elementType.schema.details.csharp.namespace}.${pt.elementType.schema.details.csharp.interfaceName}`,
+            schema: pt.elementType.schema,
+          };
         }
         break;
 
