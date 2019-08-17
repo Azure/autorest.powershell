@@ -25,8 +25,8 @@ export interface Metadata {
   copyright: string,
   tags: string,
   companyName: string,
-  licenseUrl: string,
-  projectUrl: string
+  licenseUri: string,
+  projectUri: string
 }
 
 export class PSSwitch extends Boolean {
@@ -133,6 +133,7 @@ export class Project extends codeDomProject {
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.accountsVersionMinimum = '1.6.0';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
+    this.metadata = await this.state.getValue<Metadata>('metadata');
 
     // Flags
     this.skipModelCmdlets = true;
@@ -178,19 +179,19 @@ export class Project extends codeDomProject {
     this.readme = `${this.baseFolder}/readme.md`;
 
     //Metadata
-    let defaultMetadata: Metadata = {
-      authors: '',
-      owners: '',
-      requireLicenseAcceptance: false,
-      description: '',
-      copyright: '',
-      tags: '',
-      companyName: '',
-      licenseUrl: '',
-      projectUrl: ''
-    };
-    let metadataFromConfig = await this.state.getValue<Metadata>('metadata', defaultMetadata);
-    this.metadata = Object.assign(defaultMetadata, metadataFromConfig);
+    // let defaultMetadata: Metadata = {
+    //   authors: '',
+    //   owners: '',
+    //   requireLicenseAcceptance: false,
+    //   description: '',
+    //   copyright: '',
+    //   tags: '',
+    //   companyName: '',
+    //   licenseUrl: '',
+    //   projectUrl: ''
+    // };
+    // let metadataFromConfig = await this.state.getValue<Metadata>('metadata', defaultMetadata);
+    // this.metadata = Object.assign(defaultMetadata, metadataFromConfig);
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));

@@ -151,6 +151,25 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class PsModuleHelpInfo
+    {
+        public string Name { get; }
+        public Guid Guid { get; }
+        public string Description { get; }
+
+        public PsModuleHelpInfo(PSModuleInfo moduleInfo)
+            : this(moduleInfo?.Name ?? String.Empty, moduleInfo?.Guid ?? Guid.NewGuid(), moduleInfo?.Description ?? String.Empty)
+        {
+        }
+
+        public PsModuleHelpInfo(string name, Guid guid, string description)
+        {
+            Name = name;
+            Guid = guid;
+            Description = description;
+        }
+    }
+
     internal static class HelpTypesExtensions
     {
         public static PsHelpInfo ToPsHelpInfo(this PSObject helpObject) => new PsHelpInfo(helpObject);
@@ -163,5 +182,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static PsHelpExampleInfo ToExampleInfo(this PSObject exampleObject) => new PsHelpExampleInfo(exampleObject);
         public static PsHelpLinkInfo ToLinkInfo(this PSObject linkObject) => new PsHelpLinkInfo(linkObject);
         public static PsHelpSyntaxInfo ToSyntaxInfo(this PSObject syntaxObject) => new PsHelpSyntaxInfo(syntaxObject);
+        public static PsModuleHelpInfo ToModuleInfo(this PSModuleInfo moduleInfo) => new PsModuleHelpInfo(moduleInfo);
     }
 }

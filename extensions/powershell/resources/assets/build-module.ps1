@@ -1,4 +1,4 @@
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -101,26 +101,37 @@ if(Test-Path $internalFolder) {
 }
 $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
-Write-Host -ForegroundColor Green 'Creating exports...'
-Export-ProxyCmdlet -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder
+$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
+$guid = Get-ModuleGuid -Psd1Path $psd1
+$moduleName = '${$project.moduleName}'
+$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
+$null = New-Item -ItemType Directory -Force -Path $examplesFolder
+
+if($NoDocs) {
+  Write-Host -ForegroundColor Green 'Creating exports...'
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs
+} else {
+  Write-Host -ForegroundColor Green 'Creating exports and docs...'
+  $moduleDescription = '${$project.metadata.description}'
+  $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
+  $null = New-Item -ItemType Directory -Force -Path $docsFolder
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid
+}
 
 Write-Host -ForegroundColor Green 'Creating format.ps1xml...'
 $formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
 Export-FormatPs1xml -FilePath $formatPs1xml
 
 Write-Host -ForegroundColor Green 'Creating psd1...'
-$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
 $customFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}'
-Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1
+Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1 -ModuleGuid $guid
 
 Write-Host -ForegroundColor Green 'Creating test stubs...'
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testFolder
-Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
+Export-TestStub -ModuleName $moduleName -ModulePath $modulePaths -OutputFolder $testFolder
 
 Write-Host -ForegroundColor Green 'Creating example stubs...'
-$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
-$null = New-Item -ItemType Directory -Force -Path $examplesFolder
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
 
 Write-Host -ForegroundColor Green '-------------Done-------------'

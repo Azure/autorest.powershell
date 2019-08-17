@@ -14,10 +14,11 @@ if(-not (Test-Path $dll)) {
 }
 $null = Import-Module -Name $dll
 
+$moduleName = '${$project.moduleName}'
 $exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
 $resourcesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.resourcesFolder)}'
 
-Export-CmdletSurface -CmdletFolder $exportsFolder -OutputFolder $resourcesFolder -IncludeGeneralParameters $IncludeGeneralParameters.IsPresent -UseExpandedFormat $UseExpandedFormat.IsPresent
+Export-CmdletSurface -ModuleName $moduleName -CmdletFolder $exportsFolder -OutputFolder $resourcesFolder -IncludeGeneralParameters $IncludeGeneralParameters.IsPresent -UseExpandedFormat $UseExpandedFormat.IsPresent
 Write-Host -ForegroundColor Green "CmdletSurface file(s) created in '$resourcesFolder'"
 
 Export-ModelSurface -OutputFolder $resourcesFolder -UseExpandedFormat $UseExpandedFormat.IsPresent

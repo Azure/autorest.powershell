@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using Pwsh = System.Management.Automation.PowerShell;
@@ -72,6 +73,23 @@ Get-ChildItem function: | Where-Object {{ ($currentFunctions -notcontains $_) -a
             => GetModuleCmdletsAndHelpInfo(null, modulePaths);
 
         public static CmdletAndHelpInfo ToCmdletAndHelpInfo(this CommandInfo commandInfo, PSObject helpInfo) => new CmdletAndHelpInfo { CommandInfo = commandInfo, HelpInfo = helpInfo };
+
+        public const string Psd1Indent = "  ";
+        public const string GuidStart = Psd1Indent + "GUID";
+
+        public static Guid ReadGuidFromPsd1(string psd1Path)
+        {
+            var guid = Guid.NewGuid();
+            if (File.Exists(psd1Path))
+            {
+                var currentGuid = File.ReadAllLines(psd1Path)
+                    .FirstOrDefault(l => l.StartsWith(GuidStart))?.Split(new[] { " = " }, StringSplitOptions.RemoveEmptyEntries)
+                    .LastOrDefault()?.Replace("'", String.Empty);
+                guid = currentGuid != null ? Guid.Parse(currentGuid) : guid;
+            }
+
+            return guid;
+        }
     }
 
     internal class CmdletAndHelpInfo

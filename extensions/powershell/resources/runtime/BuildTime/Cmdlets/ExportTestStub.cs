@@ -14,6 +14,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
+        public string ModuleName { get; set; }
+
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
         public string[] ModulePath { get; set; }
 
         [Parameter(Mandatory = true)]
@@ -31,7 +35,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .SelectMany(ci => ci.ToVariants())
                 .Where(v => !v.IsDoNotExport)
                 .GroupBy(v => v.CmdletName)
-                .Select(vg => new VariantGroup(vg.Key, vg.Select(v => v).ToArray(), OutputFolder, isTest: true))
+                .Select(vg => new VariantGroup(ModuleName, vg.Key, vg.Select(v => v).ToArray(), OutputFolder, isTest: true))
                 .Where(vtg => !File.Exists(vtg.FilePath) && (IncludeGenerated || !vtg.IsGenerated));
 
             foreach (var variantGroup in variantGroups)

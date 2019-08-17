@@ -108,11 +108,11 @@ Dynamic: {ParameterInfo.IsDynamic}
 
     internal class ModulePageMetadataOutput
     {
-        public PSModuleInfo ModuleInfo { get; }
+        public PsModuleHelpInfo ModuleInfo { get; }
 
         private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
 
-        public ModulePageMetadataOutput(PSModuleInfo moduleInfo)
+        public ModulePageMetadataOutput(PsModuleHelpInfo moduleInfo)
         {
             ModuleInfo = moduleInfo;
         }
@@ -161,7 +161,7 @@ Locale: en-US
 
         public static HelpParameterOutput ToHelpParameterOutput(this MarkdownParameterHelpInfo parameterInfo) => new HelpParameterOutput(parameterInfo);
 
-        public static ModulePageMetadataOutput ToModulePageMetadataOutput(this PSModuleInfo moduleInfo) => new ModulePageMetadataOutput(moduleInfo);
+        public static ModulePageMetadataOutput ToModulePageMetadataOutput(this PsModuleHelpInfo moduleInfo) => new ModulePageMetadataOutput(moduleInfo);
 
         public static ModulePageCmdletOutput ToModulePageCmdletOutput(this MarkdownHelpInfo helpInfo) => new ModulePageCmdletOutput(helpInfo);
     }

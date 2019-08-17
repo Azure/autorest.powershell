@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -26,6 +25,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class VariantGroup
     {
+        public string ModuleName { get; }
         public string CmdletName { get; }
         public string CmdletVerb { get; }
         public string CmdletNoun { get; }
@@ -42,6 +42,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PsHelpInfo HelpInfo { get; }
         public string Description { get; }
         public bool IsGenerated { get; }
+        public bool IsInternal { get; }
         public string Link { get; }
 
         public string OutputFolder { get; }
@@ -50,8 +51,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
 
-        public VariantGroup(string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false)
+        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false)
         {
+            ModuleName = moduleName;
             CmdletName = cmdletName;
             var cmdletNameParts = CmdletName.Split('-');
             CmdletVerb = cmdletNameParts.First();
@@ -66,9 +68,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
-            Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
+            Description = HelpInfo.Description.NullIfEmpty() ?? Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
-            Link = $@"{HelpLinkPrefix}{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
+            IsInternal = isInternal;
+            Link = $@"{HelpLinkPrefix}{ModuleName.ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
 
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";

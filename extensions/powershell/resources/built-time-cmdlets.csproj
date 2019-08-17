@@ -13,9 +13,12 @@
   <ItemGroup>
     <Compile Include="..\..\csharp-v2\resources\runtime\csharp\client\IAssociativeArray.cs" Link="IAssociativeArray.cs" />
     <Compile Include="..\..\csharp-v2\resources\runtime\csharp\client\InfoAttribute.cs" Link="InfoAttribute.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportModelSurface.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\ExportCmdletSurface.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportExampleStub.cs" />
+    <Compile Include="runtime\BuildTime\Cmdlets\GetModuleGuid.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportPsd1.cs" />
     <Compile Include="runtime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
     <Compile Include="runtime\BuildTime\Models\PsMarkdownTypes.cs" />
@@ -24,6 +27,7 @@
     <Compile Include="runtime\BuildTime\Cmdlets\GetScriptCmdlet.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportProxyCmdlet.cs" />
     <Compile Include="runtime\BuildTime\Cmdlets\ExportTestStub.cs" />
+    <Compile Include="runtime\BuildTime\MarkdownRenderer.cs" />
     <Compile Include="runtime\BuildTime\PsHelpers.cs" />
     <Compile Include="runtime\BuildTime\PsAttributes.cs" />
     <Compile Include="runtime\BuildTime\PsExtensions.cs" />

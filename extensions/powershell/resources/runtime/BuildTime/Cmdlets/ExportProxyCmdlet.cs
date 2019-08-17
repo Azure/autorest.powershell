@@ -4,6 +4,8 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
+using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownRenderer;
+using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -11,6 +13,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     [DoNotExport]
     public class ExportProxyCmdlet : PSCmdlet
     {
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
+        public string ModuleName { get; set; }
+
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public string[] ModulePath { get; set; }
@@ -23,16 +29,23 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string InternalFolder { get; set; }
 
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string DocsFolder { get; set; }
+        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
+        [ValidateNotNullOrEmpty]
+        public string ModuleDescription { get; set; }
 
-        //[Parameter(Mandatory = true)]
-        //[ValidateNotNullOrEmpty]
-        //public string ExamplesFolder { get; set; }
+        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
+        [ValidateNotNullOrEmpty]
+        public string DocsFolder { get; set; }
+
+        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
+        [ValidateNotNullOrEmpty]
+        public string ExamplesFolder { get; set; }
+
+        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
+        public Guid ModuleGuid { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
-        public bool ExcludeDocs { get; set; }
+        public SwitchParameter ExcludeDocs { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -50,8 +63,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 : new[] { new ProfileGroup(variants) };
             var variantGroups = profileGroups.SelectMany(pg => pg.Variants
                 .GroupBy(v => new { v.CmdletName, v.IsInternal })
-                .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(),
-                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName)));
+                .Select(vg => new VariantGroup(ModuleName, vg.Key.CmdletName, vg.Select(v => v).ToArray(),
+                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal)))
+                .ToArray();
 
             foreach (var variantGroup in variantGroups)
             {
@@ -99,6 +113,19 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                 Directory.CreateDirectory(variantGroup.OutputFolder);
                 File.WriteAllText(variantGroup.FilePath, sb.ToString());
+            }
+
+            if (!ExcludeDocs)
+            {
+                var moduleInfo = new PsModuleHelpInfo(ModuleName, ModuleGuid, ModuleDescription);
+                foreach (var variantGroupsByProfile in variantGroups.GroupBy(vg => vg.ProfileName))
+                {
+                    var profileName = variantGroupsByProfile.Key;
+                    var isValidProfile = !String.IsNullOrEmpty(profileName) && profileName != NoProfiles;
+                    var docsFolder = isValidProfile ? Path.Combine(DocsFolder, profileName) : DocsFolder;
+                    var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, profileName) : ExamplesFolder;
+                    WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder);
+                }
             }
         }
     }

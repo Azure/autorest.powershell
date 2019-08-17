@@ -32,10 +32,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsShouldProcess { get; }
         public bool SupportsPaging { get; }
 
-        public MarkdownHelpInfo(VariantGroup variantGroup, PsHelpInfo helpInfo, string examplesFolder, string externalHelpFilename = "")
+        public MarkdownHelpInfo(VariantGroup variantGroup, string examplesFolder, string externalHelpFilename = "")
         {
             ExternalHelpFilename = externalHelpFilename;
-            ModuleName = helpInfo.ModuleName;
+            ModuleName = variantGroup.ModuleName;
+            var helpInfo = variantGroup.HelpInfo;
             OnlineVersion = helpInfo.OnlineVersion?.Uri?.NullIfEmpty() ?? variantGroup.Link;
             Schema = Version.Parse("2.0.0");
 
