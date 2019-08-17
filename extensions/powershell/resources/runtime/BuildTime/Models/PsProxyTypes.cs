@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -38,6 +39,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsPaging { get; }
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
+        public PsHelpInfo HelpInfo { get; }
         public string Description { get; }
         public bool IsGenerated { get; }
         public string Link { get; }
@@ -63,6 +65,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsPaging = Variants.Any(v => v.SupportsPaging);
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
+            HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
             Description = Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             Link = $@"{HelpLinkPrefix}{@"${$project.moduleName}".ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
@@ -102,6 +105,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string VariantName { get; }
         public CommandInfo Info { get; }
         public CommandMetadata Metadata { get; }
+        public PsHelpInfo HelpInfo { get; }
         public bool HasParameterSets { get; }
         public bool IsFunction { get; }
         public string PrivateModuleName { get; }
@@ -116,11 +120,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool IsDoNotExport { get; }
         public string[] Profiles { get; }
 
-        public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata, bool hasParameterSets = false)
+        public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata, bool hasParameterSets = false, PsHelpInfo helpInfo = null)
         {
             CmdletName = cmdletName;
             VariantName = variantName;
             Info = info;
+            HelpInfo = helpInfo ?? new PsHelpInfo();
             Metadata = metadata;
             HasParameterSets = hasParameterSets;
             IsFunction = Info.CommandType == CommandTypes.Function;
@@ -175,7 +180,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
             var firstParameter = Parameters.First();
             ParameterType = firstParameter.ParameterType;
-            Description = firstParameter.HelpMessage;
+            Description = firstParameter.Description;
 
             CompleterInfoAttribute = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault();
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
@@ -202,6 +207,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string VariantName { get; }
         public string ParameterName { get; }
         public ParameterMetadata Metadata { get; }
+        public PsParameterHelpInfo HelpInfo { get; }
         public Type ParameterType { get; }
 
         public Attribute[] Attributes { get; }
@@ -220,13 +226,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
         public bool IsComplexInterface { get; }
-        public string HelpMessage { get; }
+        public string Description { get; }
 
-        public Parameter(string variantName, string parameterName, ParameterMetadata metadata)
+        public Parameter(string variantName, string parameterName, ParameterMetadata metadata, PsParameterHelpInfo helpInfo = null)
         {
             VariantName = variantName;
             ParameterName = parameterName;
             Metadata = metadata;
+            HelpInfo = helpInfo ?? new PsParameterHelpInfo();
 
             Attributes = Metadata.Attributes.ToArray();
             ParameterType = Attributes.OfType<ExportAsAttribute>().FirstOrDefault()?.Type ?? Metadata.ParameterType;
@@ -244,9 +251,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsMandatory = ParameterAttribute.Mandatory;
 
             var complexParameterName = ParameterName.ToUpperInvariant();
-            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(complexParameterName, ParameterType, true);
+            var complexMessage = $"{Environment.NewLine}To construct, see NOTES section for {complexParameterName} properties and create a hash table.";
+            var description = ParameterAttribute.HelpMessage.NullIfEmpty() ?? HelpInfo.Description.NullIfEmpty() ?? InfoAttribute?.Description.NullIfEmpty() ?? String.Empty;
+            // Remove the complex type message as it will be reinserted if this is a complex type
+            description = description.NormalizeNewLines().Replace(complexMessage, String.Empty).Replace(complexMessage.ToPsSingleLine(), String.Empty);
+            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(complexParameterName, ParameterType, true, description: description);
             IsComplexInterface = ComplexInterfaceInfo?.IsComplexInterface ?? false;
-            HelpMessage = $"{ParameterAttribute.HelpMessage}{(IsComplexInterface ? $"{Environment.NewLine}To construct, see NOTES section for {complexParameterName} properties and create a hash table." : String.Empty)}";
+            Description = $"{description}{(IsComplexInterface ? complexMessage : String.Empty)}";
         }
     }
 
@@ -263,7 +274,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
-        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes)
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes, string description)
         {
             Name = name;
             Type = type;
@@ -271,7 +282,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             Required = required ?? InfoAttribute.Required;
             ReadOnly = InfoAttribute.ReadOnly;
-            Description = InfoAttribute.Description.ToPsSingleLine();
+            Description = (description ?? InfoAttribute.Description).ToPsSingleLine();
 
             var unwrappedType = Type.Unwrap();
             var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
@@ -289,7 +300,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 ?.GetTypeInfo().GetGenericArguments().First();
             if (!hasBeenSeen && associativeArrayInnerType != null)
             {
-                var anyInfo = new InfoAttribute {Description = "This indicates any property can be added to this object." };
+                var anyInfo = new InfoAttribute { Description = "This indicates any property can be added to this object." };
                 NestedInfos = NestedInfos.Prepend(anyInfo.ToComplexInterfaceInfo("(Any)", associativeArrayInnerType)).ToArray();
             }
             IsComplexInterface = NestedInfos.Any();
@@ -303,25 +314,31 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static bool IsValidDefaultParameterSetName(this string parameterSetName) =>
             !String.IsNullOrEmpty(parameterSetName) && parameterSetName != AllParameterSets;
 
-        public static Variant[] ToVariants(this CommandInfo info)
+        public static Variant[] ToVariants(this CommandInfo info, PsHelpInfo helpInfo)
         {
             var metadata = new CommandMetadata(info);
             var privateCmdletName = metadata.Name.Split('!').First();
             var parts = privateCmdletName.Split('_');
             return parts.Length > 1
-                ? new[] { new Variant(parts[0], parts[1], info, metadata) }
+                ? new[] { new Variant(parts[0], parts[1], info, metadata, helpInfo: helpInfo) }
                 // Process multiple parameter sets, so we declare a variant per parameter set.
-                : info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata, true)).ToArray();
+                : info.ParameterSets.Select(ps => new Variant(privateCmdletName, ps.Name, info, metadata, true, helpInfo)).ToArray();
         }
+
+        public static Variant[] ToVariants(this CmdletAndHelpInfo info) => info.CommandInfo.ToVariants(info.HelpInfo);
+
+        public static Variant[] ToVariants(this CommandInfo info, PSObject helpInfo = null) => info.ToVariants(helpInfo?.ToPsHelpInfo());
 
         public static Parameter[] ToParameters(this Variant variant)
         {
             var parameters = variant.Metadata.Parameters.AsEnumerable();
+            var parameterHelp = variant.HelpInfo.Parameters.AsEnumerable();
             if (variant.HasParameterSets)
             {
                 parameters = parameters.Where(p => p.Value.ParameterSets.Keys.Any(k => k == variant.VariantName || k == AllParameterSets));
+                parameterHelp = parameterHelp.Where(ph => !ph.ParameterSetNames.Any() || ph.ParameterSetNames.Any(psn => psn == variant.VariantName || psn == AllParameterSets));
             }
-            return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value)).ToArray();
+            return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value, parameterHelp.FirstOrDefault(ph => ph.Name == p.Key))).ToArray();
         }
 
         public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction 
@@ -337,6 +354,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
 
-        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null) => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes);
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null, string description = null)
+            => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes, description);
     }
 }

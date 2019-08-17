@@ -35,12 +35,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         protected override void ProcessRecord()
         {
             Directory.CreateDirectory(DocsFolder);
+            var helpInfos = HelpInfo.Select(hi => hi.ToPsHelpInfo()).ToArray();
+            //var variantGroups = FunctionInfo.Select(fi => fi.BaseObject).Cast<FunctionInfo>()
+            //    .Select(fi => fi.ToVariants(helpInfos.FirstOrDefault(hi => hi.CmdletName == fi.Name)))
+            //    .Select(va => new VariantGroup(va.First().CmdletName, va, String.Empty))
+            //    .ToArray();
+            //var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi, ExamplesFolder)).ToArray();
             var variantGroups = FunctionInfo.Select(fi => fi.BaseObject).Cast<FunctionInfo>()
-                .Select(fi => fi.ToVariants())
+                .Join(helpInfos, fi => fi.Name, phi => phi.CmdletName, (fi, phi) => fi.ToVariants(phi))
                 .Select(va => new VariantGroup(va.First().CmdletName, va, String.Empty))
                 .ToArray();
-            var helpInfos = HelpInfo.Select(hi => hi.ToPsHelpInfo()).ToArray();
-            var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi, ExamplesFolder)).ToArray();
+            //var markdownInfos = variantGroups.Join(helpInfos, vg => vg.CmdletName, phi => phi.CmdletName, (vg, phi) => new MarkdownHelpInfo(vg, phi, ExamplesFolder)).ToArray();
+            var markdownInfos = variantGroups.Select(vg => new MarkdownHelpInfo(vg, vg.HelpInfo, ExamplesFolder)).ToArray();
 
             foreach (var markdownInfo in markdownInfos)
             {

@@ -61,9 +61,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var dontShowText = Parameter.DontShow ? "DontShow" : String.Empty;
             var vfpText = Parameter.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
             var vfpbpnText = Parameter.ValueFromPipelineByPropertyName ? "ValueFromPipelineByPropertyName" : String.Empty;
-            var helpMessage = Parameter.HelpMessage.ToPsStringLiteral();
-            var helpText = !String.IsNullOrEmpty(helpMessage) ? $"HelpMessage='{helpMessage}'" : String.Empty;
-            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, vfpbpnText, helpText }.JoinIgnoreEmpty(ItemSeparator);
+            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, vfpbpnText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
@@ -306,14 +304,14 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public override string ToString()
         {
-            var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
-            var requiredText = Info.Required ? "Required" : String.Empty;
-            var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
+            //var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
+            //var requiredText = Info.Required ? "Required" : String.Empty;
+            //var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
             var possibleTypesText = Info.PossibleTypes.Any() 
                 ? $"PossibleTypes=({Info.PossibleTypes.Select(pt => $"[{pt.ToPsType()}]").JoinIgnoreEmpty(ItemSeparator)})"
                 : String.Empty;
-            var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;
-            var propertyText = new[] { serializedNameText, requiredText, readOnlyText, possibleTypesText, descriptionText }.JoinIgnoreEmpty(ItemSeparator);
+            //var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;
+            var propertyText = new[] { /*serializedNameText, requiredText, readOnlyText,*/ possibleTypesText/*, descriptionText*/ }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}";
         }
     }
@@ -390,9 +388,9 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         // https://stackoverflow.com/a/5284606/294804
         private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
 
-        public static string ToPsSingleLine(this string value, string replacer = " ") => value?.Replace("<br>", replacer)?.Replace("\r\n", replacer)?.Replace("\n", replacer) ?? String.Empty;
+        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new []{"<br>", "\r\n", "\n"});
 
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''")?.Replace("‘", "''")?.Replace("’", "''")?.ToPsSingleLine() ?? String.Empty;
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine() ?? String.Empty;
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 

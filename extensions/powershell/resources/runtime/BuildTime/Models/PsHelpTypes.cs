@@ -32,8 +32,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public object Role { get; }
         public string NonTerminatingErrors { get; }
 
-        public PsHelpInfo(PSObject helpObject)
+        public PsHelpInfo(PSObject helpObject = null)
         {
+            helpObject = helpObject ?? new PSObject();
             CmdletName = helpObject.GetProperty<string>("Name").NullIfEmpty() ?? helpObject.GetNestedProperty<string>("details", "name");
             ModuleName = helpObject.GetProperty<string>("ModuleName");
             Synopsis = helpObject.GetProperty<string>("Synopsis");
@@ -131,8 +132,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool? IsVariableLength { get; }
         public bool? IsDynamic { get; }
 
-        public PsParameterHelpInfo(PSObject parameterHelpObject)
+        public PsParameterHelpInfo(PSObject parameterHelpObject = null)
         {
+            parameterHelpObject = parameterHelpObject ?? new PSObject();
             DefaultValueAsString = parameterHelpObject.GetProperty<string>("defaultValue");
             Name = parameterHelpObject.GetProperty<string>("name");
             TypeName = parameterHelpObject.GetProperty<string>("parameterValue").NullIfEmpty() ?? parameterHelpObject.GetNestedProperty<string>("type", "name");

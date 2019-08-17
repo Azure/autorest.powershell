@@ -7,7 +7,7 @@ using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
-    [Cmdlet(VerbsData.Export, "ProxyCmdlet")]
+    [Cmdlet(VerbsData.Export, "ProxyCmdlet", DefaultParameterSetName = "Docs")]
     [DoNotExport]
     public class ExportProxyCmdlet : PSCmdlet
     {
@@ -23,10 +23,22 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string InternalFolder { get; set; }
 
+        //[Parameter(Mandatory = true)]
+        //[ValidateNotNullOrEmpty]
+        //public string DocsFolder { get; set; }
+
+        //[Parameter(Mandatory = true)]
+        //[ValidateNotNullOrEmpty]
+        //public string ExamplesFolder { get; set; }
+
+        [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
+        public bool ExcludeDocs { get; set; }
+
         protected override void ProcessRecord()
         {
-            var variants = GetModuleCmdlets(this, ModulePath)
-                .SelectMany(ci => ci.ToVariants())
+            var variants = (ExcludeDocs
+                    ? GetModuleCmdlets(this, ModulePath).SelectMany(ci => ci.ToVariants())
+                    : GetModuleCmdletsAndHelpInfo(this, ModulePath).SelectMany(ci => ci.ToVariants()))
                 .Where(v => !v.IsDoNotExport)
                 .ToArray();
             var allProfiles = variants.SelectMany(v => v.Profiles).Distinct().ToArray();

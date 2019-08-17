@@ -1,11 +1,11 @@
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
   Write-Error 'This script requires PowerShell Core to execute. [Note] Generated cmdlets will work in both PowerShell Core or Windows PowerShell.'
 }
 
-if(-not $Isolated) {
+if(-not $Isolated -and -not $Debugger) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
   & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
@@ -50,29 +50,32 @@ if(-not $Isolated) {
   return
 }
 
-Write-Host -ForegroundColor Green 'Cleaning build folders...'
 $binFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}'
 $objFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}'
-$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
 
-if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
-  Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
-  Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+if(-not $Debugger) {
+  Write-Host -ForegroundColor Green 'Cleaning build folders...'
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
+
+  if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
+    Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
+    Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+  }
+
+  Write-Host -ForegroundColor Green 'Compiling module...'
+  $buildConfig = 'Debug'
+  if($Release) {
+    $buildConfig = 'Release'
+  }
+  dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig /nologo
+  if($LastExitCode -ne 0) {
+    Write-Error 'Compilation failed.'
+  }
+
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 }
 
-Write-Host -ForegroundColor Green 'Compiling module...'
-$buildConfig = 'Debug'
-if($Release) {
-  $buildConfig = 'Release'
-}
-dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig /nologo
-if($LastExitCode -ne 0) {
-  Write-Error 'Compilation failed.'
-}
-
-$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 $dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
-
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
 }
