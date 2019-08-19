@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral, toExpression, System } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
 import { Variable } from '@microsoft.azure/codegen-csharp';
 import { Schema } from '../code-model';
@@ -39,7 +39,11 @@ export class Duration extends Primitive {
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString(${value})`)}`);
+        if (this.isRequired) {
+          return toExpression(`(null != ${value} ? ${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})`)}: null)`).Cast(ClientRuntime.JsonNode);
+        }
+        return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})`)}`).Cast(ClientRuntime.JsonNode);
+
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
           return toExpression(`"${serializedName}=" + ${this.encode}(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value}))`);
@@ -51,7 +55,11 @@ export class Duration extends Primitive {
   }
 
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        // container : JsonObject
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${valueOf(container)}.Add );`;
+    }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
 
