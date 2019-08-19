@@ -254,6 +254,7 @@ function createVirtualParameters(operation: CommandOperation) {
   };
 
   const dropBodyParameter = !!operation.details.default.dropBodyParameter;
+  const isViaIdentity = !!operation.details.default.viaIdentity;
 
   // loop thru the parameters of the command operation, and if there is a body parameter, expand it if necessary.
   for (const parameter of values(operation.parameters)) {
@@ -289,7 +290,7 @@ function createVirtualParameters(operation: CommandOperation) {
       }
     } else {
       virtualParameters.operation.push({
-        name: parameter.details.default.name,
+        name: parameter.details.default.isBodyParameter && !isViaIdentity ? 'InputObject' : parameter.details.default.name,
         nameOptions: [parameter.details.default.name],
         description: parameter.details.default.description,
         required: parameter.details.default.isBodyParameter ? true : parameter.required,

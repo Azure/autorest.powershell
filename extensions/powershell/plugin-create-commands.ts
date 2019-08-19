@@ -273,6 +273,7 @@ export /* @internal */ class Inferrer {
         }));
       }
     }
+    return op;
   }
 
 
@@ -393,7 +394,8 @@ export /* @internal */ class Inferrer {
 
     if (!dvi && pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
       // we have an operation that has path parameters, a good canididate for piping for identity.
-      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+      const operationVariant = await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+      operationVariant.details.default.viaIdentity = true;
     }
 
   }
