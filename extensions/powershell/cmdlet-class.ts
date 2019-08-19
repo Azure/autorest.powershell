@@ -1241,30 +1241,35 @@ export class CmdletClass extends Class {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?
-          const typeDeclaration = props.length !== 1 ?
-            this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, this.state) :
-            this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>props[0].schema, true, this.state);
+          const resultSchema = props.length !== 1 ? <Schema>schema : <Schema>props[0].schema;
 
-          if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
-            // if this is a stream, skip the output type.
-            this.hasStreamOutput = true;
-            shouldAddPassThru = true;
+          // make sure return type for boolean stays boolean!
+          if (resultSchema.type === JsonType.Boolean) {
             outputTypes.add(`typeof(${dotnet.Bool})`);
           } else {
+            const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state);
 
-            let type = '';
-            if (typeDeclaration instanceof ArrayOf) {
-              type = typeDeclaration.elementTypeDeclaration;
-            } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-              const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
-              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
-              type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+            if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
+              // if this is a stream, skip the output type.
+              this.hasStreamOutput = true;
+              shouldAddPassThru = true;
+              outputTypes.add(`typeof(${dotnet.Bool})`);
             } else {
-              type = typeDeclaration.declaration;
-            }
-            // check if this is a stream output
-            if (type) {
-              outputTypes.add(`typeof(${type})`);
+
+              let type = '';
+              if (typeDeclaration instanceof ArrayOf) {
+                type = typeDeclaration.elementTypeDeclaration;
+              } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+                const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
+                const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+                type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+              } else {
+                type = typeDeclaration.declaration;
+              }
+              // check if this is a stream output
+              if (type) {
+                outputTypes.add(`typeof(${type})`);
+              }
             }
           }
         }
