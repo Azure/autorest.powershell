@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral, toExpression, System } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '@microsoft.azure/codegen-csharp';
 import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
 import { Variable } from '@microsoft.azure/codegen-csharp';
 import { Schema } from '../code-model';
@@ -51,7 +51,11 @@ export class Duration extends Primitive {
   }
 
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        // container : JsonObject
+        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${valueOf(container)}.Add );`;
+    }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
 

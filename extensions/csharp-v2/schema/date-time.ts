@@ -79,7 +79,7 @@ export class DateTime extends Primitive {
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}..ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
+          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
           `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
 
       case KnownMediaType.UriParameter:
