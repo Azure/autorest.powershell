@@ -536,9 +536,9 @@ export class CmdletClass extends Class {
                 ep = `${errorProperty.name}?.`
               }
 
-              const codeProp = values(props).linq.first(p => p.name.toLowerCase() === 'code');
-              const messageProp = values(props).linq.first(p => p.name.toLowerCase() === 'message');
-              const actionProp = values(props).linq.first(p => p.name.toLowerCase() === 'action');
+              const codeProp = props.find(p => p.name.toLowerCase().indexOf('code') > -1); // first property with 'code'
+              const messageProp = props.find(p => p.name.toLowerCase().indexOf('message') > -1); // first property with 'message'
+              const actionProp = props.find(p => p.name.toLowerCase().indexOf('action') > -1); // first property with 'action'
 
               if (codeProp && messageProp) {
                 const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
