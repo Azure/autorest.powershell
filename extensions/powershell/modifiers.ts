@@ -673,8 +673,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     let n = 1;
 
     while (operationIdentities.has(fname)) {
-      details.name = `${details.name.replace(/\d*$/g, '')} ${n++} `;
-      fname = `${details.verb} -${details.subject} -${details.name} `;
+      details.name = pascalCase(`${details.name.replace(/\d*$/g, '')} ${n++}`);
+      fname = pascalCase(`${details.verb} -${details.subject} -${details.name}`);
     }
     operationIdentities.add(fname);
   }
