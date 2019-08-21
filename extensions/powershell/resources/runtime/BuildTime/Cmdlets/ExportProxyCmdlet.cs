@@ -49,11 +49,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            var variants = (ExcludeDocs
-                    ? GetModuleCmdlets(this, ModulePath).SelectMany(ci => ci.ToVariants())
-                    : GetModuleCmdletsAndHelpInfo(this, ModulePath).SelectMany(ci => ci.ToVariants()))
-                .Where(v => !v.IsDoNotExport)
-                .ToArray();
+            var variants = GetModuleCmdletsAndHelpInfo(this, ModulePath).SelectMany(ci => ci.ToVariants()).Where(v => !v.IsDoNotExport).ToArray();
             var allProfiles = variants.SelectMany(v => v.Profiles).Distinct().ToArray();
             var profileGroups = allProfiles.Any()
                 ? variants
@@ -69,21 +65,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             foreach (var variantGroup in variantGroups)
             {
-                var parameterGroups = variantGroup.ParameterGroups
-                    .OrderBy(pg => pg.OrderCategory)
-                    .ThenByDescending(pg => pg.IsMandatory)
-                    .ToList();
-                var inputs = parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType).ToArray();
-                var outputs = variantGroup.OutputTypes.Select(ot => ot.Type).ToArray();
+                var parameterGroups = variantGroup.ParameterGroups.ToList();
 
                 var sb = new StringBuilder();
-                sb.Append(variantGroup.ToHelpCommentOutput(inputs, outputs, parameterGroups.ToArray()));
+                sb.Append(variantGroup.ToHelpCommentOutput());
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
                 sb.Append(variantGroup.ToCmdletBindingOutput());
                 sb.Append(variantGroup.ProfileName.ToProfileOutput());
-                sb.Append(variantGroup.Description.ToDescriptionOutput());
 
                 sb.Append("param(");
                 sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");

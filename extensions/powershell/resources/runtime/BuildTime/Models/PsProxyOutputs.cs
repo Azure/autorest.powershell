@@ -203,41 +203,76 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 ";
     }
 
+    //    internal class HelpCommentOutput
+    //    {
+    //        public VariantGroup VariantGroup { get; }
+    //        public Type[] Inputs { get; }
+    //        public Type[] Outputs { get; }
+    //        public ParameterGroup[] ParameterGroups { get; }
+
+    //        public HelpCommentOutput(VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups)
+    //        {
+    //            VariantGroup = variantGroup;
+    //            Inputs = inputs;
+    //            Outputs = outputs;
+    //            ParameterGroups = parameterGroups;
+    //        }
+
+    //        public override string ToString()
+    //        {
+    //            var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
+    //            var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
+    //            var outputs = String.Join(Environment.NewLine, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}"));
+    //            var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
+    //            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
+    //                .Where(pg => pg.IsComplexInterface)
+    //                .OrderBy(pg => pg.ParameterName)
+    //                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput()));
+    //            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
+    //            return $@"<#
+    //.Synopsis
+    //{VariantGroup.Description.ToDescriptionFormat()}
+    //.Description
+    //{VariantGroup.Description.ToDescriptionFormat()}
+    //.Example
+    //To view examples, please use the -Online parameter with Get-Help or navigate to: {VariantGroup.Link}{inputsText}{outputsText}{notesText}
+    //.Link
+    //{VariantGroup.Link}
+    //#>
+    //";
+    //        }
+    //    }
+
     internal class HelpCommentOutput
     {
         public VariantGroup VariantGroup { get; }
-        public Type[] Inputs { get; }
-        public Type[] Outputs { get; }
-        public ParameterGroup[] ParameterGroups { get; }
+        public CommentInfo CommentInfo { get; }
 
-        public HelpCommentOutput(VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups)
+        public HelpCommentOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
-            Inputs = inputs;
-            Outputs = outputs;
-            ParameterGroups = parameterGroups;
+            CommentInfo = variantGroup.CommentInfo;
         }
 
         public override string ToString()
         {
-            var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
+            var inputs = String.Join(Environment.NewLine, CommentInfo.Inputs.Select(i => $".Inputs{Environment.NewLine}{i}"));
             var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
-            var outputs = String.Join(Environment.NewLine, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}"));
+            var outputs = String.Join(Environment.NewLine, CommentInfo.Outputs.Select(o => $".Outputs{Environment.NewLine}{o}"));
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
-            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
-                .Where(pg => pg.IsComplexInterface)
-                .OrderBy(pg => pg.ParameterName)
-                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput()));
+            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
             var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
+            var relatedLinks = String.Join(Environment.NewLine, CommentInfo.RelatedLinks.Select(l => $".Link{Environment.NewLine}{l}"));
+            var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
             return $@"<#
 .Synopsis
-{VariantGroup.Description}
+{CommentInfo.Synopsis.ToDescriptionFormat()}
 .Description
-{VariantGroup.Description}
+{CommentInfo.Description.ToDescriptionFormat()}
 .Example
-To view examples, please use the -Online parameter with Get-Help or navigate to: {VariantGroup.Link}{inputsText}{outputsText}{notesText}
+To view examples, please use the -Online parameter with Get-Help or navigate to: {CommentInfo.OnlineVersion}{inputsText}{outputsText}{notesText}
 .Link
-{VariantGroup.Link}
+{CommentInfo.OnlineVersion}{relatedLinksText}
 #>
 ";
         }
@@ -433,7 +468,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
-        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups) => new HelpCommentOutput(variantGroup, inputs, outputs, parameterGroups);
+        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
 
         public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
 

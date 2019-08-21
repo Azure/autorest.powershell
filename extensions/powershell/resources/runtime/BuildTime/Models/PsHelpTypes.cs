@@ -72,7 +72,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public PsHelpTypeInfo(PSObject typeObject)
         {
-            Name = typeObject.GetNestedProperty<string>("type", "name").EmptyIfNull();
+            Name = typeObject.GetNestedProperty<string>("type", "name").EmptyIfNull().Trim();
             Description = typeObject.GetProperty<PSObject[]>("description").EmptyIfNull().ToDescriptionText();
         }
     }

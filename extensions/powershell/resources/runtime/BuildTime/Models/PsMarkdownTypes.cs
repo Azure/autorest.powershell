@@ -37,33 +37,32 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ExternalHelpFilename = externalHelpFilename;
             ModuleName = variantGroup.ModuleName;
             var helpInfo = variantGroup.HelpInfo;
-            OnlineVersion = helpInfo.OnlineVersion?.Uri?.NullIfEmpty() ?? variantGroup.Link;
+            var commentInfo = variantGroup.CommentInfo;
             Schema = Version.Parse("2.0.0");
 
             CmdletName = variantGroup.CmdletName;
-            Aliases = helpInfo.Aliases.NullIfEmpty() ?? variantGroup.Aliases;
-            Synopsis = helpInfo.Synopsis.NullIfEmpty() ?? variantGroup.Description;
-            Description = helpInfo.Description.NullIfEmpty() ?? variantGroup.Description;
+            Aliases = (variantGroup.Aliases.NullIfEmpty() ?? helpInfo.Aliases).Where(a => a != "None").ToArray();
+            Synopsis = commentInfo.Synopsis;
+            Description = commentInfo.Description;
 
-            var defaultParameterSet = variantGroup.DefaultParameterSetName;
-            SyntaxInfos = variantGroup.Variants.Select(v => new MarkdownSyntaxHelpInfo(v, v.VariantName == defaultParameterSet)).ToArray();
-
+            SyntaxInfos = variantGroup.Variants
+                .Select(v => new MarkdownSyntaxHelpInfo(v, v.VariantName == variantGroup.DefaultParameterSetName))
+                .OrderByDescending(v => v.IsDefault).ThenBy(v => v.ParameterSetName).ToArray();
             Examples = GetExamplesFromMarkdown(examplesFolder).NullIfEmpty() 
                        ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() 
                        ?? DefaultExampleHelpInfos;
 
-            var parameterGroups = variantGroup.ParameterGroups.Where(pg => !pg.DontShow).ToArray();
-            Parameters = parameterGroups
-                .Join(helpInfo.Parameters, pg => pg.ParameterName, phi => phi.Name, (pg, phi) => new MarkdownParameterHelpInfo(phi, pg))
+            Parameters = variantGroup.ParameterGroups
+                .Where(pg => !pg.DontShow)
+                .Select(pg => new MarkdownParameterHelpInfo(helpInfo.Parameters.FirstOrDefault(phi => phi.Name == pg.ParameterName) ?? new PsParameterHelpInfo(), pg))
                 .OrderBy(phi => phi.Name).ToArray();
 
-            Inputs = helpInfo.InputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(it => it.Name).ToArray().NullIfEmpty() ??
-                     parameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray();
-            Outputs = helpInfo.OutputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(ot => ot.Name).ToArray().NullIfEmpty() ??
-                      variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray();
+            Inputs = commentInfo.Inputs;
+            Outputs = commentInfo.Outputs;
 
-            ComplexInterfaceInfos = parameterGroups.Where(pg => pg.IsComplexInterface).OrderBy(pg => pg.ParameterName).Select(pg => pg.ComplexInterfaceInfo).ToArray();
-            RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
+            ComplexInterfaceInfos = variantGroup.ComplexInterfaceInfos;
+            OnlineVersion = commentInfo.OnlineVersion;
+            RelatedLinks = commentInfo.RelatedLinks;
 
             SupportsShouldProcess = variantGroup.SupportsShouldProcess;
             SupportsPaging = variantGroup.SupportsPaging;
@@ -102,6 +101,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Variant Variant { get; }
         public bool IsDefault { get; }
         public string ParameterSetName { get; }
+        public Parameter[] Parameters { get; }
         public string SyntaxText { get; }
 
         public MarkdownSyntaxHelpInfo(Variant variant, bool isDefault)
@@ -109,6 +109,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Variant = variant;
             IsDefault = isDefault;
             ParameterSetName = Variant.VariantName;
+            Parameters = Variant.Parameters
+                .Where(p => !p.DontShow).OrderByDescending(p => p.IsMandatory)
+                //https://stackoverflow.com/a/6461526/294804
+                .ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
+                .ThenBy(p => p.OrderCategory).ToArray();
             SyntaxText = CreateSyntaxFormat();
         }
 
@@ -116,11 +121,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private const int SyntaxLineWidth = 110;
         private string CreateSyntaxFormat()
         {
-            var parameterStrings = Variant.Parameters
-                .Where(p => !p.DontShow)
-                //https://stackoverflow.com/a/6461526/294804
-                .OrderByDescending(p => p.IsMandatory).ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
-                .Select(p => p.ToPropertySyntaxOutput().ToString());
+            var parameterStrings = Parameters.Select(p => p.ToPropertySyntaxOutput().ToString());
             if (Variant.SupportsShouldProcess)
             {
                 parameterStrings = parameterStrings.Append(" [-Confirm]").Append(" [-WhatIf]");
@@ -185,16 +186,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public MarkdownParameterHelpInfo(PsParameterHelpInfo parameterHelpInfo, ParameterGroup parameterGroup)
         {
             Name = parameterGroup.ParameterName;
-            Description = parameterHelpInfo.Description.NullIfEmpty() ?? parameterGroup.Description;
+            Description = parameterGroup.Description.NullIfEmpty() ?? parameterHelpInfo.Description.EmptyIfNull();
             Type = parameterGroup.ParameterType;
-            Position = parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? parameterGroup.FirstPosition?.ToString() ?? "Named";
-            DefaultValue = parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? parameterGroup.DefaultValue?.Value?.ToString() ?? "None";
+            Position = parameterGroup.FirstPosition?.ToString() ?? parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? "Named";
+            DefaultValue = parameterGroup.DefaultValue?.Value?.ToString() ?? parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? "None";
 
             HasAllParameterSets = parameterGroup.HasAllVariants;
-            ParameterSetNames = parameterHelpInfo.ParameterSetNames.NullIfEmpty() ?? parameterGroup.Parameters.Select(p => p.VariantName).ToArray();
-            Aliases = parameterHelpInfo.Aliases.NullIfEmpty() ?? parameterGroup.Aliases;
+            ParameterSetNames = (parameterGroup.Parameters.Select(p => p.VariantName).ToArray().NullIfEmpty() ?? parameterHelpInfo.ParameterSetNames)
+                .OrderBy(psn => psn).ToArray();
+            Aliases = parameterGroup.Aliases.NullIfEmpty() ?? parameterHelpInfo.Aliases;
 
-            IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.IsMandatory;
+            IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.Parameters.Any(p => p.IsMandatory);
             IsDynamic = parameterHelpInfo.IsDynamic ?? false;
             AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? parameterGroup.ValueFromPipeline;
             AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? parameterGroup.ValueFromPipelineByPropertyName;

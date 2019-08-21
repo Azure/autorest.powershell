@@ -13,7 +13,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static void WriteMarkdowns(IEnumerable<VariantGroup> variantGroups, PsModuleHelpInfo moduleHelpInfo, string docsFolder, string examplesFolder)
         {
             Directory.CreateDirectory(docsFolder);
-            var markdownInfos = variantGroups.Where(vg => !vg.IsInternal).Select(vg => new MarkdownHelpInfo(vg, examplesFolder)).ToArray();
+            var markdownInfos = variantGroups.Where(vg => !vg.IsInternal).Select(vg => new MarkdownHelpInfo(vg, examplesFolder)).OrderBy(mhi => mhi.CmdletName).ToArray();
 
             foreach (var markdownInfo in markdownInfos)
             {

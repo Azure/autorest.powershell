@@ -145,9 +145,9 @@ Locale: en-US
 
     internal static class PsHelpOutputExtensions
     {
-        public static string EscapeAngleBrackets(this string text) => text?.Replace("<", @"\<")?.Replace(">", @"\>");
-        public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}")?.Replace(". ", $".{Environment.NewLine}");
-        public static string ToDescriptionFormat(this string text) => text?.EscapeAngleBrackets()?.ReplaceSentenceEndWithNewline();
+        public static string EscapeAngleBrackets(this string text) => text?.Replace("<", @"\<").Replace(">", @"\>");
+        public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}").Replace(". ", $".{Environment.NewLine}");
+        public static string ToDescriptionFormat(this string text) => text?.EscapeAngleBrackets().ReplaceSentenceEndWithNewline().Trim();
 
         public const string ExampleNameHeader = "### ";
         public const string ExampleCodeHeader = "```powershell";

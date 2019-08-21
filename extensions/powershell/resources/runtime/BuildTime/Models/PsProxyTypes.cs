@@ -32,6 +32,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string ProfileName { get; }
         public Variant[] Variants { get; }
         public ParameterGroup[] ParameterGroups { get; }
+        public ComplexInterfaceInfo[] ComplexInterfaceInfos { get; }
 
         public string[] Aliases { get; }
         public PSTypeName[] OutputTypes { get; }
@@ -40,16 +41,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
         public PsHelpInfo HelpInfo { get; }
-        public string Description { get; }
         public bool IsGenerated { get; }
         public bool IsInternal { get; }
-        public string Link { get; }
 
         public string OutputFolder { get; }
         public string FileName { get; }
         public string FilePath { get; }
 
-        private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
+        public CommentInfo CommentInfo { get; }
 
         public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false)
         {
@@ -60,7 +59,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletNoun = cmdletNameParts.Last();
             ProfileName = profileName;
             Variants = variants;
-            ParameterGroups = Variants.ToParameterGroups().ToArray();
+            ParameterGroups = Variants.ToParameterGroups().OrderBy(pg => pg.OrderCategory).ThenByDescending(pg => pg.IsMandatory).ToArray();
+            ComplexInterfaceInfos = ParameterGroups.Where(pg => !pg.DontShow && pg.IsComplexInterface).OrderBy(pg => pg.ParameterName).Select(pg => pg.ComplexInterfaceInfo).ToArray();
+
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
             OutputTypes = Variants.SelectMany(v => v.Info.OutputType).Where(ot => ot.Type != null).GroupBy(ot => ot.Type).Select(otg => otg.First()).ToArray();
             SupportsShouldProcess = Variants.Any(v => v.SupportsShouldProcess);
@@ -68,14 +69,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             DefaultParameterSetName = DetermineDefaultParameterSetName();
             HasMultipleVariants = Variants.Length > 1;
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
-            Description = HelpInfo.Description.NullIfEmpty() ?? Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description;
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             IsInternal = isInternal;
-            Link = $@"{HelpLinkPrefix}{ModuleName.ToLowerInvariant()}/{CmdletName.ToLowerInvariant()}";
 
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
             FilePath = Path.Combine(OutputFolder, FileName);
+
+            CommentInfo = new CommentInfo(this);
         }
 
         private string DetermineDefaultParameterSetName()
@@ -180,7 +181,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Parameters = parameters;
 
             AllVariantNames = allVariantNames;
-            HasAllVariants = !AllVariantNames.Except(Parameters.Select(p => p.VariantName)).Any();
+            var variantNames = Parameters.Select(p => p.VariantName).ToArray();
+            HasAllVariants = variantNames.Any(vn => vn == AllParameterSets) || !AllVariantNames.Except(variantNames).Any();
             var firstParameter = Parameters.First();
             ParameterType = firstParameter.ParameterType;
             Description = firstParameter.Description;
@@ -189,7 +191,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasArgumentCompleter = CompleterInfoAttribute != null || Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
-            OrderCategory = Parameters.SelectMany(p => p.Categories).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
+            OrderCategory = Parameters.Select(p => p.OrderCategory).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
             IsMandatory = HasAllVariants && firstParameter.IsMandatory;
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
@@ -215,6 +217,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public Attribute[] Attributes { get; }
         public ParameterCategory[] Categories { get; }
+        public ParameterCategory OrderCategory { get; }
         public PSDefaultValueAttribute DefaultValue { get; }
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
@@ -241,6 +244,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Attributes = Metadata.Attributes.ToArray();
             ParameterType = Attributes.OfType<ExportAsAttribute>().FirstOrDefault()?.Type ?? Metadata.ParameterType;
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
+            OrderCategory = Categories.DefaultIfEmpty(ParameterCategory.Body).Min();
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
@@ -310,6 +314,40 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class CommentInfo
+    {
+        public string Description { get; }
+        public string Synopsis { get; }
+
+        public string[] Inputs { get; }
+        public string[] Outputs { get; }
+
+        public string OnlineVersion { get; }
+        public string[] RelatedLinks { get; }
+
+        private const string HelpLinkPrefix = @"${$project.helpLinkPrefix}";
+
+        public CommentInfo(VariantGroup variantGroup)
+        {
+            var helpInfo = variantGroup.HelpInfo;
+            Description = variantGroup.Variants.SelectMany(v => v.Attributes).OfType<DescriptionAttribute>().FirstOrDefault()?.Description.NullIfEmpty()
+                          ?? helpInfo.Description.EmptyIfNull();
+            // If there is no Synopsis, PowerShell may put in the Syntax string as the Synopsis. This seems unintended, so we remove the Synopsis in this situation.
+            var synopsis = helpInfo.Synopsis.EmptyIfNull().Trim().StartsWith(variantGroup.CmdletName) ? String.Empty : helpInfo.Synopsis;
+            Synopsis = synopsis.NullIfEmpty() ?? Description;
+
+            Inputs = (variantGroup.ParameterGroups.Where(pg => pg.IsInputType).Select(pg => pg.ParameterType.FullName).ToArray().NullIfEmpty() ??
+                      helpInfo.InputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(it => it.Name).ToArray())
+                .Where(i => i != "None").Distinct().OrderBy(i => i).ToArray();
+            Outputs = (variantGroup.OutputTypes.Select(ot => ot.Type.FullName).ToArray().NullIfEmpty() ??
+                       helpInfo.OutputTypes.Where(it => it.Name.NullIfWhiteSpace() != null).Select(ot => ot.Name).ToArray())
+                .Where(o => o != "None").Distinct().OrderBy(o => o).ToArray();
+
+            OnlineVersion = helpInfo.OnlineVersion?.Uri.NullIfEmpty() ?? $@"{HelpLinkPrefix}{variantGroup.ModuleName.ToLowerInvariant()}/{variantGroup.CmdletName.ToLowerInvariant()}";
+            RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
+        }
+    }
+
     internal static class PsProxyTypeExtensions
     {
         public const string NoProfiles = "__NoProfiles";
@@ -344,7 +382,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value, parameterHelp.FirstOrDefault(ph => ph.Name == p.Key))).ToArray();
         }
 
-        public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction 
+        public static Attribute[] ToAttributes(this Variant variant) => variant.IsFunction
             ? ((FunctionInfo)variant.Info).ScriptBlock.Attributes.ToArray()
             : variant.Metadata.CommandType.GetCustomAttributes(false).Cast<Attribute>().ToArray();
 

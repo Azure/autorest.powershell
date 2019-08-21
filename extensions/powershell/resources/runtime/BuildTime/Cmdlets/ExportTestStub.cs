@@ -41,7 +41,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variantGroup in variantGroups)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($@"$TestRecordingFile = Join-Path '{OutputFolder}' '{variantGroup.CmdletName}.Recording.json'");
+                sb.AppendLine($@"$TestRecordingFile = Join-Path $PSScriptRoot '{variantGroup.CmdletName}.Recording.json'");
                 sb.AppendLine($@". (Join-Path $PSScriptRoot '{RuntimeFolder}' 'HttpPipelineMocking.ps1'){Environment.NewLine}");
 
                 sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
