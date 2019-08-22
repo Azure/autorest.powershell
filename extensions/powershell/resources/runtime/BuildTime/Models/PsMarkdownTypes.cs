@@ -46,15 +46,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Description = commentInfo.Description;
 
             SyntaxInfos = variantGroup.Variants
-                .Select(v => new MarkdownSyntaxHelpInfo(v, v.VariantName == variantGroup.DefaultParameterSetName))
+                .Select(v => new MarkdownSyntaxHelpInfo(v, variantGroup.ParameterGroups, v.VariantName == variantGroup.DefaultParameterSetName))
                 .OrderByDescending(v => v.IsDefault).ThenBy(v => v.ParameterSetName).ToArray();
             Examples = GetExamplesFromMarkdown(examplesFolder).NullIfEmpty() 
-                       ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty() 
+                       ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty()
                        ?? DefaultExampleHelpInfos;
 
             Parameters = variantGroup.ParameterGroups
                 .Where(pg => !pg.DontShow)
-                .Select(pg => new MarkdownParameterHelpInfo(helpInfo.Parameters.FirstOrDefault(phi => phi.Name == pg.ParameterName) ?? new PsParameterHelpInfo(), pg))
+                .Select(pg => new MarkdownParameterHelpInfo(
+                    variantGroup.Variants.SelectMany(v => v.HelpInfo.Parameters).Where(phi => phi.Name == pg.ParameterName).ToArray(), pg))
                 .OrderBy(phi => phi.Name).ToArray();
 
             Inputs = commentInfo.Inputs;
@@ -104,7 +105,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Parameter[] Parameters { get; }
         public string SyntaxText { get; }
 
-        public MarkdownSyntaxHelpInfo(Variant variant, bool isDefault)
+        public MarkdownSyntaxHelpInfo(Variant variant, ParameterGroup[] parameterGroups, bool isDefault)
         {
             Variant = variant;
             IsDefault = isDefault;
@@ -113,7 +114,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Where(p => !p.DontShow).OrderByDescending(p => p.IsMandatory)
                 //https://stackoverflow.com/a/6461526/294804
                 .ThenByDescending(p => p.Position.HasValue).ThenBy(p => p.Position)
-                .ThenBy(p => p.OrderCategory).ToArray();
+                // Use the OrderCategory of the parameter group because the final order category is the highest of the group, and not the order category of the individual parameters from the variants.
+                .ThenBy(p => parameterGroups.First(pg => pg.ParameterName == p.ParameterName).OrderCategory).ThenBy(p => p.ParameterName).ToArray();
             SyntaxText = CreateSyntaxFormat();
         }
 
@@ -183,23 +185,28 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         // For use by common parameters that have no backing data in the objects themselves.
         public MarkdownParameterHelpInfo() { }
 
-        public MarkdownParameterHelpInfo(PsParameterHelpInfo parameterHelpInfo, ParameterGroup parameterGroup)
+        public MarkdownParameterHelpInfo(PsParameterHelpInfo[] parameterHelpInfos, ParameterGroup parameterGroup)
         {
             Name = parameterGroup.ParameterName;
-            Description = parameterGroup.Description.NullIfEmpty() ?? parameterHelpInfo.Description.EmptyIfNull();
+            Description = parameterGroup.Description.NullIfEmpty()
+                          ?? parameterHelpInfos.Select(phi => phi.Description).FirstOrDefault(d => !String.IsNullOrEmpty(d)).EmptyIfNull();
             Type = parameterGroup.ParameterType;
-            Position = parameterGroup.FirstPosition?.ToString() ?? parameterHelpInfo.PositionText.ToUpperFirstCharacter().NullIfEmpty() ?? "Named";
-            DefaultValue = parameterGroup.DefaultValue?.Value?.ToString() ?? parameterHelpInfo.DefaultValueAsString.NullIfEmpty() ?? "None";
+            Position = parameterGroup.FirstPosition?.ToString()
+                       ?? parameterHelpInfos.Select(phi => phi.PositionText).FirstOrDefault(d => !String.IsNullOrEmpty(d)).ToUpperFirstCharacter().NullIfEmpty()
+                       ?? "Named";
+            // This no longer uses firstHelpInfo.DefaultValueAsString since it seems to be broken. For example, it has a value of 0 for Int32, but no default value was declared.
+            DefaultValue = parameterGroup.DefaultValue?.Value?.ToString() ?? "None";
 
             HasAllParameterSets = parameterGroup.HasAllVariants;
-            ParameterSetNames = (parameterGroup.Parameters.Select(p => p.VariantName).ToArray().NullIfEmpty() ?? parameterHelpInfo.ParameterSetNames)
+            ParameterSetNames = (parameterGroup.Parameters.Select(p => p.VariantName).ToArray().NullIfEmpty()
+                                 ?? parameterHelpInfos.SelectMany(phi => phi.ParameterSetNames).Distinct())
                 .OrderBy(psn => psn).ToArray();
-            Aliases = parameterGroup.Aliases.NullIfEmpty() ?? parameterHelpInfo.Aliases;
+            Aliases = parameterGroup.Aliases.NullIfEmpty() ?? parameterHelpInfos.SelectMany(phi => phi.Aliases).ToArray();
 
-            IsRequired = parameterHelpInfo.IsRequired ?? parameterGroup.Parameters.Any(p => p.IsMandatory);
-            IsDynamic = parameterHelpInfo.IsDynamic ?? false;
-            AcceptsPipelineByValue = parameterHelpInfo.SupportsPipelineInput?.Contains("ByValue") ?? parameterGroup.ValueFromPipeline;
-            AcceptsPipelineByPropertyName = parameterHelpInfo.SupportsPipelineInput?.Contains("ByPropertyName") ?? parameterGroup.ValueFromPipelineByPropertyName;
+            IsRequired = parameterHelpInfos.Select(phi => phi.IsRequired).FirstOrDefault(r => r == true) ?? parameterGroup.Parameters.Any(p => p.IsMandatory);
+            IsDynamic = parameterHelpInfos.Select(phi => phi.IsDynamic).FirstOrDefault(d => d == true) ?? false;
+            AcceptsPipelineByValue = parameterHelpInfos.Select(phi => phi.SupportsPipelineInput?.Contains("ByValue")).FirstOrDefault(bv => bv == true) ?? parameterGroup.ValueFromPipeline;
+            AcceptsPipelineByPropertyName = parameterHelpInfos.Select(phi => phi.SupportsPipelineInput?.Contains("ByPropertyName")).FirstOrDefault(bv => bv == true) ?? parameterGroup.ValueFromPipelineByPropertyName;
             AcceptsWildcardCharacters = parameterGroup.SupportsWildcards;
         }
     }

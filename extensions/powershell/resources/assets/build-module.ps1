@@ -129,7 +129,7 @@ Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path 
 Write-Host -ForegroundColor Green 'Creating test stubs...'
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testFolder
-Export-TestStub -ModuleName $moduleName -ModulePath $modulePaths -OutputFolder $testFolder
+Export-TestStub -ModuleName $moduleName -ExportsFolder $exportsFolder -OutputFolder $testFolder
 
 Write-Host -ForegroundColor Green 'Creating example stubs...'
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder

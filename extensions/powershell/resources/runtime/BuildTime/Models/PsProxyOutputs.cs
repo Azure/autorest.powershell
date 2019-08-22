@@ -94,19 +94,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class ArgumentCompleterOutput
     {
-        public bool HasArgumentCompleter { get; }
-        public Type ParameterType { get; }
-        public CompleterInfoAttribute CompleterInfoAttribute { get; }
+        public CompleterInfo CompleterInfo { get; }
 
-        public ArgumentCompleterOutput(ParameterGroup parameterGroup)
+        public ArgumentCompleterOutput(CompleterInfo completerInfo)
         {
-            HasArgumentCompleter = parameterGroup.HasArgumentCompleter;
-            ParameterType = parameterGroup.ParameterType;
-            CompleterInfoAttribute = parameterGroup.CompleterInfoAttribute;
+            CompleterInfo = completerInfo;
         }
 
-        public override string ToString() => HasArgumentCompleter
-            ? $"{Indent}[ArgumentCompleter({(CompleterInfoAttribute != null ? $"{{{CompleterInfoAttribute.Script.ToPsSingleLine("; ")}}}" : $"[{ParameterType.Unwrap().ToPsType()}]")})]{Environment.NewLine}"
+        public override string ToString() => CompleterInfo != null
+            ? $"{Indent}[ArgumentCompleter({(CompleterInfo.IsTypeCompleter ? $"[{CompleterInfo.Type.Unwrap().ToPsType()}]" : $"{{{CompleterInfo.Script.ToPsSingleLine("; ")}}}")})]{Environment.NewLine}"
             : String.Empty;
     }
 
@@ -202,46 +198,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 }}
 ";
     }
-
-    //    internal class HelpCommentOutput
-    //    {
-    //        public VariantGroup VariantGroup { get; }
-    //        public Type[] Inputs { get; }
-    //        public Type[] Outputs { get; }
-    //        public ParameterGroup[] ParameterGroups { get; }
-
-    //        public HelpCommentOutput(VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups)
-    //        {
-    //            VariantGroup = variantGroup;
-    //            Inputs = inputs;
-    //            Outputs = outputs;
-    //            ParameterGroups = parameterGroups;
-    //        }
-
-    //        public override string ToString()
-    //        {
-    //            var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
-    //            var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
-    //            var outputs = String.Join(Environment.NewLine, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}"));
-    //            var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
-    //            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
-    //                .Where(pg => pg.IsComplexInterface)
-    //                .OrderBy(pg => pg.ParameterName)
-    //                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput()));
-    //            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
-    //            return $@"<#
-    //.Synopsis
-    //{VariantGroup.Description.ToDescriptionFormat()}
-    //.Description
-    //{VariantGroup.Description.ToDescriptionFormat()}
-    //.Example
-    //To view examples, please use the -Online parameter with Get-Help or navigate to: {VariantGroup.Link}{inputsText}{outputsText}{notesText}
-    //.Link
-    //{VariantGroup.Link}
-    //#>
-    //";
-    //        }
-    //    }
 
     internal class HelpCommentOutput
     {
@@ -339,13 +295,15 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public override string ToString()
         {
-            //var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
-            //var requiredText = Info.Required ? "Required" : String.Empty;
-            //var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
-            var possibleTypesText = Info.PossibleTypes.Any() 
+            // Rendering of InfoAttribute members that are not used
+            /*var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
+            var requiredText = Info.Required ? "Required" : String.Empty;
+            var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;*/
+
+            var possibleTypesText = Info.PossibleTypes.Any()
                 ? $"PossibleTypes=({Info.PossibleTypes.Select(pt => $"[{pt.ToPsType()}]").JoinIgnoreEmpty(ItemSeparator)})"
                 : String.Empty;
-            //var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;
             var propertyText = new[] { /*serializedNameText, requiredText, readOnlyText,*/ possibleTypesText/*, descriptionText*/ }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}";
         }
@@ -456,7 +414,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static ValidateNotNullOutput ToValidateNotNullOutput(this bool hasValidateNotNull) => new ValidateNotNullOutput(hasValidateNotNull);
 
-        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this ParameterGroup parameterGroup) => new ArgumentCompleterOutput(parameterGroup);
+        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
 
         public static ParameterTypeOutput ToParameterTypeOutput(this Type parameterType) => new ParameterTypeOutput(parameterType);
 

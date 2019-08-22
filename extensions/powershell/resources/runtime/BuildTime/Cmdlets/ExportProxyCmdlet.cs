@@ -86,7 +86,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     }
                     sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
                     sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
-                    sb.Append(parameterGroup.ToArgumentCompleterOutput());
+                    sb.Append(parameterGroup.CompleterInfo.ToArgumentCompleterOutput());
                     sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
                     sb.Append(parameterGroup.InfoAttribute?.ToInfoOutput().ToString() ?? String.Empty);
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());

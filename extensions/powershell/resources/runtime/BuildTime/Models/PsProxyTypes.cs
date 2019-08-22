@@ -139,7 +139,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsPaging = Metadata.SupportsPaging;
 
             Attributes = this.ToAttributes();
-            Parameters = this.ToParameters();
+            Parameters = this.ToParameters().OrderBy(p => p.OrderCategory).ThenByDescending(p => p.IsMandatory).ToArray();
             IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
             IsDoNotExport = Attributes.OfType<DoNotExportAttribute>().Any();
             CmdletOnlyParameters = Parameters.Where(p => !p.Categories.Any(c => c == ParameterCategory.Azure || c == ParameterCategory.Runtime)).ToArray();
@@ -157,10 +157,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Type ParameterType { get; }
         public string Description { get; }
 
-        public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
-        public bool HasArgumentCompleter { get; }
+        public CompleterInfo CompleterInfo { get; }
         public ParameterCategory OrderCategory { get; }
         public bool DontShow { get; }
         public bool IsMandatory { get; }
@@ -183,23 +182,27 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             AllVariantNames = allVariantNames;
             var variantNames = Parameters.Select(p => p.VariantName).ToArray();
             HasAllVariants = variantNames.Any(vn => vn == AllParameterSets) || !AllVariantNames.Except(variantNames).Any();
-            var firstParameter = Parameters.First();
-            ParameterType = firstParameter.ParameterType;
-            Description = firstParameter.Description;
+            var types = Parameters.Select(p => p.ParameterType).Distinct().ToArray();
+            if (types.Length > 1)
+            {
+                throw new ParsingMetadataException($"The parameter '{ParameterName}' has multiple parameter types [{String.Join(", ", types.Select(t => t.Name))}] defined, which is not supported.");
+            }
+            ParameterType = types.First();
+            Description = Parameters.Select(p => p.Description).FirstOrDefault(d => !String.IsNullOrEmpty(d)).EmptyIfNull();
 
-            CompleterInfoAttribute = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault();
             Aliases = Parameters.SelectMany(p => p.Attributes).ToAliasNames().ToArray();
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
-            HasArgumentCompleter = CompleterInfoAttribute != null || Parameters.SelectMany(p => p.Attributes.OfType<ArgumentCompleterAttribute>()).Any();
+            CompleterInfo = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault()?.ToCompleterInfo()
+                            ?? Parameters.Select(p => p.ArgumentCompleterAttribute).FirstOrDefault()?.ToCompleterInfo();
             OrderCategory = Parameters.Select(p => p.OrderCategory).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
-            IsMandatory = HasAllVariants && firstParameter.IsMandatory;
+            IsMandatory = HasAllVariants && Parameters.Any(p => p.IsMandatory);
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
             IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
             ComplexInterfaceInfo = Parameters.Where(p => p.IsComplexInterface).Select(p => p.ComplexInterfaceInfo).FirstOrDefault();
             InfoAttribute = Parameters.Select(p => p.InfoAttribute).FirstOrDefault();
 
-            FirstPosition = firstParameter.Position;
+            FirstPosition = Parameters.Select(p => p.Position).FirstOrDefault(p => p != null);
             DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
             ValueFromPipeline = Parameters.Any(p => p.ValueFromPipeline);
             ValueFromPipelineByPropertyName = Parameters.Any(p => p.ValueFromPipelineByPropertyName);
@@ -223,6 +226,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public InfoAttribute InfoAttribute { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
+        public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -246,10 +250,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
             OrderCategory = Categories.DefaultIfEmpty(ParameterCategory.Body).Min();
             DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
-            ParameterAttribute = Attributes.OfType<ParameterAttribute>().First();
+            ParameterAttribute = Attributes.OfType<ParameterAttribute>().FirstOrDefault(pa => pa.ParameterSetName == VariantName || pa.ParameterSetName == AllParameterSets);
+            if (ParameterAttribute == null)
+            {
+                throw new ParsingMetadataException($"The variant '{VariantName}' has multiple parameter sets defined, which is not supported.");
+            }
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
             InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault();
             CompleterInfoAttribute = Attributes.OfType<CompleterInfoAttribute>().FirstOrDefault();
+            ArgumentCompleterAttribute = Attributes.OfType<ArgumentCompleterAttribute>().FirstOrDefault();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
@@ -348,6 +357,33 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class CompleterInfo
+    {
+        public string Name { get; }
+        public string Description { get; }
+        public string Script { get; }
+        public Type Type { get; }
+        public bool IsTypeCompleter { get; }
+
+        public CompleterInfo(CompleterInfoAttribute infoAttribute)
+        {
+            Name = infoAttribute.Name;
+            Description = infoAttribute.Description;
+            Script = infoAttribute.Script;
+        }
+
+        public CompleterInfo(ArgumentCompleterAttribute completerAttribute)
+        {
+            Script = completerAttribute.ScriptBlock?.ToString();
+            if (completerAttribute.Type != null)
+            {
+                Type = completerAttribute.Type;
+                IsTypeCompleter = true;
+            }
+        }
+
+    }
+
     internal static class PsProxyTypeExtensions
     {
         public const string NoProfiles = "__NoProfiles";
@@ -397,5 +433,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null, string description = null)
             => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes, description);
+
+        public static CompleterInfo ToCompleterInfo(this CompleterInfoAttribute infoAttribute) => new CompleterInfo(infoAttribute);
+        public static CompleterInfo ToCompleterInfo(this ArgumentCompleterAttribute completerAttribute) => new CompleterInfo(completerAttribute);
     }
 }

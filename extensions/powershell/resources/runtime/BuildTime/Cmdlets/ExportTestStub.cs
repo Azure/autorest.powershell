@@ -18,7 +18,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public string[] ModulePath { get; set; }
+        public string ExportsFolder { get; set; }
 
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
@@ -31,34 +31,55 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            var variantGroups = GetModuleCmdlets(this, ModulePath)
-                .SelectMany(ci => ci.ToVariants())
-                .Where(v => !v.IsDoNotExport)
-                .GroupBy(v => v.CmdletName)
-                .Select(vg => new VariantGroup(ModuleName, vg.Key, vg.Select(v => v).ToArray(), OutputFolder, isTest: true))
-                .Where(vtg => !File.Exists(vtg.FilePath) && (IncludeGenerated || !vtg.IsGenerated));
-
-            foreach (var variantGroup in variantGroups)
+            if (!Directory.Exists(ExportsFolder))
             {
-                var sb = new StringBuilder();
-                sb.AppendLine($@"$TestRecordingFile = Join-Path $PSScriptRoot '{variantGroup.CmdletName}.Recording.json'");
-                sb.AppendLine($@". (Join-Path $PSScriptRoot '{RuntimeFolder}' 'HttpPipelineMocking.ps1'){Environment.NewLine}");
+                throw new ArgumentException($"Exports folder '{ExportsFolder}' does not exist");
+            }
 
-                sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
-                var variants = variantGroup.Variants
-                    .Where(v => IncludeGenerated || !v.Attributes.OfType<GeneratedAttribute>().Any())
-                    .ToList();
+            var exportDirectories = Directory.GetDirectories(ExportsFolder);
+            if (!exportDirectories.Any())
+            {
+                exportDirectories = new[] { ExportsFolder };
+            }
 
-                foreach (var variant in variants)
+            foreach (var exportDirectory in exportDirectories)
+            {
+                var outputFolder = OutputFolder;
+                if (exportDirectory != ExportsFolder)
                 {
-                    sb.AppendLine($"{Indent}It '{variant.VariantName}' {{");
-                    sb.AppendLine($"{Indent}{Indent}{{ throw [System.NotImplementedException] }} | Should -Not -Throw");
-                    var variantSeparator = variants.IndexOf(variant) == variants.Count - 1 ? String.Empty : Environment.NewLine;
-                    sb.AppendLine($"{Indent}}}{variantSeparator}");
+                    outputFolder = Path.Combine(OutputFolder, Path.GetFileName(exportDirectory));
+                    Directory.CreateDirectory(outputFolder);
                 }
-                sb.AppendLine("}");
 
-                File.WriteAllText(variantGroup.FilePath, sb.ToString());
+                var variantGroups = GetScriptCmdlets(exportDirectory)
+                    .SelectMany(fi => fi.ToVariants())
+                    .Where(v => !v.IsDoNotExport)
+                    .GroupBy(v => v.CmdletName)
+                    .Select(vg => new VariantGroup(ModuleName, vg.Key, vg.Select(v => v).ToArray(), outputFolder, isTest: true))
+                    .Where(vtg => !File.Exists(vtg.FilePath) && (IncludeGenerated || !vtg.IsGenerated));
+
+                foreach (var variantGroup in variantGroups)
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine($@"$TestRecordingFile = Join-Path $PSScriptRoot '{variantGroup.CmdletName}.Recording.json'");
+                    sb.AppendLine($@". (Join-Path $PSScriptRoot '{RuntimeFolder}' 'HttpPipelineMocking.ps1'){Environment.NewLine}");
+
+                    sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
+                    var variants = variantGroup.Variants
+                        .Where(v => IncludeGenerated || !v.Attributes.OfType<GeneratedAttribute>().Any())
+                        .ToList();
+
+                    foreach (var variant in variants)
+                    {
+                        sb.AppendLine($"{Indent}It '{variant.VariantName}' {{");
+                        sb.AppendLine($"{Indent}{Indent}{{ throw [System.NotImplementedException] }} | Should -Not -Throw");
+                        var variantSeparator = variants.IndexOf(variant) == variants.Count - 1 ? String.Empty : Environment.NewLine;
+                        sb.AppendLine($"{Indent}}}{variantSeparator}");
+                    }
+                    sb.AppendLine("}");
+
+                    File.WriteAllText(variantGroup.FilePath, sb.ToString());
+                }
             }
         }
     }
