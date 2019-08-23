@@ -287,25 +287,29 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
     internal class InfoOutput
     {
         public InfoAttribute Info { get; }
+        public Type ParameterType { get; }
 
-        public InfoOutput(InfoAttribute info)
+        public InfoOutput(InfoAttribute info, Type parameterType)
         {
             Info = info;
+            ParameterType = parameterType;
         }
 
         public override string ToString()
         {
-            // Rendering of InfoAttribute members that are not used
+            // Rendering of InfoAttribute members that are not used currently
             /*var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
-            var requiredText = Info.Required ? "Required" : String.Empty;
             var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
             var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;*/
 
-            var possibleTypesText = Info.PossibleTypes.Any()
+            var requiredText = Info.Required ? "Required" : String.Empty;
+            var unwrappedType = ParameterType.Unwrap();
+            var hasValidPossibleTypes = Info.PossibleTypes.Any(pt => pt != unwrappedType);
+            var possibleTypesText = hasValidPossibleTypes
                 ? $"PossibleTypes=({Info.PossibleTypes.Select(pt => $"[{pt.ToPsType()}]").JoinIgnoreEmpty(ItemSeparator)})"
                 : String.Empty;
-            var propertyText = new[] { /*serializedNameText, requiredText, readOnlyText,*/ possibleTypesText/*, descriptionText*/ }.JoinIgnoreEmpty(ItemSeparator);
-            return $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}";
+            var propertyText = new[] { /*serializedNameText, */requiredText,/* readOnlyText,*/ possibleTypesText/*, descriptionText*/ }.JoinIgnoreEmpty(ItemSeparator);
+            return hasValidPossibleTypes ? $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
         }
     }
 
@@ -440,7 +444,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this ComplexInterfaceInfo complexInterfaceInfo) => new PropertySyntaxOutput(complexInterfaceInfo);
 
-        public static InfoOutput ToInfoOutput(this InfoAttribute info) => new InfoOutput(info);
+        public static InfoOutput ToInfoOutput(this InfoAttribute info, Type parameterType) => new InfoOutput(info, parameterType);
 
         public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent = "", bool includeDashes = false, bool includeBackticks = false, bool isFirst = true)
         {

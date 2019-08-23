@@ -200,7 +200,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsWildcards = Parameters.Any(p => p.SupportsWildcards);
             IsComplexInterface = Parameters.Any(p => p.IsComplexInterface);
             ComplexInterfaceInfo = Parameters.Where(p => p.IsComplexInterface).Select(p => p.ComplexInterfaceInfo).FirstOrDefault();
-            InfoAttribute = Parameters.Select(p => p.InfoAttribute).FirstOrDefault();
+            InfoAttribute = Parameters.Select(p => p.InfoAttribute).First();
 
             FirstPosition = Parameters.Select(p => p.Position).FirstOrDefault(p => p != null);
             DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
@@ -224,7 +224,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PSDefaultValueAttribute DefaultValue { get; }
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
-        public InfoAttribute InfoAttribute { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
 
@@ -234,6 +233,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool DontShow { get; }
         public bool IsMandatory { get; }
 
+        public InfoAttribute InfoAttribute { get; }
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
         public bool IsComplexInterface { get; }
         public string Description { get; }
@@ -256,7 +256,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 throw new ParsingMetadataException($"The variant '{VariantName}' has multiple parameter sets defined, which is not supported.");
             }
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
-            InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault();
             CompleterInfoAttribute = Attributes.OfType<CompleterInfoAttribute>().FirstOrDefault();
             ArgumentCompleterAttribute = Attributes.OfType<ArgumentCompleterAttribute>().FirstOrDefault();
 
@@ -271,8 +270,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var description = ParameterAttribute.HelpMessage.NullIfEmpty() ?? HelpInfo.Description.NullIfEmpty() ?? InfoAttribute?.Description.NullIfEmpty() ?? String.Empty;
             // Remove the complex type message as it will be reinserted if this is a complex type
             description = description.NormalizeNewLines().Replace(complexMessage, String.Empty).Replace(complexMessage.ToPsSingleLine(), String.Empty);
-            ComplexInterfaceInfo = InfoAttribute?.ToComplexInterfaceInfo(complexParameterName, ParameterType, true, description: description);
-            IsComplexInterface = ComplexInterfaceInfo?.IsComplexInterface ?? false;
+            // Make an InfoAttribute for processing only if one isn't provided
+            InfoAttribute = Attributes.OfType<InfoAttribute>().FirstOrDefault() ?? new InfoAttribute { PossibleTypes = new[] { ParameterType.Unwrap() }, Required = IsMandatory };
+            // Set the description if the InfoAttribute does not have one since they are exported without a description
+            InfoAttribute.Description = String.IsNullOrEmpty(InfoAttribute.Description) ? description : InfoAttribute.Description;
+            ComplexInterfaceInfo = InfoAttribute.ToComplexInterfaceInfo(complexParameterName, ParameterType, true);
+            IsComplexInterface = ComplexInterfaceInfo.IsComplexInterface;
             Description = $"{description}{(IsComplexInterface ? complexMessage : String.Empty)}";
         }
     }
@@ -290,7 +293,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
-        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes, string description)
+        public ComplexInterfaceInfo(string name, Type type, InfoAttribute infoAttribute, bool? required, List<Type> seenTypes)
         {
             Name = name;
             Type = type;
@@ -298,7 +301,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             Required = required ?? InfoAttribute.Required;
             ReadOnly = InfoAttribute.ReadOnly;
-            Description = (description ?? InfoAttribute.Description).ToPsSingleLine();
+            Description = InfoAttribute.Description.ToPsSingleLine();
 
             var unwrappedType = Type.Unwrap();
             var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
@@ -431,8 +434,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(pg => new ParameterGroup(pg.Key, pg.Select(p => p).ToArray(), allVariantNames));
         }
 
-        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null, string description = null)
-            => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes, description);
+        public static ComplexInterfaceInfo ToComplexInterfaceInfo(this InfoAttribute infoAttribute, string name, Type type, bool? required = null, List<Type> seenTypes = null)
+            => new ComplexInterfaceInfo(name, type, infoAttribute, required, seenTypes);
 
         public static CompleterInfo ToCompleterInfo(this CompleterInfoAttribute infoAttribute) => new CompleterInfo(infoAttribute);
         public static CompleterInfo ToCompleterInfo(this ArgumentCompleterAttribute completerAttribute) => new CompleterInfo(completerAttribute);

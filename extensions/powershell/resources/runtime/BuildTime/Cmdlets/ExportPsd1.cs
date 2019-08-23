@@ -48,13 +48,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($@"{Indent}RootModule = '{"${$project.psm1}"}'");
             sb.AppendLine($@"{Indent}ModuleVersion = '{"${$project.moduleVersion}"}'");
             sb.AppendLine($@"{Indent}CompatiblePSEditions = 'Core', 'Desktop'");
-            //var author = IsAzure ? "Microsoft Corporation" : "${$project.metadata.authors}";
             sb.AppendLine($@"{Indent}Author = '{"${$project.metadata.authors}"}'");
-            //var companyName = IsAzure ? "Microsoft Corporation" : "${$project.metadata.companyName}";
             sb.AppendLine($@"{Indent}CompanyName = '{"${$project.metadata.companyName}"}'");
-            //var copyright = IsAzure ? "Microsoft Corporation. All rights reserved." : "${$project.metadata.copyright}";
             sb.AppendLine($@"{Indent}Copyright = '{"${$project.metadata.copyright}"}'");
-            //var description = IsAzure ? "Microsoft Azure PowerShell: ${$project.serviceName} cmdlets" : "${$project.metadata.description}";
             sb.AppendLine($@"{Indent}Description = '{"${$project.metadata.description}"}'");
             sb.AppendLine($@"{Indent}PowerShellVersion = '5.1'");
             sb.AppendLine($@"{Indent}DotNetFrameworkVersion = '4.7.2'");
@@ -75,11 +71,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($@"{Indent}PrivateData = @{{");
             sb.AppendLine($@"{Indent}{Indent}PSData = @{{");
 
-            //var tagsList = IsAzure ? "'Azure', 'ResourceManager', 'ARM', '${$project.serviceName}'" : "''";
             sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".NullIfEmpty() ?? "''"}");
-            //var licenseUri = IsAzure ? "https://aka.ms/azps-license" : "";
             sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{"${$project.metadata.licenseUri}"}'");
-            //var projectUri = IsAzure ? "https://github.com/Azure/azure-powershell" : "";
             sb.AppendLine($@"{Indent}{Indent}{Indent}ProjectUri = '{"${$project.metadata.projectUri}"}'");
             sb.AppendLine($@"{Indent}{Indent}{Indent}ReleaseNotes = ''");
             var profilesList = "${$project.profiles.map(each => `'` + each + `'`).join(', ')}";

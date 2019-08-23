@@ -88,7 +88,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                     sb.Append(parameterGroup.CompleterInfo.ToArgumentCompleterOutput());
                     sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
-                    sb.Append(parameterGroup.InfoAttribute?.ToInfoOutput().ToString() ?? String.Empty);
+                    sb.Append(parameterGroup.InfoAttribute.ToInfoOutput(parameterGroup.ParameterType));
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
                     sb.Append(parameterGroup.Description.ToParameterHelpOutput());
                     sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
