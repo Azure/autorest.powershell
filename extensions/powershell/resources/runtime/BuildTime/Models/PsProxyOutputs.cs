@@ -18,7 +18,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             OutputTypes = outputTypes.ToArray();
         }
 
-        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"'{ot}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"[{ot}]").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
     internal class CmdletBindingOutput
