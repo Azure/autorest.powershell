@@ -60,6 +60,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ProfileName = profileName;
             Variants = variants;
             ParameterGroups = Variants.ToParameterGroups().OrderBy(pg => pg.OrderCategory).ThenByDescending(pg => pg.IsMandatory).ToArray();
+            var aliasDuplicates = ParameterGroups.SelectMany(pg => pg.Aliases)
+                //https://stackoverflow.com/a/18547390/294804
+                .GroupBy(a => a).Where(g => g.Count() > 1).Select(g => g.Key).ToArray();
+            if (aliasDuplicates.Any())
+            {
+                throw new ParsingMetadataException($"The alias(es) [{String.Join(", ", aliasDuplicates)}] are defined on multiple parameters for cmdlet '{CmdletName}', which is not supported.");
+            }
             ComplexInterfaceInfos = ParameterGroups.Where(pg => !pg.DontShow && pg.IsComplexInterface).OrderBy(pg => pg.ParameterName).Select(pg => pg.ComplexInterfaceInfo).ToArray();
 
             Aliases = Variants.SelectMany(v => v.Attributes).ToAliasNames().ToArray();
