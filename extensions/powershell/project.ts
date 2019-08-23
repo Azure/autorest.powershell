@@ -178,21 +178,6 @@ export class Project extends codeDomProject {
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/readme.md`;
 
-    //Metadata
-    // let defaultMetadata: Metadata = {
-    //   authors: '',
-    //   owners: '',
-    //   requireLicenseAcceptance: false,
-    //   description: '',
-    //   copyright: '',
-    //   tags: '',
-    //   companyName: '',
-    //   licenseUrl: '',
-    //   projectUrl: ''
-    // };
-    // let metadataFromConfig = await this.state.getValue<Metadata>('metadata', defaultMetadata);
-    // this.metadata = Object.assign(defaultMetadata, metadataFromConfig);
-
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
     this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
