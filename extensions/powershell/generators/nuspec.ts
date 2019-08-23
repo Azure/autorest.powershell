@@ -9,8 +9,8 @@ import { Project } from '../project';
 export async function generateNuspec(project: Project) {
   const authors = project.azure ? 'Microsoft Corporation' : project.metadata.authors;
   const owners = project.azure ? 'Microsoft Corporation' : project.metadata.owners;
-  const licenseUrl = project.azure ? `https://aka.ms/azps-license` : project.metadata.licenseUrl;
-  const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : project.metadata.projectUrl;
+  const licenseUrl = project.azure ? `https://aka.ms/azps-license` : project.metadata.licenseUri;
+  const projectUrl = project.azure ? `https://github.com/Azure/azure-powershell` : project.metadata.projectUri;
   const description = project.azure ? `Microsoft Azure PowerShell: ${project.serviceName} cmdlets` : project.metadata.description;
   const copyright = project.azure ? 'Microsoft Corporation. All rights reserved.' : project.metadata.copyright;
   const tags = project.azure ? 'Azure ResourceManager ARM AppConfiguration PSModule' : project.metadata.tags;
