@@ -71,7 +71,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($@"{Indent}PrivateData = @{{");
             sb.AppendLine($@"{Indent}{Indent}PSData = @{{");
 
-            sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".NullIfEmpty() ?? "''"}");
+            sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".Split(' ').ToPsList().NullIfEmpty() ?? "''"}");
             sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{"${$project.metadata.licenseUri}"}'");
             sb.AppendLine($@"{Indent}{Indent}{Indent}ProjectUri = '{"${$project.metadata.projectUri}"}'");
             sb.AppendLine($@"{Indent}{Indent}{Indent}ReleaseNotes = ''");
