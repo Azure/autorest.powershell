@@ -222,9 +222,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
             return $@"<#
 .Synopsis
-{CommentInfo.Synopsis.ToDescriptionFormat()}
+{CommentInfo.Synopsis.ToDescriptionFormat(false)}
 .Description
-{CommentInfo.Description.ToDescriptionFormat()}
+{CommentInfo.Description.ToDescriptionFormat(false)}
 .Example
 To view examples, please use the -Online parameter with Get-Help or navigate to: {CommentInfo.OnlineVersion}{inputsText}{outputsText}{notesText}
 .Link
@@ -234,17 +234,19 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         }
     }
 
-    internal class ParameterHelpOutput
+    internal class ParameterDescriptionOutput
     {
-        public string HelpMessage { get; }
+        public string Description { get; }
 
-        public ParameterHelpOutput(string helpMessage)
+        public ParameterDescriptionOutput(string description)
         {
-            HelpMessage = helpMessage;
+            Description = description;
         }
 
-        public override string ToString() => !String.IsNullOrEmpty(HelpMessage)
-            ? HelpMessage.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
+        public override string ToString() => !String.IsNullOrEmpty(Description)
+            ? Description.ToDescriptionFormat(false).NormalizeNewLines()
+                .Split(new [] { Environment.NewLine }, StringSplitOptions.None)
+                .Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
             : String.Empty;
     }
 
@@ -432,7 +434,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
 
-        public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
+        public static ParameterDescriptionOutput ToParameterDescriptionOutput(this string description) => new ParameterDescriptionOutput(description);
 
         public static ProfileOutput ToProfileOutput(this string profileName) => new ProfileOutput(profileName);
 

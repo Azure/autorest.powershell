@@ -90,7 +90,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
                     sb.Append(parameterGroup.InfoAttribute.ToInfoOutput(parameterGroup.ParameterType));
                     sb.Append(parameterGroup.ParameterType.ToParameterTypeOutput());
-                    sb.Append(parameterGroup.Description.ToParameterHelpOutput());
+                    sb.Append(parameterGroup.Description.ToParameterDescriptionOutput());
                     sb.Append(parameterGroup.ParameterName.ToParameterNameOutput(parameterGroups.IndexOf(parameterGroup) == parameterGroups.Count - 1));
                 }
                 sb.Append($"){Environment.NewLine}{Environment.NewLine}");
