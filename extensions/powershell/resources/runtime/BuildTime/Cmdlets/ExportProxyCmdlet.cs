@@ -30,7 +30,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string InternalFolder { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "Docs")]
-        [ValidateNotNullOrEmpty]
         public string ModuleDescription { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "Docs")]
