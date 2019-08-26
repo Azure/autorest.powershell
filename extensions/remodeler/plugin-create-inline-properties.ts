@@ -83,8 +83,11 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
 
     // now we go thru the parent's virutal properties and create our own copies 
     for (const virtualProperty of [...parentProperties.inherited, ...parentProperties.inlined, ...parentProperties.owned]) {
+      // make sure that we have a list of shared owners of this property.
+      virtualProperty.sharedWith = virtualProperty.sharedWith || [virtualProperty];
+
       // we are just copying over theirs to ours.
-      virtualProperties.inherited.push({
+      const inheritedProperty = {
         name: virtualProperty.name,
         property: virtualProperty.property,
         private: virtualProperty.private,
@@ -97,7 +100,13 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         description: virtualProperty.description,
         alias: [],
         required: virtualProperty.required,
-      });
+        sharedWith: virtualProperty.sharedWith,
+      };
+      // add it to the list of virtual properties that share this property.
+      virtualProperty.sharedWith.push(inheritedProperty);
+
+      // add it to this class.
+      virtualProperties.inherited.push(inheritedProperty);
     }
   }
 
@@ -177,6 +186,8 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
         });
       }
 
+
+
       for (const inlinedProperty of [...virtualChildProperties.inlined]) {
         // child properties are be inlined without prefixing the name with the property name
         // unless there is a collision, in which case, we have to resolve 
@@ -240,6 +251,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
   for (const each of virtualProperties.inlined.sort((a, b) => a.nameOptions.length - b.nameOptions.length)) {
     const ct = inlined.get(each.name);
     if (ct && ct > 1) {
+      console.error(`Fixing collision on name ${each.name} #${ct} `)
       each.name = selectName(each.nameOptions, usedNames);
     }
   }

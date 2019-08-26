@@ -45,7 +45,7 @@ export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { s
 async function tweakModel(state: State): Promise<codemodel.Model> {
   // get the value 
   const isAzure = await state.getValue('azure', false);
-  const shouldSanitize = await state.getValue('sanitize-names', false);
+  const shouldSanitize = await state.getValue('sanitize-names', isAzure);
 
   // make sure recursively that every details field has csharp
   for (const { index, instance } of linq.visitor(state.model)) {
@@ -54,7 +54,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
 
-  if (shouldSanitize || isAzure) {
+  if (shouldSanitize) {
     for (const operation of values(state.model.commands.operations)) {
       // clean the noun (i.e. subjectPrefix + subject)
       const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
@@ -149,9 +149,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         );
 
         if (prevName !== sanitizedName) {
-          if (property.alias === undefined) {
-            property.alias = [];
-          }
+          property.alias = property.alias || [];
 
           // saved the prev name as alias
           property.alias.push(property.name);
@@ -160,6 +158,18 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           property.name = sanitizedName;
           state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
           state.message({ Channel: Channel.Debug, Text: `                        -> And, added alias '${prevName}'` });
+
+          // update shared properties too
+          if (property.sharedWith) {
+            for (const sharedProperty of property.sharedWith) {
+              if (sharedProperty.name !== sanitizedName) {
+                state.message({ Channel: Channel.Debug, Text: `Changing shared property ${sharedProperty.name} to ${sanitizedName}` });
+                sharedProperty.alias = sharedProperty.alias || [];
+                sharedProperty.alias.push(sharedProperty.name);
+                sharedProperty.name = sanitizedName;
+              }
+            }
+          }
         }
       }
     }
