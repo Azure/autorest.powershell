@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -12,5 +13,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static string ToUpperFirstCharacter(this string text) => String.IsNullOrEmpty(text) ? text : $"{text[0].ToString().ToUpperInvariant()}{text.Remove(0, 1)}";
 
+        public static string ReplaceNewLines(this string value, string replacer = " ", string[] newLineSymbols = null)
+            => (newLineSymbols ?? new []{ "\r\n", "\n" }).Aggregate(value.EmptyIfNull(), (current, symbol) => current.Replace(symbol, replacer));
+        public static string NormalizeNewLines(this string value) => value.ReplaceNewLines("\u00A0").Replace("\u00A0", Environment.NewLine);
     }
 }

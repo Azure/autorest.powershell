@@ -8,6 +8,16 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 module-version: 0.1.0
 skip-model-cmdlets: false
 help-link-prefix: https://docs.microsoft.com/en-us/powershell/module/
+metadata:
+  authors: ''
+  owners: ''
+  requireLicenseAcceptance: false
+  description: ''
+  copyright: ''
+  tags: ''
+  companyName: ''
+  licenseUri: ''
+  projectUri: ''
 ```
 
 > Names

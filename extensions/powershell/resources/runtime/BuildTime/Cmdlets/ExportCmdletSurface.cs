@@ -14,6 +14,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
+        public string ModuleName { get; set; }
+
+        [Parameter(Mandatory = true)]
+        [ValidateNotNullOrEmpty]
         public string CmdletFolder { get; set; }
 
         [Parameter(Mandatory = true)]
@@ -43,7 +47,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 var variantGroups = profileGroup.Variants
                     .GroupBy(v => new {v.CmdletName})
-                    .Select(vg => new VariantGroup(vg.Key.CmdletName, vg.Select(v => v).ToArray(), String.Empty, profileGroup.ProfileName));
+                    .Select(vg => new VariantGroup(ModuleName, vg.Key.CmdletName, vg.Select(v => v).ToArray(), String.Empty, profileGroup.ProfileName));
                 var sb = UseExpandedFormat ? ExpandedFormat(variantGroups) : CondensedFormat(variantGroups);
                 Directory.CreateDirectory(OutputFolder);
                 File.WriteAllText(Path.Combine(OutputFolder, $"CmdletSurface-{profileGroup.ProfileName}.md"), sb.ToString());
@@ -57,9 +61,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 sb.Append($"### {variantGroup.CmdletName}{Environment.NewLine}");
                 var parameterGroups = variantGroup.ParameterGroups
-                    .Where(pg => !pg.DontShow && (IncludeGeneralParameters || (pg.OrderCategory != ParameterCategory.Azure && pg.OrderCategory != ParameterCategory.Runtime)))
-                    .OrderBy(pg => pg.OrderCategory)
-                    .ThenByDescending(pg => pg.IsMandatory);
+                    .Where(pg => !pg.DontShow && (IncludeGeneralParameters || (pg.OrderCategory != ParameterCategory.Azure && pg.OrderCategory != ParameterCategory.Runtime)));
                 foreach (var parameterGroup in parameterGroups)
                 {
                     sb.Append($"  - {parameterGroup.ParameterName} `{parameterGroup.ParameterType.ToSyntaxTypeName()}`{Environment.NewLine}");
@@ -85,9 +87,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 sb.Append($"### {condensedGroup.CmdletNoun} [{String.Join(", ", condensedGroup.CmdletVerbs)}] `{String.Join(", ", condensedGroup.OutputTypes)}`{Environment.NewLine}");
                 var parameterGroups = condensedGroup.ParameterGroups
-                    .Where(pg => !pg.DontShow && (IncludeGeneralParameters || (pg.OrderCategory != ParameterCategory.Azure && pg.OrderCategory != ParameterCategory.Runtime)))
-                    .OrderBy(pg => pg.OrderCategory)
-                    .ThenByDescending(pg => pg.IsMandatory);
+                    .Where(pg => !pg.DontShow && (IncludeGeneralParameters || (pg.OrderCategory != ParameterCategory.Azure && pg.OrderCategory != ParameterCategory.Runtime)));
                 foreach (var parameterGroup in parameterGroups)
                 {
                     sb.Append($"  - {parameterGroup.ParameterName} `{parameterGroup.ParameterType.ToSyntaxTypeName()}`{Environment.NewLine}");

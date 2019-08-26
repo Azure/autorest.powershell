@@ -108,11 +108,11 @@ Dynamic: {ParameterInfo.IsDynamic}
 
     internal class ModulePageMetadataOutput
     {
-        public PSModuleInfo ModuleInfo { get; }
+        public PsModuleHelpInfo ModuleInfo { get; }
 
         private static string HelpLinkPrefix { get; } = @"${$project.helpLinkPrefix}";
 
-        public ModulePageMetadataOutput(PSModuleInfo moduleInfo)
+        public ModulePageMetadataOutput(PsModuleHelpInfo moduleInfo)
         {
             ModuleInfo = moduleInfo;
         }
@@ -145,9 +145,15 @@ Locale: en-US
 
     internal static class PsHelpOutputExtensions
     {
-        public static string EscapeAngleBrackets(this string text) => text?.Replace("<", @"\<")?.Replace(">", @"\>");
-        public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}")?.Replace(". ", $".{Environment.NewLine}");
-        public static string ToDescriptionFormat(this string text) => text?.EscapeAngleBrackets()?.ReplaceSentenceEndWithNewline();
+        public static string EscapeAngleBrackets(this string text) => text?.Replace("<", @"\<").Replace(">", @"\>");
+        public static string ReplaceSentenceEndWithNewline(this string text) => text?.Replace(".  ", $".{Environment.NewLine}").Replace(". ", $".{Environment.NewLine}");
+        public static string ReplaceBrWithNewline(this string text) => text?.Replace("<br>", $"{Environment.NewLine}");
+        public static string ToDescriptionFormat(this string text, bool escapeAngleBrackets = true)
+        {
+            var description = text?.ReplaceBrWithNewline();
+            description = escapeAngleBrackets ? description?.EscapeAngleBrackets() : description;
+            return description?.ReplaceSentenceEndWithNewline().Trim();
+        }
 
         public const string ExampleNameHeader = "### ";
         public const string ExampleCodeHeader = "```powershell";
@@ -161,7 +167,7 @@ Locale: en-US
 
         public static HelpParameterOutput ToHelpParameterOutput(this MarkdownParameterHelpInfo parameterInfo) => new HelpParameterOutput(parameterInfo);
 
-        public static ModulePageMetadataOutput ToModulePageMetadataOutput(this PSModuleInfo moduleInfo) => new ModulePageMetadataOutput(moduleInfo);
+        public static ModulePageMetadataOutput ToModulePageMetadataOutput(this PsModuleHelpInfo moduleInfo) => new ModulePageMetadataOutput(moduleInfo);
 
         public static ModulePageCmdletOutput ToModulePageCmdletOutput(this MarkdownHelpInfo helpInfo) => new ModulePageCmdletOutput(helpInfo);
     }

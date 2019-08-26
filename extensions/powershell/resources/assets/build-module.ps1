@@ -1,11 +1,11 @@
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
   Write-Error 'This script requires PowerShell Core to execute. [Note] Generated cmdlets will work in both PowerShell Core or Windows PowerShell.'
 }
 
-if(-not $Isolated) {
+if(-not $Isolated -and -not $Debugger) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
   & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
@@ -50,29 +50,32 @@ if(-not $Isolated) {
   return
 }
 
-Write-Host -ForegroundColor Green 'Cleaning build folders...'
 $binFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}'
 $objFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}'
-$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
 
-if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
-  Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
-  Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+if(-not $Debugger) {
+  Write-Host -ForegroundColor Green 'Cleaning build folders...'
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
+
+  if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
+    Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
+    Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+  }
+
+  Write-Host -ForegroundColor Green 'Compiling module...'
+  $buildConfig = 'Debug'
+  if($Release) {
+    $buildConfig = 'Release'
+  }
+  dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig /nologo
+  if($LastExitCode -ne 0) {
+    Write-Error 'Compilation failed.'
+  }
+
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 }
 
-Write-Host -ForegroundColor Green 'Compiling module...'
-$buildConfig = 'Debug'
-if($Release) {
-  $buildConfig = 'Release'
-}
-dotnet publish $PSScriptRoot --verbosity quiet --configuration $buildConfig /nologo
-if($LastExitCode -ne 0) {
-  Write-Error 'Compilation failed.'
-}
-
-$null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 $dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
-
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
 }
@@ -98,26 +101,37 @@ if(Test-Path $internalFolder) {
 }
 $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
-Write-Host -ForegroundColor Green 'Creating exports...'
-Export-ProxyCmdlet -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder
+$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
+$guid = Get-ModuleGuid -Psd1Path $psd1
+$moduleName = '${$project.moduleName}'
+$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
+$null = New-Item -ItemType Directory -Force -Path $examplesFolder
+
+if($NoDocs) {
+  Write-Host -ForegroundColor Green 'Creating exports...'
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs
+} else {
+  Write-Host -ForegroundColor Green 'Creating exports and docs...'
+  $moduleDescription = '${$project.metadata.description}'
+  $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
+  $null = New-Item -ItemType Directory -Force -Path $docsFolder
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid
+}
 
 Write-Host -ForegroundColor Green 'Creating format.ps1xml...'
 $formatPs1xml = Join-Path $PSScriptRoot '${$project.formatPs1xml}'
 Export-FormatPs1xml -FilePath $formatPs1xml
 
 Write-Host -ForegroundColor Green 'Creating psd1...'
-$psd1 = Join-Path $PSScriptRoot '${$project.psd1}'
 $customFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.customFolder)}'
-Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1
+Export-Psd1 -ExportsFolder $exportsFolder -CustomFolder $customFolder -Psd1Path $psd1 -ModuleGuid $guid
 
 Write-Host -ForegroundColor Green 'Creating test stubs...'
 $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $testFolder
-Export-TestStub -ModulePath $modulePaths -OutputFolder $testFolder
+Export-TestStub -ModuleName $moduleName -ExportsFolder $exportsFolder -OutputFolder $testFolder
 
 Write-Host -ForegroundColor Green 'Creating example stubs...'
-$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
-$null = New-Item -ItemType Directory -Force -Path $examplesFolder
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
 
 Write-Host -ForegroundColor Green '-------------Done-------------'

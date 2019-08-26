@@ -18,7 +18,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             OutputTypes = outputTypes.ToArray();
         }
 
-        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"'{ot}'").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
+        public override string ToString() => OutputTypes != null && OutputTypes.Any() ? $"[OutputType({OutputTypes.Select(ot => $"[{ot}]").JoinIgnoreEmpty(ItemSeparator)})]{Environment.NewLine}" : String.Empty;
     }
 
     internal class CmdletBindingOutput
@@ -61,9 +61,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var dontShowText = Parameter.DontShow ? "DontShow" : String.Empty;
             var vfpText = Parameter.ValueFromPipeline ? "ValueFromPipeline" : String.Empty;
             var vfpbpnText = Parameter.ValueFromPipelineByPropertyName ? "ValueFromPipelineByPropertyName" : String.Empty;
-            var helpMessage = Parameter.HelpMessage.ToPsStringLiteral();
-            var helpText = !String.IsNullOrEmpty(helpMessage) ? $"HelpMessage='{helpMessage}'" : String.Empty;
-            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, vfpbpnText, helpText }.JoinIgnoreEmpty(ItemSeparator);
+            var propertyText = new[] { psnText, positionText, mandatoryText, dontShowText, vfpText, vfpbpnText }.JoinIgnoreEmpty(ItemSeparator);
             return $"{Indent}[Parameter({propertyText})]{Environment.NewLine}";
         }
     }
@@ -96,19 +94,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class ArgumentCompleterOutput
     {
-        public bool HasArgumentCompleter { get; }
-        public Type ParameterType { get; }
-        public CompleterInfoAttribute CompleterInfoAttribute { get; }
+        public CompleterInfo CompleterInfo { get; }
 
-        public ArgumentCompleterOutput(ParameterGroup parameterGroup)
+        public ArgumentCompleterOutput(CompleterInfo completerInfo)
         {
-            HasArgumentCompleter = parameterGroup.HasArgumentCompleter;
-            ParameterType = parameterGroup.ParameterType;
-            CompleterInfoAttribute = parameterGroup.CompleterInfoAttribute;
+            CompleterInfo = completerInfo;
         }
 
-        public override string ToString() => HasArgumentCompleter
-            ? $"{Indent}[ArgumentCompleter({(CompleterInfoAttribute != null ? $"{{{CompleterInfoAttribute.Script.ToPsSingleLine("; ")}}}" : $"[{ParameterType.Unwrap().ToPsType()}]")})]{Environment.NewLine}"
+        public override string ToString() => CompleterInfo != null
+            ? $"{Indent}[ArgumentCompleter({(CompleterInfo.IsTypeCompleter ? $"[{CompleterInfo.Type.Unwrap().ToPsType()}]" : $"{{{CompleterInfo.Script.ToPsSingleLine("; ")}}}")})]{Environment.NewLine}"
             : String.Empty;
     }
 
@@ -208,54 +202,51 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class HelpCommentOutput
     {
         public VariantGroup VariantGroup { get; }
-        public Type[] Inputs { get; }
-        public Type[] Outputs { get; }
-        public ParameterGroup[] ParameterGroups { get; }
+        public CommentInfo CommentInfo { get; }
 
-        public HelpCommentOutput(VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups)
+        public HelpCommentOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
-            Inputs = inputs;
-            Outputs = outputs;
-            ParameterGroups = parameterGroups;
+            CommentInfo = variantGroup.CommentInfo;
         }
 
         public override string ToString()
         {
-            var inputs = String.Join(Environment.NewLine, Inputs.Select(t => $".Inputs{Environment.NewLine}{t.FullName}"));
+            var inputs = String.Join(Environment.NewLine, CommentInfo.Inputs.Select(i => $".Inputs{Environment.NewLine}{i}"));
             var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
-            var outputs = String.Join(Environment.NewLine, Outputs.Select(t => $".Outputs{Environment.NewLine}{t.FullName}"));
+            var outputs = String.Join(Environment.NewLine, CommentInfo.Outputs.Select(o => $".Outputs{Environment.NewLine}{o}"));
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
-            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", ParameterGroups
-                .Where(pg => pg.IsComplexInterface)
-                .OrderBy(pg => pg.ParameterName)
-                .Select(pg => pg.ComplexInterfaceInfo.ToNoteOutput()));
+            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
             var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
+            var relatedLinks = String.Join(Environment.NewLine, CommentInfo.RelatedLinks.Select(l => $".Link{Environment.NewLine}{l}"));
+            var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
             return $@"<#
 .Synopsis
-{VariantGroup.Description}
+{CommentInfo.Synopsis.ToDescriptionFormat(false)}
 .Description
-{VariantGroup.Description}
+{CommentInfo.Description.ToDescriptionFormat(false)}
 .Example
-To view examples, please use the -Online parameter with Get-Help or navigate to: {VariantGroup.Link}{inputsText}{outputsText}{notesText}
+To view examples, please use the -Online parameter with Get-Help or navigate to: {CommentInfo.OnlineVersion}{inputsText}{outputsText}{notesText}
 .Link
-{VariantGroup.Link}
+{CommentInfo.OnlineVersion}{relatedLinksText}
 #>
 ";
         }
     }
 
-    internal class ParameterHelpOutput
+    internal class ParameterDescriptionOutput
     {
-        public string HelpMessage { get; }
+        public string Description { get; }
 
-        public ParameterHelpOutput(string helpMessage)
+        public ParameterDescriptionOutput(string description)
         {
-            HelpMessage = helpMessage;
+            Description = description;
         }
 
-        public override string ToString() => !String.IsNullOrEmpty(HelpMessage)
-            ? HelpMessage.Split(new [] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
+        public override string ToString() => !String.IsNullOrEmpty(Description)
+            ? Description.ToDescriptionFormat(false).NormalizeNewLines()
+                .Split(new [] { Environment.NewLine }, StringSplitOptions.None)
+                .Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
             : String.Empty;
     }
 
@@ -298,23 +289,29 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
     internal class InfoOutput
     {
         public InfoAttribute Info { get; }
+        public Type ParameterType { get; }
 
-        public InfoOutput(InfoAttribute info)
+        public InfoOutput(InfoAttribute info, Type parameterType)
         {
             Info = info;
+            ParameterType = parameterType;
         }
 
         public override string ToString()
         {
-            var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
-            var requiredText = Info.Required ? "Required" : String.Empty;
+            // Rendering of InfoAttribute members that are not used currently
+            /*var serializedNameText = Info.SerializedName != null ? $"SerializedName='{Info.SerializedName}'" : String.Empty;
             var readOnlyText = Info.ReadOnly ? "ReadOnly" : String.Empty;
-            var possibleTypesText = Info.PossibleTypes.Any() 
+            var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;*/
+
+            var requiredText = Info.Required ? "Required" : String.Empty;
+            var unwrappedType = ParameterType.Unwrap();
+            var hasValidPossibleTypes = Info.PossibleTypes.Any(pt => pt != unwrappedType);
+            var possibleTypesText = hasValidPossibleTypes
                 ? $"PossibleTypes=({Info.PossibleTypes.Select(pt => $"[{pt.ToPsType()}]").JoinIgnoreEmpty(ItemSeparator)})"
                 : String.Empty;
-            var descriptionText = !String.IsNullOrEmpty(Info.Description) ? $"Description='{Info.Description.ToPsStringLiteral()}'" : String.Empty;
-            var propertyText = new[] { serializedNameText, requiredText, readOnlyText, possibleTypesText, descriptionText }.JoinIgnoreEmpty(ItemSeparator);
-            return $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}";
+            var propertyText = new[] { /*serializedNameText, */requiredText,/* readOnlyText,*/ possibleTypesText/*, descriptionText*/ }.JoinIgnoreEmpty(ItemSeparator);
+            return hasValidPossibleTypes ? $"{Indent}[{typeof(InfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
         }
     }
 
@@ -390,9 +387,9 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         // https://stackoverflow.com/a/5284606/294804
         private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
 
-        public static string ToPsSingleLine(this string value, string replacer = " ") => value?.Replace("<br>", replacer)?.Replace("\r\n", replacer)?.Replace("\n", replacer) ?? String.Empty;
+        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new []{"<br>", "\r\n", "\n"});
 
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''")?.Replace("‘", "''")?.Replace("’", "''")?.ToPsSingleLine() ?? String.Empty;
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine() ?? String.Empty;
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 
@@ -423,7 +420,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static ValidateNotNullOutput ToValidateNotNullOutput(this bool hasValidateNotNull) => new ValidateNotNullOutput(hasValidateNotNull);
 
-        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this ParameterGroup parameterGroup) => new ArgumentCompleterOutput(parameterGroup);
+        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
 
         public static ParameterTypeOutput ToParameterTypeOutput(this Type parameterType) => new ParameterTypeOutput(parameterType);
 
@@ -435,9 +432,9 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
-        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, Type[] inputs, Type[] outputs, ParameterGroup[] parameterGroups) => new HelpCommentOutput(variantGroup, inputs, outputs, parameterGroups);
+        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
 
-        public static ParameterHelpOutput ToParameterHelpOutput(this string helpMessage) => new ParameterHelpOutput(helpMessage);
+        public static ParameterDescriptionOutput ToParameterDescriptionOutput(this string description) => new ParameterDescriptionOutput(description);
 
         public static ProfileOutput ToProfileOutput(this string profileName) => new ProfileOutput(profileName);
 
@@ -449,7 +446,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static PropertySyntaxOutput ToPropertySyntaxOutput(this ComplexInterfaceInfo complexInterfaceInfo) => new PropertySyntaxOutput(complexInterfaceInfo);
 
-        public static InfoOutput ToInfoOutput(this InfoAttribute info) => new InfoOutput(info);
+        public static InfoOutput ToInfoOutput(this InfoAttribute info, Type parameterType) => new InfoOutput(info, parameterType);
 
         public static string ToNoteOutput(this ComplexInterfaceInfo complexInterfaceInfo, string currentIndent = "", bool includeDashes = false, bool includeBackticks = false, bool isFirst = true)
         {

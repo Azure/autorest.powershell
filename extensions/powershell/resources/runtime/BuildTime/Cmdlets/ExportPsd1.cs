@@ -23,10 +23,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string Psd1Path { get; set; }
 
+        [Parameter(Mandatory = true)]
+        public Guid ModuleGuid { get; set; }
+
         private static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
         private const string CustomFolderRelative = "${$project.customFolder}";
-        private const string Indent = "  ";
-        private const string GuidStart = Indent + "GUID";
+        private const string Indent = Psd1Indent;
 
         protected override void ProcessRecord()
         {
@@ -40,29 +42,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 throw new ArgumentException($"Custom folder '{CustomFolder}' does not exist");
             }
 
-            var guid = Guid.NewGuid();
-            if (File.Exists(Psd1Path))
-            {
-                var currentGuid = File.ReadAllLines(Psd1Path)
-                    .FirstOrDefault(l => l.StartsWith(GuidStart))?.Split(new[] {" = "}, StringSplitOptions.RemoveEmptyEntries)
-                    .LastOrDefault()?.Replace("'", String.Empty);
-                guid = currentGuid != null ? Guid.Parse(currentGuid) : guid;
-            }
-
             var sb = new StringBuilder();
             sb.AppendLine("@{");
-            sb.AppendLine($@"{GuidStart} = '{guid}'");
+            sb.AppendLine($@"{GuidStart} = '{ModuleGuid}'");
             sb.AppendLine($@"{Indent}RootModule = '{"${$project.psm1}"}'");
             sb.AppendLine($@"{Indent}ModuleVersion = '{"${$project.moduleVersion}"}'");
             sb.AppendLine($@"{Indent}CompatiblePSEditions = 'Core', 'Desktop'");
-            var author = IsAzure ? "Microsoft Corporation" : "${$project.metadata.authors}";
-            sb.AppendLine($@"{Indent}Author = '{author}'");
-            var companyName = IsAzure ? "Microsoft Corporation" : "${$project.metadata.companyName}";
-            sb.AppendLine($@"{Indent}CompanyName = '{companyName}'");
-            var copyright = IsAzure ? "Microsoft Corporation. All rights reserved." : "${$project.metadata.copyright}";
-            sb.AppendLine($@"{Indent}Copyright = '{copyright}'");
-            var description = IsAzure ? "Microsoft Azure PowerShell: ${$project.serviceName} cmdlets" : "${$project.metadata.description}";
-            sb.AppendLine($@"{Indent}Description = '{description}'");
+            sb.AppendLine($@"{Indent}Author = '{"${$project.metadata.authors}"}'");
+            sb.AppendLine($@"{Indent}CompanyName = '{"${$project.metadata.companyName}"}'");
+            sb.AppendLine($@"{Indent}Copyright = '{"${$project.metadata.copyright}"}'");
+            sb.AppendLine($@"{Indent}Description = '{"${$project.metadata.description}"}'");
             sb.AppendLine($@"{Indent}PowerShellVersion = '5.1'");
             sb.AppendLine($@"{Indent}DotNetFrameworkVersion = '4.7.2'");
             sb.AppendLine($@"{Indent}RequiredAssemblies = '{"${$project.dll}"}'");
@@ -82,12 +71,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($@"{Indent}PrivateData = @{{");
             sb.AppendLine($@"{Indent}{Indent}PSData = @{{");
 
-            var tagsList = IsAzure ? "'Azure', 'ResourceManager', 'ARM', '${$project.serviceName}'" : "''";
-            sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {tagsList}");
-            var licenseUri = IsAzure ? "https://aka.ms/azps-license" : "";
-            sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{licenseUri}'");
-            var projectUri = IsAzure ? "https://github.com/Azure/azure-powershell" : "";
-            sb.AppendLine($@"{Indent}{Indent}{Indent}ProjectUri = '{projectUri}'");
+            sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".Split(' ').ToPsList().NullIfEmpty() ?? "''"}");
+            sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{"${$project.metadata.licenseUri}"}'");
+            sb.AppendLine($@"{Indent}{Indent}{Indent}ProjectUri = '{"${$project.metadata.projectUri}"}'");
             sb.AppendLine($@"{Indent}{Indent}{Indent}ReleaseNotes = ''");
             var profilesList = "${$project.profiles.map(each => `'` + each + `'`).join(', ')}";
             if (IsAzure && !String.IsNullOrEmpty(profilesList))
