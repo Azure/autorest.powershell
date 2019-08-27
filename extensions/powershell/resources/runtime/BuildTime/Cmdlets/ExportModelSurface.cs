@@ -89,7 +89,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAssociativeArray<>))?.GetGenericArguments().First();
 
         private static string[] GetEnumFieldNames(Type type) =>
-            type.IsValueType && !type.IsPrimitive
+            type.IsValueType && !type.IsPrimitive && type != typeof(decimal) && type != typeof(DateTime)
                 ? type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => f.FieldType == type).Select(p => p.Name).ToArray()
                 : new string[] { };
 
