@@ -114,6 +114,9 @@ if($NoDocs) {
   Write-Host -ForegroundColor Green 'Creating exports and docs...'
   $moduleDescription = '${$project.metadata.description}'
   $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
+  if(Test-Path $docsFolder) {
+    $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+  }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid
 }
