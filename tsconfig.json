@@ -22,11 +22,5 @@
     ],
     "experimentalDecorators": true,
     "newLine": "LF",
-    "plugins": [
-      {
-        "name": "tslint-language-service-ts3",
-        "configFile": "./tslint.json"
-      }
-    ]
   }
 }

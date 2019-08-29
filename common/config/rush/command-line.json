@@ -37,6 +37,12 @@
       "name": "lint",
       "summary": "run all npm eslint",
       "shellCommand": "node common/scripts/eslint.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "test",
+      "summary": "run all npm test",
+      "shellCommand": "node common/scripts/test.js"
     }
   ],
   "parameters": []

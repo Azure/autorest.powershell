@@ -16,4 +16,3 @@ Examples/
 samples/
 *.log
 package-deps.json
-tslint.json
