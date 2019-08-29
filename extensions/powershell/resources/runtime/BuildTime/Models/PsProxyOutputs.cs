@@ -147,11 +147,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer)) {{
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
-{Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
+{Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
 {GetParameterSetToCmdletMapping()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
-{Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
+{Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($MyInvocation.CommandOrigin)
 {Indent}{Indent}$steppablePipeline.Begin($PSCmdlet)
 {Indent}}} catch {{
 {Indent}{Indent}throw
