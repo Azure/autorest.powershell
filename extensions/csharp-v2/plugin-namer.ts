@@ -3,20 +3,47 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure/autorest.codemodel-v3';
 
-import { camelCase, deconstruct, Dictionary, excludeXDash, fixLeadingNumber, items, keys, length, pascalCase, values, lowest, maximum, minimum, getPascalIdentifier } from '@microsoft.azure/codegen';
-import { System } from '@microsoft.azure/codegen-csharp';
+import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { System } from '@azure/codegen-csharp';
 
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host } from '@azure/autorest-extension-base';
 import { Schema, SchemaDetails } from './code-model';
 import { SchemaDefinitionResolver } from './schema/schema-resolver';
 
 type State = ModelState<codemodel.Model>;
 
-export async function csnamer(service: Host) {
-  return processCodeModel(nameStuffRight, service, `csnamer`);
+
+function setPropertyNames(schema: Schema) {
+  // name each property in this schema
+  for (const propertySchema of values(schema.properties)) {
+    const propertyDetails = propertySchema.details.default;
+
+    const className = schema.details.csharp.name;
+
+    let pname = getPascalIdentifier(propertyDetails.name);
+    if (pname === className) {
+      pname = `${pname}Property`;
+    }
+
+    if (pname === 'default') {
+      pname = '@default';
+    }
+
+    propertySchema.details.csharp = {
+      ...propertyDetails,
+      name: pname // and so are the propertyNmaes
+    };
+
+    if (propertyDetails.isNamedStream) {
+      propertySchema.details.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
+    }
+  }
+
 }
+
 
 function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceNamespace: string) {
   const baseNamespace = new Set<string>();
@@ -65,10 +92,10 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         apiname: apiName,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
         internalInterfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal'])), // objects have an ineternal interfaceName for setting private members. 
-        fullInternalInterfaceName: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal']))}`,
+        fullInternalInterfaceName: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal']))}`,
         name: getPascalIdentifier(schemaName),
-        namespace: pascalCase([serviceNamespace, '.', `Models`, ...ns]),  // objects have a namespace
-        fullname: `${pascalCase([serviceNamespace, '.', `Models`, ...ns])}.${getPascalIdentifier(schemaName)}`,
+        namespace: pascalCase([serviceNamespace, '.', 'Models', ...ns]),  // objects have a namespace
+        fullname: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${getPascalIdentifier(schemaName)}`,
       };
     } else if (schema.type === JsonType.String && schema.details.default.enum) {
       // oh, it's an enum type
@@ -76,8 +103,8 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
         ...details,
         interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
         name: getPascalIdentifier(schema.details.default.enum.name),
-        namespace: pascalCase([serviceNamespace, '.', `Support`]),
-        fullname: `${pascalCase([serviceNamespace, '.', `Support`])}.${getPascalIdentifier(schema.details.default.enum.name)}`,
+        namespace: pascalCase([serviceNamespace, '.', 'Support']),
+        fullname: `${pascalCase([serviceNamespace, '.', 'Support'])}.${getPascalIdentifier(schema.details.default.enum.name)}`,
         enum: {
           ...schema.details.default.enum,
           name: getPascalIdentifier(schema.details.default.enum.name),
@@ -115,57 +142,6 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
       for (const value of values(schema.details.csharp.enum.values)) {
         value.name = getPascalIdentifier(value.name);
       }
-    }
-  }
-
-}
-
-async function nameStuffRight(state: State): Promise<codemodel.Model> {
-  const resolver = new SchemaDefinitionResolver();
-  const model = state.model;
-
-  // set the namespace for the service
-  const serviceNamespace = await state.getValue('namespace', "Sample.API");
-  const azure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
-  const clientName = getPascalIdentifier(model.details.default.name);
-
-  // set c# client details (name)
-  model.details.csharp = {
-    ...model.details.default, // copy everything by default
-    name: clientName,
-    namespace: serviceNamespace,
-    fullname: `${serviceNamespace}.${clientName}`
-  };
-
-  setSchemaNames(<Dictionary<Schema>><any>model.schemas, azure, serviceNamespace);
-  await setOperationNames(state, resolver);
-
-  return model;
-}
-
-function setPropertyNames(schema: Schema) {
-  // name each property in this schema
-  for (const propertySchema of values(schema.properties)) {
-    const propertyDetails = propertySchema.details.default;
-
-    const className = schema.details.csharp.name;
-
-    let pname = getPascalIdentifier(propertyDetails.name);
-    if (pname === className) {
-      pname = `${pname}Property`;
-    }
-
-    if (pname === 'default') {
-      pname = '@default';
-    }
-
-    propertySchema.details.csharp = {
-      ...propertyDetails,
-      name: pname // and so are the propertyNmaes
-    };
-
-    if (propertyDetails.isNamedStream) {
-      propertySchema.details.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
     }
   }
 
@@ -217,8 +193,8 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
         let code = (System.Net.HttpStatusCode[response.responseCode] ? System.Net.HttpStatusCode[response.responseCode].value : response.responseCode).replace('global::System.Net.HttpStatusCode', '');
         let rawValue = code.replace(/\./, '');
         if (response.responseCode === 'default' || rawValue === 'default' || '') {
-          rawValue = `any response code not handled elsewhere`;
-          code = 'default'
+          rawValue = 'any response code not handled elsewhere';
+          code = 'default';
         }
         response.details.csharp = {
           ...response.details.default,
@@ -235,5 +211,33 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
       }
     }
   }
+}
+
+async function nameStuffRight(state: State): Promise<codemodel.Model> {
+  const resolver = new SchemaDefinitionResolver();
+  const model = state.model;
+
+  // set the namespace for the service
+  const serviceNamespace = await state.getValue('namespace', 'Sample.API');
+  const azure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
+  const clientName = getPascalIdentifier(model.details.default.name);
+
+  // set c# client details (name)
+  model.details.csharp = {
+    ...model.details.default, // copy everything by default
+    name: clientName,
+    namespace: serviceNamespace,
+    fullname: `${serviceNamespace}.${clientName}`
+  };
+
+  setSchemaNames(<Dictionary<Schema>><any>model.schemas, azure, serviceNamespace);
+  await setOperationNames(state, resolver);
+
+  return model;
+}
+
+
+export async function csnamer(service: Host) {
+  return processCodeModel(nameStuffRight, service, 'csnamer');
 }
 

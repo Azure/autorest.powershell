@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { intersect } from '@microsoft.azure/codegen';
-import { ClassType, dotnet, System } from '@microsoft.azure/codegen-csharp';
+import { intersect } from '@azure/codegen';
+import { ClassType, dotnet, System } from '@azure/codegen-csharp';
 
-import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '@microsoft.azure/codegen-csharp';
-import { Interface } from '@microsoft.azure/codegen-csharp';
-import { Namespace } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, LiteralExpression, toExpression } from '@azure/codegen-csharp';
+import { Interface } from '@azure/codegen-csharp';
+import { Namespace } from '@azure/codegen-csharp';
 
 const clientRuntimeNamespace: Namespace = new Namespace('Microsoft.Rest.ClientRuntime');
 const serializationMode = new ClassType(clientRuntimeNamespace, 'SerializationMode');
@@ -32,8 +32,8 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Trace: new LiteralExpression(`${method.declaration}.Trace`),
     Patch: new LiteralExpression(`${method.declaration}.Patch`)
   }),
-  InfoAttribute: new ClassType(clientRuntimeNamespace, `Info`),
-  CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, `CompleterInfo`),
+  InfoAttribute: new ClassType(clientRuntimeNamespace, 'Info'),
+  CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, 'CompleterInfo'),
   EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
@@ -78,9 +78,9 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   JsonObject: intersect(jsonObject, {
     Parse: (expression: Expression) => toExpression(`${jsonObject}.Parse(${expression})`)
   }),
-  JsonString: new ClassType(carbon, `JsonString`),
-  JsonBoolean: new ClassType(carbon, `JsonBoolean`),
-  JsonNumber: new ClassType(carbon, `JsonNumber`),
+  JsonString: new ClassType(carbon, 'JsonString'),
+  JsonBoolean: new ClassType(carbon, 'JsonBoolean'),
+  JsonNumber: new ClassType(carbon, 'JsonNumber'),
   JsonArray: intersect(jsonArray, {
     Parse: (expression: ExpressionOrLiteral) => toExpression(`${jsonArray}.Parse(${toExpression(expression)})`)
   }),
@@ -94,6 +94,6 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Number: new LiteralExpression(`${jsonType.declaration}.Number`),
     String: new LiteralExpression(`${jsonType.declaration}.String`)
   }),
-  XNodeArray: new ClassType(carbon, `XNodeArray`)
+  XNodeArray: new ClassType(carbon, 'XNodeArray')
 });
 

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutoRestExtension } from '@microsoft.azure/autorest-extension-base';
+import { AutoRestExtension } from '@azure/autorest-extension-base';
 
 import { llcsharp } from './plugin-llcsharp';
 import { csnamer } from './plugin-namer';

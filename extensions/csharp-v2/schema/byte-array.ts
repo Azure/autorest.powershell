@@ -3,32 +3,32 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, knownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, nameof } from '@microsoft.azure/codegen';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf, System } from '@microsoft.azure/codegen-csharp';
-import { If } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType, knownMediaType } from '@azure/autorest.codemodel-v3';
+import { camelCase, deconstruct, nameof } from '@azure/codegen';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf, System } from '@azure/codegen-csharp';
+import { If } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 
 export class ByteArray implements EnhancedTypeDeclaration {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
 
   get declaration(): string {
-    return `byte[]`;
+    return 'byte[]';
   }
 
   get convertObjectMethod() {
-    return `i => i`;
+    return 'i => i';
   }
 
   public isNullable = true;
 
   get defaultOfType() {
-    return toExpression(`null /* byte array */`);
+    return toExpression('null /* byte array */');
   }
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
@@ -85,7 +85,7 @@ export class ByteArray implements EnhancedTypeDeclaration {
       const b = pushTempVar();
       switch (mediaType) {
         case KnownMediaType.Xml: {
-          return `AddIf( null != ${value} ? ${System.Xml.Linq.XElement.new(serializedName, System.Convert.ToBase64String(value))}  : null, ${container}.Add);`
+          return `AddIf( null != ${value} ? ${System.Xml.Linq.XElement.new(serializedName, System.Convert.ToBase64String(value))}  : null, ${container}.Add);`;
         }
 
         case KnownMediaType.Json: {
@@ -107,13 +107,13 @@ export class ByteArray implements EnhancedTypeDeclaration {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 
   public validatePresence(eventListener: Variable, property: Variable): string {
     if (this.isRequired) {
       return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
     }
-    return ``;
+    return '';
   }
 }

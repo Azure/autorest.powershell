@@ -3,21 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { camelCase, deconstruct } from '@microsoft.azure/codegen';
-import { IsNotNull } from '@microsoft.azure/codegen-csharp';
-import { ClassType, dotnet, System } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { If } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { camelCase, deconstruct } from '@azure/codegen';
+import { IsNotNull } from '@azure/codegen-csharp';
+import { ClassType, dotnet, System } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure/codegen-csharp';
+import { If } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 let tmpVar: number | undefined;
-let max: number = 0;
+let max = 0;
 
 function numToChars(ch: number): string {
   if (ch < 26) {
@@ -58,7 +58,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get defaultOfType() {
@@ -67,7 +67,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
 
   get convertObjectMethod() {
     const v = pushTempVar();
-    const result = `(${v})=> (${this.baseType}) global::System.Convert.ChangeType(${v}, typeof(${this.baseType}))`
+    const result = `(${v})=> (${this.baseType}) global::System.Convert.ChangeType(${v}, typeof(${this.baseType}))`;
     popTempVar();
 
     return result;
@@ -77,7 +77,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */
   public validatePresence(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 
   abstract validateValue(eventListener: Variable, property: Variable): string;
@@ -186,7 +186,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:

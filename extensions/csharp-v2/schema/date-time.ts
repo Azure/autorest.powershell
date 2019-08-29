@@ -3,24 +3,24 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { System, Ternery, IsNotNull, dotnet } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { If } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { System, Ternery, IsNotNull, dotnet } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@azure/codegen-csharp';
+import { If } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Primitive } from './primitive';
 
 export class DateTime extends Primitive {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
   // public DateFormat = new StringExpression('yyyy-MM-dd');
   public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get declaration(): string {
@@ -34,7 +34,7 @@ export class DateTime extends Primitive {
   }
 
   get convertObjectMethod() {
-    return `(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified)`
+    return '(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified)';
   }
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
@@ -101,7 +101,7 @@ export class DateTime extends Primitive {
   // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.InvariantCulture)) : null;
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 }
 
@@ -113,13 +113,13 @@ export class DateTime1123 extends DateTime {
 }
 
 export class UnixTime extends Primitive {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 
   private EpochDate = System.DateTime.new('1970', '1', '1', '0', '0', '0', System.DateTimeKind.Utc);
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
 
@@ -149,7 +149,7 @@ export class UnixTime extends Primitive {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
@@ -182,7 +182,7 @@ export class UnixTime extends Primitive {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 
   get declaration(): string {

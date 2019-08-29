@@ -15,7 +15,7 @@
    * path segment in the "$schema" field for all your Rush config files.  This will ensure
    * correct error-underlining and tab-completion for editors such as VS Code.
    */
-  "rushVersion": "5.3.1",
+  "rushVersion": "5.11.4",
   /**
    * The next field selects which package manager should be installed and determines its version.
    * Rush installs its own local copy of the package manager to ensure that your build process
@@ -94,117 +94,118 @@
    */
   "telemetryEnabled": false,
   "projects": [
+    /* REGION: PERKS 
     {
-      "packageName": "@microsoft.azure/tasks",
+      "packageName": "@azure/tasks",
       "projectFolder": "perks/libraries/tasks",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/async-io",
+      "packageName": "@azure/async-io",
       "projectFolder": "perks/libraries/async-io",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/eventing",
+      "packageName": "@azure/eventing",
       "projectFolder": "perks/libraries/eventing",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/extension",
+      "packageName": "@azure/extension",
       "projectFolder": "perks/libraries/extension",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/datastore",
+      "packageName": "@azure/datastore",
       "projectFolder": "perks/libraries/datastore",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/linq",
+      "packageName": "@azure/linq",
       "projectFolder": "perks/libraries/linq",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/openapi",
+      "packageName": "@azure/openapi",
       "projectFolder": "perks/libraries/openapi",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/uri",
+      "packageName": "@azure/uri",
       "projectFolder": "perks/libraries/uri",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/oai2-to-oai3",
+      "packageName": "@azure/oai2-to-oai3",
       "projectFolder": "perks/libraries/oai2-to-oai3",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/autorest-extension-base",
+      "packageName": "@azure/autorest-extension-base",
       "projectFolder": "perks/libraries/autorest-extension-base",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/autorest.codemodel-v3",
+      "packageName": "@azure/autorest.codemodel-v3",
       "projectFolder": "perks/libraries/codemodel-v3",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/codegen",
+      "packageName": "@azure/codegen",
       "projectFolder": "perks/libraries/codegen",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/codegen-csharp",
+      "packageName": "@azure/codegen-csharp",
       "projectFolder": "perks/libraries/codegen-csharp",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/object-comparison",
+      "packageName": "@azure/object-comparison",
       "projectFolder": "perks/libraries/object-comparison",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@microsoft.azure/deduplication",
+      "packageName": "@azure/deduplication",
       "projectFolder": "perks/libraries/deduplication",
       "reviewCategory": "production",
       "shouldPublish": false
     },
-    /* --- project packages --- */ 
+    /* --- project packages --- */
     {
-      "packageName": "@microsoft.azure/autorest.csharp-v2",
+      "packageName": "@azure/autorest.csharp-v2",
       "projectFolder": "extensions/csharp-v2",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@microsoft.azure/autorest.remodeler",
+      "packageName": "@azure/autorest.remodeler",
       "projectFolder": "extensions/remodeler",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@microsoft.azure/autorest.powershell",
+      "packageName": "@azure/autorest.powershell",
       "projectFolder": "extensions/powershell",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@microsoft.azure/autorest.incubator",
+      "packageName": "@azure/autorest.incubator",
       "projectFolder": "extensions/incubator",
       "reviewCategory": "production",
       "shouldPublish": false

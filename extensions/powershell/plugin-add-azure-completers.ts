@@ -3,13 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { values } from '@microsoft.azure/codegen';
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { codemodel, processCodeModel, ModelState } from '@azure/autorest.codemodel-v3';
+import { values } from '@azure/linq';
+import { Host } from '@azure/autorest-extension-base';
 
 type State = ModelState<codemodel.Model>;
-
-
 
 const resourceGroupNames = new Set<string>([
   'resourcegroupname',
@@ -21,10 +19,6 @@ const subscriptionIdNames = new Set<string>([
 const locationNames = new Set<string>([
   'location',
 ]);
-
-export async function addCompleter(service: Host) {
-  return processCodeModel(tweakModel, service, 'add-azure-completers');
-}
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
   const model = state.model;
@@ -45,4 +39,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
   }
   return model;
+}
+
+
+export async function addCompleter(service: Host) {
+  return processCodeModel(tweakModel, service, 'add-azure-completers');
 }

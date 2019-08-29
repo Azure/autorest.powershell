@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { suite, test } from "mocha-typescript";
-import * as assert from "assert";
-import { getDeduplicatedNoun } from "../plugin-namer";
+import { suite, test } from 'mocha-typescript';
+import * as assert from 'assert';
+import { getDeduplicatedNoun } from '../plugin-namer';
 
 @suite class TestNounCleaning {
 
-  @test async "deduplicate information from the cmdlet noun"() {
+  @test async 'deduplicate information from the cmdlet noun'() {
     const subjectPrefix1 = 'AppConfiguration';
     const subject1 = 'ConfigurationStore';
     const expectedNounParts1 = { subject: 'ConfigurationStore', subjectPrefix: 'App' };

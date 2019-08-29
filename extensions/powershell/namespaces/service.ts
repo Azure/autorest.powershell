@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ImportDirective, Namespace } from '@microsoft.azure/codegen-csharp';
-import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
+import { ImportDirective, Namespace } from '@azure/codegen-csharp';
+import { ClientRuntime } from '@azure/autorest.csharp-v2';
 import { State } from '../state';
 import { ModuleClass } from '../module-class';
 

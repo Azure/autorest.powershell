@@ -1,6 +1,6 @@
-import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, ForEach, And, LocalVariable } from '@microsoft.azure/codegen-csharp';
+import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, ForEach, And, LocalVariable } from '@azure/codegen-csharp';
 
-export function implementIDictionary(targetClass: Class, name: String, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
+export function implementIDictionary(targetClass: Class, name: string, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
   const dictionaryInterfaceType = System.Collections.Generic.IDictionary(keyType, valueType);
   const itemType = System.Collections.Generic.KeyValuePair(keyType, valueType);
   const collectionInterfaceType = System.Collections.Generic.ICollection(itemType);

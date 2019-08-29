@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, VirtualProperty } from '@microsoft.azure/autorest.codemodel-v3';
-import { escapeString, items, length, pascalCase, values } from '@microsoft.azure/codegen';
+import { JsonType, VirtualProperty } from '@azure/autorest.codemodel-v3';
+import { escapeString, pascalCase, } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
 
-import { Binary, Schema } from '@microsoft.azure/autorest.csharp-v2';
-import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@microsoft.azure/codegen-csharp';
+import { Binary, Schema } from '@azure/autorest.csharp-v2';
+import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@azure/codegen-csharp';
 
 import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
 import { State } from './state';
@@ -16,7 +17,16 @@ export interface WithState extends Class {
   state: State;
 }
 
-let nn = 0;
+const nn = 0;
+
+function addClassAttributes($class: WithState, schema: Schema, variantName: string) {
+
+  const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
+  $class.add(new Attribute(CmdletAttribute, { parameters: ['System.Management.Automation.VerbsCommon.New', new StringExpression(`${variantName}`)] }));
+  $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
+  $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }));
+  $class.add(new Attribute(GeneratedAttribute));
+}
 
 export class ModelCmdlet extends Class {
   public state: State;
@@ -33,7 +43,7 @@ export class ModelCmdlet extends Class {
     const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, this.state);
     const prop = this.add(new Field(`_${schema.details.csharp.name.uncapitalize()}`, td, { initialValue: `new ${schema.details.csharp.namespace}.${schema.details.csharp.name}()`, access: Access.Private, description: `Backing field for <see cref="${schema.details.csharp.name}" />` }));
 
-    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: `Performs execution of the command.` })).add(`WriteObject(${prop});`);
+    const processRecord = this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: 'Performs execution of the command.' })).add(`WriteObject(${prop});`);
 
     const vps = schema.details.csharp.virtualProperties;
     if (vps) {
@@ -57,13 +67,4 @@ export class ModelCmdlet extends Class {
       }
     }
   }
-}
-
-function addClassAttributes($class: WithState, schema: Schema, variantName: string) {
-
-  const td = $class.state.project.schemaDefinitionResolver.resolveTypeDeclaration(schema, true, $class.state);
-  $class.add(new Attribute(CmdletAttribute, { parameters: [`System.Management.Automation.VerbsCommon.New`, new StringExpression(`${variantName}`)] }));
-  $class.add(new Attribute(OutputTypeAttribute, { parameters: [`typeof(${td.declaration})`] }));
-  $class.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(`Cmdlet to create an in-memory instance of the ${schema.details.csharp.name} object.`)] }))
-  $class.add(new Attribute(GeneratedAttribute));
 }

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Class, Namespace } from '@microsoft.azure/codegen-csharp';
+import { Class, Namespace } from '@azure/codegen-csharp';
 
 import { State } from './state';
 

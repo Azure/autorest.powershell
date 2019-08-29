@@ -3,27 +3,27 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { nameof } from '@microsoft.azure/codegen';
-import { System, valueOf } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { nameof } from '@azure/codegen';
+import { System, valueOf } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class Binary implements EnhancedTypeDeclaration {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   constructor(public schema: Schema, public isRequired: boolean) {
   }
 
   get convertObjectMethod() {
-    return `i=>i`;
+    return 'i=>i';
   }
-  public isNullable: boolean = true;
+  public isNullable = true;
 
   get defaultOfType() {
-    return toExpression(`null /* binary type */`);
+    return toExpression('null /* binary type */');
   }
 
   get declaration(): string {
@@ -34,9 +34,9 @@ export class Binary implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     if (mediaType === KnownMediaType.Stream) {
       // dunno.
-    };
+    }
     if (mediaType === KnownMediaType.Json) {
-      return toExpression(`null /* no need to deserialize a stream here */ `);
+      return toExpression('null /* no need to deserialize a stream here */ ');
     }
     return toExpression(`null /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -76,13 +76,13 @@ export class Binary implements EnhancedTypeDeclaration {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 
   public validatePresence(eventListener: Variable, property: Variable): string {
     if (this.isRequired) {
       return `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim();
     }
-    return ``;
+    return '';
   }
 }

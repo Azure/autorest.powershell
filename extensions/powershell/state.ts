@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, ModelState } from '@azure/autorest.codemodel-v3';
 
-import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
+import { Host, JsonPath } from '@azure/autorest-extension-base';
 import { Project } from './project';
-import { Dictionary } from '@microsoft.azure/codegen';
+
 
 export interface GeneratorSettings {
   azure: boolean;

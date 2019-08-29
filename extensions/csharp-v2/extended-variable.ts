@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { Expression, ExpressionOrLiteral } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { EnhancedTypeDeclaration } from './schema/extended-type-declaration';
 
 export interface ExtendedVariable extends Variable {

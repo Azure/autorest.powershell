@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StringExpression } from '@microsoft.azure/codegen-csharp';
+import { StringExpression } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
 import { DateTime } from './date-time';
 

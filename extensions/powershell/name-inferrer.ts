@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { pascalCase, EnglishPluralizationService } from '@microsoft.azure/codegen';
-import { Channel, Message } from '@microsoft.azure/autorest-extension-base';
+import { pascalCase, EnglishPluralizationService } from '@azure/codegen';
+import { Channel, Message } from '@azure/autorest-extension-base';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -271,7 +271,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
     } else {
       // This condition happens in cases like: CreateSuffix, CreateOrUpdateSuffix
       let longestVerbMatch: string | null = null;
-      let currentVerbCandidate: string = '';
+      let currentVerbCandidate = '';
       let firstWord = '';
       let firstWordStarted = false;
       let buildFirstWord = false;

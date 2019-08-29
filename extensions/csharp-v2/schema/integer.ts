@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nameof } from '@microsoft.azure/codegen';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { nameof } from '@azure/codegen';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Primitive } from './primitive';
 
 export class Numeric extends Primitive {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 
   constructor(schema: Schema, public isRequired: boolean, protected numericType: string) {

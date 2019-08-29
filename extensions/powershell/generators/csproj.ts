@@ -5,12 +5,15 @@
 
 import { Project } from '../project';
 
+function removeCd(path: string): string {
+  return path.startsWith('./') ? path.replace('./', '') : path;
+}
 export async function generateCsproj(project: Project) {
   const release = project.azure ? `    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
     <DefineConstants>TRACE;RELEASE;NETSTANDARD;SIGN</DefineConstants>` :
-    `    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>`;
+    '    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>';
 
   project.state.writeFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
@@ -52,8 +55,4 @@ ${release}
   </PropertyGroup>
 
 </Project>`, undefined, 'source-file-csharp');
-}
-
-function removeCd(path: string): string {
-  return path.startsWith('./') ? path.replace('./', '') : path;
 }

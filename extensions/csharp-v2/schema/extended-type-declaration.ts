@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { TypeDeclaration } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { Expression, ExpressionOrLiteral } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { TypeDeclaration } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
 
 /** A TypeDeclaration that can assist in generating code for a variety of serialization, validation and other common use cases */
@@ -39,7 +39,7 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** defaultOfType */
   readonly defaultOfType: Expression;
 
-  readonly convertObjectMethod: string // "global::System.Convert.ToString";
+  readonly convertObjectMethod: string; // "global::System.Convert.ToString";
 
   /** is a value for this required */
   isRequired: boolean;

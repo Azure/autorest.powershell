@@ -3,26 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, nameof } from '@microsoft.azure/codegen';
-import { IsNotNull } from '@microsoft.azure/codegen-csharp';
-import { dotnet, System } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { ForEach } from '@microsoft.azure/codegen-csharp';
-import { If } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
-import { LocalVariable, Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { camelCase, deconstruct, nameof } from '@azure/codegen';
+import { IsNotNull } from '@azure/codegen-csharp';
+import { dotnet, System } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure/codegen-csharp';
+import { ForEach } from '@azure/codegen-csharp';
+import { If } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
+import { LocalVariable, Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ArrayOf implements EnhancedTypeDeclaration {
-  public isXmlAttribute: boolean = false;
-  public isNullable: boolean = true;
+  public isXmlAttribute = false;
+  public isNullable = true;
   get defaultOfType() {
-    return toExpression(`null /* arrayOf */`);
+    return toExpression('null /* arrayOf */');
   }
 
   constructor(public schema: Schema, public isRequired: boolean, public elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
@@ -48,7 +48,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get convertObjectMethod() {
@@ -216,7 +216,8 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const each = pushTempVar();
       const tmp = pushTempVar();
       switch (mediaType) {
-        case KnownMediaType.Json:
+        case KnownMediaType.Json: {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           const $this = this;
           return If(`null != ${value}`, function* () {
             const t = new LocalVariable(tmp, dotnet.Var, { initializer: `new ${ClientRuntime.XNodeArray}()` });
@@ -224,11 +225,11 @@ export class ArrayOf implements EnhancedTypeDeclaration {
             yield ForEach(each, toExpression(value), `AddIf(${$this.elementType.serializeToNode(mediaType, each, '', mode)} ,${tmp}.Add);`);
             yield `${container}.Add("${serializedName}",${tmp});`;
           });
-
+        }
         case KnownMediaType.Xml:
           if (this.isWrapped) {
 
-            return `AddIf( ${System.Xml.Linq.XElement.new(`"{this.serializedName || serializedName}"`, `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName, mode)}):null`)}, ${container}.Add); `;
+            return `AddIf( ${System.Xml.Linq.XElement.new('"{this.serializedName || serializedName}"', `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName, mode)}):null`)}, ${container}.Add); `;
           } else {
             return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}, ${container}.Add);`));
           }
@@ -244,7 +245,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     if (this.isRequired) {
       return `await ${eventListener}.AssertNotNull(${nameof(property.value)}, ${property}); `;
     }
-    return ``;
+    return '';
   }
   validateValue(eventListener: Variable, property: Variable): OneOrMoreStatements {
     // check if the underlyingType has validation.

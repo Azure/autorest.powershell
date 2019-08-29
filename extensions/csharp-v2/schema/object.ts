@@ -3,25 +3,25 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { values } from '@microsoft.azure/codegen';
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, EOL, nameof } from '@microsoft.azure/codegen';
-import { IsNotNull } from '@microsoft.azure/codegen-csharp';
-import { System } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { values } from '@azure/linq';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { camelCase, deconstruct, EOL, nameof } from '@azure/codegen';
+import { IsNotNull } from '@azure/codegen-csharp';
+import { System } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, StringExpression, toExpression, valueOf } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
 
   get defaultOfType() {
-    return toExpression(`null /* object */`);
+    return toExpression('null /* object */');
   }
 
   get isNullable(): boolean {
@@ -101,7 +101,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
             System.String.Empty),
           System.Text.Encoding.UTF8);
       }
-      case KnownMediaType.Multipart:
+      case KnownMediaType.Multipart: {
         let contents = '';
         for (const p of values(this.schema.properties)) {
           // to do -- add in a potential support for the filename too.
@@ -114,7 +114,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
     ${contents}
     return bodyContent;
 })()`);
-
+      }
     }
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }

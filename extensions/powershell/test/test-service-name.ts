@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { suite, test } from "mocha-typescript";
-import * as assert from "assert";
-import * as aio from "@microsoft.azure/async-io"
-import { values } from '@microsoft.azure/codegen';
-import { titleToAzureServiceName } from "../plugin-create-commands";
+import { suite, test } from 'mocha-typescript';
+import * as assert from 'assert';
+import * as aio from '@azure/async-io';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { titleToAzureServiceName } from '../plugin-create-commands';
 
 @suite class TestServiceName {
 
-  @test async "output service names"() {
+  @test async 'output service names'() {
     const titlesFile = await aio.readFile(`${__dirname}/../../test/resources/titles.txt`);
     const serviceNamesFile = await aio.readFile(`${__dirname}/../../test/resources/service-names.txt`);
 

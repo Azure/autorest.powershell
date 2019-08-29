@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@microsoft.azure/autorest.codemodel-v3';
-import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { values, items, Dictionary, pascalCase } from '@microsoft.azure/codegen';
-import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@azure/autorest.codemodel-v3';
+import { Host, Channel } from '@azure/autorest-extension-base';
+import { pascalCase } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { CommandOperation } from '@azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 type State = ModelState<codemodel.Model>;
 
@@ -33,7 +34,7 @@ interface WhereCommandDirective {
       name: string;
       description: string;
       script: string;
-    }
+    };
   };
   'clear-alias': boolean;
   hide?: boolean;
@@ -47,15 +48,44 @@ interface RemoveCommandDirective {
     'variant'?: string;
     'parameter-name'?: string;
   };
-  remove: Boolean;
+  remove: boolean;
 }
+
+
+function hasSpecialChars(str: string): boolean {
+  return !/^[a-zA-Z0-9]+$/.test(str);
+}
+
+
+function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedFilters) {
+    if (whereObject[each] !== undefined) {
+      error += `Can't filter by ${each} when selecting command. `;
+    }
+  }
+
+  return error;
+}
+
+function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
+  let error = '';
+  for (const each of prohibitedSetters) {
+    if (setObject[each] !== undefined) {
+      error += `Can't set ${each} when a ${selectionType} is selected. `;
+    }
+  }
+
+  return error;
+}
+
 
 function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const directive = it;
   const select = directive.select;
   const where = directive.where;
   const set = directive.set;
-  if (directive.remove === undefined && where && (where.verb || where.variant || where["parameter-name"] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['clear-alias'])) {
+  if (directive.remove === undefined && where && (where.verb || where.variant || where['parameter-name'] || where.subject || where['subject-prefix'] || directive.hide || select === 'command' || select === 'parameter' || directive['clear-alias'])) {
     const prohibitedFilters = ['model-name', 'property-name', 'enum-name', 'enum-value-name'];
     let error = getFilterError(where, prohibitedFilters, 'command');
 
@@ -78,7 +108,7 @@ function isRemoveCommandDirective(it: any): it is RemoveCommandDirective {
   const directive = <RemoveCommandDirective>it;
   const where = directive.where;
   const remove = directive.remove;
-  if (where && remove && (where.subject || where.verb || where.variant || where["subject-prefix"] || where["parameter-name"] || directive.select === 'command') && directive.select !== 'parameter') {
+  if (where && remove && (where.subject || where.verb || where.variant || where['subject-prefix'] || where['parameter-name'] || directive.select === 'command') && directive.select !== 'parameter') {
     return true;
   }
 
@@ -119,7 +149,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
     let error = getFilterError(where, prohibitedFilters, 'enum');
     const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer'];
     error += getSetError(set, prohibitedSetters, 'enum');
-    let modelSelectNameConflict = [];
+    const modelSelectNameConflict = [];
     let modelSelectNameType = '';
     if (where['model-name']) {
       modelSelectNameType = 'model-name';
@@ -194,54 +224,22 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   return false;
 }
 
-function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
-  let error = '';
-  for (const each of prohibitedFilters) {
-    if (whereObject[each] !== undefined) {
-      error += `Can't filter by ${each} when selecting command. `
-    }
-  }
-
-  return error;
-}
-
-function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
-  let error = '';
-  for (const each of prohibitedSetters) {
-    if (setObject[each] !== undefined) {
-      error += `Can't set ${each} when a ${selectionType} is selected. `
-    }
-  }
-
-  return error;
-}
-
-export async function applyModifiers(service: Host) {
-  const allDirectives = await service.GetValue('directive');
-  directives = values(allDirectives)
-    // .linq.select(directive => directive)
-    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
-    .linq.toArray();
-
-  return processCodeModel(tweakModel, service, 'modifiers');
-}
-
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
   // only look at directives without the `transform` node.
   for (const directive of directives.filter(each => !each.transform)) {
     const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
-    }
+    };
 
     if (isWhereCommandDirective(directive)) {
       const selectType = directive.select;
-      const clearAlias = directive["clear-alias"];
+      const clearAlias = directive['clear-alias'];
       const subjectRegex = getPatternToMatch(directive.where['subject']);
       const subjectPrefixRegex = getPatternToMatch(directive.where['subject-prefix']);
       const verbRegex = getPatternToMatch(directive.where.verb);
       const variantRegex = getPatternToMatch(directive.where.variant);
-      const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
+      const parameterRegex = getPatternToMatch(directive.where['parameter-name']);
 
       const alias =
         (directive.set !== undefined) ?
@@ -252,12 +250,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             : undefined
           : undefined;
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
-      const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set["subject-prefix"] : undefined;
+      const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set['subject-prefix'] : undefined;
       const verbReplacer = (directive.set !== undefined) ? directive.set.verb : undefined;
-      const variantReplacer = (directive.set !== undefined) ? directive.set.variant : undefined;;
-      const parameterReplacer = (directive.set !== undefined) ? directive.set["parameter-name"] : undefined;;
-      const paramDescriptionReplacer = (directive.set !== undefined) ? directive.set["parameter-description"] : undefined;;
-      const paramCompleterReplacer = (directive.set !== undefined) ? directive.set["completer"] : undefined;;
+      const variantReplacer = (directive.set !== undefined) ? directive.set.variant : undefined;
+      const parameterReplacer = (directive.set !== undefined) ? directive.set['parameter-name'] : undefined;
+      const paramDescriptionReplacer = (directive.set !== undefined) ? directive.set['parameter-description'] : undefined;
+      const paramCompleterReplacer = (directive.set !== undefined) ? directive.set['completer'] : undefined;
 
       // select all operations
       let operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
@@ -342,8 +340,8 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       } else if (operations) {
         for (const operation of operations) {
           const getCmdletName = (verb: string, subjectPrefix: string, subject: string, variantName: string): string => {
-            return `${verb}-${subjectPrefix}${subject}${variantName ? `_${variantName}` : ``}`
-          }
+            return `${verb}-${subjectPrefix}${subject}${variantName ? `_${variantName}` : ''}`;
+          };
 
           const prevSubject = operation.details.csharp.subject;
           const prevSubjectPrefix = operation.details.csharp.subjectPrefix;
@@ -366,7 +364,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
           // just the subject prefix can be an empty string
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
-            let modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `
+            const modificationMessage = `[DIRECTIVE] Changed command from ${oldCommandName} to ${newCommandName}. `;
             state.message({
               Channel: Channel.Debug, Text: modificationMessage
             });
@@ -385,7 +383,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 .replace('${subject-prefix}', operation.details.csharp.subjectPrefix)
                 .replace('${subject}', operation.details.csharp.subject)
                 .replace('${variant}', operation.details.csharp.name);
-            }
+            };
 
             const parsedAlias = new Array<string>();
             for (const each of alias) {
@@ -405,16 +403,16 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
     if (isWhereModelDirective(directive)) {
       const selectType = directive.select;
-      const modelNameRegex = getPatternToMatch(directive.where["model-name"]);
-      const modelFullNameRegex = getPatternToMatch(directive.where["model-fullname"]);
-      const modelNamespaceRegex = getPatternToMatch(directive.where["model-namespace"]);
-      const propertyNameRegex = getPatternToMatch(directive.where["property-name"]);
+      const modelNameRegex = getPatternToMatch(directive.where['model-name']);
+      const modelFullNameRegex = getPatternToMatch(directive.where['model-fullname']);
+      const modelNamespaceRegex = getPatternToMatch(directive.where['model-namespace']);
+      const propertyNameRegex = getPatternToMatch(directive.where['property-name']);
 
-      const modelNameReplacer = directive.set["model-name"];
-      const propertyNameReplacer = directive.set["property-name"];
-      const propertyDescriptionReplacer = directive.set["property-description"];
-      const formatTable = directive.set["format-table"];
-      const suppressFormat = directive.set["suppress-format"];
+      const modelNameReplacer = directive.set['model-name'];
+      const propertyNameReplacer = directive.set['property-name'];
+      const propertyDescriptionReplacer = directive.set['property-description'];
+      const formatTable = directive.set['format-table'];
+      const suppressFormat = directive.set['suppress-format'];
 
       // select all models
       let models = values(state.model.schemas).linq.toArray();
@@ -475,7 +473,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
           if (formatTable !== undefined && !suppressFormat) {
             const properties = allVirtualProperties(model.details.csharp.virtualProperties);
-            const propertiesToExclude = formatTable["exclude-properties"];
+            const propertiesToExclude = formatTable['exclude-properties'];
             const propertiesToInclude = formatTable.properties;
             const labels = formatTable.labels;
             const widths = formatTable.width;
@@ -553,11 +551,11 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     }
 
     if (isWhereEnumDirective(directive)) {
-      const enumNameRegex = getPatternToMatch(directive.where["enum-name"]);
-      const enumValueNameRegex = getPatternToMatch(directive.where["enum-value-name"]);
+      const enumNameRegex = getPatternToMatch(directive.where['enum-name']);
+      const enumValueNameRegex = getPatternToMatch(directive.where['enum-value-name']);
 
-      const enumNameReplacer = directive.set["enum-name"];
-      const enumValueNameReplacer = directive.set["enum-value-name"];
+      const enumNameReplacer = directive.set['enum-name'];
+      const enumValueNameReplacer = directive.set['enum-value-name'];
 
       let enums = values(state.model.schemas)
         .linq.where(each => each.details.csharp.enum !== undefined)
@@ -603,10 +601,10 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     if (isRemoveCommandDirective(directive)) {
       const selectType = directive.select;
       const subjectRegex = getPatternToMatch(directive.where.subject);
-      const subjectPrefixRegex = getPatternToMatch(directive.where["subject-prefix"]);
+      const subjectPrefixRegex = getPatternToMatch(directive.where['subject-prefix']);
       const verbRegex = getPatternToMatch(directive.where.verb);
       const variantRegex = getPatternToMatch(directive.where.variant);
-      const parameterRegex = getPatternToMatch(directive.where["parameter-name"]);
+      const parameterRegex = getPatternToMatch(directive.where['parameter-name']);
 
       if (subjectRegex || subjectPrefixRegex || verbRegex || variantRegex || (parameterRegex && selectType === 'command')) {
         // select all operations first then reduce by finding the intersection with selectors
@@ -654,7 +652,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         for (const key of operationsToRemoveKeys) {
           const operationInfo = state.model.commands.operations[key].details.csharp;
           state.message({
-            Channel: Channel.Debug, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ``}`
+            Channel: Channel.Debug, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ''}`
           });
 
           delete state.model.commands.operations[key];
@@ -682,6 +680,12 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   return state.model;
 }
 
-function hasSpecialChars(str: string): boolean {
-  return !/^[a-zA-Z0-9]+$/.test(str);
+export async function applyModifiers(service: Host) {
+  const allDirectives = await service.GetValue('directive');
+  directives = values(allDirectives)
+    // .linq.select(directive => directive)
+    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
+    .linq.toArray();
+
+  return processCodeModel(tweakModel, service, 'modifiers');
 }

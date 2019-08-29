@@ -2,10 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@azure/autorest.codemodel-v3';
 
-import { camelCase, deconstruct, items, values } from '@microsoft.azure/codegen';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@microsoft.azure/codegen-csharp';
+import { camelCase, deconstruct } from '@azure/codegen';
+import { items, values } from '@azure/linq';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -38,7 +39,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   }
 
   get defaultOfType() {
-    return toExpression(`null /* model class */`);
+    return toExpression('null /* model class */');
   }
 
   get convertObjectMethod() {
@@ -65,13 +66,13 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     return this.featureImplementation.isXmlAttribute;
   }
 
-  public isNullable: boolean = true;
+  public isNullable = true;
 
   get isRequired(): boolean {
     return this.featureImplementation.isRequired;
   }
 
-  public isPolymorphic: boolean = false;
+  public isPolymorphic = false;
   public get schema() { return this.featureImplementation.schema; }
 
   /* @internal */ validateMethod?: Method;
@@ -157,7 +158,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
-  private accessor(virtualProperty: VirtualProperty, internal: boolean = false): string {
+  private accessor(virtualProperty: VirtualProperty, internal = false): string {
     if (virtualProperty.accessViaProperty) {
       const prefix = virtualProperty.accessViaProperty.accessViaProperty ? this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal) : '';
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
@@ -181,27 +182,27 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           } else {
             const parameters = [];
             if (virtualProperty.format.index !== undefined) {
-              parameters.push(`Index = ${virtualProperty.format.index}`)
+              parameters.push(`Index = ${virtualProperty.format.index}`);
             }
 
             if (virtualProperty.format.label !== undefined) {
-              parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`)
+              parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`);
             }
 
             if (virtualProperty.format.width !== undefined) {
-              parameters.push(`Width = ${virtualProperty.format.width}`)
+              parameters.push(`Width = ${virtualProperty.format.width}`);
             }
 
             property.add(new Attribute(FormatTableAttribute, { parameters }));
           }
         }
-      }
+      };
 
       /* Owned Properties */
       for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.owned)) {
         const actualProperty = virtualProperty.property;
         let n = 0;
-        const decl = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actualProperty.schema, actualProperty.details.csharp.required, this.state.path("schema"));
+        const decl = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actualProperty.schema, actualProperty.details.csharp.required, this.state.path('schema'));
 
         /* public property */
         const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
@@ -234,7 +235,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             getAccess: Access.Explicit,
             setAccess: Access.Explicit,
             get: myProperty.get,
-            set: myProperty.assignPrivate(`value`)
+            set: myProperty.assignPrivate('value')
           }));
         }
 
@@ -303,7 +304,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
             if (!virtualProperty.private) {
               this.add(vp);
-            };
+            }
 
             if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
               this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
@@ -340,7 +341,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.validateMethod = this.addMethod(new Method('Validate', System.Threading.Tasks.Task(), {
         async: Modifier.Async,
         parameters: [this.validationEventListener],
-        description: `Validates that this object meets the validation criteria.`,
+        description: 'Validates that this object meets the validation criteria.',
         returnsDescription: `A < see cref = "${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
       }));
       this.validateMethod.add(this.validationStatements);
@@ -368,7 +369,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   }
 
   private handleAllOf() {
-    var hasAdditionalPropertiesInParent = false;
+    let hasAdditionalPropertiesInParent = false;
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.allOf)) {
@@ -393,7 +394,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       this.validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
       this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
 
-      this.internalModelInterface.interfaces.push(<ModelInterface>aSchema.details.csharp.internalInterfaceImplementation)
+      this.internalModelInterface.interfaces.push(<ModelInterface>aSchema.details.csharp.internalInterfaceImplementation);
       this.modelInterface.interfaces.push(iface);
 
       //
@@ -450,7 +451,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       used = true;
       const t = `((${headerProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
       const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
-      const td = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>headerProperty.property.schema, false, this.state.path("schema"));
+      const td = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>headerProperty.property.schema, false, this.state.path('schema'));
       readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values, td.defaultOfType)};`));
     }
     if (used) {

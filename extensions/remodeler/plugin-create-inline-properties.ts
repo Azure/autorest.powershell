@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
-import { length, values, getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@microsoft.azure/codegen';
-import { Host } from '@microsoft.azure/autorest-extension-base';
-import { CommandOperation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
+import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@azure/autorest.codemodel-v3';
+import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@azure/codegen';
+import { length, values, } from '@azure/linq';
+import { Host } from '@azure/autorest-extension-base';
+import { CommandOperation } from '@azure/autorest.codemodel-v3/dist/code-model/command-operation';
 type State = ModelState<codemodel.Model>;
 
 
@@ -20,10 +21,6 @@ function getPluralizationService(): EnglishPluralizationService {
 
 export function singularize(word: string): string {
   return getPluralizationService().singularize(word);
-}
-
-export async function createInlinedPropertiesPlugin(service: Host) {
-  return processCodeModel(createVirtuals, service, 'create-virtual-properties');
 }
 
 function getNameOptions(typeName: string, components: Array<string>) {
@@ -39,7 +36,6 @@ function getNameOptions(typeName: string, components: Array<string>) {
   result.add(pascalCase([...removeSequentialDuplicates([...fixLeadingNumber(deconstruct(typeName)), ...deconstruct(components.last)])]));
   return [...result.values()];
 }
-
 
 
 function createVirtualProperties(schema: Schema, stack = new Array<string>(), threshold = 30) {
@@ -64,7 +60,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
   schema.details.default.inline = 'inprogress';
 
   // virutual property set.
-  let virtualProperties = schema.details.default.virtualProperties = {
+  const virtualProperties = schema.details.default.virtualProperties = {
     owned: new Array<VirtualProperty>(),
     inherited: new Array<VirtualProperty>(),
     inlined: new Array<VirtualProperty>(),
@@ -110,7 +106,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
     }
   }
 
-  let [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each =>
+  const [objectProperties, nonObjectProperties] = values(schema.properties).linq.bifurcate(each =>
     each.schema.type === JsonType.Object &&       // is it an object 
     getAllProperties(each.schema).length > 0    // does it have properties (or inherit properties)
   );
@@ -135,7 +131,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
       owned: [],
       inherited: [],
       inlined: [],
-    }
+    };
 
     const allNotRequired = values(getAllPublicVirtualProperties()).linq.all(each => !each.property.details.default.required);
 
@@ -185,7 +181,6 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
           required: inlinedProperty.required && privateProperty.required,
         });
       }
-
 
 
       for (const inlinedProperty of [...virtualChildProperties.inlined]) {
@@ -251,7 +246,7 @@ function createVirtualProperties(schema: Schema, stack = new Array<string>(), th
   for (const each of virtualProperties.inlined.sort((a, b) => a.nameOptions.length - b.nameOptions.length)) {
     const ct = inlined.get(each.name);
     if (ct && ct > 1) {
-      console.error(`Fixing collision on name ${each.name} #${ct} `)
+      console.error(`Fixing collision on name ${each.name} #${ct} `);
       each.name = selectName(each.nameOptions, usedNames);
     }
   }
@@ -346,4 +341,9 @@ async function createVirtuals(state: State): Promise<codemodel.Model> {
   }
 
   return state.model;
+}
+
+
+export async function createInlinedPropertiesPlugin(service: Host) {
+  return processCodeModel(createVirtuals, service, 'create-virtual-properties');
 }

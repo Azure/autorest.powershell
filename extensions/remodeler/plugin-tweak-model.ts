@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { items, keys, values, select, pascalCase, deconstruct, fixLeadingNumber } from '@microsoft.azure/codegen';
+import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure/autorest.codemodel-v3';
+import { pascalCase, deconstruct, fixLeadingNumber } from '@azure/codegen';
+import { items, keys, values, select, } from '@azure/linq';
 
-import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
-import { OAuthFlows } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/security-scheme';
+import { Channel, Host } from '@azure/autorest-extension-base';
+import { OAuthFlows } from '@azure/autorest.codemodel-v3/dist/code-model/security-scheme';
 import { parentPort } from 'worker_threads';
 
 export const HeaderProperty = 'HeaderProperty';
@@ -17,11 +18,50 @@ export enum HeaderPropertyType {
 }
 type State = ModelState<codemodel.Model>;
 
-// Universal version -
-// tweaks the code model to adjust things so that the code will generate better.
 
-export async function tweakModelPlugin(service: Host) {
-  return processCodeModel(tweakModel, service, 'remodeler');
+// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
+export function titleToAzureServiceName(title: string): string {
+  const titleCamelCase = pascalCase(deconstruct(title)).trim();
+  const serviceName = titleCamelCase
+    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+  return serviceName || titleCamelCase;
+}
+
+
+function dropDuplicatePropertiesInChildSchemas(schema: Schema, state: State, map: Map<string, Property> = new Map()) {
+  let success = true;
+  for (const parent of schema.allOf) {
+    // handle parents first
+    if (!dropDuplicatePropertiesInChildSchemas(parent, state, map)) {
+      return false;
+    }
+  }
+  for (const { key: id, value: property } of items(schema.properties)) {
+    // see if it's in the parent.
+    const pProp = map.get(property.serializedName);
+    if (pProp) {
+      // if the parent prop is the same type as the child prop
+      // we're going to drop the child property.
+      if (pProp.schema.type === property.schema.type) {
+        // if it's an object type, it has to be the exact same schema type too
+        if (pProp.schema.type != JsonType.Object || pProp.schema === property.schema) {
+          state.verbose(`Property '${property.serializedName}' in '${schema.details.default.name}' has a property the same as the parent, and is dropping the duplicate.`, {});
+          delete schema.properties[id];
+        } else {
+          const conflict = `Property '${property.serializedName}' in '${schema.details.default.name}' has a conflict with a parent schema (allOf ${schema.allOf.joinWith(each => each.details.default.name)}.`;
+          state.error(conflict, [], {});
+          success = false;
+        }
+      }
+    }
+    else {
+      map.set(property.serializedName, property);
+    }
+  }
+  return success;
 }
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
@@ -49,7 +89,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   // we're going to create a schema that represents the distinct sum 
   // of all operation PATH parameters
   const universalId = new Schema(`${serviceName}Identity`, {
-    type: JsonType.Object, description: "Resource Identity", details: {
+    type: JsonType.Object, description: 'Resource Identity', details: {
       default: {
         uid: 'universal-parameter-type'
       }
@@ -77,15 +117,15 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   }
 
   if (await state.getValue('azure', false)) {
-    universalId.properties["id"] = new Property("id", {
-      schema: new Schema("_identity_type_", { type: JsonType.String, description: "Resource identity path" }),
-      description: 'Resource identity path', serializedName: "id", details: {
+    universalId.properties['id'] = new Property('id', {
+      schema: new Schema('_identity_type_', { type: JsonType.String, description: 'Resource identity path' }),
+      description: 'Resource identity path', serializedName: 'id', details: {
         default: {
           description: 'Resource identity path',
           name: 'id',
           required: false,
           readOnly: false,
-          uid: `universal-parameter:resource identity`
+          uid: 'universal-parameter:resource identity'
         }
       }
     });
@@ -114,7 +154,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   for (const schema of values(model.schemas)) {
     if (schema.allOf.length > 0) {
       if (!dropDuplicatePropertiesInChildSchemas(schema, state)) {
-        throw new Error("Schemas are in conflict.");
+        throw new Error('Schemas are in conflict.');
       }
     }
   }
@@ -279,46 +319,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   return model;
 }
 
-function dropDuplicatePropertiesInChildSchemas(schema: Schema, state: State, map: Map<string, Property> = new Map()) {
-  let success = true;
-  for (const parent of schema.allOf) {
-    // handle parents first
-    if (!dropDuplicatePropertiesInChildSchemas(parent, state, map)) {
-      return false;
-    };
-  }
-  for (const { key: id, value: property } of items(schema.properties)) {
-    // see if it's in the parent.
-    const pProp = map.get(property.serializedName)
-    if (pProp) {
-      // if the parent prop is the same type as the child prop
-      // we're going to drop the child property.
-      if (pProp.schema.type === property.schema.type) {
-        // if it's an object type, it has to be the exact same schema type too
-        if (pProp.schema.type != JsonType.Object || pProp.schema === property.schema) {
-          state.verbose(`Property '${property.serializedName}' in '${schema.details.default.name}' has a property the same as the parent, and is dropping the duplicate.`, {});
-          delete schema.properties[id];
-        } else {
-          const conflict = `Property '${property.serializedName}' in '${schema.details.default.name}' has a conflict with a parent schema (allOf ${schema.allOf.joinWith(each => each.details.default.name)}.`
-          state.error(conflict, [], {});
-          success = false;
-        }
-      }
-    }
-    else {
-      map.set(property.serializedName, property);
-    }
-  }
-  return success;
-}
+// Universal version -
+// tweaks the code model to adjust things so that the code will generate better.
 
-// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
-export function titleToAzureServiceName(title: string): string {
-  const titleCamelCase = pascalCase(deconstruct(title)).trim();
-  const serviceName = titleCamelCase
-    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
-    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
-    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
-    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
-  return serviceName || titleCamelCase;
+export async function tweakModelPlugin(service: Host) {
+  return processCodeModel(tweakModel, service, 'remodeler');
 }

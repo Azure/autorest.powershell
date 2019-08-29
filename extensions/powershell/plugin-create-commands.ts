@@ -3,15 +3,29 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@microsoft.azure/autorest.codemodel-v3';
-import { deconstruct, fixLeadingNumber, pascalCase, items, length, values, EnglishPluralizationService, fail, removeSequentialDuplicates } from '@microsoft.azure/codegen';
-import { Schema } from '@microsoft.azure/autorest.csharp-v2';
-import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
-import { Lazy } from '@microsoft.azure/tasks';
-import { clone } from '@microsoft.azure/linq';
+import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@azure/autorest.codemodel-v3';
+import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { Schema } from '@azure/autorest.csharp-v2';
+import { Channel, Host } from '@azure/autorest-extension-base';
+import { Lazy } from '@azure/tasks';
+import { clone } from '@azure/linq';
 import { verbs } from './verbs';
 
 type State = ModelState<codemodel.Model>;
+
+
+// UNUSED: Moved to plugin-tweak-model.ts in remodeler
+// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
+export function titleToAzureServiceName(title: string): string {
+  const titleCamelCase = pascalCase(deconstruct(title)).trim();
+  const serviceName = titleCamelCase
+    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
+    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
+    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
+    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
+  return serviceName || titleCamelCase;
+}
 
 
 const pluralizationService = new EnglishPluralizationService();
@@ -50,7 +64,7 @@ function splitOnPreposition(preposition: string, parts: Array<string>) {
     return [
       parts.slice(0, i),
       parts.slice(i + 1)
-    ]
+    ];
   }
   return undefined;
 }
@@ -66,12 +80,6 @@ function splitOnAnyPreposition(parts: Array<string>) {
   return undefined;
 }
 
-export async function createCommands(service: Host) {
-  // return processCodeModel(commandCreator, service);
-  return processCodeModel(async (state) => {
-    return await (await new Inferrer(state).init()).createCommands();
-  }, service, 'createCommands');
-}
 
 export /* @internal */ class Inferrer {
   commonParameters = new Array<string>();
@@ -140,7 +148,7 @@ export /* @internal */ class Inferrer {
     // no instant match 
     switch (operation.length) {
       case 0:
-        throw new Error("Missing operation id?");
+        throw new Error('Missing operation id?');
 
       case 1:
         // simple operation, just an id with a single value
@@ -196,17 +204,17 @@ export /* @internal */ class Inferrer {
         // if the action is first
         if (i === 0) {
           // everything else is the subject
-          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)]
+          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)];
         }
         if (i === operation.length - 1) {
           // if it's last, the subject would be the first thing
-          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)]
+          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)];
         }
 
         // otherwise          
         // things before are part of the subject
         // things after the verb should be part of the suffix
-        return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)]
+        return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)];
       }
     }
 
@@ -223,10 +231,10 @@ export /* @internal */ class Inferrer {
     if (!method) {
       // no group given.
       method = group;
-      group = pascalCase(op.tags) || ''
+      group = pascalCase(op.tags) || '';
     }
 
-    let groupWords = deconstruct(group);
+    const groupWords = deconstruct(group);
     groupWords[groupWords.length - 1] = pluralizationService.singularize(groupWords.last);
 
     group = pascalCase(groupWords);
@@ -381,7 +389,7 @@ export /* @internal */ class Inferrer {
 
     // wait! "update" should be "set" if it's a POST
     if (variant.verb === 'Update' && operation.method === http.HttpMethod.Put) {
-      variant.verb = `Set`;
+      variant.verb = 'Set';
     }
 
     // create variant 
@@ -428,14 +436,10 @@ export /* @internal */ class Inferrer {
   }
 }
 
-// UNUSED: Moved to plugin-tweak-model.ts in remodeler
-// For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
-export function titleToAzureServiceName(title: string): string {
-  const titleCamelCase = pascalCase(deconstruct(title)).trim();
-  const serviceName = titleCamelCase
-    // Remove: !StartsWith(Management)AndContains(Management), Client, Azure, Microsoft, APIs, API, REST
-    .replace(/(?!^Management)(?=.*)Management|Client|Azure|Microsoft|APIs|API|REST/g, '')
-    // Remove: EndsWith(ServiceResourceProvider), EndsWith(ResourceProvider), EndsWith(DataPlane), EndsWith(Data)
-    .replace(/ServiceResourceProvider$|ResourceProvider$|DataPlane$|Data$/g, '');
-  return serviceName || titleCamelCase;
+
+export async function createCommands(service: Host) {
+  // return processCodeModel(commandCreator, service);
+  return processCodeModel(async (state) => {
+    return await (await new Inferrer(state).init()).createCommands();
+  }, service, 'createCommands');
 }

@@ -3,14 +3,50 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host } from '@azure/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { join, relative } from 'path';
 
+
+export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
+  const defaultParameterValues = isAzure ? `
+    $cmdletNames | ForEach-Object { $global:PSDefaultParameterValues["$_\`:SubscriptionId"] = { (Get-AzContext).Subscription.Id } }` : '';
+
+  return `
+  # Export proxy cmdlet scripts
+  $exportsPath = ${exportFolderScript}
+  $directories = Get-ChildItem -Directory -Path $exportsPath
+  $profileDirectory = $null
+  if($instance.ProfileName) {
+    if(($directories | ForEach-Object { $_.Name }) -contains $instance.ProfileName) {
+      $profileDirectory = $directories | Where-Object { $_.Name -eq $instance.ProfileName }
+    } else {
+      # Don't export anything if the profile doesn't exist for the module
+      $exportsPath = $null
+      Write-Warning "Selected Azure profile '$($instance.ProfileName)' does not exist for module '$($instance.Name)'. No cmdlets were loaded."
+    }
+  } elseif(($directories | Measure-Object).Count -gt 0) {
+    # Load the last folder if no profile is selected
+    $profileDirectory = $directories | Select-Object -Last 1
+  }
+
+  if($profileDirectory) {
+    Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
+    $exportsPath = $profileDirectory.FullName
+  }
+
+  if($exportsPath) {
+    Get-ChildItem -Path $exportsPath -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
+    $cmdletNames = Get-ScriptCmdlet -ScriptFolder $exportsPath
+    Export-ModuleMember -Function $cmdletNames -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)${defaultParameterValues}
+  }
+`;
+}
+
 export async function generatePsm1(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
-  let azureInitialize = ''
+  let azureInitialize = '';
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     azureInitialize = `
@@ -86,37 +122,3 @@ ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, p
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
 
-export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
-  const defaultParameterValues = isAzure ? `
-    $cmdletNames | ForEach-Object { $global:PSDefaultParameterValues["$_\`:SubscriptionId"] = { (Get-AzContext).Subscription.Id } }` : ``;
-
-  return `
-  # Export proxy cmdlet scripts
-  $exportsPath = ${exportFolderScript}
-  $directories = Get-ChildItem -Directory -Path $exportsPath
-  $profileDirectory = $null
-  if($instance.ProfileName) {
-    if(($directories | ForEach-Object { $_.Name }) -contains $instance.ProfileName) {
-      $profileDirectory = $directories | Where-Object { $_.Name -eq $instance.ProfileName }
-    } else {
-      # Don't export anything if the profile doesn't exist for the module
-      $exportsPath = $null
-      Write-Warning "Selected Azure profile '$($instance.ProfileName)' does not exist for module '$($instance.Name)'. No cmdlets were loaded."
-    }
-  } elseif(($directories | Measure-Object).Count -gt 0) {
-    # Load the last folder if no profile is selected
-    $profileDirectory = $directories | Select-Object -Last 1
-  }
-
-  if($profileDirectory) {
-    Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
-    $exportsPath = $profileDirectory.FullName
-  }
-
-  if($exportsPath) {
-    Get-ChildItem -Path $exportsPath -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
-    $cmdletNames = Get-ScriptCmdlet -ScriptFolder $exportsPath
-    Export-ModuleMember -Function $cmdletNames -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)${defaultParameterValues}
-  }
-`;
-}

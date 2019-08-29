@@ -1,4 +1,4 @@
-import { TextWithRegions, TextPossibilities, Text, EOL } from "@microsoft.azure/codegen";
+import { TextWithRegions, TextPossibilities, Text, EOL } from '@azure/codegen';
 
 export class PSScriptFile extends TextWithRegions {
 

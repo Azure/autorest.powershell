@@ -2,31 +2,32 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from "@microsoft.azure/autorest.codemodel-v3"
-import { items, values, EOL, } from '@microsoft.azure/codegen';
-import { Access, Modifier, StringExpression, Expression, System } from '@microsoft.azure/codegen-csharp';
-import { Class } from '@microsoft.azure/codegen-csharp';
-import { Constructor } from '@microsoft.azure/codegen-csharp';
-import { IsDeclaration, toExpression } from '@microsoft.azure/codegen-csharp';
-import { Method, PartialMethod } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from '@azure/autorest.codemodel-v3';
+import { EOL, } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { Access, Modifier, StringExpression, Expression, System } from '@azure/codegen-csharp';
+import { Class } from '@azure/codegen-csharp';
+import { Constructor } from '@azure/codegen-csharp';
+import { IsDeclaration, toExpression } from '@azure/codegen-csharp';
+import { Method, PartialMethod } from '@azure/codegen-csharp';
 
-import { Parameter } from '@microsoft.azure/codegen-csharp';
-import { ParameterModifier } from '@microsoft.azure/codegen-csharp';
-import { TerminalCase } from '@microsoft.azure/codegen-csharp';
-import { If, Not } from '@microsoft.azure/codegen-csharp';
-import { Return } from '@microsoft.azure/codegen-csharp';
-import { Statements } from '@microsoft.azure/codegen-csharp';
-import { Switch } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
+import { Parameter } from '@azure/codegen-csharp';
+import { ParameterModifier } from '@azure/codegen-csharp';
+import { TerminalCase } from '@azure/codegen-csharp';
+import { If, Not } from '@azure/codegen-csharp';
+import { Return } from '@azure/codegen-csharp';
+import { Statements } from '@azure/codegen-csharp';
+import { Switch } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 
-import { dotnet } from '@microsoft.azure/codegen-csharp';
+import { dotnet } from '@azure/codegen-csharp';
 import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
-import { ObjectImplementation } from "../schema/object";
+import { ObjectImplementation } from '../schema/object';
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -67,7 +68,7 @@ export class JsonSerializableClass extends Class {
     if (this.modelClass.dictionaryImpl) {
       const vType = this.modelClass.dictionaryImpl.valueType;
       // we have to ensure that all the known wire-names are excluded on deserialization.
-      const exclusions = new Parameter('exclusions', System.Collections.Generic.HashSet(dotnet.String), { defaultInitializer: dotnet.Null })
+      const exclusions = new Parameter('exclusions', System.Collections.Generic.HashSet(dotnet.String), { defaultInitializer: dotnet.Null });
       deserializerConstructor.parameters.push(exclusions);
 
       this.excludes = [...values(getAllProperties(this.modelClass.schema)).linq.select(each => each.serializedName).linq.select(each => new StringExpression(each))].join();
@@ -91,7 +92,6 @@ export class JsonSerializableClass extends Class {
         }
       }
     }
-
 
 
     for (const each of values(modelClass.backingFields)) {
@@ -122,10 +122,10 @@ export class JsonSerializableClass extends Class {
       yield `${container} = ${container} ?? new ${ClientRuntime.JsonObject.declaration}();`;
       yield EOL;
 
-      yield `bool returnNow = false;`;
+      yield 'bool returnNow = false;';
       yield `${$this.btj.name}(ref ${container}, ref returnNow);`;
 
-      yield If(toExpression(`returnNow`), `return ${container};`);
+      yield If(toExpression('returnNow'), `return ${container};`);
 
       // get serialization statements
       yield serializeStatements;
@@ -136,9 +136,9 @@ export class JsonSerializableClass extends Class {
 
     // and let's fill in the deserializer constructor statements now.
     deserializerConstructor.add(function* () {
-      yield `bool returnNow = false;`;
+      yield 'bool returnNow = false;';
       yield `${$this.bfj.name}(json, ref returnNow);`;
-      yield If(toExpression(`returnNow`), `return;`);
+      yield If(toExpression('returnNow'), 'return;');
 
       yield deserializeStatements;
       yield `${$this.afj.name}(json);`;
@@ -231,7 +231,7 @@ export class JsonSerializableClass extends Class {
       parameters: [
         new Parameter('json', ClientRuntime.JsonObject, { description: 'The JsonNode that should be deserialized into this object.' }),
       ],
-      description: `<c>AfterFromJson</c> will be called after the json deserialization has finished, allowing customization of the object before it is returned. Implement this method in a partial class to enable this behavior `
+      description: '<c>AfterFromJson</c> will be called after the json deserialization has finished, allowing customization of the object before it is returned. Implement this method in a partial class to enable this behavior '
     }));
   }
 }

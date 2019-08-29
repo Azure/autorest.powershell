@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Access, isAnExpression, toExpression } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral } from '@microsoft.azure/codegen-csharp';
-import { BackedProperty } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, JsonType } from '@azure/autorest.codemodel-v3';
+import { Access, isAnExpression, toExpression } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral } from '@azure/codegen-csharp';
+import { BackedProperty } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { Property, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
@@ -46,7 +46,7 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
     if (this.required) {
       return (<EnhancedTypeDeclaration>this.type).validatePresence(eventListener, this);
     }
-    return ``;
+    return '';
   }
   public validationStatement(eventListener: Variable): OneOrMoreStatements {
     return (<EnhancedTypeDeclaration>this.type).validateValue(eventListener, this);
@@ -61,7 +61,7 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   public details: any;
 
   constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: Partial<ModelProperty>) {
-    const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path("schema"));
+    const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path('schema'));
     super(name, decl);
     this.typeDeclaration = decl;
     this.serializedName = serializedName;

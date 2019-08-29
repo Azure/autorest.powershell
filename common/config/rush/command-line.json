@@ -25,6 +25,18 @@
       "name": "clean",
       "summary": "run npm clean on all projects",
       "shellCommand": "node common/scripts/clean.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "fix",
+      "summary": "run all npm fix",
+      "shellCommand": "node common/scripts/fix.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "lint",
+      "summary": "run all npm eslint",
+      "shellCommand": "node common/scripts/eslint.js"
     }
   ],
   "parameters": []

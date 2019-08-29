@@ -1,12 +1,12 @@
-import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, And, ForEach, LocalVariable, ImplicitCastOperator } from '@microsoft.azure/codegen-csharp';
+import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, And, ForEach, LocalVariable, ImplicitCastOperator } from '@azure/codegen-csharp';
 import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
-import { getAllVirtualProperties } from '@microsoft.azure/autorest.codemodel-v3';
+import { getAllVirtualProperties } from '@azure/autorest.codemodel-v3';
 
 export class DictionaryImplementation extends Class {
-  private get state() { return this.modelClass.state; };
-  private get schema() { return this.modelClass.schema; };
+  private get state() { return this.modelClass.state; }
+  private get schema() { return this.modelClass.schema; }
   public valueType!: TypeDeclaration | EnhancedTypeDeclaration;
   public ownsDictionary = false;
 
@@ -24,7 +24,7 @@ export class DictionaryImplementation extends Class {
     else {
       if (this.schema.additionalProperties) {
         this.ownsDictionary = true;
-        this.valueType = this.schema.additionalProperties === true ? System.Object : this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state)
+        this.valueType = this.schema.additionalProperties === true ? System.Object : this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state);
         this.modelClass.modelInterface.interfaces.push(this.implementIDictionary(this, 'additionalProperties', System.String, this.valueType));
       }
     }
@@ -41,8 +41,8 @@ export class DictionaryImplementation extends Class {
     }
   }
 
-  implementIDictionary(targetClass: Class, name: String, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
-    const containerInterfaceType = { declaration: `${ClientRuntime}.IAssociativeArray<${valueType.declaration}>`, allProperties: [] }
+  implementIDictionary(targetClass: Class, name: string, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {
+    const containerInterfaceType = { declaration: `${ClientRuntime}.IAssociativeArray<${valueType.declaration}>`, allProperties: [] };
     const dictionaryInterfaceType = System.Collections.Generic.IDictionary(keyType, valueType);
     const itemType = System.Collections.Generic.KeyValuePair(keyType, valueType);
 
@@ -71,20 +71,20 @@ export class DictionaryImplementation extends Class {
     } else {
       targetClass.add(new Property(`${containerInterfaceType.declaration}.AdditionalProperties`, dictionaryInterfaceType, { get: toExpression(`${accessViaMember}.AdditionalProperties`), getAccess: Access.Explicit }));
     }
-    targetClass.add(new Method(`Add`, dotnet.Void, { parameters: [pKey, pValue], body: toExpression(`${accessViaMember}.Add( ${pKey}, ${pValue})`), access: Access.Public }));
-    targetClass.add(new Method(`Clear`, dotnet.Void, { body: toExpression(`${accessViaMember}.Clear()`), access: Access.Public }));
+    targetClass.add(new Method('Add', dotnet.Void, { parameters: [pKey, pValue], body: toExpression(`${accessViaMember}.Add( ${pKey}, ${pValue})`), access: Access.Public }));
+    targetClass.add(new Method('Clear', dotnet.Void, { body: toExpression(`${accessViaMember}.Clear()`), access: Access.Public }));
 
-    targetClass.add(new Method(`ContainsKey`, dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.ContainsKey( ${pKey})`), access: Access.Public }));
+    targetClass.add(new Method('ContainsKey', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.ContainsKey( ${pKey})`), access: Access.Public }));
 
-    targetClass.add(new Method(`Remove`, dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.Remove( ${pKey})`), access: Access.Public }));
+    targetClass.add(new Method('Remove', dotnet.Bool, { parameters: [pKey], body: toExpression(`${accessViaMember}.Remove( ${pKey})`), access: Access.Public }));
 
-    targetClass.add(new Method(`TryGetValue`, dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Public }));
+    targetClass.add(new Method('TryGetValue', dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Public }));
 
     const all = getAllVirtualProperties(this.schema.details.csharp.virtualProperties);
     const exclusions = all.map(each => `"${each.name}"`).join(',');
 
     // add a CopyFrom that takes an IDictionary or PSObject and copies the values into this dictionary
-    for (const pDictType of [System.Collections.IDictionary, { declaration: `global::System.Management.Automation.PSObject` }]) {
+    for (const pDictType of [System.Collections.IDictionary, { declaration: 'global::System.Management.Automation.PSObject' }]) {
       const pDict = new Parameter('source', pDictType);
       targetClass.add(new Method('CopyFrom', dotnet.Void, {
         parameters: [pDict], body: function* () {
@@ -92,11 +92,11 @@ export class DictionaryImplementation extends Class {
 
             yield ForEach('property', ` Microsoft.Rest.ClientRuntime.PowerShell.TypeConverterExtensions.GetFilteredProperties(${pDict.value}, ${System.Collections.Generic.HashSet(System.String).new()} { ${exclusions} } )`, function* () {
 
-              yield If(And(`null != property.Key`, `null != property.Value`), function* () {
-                yield `this.${accessViaMember}.Add(property.Key.ToString(), global::System.Management.Automation.LanguagePrimitives.ConvertTo<${valueType.declaration}>( property.Value));`
+              yield If(And('null != property.Key', 'null != property.Value'), function* () {
+                yield `this.${accessViaMember}.Add(property.Key.ToString(), global::System.Management.Automation.LanguagePrimitives.ConvertTo<${valueType.declaration}>( property.Value));`;
               });
-            })
-          })
+            });
+          });
         }
       }));
     }

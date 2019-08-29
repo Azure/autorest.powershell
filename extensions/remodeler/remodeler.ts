@@ -4,21 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { components, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
-import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@microsoft.azure/autorest.codemodel-v3';
-import { CopyDictionary, Dictionary, items, keys, length, ToDictionary, values } from '@microsoft.azure/codegen';
-import { isMediaTypeJson, isMediaTypeXml } from '@microsoft.azure/autorest.codemodel-v3';
-import { ModelState } from '@microsoft.azure/autorest.codemodel-v3';
-import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@microsoft.azure/autorest.codemodel-v3';
-import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
-import { StringFormat } from '@microsoft.azure/autorest.codemodel-v3';
+import { components, ParameterLocation } from '@azure/autorest.codemodel-v3';
+import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@azure/autorest.codemodel-v3';
+
+import { Dictionary, items, keys, length, ToDictionary, values } from '@azure/linq';
+import { isMediaTypeJson, isMediaTypeXml } from '@azure/autorest.codemodel-v3';
+import { ModelState } from '@azure/autorest.codemodel-v3';
+import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@azure/autorest.codemodel-v3';
+import { codemodel } from '@azure/autorest.codemodel-v3';
+import { StringFormat } from '@azure/autorest.codemodel-v3';
 import { dereference, Dereferenced, getExtensionProperties, Refable, isReference } from './common';
 import * as Interpretations from './interpretations';
-import * as OpenAPI from '@microsoft.azure/openapi';
-import { ImplementationLocation } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
+import * as OpenAPI from '@azure/openapi';
+import { ImplementationLocation } from '@azure/autorest.codemodel-v3/dist/code-model/components';
+import { excludeXDash } from '@azure/codegen';
+
+export function CopyDictionary<TSource, TDestination>(dictionary: Dictionary<TSource>, each: (index: string) => TDestination) {
+  return ToDictionary(excludeXDash(dictionary), each);
+}
 
 const xmsMetadata = 'x-ms-metadata';
 const TODO_UNIMPLEMENTED = undefined;
+
+export function isBinaryStream(schema?: OpenAPI.Schema): boolean {
+  return !!schema && (schema.format === 'file' || schema.format === 'binary' || schema.format === 'stream');
+}
+
 
 export class Remodeler {
 
@@ -94,8 +105,8 @@ export class Remodeler {
       type = OpenAPI.JsonType.String;
       format = StringFormat.Binary;
       this.modelState.warning(
-        `The schema type 'file' is not a OAI standard type. This has been auto-corrected to 'type:string' and 'format:binary'`,
-        [`TypeFileNotValid`],
+        'The schema type \'file\' is not a OAI standard type. This has been auto-corrected to \'type:string\' and \'format:binary\'',
+        ['TypeFileNotValid'],
         /* todo: find source location for this node */
       );
     }
@@ -104,8 +115,8 @@ export class Remodeler {
       type = OpenAPI.JsonType.String;
       format = StringFormat.Binary;
       this.modelState.warning(
-        `The schema type 'object' with format 'file' is not a standard OAI representation. This has been auto-corrected to 'type:string' and 'format:binary'`,
-        [`TypeObjectFormatFileNotValid`],
+        'The schema type \'object\' with format \'file\' is not a standard OAI representation. This has been auto-corrected to \'type:string\' and \'format:binary\'',
+        ['TypeObjectFormatFileNotValid'],
         /* todo: find source location for this node */
       );
     }
@@ -114,7 +125,7 @@ export class Remodeler {
       type = OpenAPI.JsonType.String;
       this.modelState.warning(
         `The schema '${name}' with an undefined type and an x-ms-enum extension is a bit ambigious. This has been auto-corrected to 'type:string'`,
-        [`UndefinedTypeWithSchema`],
+        ['UndefinedTypeWithSchema'],
         /* todo: find source location for this node */
       );
     }
@@ -134,7 +145,7 @@ export class Remodeler {
       type = OpenAPI.JsonType.Object;
       this.modelState.warning(
         `The schema '${name}' with an undefined type and additionalProperties is a bit ambigious. This has been auto-corrected to 'type:object'`,
-        [`UndefinedTypeWithSchema`],
+        ['UndefinedTypeWithSchema'],
         /* todo: find source location for this node */
       );
     }
@@ -143,7 +154,7 @@ export class Remodeler {
       type = OpenAPI.JsonType.Object;
       this.modelState.warning(
         `The schema '${name}' with a undefined type and using allOf is a bit ambigious. This has been auto-corrected to 'type:object'`,
-        [`UndefinedTypeWithSchema`],
+        ['UndefinedTypeWithSchema'],
         /* todo: find source location for this node */
       );
     }
@@ -387,7 +398,7 @@ export class Remodeler {
 
     newParameter.details.default.name = Interpretations.getName(original.name, original);
     newParameter.details.default.deprecationMessage = Interpretations.getDeprecationMessage(original);
-    newParameter.details.default.description = Interpretations.getDescription(``, original);
+    newParameter.details.default.description = Interpretations.getDescription('', original);
 
     // TODO: not handled: Examples, Example, Content
 
@@ -436,7 +447,7 @@ export class Remodeler {
     for (const { key: parameterName, value: value } of items(server.variables)) {
       if (parameterName) {
         newOperation.parameters.push(new HttpOperationParameter(parameterName, ParameterLocation.Uri, ImplementationLocation.Method, {
-          schema: new Schema(`host${parameterName}`, { type: JsonType.String, description: "Host parameter type" }),
+          schema: new Schema(`host${parameterName}`, { type: JsonType.String, description: 'Host parameter type' }),
           description: value.description,
           details: {
             default: {
@@ -594,8 +605,10 @@ export class Remodeler {
   }
   copyHeaders = (containerName: string, original?: Dictionary<Refable<OpenAPI.Header>>): Array<Header> => {
     const result = new Array<Header>();
-    for (const { key: headerName, value: header } of items(original)) {
-      result.push(this.copyHeader(headerName, this.dereference(header).instance));
+    if (original) {
+      for (const { key: headerName, value: header } of items(original)) {
+        result.push(this.copyHeader(headerName, this.dereference(header).instance));
+      }
     }
     return result;
   }
@@ -616,8 +629,10 @@ export class Remodeler {
 
   copyEncodings(original?: Dictionary<OpenAPI.Encoding>): Array<Encoding> {
     const result = new Array<Encoding>();
-    for (const { key: name, value: encoding } of items(original)) {
-      result.push(this.copyEncoding(name, this.dereference(encoding).instance));
+    if (original) {
+      for (const { key: name, value: encoding } of items(original)) {
+        result.push(this.copyEncoding(name, this.dereference(encoding).instance));
+      }
     }
     return result;
   }
@@ -672,7 +687,7 @@ export class Remodeler {
 
         this.modelState.warning(
           `The request body '${name}' has more than one possible content type specified (${keys(original.content).linq.toArray().join()}) - using '${rq.key}'`,
-          [`MultipleRequestTypesFound`],
+          ['MultipleRequestTypesFound'],
           /* todo: find source location for this node */
         );
       }
@@ -825,9 +840,4 @@ export class Remodeler {
     }
     return this.model;
   }
-}
-
-
-export function isBinaryStream(schema?: OpenAPI.Schema): boolean {
-  return !!schema && (schema.format === 'file' || schema.format === 'binary' || schema.format === 'stream');
 }

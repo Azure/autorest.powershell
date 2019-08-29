@@ -3,16 +3,58 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EnumDetails, ModelState, components } from '@microsoft.azure/autorest.codemodel-v3';
+import { EnumDetails, ModelState, components } from '@azure/autorest.codemodel-v3';
 
 import { clone, getExtensionProperties } from './common';
-import * as OpenAPI from '@microsoft.azure/openapi';
-import { getPascalIdentifier } from '@microsoft.azure/codegen';
+import * as OpenAPI from '@azure/openapi';
+import { getPascalIdentifier } from '@azure/codegen';
 
 interface XMSEnum {
   modelAsString?: boolean;
   values: [{ value: any; description?: string; name?: string }];
   name: string;
+}
+
+// ref: https://www.w3schools.com/charsets/ref_html_ascii.asp
+const specialCharacterMapping: { [character: string]: string } = {
+  '!': 'exclamation mark',
+  '"': 'quotation mark',
+  '#': 'number sign',
+  '$': 'dollar sign',
+  '%': 'percent sign',
+  '&': 'ampersand',
+  '\'': 'apostrophe',
+  '(': 'left parenthesis',
+  ')': 'right parenthesis',
+  '*': 'asterisk',
+  '+': 'plus sign',
+  ',': 'comma',
+  '-': 'hyphen',
+  '.': 'period',
+  '/': 'slash',
+  ':': 'colon',
+  ';': 'semicolon',
+  '<': 'less-than',
+  '=': 'equals-to',
+  '>': 'greater-than',
+  '?': 'question mark',
+  '@': 'at sign',
+  '[': 'left square bracket',
+  '\\': 'backslash',
+  ']': 'right square bracket',
+  '^': 'caret',
+  '_': 'underscore',
+  '`': 'grave accent',
+  '{': 'left curly brace',
+  '|': 'vertical bar',
+  '}': 'right curly brace',
+  '~': 'tilde'
+};
+
+export function getValidEnumValueName(originalString: string): string {
+  return !originalString.match(/[A-Za-z0-9]/g) ?
+    getPascalIdentifier(originalString.split('').map(x => specialCharacterMapping[x]).join(' '))
+    : originalString;
 }
 
 export function getName(defaultValue: string, original: OpenAPI.Extensions) {
@@ -65,50 +107,8 @@ export function getEnumDefinition(original: OpenAPI.Schema): EnumDetails | undef
   return undefined;
 }
 
-export function getValidEnumValueName(originalString: string): string {
-  return !originalString.match(/[A-Za-z0-9]/g) ?
-    getPascalIdentifier(originalString.split('').map(x => specialCharacterMapping[x]).join(' '))
-    : originalString;
-}
-
-// ref: https://www.w3schools.com/charsets/ref_html_ascii.asp
-const specialCharacterMapping: { [character: string]: string } = {
-  '!': 'exclamation mark',
-  '"': 'quotation mark',
-  '#': 'number sign',
-  '$': 'dollar sign',
-  '%': 'percent sign',
-  '&': 'ampersand',
-  '\'': 'apostrophe',
-  '(': 'left parenthesis',
-  ')': 'right parenthesis',
-  '*': 'asterisk',
-  '+': 'plus sign',
-  ',': 'comma',
-  '-': 'hyphen',
-  '.': 'period',
-  '/': 'slash',
-  ':': 'colon',
-  ';': 'semicolon',
-  '<': 'less-than',
-  '=': 'equals-to',
-  '>': 'greater-than',
-  '?': 'question mark',
-  '@': 'at sign',
-  '[': 'left square bracket',
-  '\\': 'backslash',
-  ']': 'right square bracket',
-  '^': 'caret',
-  '_': 'underscore',
-  '`': 'grave accent',
-  '{': 'left curly brace',
-  '|': 'vertical bar',
-  '}': 'right curly brace',
-  '~': 'tilde'
-}
-
 export function getKnownFormatType() {
-
+  // not implemented.
 }
 
 export function getDeprecationMessage(original: OpenAPI.Extensions) {
@@ -117,10 +117,10 @@ export function getDeprecationMessage(original: OpenAPI.Extensions) {
 }
 
 export function getConstantValue() {
-
+  // not implemented.
 }
 
-let counter = 0;
+const counter = 0;
 export function getOperationId(method: string, path: string, original: OpenAPI.HttpOperation, serviceTitle: string, state: ModelState<OpenAPI.Model>): string {
   if (original.operationId) {
     return original.operationId;
@@ -142,7 +142,7 @@ export function getOperationId(method: string, path: string, original: OpenAPI.H
   }
   state.path('components', 'paths', path, method).error(`NEED 'operationId' for '${method}' operation on path '${path}' `, ['Interpretations']);
 
-  return ``;
+  return '';
 }
 
 export function copyServer(server: OpenAPI.Server): components.Server {

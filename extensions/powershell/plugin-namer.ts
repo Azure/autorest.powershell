@@ -3,16 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@microsoft.azure/autorest.codemodel-v3';
-import { deconstruct, values, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@microsoft.azure/codegen';
-import * as linq from '@microsoft.azure/linq';
+import { Host, Channel } from '@azure/autorest-extension-base';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@azure/autorest.codemodel-v3';
+import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import * as linq from '@azure/linq';
 import { singularize } from './name-inferrer';
-import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
+import { IParameter } from '@azure/autorest.codemodel-v3/dist/code-model/components';
 type State = ModelState<codemodel.Model>;
 
-export async function namer(service: Host) {
-  return processCodeModel(tweakModel, service, 'psnamer');
+function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
+  return `${verb}-${subjectPrefix}${subject}`;
 }
 
 export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { subjectPrefix: string; subject: string } {
@@ -36,7 +37,7 @@ export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { s
   // what's left belongs to the prefix
   const finalPrefix = new Array<string>();
   for (const each of dedupedMerge) {
-    finalPrefix.push(each)
+    finalPrefix.push(each);
   }
 
   return { subjectPrefix: pascalCase(finalPrefix), subject: pascalCase(reversedFinalSubject.reverse()) };
@@ -75,7 +76,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         );
       }
 
-      const virtualParameters = [...allVirtualParameters(operation.details.csharp.virtualParameters)]
+      const virtualParameters = [...allVirtualParameters(operation.details.csharp.virtualParameters)];
       for (const parameter of virtualParameters) {
         let prevName = parameter.name;
         const otherParametersNames = values(virtualParameters)
@@ -96,7 +97,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         // now remove the subject from the beginning of the parameter
         // to reduce naming redundancy, but just for path parameters
         // e.g. get-vm -vmname ---> get-vm -name
-        if ((parameter.origin as any).in === ParameterLocation.Path) {
+        if ((<any>parameter.origin).in === ParameterLocation.Path) {
           const sanitizedName = removeProhibitedPrefix(
             parameter.name,
             operation.details.csharp.subject,
@@ -193,6 +194,6 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 }
 
 
-function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
-  return `${verb}-${subjectPrefix}${subject}`;
+export async function namer(service: Host) {
+  return processCodeModel(tweakModel, service, 'psnamer');
 }

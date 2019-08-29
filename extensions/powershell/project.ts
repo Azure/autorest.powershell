@@ -3,30 +3,31 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { deconstruct, pascalCase, Dictionary } from '@microsoft.azure/codegen';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '@microsoft.azure/autorest.csharp-v2';
+import { deconstruct, pascalCase, } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '@azure/autorest.csharp-v2';
 import { State } from './state';
-import { Project as codeDomProject } from '@microsoft.azure/codegen-csharp';
-import { SupportNamespace } from './namespaces/support'
-import { ModelExtensionsNamespace } from './namespaces/model-extensions'
-import { ModelCmdletNamespace } from './namespaces/model-cmdlet'
-import { ServiceNamespace } from './namespaces/service'
-import { CmdletNamespace } from './namespaces/cmdlet'
-import { Host, Channel } from '@microsoft.azure/autorest-extension-base';
-import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@microsoft.azure/autorest.codemodel-v3';
+import { Project as codeDomProject } from '@azure/codegen-csharp';
+import { SupportNamespace } from './namespaces/support';
+import { ModelExtensionsNamespace } from './namespaces/model-extensions';
+import { ModelCmdletNamespace } from './namespaces/model-cmdlet';
+import { ServiceNamespace } from './namespaces/service';
+import { CmdletNamespace } from './namespaces/cmdlet';
+import { Host, Channel } from '@azure/autorest-extension-base';
+import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure/autorest.codemodel-v3';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
 export interface Metadata {
-  authors: string,
-  owners: string,
-  requireLicenseAcceptance: boolean,
-  description: string,
-  copyright: string,
-  tags: string,
-  companyName: string,
-  licenseUri: string,
-  projectUri: string
+  authors: string;
+  owners: string;
+  requireLicenseAcceptance: boolean;
+  description: string;
+  copyright: string;
+  tags: string;
+  companyName: string;
+  licenseUri: string;
+  projectUri: string;
 }
 
 export class PSSwitch extends Boolean {
@@ -79,7 +80,7 @@ export class Project extends codeDomProject {
   public moduleFolder!: string;
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
-  public profiles!: string[];
+  public profiles!: Array<string>;
   public skipModelCmdlets!: boolean;
   public prefix!: string;
   public subjectPrefix!: string;
@@ -95,7 +96,7 @@ export class Project extends codeDomProject {
   public metadata!: Metadata;
   public state!: State;
   public helpLinkPrefix!: string;
-  get model() { return <codemodel.Model>this.state.model };
+  get model() { return <codemodel.Model>this.state.model; }
 
   constructor(protected service: Host, objectInitializer?: Partial<Project>) {
     super();

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Dictionary, items } from '@microsoft.azure/codegen';
-import { ImportDirective, Namespace } from '@microsoft.azure/codegen-csharp';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { ImportDirective, Namespace } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
@@ -91,7 +91,7 @@ export class ModelsNamespace extends Namespace {
         if (schema.details.csharp.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
           if (ec.length === 0) {
-            new EnumClass(td, state)
+            new EnumClass(td, state);
             // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
           }
         }

@@ -46,4 +46,34 @@
     "command-line.json": "jsonc",
     "common-versions.json": "jsonc"
   },
+  "eslint.autoFixOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": false
+    }
+  ],
+  "eslint.workingDirectories": [
+    {
+      "changeProcessCWD": true,
+      "directory": "./extensions/csharp-v2",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./extensions/incubator",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./extensions/powershell",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./extensions/remodeler",
+    }
+  ]
 }

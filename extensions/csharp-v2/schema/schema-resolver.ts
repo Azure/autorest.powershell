@@ -3,9 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { length } from '@microsoft.azure/codegen';
-import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@microsoft.azure/autorest.codemodel-v3';
+import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure/autorest.codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
 import { ArrayOf } from './array';
@@ -37,18 +35,19 @@ export class SchemaDefinitionResolver {
 
     // determine if we need a new model class for the type or just a known type object
     switch (schema.type) {
-      case JsonType.Array:
+      case JsonType.Array: {
         // can be recursive!
         const elementType = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
         return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
+      }
 
-      case JsonType.Object:
+      case JsonType.Object: {
         const result = this.cache.get(schema.details.csharp.fullname || '');
         if (result) {
           return result;
         }
         return this.add(schema, new ObjectImplementation(schema));
-
+      }
       case JsonType.String:
         switch (schema.format) {
           case StringFormat.Base64Url:

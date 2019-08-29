@@ -4,19 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties, HttpMethod, schema } from '@microsoft.azure/autorest.codemodel-v3';
-import { keys, length, values } from '@microsoft.azure/codegen';
+import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties, HttpMethod, schema } from '@azure/autorest.codemodel-v3';
+import { keys, length, values } from '@azure/linq';
 
-import { Channel, Host } from '@microsoft.azure/autorest-extension-base';
+import { Channel, Host } from '@azure/autorest-extension-base';
 type State = ModelState<codemodel.Model>;
 
 const xmsPageable = 'x-ms-pageable';
-// Azure version -
-// Additional tweaks the code model to adjust things so that the code will generate better.
-
-export async function tweakModelAzurePlugin(service: Host) {
-  return processCodeModel(tweakModel, service, 'tweakcodemodel');
-}
 
 async function tweakModel(state: State): Promise<codemodel.Model> {
   const model = state.model;
@@ -34,7 +28,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
     if (operation.extensions[xmsPageable]) {
       // it's marked pagable.
       operation.details.default.pageable = {
-        responseType: `pageable`,
+        responseType: 'pageable',
         nextLinkName: operation.extensions[xmsPageable].nextLinkName || undefined,
         itemName: operation.extensions[xmsPageable].itemName || 'value',
         operationName: operation.extensions[xmsPageable].operationName || `${operation.operationId}Next`,
@@ -52,7 +46,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           // is this just an array response?
           if (schema.type === JsonType.Array) {
             operation.details.default.pageable = {
-              responseType: `array`,
+              responseType: 'array',
             };
             continue;
           }
@@ -68,7 +62,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 if (property.schema.type === JsonType.Array) {
                   // nested array!
                   operation.details.default.pageable = {
-                    responseType: `nested-array`,
+                    responseType: 'nested-array',
                     itemName: propertyName,
                   };
                 }
@@ -85,7 +79,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                   if (property.schema.type === JsonType.Array) {
                     // nested array!
                     operation.details.default.pageable = {
-                      responseType: `nested-array`,
+                      responseType: 'nested-array',
                       itemName: propertyName,
                       nextLinkName: 'nextLink'
                     };
@@ -171,4 +165,11 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
   }
 
   return model;
+}
+
+// Azure version -
+// Additional tweaks the code model to adjust things so that the code will generate better.
+
+export async function tweakModelAzurePlugin(service: Host) {
+  return processCodeModel(tweakModel, service, 'tweakcodemodel');
 }

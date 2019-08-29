@@ -2,32 +2,34 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from "@microsoft.azure/autorest.codemodel-v3"
-import { items, values, EOL, Initializer, } from '@microsoft.azure/codegen';
-import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@microsoft.azure/codegen-csharp';
-import { Class } from '@microsoft.azure/codegen-csharp';
-import { Constructor } from '@microsoft.azure/codegen-csharp';
-import { IsDeclaration, toExpression } from '@microsoft.azure/codegen-csharp';
-import { Method, PartialMethod } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from '@azure/autorest.codemodel-v3';
+import { Initializer, EOL } from '@azure/codegen';
+import { items, values } from '@azure/linq';
 
-import { Parameter } from '@microsoft.azure/codegen-csharp';
-import { ParameterModifier } from '@microsoft.azure/codegen-csharp';
-import { TerminalCase } from '@microsoft.azure/codegen-csharp';
-import { If, Not, ForEach } from '@microsoft.azure/codegen-csharp';
-import { Return } from '@microsoft.azure/codegen-csharp';
-import { Statements } from '@microsoft.azure/codegen-csharp';
-import { Switch } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
+import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@azure/codegen-csharp';
+import { Class } from '@azure/codegen-csharp';
+import { Constructor } from '@azure/codegen-csharp';
+import { IsDeclaration, toExpression } from '@azure/codegen-csharp';
+import { Method, PartialMethod } from '@azure/codegen-csharp';
+
+import { Parameter } from '@azure/codegen-csharp';
+import { ParameterModifier } from '@azure/codegen-csharp';
+import { TerminalCase } from '@azure/codegen-csharp';
+import { If, Not, ForEach } from '@azure/codegen-csharp';
+import { Return } from '@azure/codegen-csharp';
+import { Statements } from '@azure/codegen-csharp';
+import { Switch } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 
-import { dotnet } from '@microsoft.azure/codegen-csharp';
+import { dotnet } from '@azure/codegen-csharp';
 import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
-import { ObjectImplementation } from "../schema/object";
-import { Schema } from "../code-model";
+import { ObjectImplementation } from '../schema/object';
+import { Schema } from '../code-model';
 
 export class SerializationPartialClass extends Initializer {
   constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializationPartialClass>) {
@@ -52,15 +54,15 @@ export class SerializationPartialClass extends Initializer {
   protected returnNowParameter = new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' });
 
   protected get typeCref() {
-    return `<see cref="${this.serializationType.declaration}" />`
+    return `<see cref="${this.serializationType.declaration}" />`;
   }
 
   protected get thisCref() {
-    return `<see cref="${this.targetClass.declaration}" />`
+    return `<see cref="${this.targetClass.declaration}" />`;
   }
 
   protected get interfaceCref() {
-    return `<see cref="${this.targetInterface.declaration}" />`
+    return `<see cref="${this.targetInterface.declaration}" />`;
   }
 
 }
@@ -93,13 +95,13 @@ export class DeserializerPartialClass extends SerializationPartialClass {
       yield returnNow.declarationStatement;
 
       yield `${$this.beforeDeserialize.name}(${$this.contentParameter}, ref ${returnNow.value});`;
-      yield If(returnNow, `return;`);
+      yield If(returnNow, 'return;');
 
       yield $this.deserializeStatements;
 
       if ($this.hasAadditionalProperties($this.schema)) {
         // this type has an additional properties dictionary
-        yield `// this type is a dictionary; copy elements from source to here.`
+        yield '// this type is a dictionary; copy elements from source to here.';
         yield `CopyFrom(${$this.contentParameter.value});`;
       }
 
@@ -124,7 +126,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
     const $this = this;
 
     return function* () {
-      yield '// actually deserialize '
+      yield '// actually deserialize ';
 
       for (const virtualProperty of $this.allVirtualProperties) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
@@ -134,9 +136,9 @@ export class DeserializerPartialClass extends SerializationPartialClass {
         const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
 
-        yield `${t}.${virtualProperty.name} = ${tt} ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`
+        yield `${t}.${virtualProperty.name} = ${tt} ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`;
       }
-    }
+    };
   }
 
   protected addDeserializerMethod() {

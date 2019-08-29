@@ -8,7 +8,7 @@ import { MdFile } from '../file-formats/md-file';
 
 export async function generateReadme(project: Project) {
   const md = new MdFile(await project.state.readFile(project.readme) || '');
-  let azureInfo = ''
+  let azureInfo = '';
   if (project.azure) {
     azureInfo = `
 ## Module Requirements
@@ -16,7 +16,7 @@ export async function generateReadme(project: Project) {
 
 ## Authentication
 AutoRest does not generate authentication code for the module. Authentication is handled via Az.Accounts by altering the HTTP payload before it is sent.
-`
+`;
   }
 
   md.prepend('Generated', `# ${project.moduleName}

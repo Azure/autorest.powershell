@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Primitive } from './primitive';
 
 export class Boolean extends Primitive {
-  isXmlAttribute: boolean = false;
+  isXmlAttribute = false;
   jsonType = ClientRuntime.JsonBoolean;
 
   constructor(schema: Schema, public isRequired: boolean) {
@@ -21,6 +21,6 @@ export class Boolean extends Primitive {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 }

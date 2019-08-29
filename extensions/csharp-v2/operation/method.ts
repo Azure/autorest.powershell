@@ -3,38 +3,75 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NewResponse, ParameterLocation } from '@microsoft.azure/autorest.codemodel-v3';
-import { items, length, values } from '@microsoft.azure/codegen';
-import { EOL } from '@microsoft.azure/codegen';
-import { Access, Modifier } from '@microsoft.azure/codegen-csharp';
-import { Class } from '@microsoft.azure/codegen-csharp';
+import { NewResponse, ParameterLocation } from '@azure/autorest.codemodel-v3';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { EOL } from '@azure/codegen';
+import { Access, Modifier } from '@azure/codegen-csharp';
+import { Class } from '@azure/codegen-csharp';
 
-import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { Method } from '@microsoft.azure/codegen-csharp';
-import { Parameter } from '@microsoft.azure/codegen-csharp';
-import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '@microsoft.azure/codegen-csharp';
-import { Finally } from '@microsoft.azure/codegen-csharp';
-import { If, While } from '@microsoft.azure/codegen-csharp';
-import { Return } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements, Statement, Statements } from '@microsoft.azure/codegen-csharp';
-import { Switch } from '@microsoft.azure/codegen-csharp';
-import { Try } from '@microsoft.azure/codegen-csharp';
-import { Using } from '@microsoft.azure/codegen-csharp';
-import { Local, LocalVariable, Variable } from '@microsoft.azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@azure/codegen-csharp';
+import { Method } from '@azure/codegen-csharp';
+import { Parameter } from '@azure/codegen-csharp';
+import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '@azure/codegen-csharp';
+import { Finally } from '@azure/codegen-csharp';
+import { If, While } from '@azure/codegen-csharp';
+import { Return } from '@azure/codegen-csharp';
+import { OneOrMoreStatements, Statement, Statements } from '@azure/codegen-csharp';
+import { Switch } from '@azure/codegen-csharp';
+import { Try } from '@azure/codegen-csharp';
+import { Using } from '@azure/codegen-csharp';
+import { Local, LocalVariable, Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
-import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { ClassType, dotnet, System } from '@microsoft.azure/codegen-csharp';
-import { Ternery } from '@microsoft.azure/codegen-csharp';
+import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure/autorest.codemodel-v3';
+import { ClassType, dotnet, System } from '@azure/codegen-csharp';
+import { Ternery } from '@azure/codegen-csharp';
 
 
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
   const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
   return pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
+
+
+export class EventListener {
+  constructor(protected expression: Expression, protected emitSignals: boolean) {
+  }
+
+  *signalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    if (this.emitSignals) {
+      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      yield `await ${this.expression.value}.Signal(${eventName}${params});`;
+    }
+  }
+  *syncSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    if (this.emitSignals) {
+      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      yield `${this.expression.value}.Signal(${eventName}${params}).Wait();`;
+    }
+  }
+  *signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    if (this.emitSignals) {
+      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+    } else {
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()}; }`;
+    }
+  }
+  *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
+    if (this.emitSignals) {
+      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+    } else {
+      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()} }`;
+    }
+
+  }
+}
+
 
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
@@ -54,7 +91,7 @@ export class OperationMethod extends Method {
     const $this = this;
 
     this.callName = `${operation.details.csharp.name}_Call`;
-    this.push(Using(`NoSynchronizationContext`, ``));
+    this.push(Using('NoSynchronizationContext', ''));
 
     // add parameters
     this.methodParameters = [];
@@ -64,7 +101,7 @@ export class OperationMethod extends Method {
       this.addParameter(identity);
     }
 
-    for (var index = 0; index < this.operation.parameters.length; index++) {
+    for (let index = 0; index < this.operation.parameters.length; index++) {
       const value = this.operation.parameters[index];
 
       const p = new OperationParameter(this, value, this.state.path('parameters', index));
@@ -79,8 +116,8 @@ export class OperationMethod extends Method {
         this.addParameter(p);
       } else {
         this.add(function* () {
-          yield ``;
-        })
+          yield '';
+        });
       }
       this.methodParameters.push(p);
     }
@@ -157,30 +194,28 @@ export class OperationMethod extends Method {
 
       yield EOL;
 
-      let urlV: LocalVariable;
-
       if ($this.viaIdentity) {
-        yield `// verify that Identity format is an exact match for uri`;
+        yield '// verify that Identity format is an exact match for uri';
         yield EOL;
 
-        const match = Local("_match", `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
+        const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
         yield match.declarationStatement;
         yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${$this.operation.path}'");`);
         yield EOL;
-        yield `// replace URI parameters with values from identity`
+        yield '// replace URI parameters with values from identity';
         for (const pp of pathParams) {
-          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`
+          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`;
         }
       }
 
-      yield `// construct URL`;
-      urlV = new LocalVariable('_url', dotnet.Var, {
+      yield '// construct URL';
+      const urlV = new LocalVariable('_url', dotnet.Var, {
         initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.name, KnownMediaType.QueryParameter)}`, `
         + "&"`
-        )}
+)}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
       });
       yield urlV.declarationStatement;
@@ -190,13 +225,13 @@ export class OperationMethod extends Method {
       yield eventListener.signal(ClientRuntime.Events.URLCreated, urlV.value);
       yield EOL;
 
-      yield `// generate request object `;
+      yield '// generate request object ';
       yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${$this.operation.method.capitalize()}, ${urlV.value}`)};`;
       yield eventListener.signal(ClientRuntime.Events.RequestCreated, urlV.value);
       yield EOL;
 
       if (headerParams.length > 0) {
-        yield `// add headers parameters`;
+        yield '// add headers parameters';
         for (const hp of headerParams) {
           if (hp.param.name === 'Content-Length') {
             // content length is set when the request body is set
@@ -209,13 +244,13 @@ export class OperationMethod extends Method {
       yield eventListener.signal(ClientRuntime.Events.HeaderParametersAdded, urlV.value);
 
       if (bp) {
-        yield `// set body content`;
+        yield '// set body content';
         yield `request.Content = ${bp.serializeToContent(bp.mediaType, ClientRuntime.SerializationMode.None)};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet, urlV.value);
       }
 
-      yield `// make the call `;
+      yield '// make the call ';
     });
   }
 
@@ -229,7 +264,7 @@ export class OperationMethod extends Method {
     this.add(`await this.${this.callName}(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
 
     // remove constant parameters and make them locals instead.
-    this.insert(`// Constant Parameters`);
+    this.insert('// Constant Parameters');
     for (let i = this.parameters.length; i--; i < 0) {
       const p = this.parameters[i];
       if (p && p.defaultInitializer) {
@@ -240,43 +275,8 @@ export class OperationMethod extends Method {
   }
 }
 
-export class EventListener {
-  constructor(protected expression: Expression, protected emitSignals: boolean) {
-  }
-
-  *signalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
-    if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
-      yield `await ${this.expression.value}.Signal(${eventName}${params});`;
-    }
-  }
-  *syncSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
-    if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
-      yield `${this.expression.value}.Signal(${eventName}${params}).Wait();`;
-    }
-  }
-  *signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
-    if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
-      yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
-    } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()}; }`;
-    }
-  }
-  *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
-    if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : ``;
-      yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
-    } else {
-      yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()} }`;
-    }
-
-  }
-}
-
 export class CallMethod extends Method {
-  public returnNull: boolean = false;
+  public returnNull = false;
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Call`, System.Threading.Tasks.Task());
     this.description = `Actual wire call for <see cref="${opMethod.operation.details.csharp.name}" /> method.`;
@@ -285,12 +285,12 @@ export class CallMethod extends Method {
     this.apply(objectInitializer);
     this.access = Access.Internal;
     this.async = Modifier.Async;
-    this.push(Using(`NoSynchronizationContext`, ``));
+    this.push(Using('NoSynchronizationContext', ''));
 
     const $this = this;
     // add parameters
     // request, listener, sender
-    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: `the prepared HttpRequestMessage to send.` }));
+    const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: 'the prepared HttpRequestMessage to send.' }));
     opMethod.callbacks.forEach(each => this.addParameter(each));
 
     this.addParameter(opMethod.contextParameter);
@@ -340,7 +340,7 @@ export class CallMethod extends Method {
         const EOL = 'EOL';
         // LRO processing (if appropriate)
         if ($this.opMethod.operation.details.csharp.lro) {
-          yield `// this operation supports x-ms-long-running-operation`;
+          yield '// this operation supports x-ms-long-running-operation';
           const originalUri = Local('_originalUri', new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`));
           yield originalUri;
 
@@ -356,7 +356,7 @@ export class CallMethod extends Method {
 
             case 'location':
               // perform a final GET on the uri in Location header
-              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
+              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
               yield finalUri;
               break;
 
@@ -366,7 +366,7 @@ export class CallMethod extends Method {
               switch ($this.opMethod.operation.method.toLowerCase()) {
                 case 'post':
                 case 'delete':
-                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
+                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
                   yield finalUri;
                   break;
                 case 'patch':
@@ -382,7 +382,7 @@ export class CallMethod extends Method {
               switch ($this.opMethod.operation.method.toLowerCase()) {
                 case 'post':
                 case 'delete':
-                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
+                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
                   yield finalUri;
                   break;
                 case 'patch':
@@ -397,25 +397,24 @@ export class CallMethod extends Method {
           }
 
 
-
           yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
-            yield `// get the delay before polling. (default to 30 seconds if not present)`;
-            yield `int delay = ${response.value}.Headers.RetryAfter?.Delta?.Seconds ?? 30;`
+            yield '// get the delay before polling. (default to 30 seconds if not present)';
+            yield `int delay = ${response.value}.Headers.RetryAfter?.Delta?.Seconds ?? 30;`;
             // yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`Retry-After`)).value}, out int delay)`, `delay = 30;`);
 
-            yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, `$"Delaying {delay} seconds before polling."`, response.value);
+            yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, '$"Delaying {delay} seconds before polling."', response.value);
 
             yield EOL;
-            yield `// start the delay timer (we'll await later...)`;
+            yield '// start the delay timer (we\'ll await later...)';
             const waiting = Local('waiting', new LiteralExpression(`${System.Threading.Tasks.Task()}.Delay(delay * 1000, ${$this.opMethod.contextParameter}.Token )`));
             yield waiting;
 
             yield EOL;
-            yield `// while we wait, let's grab the headers and get ready to poll. `;
-            const asyncOperation = Local('asyncOperation', response.invokeMethod('GetFirstHeader', new StringExpression(`Azure-AsyncOperation`)));
+            yield '// while we wait, let\'s grab the headers and get ready to poll. ';
+            const asyncOperation = Local('asyncOperation', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
             yield asyncOperation;
-            const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression(`Location`)));
+            const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
             yield location;
 
             const uriLocal = Local('_uri', Ternery(
@@ -429,33 +428,33 @@ export class CallMethod extends Method {
             yield `${reqParameter.use} = ${reqParameter.use}.CloneAndDispose(${System.Uri.new(uriLocal)}, ${ClientRuntime.Method.Get});`;
 
             yield EOL;
-            yield `// and let's look at the current response body and see if we have some information we can give back to the listener`;
+            yield '// and let\'s look at the current response body and see if we have some information we can give back to the listener';
             const content = Local('content', new LiteralExpression(`${response.value}.Content.ReadAsStringAsync()`));
             yield content;
 
-            yield `await waiting;`;
+            yield 'await waiting;';
 
             yield EOL;
-            yield `// check for cancellation`;
+            yield '// check for cancellation';
             yield `if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }`;
 
             yield eventListener.signal(ClientRuntime.Events.Polling, `$"Polling {${uriLocal}}."`, response.value);
 
             yield EOL;
-            yield `// drop the old response`;
+            yield '// drop the old response';
             yield `${response.value}?.Dispose();`;
 
             yield EOL;
-            yield `// make the polling call`;
+            yield '// make the polling call';
             yield `${response.value} = await ${opMethod.senderParameter}.SendAsync(${reqParameter.value}, ${opMethod.contextParameter});`;
 
             yield EOL;
             yield `
-if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.IsNullOrEmpty(`asyncOperation`)})
+if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.IsNullOrEmpty('asyncOperation')})
 {
     try {
         // we have a 200, and a should have a provisioning state.
-        if( ${ClientRuntime.JsonNode.Parse(toExpression(`await _response.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
+        if( ${ClientRuntime.JsonNode.Parse(toExpression('await _response.Content.ReadAsStringAsync()'))} is ${ClientRuntime.JsonObject} json)
         {
             var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState");
             await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", _response); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
@@ -472,7 +471,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
             yield EOL;
             yield '// check for terminal status code';
             yield If(new LiteralExpression(`${response.value}.StatusCode != ${System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${System.Net.HttpStatusCode[202].value} `), function* () {
-              yield `// we're done polling, do a request on final target?`;
+              yield '// we\'re done polling, do a request on final target?';
 
               switch (fsv) {
                 case 'original-uri':
@@ -496,11 +495,10 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
       });
 
 
-
       yield Finally(function* () {
         yield '// finally statements';
         yield eventListener.signalNoCheck(ClientRuntime.Events.Finally, 'request', '_response');
-        yield `_response?.Dispose();`;
+        yield '_response?.Dispose();';
         yield `${reqParameter.use}?.Dispose();`;
       });
 
@@ -517,11 +515,11 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
     yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(${System.Uri.new(finalLocation)}, ${ClientRuntime.Method.Get})`);
 
     yield EOL;
-    yield `// drop the old response`;
+    yield '// drop the old response';
     yield `${response.value}?.Dispose();`;
 
     yield EOL;
-    yield `// make the final call`;
+    yield '// make the final call';
     yield response.assign(`await ${this.opMethod.senderParameter}.SendAsync(${valueOf(reqParameter)},  ${this.opMethod.contextParameter})`);
 
     // make sure we're not polling anymore.
@@ -530,7 +528,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
 
   private *responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<NewResponse>, eventListener: EventListener) {
     if (length(responses) > 1) {
-      yield Switch(`_contentType`, function* () {
+      yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
           const mimetype = eachResponse.mimeTypes.length > 0 ? eachResponse.mimeTypes[0] : '';
           const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === eachResponse.details.csharp.name);
@@ -543,7 +541,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
               if (count === 0) {
                 yield Case(new StringExpression(mediaType).toString(), $this.responseHandler(mimetype, eachResponse, callbackParameter));
               } else {
-                yield TerminalCase(new StringExpression(mediaType).toString(), ``);
+                yield TerminalCase(new StringExpression(mediaType).toString(), '');
               }
             }
           }
@@ -564,7 +562,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
 
     if (callbackParameter.responseType) {
       // hande the body response
-      let r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(`_response`), toExpression('null'));
+      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression('_response'), toExpression('null'));
       if (r) {
 
         callbackParameters.push(r);
@@ -578,7 +576,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
 
     if (callbackParameter.headerType) {
       // header model deserialization...
-      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression(`_response`), toExpression('null'));
+      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression('_response'), toExpression('null'));
       if (r) {
         callbackParameters.push(r);
       }
@@ -601,7 +599,7 @@ export class ValidationMethod extends Method {
     this.returnsDescription = opMethod.returnsDescription;
     this.access = Access.Internal;
     this.async = Modifier.Async;
-    this.push(Using(`NoSynchronizationContext`, ``));
+    this.push(Using('NoSynchronizationContext', ''));
 
     // add the method parameters
     for (const parameter of opMethod.methodParameters) {

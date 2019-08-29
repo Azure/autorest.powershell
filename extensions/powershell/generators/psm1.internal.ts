@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host } from '@azure/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
-import { getProfileExportScript } from './psm1'
+import { getProfileExportScript } from './psm1';
 
 export async function generatePsm1Internal(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1Internal) || '');

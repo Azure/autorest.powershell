@@ -1,15 +1,17 @@
+/* eslint-disable no-useless-escape */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Project } from '../project';
-import { Dictionary, values, serialize, items, indent, setIndentation, applyOverrides, pascalCase } from '@microsoft.azure/codegen';
+import { serialize, indent, setIndentation, applyOverrides, pascalCase } from '@azure/codegen';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
 import { State } from '../state';
 
-import { dotnet, System } from '@microsoft.azure/codegen-csharp';
+import { dotnet, System } from '@azure/codegen-csharp';
 import { PSScriptFile } from '../file-formats/psscript-file';
-import { ClientRuntime } from '@microsoft.azure/autorest.csharp-v2';
+import { ClientRuntime } from '@azure/autorest.csharp-v2';
 
 interface ScenarioParameter extends Dictionary<any> {
   type: string;
@@ -25,7 +27,7 @@ interface ScenarioCommand extends Dictionary<any> {
   output?: string;
   link?: string;
   writeable?: boolean;
-  "as-job"?: boolean;
+  'as-job'?: boolean;
 
   parameters?: Dictionary<ScenarioParameter>;
 }
@@ -40,10 +42,10 @@ function getType(type: string) {
         return 'System.Int';
       case 'boolean':
       case 'bool':
-      case "switch":
-        return "System.Management.Automation.SwitchParameter";
-      case "object":
-        return "System.Object";
+      case 'switch':
+        return 'System.Management.Automation.SwitchParameter';
+      case 'object':
+        return 'System.Object';
     }
   }
   return type;
@@ -61,7 +63,7 @@ export async function generateScriptCmdlets(project: Project) {
       continue;
     }
 
-    const verbMap = await project.state.getValue('verb-mapping', new Dictionary<string>());;
+    const verbMap = await project.state.getValue('verb-mapping', new Dictionary<string>());
     command.verb = verbMap[command.action] || command.action.capitalize();
     command.variant = command.variant ? `_${pascalCase(command.variant)}` : '';
     command.subject = pascalCase(command.subject);
@@ -77,19 +79,19 @@ export async function generateScriptCmdlets(project: Project) {
       script.add(function* () {
         yield `<#
 .Synopsis
-${command.description || ""}
+${command.description || ''}
 .Description
-${command.description || ""}
+${command.description || ''}
 .Link
-${command.link || ""}
+${command.link || ''}
 #>`;
 
-        yield `function ${command.verb}-${command.subject}${command.variant} {`
+        yield `function ${command.verb}-${command.subject}${command.variant} {`;
         if (command.output) {
           yield `[OutputType('${getType(command.output)}')]`;
         }
-        yield command.writeable ? `[CmdletBinding(PositionalBinding=$false, SupportsShouldProcess, ConfirmImpact='Medium')]` : `[CmdletBinding(PositionalBinding=$false)]`
-        yield `param(`;
+        yield command.writeable ? '[CmdletBinding(PositionalBinding=$false, SupportsShouldProcess, ConfirmImpact=\'Medium\')]' : '[CmdletBinding(PositionalBinding=$false)]';
+        yield 'param(';
 
         if (command.parameters) {
           for (const { key: name, value: parameter } of items(command.parameters)) {
@@ -99,7 +101,7 @@ ${command.link || ""}
               yield indent(`# ${parameter.description}`);
             }
             yield indent(`$\{${pascalCase(name)}\},`);
-            yield ``;
+            yield '';
 
           }
         }
@@ -112,7 +114,7 @@ ${command.link || ""}
 [System.Management.Automation.PSObject]
 # The credentials, account, tenant, and subscription used for communication with Azure.
 $\{DefaultProfile\},`);
-          yield ``;
+          yield '';
         }
 
         if (command['as-job']) {
@@ -121,7 +123,7 @@ $\{DefaultProfile\},`);
 [System.Management.Automation.SwitchParameter]
 # Run the command as a job
 $\{AsJob\},`);
-          yield ``;
+          yield '';
         }
 
 
@@ -160,7 +162,7 @@ $\{ProxyCredential\},
 $\{ProxyUseDefaultCredentials\}
 `);
 
-        yield `)`;
+        yield ')';
         yield indent(`process {
   try {
     # do something with your custom parameters
@@ -181,7 +183,7 @@ $\{ProxyUseDefaultCredentials\}
     throw
   }
 }`);
-        yield `}`
+        yield '}';
 
       });
 

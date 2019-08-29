@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState } from '@microsoft.azure/autorest.codemodel-v3';
+import { ModelState } from '@azure/autorest.codemodel-v3';
 import { Model } from './code-model';
-import { Host, JsonPath } from '@microsoft.azure/autorest-extension-base';
+import { Host, JsonPath } from '@azure/autorest-extension-base';
 
 import { Project } from './project';
-import { Dictionary } from '@microsoft.azure/codegen';
+import { Dictionary } from '@azure/linq';
 
 export class State extends ModelState<Model> {
   project!: Project;

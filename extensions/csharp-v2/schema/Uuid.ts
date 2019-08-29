@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nameof } from '@microsoft.azure/codegen';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { nameof } from '@azure/codegen';
+import { Variable } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
 import { String } from './string';
 
@@ -14,7 +14,7 @@ export class Uuid extends String {
   }
 
   get declaration(): string {
-    return `string`;
+    return 'string';
   }
   public validatePresence(eventListener: Variable, property: Variable): string {
     return this.isRequired ? `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim() : '';

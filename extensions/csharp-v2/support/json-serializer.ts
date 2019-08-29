@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Modifier } from '@microsoft.azure/codegen-csharp';
-import { Class } from '@microsoft.azure/codegen-csharp';
-import { Method } from '@microsoft.azure/codegen-csharp';
+import { Modifier } from '@azure/codegen-csharp';
+import { Class } from '@azure/codegen-csharp';
+import { Method } from '@azure/codegen-csharp';
 
-import { items } from '@microsoft.azure/codegen';
-import { dotnet } from '@microsoft.azure/codegen-csharp';
-import { Namespace } from '@microsoft.azure/codegen-csharp';
-import { Parameter } from '@microsoft.azure/codegen-csharp';
+import { items } from '@azure/linq';
+import { dotnet } from '@azure/codegen-csharp';
+import { Namespace } from '@azure/codegen-csharp';
+import { Parameter } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 
@@ -26,7 +26,7 @@ export class JsonSerializerClass extends Class {
     const tojson = this.addMethod(new Method('ToJson', ClientRuntime.JsonNode, { static: Modifier.Static }));
     const objP = tojson.addParameter(new Parameter('obj', dotnet.ThisObject));
     const container = tojson.addParameter(new Parameter('container', ClientRuntime.JsonObject, { defaultInitializer: dotnet.Null }));
-    tojson.add(`return null;`);
+    tojson.add('return null;');
 
     const schemas = state.model.schemas;
 

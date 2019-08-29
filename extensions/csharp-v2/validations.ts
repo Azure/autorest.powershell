@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, Schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { JsonType, Schema } from '@azure/autorest.codemodel-v3';
 import { State } from './generator';
 import * as message from './messages';
 
@@ -35,7 +35,7 @@ export function hasXmsEnum(schema: Schema, state: State): boolean {
 
 export function arrayMissingItems(schema: Schema, state: State): boolean {
   if (schema.type === JsonType.Array && !schema.items) {
-    state.error(`Array schema missing items type`, message.ArrayMissingItems);
+    state.error('Array schema missing items type', message.ArrayMissingItems);
     return true;
   }
   return false;

@@ -5,10 +5,10 @@
 
 import { Schema } from '../code-model';
 import { String } from './string';
-import { dotnet, toExpression } from '@microsoft.azure/codegen-csharp';
+import { dotnet, toExpression } from '@azure/codegen-csharp';
 
 export class EnumImplementation extends String {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   get isNullable(): boolean {
     return !this.isRequired;
   }

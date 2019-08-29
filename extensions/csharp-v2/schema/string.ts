@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, nameof } from '@microsoft.azure/codegen';
-import { System } from '@microsoft.azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@microsoft.azure/codegen-csharp';
-import { If } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { camelCase, deconstruct, nameof } from '@azure/codegen';
+import { System } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure/codegen-csharp';
+import { If } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';
@@ -17,13 +17,13 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 /** A ETD for the c# string type. */
 export class String implements EnhancedTypeDeclaration {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
 
   get defaultOfType() {
-    return toExpression(`null`);
+    return toExpression('null');
   }
   get convertObjectMethod() {
-    return `global::System.Convert.ToString`;
+    return 'global::System.Convert.ToString';
   }
 
   get isNullable(): boolean {
@@ -31,7 +31,7 @@ export class String implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {

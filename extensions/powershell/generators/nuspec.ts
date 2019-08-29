@@ -3,9 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { Host } from '@azure/autorest-extension-base';
 import { Project } from '../project';
 
+function removeCd(path: string): string {
+  return path.startsWith('./') ? path.replace('./', '') : path;
+}
 export async function generateNuspec(project: Project) {
   const dependencies = project.azure ? `
     <dependencies>
@@ -42,6 +45,3 @@ export async function generateNuspec(project: Project) {
 </package>`, undefined, 'source-file-other');
 }
 
-function removeCd(path: string): string {
-  return path.startsWith('./') ? path.replace('./', '') : path;
-}

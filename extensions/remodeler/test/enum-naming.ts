@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { suite, test } from "mocha-typescript";
-import * as assert from "assert";
-import { getValidEnumValueName } from "../interpretations";
+import { suite, test } from 'mocha-typescript';
+import * as assert from 'assert';
+import { getValidEnumValueName } from '../interpretations';
 
 @suite class TestEnumNameInterpretation {
 
-  @test async "get a valid enum name"() {
+  @test async 'get a valid enum name'() {
     const originalName1 = '*';
     const expectedName1 = 'Asterisk';
 

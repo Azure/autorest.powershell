@@ -3,17 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@microsoft.azure/autorest.codemodel-v3';
-import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '@microsoft.azure/codegen-csharp';
-import { OneOrMoreStatements } from '@microsoft.azure/codegen-csharp';
-import { Variable } from '@microsoft.azure/codegen-csharp';
+import { KnownMediaType } from '@azure/autorest.codemodel-v3';
+import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '@azure/codegen-csharp';
+import { OneOrMoreStatements } from '@azure/codegen-csharp';
+import { Variable } from '@azure/codegen-csharp';
 import { Schema } from '../code-model';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { Primitive } from './primitive';
 import { ClientRuntime } from '../clientruntime';
 
 export class Duration extends Primitive {
-  public isXmlAttribute: boolean = false;
+  public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
 
   constructor(public schema: Schema, public isRequired: boolean) {
@@ -21,7 +20,7 @@ export class Duration extends Primitive {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString'
+    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get declaration(): string {
@@ -33,7 +32,7 @@ export class Duration extends Primitive {
   }
 
   get convertObjectMethod() {
-    return `(v) => v is global::System.TimeSpan _v ? _v : global::System.Xml.XmlConvert.ToTimeSpan( v.ToString() )`
+    return '(v) => v is global::System.TimeSpan _v ? _v : global::System.Xml.XmlConvert.ToTimeSpan( v.ToString() )';
   }
 
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
@@ -64,9 +63,9 @@ export class Duration extends Primitive {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
   public validatePresence(eventListener: Variable, property: Variable): string {
-    return ``;
+    return '';
   }
 }

@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { items, values, Dictionary } from '@microsoft.azure/codegen';
-import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@microsoft.azure/codegen-csharp';
-import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '@microsoft.azure/autorest.csharp-v2';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@azure/codegen-csharp';
+import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '@azure/autorest.csharp-v2';
 import { State } from '../state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
 import { join } from 'path';
@@ -23,8 +23,8 @@ class ApiVersionModelExtensionsNamespace extends Namespace {
 
 export class ModelExtensionsNamespace extends Namespace {
   CreateReferenceType(): Class {
-    const rt = new Class(this, "ReferenceType");
-    rt.add(new Property("Id", dotnet.String, { setAccess: Access.Internal }));
+    const rt = new Class(this, 'ReferenceType');
+    rt.add(new Property('Id', dotnet.String, { setAccess: Access.Internal }));
     return rt;
   }
   private subNamespaces = new Dictionary<Namespace>();
@@ -41,7 +41,7 @@ export class ModelExtensionsNamespace extends Namespace {
     this.subNamespaces[this.fullName] = this;
 
     const $this = this;
-    const resolver = (s: Schema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state)
+    const resolver = (s: Schema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state);
 
     // Add typeconverters to model classes (partial)
     for (const schema of values(schemas)) {
@@ -93,7 +93,7 @@ export class ModelExtensionsNamespace extends Namespace {
             fileName: `${interfaceName}.PowerShell` // make sure that the interface ends up in the same file as the class.
           });
           referenceInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
-          referenceInterface.add(new InterfaceProperty("Id", dotnet.String, { setAccess: Access.Internal }));
+          referenceInterface.add(new InterfaceProperty('Id', dotnet.String, { setAccess: Access.Internal }));
           model.interfaces.push(referenceInterface);
 
           // add it to the generic reference type.
@@ -107,12 +107,12 @@ export class ModelExtensionsNamespace extends Namespace {
           static: Modifier.Static,
           parameters: [new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this model.' })],
           description: `Creates a new instance of <see cref="${td.schema.details.csharp.name}" />, deserializing the content from a json string.`,
-          returnsDescription: `an instance of the <see cref="className" /> model class.`
+          returnsDescription: 'an instance of the <see cref="className" /> model class.'
         }));
 
         model.add(new LambdaMethod('ToJsonString', dotnet.String, new LiteralExpression(`ToJson(${dotnet.Null}, ${ClientRuntime.SerializationMode.IncludeAll})?.ToString()`), {
-          description: `Serializes this instance to a json string.`,
-          returnsDescription: `a <see cref="System.String" /> containing this model serialized to JSON text.`
+          description: 'Serializes this instance to a json string.',
+          returnsDescription: 'a <see cref="System.String" /> containing this model serialized to JSON text.'
         }));
 
         const hashDeseralizer = new DeserializerPartialClass(model, modelInterface, System.Collections.IDictionary, 'Dictionary', schema, resolver).init();
@@ -129,40 +129,40 @@ export class ModelExtensionsNamespace extends Namespace {
         typeConverter.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
-            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` })
+            new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+            new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
           ],
-          description: `Determines if the <see cref="sourceValue" /> parameter can be converted to the <see cref="destinationType" /> parameter`,
-          returnsDescription: `<c>true</c> if the converter can convert the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>`,
+          description: 'Determines if the <see cref="sourceValue" /> parameter can be converted to the <see cref="destinationType" /> parameter',
+          returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>',
         }));
         typeConverter.add(new LambdaMethod('ConvertTo', dotnet.Object, dotnet.Null, {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
-            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` }),
-            new Parameter('formatProvider', System.IFormatProvider, { description: `not used by this TypeConverter.` }),
-            new Parameter('ignoreCase', dotnet.Bool, { description: `when set to <c>true</c>, will ignore the case when converting.` }),
-          ], description: `NotImplemented -- this will return <c>null</c>`,
-          returnsDescription: `will always return <c>null</c>.`
+            new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+            new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' }),
+            new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
+            new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
+          ], description: 'NotImplemented -- this will return <c>null</c>',
+          returnsDescription: 'will always return <c>null</c>.'
         }));
-        typeConverter.add(new LambdaMethod('CanConvertFrom', dotnet.Bool, new LiteralExpression(`CanConvertFrom(sourceValue)`), {
+        typeConverter.add(new LambdaMethod('CanConvertFrom', dotnet.Bool, new LiteralExpression('CanConvertFrom(sourceValue)'), {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
-            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` })
+            new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+            new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
           ],
-          description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.`,
-          returnsDescription: `<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.`,
+          description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
+          returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
         }));
         typeConverter.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression('ConvertFrom(sourceValue)'), {
           override: Modifier.Override,
           parameters: [
-            new Parameter('sourceValue', dotnet.Object, { description: `the <see cref="System.Object"/> to convert from` }),
-            new Parameter('destinationType', System.Type, { description: `the <see cref="System.Type" /> to convert to` }),
-            new Parameter('formatProvider', System.IFormatProvider, { description: `not used by this TypeConverter.` }),
-            new Parameter('ignoreCase', dotnet.Bool, { description: `when set to <c>true</c>, will ignore the case when converting.` }),
+            new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+            new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' }),
+            new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
+            new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
           ],
-          description: `Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> `,
+          description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> ',
           returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
         }));
 
@@ -171,37 +171,37 @@ export class ModelExtensionsNamespace extends Namespace {
           parameters: [
             new Parameter('sourceValue', dotnet.Dynamic, { description: `the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="${className}" /> type.` }),
           ],
-          description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.`,
+          description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
           returnsDescription: `<c>true</c> if the instance could be converted to a <see cref="${className}" /> type, otherwise <c>false</c> `
         })).add(function* () {
-          yield If(`null == sourceValue`, Return(dotnet.True));
+          yield If('null == sourceValue', Return(dotnet.True));
 
-          const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
+          const t = new LocalVariable('type', System.Type, { initializer: 'sourceValue.GetType()' });
           yield t.declarationStatement;
 
           if (schema.details.default.uid === 'universal-parameter-type' || schema.details.csharp.byReference) {
-            yield `// we allow string conversion too.`
-            yield If(`${t.value} == typeof(${System.String})`, Return(dotnet.True))
+            yield '// we allow string conversion too.';
+            yield If(`${t.value} == typeof(${System.String})`, Return(dotnet.True));
           }
 
           yield If(IsAssignableFrom(PSObject, t), function* () {
-            yield `// we say yest to PSObjects`;
+            yield '// we say yest to PSObjects';
             yield Return(dotnet.True);
           });
           yield If(IsAssignableFrom(System.Collections.IDictionary, t), function* () {
-            yield `// we say yest to Hashtables/dictionaries`;
+            yield '// we say yest to Hashtables/dictionaries';
             yield Return(dotnet.True);
           });
 
-          yield Try(If(`null != sourceValue.ToJsonString()`, Return(dotnet.True)));
-          yield Catch(undefined, `// Not one of our objects`);
+          yield Try(If('null != sourceValue.ToJsonString()', Return(dotnet.True)));
+          yield Catch(undefined, '// Not one of our objects');
 
           yield Try(function* () {
-            const t = new LocalVariable('text', dotnet.String, { initializer: `sourceValue.ToString()?.Trim()` });
+            const t = new LocalVariable('text', dotnet.String, { initializer: 'sourceValue.ToString()?.Trim()' });
             yield t.declarationStatement;
             yield Return(`${dotnet.True} == ${t.value}?.StartsWith("{") && ${dotnet.True} == ${t.value}?.EndsWith("}") && ${ClientRuntime.JsonNode.Parse(t)}.Type == ${ClientRuntime.JsonType.Object}`);
           });
-          yield Catch(undefined, `// Doesn't look like it can be treated as JSON`);
+          yield Catch(undefined, '// Doesn\'t look like it can be treated as JSON');
 
           yield Return(dotnet.False);
         });
@@ -213,34 +213,34 @@ export class ModelExtensionsNamespace extends Namespace {
               description: `the value to convert into an instance of <see cref="${className}" />.`
             }),
           ],
-          description: `Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" />`,
+          description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" />',
           returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
         })).add(function* () {
           // null begets null
-          yield If(`null == sourceValue`, Return(dotnet.Null));
+          yield If('null == sourceValue', Return(dotnet.Null));
 
-          const t = new LocalVariable("type", System.Type, { initializer: `sourceValue.GetType()` });
+          const t = new LocalVariable('type', System.Type, { initializer: 'sourceValue.GetType()' });
           yield t.declarationStatement;
 
           if (($this.state.project.azure && schema.details.default.uid === 'universal-parameter-type') || schema.details.csharp.byReference) {
-            yield `// support direct string to id type conversion.`
+            yield '// support direct string to id type conversion.';
             yield If(`${t.value} == typeof(${System.String})`, function* () {
               yield Return(`new ${className} { Id = sourceValue }`);
             });
           }
 
           if (schema.details.csharp.byReference) {
-            yield `// if Id is present with by-reference schemas, just return the type with Id `
+            yield '// if Id is present with by-reference schemas, just return the type with Id ';
             yield Try(Return(`new ${className} { Id = sourceValue.Id }`));
-            yield Catch(undefined, `// Not an Id reference parameter`);
+            yield Catch(undefined, '// Not an Id reference parameter');
           }
 
           // if the type can be assigned directly, do that 
-          yield If(IsAssignableFrom(td, t), Return(`sourceValue`));
+          yield If(IsAssignableFrom(td, t), Return('sourceValue'));
 
           // try using json first (either from string or toJsonString())
           yield Try(Return(`${className}.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());`));
-          yield Catch(undefined, `// Unable to use JSON pattern`);
+          yield Catch(undefined, '// Unable to use JSON pattern');
 
           yield If(IsAssignableFrom(PSObject, t), Return(`${className}.DeserializeFromPSObject(sourceValue)`));
           yield If(IsAssignableFrom(System.Collections.IDictionary, t), Return(`${className}.DeserializeFromDictionary(sourceValue)`));

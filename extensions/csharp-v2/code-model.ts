@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, command, components, exportedModels as T, http, schema } from '@microsoft.azure/autorest.codemodel-v3';
+import { codemodel, command, components, exportedModels as T, http, schema } from '@azure/autorest.codemodel-v3';
 import { ModelInterface } from './model/interface';
 import { ModelClass } from './model/model-class';
 import { EnhancedTypeDeclaration } from './schema/extended-type-declaration';

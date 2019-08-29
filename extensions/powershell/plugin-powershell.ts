@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel } from '@microsoft.azure/autorest.codemodel-v3';
-import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@microsoft.azure/codegen';
-import { Host } from '@microsoft.azure/autorest-extension-base';
+import { codemodel } from '@azure/autorest.codemodel-v3';
+import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure/codegen';
+import { Host } from '@azure/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State } from './state';
@@ -21,6 +21,26 @@ import { generateScriptCmdlets } from './generators/script-cmdlet';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../resources`;
+
+
+async function copyRequiredFiles(project: Project) {
+  const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); };
+
+  // Project assets
+  await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
+
+  // Runtime files
+  await copyResources(join(resources, 'runtime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+
+  // Modules files
+  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
+
+  if (project.azure) {
+    // Signing key file
+    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => project.state.writeFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
+  }
+}
+
 
 export async function powershell(service: Host) {
   try {
@@ -51,24 +71,6 @@ export async function powershell(service: Host) {
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     throw E;
-  }
-}
-
-async function copyRequiredFiles(project: Project) {
-  const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); }
-
-  // Project assets
-  await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
-
-  // Runtime files
-  await copyResources(join(resources, 'runtime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
-
-  // Modules files
-  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
-
-  if (project.azure) {
-    // Signing key file
-    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => project.state.writeFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
   }
 }
 

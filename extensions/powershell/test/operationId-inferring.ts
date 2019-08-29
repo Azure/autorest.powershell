@@ -1,4 +1,3 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,17 +5,18 @@
 
 import * as assert from 'assert';
 import { suite, test } from 'mocha-typescript';
-import * as aio from "@microsoft.azure/async-io"
+
 import * as pp from '../plugin-create-commands';
-import { ModelState, JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, } from '@microsoft.azure/autorest.codemodel-v3';
-import { Channel, JsonPath, Mapping, RawSourceMap, Message } from '@microsoft.azure/autorest-extension-base';
-import { deserialize, Dictionary, pascalCase, serialize } from '@microsoft.azure/codegen';
+import { ModelState, JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, } from '@azure/autorest.codemodel-v3';
+import { Channel, JsonPath, Mapping, RawSourceMap, Message } from '@azure/autorest-extension-base';
+import { items, values, keys, Dictionary, length } from '@azure/linq';
 require('source-map-support').install();
 
 class Host {
   inputs = ['model'];
 
   constructor(public input: string, public config: Dictionary<any>) {
+    // test 
   }
 
   async ReadFile(filename: string): Promise<string> {
@@ -28,21 +28,21 @@ class Host {
     }
     return this.config[key];
   }
-  async ListInputs(artifactType?: string): Promise<string[]> {
+  async ListInputs(artifactType?: string): Promise<Array<string>> {
     return this.inputs;
   }
 
   async ProtectFiles(path: string): Promise<void> {
-
+    // test 
   }
-  WriteFile(filename: string, content: string, sourceMap?: Mapping[] | RawSourceMap, artifactType?: string): void {
-
+  WriteFile(filename: string, content: string, sourceMap?: Array<Mapping> | RawSourceMap, artifactType?: string): void {
+    // test 
   }
   Message(message: Message): void {
-
+    // test 
   }
   UpdateConfigurationFile(filename: string, content: string): void {
-
+    // test 
   }
   async GetConfigurationFile(filename: string): Promise<string> {
     return '';

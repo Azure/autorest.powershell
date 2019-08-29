@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@microsoft.azure/autorest.codemodel-v3';
-import { EOL, items, values } from '@microsoft.azure/codegen';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@azure/autorest.codemodel-v3';
+import { EOL } from '@azure/codegen';
+import { items, values } from '@azure/linq';
 
-import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@microsoft.azure/codegen-csharp';
+import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@azure/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
@@ -74,10 +75,10 @@ export class XmlSerializableClass extends Class {
       yield `${container} = ${container} ?? new ${System.Xml.Linq.XElement.declaration}(nameof(${$this.modelClass.name}));`;
       yield EOL;
 
-      yield `bool returnNow = false;`;
+      yield 'bool returnNow = false;';
       yield `${$this.btj.name}(ref ${container}, ref returnNow);`;
 
-      yield If(`returnNow`, `return ${container};`);
+      yield If('returnNow', `return ${container};`);
 
       // get serialization statements
       yield serializeStatements;
@@ -88,9 +89,9 @@ export class XmlSerializableClass extends Class {
 
     // and let's fill in the deserializer constructor statements now.
     deserializerConstructor.add(function* () {
-      yield `bool returnNow = false;`;
+      yield 'bool returnNow = false;';
       yield `${$this.bfj.name}(xml, ref returnNow);`;
-      yield If(`returnNow`, `return;`);
+      yield If('returnNow', 'return;');
 
       yield deserializeStatements;
       yield `${$this.afj.name}(xml);`;

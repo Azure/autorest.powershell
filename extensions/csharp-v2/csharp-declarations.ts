@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ClassType, Namespace, TypeDeclaration } from '@microsoft.azure/codegen-csharp';
+import { ClassType, Namespace, TypeDeclaration } from '@azure/codegen-csharp';
 
-const rest = new Namespace(`Microsoft.Rest`);
+const rest = new Namespace('Microsoft.Rest');
 
-export const PropertyOriginAttribute: TypeDeclaration = new ClassType(rest, `Origin`);
-export const DoNotFormatAttribute: TypeDeclaration = new ClassType(rest, `DoNotFormat`);
-export const FormatTableAttribute: TypeDeclaration = new ClassType(rest, `FormatTable`);
+export const PropertyOriginAttribute: TypeDeclaration = new ClassType(rest, 'Origin');
+export const DoNotFormatAttribute: TypeDeclaration = new ClassType(rest, 'DoNotFormat');
+export const FormatTableAttribute: TypeDeclaration = new ClassType(rest, 'FormatTable');
