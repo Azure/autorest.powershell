@@ -33,6 +33,11 @@ interface WhereCommandDirective {
       name: string;
       description: string;
       script: string;
+    },
+    'default'?: {
+      name: string;
+      description: string;
+      script: string;
     }
   };
   'clear-alias': boolean;
@@ -117,7 +122,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
   if (where && set && (where['model-name'] || where['model-fullname'] || where['model-namespace'] || where['property-name'] || directive.select === 'model')) {
     const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
-    const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer'];
+    const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer', 'default'];
     error += getSetError(set, prohibitedSetters, 'enum');
     let modelSelectNameConflict = [];
     let modelSelectNameType = '';
@@ -183,7 +188,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   if (where && set && (where['enum-name'] || where['enum-value-name'] || directive.select === 'enum')) {
     const prohibitedFilters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
-    const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer'];
+    const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer', 'default'];
     error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
@@ -258,6 +263,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const parameterReplacer = (directive.set !== undefined) ? directive.set["parameter-name"] : undefined;;
       const paramDescriptionReplacer = (directive.set !== undefined) ? directive.set["parameter-description"] : undefined;;
       const paramCompleterReplacer = (directive.set !== undefined) ? directive.set["completer"] : undefined;;
+      const paramDefaultReplacer = (directive.set !== undefined) ? directive.set["default"] : undefined;
 
       // select all operations
       let operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
@@ -301,11 +307,13 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .linq.selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
           .linq.where(parameter => !!`${parameter.name}`.match(parameterRegex))
           .linq.toArray();
-        for (const parameter of parameters) {
+        for (const p of parameters) {
+          const parameter = <any>p;
           const prevName = parameter.name;
           parameter.name = parameterReplacer ? parameterRegex ? parameter.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.name;
           parameter.description = paramDescriptionReplacer ? paramDescriptionReplacer : parameter.description;
           parameter.completerInfo = paramCompleterReplacer ? paramCompleterReplacer : parameter.completerInfo;
+          parameter.defaultInfo = paramDefaultReplacer ? paramDefaultReplacer : parameter.defaultInfo;
 
           if (clearAlias) {
             parameter.alias = [];

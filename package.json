@@ -11,6 +11,6 @@
     "tslint": "^5.12.1",
     "pwsh": "0.2.0",
     "tslint-microsoft-contrib": "^6.0.0",
-    "typescript": "^3.3.3"
+    "typescript": "~3.5.2"
   }
 }
