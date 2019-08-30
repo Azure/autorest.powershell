@@ -34,6 +34,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   }),
   InfoAttribute: new ClassType(clientRuntimeNamespace, `Info`),
   CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, `CompleterInfo`),
+  DefaultInfoAttribute: new ClassType(clientRuntimeNamespace, `DefaultInfo`),
   EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
