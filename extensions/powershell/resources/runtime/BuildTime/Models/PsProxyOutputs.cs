@@ -148,7 +148,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
-{GetParameterSetToCmdletMapping()}
+{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
 {Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($MyInvocation.CommandOrigin)
@@ -172,6 +172,22 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return sb.ToString();
         }
 
+        private string GetDefaultValuesStatements()
+        {
+            var defaultInfos = VariantGroup.ParameterGroups.Where(pg => pg.HasDefaultInfo).Select(pg => pg.DefaultInfo).ToArray();
+            var sb = new StringBuilder();
+
+            foreach (var defaultInfo in defaultInfos)
+            {
+                var variantListString = defaultInfo.ParameterGroup.VariantNames.ToPsList();
+                var parameterName = defaultInfo.ParameterGroup.ParameterName;
+                sb.AppendLine();
+                sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}')) {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
+                sb.Append($"{Indent}{Indent}}}");
+            }
+            return sb.ToString();
+        }
     }
 
     internal class ProcessOutput
