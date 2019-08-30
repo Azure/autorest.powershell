@@ -10,10 +10,10 @@ Download the [XKCD swagger](https://raw.githubusercontent.com/Azure/autorest.pow
 AutoRest code generation utility [version: 3.0.5135; node: v10.15.0]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
-   Loading AutoRest core      'C:\Users\garretts.NTDEV\.autorest\@microsoft.azure_autorest-core@3.0.5330\node_modules\@microsoft.azure\autorest-core\dist' (3.0.5330)
-   Installing AutoRest extension '@microsoft.azure/autorest.powershell' (beta)
-   Installing AutoRest extension '@microsoft.azure/autorest.remodeler' (beta)
-   Installing AutoRest extension '@microsoft.azure/autorest.csharp-v2' (beta)
+   Loading AutoRest core      'C:\Users\garretts.NTDEV\.autorest\@azure_autorest-core@3.0.5330\node_modules\@azure\autorest-core\dist' (3.0.5330)
+   Installing AutoRest extension '@azure/autorest.powershell' (beta)
+   Installing AutoRest extension '@azure/autorest.remodeler' (beta)
+   Installing AutoRest extension '@azure/autorest.csharp-v2' (beta)
 
 > 
 ```

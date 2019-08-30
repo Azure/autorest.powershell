@@ -187,12 +187,6 @@
     },
     /* --- project packages --- */
     {
-      "packageName": "@azure/autorest.csharp-v2",
-      "projectFolder": "extensions/csharp-v2",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
       "packageName": "@azure/autorest.remodeler",
       "projectFolder": "extensions/remodeler",
       "reviewCategory": "production",

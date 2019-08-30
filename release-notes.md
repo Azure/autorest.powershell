@@ -19,7 +19,7 @@
     > autorest --reset 
 
     # install the lates version of hte generator (you still have to 
-    # say --use=@microsoft.azure/autorest.powershell@beta when you use it! )
+    # say --use=@azure/autorest.powershell@beta when you use it! )
     > autorest --powershell --help
     
     # verify the version you have
@@ -36,8 +36,8 @@ https://aka.ms/autorest
 Showing All Installed Extensions
 
  Type       Extension Name                           Version      Location
- core       @microsoft.azure/autorest-core           2.0.4289     C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@2.0.4289
- extension  @microsoft.azure/autorest.powershell      1.0.123      C:\Users\garretts\.autorest\@microsoft.azure_autorest.powershell@1.0.123
+ core       @azure/autorest-core           2.0.4289     C:\Users\garretts\.autorest\@azure_autorest-core@2.0.4289
+ extension  @azure/autorest.powershell      1.0.123      C:\Users\garretts\.autorest\@azure_autorest.powershell@1.0.123
 ```
 
 # Prerequisites
@@ -92,13 +92,13 @@ _use this to install and/or update to the latest version as updates come_
 ### When Using an autorest literate configuration file
 
 ```
-autorest --use=@microsoft.azure/autorest.ubator@preview --powershell --output-folder=./output path/to/autorest-cfg-file/readme.md
+autorest --use=@azure/autorest.ubator@preview --powershell --output-folder=./output path/to/autorest-cfg-file/readme.md
 ```
 
 ### When building with just an OpenAPI2/Swagger file
 
 ```
-autorest --use=@microsoft.azure/autorest.powershell@preview --powershell --output-folder=./output --input-file=./path/to/swagger.json
+autorest --use=@azure/autorest.powershell@preview --powershell --output-folder=./output --input-file=./path/to/swagger.json
 ```
 
 # Examples
@@ -110,15 +110,15 @@ autorest --use=@microsoft.azure/autorest.powershell@preview --powershell --outpu
 # try out the Xkcd example
 cd ./Examples/Xkcd
 
-autorest --use=@microsoft.azure/autorest.powershell@preview --powershell --input-file=xkcd.yaml --namespace=Xkcd --output-folder=./generated --clear-output-folder
+autorest --use=@azure/autorest.powershell@preview --powershell --input-file=xkcd.yaml --namespace=Xkcd --output-folder=./generated --clear-output-folder
 ```
 Output:
 ```
 AutoRest code generation utility [version: 2.0.4283; node: v8.11.2]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
-   Loading AutoRest core      '/home/garretts/.autorest/@microsoft.azure_autorest-core@2.0.4286/node_modules/@microsoft.azure/autorest-core/dist' (2.0.4286)
-   Loading AutoRest extension '@microsoft.azure/autorest.powershell' (1.0.105->1.0.105)
+   Loading AutoRest core      '/home/garretts/.autorest/@azure_autorest-core@2.0.4286/node_modules/@azure/autorest-core/dist' (2.0.4286)
+   Loading AutoRest extension '@azure/autorest.powershell' (1.0.105->1.0.105)
 >
 ```
 
@@ -212,8 +212,8 @@ Output:
 AutoRest code generation utility [version: 2.0.4283; node: v8.11.2]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
-   Loading AutoRest core      '/home/garretts/.autorest/@microsoft.azure_autorest-core@2.0.4286/node_modules/@microsoft.azure/autorest-core/dist' (2.0.4286)
-   Loading AutoRest extension '@microsoft.azure/autorest.powershell' (preview->1.0.105)
+   Loading AutoRest core      '/home/garretts/.autorest/@azure_autorest-core@2.0.4286/node_modules/@azure/autorest-core/dist' (2.0.4286)
+   Loading AutoRest extension '@azure/autorest.powershell' (preview->1.0.105)
 
 PS /autorest.powershell/Examples/TimesWire>
 ```
