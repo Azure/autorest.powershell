@@ -120,7 +120,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString()
         {
             var nameText = !String.IsNullOrEmpty(DefaultInfo?.Name) ? $"Name='{DefaultInfo?.Name}'" : String.Empty;
-            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description.ToDescriptionFormat(false)}'" : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description.ToPsStringLiteral()}'" : String.Empty;
             var scriptText = !String.IsNullOrEmpty(DefaultInfo?.Script) ? $"Script='{DefaultInfo?.Script.ToPsSingleLine("; ")}'" : String.Empty;
             var propertyText = new[] { nameText, descriptionText, scriptText }.JoinIgnoreEmpty(ItemSeparator);
             return HasDefaultInfo ? $"{Indent}[{typeof(DefaultInfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
@@ -426,7 +426,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new []{"<br>", "\r\n", "\n"});
 
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine() ?? String.Empty;
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine().Trim() ?? String.Empty;
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 
