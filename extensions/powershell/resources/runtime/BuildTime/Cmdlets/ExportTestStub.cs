@@ -27,8 +27,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter]
         public SwitchParameter IncludeGenerated { get; set; }
 
-        private const string RuntimeFolder = @"${$lib.path.relative($project.testFolder, $project.runtimeFolder)}";
-
         protected override void ProcessRecord()
         {
             if (!Directory.Exists(ExportsFolder))
@@ -62,7 +60,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 {
                     var sb = new StringBuilder();
                     sb.AppendLine($@"$TestRecordingFile = Join-Path $PSScriptRoot '{variantGroup.CmdletName}.Recording.json'");
-                    sb.AppendLine($@". (Join-Path $PSScriptRoot '{RuntimeFolder}' 'HttpPipelineMocking.ps1'){Environment.NewLine}");
+                    sb.AppendLine(@"$currentPath = $PSScriptRoot
+while(-not $mockingPath) {
+    $mockingPath = Get-ChildItem -Path $currentPath -Recurse -Include 'HttpPipelineMocking.ps1' -File
+    $currentPath = Split-Path -Path $currentPath -Parent
+}
+. ($mockingPath | Select-Object -First 1).FullName
+");
 
                     sb.AppendLine($"Describe '{variantGroup.CmdletName}' {{");
                     var variants = variantGroup.Variants

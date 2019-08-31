@@ -106,6 +106,27 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
+    internal class DefaultInfoOutput
+    {
+        public bool HasDefaultInfo { get; }
+        public DefaultInfo DefaultInfo { get; }
+
+        public DefaultInfoOutput(ParameterGroup parameterGroup)
+        {
+            HasDefaultInfo = parameterGroup.HasDefaultInfo;
+            DefaultInfo = parameterGroup.DefaultInfo;
+        }
+
+        public override string ToString()
+        {
+            var nameText = !String.IsNullOrEmpty(DefaultInfo?.Name) ? $"Name='{DefaultInfo?.Name}'" : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description}'" : String.Empty;
+            var scriptText = !String.IsNullOrEmpty(DefaultInfo?.Script) ? $"Script='{DefaultInfo?.Script}'" : String.Empty;
+            var propertyText = new[] { nameText, descriptionText, scriptText }.JoinIgnoreEmpty(ItemSeparator);
+            return HasDefaultInfo ? $"{Indent}[{typeof(DefaultInfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
+        }
+    }
+
     internal class ParameterTypeOutput
     {
         public Type ParameterType { get; }
@@ -437,6 +458,8 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public static ValidateNotNullOutput ToValidateNotNullOutput(this bool hasValidateNotNull) => new ValidateNotNullOutput(hasValidateNotNull);
 
         public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
+
+        public static DefaultInfoOutput ToDefaultInfoOutput(this ParameterGroup parameterGroup) => new DefaultInfoOutput(parameterGroup);
 
         public static ParameterTypeOutput ToParameterTypeOutput(this Type parameterType) => new ParameterTypeOutput(parameterType);
 
