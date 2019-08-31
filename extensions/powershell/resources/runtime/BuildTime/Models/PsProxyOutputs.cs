@@ -120,8 +120,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public override string ToString()
         {
             var nameText = !String.IsNullOrEmpty(DefaultInfo?.Name) ? $"Name='{DefaultInfo?.Name}'" : String.Empty;
-            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description}'" : String.Empty;
-            var scriptText = !String.IsNullOrEmpty(DefaultInfo?.Script) ? $"Script='{DefaultInfo?.Script}'" : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description.ToDescriptionFormat(false)}'" : String.Empty;
+            var scriptText = !String.IsNullOrEmpty(DefaultInfo?.Script) ? $"Script='{DefaultInfo?.Script.ToPsSingleLine("; ")}'" : String.Empty;
             var propertyText = new[] { nameText, descriptionText, scriptText }.JoinIgnoreEmpty(ItemSeparator);
             return HasDefaultInfo ? $"{Indent}[{typeof(DefaultInfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
         }
