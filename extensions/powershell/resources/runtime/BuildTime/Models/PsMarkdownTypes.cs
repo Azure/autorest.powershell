@@ -195,7 +195,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                        ?? parameterHelpInfos.Select(phi => phi.PositionText).FirstOrDefault(d => !String.IsNullOrEmpty(d)).ToUpperFirstCharacter().NullIfEmpty()
                        ?? "Named";
             // This no longer uses firstHelpInfo.DefaultValueAsString since it seems to be broken. For example, it has a value of 0 for Int32, but no default value was declared.
-            DefaultValue = parameterGroup.DefaultValue?.Value?.ToString() ?? "None";
+            DefaultValue = parameterGroup.DefaultInfo?.Script ?? "None";
 
             HasAllParameterSets = parameterGroup.HasAllVariants;
             ParameterSetNames = (parameterGroup.Parameters.Select(p => p.VariantName).ToArray().NullIfEmpty()

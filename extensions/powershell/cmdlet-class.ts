@@ -16,6 +16,7 @@ import { State } from './state';
 import { Channel } from '@microsoft.azure/autorest-extension-base';
 import { IParameter } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@microsoft.azure/codegen-csharp';
+import { CompleterInfo } from '@microsoft.azure/autorest.codemodel-v3/dist/code-model/command-operation';
 
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
@@ -31,9 +32,22 @@ export function addCompleterInfo(targetProperty: Property, parameter: VirtualPar
   if (parameter.completerInfo && parameter.completerInfo.script) {
     targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
       parameters: [
-        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || 'completer-name-missing').value}`),
-        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || 'completer-description-missing').value}`),
+        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
+        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
         new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
+      ]
+    }));
+  }
+}
+
+
+export function addDefaultInfo(targetProperty: Property, parameter: any) {
+  if (parameter.defaultInfo && parameter.defaultInfo.script) {
+    targetProperty.add(new Attribute(ClientRuntime.DefaultInfoAttribute, {
+      parameters: [
+        new LiteralExpression(`\nName = ${new StringExpression(parameter.defaultInfo.name || '').value}`),
+        new LiteralExpression(`\nDescription =${new StringExpression(parameter.defaultInfo.description || '').value}`),
+        new LiteralExpression(`\nScript = ${new StringExpression(parameter.defaultInfo.script).value}`)
       ]
     }));
   }
@@ -1041,6 +1055,7 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<VirtualProperty>vParam.origin).property.serializedName);
             addCompleterInfo(cmdletParameter, vParam);
+            addDefaultInfo(cmdletParameter, vParam);
           }
 
           const isEnum = propertyType.schema.details.csharp.enum !== undefined;
@@ -1154,6 +1169,7 @@ export class CmdletClass extends Class {
 
       addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
       addCompleterInfo(regularCmdletParameter, vParam);
+      addDefaultInfo(regularCmdletParameter, vParam);
 
       // add aliases if there is any
       if (vParam.alias.length > 0) {

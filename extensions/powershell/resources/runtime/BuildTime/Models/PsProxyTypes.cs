@@ -159,6 +159,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string ParameterName { get; }
         public Parameter[] Parameters { get; }
 
+        public string[] VariantNames { get; }
         public string[] AllVariantNames { get; }
         public bool HasAllVariants { get; }
         public Type ParameterType { get; }
@@ -167,6 +168,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public CompleterInfo CompleterInfo { get; }
+        public DefaultInfo DefaultInfo { get; }
+        public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }
         public bool DontShow { get; }
         public bool IsMandatory { get; }
@@ -176,7 +179,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public InfoAttribute InfoAttribute { get; }
 
         public int? FirstPosition { get; }
-        public PSDefaultValueAttribute DefaultValue { get; }
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
         public bool IsInputType { get; }
@@ -186,9 +188,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterName = parameterName;
             Parameters = parameters;
 
+            VariantNames = Parameters.Select(p => p.VariantName).ToArray();
             AllVariantNames = allVariantNames;
-            var variantNames = Parameters.Select(p => p.VariantName).ToArray();
-            HasAllVariants = variantNames.Any(vn => vn == AllParameterSets) || !AllVariantNames.Except(variantNames).Any();
+            HasAllVariants = VariantNames.Any(vn => vn == AllParameterSets) || !AllVariantNames.Except(VariantNames).Any();
             var types = Parameters.Select(p => p.ParameterType).Distinct().ToArray();
             if (types.Length > 1)
             {
@@ -201,6 +203,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             CompleterInfo = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault()?.ToCompleterInfo()
                             ?? Parameters.Select(p => p.ArgumentCompleterAttribute).FirstOrDefault()?.ToCompleterInfo();
+            DefaultInfo = Parameters.Select(p => p.DefaultInfoAttribute).FirstOrDefault()?.ToDefaultInfo(this)
+                            ?? Parameters.Select(p => p.DefaultValueAttribute).FirstOrDefault(dv => dv != null)?.ToDefaultInfo(this);
+            HasDefaultInfo = DefaultInfo != null && !String.IsNullOrEmpty(DefaultInfo.Script);
+            // When DefaultInfo is present, force all parameters from this group to be optional.
+            if (HasDefaultInfo)
+            {
+                foreach (var parameter in Parameters)
+                {
+                    parameter.IsMandatory = false;
+                }
+            }
             OrderCategory = Parameters.Select(p => p.OrderCategory).Distinct().DefaultIfEmpty(ParameterCategory.Body).Min();
             DontShow = Parameters.All(p => p.DontShow);
             IsMandatory = HasAllVariants && Parameters.Any(p => p.IsMandatory);
@@ -210,7 +223,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             InfoAttribute = Parameters.Select(p => p.InfoAttribute).First();
 
             FirstPosition = Parameters.Select(p => p.Position).FirstOrDefault(p => p != null);
-            DefaultValue = Parameters.Select(p => p.DefaultValue).FirstOrDefault(dv => dv != null);
             ValueFromPipeline = Parameters.Any(p => p.ValueFromPipeline);
             ValueFromPipelineByPropertyName = Parameters.Any(p => p.ValueFromPipelineByPropertyName);
             IsInputType = ValueFromPipeline || ValueFromPipelineByPropertyName;
@@ -228,7 +240,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Attribute[] Attributes { get; }
         public ParameterCategory[] Categories { get; }
         public ParameterCategory OrderCategory { get; }
-        public PSDefaultValueAttribute DefaultValue { get; }
+        public PSDefaultValueAttribute DefaultValueAttribute { get; }
+        public DefaultInfoAttribute DefaultInfoAttribute { get; }
         public ParameterAttribute ParameterAttribute { get; }
         public bool SupportsWildcards { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
@@ -238,7 +251,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool ValueFromPipelineByPropertyName { get; }
         public int? Position { get; }
         public bool DontShow { get; }
-        public bool IsMandatory { get; }
+        public bool IsMandatory { get; set; }
 
         public InfoAttribute InfoAttribute { get; }
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
@@ -256,7 +269,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ParameterType = Attributes.OfType<ExportAsAttribute>().FirstOrDefault()?.Type ?? Metadata.ParameterType;
             Categories = Attributes.OfType<CategoryAttribute>().SelectMany(ca => ca.Categories).Distinct().ToArray();
             OrderCategory = Categories.DefaultIfEmpty(ParameterCategory.Body).Min();
-            DefaultValue = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
+            DefaultValueAttribute = Attributes.OfType<PSDefaultValueAttribute>().FirstOrDefault();
+            DefaultInfoAttribute = Attributes.OfType<DefaultInfoAttribute>().FirstOrDefault();
             ParameterAttribute = Attributes.OfType<ParameterAttribute>().FirstOrDefault(pa => pa.ParameterSetName == VariantName || pa.ParameterSetName == AllParameterSets);
             if (ParameterAttribute == null)
             {
@@ -391,7 +405,32 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 IsTypeCompleter = true;
             }
         }
+    }
 
+    internal class DefaultInfo
+    {
+        public string Name { get; }
+        public string Description { get; }
+        public string Script { get; }
+        public ParameterGroup ParameterGroup { get; }
+
+        public DefaultInfo(DefaultInfoAttribute infoAttribute, ParameterGroup parameterGroup)
+        {
+            Name = infoAttribute.Name;
+            Description = infoAttribute.Description;
+            Script = infoAttribute.Script;
+            ParameterGroup = parameterGroup;
+        }
+
+        public DefaultInfo(PSDefaultValueAttribute defaultValueAttribute, ParameterGroup parameterGroup)
+        {
+            Description = defaultValueAttribute.Help;
+            ParameterGroup = parameterGroup;
+            if (defaultValueAttribute.Value != null)
+            {
+                Script = defaultValueAttribute.Value.ToString();
+            }
+        }
     }
 
     internal static class PsProxyTypeExtensions
@@ -446,5 +485,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static CompleterInfo ToCompleterInfo(this CompleterInfoAttribute infoAttribute) => new CompleterInfo(infoAttribute);
         public static CompleterInfo ToCompleterInfo(this ArgumentCompleterAttribute completerAttribute) => new CompleterInfo(completerAttribute);
+
+        public static DefaultInfo ToDefaultInfo(this DefaultInfoAttribute infoAttribute, ParameterGroup parameterGroup) => new DefaultInfo(infoAttribute, parameterGroup);
+        public static DefaultInfo ToDefaultInfo(this PSDefaultValueAttribute defaultValueAttribute, ParameterGroup parameterGroup) => new DefaultInfo(defaultValueAttribute, parameterGroup);
     }
 }
