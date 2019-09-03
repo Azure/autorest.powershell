@@ -106,6 +106,27 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
+    internal class DefaultInfoOutput
+    {
+        public bool HasDefaultInfo { get; }
+        public DefaultInfo DefaultInfo { get; }
+
+        public DefaultInfoOutput(ParameterGroup parameterGroup)
+        {
+            HasDefaultInfo = parameterGroup.HasDefaultInfo;
+            DefaultInfo = parameterGroup.DefaultInfo;
+        }
+
+        public override string ToString()
+        {
+            var nameText = !String.IsNullOrEmpty(DefaultInfo?.Name) ? $"Name='{DefaultInfo?.Name}'" : String.Empty;
+            var descriptionText = !String.IsNullOrEmpty(DefaultInfo?.Description) ? $"Description='{DefaultInfo?.Description.ToPsStringLiteral()}'" : String.Empty;
+            var scriptText = !String.IsNullOrEmpty(DefaultInfo?.Script) ? $"Script='{DefaultInfo?.Script.ToPsSingleLine("; ")}'" : String.Empty;
+            var propertyText = new[] { nameText, descriptionText, scriptText }.JoinIgnoreEmpty(ItemSeparator);
+            return HasDefaultInfo ? $"{Indent}[{typeof(DefaultInfoAttribute).ToPsAttributeType()}({propertyText})]{Environment.NewLine}" : String.Empty;
+        }
+    }
+
     internal class ParameterTypeOutput
     {
         public Type ParameterType { get; }
@@ -147,11 +168,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}if ($PSBoundParameters.TryGetValue('OutBuffer', [ref]$outBuffer)) {{
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
-{Indent}{Indent}$parameterSet = $PsCmdlet.ParameterSetName
-{GetParameterSetToCmdletMapping()}
+{Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
+{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
-{Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($myInvocation.CommandOrigin)
+{Indent}{Indent}$steppablePipeline = $scriptCmd.GetSteppablePipeline($MyInvocation.CommandOrigin)
 {Indent}{Indent}$steppablePipeline.Begin($PSCmdlet)
 {Indent}}} catch {{
 {Indent}{Indent}throw
@@ -172,6 +193,22 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return sb.ToString();
         }
 
+        private string GetDefaultValuesStatements()
+        {
+            var defaultInfos = VariantGroup.ParameterGroups.Where(pg => pg.HasDefaultInfo).Select(pg => pg.DefaultInfo).ToArray();
+            var sb = new StringBuilder();
+
+            foreach (var defaultInfo in defaultInfos)
+            {
+                var variantListString = defaultInfo.ParameterGroup.VariantNames.ToPsList();
+                var parameterName = defaultInfo.ParameterGroup.ParameterName;
+                sb.AppendLine();
+                sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}')) {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
+                sb.Append($"{Indent}{Indent}}}");
+            }
+            return sb.ToString();
+        }
     }
 
     internal class ProcessOutput
@@ -389,7 +426,7 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
 
         public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new []{"<br>", "\r\n", "\n"});
 
-        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine() ?? String.Empty;
+        public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine().Trim() ?? String.Empty;
 
         public static string JoinIgnoreEmpty(this IEnumerable<string> values, string separator) => String.Join(separator, values?.Where(v => !String.IsNullOrEmpty(v)));
 
@@ -421,6 +458,8 @@ To view examples, please use the -Online parameter with Get-Help or navigate to:
         public static ValidateNotNullOutput ToValidateNotNullOutput(this bool hasValidateNotNull) => new ValidateNotNullOutput(hasValidateNotNull);
 
         public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
+
+        public static DefaultInfoOutput ToDefaultInfoOutput(this ParameterGroup parameterGroup) => new DefaultInfoOutput(parameterGroup);
 
         public static ParameterTypeOutput ToParameterTypeOutput(this Type parameterType) => new ParameterTypeOutput(parameterType);
 

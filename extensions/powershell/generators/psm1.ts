@@ -8,11 +8,7 @@ import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { join, relative } from 'path';
 
-
 export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
-  const defaultParameterValues = isAzure ? `
-    $cmdletNames | ForEach-Object { $global:PSDefaultParameterValues["$_\`:SubscriptionId"] = { (Get-AzContext).Subscription.Id } }` : '';
-
   return `
   # Export proxy cmdlet scripts
   $exportsPath = ${exportFolderScript}
@@ -39,7 +35,7 @@ export function getProfileExportScript(exportFolderScript: string, isAzure: bool
   if($exportsPath) {
     Get-ChildItem -Path $exportsPath -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
     $cmdletNames = Get-ScriptCmdlet -ScriptFolder $exportsPath
-    Export-ModuleMember -Function $cmdletNames -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)${defaultParameterValues}
+    Export-ModuleMember -Function $cmdletNames -Alias (Get-ScriptCmdlet -ScriptFolder $exportsPath -AsAlias)
   }
 `;
 }
@@ -121,4 +117,3 @@ ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, p
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
-

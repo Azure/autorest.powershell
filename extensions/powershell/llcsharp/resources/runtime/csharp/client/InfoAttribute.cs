@@ -19,4 +19,12 @@ namespace Microsoft.Rest.ClientRuntime
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";
     }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class DefaultInfoAttribute : Attribute
+    {
+        public string Script { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
 }

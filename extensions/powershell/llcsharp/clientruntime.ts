@@ -32,8 +32,10 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Trace: new LiteralExpression(`${method.declaration}.Trace`),
     Patch: new LiteralExpression(`${method.declaration}.Patch`)
   }),
+
   InfoAttribute: new ClassType(clientRuntimeNamespace, 'Info'),
   CompleterInfoAttribute: new ClassType(clientRuntimeNamespace, 'CompleterInfo'),
+  DefaultInfoAttribute: new ClassType(clientRuntimeNamespace, 'DefaultInfo'),
   EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
