@@ -2,27 +2,27 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from '@azure/autorest.codemodel-v3';
-import { Initializer, EOL } from '@azure/codegen';
-import { items, values } from '@azure/linq';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from '@azure-tools/codemodel-v3';
+import { Initializer, EOL } from '@azure-tools/codegen';
+import { items, values } from '@azure-tools/linq';
 
-import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@azure/codegen-csharp';
-import { Class } from '@azure/codegen-csharp';
-import { Constructor } from '@azure/codegen-csharp';
-import { IsDeclaration, toExpression } from '@azure/codegen-csharp';
-import { Method, PartialMethod } from '@azure/codegen-csharp';
+import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@azure-tools/codegen-csharp';
+import { Class } from '@azure-tools/codegen-csharp';
+import { Constructor } from '@azure-tools/codegen-csharp';
+import { IsDeclaration, toExpression } from '@azure-tools/codegen-csharp';
+import { Method, PartialMethod } from '@azure-tools/codegen-csharp';
 
-import { Parameter } from '@azure/codegen-csharp';
-import { ParameterModifier } from '@azure/codegen-csharp';
-import { TerminalCase } from '@azure/codegen-csharp';
-import { If, Not, ForEach } from '@azure/codegen-csharp';
-import { Return } from '@azure/codegen-csharp';
-import { Statements } from '@azure/codegen-csharp';
-import { Switch } from '@azure/codegen-csharp';
-import { Ternery } from '@azure/codegen-csharp';
+import { Parameter } from '@azure-tools/codegen-csharp';
+import { ParameterModifier } from '@azure-tools/codegen-csharp';
+import { TerminalCase } from '@azure-tools/codegen-csharp';
+import { If, Not, ForEach } from '@azure-tools/codegen-csharp';
+import { Return } from '@azure-tools/codegen-csharp';
+import { Statements } from '@azure-tools/codegen-csharp';
+import { Switch } from '@azure-tools/codegen-csharp';
+import { Ternery } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 
-import { dotnet } from '@azure/codegen-csharp';
+import { dotnet } from '@azure-tools/codegen-csharp';
 import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';

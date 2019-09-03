@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ClassType, Namespace, TypeDeclaration } from '@azure/codegen-csharp';
+import { ClassType, Namespace, TypeDeclaration } from '@azure-tools/codegen-csharp';
 
 const rest = new Namespace('Microsoft.Rest');
 

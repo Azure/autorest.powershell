@@ -1,5 +1,5 @@
 {
-  "name": "@azure/autorest.remodeler",
+  "name": "@autorest/remodeler",
   "version": "2.0.0",
   "description": "AutoRest Remodeler (component)",
   "directories": {
@@ -48,14 +48,14 @@
     "eslint": "~6.2.2"
   },
   "dependencies": {
-    "@azure/codegen": "~2.0.0",
-    "@azure/codegen-csharp": "~3.0.0",
-    "@azure/autorest-extension-base": "~3.0.0",
-    "@azure/autorest.codemodel-v3": "~3.0.0",
-    "@azure/tasks": "~3.0.0",
-    "@azure/openapi": "~3.0.0",
-    "@azure/datastore": "~4.0.0",
-    "@azure/linq": "~3.0.0",
+    "@azure-tools/codegen": "~2.0.0",
+    "@azure-tools/codegen-csharp": "~3.0.0",
+    "@azure-tools/autorest-extension-base": "~3.0.0",
+    "@azure-tools/codemodel-v3": "~3.0.0",
+    "@azure-tools/tasks": "~3.0.0",
+    "@azure-tools/openapi": "~3.0.0",
+    "@azure-tools/datastore": "~4.0.0",
+    "@azure-tools/linq": "~3.0.0",
     "source-map-support": "0.5.9"
   }
 }

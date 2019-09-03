@@ -5,7 +5,7 @@
 
 import { Schema } from '../code-model';
 import { String } from './string';
-import { dotnet, toExpression } from '@azure/codegen-csharp';
+import { dotnet, toExpression } from '@azure-tools/codegen-csharp';
 
 export class EnumImplementation extends String {
   public isXmlAttribute = false;

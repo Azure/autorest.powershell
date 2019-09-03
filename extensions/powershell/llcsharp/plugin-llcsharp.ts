@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Host } from '@azure/autorest-extension-base';
-import { applyOverrides, copyResources, deserialize, serialize, } from '@azure/codegen';
+import { Host } from '@azure-tools/autorest-extension-base';
+import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
 import { Model } from './code-model';
 import { State } from './generator';

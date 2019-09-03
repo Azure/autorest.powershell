@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Modifier } from '@azure/codegen-csharp';
-import { Class } from '@azure/codegen-csharp';
-import { Method } from '@azure/codegen-csharp';
+import { Modifier } from '@azure-tools/codegen-csharp';
+import { Class } from '@azure-tools/codegen-csharp';
+import { Method } from '@azure-tools/codegen-csharp';
 
-import { items } from '@azure/linq';
-import { dotnet } from '@azure/codegen-csharp';
-import { Namespace } from '@azure/codegen-csharp';
-import { Parameter } from '@azure/codegen-csharp';
+import { items } from '@azure-tools/linq';
+import { dotnet } from '@azure-tools/codegen-csharp';
+import { Namespace } from '@azure-tools/codegen-csharp';
+import { Parameter } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 

@@ -3,32 +3,32 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NewResponse, ParameterLocation } from '@azure/autorest.codemodel-v3';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { EOL } from '@azure/codegen';
-import { Access, Modifier } from '@azure/codegen-csharp';
-import { Class } from '@azure/codegen-csharp';
+import { NewResponse, ParameterLocation } from '@azure-tools/codemodel-v3';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { EOL } from '@azure-tools/codegen';
+import { Access, Modifier } from '@azure-tools/codegen-csharp';
+import { Class } from '@azure-tools/codegen-csharp';
 
-import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@azure/codegen-csharp';
-import { Method } from '@azure/codegen-csharp';
-import { Parameter } from '@azure/codegen-csharp';
-import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '@azure/codegen-csharp';
-import { Finally } from '@azure/codegen-csharp';
-import { If, While } from '@azure/codegen-csharp';
-import { Return } from '@azure/codegen-csharp';
-import { OneOrMoreStatements, Statement, Statements } from '@azure/codegen-csharp';
-import { Switch } from '@azure/codegen-csharp';
-import { Try } from '@azure/codegen-csharp';
-import { Using } from '@azure/codegen-csharp';
-import { Local, LocalVariable, Variable } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@azure-tools/codegen-csharp';
+import { Method } from '@azure-tools/codegen-csharp';
+import { Parameter } from '@azure-tools/codegen-csharp';
+import { Case, DefaultCase, TerminalCase, TerminalDefaultCase } from '@azure-tools/codegen-csharp';
+import { Finally } from '@azure-tools/codegen-csharp';
+import { If, While } from '@azure-tools/codegen-csharp';
+import { Return } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements, Statement, Statements } from '@azure-tools/codegen-csharp';
+import { Switch } from '@azure-tools/codegen-csharp';
+import { Try } from '@azure-tools/codegen-csharp';
+import { Using } from '@azure-tools/codegen-csharp';
+import { Local, LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationBodyParameter, OperationParameter } from '../operation/parameter';
 
-import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure/autorest.codemodel-v3';
-import { ClassType, dotnet, System } from '@azure/codegen-csharp';
-import { Ternery } from '@azure/codegen-csharp';
+import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure-tools/codemodel-v3';
+import { ClassType, dotnet, System } from '@azure-tools/codegen-csharp';
+import { Ternery } from '@azure-tools/codegen-csharp';
 
 
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {

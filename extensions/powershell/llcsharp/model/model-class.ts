@@ -2,11 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@azure/autorest.codemodel-v3';
+import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 
-import { camelCase, deconstruct } from '@azure/codegen';
-import { items, values } from '@azure/linq';
-import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure/codegen-csharp';
+import { camelCase, deconstruct } from '@azure-tools/codegen';
+import { items, values } from '@azure-tools/linq';
+import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';

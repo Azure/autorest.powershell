@@ -1,8 +1,8 @@
-import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, And, ForEach, LocalVariable, ImplicitCastOperator } from '@azure/codegen-csharp';
+import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, And, ForEach, LocalVariable, ImplicitCastOperator } from '@azure-tools/codegen-csharp';
 import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
-import { getAllVirtualProperties } from '@azure/autorest.codemodel-v3';
+import { getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 
 export class DictionaryImplementation extends Class {
   private get state() { return this.modelClass.state; }

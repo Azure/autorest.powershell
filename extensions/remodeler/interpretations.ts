@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EnumDetails, ModelState, components } from '@azure/autorest.codemodel-v3';
+import { EnumDetails, ModelState, components } from '@azure-tools/codemodel-v3';
 
 import { clone, getExtensionProperties } from './common';
-import * as OpenAPI from '@azure/openapi';
-import { getPascalIdentifier } from '@azure/codegen';
+import * as OpenAPI from '@azure-tools/openapi';
+import { getPascalIdentifier } from '@azure-tools/codegen';
 
 interface XMSEnum {
   modelAsString?: boolean;

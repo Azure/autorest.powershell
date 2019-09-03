@@ -5,11 +5,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Project } from '../project';
-import { serialize, indent, setIndentation, applyOverrides, pascalCase } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { serialize, indent, setIndentation, applyOverrides, pascalCase } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { State } from '../state';
 
-import { dotnet, System } from '@azure/codegen-csharp';
+import { dotnet, System } from '@azure-tools/codegen-csharp';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { ClientRuntime } from '../llcsharp/exports';
 

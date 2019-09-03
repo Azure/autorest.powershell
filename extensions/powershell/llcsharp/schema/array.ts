@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, nameof } from '@azure/codegen';
-import { IsNotNull } from '@azure/codegen-csharp';
-import { dotnet, System } from '@azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure/codegen-csharp';
-import { ForEach } from '@azure/codegen-csharp';
-import { If } from '@azure/codegen-csharp';
-import { OneOrMoreStatements } from '@azure/codegen-csharp';
-import { Ternery } from '@azure/codegen-csharp';
-import { LocalVariable, Variable } from '@azure/codegen-csharp';
+import { KnownMediaType } from '@azure-tools/codemodel-v3';
+import { camelCase, deconstruct, nameof } from '@azure-tools/codegen';
+import { IsNotNull } from '@azure-tools/codegen-csharp';
+import { dotnet, System } from '@azure-tools/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure-tools/codegen-csharp';
+import { ForEach } from '@azure-tools/codegen-csharp';
+import { If } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
+import { Ternery } from '@azure-tools/codegen-csharp';
+import { LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from '../schema/primitive';

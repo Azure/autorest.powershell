@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure/autorest.codemodel-v3';
-import { pascalCase, deconstruct, fixLeadingNumber } from '@azure/codegen';
-import { items, keys, values, select, } from '@azure/linq';
+import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
+import { pascalCase, deconstruct, fixLeadingNumber } from '@azure-tools/codegen';
+import { items, keys, values, select, } from '@azure-tools/linq';
 
-import { Channel, Host } from '@azure/autorest-extension-base';
-import { OAuthFlows } from '@azure/autorest.codemodel-v3/dist/code-model/security-scheme';
+import { Channel, Host } from '@azure-tools/autorest-extension-base';
+import { OAuthFlows } from '@azure-tools/codemodel-v3/dist/code-model/security-scheme';
 import { parentPort } from 'worker_threads';
 
 export const HeaderProperty = 'HeaderProperty';

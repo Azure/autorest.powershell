@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@azure/autorest.codemodel-v3';
-import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@azure/codegen';
-import { length, values, } from '@azure/linq';
-import { Host } from '@azure/autorest-extension-base';
-import { CommandOperation } from '@azure/autorest.codemodel-v3/dist/code-model/command-operation';
+import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@azure-tools/codemodel-v3';
+import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService } from '@azure-tools/codegen';
+import { length, values, } from '@azure-tools/linq';
+import { Host } from '@azure-tools/autorest-extension-base';
+import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
 type State = ModelState<codemodel.Model>;
 
 

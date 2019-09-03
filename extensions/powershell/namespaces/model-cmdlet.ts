@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { JsonType } from '@azure/autorest.codemodel-v3';
-import { ImportStatic, Namespace } from '@azure/codegen-csharp';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { JsonType } from '@azure-tools/codemodel-v3';
+import { ImportStatic, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../state';
 import { ModelCmdlet } from '../model-cmdlet';

@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@azure/autorest.codemodel-v3';
-import { EOL } from '@azure/codegen';
-import { items, values } from '@azure/linq';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@azure-tools/codemodel-v3';
+import { EOL } from '@azure-tools/codegen';
+import { items, values } from '@azure-tools/linq';
 
-import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@azure/codegen-csharp';
+import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';

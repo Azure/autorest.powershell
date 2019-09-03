@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { components, ParameterLocation } from '@azure/autorest.codemodel-v3';
-import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@azure/autorest.codemodel-v3';
+import { components, ParameterLocation } from '@azure-tools/codemodel-v3';
+import { Discriminator, JsonType, Property, Schema, XML, StatusCodes, uid } from '@azure-tools/codemodel-v3';
 
-import { Dictionary, items, keys, length, ToDictionary, values } from '@azure/linq';
-import { isMediaTypeJson, isMediaTypeXml } from '@azure/autorest.codemodel-v3';
-import { ModelState } from '@azure/autorest.codemodel-v3';
-import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@azure/autorest.codemodel-v3';
-import { codemodel } from '@azure/autorest.codemodel-v3';
-import { StringFormat } from '@azure/autorest.codemodel-v3';
+import { Dictionary, items, keys, length, ToDictionary, values } from '@azure-tools/linq';
+import { isMediaTypeJson, isMediaTypeXml } from '@azure-tools/codemodel-v3';
+import { ModelState } from '@azure-tools/codemodel-v3';
+import { Callback, Encoding, EncodingStyle, Header, HttpMethod, HttpOperation, HttpOperationParameter, MediaType, NewResponse, RequestBody } from '@azure-tools/codemodel-v3';
+import { codemodel } from '@azure-tools/codemodel-v3';
+import { StringFormat } from '@azure-tools/codemodel-v3';
 import { dereference, Dereferenced, getExtensionProperties, Refable, isReference } from './common';
 import * as Interpretations from './interpretations';
-import * as OpenAPI from '@azure/openapi';
-import { ImplementationLocation } from '@azure/autorest.codemodel-v3/dist/code-model/components';
-import { excludeXDash } from '@azure/codegen';
+import * as OpenAPI from '@azure-tools/openapi';
+import { ImplementationLocation } from '@azure-tools/codemodel-v3/dist/code-model/components';
+import { excludeXDash } from '@azure-tools/codegen';
 
 export function CopyDictionary<TSource, TDestination>(dictionary: Dictionary<TSource>, each: (index: string) => TDestination) {
   return ToDictionary(excludeXDash(dictionary), each);

@@ -5,8 +5,8 @@
 
 import { suite, test } from 'mocha-typescript';
 import * as assert from 'assert';
-import * as aio from '@azure/async-io';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
+import * as aio from '@azure-tools/async-io';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { titleToAzureServiceName } from '../plugin-create-commands';
 
 @suite class TestServiceName {

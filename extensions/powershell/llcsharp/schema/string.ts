@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType } from '@azure/autorest.codemodel-v3';
-import { camelCase, deconstruct, nameof } from '@azure/codegen';
-import { System } from '@azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure/codegen-csharp';
-import { If } from '@azure/codegen-csharp';
-import { OneOrMoreStatements } from '@azure/codegen-csharp';
-import { Variable } from '@azure/codegen-csharp';
+import { KnownMediaType } from '@azure-tools/codemodel-v3';
+import { camelCase, deconstruct, nameof } from '@azure-tools/codegen';
+import { System } from '@azure-tools/codegen-csharp';
+import { Expression, ExpressionOrLiteral, toExpression, valueOf } from '@azure-tools/codegen-csharp';
+import { If } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
+import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';

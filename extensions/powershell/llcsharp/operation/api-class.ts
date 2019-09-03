@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { Class, Namespace } from '@azure/codegen-csharp';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { Class, Namespace } from '@azure-tools/codegen-csharp';
 
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
-import { ParameterLocation } from '@azure/autorest.codemodel-v3';
+import { ParameterLocation } from '@azure-tools/codemodel-v3';
 
 export class ApiClass extends Class {
 

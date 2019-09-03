@@ -19,7 +19,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 > Requires
 ``` yaml !$(powershell-testing)
 use-extension: 
-  "@azure/autorest.remodeler": "beta"
+  "@autorest/remodeler": "beta"
 ```
 
 > Multi-Api Mode

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ImportDirective } from '@azure/codegen-csharp';
-import { Namespace } from '@azure/codegen-csharp';
+import { ImportDirective } from '@azure-tools/codegen-csharp';
+import { Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
 

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { JsonType, VirtualProperty } from '@azure/autorest.codemodel-v3';
-import { escapeString, pascalCase, } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { JsonType, VirtualProperty } from '@azure-tools/codemodel-v3';
+import { escapeString, pascalCase, } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 
 import { Binary, Schema } from './llcsharp/exports';
-import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@azure/codegen-csharp';
+import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@azure-tools/codegen-csharp';
 
 import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
 import { State } from './state';

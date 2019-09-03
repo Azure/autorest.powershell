@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { components } from '@azure/autorest.codemodel-v3';
-import { BackedProperty, TypeDeclaration } from '@azure/codegen-csharp';
+import { components } from '@azure-tools/codemodel-v3';
+import { BackedProperty, TypeDeclaration } from '@azure-tools/codegen-csharp';
 
 export class CmdletParameter extends BackedProperty {
   public parameterDefinition: components.IParameter;

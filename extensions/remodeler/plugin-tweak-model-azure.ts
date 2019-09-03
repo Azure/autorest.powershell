@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties, HttpMethod, schema } from '@azure/autorest.codemodel-v3';
-import { keys, length, values } from '@azure/linq';
+import { codemodel, JsonType, processCodeModel, ModelState, getAllProperties, HttpMethod, schema } from '@azure-tools/codemodel-v3';
+import { keys, length, values } from '@azure-tools/linq';
 
-import { Channel, Host } from '@azure/autorest-extension-base';
+import { Channel, Host } from '@azure-tools/autorest-extension-base';
 type State = ModelState<codemodel.Model>;
 
 const xmsPageable = 'x-ms-pageable';

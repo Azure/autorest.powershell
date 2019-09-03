@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { ImportDirective, Namespace } from '@azure/codegen-csharp';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../state';
 import { CmdletClass } from '../cmdlet-class';

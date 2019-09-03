@@ -3,18 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { deconstruct, pascalCase, } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { deconstruct, pascalCase, } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from './llcsharp/exports';
 import { State } from './state';
-import { Project as codeDomProject } from '@azure/codegen-csharp';
+import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { SupportNamespace } from './namespaces/support';
 import { ModelExtensionsNamespace } from './namespaces/model-extensions';
 import { ModelCmdletNamespace } from './namespaces/model-cmdlet';
 import { ServiceNamespace } from './namespaces/service';
 import { CmdletNamespace } from './namespaces/cmdlet';
-import { Host, Channel } from '@azure/autorest-extension-base';
-import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure/autorest.codemodel-v3';
+import { Host, Channel } from '@azure-tools/autorest-extension-base';
+import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 

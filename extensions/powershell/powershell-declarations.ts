@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { intersect } from '@azure/codegen';
-import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace, TypeDeclaration } from '@azure/codegen-csharp';
+import { intersect } from '@azure-tools/codegen';
+import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace, TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from './llcsharp/exports';
 
 const sma = new Namespace('System.Management.Automation');

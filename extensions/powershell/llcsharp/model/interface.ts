@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, JsonType, getPolymorphicBases } from '@azure/autorest.codemodel-v3';
+import { KnownMediaType, JsonType, getPolymorphicBases } from '@azure-tools/codemodel-v3';
 
-import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, InterfaceProperty, Attribute, StringExpression, LiteralExpression, Property, TypeDeclaration } from '@azure/codegen-csharp';
+import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, InterfaceProperty, Attribute, StringExpression, LiteralExpression, Property, TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelClass } from './model-class';
-import { TypeContainer } from '@azure/codegen-csharp/dist/type-container';
+import { TypeContainer } from '@azure-tools/codegen-csharp/dist/type-container';
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nameof } from '@azure/codegen';
-import { Variable } from '@azure/codegen-csharp';
+import { nameof } from '@azure-tools/codegen';
+import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Primitive } from './primitive';

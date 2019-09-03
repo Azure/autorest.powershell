@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { pascalCase, EnglishPluralizationService } from '@azure/codegen';
-import { Channel, Message } from '@azure/autorest-extension-base';
+import { pascalCase, EnglishPluralizationService } from '@azure-tools/codegen';
+import { Channel, Message } from '@azure-tools/autorest-extension-base';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();

@@ -94,112 +94,114 @@
    */
   "telemetryEnabled": false,
   "projects": [
-    /* REGION: PERKS */
+    /* To build the PERKS project along with the generator itself, 
+    the following line must end in a star-slash (to close the comment)   */
+    /* REGION: PERKS
     {
-      "packageName": "@azure/tasks",
+      "packageName": "@azure-tools/tasks",
       "projectFolder": "perks/libraries/tasks",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/async-io",
+      "packageName": "@azure-tools/async-io",
       "projectFolder": "perks/libraries/async-io",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/eventing",
+      "packageName": "@azure-tools/eventing",
       "projectFolder": "perks/libraries/eventing",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/extension",
+      "packageName": "@azure-tools/extension",
       "projectFolder": "perks/libraries/extension",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/datastore",
+      "packageName": "@azure-tools/datastore",
       "projectFolder": "perks/libraries/datastore",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/linq",
+      "packageName": "@azure-tools/linq",
       "projectFolder": "perks/libraries/linq",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/openapi",
+      "packageName": "@azure-tools/openapi",
       "projectFolder": "perks/libraries/openapi",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/uri",
+      "packageName": "@azure-tools/uri",
       "projectFolder": "perks/libraries/uri",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/oai2-to-oai3",
+      "packageName": "@azure-tools/oai2-to-oai3",
       "projectFolder": "perks/libraries/oai2-to-oai3",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/autorest-extension-base",
+      "packageName": "@azure-tools/autorest-extension-base",
       "projectFolder": "perks/libraries/autorest-extension-base",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/autorest.codemodel-v3",
+      "packageName": "@azure-tools/codemodel-v3",
       "projectFolder": "perks/libraries/codemodel-v3",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/codegen",
+      "packageName": "@azure-tools/codegen",
       "projectFolder": "perks/libraries/codegen",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/codegen-csharp",
+      "packageName": "@azure-tools/codegen-csharp",
       "projectFolder": "perks/libraries/codegen-csharp",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/object-comparison",
+      "packageName": "@azure-tools/object-comparison",
       "projectFolder": "perks/libraries/object-comparison",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@azure/deduplication",
+      "packageName": "@azure-tools/deduplication",
       "projectFolder": "perks/libraries/deduplication",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     /* --- project packages --- */
     {
-      "packageName": "@azure/autorest.remodeler",
+      "packageName": "@autorest/remodeler",
       "projectFolder": "extensions/remodeler",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@azure/autorest.powershell",
+      "packageName": "@autorest/powershell",
       "projectFolder": "extensions/powershell",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@azure/autorest.incubator",
+      "packageName": "@autorest/incubator",
       "projectFolder": "extensions/incubator",
       "reviewCategory": "production",
       "shouldPublish": false

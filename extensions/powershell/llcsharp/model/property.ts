@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, JsonType } from '@azure/autorest.codemodel-v3';
-import { Access, isAnExpression, toExpression } from '@azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral } from '@azure/codegen-csharp';
-import { BackedProperty } from '@azure/codegen-csharp';
-import { OneOrMoreStatements } from '@azure/codegen-csharp';
-import { Variable } from '@azure/codegen-csharp';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, JsonType } from '@azure-tools/codemodel-v3';
+import { Access, isAnExpression, toExpression } from '@azure-tools/codegen-csharp';
+import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';
+import { BackedProperty } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
+import { Variable } from '@azure-tools/codegen-csharp';
 import { Property, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';

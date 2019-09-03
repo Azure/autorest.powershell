@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel } from '@azure/autorest.codemodel-v3';
-import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure/codegen';
-import { Host } from '@azure/autorest-extension-base';
+import { codemodel } from '@azure-tools/codemodel-v3';
+import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
+import { Host } from '@azure-tools/autorest-extension-base';
 import { join } from 'path';
 import { Project } from './project';
 import { State } from './state';

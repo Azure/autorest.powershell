@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { includeXDash } from '@azure/codegen';
-import { Dictionary, ToDictionary } from '@azure/linq';
+import { includeXDash } from '@azure-tools/codegen';
+import { Dictionary, ToDictionary } from '@azure-tools/linq';
 
 export interface PathReference<T> {
   $ref: string;

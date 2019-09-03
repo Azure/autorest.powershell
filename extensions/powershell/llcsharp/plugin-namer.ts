@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure/autorest.codemodel-v3';
+import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure-tools/codemodel-v3';
 
-import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { System } from '@azure/codegen-csharp';
+import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { System } from '@azure-tools/codegen-csharp';
 
-import { Host } from '@azure/autorest-extension-base';
+import { Host } from '@azure-tools/autorest-extension-base';
 import { Schema, SchemaDetails } from './code-model';
 import { SchemaDefinitionResolver } from './schema/schema-resolver';
 

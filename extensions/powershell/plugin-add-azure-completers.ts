@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, processCodeModel, ModelState } from '@azure/autorest.codemodel-v3';
-import { values } from '@azure/linq';
-import { Host } from '@azure/autorest-extension-base';
+import { codemodel, processCodeModel, ModelState } from '@azure-tools/codemodel-v3';
+import { values } from '@azure-tools/linq';
+import { Host } from '@azure-tools/autorest-extension-base';
 
 type State = ModelState<codemodel.Model>;
 

@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Method } from '@azure/codegen-csharp';
+import { Method } from '@azure-tools/codegen-csharp';
 
-import { KnownMediaType } from '@azure/autorest.codemodel-v3';
-import { System } from '@azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral } from '@azure/codegen-csharp';
+import { KnownMediaType } from '@azure-tools/codemodel-v3';
+import { System } from '@azure-tools/codegen-csharp';
+import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';
 
-import { Parameter } from '@azure/codegen-csharp';
-import { OneOrMoreStatements } from '@azure/codegen-csharp';
-import { Variable } from '@azure/codegen-csharp';
+import { Parameter } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
+import { Variable } from '@azure-tools/codegen-csharp';
 
 import { HttpOperationParameter, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';

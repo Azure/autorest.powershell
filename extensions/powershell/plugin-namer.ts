@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@azure/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@azure/autorest.codemodel-v3';
-import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
-import * as linq from '@azure/linq';
+import { Host, Channel } from '@azure-tools/autorest-extension-base';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@azure-tools/codemodel-v3';
+import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import * as linq from '@azure-tools/linq';
 import { singularize } from './name-inferrer';
-import { IParameter } from '@azure/autorest.codemodel-v3/dist/code-model/components';
+import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
 type State = ModelState<codemodel.Model>;
 
 function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {

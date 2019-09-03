@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure/autorest.codemodel-v3';
+import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
 import { ArrayOf } from './array';

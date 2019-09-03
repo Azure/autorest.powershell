@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ImportDirective, Namespace } from '@azure/codegen-csharp';
+import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../llcsharp/exports';
 import { State } from '../state';
 import { ModuleClass } from '../module-class';

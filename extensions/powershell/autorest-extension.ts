@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutoRestExtension, } from '@azure/autorest-extension-base';
+import { AutoRestExtension, } from '@azure-tools/autorest-extension-base';
 
 import { applyModifiers } from './modifiers';
 import { createCommands } from './plugin-create-commands';

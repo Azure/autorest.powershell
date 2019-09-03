@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure/autorest.codemodel-v3';
-import { escapeString, docComment, serialize, pascalCase } from '@azure/codegen';
-import { items, values, keys, Dictionary, length } from '@azure/linq';
+import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
+import { escapeString, docComment, serialize, pascalCase } from '@azure-tools/codegen';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
   LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case
-} from '@azure/codegen-csharp';
+} from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from './llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from './powershell-declarations';
 import { State } from './state';
-import { Channel } from '@azure/autorest-extension-base';
-import { IParameter } from '@azure/autorest.codemodel-v3/dist/code-model/components';
-import { Variable, Local, ParameterModifier } from '@azure/codegen-csharp';
+import { Channel } from '@azure-tools/autorest-extension-base';
+import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
+import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
 
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 

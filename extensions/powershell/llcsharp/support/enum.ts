@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Modifier, toExpression } from '@azure/codegen-csharp';
-import { Constructor } from '@azure/codegen-csharp';
-import { Expression, ExpressionOrLiteral, StringExpression } from '@azure/codegen-csharp';
-import { Field } from '@azure/codegen-csharp';
-import { Interface } from '@azure/codegen-csharp';
-import { Method } from '@azure/codegen-csharp';
+import { Access, Modifier, toExpression } from '@azure-tools/codegen-csharp';
+import { Constructor } from '@azure-tools/codegen-csharp';
+import { Expression, ExpressionOrLiteral, StringExpression } from '@azure-tools/codegen-csharp';
+import { Field } from '@azure-tools/codegen-csharp';
+import { Interface } from '@azure-tools/codegen-csharp';
+import { Method } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
 
-import { KnownMediaType } from '@azure/autorest.codemodel-v3';
-import { dotnet } from '@azure/codegen-csharp';
-import { Namespace } from '@azure/codegen-csharp';
-import { Operator } from '@azure/codegen-csharp';
-import { Parameter } from '@azure/codegen-csharp';
-import { Property } from '@azure/codegen-csharp';
-import { OneOrMoreStatements } from '@azure/codegen-csharp';
-import { Struct } from '@azure/codegen-csharp';
-import { Variable } from '@azure/codegen-csharp';
+import { KnownMediaType } from '@azure-tools/codemodel-v3';
+import { dotnet } from '@azure-tools/codegen-csharp';
+import { Namespace } from '@azure-tools/codegen-csharp';
+import { Operator } from '@azure-tools/codegen-csharp';
+import { Parameter } from '@azure-tools/codegen-csharp';
+import { Property } from '@azure-tools/codegen-csharp';
+import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
+import { Struct } from '@azure-tools/codegen-csharp';
+import { Variable } from '@azure-tools/codegen-csharp';
 import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';

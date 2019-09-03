@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState } from '@azure/autorest.codemodel-v3';
-import { deserialize, serialize } from '@azure/codegen';
-import { Host } from '@azure/autorest-extension-base';
-import * as OpenAPI from '@azure/openapi';
+import { ModelState } from '@azure-tools/codemodel-v3';
+import { deserialize, serialize } from '@azure-tools/codegen';
+import { Host } from '@azure-tools/autorest-extension-base';
+import * as OpenAPI from '@azure-tools/openapi';
 import { Remodeler } from './remodeler';
 type State = ModelState<OpenAPI.Model>;
 
