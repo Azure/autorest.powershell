@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@azure-tools/autorest-extension-base';
 import { Project } from '../project';
 
 export async function generateGitAttributes(project: Project) {

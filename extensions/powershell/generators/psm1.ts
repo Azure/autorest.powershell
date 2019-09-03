@@ -3,12 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@azure-tools/autorest-extension-base';
 import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
-import { join, relative } from 'path';
+import { relative } from 'path';
 
-export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
+export function getProfileExportScript(exportFolderScript: string): string {
   return `
   # Export proxy cmdlet scripts
   $exportsPath = ${exportFolderScript}
@@ -110,7 +109,7 @@ ${azureInitialize}
 
   # Export nothing to clear implicit exports
   Export-ModuleMember
-${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, project.azure)}
+${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
   # Finalize initialization of this module
   $instance.Init();
   Write-Information "Loaded Module '$($instance.Name)'"`);
