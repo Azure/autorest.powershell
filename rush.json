@@ -94,7 +94,7 @@
    */
   "telemetryEnabled": false,
   "projects": [
-    /* REGION: PERKS 
+    /* REGION: PERKS */
     {
       "packageName": "@azure/tasks",
       "projectFolder": "perks/libraries/tasks",

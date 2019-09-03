@@ -11,7 +11,8 @@ import { State } from '../state';
 
 import { dotnet, System } from '@azure/codegen-csharp';
 import { PSScriptFile } from '../file-formats/psscript-file';
-import { ClientRuntime } from '@azure/autorest.csharp-v2';
+import { ClientRuntime } from '../llcsharp/exports';
+
 
 interface ScenarioParameter extends Dictionary<any> {
   type: string;

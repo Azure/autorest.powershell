@@ -5,7 +5,7 @@
 
 import { deconstruct, pascalCase, } from '@azure/codegen';
 import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '@azure/autorest.csharp-v2';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from './llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure/codegen-csharp';
 import { SupportNamespace } from './namespaces/support';

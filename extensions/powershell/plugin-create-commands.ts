@@ -6,7 +6,7 @@
 import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@azure/autorest.codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates } from '@azure/codegen';
 import { items, values, keys, Dictionary, length } from '@azure/linq';
-import { Schema } from '@azure/autorest.csharp-v2';
+import { Schema } from './llcsharp/exports';
 import { Channel, Host } from '@azure/autorest-extension-base';
 import { Lazy } from '@azure/tasks';
 import { clone } from '@azure/linq';

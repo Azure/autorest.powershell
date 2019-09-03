@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { items, values, keys, Dictionary, length } from '@azure/linq';
 import { ImportDirective, Namespace } from '@azure/codegen-csharp';
-import { Schema, ClientRuntime } from '@azure/autorest.csharp-v2';
+import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../state';
 import { CmdletClass } from '../cmdlet-class';
 

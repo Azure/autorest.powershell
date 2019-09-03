@@ -62,10 +62,6 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
-      "directory": "./extensions/csharp-v2",
-    },
-    {
-      "changeProcessCWD": true,
       "directory": "./extensions/incubator",
     },
     {

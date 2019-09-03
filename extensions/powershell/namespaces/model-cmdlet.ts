@@ -5,7 +5,7 @@
 import { items, values, keys, Dictionary, length } from '@azure/linq';
 import { JsonType } from '@azure/autorest.codemodel-v3';
 import { ImportStatic, Namespace } from '@azure/codegen-csharp';
-import { Schema, ClientRuntime } from '@azure/autorest.csharp-v2';
+import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../state';
 import { ModelCmdlet } from '../model-cmdlet';
 

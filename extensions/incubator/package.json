@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/Azure/autorest.powershell#readme",
   "devDependencies": {
-    "@types/js-yaml": "3.11.2",
+    "@types/js-yaml": "3.12.1",
     "@types/mocha": "5.2.5",
     "@types/node": "12.7.2",
     "mocha": "5.2.0",
@@ -47,10 +47,9 @@
     "@azure/codegen": "~2.0.0",
     "@azure/codegen-csharp": "~3.0.0",
     "@azure/autorest.codemodel-v3": "~3.0.0",
-    "@azure/autorest.remodeler": "^2.0.0",
-    "@azure/autorest.powershell": "^2.0.0",
+    "@azure/autorest.remodeler": "~2.0.0",
+    "@azure/autorest.powershell": "~2.0.0",
     "@azure/autorest-extension-base": "~3.0.0",
-    "@azure/autorest.csharp-v2": "^2.0.0",
     "@azure/tasks": "~3.0.0",
     "source-map-support": "0.5.9"
   }

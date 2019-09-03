@@ -13,7 +13,6 @@ https://aka.ms/autorest
    Loading AutoRest core      'C:\Users\garretts.NTDEV\.autorest\@azure_autorest-core@3.0.5330\node_modules\@azure\autorest-core\dist' (3.0.5330)
    Installing AutoRest extension '@azure/autorest.powershell' (beta)
    Installing AutoRest extension '@azure/autorest.remodeler' (beta)
-   Installing AutoRest extension '@azure/autorest.csharp-v2' (beta)
 
 > 
 ```

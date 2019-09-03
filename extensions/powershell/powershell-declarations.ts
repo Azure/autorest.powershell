@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ClientRuntime } from '@azure/autorest.csharp-v2';
+
 import { intersect } from '@azure/codegen';
 import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace, TypeDeclaration } from '@azure/codegen-csharp';
+import { ClientRuntime } from './llcsharp/exports';
 
 const sma = new Namespace('System.Management.Automation');
 const rest = new Namespace('Microsoft.Rest');

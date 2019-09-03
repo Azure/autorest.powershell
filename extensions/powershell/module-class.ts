@@ -5,10 +5,9 @@
 
 import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@azure/codegen-csharp';
 
-import { ClientRuntime } from '@azure/autorest.csharp-v2';
-
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from './powershell-declarations';
 import { State } from './state';
+import { ClientRuntime } from './llcsharp/exports';
 
 export class ModuleClass extends Class {
 

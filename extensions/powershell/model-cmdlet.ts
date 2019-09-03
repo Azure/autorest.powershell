@@ -7,7 +7,7 @@ import { JsonType, VirtualProperty } from '@azure/autorest.codemodel-v3';
 import { escapeString, pascalCase, } from '@azure/codegen';
 import { items, values, keys, Dictionary, length } from '@azure/linq';
 
-import { Binary, Schema } from '@azure/autorest.csharp-v2';
+import { Binary, Schema } from './llcsharp/exports';
 import { Access, Attribute, Class, Property, LiteralExpression, MemberVariable, Method, Modifier, Namespace, Statements, StringExpression, System, valueOf, Variable, ExpressionOrLiteral, Field, toExpression, } from '@azure/codegen-csharp';
 
 import { ArgumentCompleterAttribute, CmdletAttribute, OutputTypeAttribute, ParameterAttribute, PSCmdlet, SwitchParameter, DescriptionAttribute, GeneratedAttribute } from './powershell-declarations';
