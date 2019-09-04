@@ -4,6 +4,7 @@ dist/test/
 package/
 .npmignore
 tsconfig.json
+*.ts
 .eslint*
 !*.d.ts
 *.tgz
