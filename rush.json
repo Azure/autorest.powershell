@@ -96,7 +96,7 @@
   "projects": [
     /* To build the PERKS project along with the generator itself, 
     the following line must end in a star-slash (to close the comment)   */
-    /* REGION: PERKS
+    /* REGION: PERKS */
     {
       "packageName": "@azure-tools/tasks",
       "projectFolder": "perks/libraries/tasks",

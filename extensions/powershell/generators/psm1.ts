@@ -7,7 +7,7 @@ import { Project } from '../project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
 
-export function getProfileExportScript(exportFolderScript: string): string {
+export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
   return `
   # Export proxy cmdlet scripts
   $exportsPath = ${exportFolderScript}
@@ -25,12 +25,10 @@ export function getProfileExportScript(exportFolderScript: string): string {
     # Load the last folder if no profile is selected
     $profileDirectory = $directories | Select-Object -Last 1
   }
-
   if($profileDirectory) {
     Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
     $exportsPath = $profileDirectory.FullName
   }
-
   if($exportsPath) {
     Get-ChildItem -Path $exportsPath -Recurse -Include '*.ps1' -File | ForEach-Object { . $_.FullName }
     $cmdletNames = Get-ScriptCmdlet -ScriptFolder $exportsPath
@@ -41,7 +39,7 @@ export function getProfileExportScript(exportFolderScript: string): string {
 
 export async function generatePsm1(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
-  let azureInitialize = '';
+  let azureInitialize = ''
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     azureInitialize = `
@@ -63,32 +61,24 @@ export async function generatePsm1(project: Project) {
       }
     }
   }
-
   if(-not $accountsModule) {
     Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. For installation instructions, please see: https://docs.microsoft.com/en-us/powershell/azure/install-az-ps" -ErrorAction Stop
   } elseif (($accountsModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') -and (-not $localAccounts)) {
     Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new PowerShell session and import this module again.\`nAdditionally, this error could indicate that multiple incompatible versions of Azure PowerShell modules are installed on your system. For troubleshooting information, please see: https://aka.ms/azps-version-error" -ErrorAction Stop
   }
   Write-Information "Loaded Module '$($accountsModule.Name)'"
-
   # Ask for the shared functionality table
   $VTable = Register-AzModule
-
   # Tweaks the pipeline on module load
   $instance.OnModuleLoad = $VTable.OnModuleLoad
-
   # Tweaks the pipeline per call
   $instance.OnNewRequest = $VTable.OnNewRequest
-
   # Gets shared parameter values
   $instance.GetParameterValue = $VTable.GetParameterValue
-
   # Allows shared module to listen to events from this module
   $instance.EventListener = $VTable.EventListener
-
   # Gets shared argument completers
   $instance.ArgumentCompleter = $VTable.ArgumentCompleter
-
   # The name of the currently selected Azure profile
   $instance.ProfileName = $VTable.ProfileName
 `;
@@ -97,7 +87,6 @@ export async function generatePsm1(project: Project) {
   psm1.prepend('Generated', `
   # Load the private module dll
   $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
-
   # Get the private module's instance
   $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 ${azureInitialize}
@@ -106,13 +95,13 @@ ${azureInitialize}
   if(Test-Path $customModulePath) {
     $null = Import-Module -Name $customModulePath
   }
-
   # Export nothing to clear implicit exports
   Export-ModuleMember
-${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`)}
+${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, project.azure)}
   # Finalize initialization of this module
   $instance.Init();
   Write-Information "Loaded Module '$($instance.Name)'"`);
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
+
