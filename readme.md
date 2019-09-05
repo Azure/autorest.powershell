@@ -42,6 +42,6 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 powershell-testing: true
 pipeline-model: v3
 powershell: true
-require: "$(this-folder)/extensions/powershell/readme.md"
+require: "$(this-folder)/powershell/readme.md"
 ```
 

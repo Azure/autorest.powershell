@@ -18,12 +18,12 @@
       "protocol": "inspector",
       "request": "launch",
       "name": "run tests",
-      "program": "${workspaceRoot}/extensions/powershell/node_modules/mocha/bin/_mocha",
+      "program": "${workspaceRoot}/powershell/node_modules/mocha/bin/_mocha",
       "args": [
         "dist/test/noun-cleaning.js",
         "--timeout=2000000"
       ],
-      "cwd": "${workspaceRoot}/extensions/powershell"
+      "cwd": "${workspaceRoot}/powershell"
     }
   ]
 }
