@@ -4,8 +4,8 @@
   "name": "autorest.powershell",
   "description": "> See readme.md for build instructions",
   "scripts": {
-    "start": "node --max_old_space_size=4096 ./extensions/powershell/dist/autorest-extension",
-    "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/powershell/dist/autorest-extension",
+    "start": "node --max_old_space_size=4096 ./powershell/dist/autorest-extension",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./powershell/dist/autorest-extension",
     "prepare": "(pwsh -v || npm --silent run show-error) && pwsh -noprofile ./.scripts/verify-install.ps1",
     "show-error": "echo ====== &echo ====== & echo ====== & echo REQUIRED: Install PowerShell-core 6.1 or greater (see readme.md) & echo ====== & echo ====== & echo ====== & exit 1",
     "clean": "ver > nul 2>&1 nul  && npm run --silent clean-cmd || npm run --silent clean-bash",
