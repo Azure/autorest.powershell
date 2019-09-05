@@ -199,12 +199,6 @@
       "projectFolder": "extensions/powershell",
       "reviewCategory": "production",
       "shouldPublish": true
-    },
-    {
-      "packageName": "@autorest/incubator",
-      "projectFolder": "extensions/incubator",
-      "reviewCategory": "production",
-      "shouldPublish": false
     }
   ]
 }

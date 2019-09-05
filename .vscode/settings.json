@@ -62,15 +62,71 @@
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,
-      "directory": "./extensions/incubator",
-    },
-    {
-      "changeProcessCWD": true,
       "directory": "./extensions/powershell",
     },
     {
       "changeProcessCWD": true,
       "directory": "./extensions/remodeler",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/async-io",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/autorest-extension-base",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/codegen",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/codegen-csharp",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/codemodel-v3",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/datastore",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/deduplication",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/eventing",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/extension",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/linq",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/oai2-to-oai3",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/object-comparison",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/openapi",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/tasks",
+    },
+    {
+      "changeProcessCWD": true,
+      "directory": "./perks/libraries/uri"
     }
   ]
 }
