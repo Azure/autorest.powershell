@@ -2,29 +2,52 @@
   "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/command-line.schema.json",
   "commands": [
     {
-      "commandKind": "bulk",
-      "name": "set-version",
-      "summary": "set the version in the package.json files",
-      "enableParallelism": true,
-      "ignoreMissingScript": true
+      "commandKind": "global",
+      "name": "set-versions",
+      "summary": "set the patch version in the package.json files",
+      "shellCommand": "node .scripts/set-versions.js"
+    },
+    {
+      "commandKind": "global",
+      "name": "reset-versions",
+      "summary": "reset the patch version in the package.json files to .0",
+      "shellCommand": "node .scripts/set-versions.js --reset"
     },
     {
       "commandKind": "global",
       "name": "sync-versions",
       "summary": "sync versions of sibling projects",
-      "shellCommand": "node common/scripts/sync-versions.js"
+      "shellCommand": "node .scripts/sync-versions.js"
     },
     {
       "commandKind": "global",
       "name": "watch",
       "summary": "run npm watch on all projects",
-      "shellCommand": "node common/scripts/watch.js"
+      "shellCommand": "node .scripts/watch.js"
     },
     {
       "commandKind": "global",
       "name": "clean",
       "summary": "run npm clean on all projects",
-      "shellCommand": "node common/scripts/clean.js"
+      "shellCommand": "node .scripts/npm-run.js clean"
+    },
+    {
+      "commandKind": "global",
+      "name": "test",
+      "summary": "run all npm test",
+      "shellCommand": "node .scripts/npm-run.js test"
+    },
+    {
+      "commandKind": "global",
+      "name": "fix",
+      "summary": "run all npm fix",
+      "shellCommand": "node .scripts/npm-run.js eslint-fix"
+    },
+    {
+      "commandKind": "global",
+      "name": "lint",
+      "summary": "run all npm lint",
+      "shellCommand": "node .scripts/npm-run.js eslint"
     }
   ],
   "parameters": []

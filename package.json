@@ -1,16 +1,13 @@
 {
+  "verison": "0.0.0",
   "private": true,
-  "name": "autorest.powershell",
+  "name": "@autorest/powershell",
+  "description": "> See readme.md for instructions",
   "scripts": {
-    "start": "node --max_old_space_size=4096 ./extensions/incubator/dist/autorest-extension",
-    "debug": "node --max_old_space_size=4096 --inspect-brk ./extensions/incubator/dist/autorest-extension",
-    "install": "node ./common/scripts/install-run-rush.js update",
-    "publish-instructions": "rush set-version && rush update-versions && rush publish --publish --include-all --tag=preview --npm-auth-token=..."
-  },
-  "devDependencies": {
-    "tslint": "^5.12.1",
-    "pwsh": "0.2.0",
-    "tslint-microsoft-contrib": "^6.0.0",
-    "typescript": "~3.5.2"
+    "start": "node --max_old_space_size=4096 ./powershell/dist/main",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./powershell/dist/main",
+    "prepare": "(pwsh -v || npm --silent run show-error) && pwsh -noprofile ./.scripts/verify-install.ps1",
+    "show-error": "echo ====== &echo ====== & echo ====== & echo REQUIRED: Install PowerShell-core 6.1 or greater (see readme.md) & echo ====== & echo ====== & echo ====== & exit 1",
+    "pack": "rush publish --publish --pack --include-all --tag preview"
   }
 }

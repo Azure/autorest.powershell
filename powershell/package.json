@@ -1,0 +1,65 @@
+{
+  "name": "@autorest/powershell",
+  "version": "2.0.0",
+  "description": "AutoRest PowerShell Cmdlet Generator",
+  "main": "dist/exports.js",
+  "typings": "dist/exports.d.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  },
+  "scripts": {
+    "start": "node --max_old_space_size=4096 ./dist/main.js",
+    "debug": "node --max_old_space_size=4096 --inspect-brk ./dist/main.js",
+    "eslint-fix": "eslint  . --fix --ext .ts",
+    "eslint": "eslint  . --ext .ts",
+    "build": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "prepare": "npm run build",
+    "test": "npm run build && mocha dist/test",
+    "clean": "ver > nul 2>&1 nul && npm run --silent clean-cmd || npm run --silent clean-bash",
+    "clean-cmd": "if exist dist rmdir /s /q dist && exit 0 || exit 0 ",
+    "clean-bash": "rm nul && rm -rf dist && exit 0 || exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azure/autorest.powershell.git"
+  },
+  "keywords": [
+    "AutoRest",
+    "PowerShell",
+    "Cmdlet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Azure/autorest.powershell/issues"
+  },
+  "homepage": "https://github.com/Azure/autorest.powershell#readme",
+  "readme": "https://github.com/Azure/autorest.powershell/blob/master/readme.md",
+  "devDependencies": {
+    "@types/js-yaml": "3.12.1",
+    "@types/mocha": "5.2.5",
+    "@types/node": "12.7.2",
+    "mocha": "5.2.0",
+    "mocha-typescript": "1.1.17",
+    "typescript": "~3.6.2",
+    "@types/xmlbuilder": "0.0.34",
+    "@typescript-eslint/eslint-plugin": "~2.0.0",
+    "@typescript-eslint/parser": "~2.0.0",
+    "eslint": "~6.2.2"
+  },
+  "dependencies": {
+    "@azure-tools/codegen": "~2.0.0",
+    "@azure-tools/codegen-csharp": "~3.0.0",
+    "@azure-tools/codemodel-v3": "~3.0.0",
+    "@azure-tools/autorest-extension-base": "~3.0.0",
+    "@azure-tools/linq": "~3.0.0",
+    "@azure-tools/tasks": "~3.0.0",
+    "@azure-tools/async-io": "~3.0.0",
+    "source-map-support": "0.5.9",
+    "xmlbuilder": "10.1.1"
+  }
+}

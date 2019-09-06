@@ -13,7 +13,7 @@
     "declaration": true,
     "stripInternal": true,
     "noEmitHelpers": false,
-    "target": "esnext",
+    "target": "es2018",
     "types": [
       "node"
     ],
@@ -22,11 +22,5 @@
     ],
     "experimentalDecorators": true,
     "newLine": "LF",
-    "plugins": [
-      {
-        "name": "tslint-language-service-ts3",
-        "configFile": "./tslint.json"
-      }
-    ]
   }
 }
