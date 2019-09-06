@@ -38,6 +38,7 @@
     "url": "https://github.com/Azure/autorest.powershell/issues"
   },
   "homepage": "https://github.com/Azure/autorest.powershell#readme",
+  "readme": "https://github.com/Azure/autorest.powershell/blob/master/readme.md",
   "devDependencies": {
     "@types/js-yaml": "3.12.1",
     "@types/mocha": "5.2.5",
