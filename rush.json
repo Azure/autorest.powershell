@@ -51,8 +51,8 @@
    */
   "nodeSupportedVersionRange": ">=8.9.4 <11.0.0",
   "ensureConsistentVersions": true,
-  "projectFolderMinDepth": 2,
-  "projectFolderMaxDepth": 3,
+  "projectFolderMinDepth": 1,
+  "projectFolderMaxDepth": 2,
   "repository": {
     /**
      * This setting is sometimes needed when using "rush change" with multiple Git remotes.
