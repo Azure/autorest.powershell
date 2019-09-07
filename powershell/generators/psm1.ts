@@ -56,7 +56,6 @@ export async function generatePsm1(project: Project) {
         $accountsModule = Import-Module -Name ($localAccounts.FullName) -Scope Global -PassThru
       }
     }
-
     if(-not $accountsModule) {
       $hasAdequateVersion = (Get-Module -Name $accountsName -ListAvailable | Where-Object { $_.Version -ge [System.Version]'${project.accountsVersionMinimum}' } | Measure-Object).Count -gt 0
       if($hasAdequateVersion) {
@@ -64,6 +63,7 @@ export async function generatePsm1(project: Project) {
       }
     }
   }
+
   if(-not $accountsModule) {
     Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. For installation instructions, please see: https://docs.microsoft.com/en-us/powershell/azure/install-az-ps" -ErrorAction Stop
   } elseif (($accountsModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') -and (-not $localAccounts)) {
@@ -88,6 +88,7 @@ export async function generatePsm1(project: Project) {
   
   # Gets shared argument completers
   $instance.ArgumentCompleter = $VTable.ArgumentCompleter
+  
   # The name of the currently selected Azure profile
   $instance.ProfileName = $VTable.ProfileName
 `;
