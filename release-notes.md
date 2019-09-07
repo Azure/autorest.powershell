@@ -19,7 +19,7 @@
     > autorest --reset 
 
     # install the lates version of hte generator (you still have to 
-    # say --use=@azure-tools/autorest.powershell@beta when you use it! )
+    # say --use=@autorest/powershell when you use it! )
     > autorest --powershell --help
     
     # verify the version you have

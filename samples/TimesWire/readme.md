@@ -53,7 +53,7 @@ powershell:
 ``` yaml
 
 use:
-- "@autorest/powershell@beta"
+- "@autorest/powershell@latest"
 
 ```
 
