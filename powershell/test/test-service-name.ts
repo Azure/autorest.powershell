@@ -27,7 +27,7 @@ import { titleToAzureServiceName } from '../plugin-create-commands';
 
   private static normalizeEndlines(text: string, selector: (each: string) => string) {
     return values(text.split(/\r\n|\r|\n/))
-      .linq.select(tl => `${selector(tl)}\r\n`)
-      .linq.toArray().join('');
+      .select(tl => `${selector(tl)}\r\n`)
+      .toArray().join('');
   }
 }

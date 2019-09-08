@@ -80,9 +80,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       for (const parameter of virtualParameters) {
         let prevName = parameter.name;
         const otherParametersNames = values(virtualParameters)
-          .linq.select(each => each.name)
-          .linq.where(name => name !== parameter.name)
-          .linq.toArray();
+          .select(each => each.name)
+          .where(name => name !== parameter.name)
+          .toArray();
 
         // first try to singularize the parameter
         const singularName = singularize(parameter.name);
@@ -127,9 +127,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       for (const property of virtualProperties) {
         let prevName = property.name;
         const otherPropertiesNames = values(virtualProperties)
-          .linq.select(each => each.name)
-          .linq.where(name => name !== property.name)
-          .linq.toArray();
+          .select(each => each.name)
+          .where(name => name !== property.name)
+          .toArray();
 
         // first try to singularize the property
         const singularName = singularize(property.name);

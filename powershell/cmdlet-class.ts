@@ -546,20 +546,20 @@ export class CmdletClass extends Class {
 
       // find each parameter to the method, and find out where the value is going to come from.
       const operationParameters =
-        values(apiCall.parameters).linq.
+        values(apiCall.parameters).
           // filter out constants and path parameters when using piping for identity
-          where(each => !(each.details.csharp.constantValue) /* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).linq.
+          where(each => !(each.details.csharp.constantValue) /* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
 
           select(p => {
             return {
               name: p.details.csharp.name,
-              param: values($this.properties).linq.
-                where(each => each.metadata.parameterDefinition).linq.
+              param: values($this.properties).
+                where(each => each.metadata.parameterDefinition).
                 first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid),
               isPathParam: $this.isViaIdentity && p.in === ParameterLocation.Path
             };
 
-          }).linq.
+          }).
           select(each => {
             if (each.param) {
 
@@ -582,7 +582,7 @@ export class CmdletClass extends Class {
             }
 
             return { name: each.name, expression: dotnet.Null, isPathParam: each.isPathParam };
-          }).linq.toArray();
+          }).toArray();
 
       // is there a body parameter we should include?
       if ($this.bodyParameter) {
@@ -590,9 +590,9 @@ export class CmdletClass extends Class {
       }
 
       // create the response handlers
-      const responses = [...values(apiCall.responses).linq.selectMany(each => each)];
+      const responses = [...values(apiCall.responses).selectMany(each => each)];
 
-      const callbackMethods = values(responses).linq.toArray().map(each => new LiteralExpression(each.details.csharp.name));
+      const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.details.csharp.name));
 
       // make callback methods
       for (const each of values(responses)) {
@@ -656,7 +656,7 @@ export class CmdletClass extends Class {
               // this supports both { error { message, code} } and { message, code} 
 
               let props = getAllPublicVirtualProperties(each.schema.details.csharp.virtualProperties);
-              const errorProperty = values(props).linq.first(p => p.property.details.csharp.name === 'error');
+              const errorProperty = values(props).first(p => p.property.details.csharp.name === 'error');
               let ep = '';
               if (errorProperty) {
                 props = getAllPublicVirtualProperties(errorProperty.property.schema.details.csharp.virtualProperties);
@@ -802,7 +802,7 @@ export class CmdletClass extends Class {
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
-          const idschema = values($this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+          const idschema = values($this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
 
 
           if ($this.isViaIdentity) {
@@ -858,7 +858,7 @@ export class CmdletClass extends Class {
               }
             };
 
-            if (idschema && values(idschema.properties).linq.first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
+            if (idschema && values(idschema.properties).first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
               yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
               yield Else(identityFromPathParams);
             } else {
@@ -1218,7 +1218,7 @@ export class CmdletClass extends Class {
     if (this.isViaIdentity) {
       // add in the pipeline parameter for the identity
 
-      const idschema = values(this.state.project.model.schemas).linq.first(each => each.details.default.uid === 'universal-parameter-type');
+      const idschema = values(this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
       const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
       const idParam = this.add(new BackedProperty('InputObject', idtd, {
         description: 'Identity Parameter'
@@ -1292,8 +1292,8 @@ export class CmdletClass extends Class {
       const httpParam = origin.details.csharp.httpParameter;
       const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
-      const cat = values(operation.callGraph[0].parameters).linq.
-        where(each => !(each.details.csharp.constantValue)).linq.
+      const cat = values(operation.callGraph[0].parameters).
+        where(each => !(each.details.csharp.constantValue)).
         first(each => each.details.csharp.uid === uid);
 
       if (cat) {
@@ -1364,8 +1364,8 @@ export class CmdletClass extends Class {
     const outputTypes = new Set<string>();
     for (const httpOperation of values(operation.callGraph)) {
       const pageableInfo = httpOperation.details.csharp.pageable;
-      for (const item of items(httpOperation.responses).linq.where(each => each.key !== 'default')) {
-        for (const schema of values(item.value).linq.selectNonNullable(each => each.schema)) {
+      for (const item of items(httpOperation.responses).where(each => each.key !== 'default')) {
+        for (const schema of values(item.value).selectNonNullable(each => each.schema)) {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?
@@ -1407,9 +1407,9 @@ export class CmdletClass extends Class {
     // if any response does not return,
     // the cmdlet should have a PassThru parameter
     shouldAddPassThru = shouldAddPassThru || values(operation.callGraph)
-      .linq.selectMany(httpOperation => items(httpOperation.responses))
-      .linq.selectMany(responsesItem => responsesItem.value)
-      .linq.any(value => value.schema === undefined);
+      .selectMany(httpOperation => items(httpOperation.responses))
+      .selectMany(responsesItem => responsesItem.value)
+      .any(value => value.schema === undefined);
     if (outputTypes.size === 0) {
       outputTypes.add(`typeof(${dotnet.Bool})`);
     }

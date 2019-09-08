@@ -71,7 +71,7 @@ export class JsonSerializableClass extends Class {
       const exclusions = new Parameter('exclusions', System.Collections.Generic.HashSet(dotnet.String), { defaultInitializer: dotnet.Null });
       deserializerConstructor.parameters.push(exclusions);
 
-      this.excludes = [...values(getAllProperties(this.modelClass.schema)).linq.select(each => each.serializedName).linq.select(each => new StringExpression(each))].join();
+      this.excludes = [...values(getAllProperties(this.modelClass.schema)).select(each => each.serializedName).select(each => new StringExpression(each))].join();
       this.excludes = this.excludes ? `,${System.Collections.Generic.HashSet(dotnet.String).new()}{ ${this.excludes} }` : '';
 
       const ap = `((${ClientRuntime}.IAssociativeArray<${vType.declaration}>)this).AdditionalProperties`;

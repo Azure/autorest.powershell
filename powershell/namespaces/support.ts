@@ -19,9 +19,9 @@ export class SupportNamespace extends Namespace {
     this.apply(objectInitializer);
 
     const enumInfos = values(state.model.schemas)
-      .linq.where(each => each.details.csharp.enum !== undefined && !each.details.csharp.skip)
-      .linq.select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
-      .linq.toArray();
+      .where(each => each.details.csharp.enum !== undefined && !each.details.csharp.skip)
+      .select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
+      .toArray();
 
     const done = new Set<string>();
 
@@ -38,7 +38,7 @@ export class SupportNamespace extends Namespace {
       }
 
 
-      const enumValues = values(enumInfo.details.values).linq.select(v => <string>v.value).linq.toArray();
+      const enumValues = values(enumInfo.details.values).select(v => <string>v.value).toArray();
       const enumClass = new Struct(this, enumInfo.details.name, undefined, {
         interfaces: [IArgumentCompleter],
         partial: true,

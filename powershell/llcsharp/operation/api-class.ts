@@ -30,7 +30,7 @@ export class ApiClass extends Class {
       // we'll do that work in the OM and expose them as public properties.
       const operationMethod = new OperationMethod(this, operation, false, state.path('components', 'operations', operationIndex));
       this.addMethod(operationMethod);
-      if ([...values(operation.parameters).linq.select(each => each.in === ParameterLocation.Path)].length > 0) {
+      if ([...values(operation.parameters).select(each => each.in === ParameterLocation.Path)].length > 0) {
         // method has parameters in the path, so it could support '...ViaIdentity' 
         const identityMethod = new OperationMethod(this, operation, true, state.path('components', 'operations', operationIndex));
         identityMethod.emitCall(false);

@@ -264,47 +264,47 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const paramDefaultReplacer = (directive.set !== undefined) ? directive.set['default'] : undefined;
 
       // select all operations
-      let operations: Array<CommandOperation> = values(state.model.commands.operations).linq.toArray();
+      let operations: Array<CommandOperation> = values(state.model.commands.operations).toArray();
       if (subjectRegex) {
         operations = values(operations)
-          .linq.where(operation =>
+          .where(operation =>
             !!`${operation.details.csharp.subject}`.match(subjectRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (subjectPrefixRegex) {
         operations = values(operations)
-          .linq.where(operation =>
+          .where(operation =>
             !!`${operation.details.csharp.subjectPrefix}`.match(subjectPrefixRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (verbRegex) {
         operations = values(operations)
-          .linq.where(operation =>
+          .where(operation =>
             !!`${operation.details.csharp.verb}`.match(verbRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (variantRegex) {
         operations = values(operations)
-          .linq.where(operation =>
+          .where(operation =>
             !!`${operation.details.csharp.name}`.match(variantRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (parameterRegex && selectType === 'command') {
         operations = values(operations)
-          .linq.where(operation => values(allVirtualParameters(operation.details.csharp.virtualParameters))
-            .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
-          .linq.toArray();
+          .where(operation => values(allVirtualParameters(operation.details.csharp.virtualParameters))
+            .any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+          .toArray();
       }
 
       if (parameterRegex && (selectType === undefined || selectType === 'parameter')) {
         const parameters = values(operations)
-          .linq.selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
-          .linq.where(parameter => !!`${parameter.name}`.match(parameterRegex))
-          .linq.toArray();
+          .selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
+          .where(parameter => !!`${parameter.name}`.match(parameterRegex))
+          .toArray();
         for (const p of parameters) {
           const parameter = <any>p;
           const prevName = parameter.name;
@@ -423,40 +423,40 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const suppressFormat = directive.set['suppress-format'];
 
       // select all models
-      let models = values(state.model.schemas).linq.toArray();
+      let models = values(state.model.schemas).toArray();
       if (modelNameRegex) {
         models = values(models)
-          .linq.where(model =>
+          .where(model =>
             !!`${model.details.csharp.name}`.match(modelNameRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (modelFullNameRegex) {
         models = values(models)
-          .linq.where(model =>
+          .where(model =>
             !!`${model.details.csharp.fullname}`.match(modelFullNameRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (modelNamespaceRegex) {
         models = values(models)
-          .linq.where(model =>
+          .where(model =>
             !!`${model.details.csharp.namespace}`.match(modelNamespaceRegex))
-          .linq.toArray();
+          .toArray();
       }
 
       if (propertyNameRegex && selectType === 'model') {
         models = values(models)
-          .linq.where(model => values(allVirtualProperties(model.details.csharp.virtualProperties))
-            .linq.any(property => !!`${property.name}`.match(propertyNameRegex)))
-          .linq.toArray();
+          .where(model => values(allVirtualProperties(model.details.csharp.virtualProperties))
+            .any(property => !!`${property.name}`.match(propertyNameRegex)))
+          .toArray();
       }
 
       if (propertyNameRegex && (selectType === undefined || selectType === 'property')) {
         const properties = values(models)
-          .linq.selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
-          .linq.where(property => !!`${property.name}`.match(propertyNameRegex))
-          .linq.toArray();
+          .selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
+          .where(property => !!`${property.name}`.match(propertyNameRegex))
+          .toArray();
         for (const property of properties) {
           const prevName = property.name;
           property.name = propertyNameReplacer ? propertyNameRegex ? property.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.name;
@@ -566,27 +566,27 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       const enumValueNameReplacer = directive.set['enum-value-name'];
 
       let enums = values(state.model.schemas)
-        .linq.where(each => each.details.csharp.enum !== undefined)
-        .linq.toArray();
+        .where(each => each.details.csharp.enum !== undefined)
+        .toArray();
 
       if (enumNameRegex) {
         enums = values(enums)
-          .linq.where(each => !!`${each.details.csharp.name}`.match(enumNameRegex))
-          .linq.toArray();
+          .where(each => !!`${each.details.csharp.name}`.match(enumNameRegex))
+          .toArray();
       }
 
       if (enumValueNameRegex) {
         const enumsValues = values(enums)
-          .linq.selectMany(each => each.details.csharp.enum ? each.details.csharp.enum.values : [])
-          .linq.where(each => !!`${each.name}`.match(enumValueNameRegex))
-          .linq.toArray();
+          .selectMany(each => each.details.csharp.enum ? each.details.csharp.enum.values : [])
+          .where(each => !!`${each.name}`.match(enumValueNameRegex))
+          .toArray();
         for (const enumValue of enumsValues) {
           const prevName = enumValue.name;
           enumValue.name = enumValueNameReplacer ? enumNameRegex ? enumValue.name.replace(enumValueNameRegex, enumValueNameReplacer) : enumValueNameReplacer : prevName;
           if (enumValueNameRegex) {
             const enumNames = values(enums)
-              .linq.select(each => each.details.csharp.name)
-              .linq.toArray();
+              .select(each => each.details.csharp.name)
+              .toArray();
             state.message({
               Channel: Channel.Debug, Text: `[DIRECTIVE] Changed enum-value-name from ${prevName} to ${enumValue.name}. Enum: ${JSON.stringify(enumNames, null, 2)}`
             });
@@ -617,44 +617,44 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       if (subjectRegex || subjectPrefixRegex || verbRegex || variantRegex || (parameterRegex && selectType === 'command')) {
         // select all operations first then reduce by finding the intersection with selectors
         let operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-          .linq.select(operation => operation.key)
-          .linq.toArray());
+          .select(operation => operation.key)
+          .toArray());
 
         if (subjectRegex) {
           operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.subject}`.match(subjectRegex) && operationsToRemoveKeys.has(operation.key))
-            .linq.select(operation => operation.key)
-            .linq.toArray());
+            .where(operation => !!`${operation.value.details.csharp.subject}`.match(subjectRegex) && operationsToRemoveKeys.has(operation.key))
+            .select(operation => operation.key)
+            .toArray());
         }
 
         if (subjectPrefixRegex && operationsToRemoveKeys.size > 0) {
           operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.subjectPrefix}`.match(subjectPrefixRegex) && operationsToRemoveKeys.has(operation.key))
-            .linq.select(operation => operation.key)
-            .linq.toArray());
+            .where(operation => !!`${operation.value.details.csharp.subjectPrefix}`.match(subjectPrefixRegex) && operationsToRemoveKeys.has(operation.key))
+            .select(operation => operation.key)
+            .toArray());
         }
 
         if (verbRegex && operationsToRemoveKeys.size > 0) {
           operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex) && operationsToRemoveKeys.has(operation.key))
-            .linq.select(operation => operation.key)
-            .linq.toArray());
+            .where(operation => !!`${operation.value.details.csharp.verb}`.match(verbRegex) && operationsToRemoveKeys.has(operation.key))
+            .select(operation => operation.key)
+            .toArray());
         }
 
         if (variantRegex && operationsToRemoveKeys.size > 0) {
           operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex) && operationsToRemoveKeys.has(operation.key))
-            .linq.select(operation => operation.key)
-            .linq.toArray());
+            .where(operation => !!`${operation.value.details.csharp.name}`.match(variantRegex) && operationsToRemoveKeys.has(operation.key))
+            .select(operation => operation.key)
+            .toArray());
         }
 
         if (parameterRegex && selectType === 'command' && operationsToRemoveKeys.size > 0) {
           operationsToRemoveKeys = new Set(items(state.model.commands.operations)
-            .linq.where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
-              .linq.any(parameter => !!`${parameter.name}`.match(parameterRegex)))
-            .linq.where(operation => operationsToRemoveKeys.has(operation.key))
-            .linq.select(operation => operation.key)
-            .linq.toArray());
+            .where(operation => values(allVirtualParameters(operation.value.details.csharp.virtualParameters))
+              .any(parameter => !!`${parameter.name}`.match(parameterRegex)))
+            .where(operation => operationsToRemoveKeys.has(operation.key))
+            .select(operation => operation.key)
+            .toArray());
         }
 
         for (const key of operationsToRemoveKeys) {
@@ -691,9 +691,9 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 export async function applyModifiers(service: Host) {
   const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives)
-    // .linq.select(directive => directive)
-    .linq.where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
-    .linq.toArray();
+    // .select(directive => directive)
+    .where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
+    .toArray();
 
   return processCodeModel(tweakModel, service, 'modifiers');
 }

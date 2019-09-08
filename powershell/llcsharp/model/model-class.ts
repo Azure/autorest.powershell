@@ -447,7 +447,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     let used = false;
 
-    for (const headerProperty of values(avp).linq.where(each => each.property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.details.csharp[HeaderProperty] === HeaderPropertyType.Header)) {
+    for (const headerProperty of values(avp).where(each => each.property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.details.csharp[HeaderProperty] === HeaderPropertyType.Header)) {
       used = true;
       const t = `((${headerProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
       const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;

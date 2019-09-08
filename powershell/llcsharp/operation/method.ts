@@ -531,7 +531,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
       yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
           const mimetype = eachResponse.mimeTypes.length > 0 ? eachResponse.mimeTypes[0] : '';
-          const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === eachResponse.details.csharp.name);
+          const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === eachResponse.details.csharp.name);
 
           let count = length(eachResponse.mimeTypes);
           for (const mt of values(eachResponse.mimeTypes)) {
@@ -549,7 +549,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
       });
     } else {
       const response = responses[0];
-      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).linq.first(each => each.name === response.details.csharp.name);
+      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === response.details.csharp.name);
       // all mimeTypes per for this response code.
       yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
       yield $this.responseHandler(response.mimeTypes[0], response, callbackParameter);

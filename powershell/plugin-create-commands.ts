@@ -371,7 +371,7 @@ export /* @internal */ class Inferrer {
 
   async addVariants(parameters: Array<http.HttpOperationParameter>, operation: http.HttpOperation, variant: CommandVariant, vname: string, state: State) {
     // now synthesize parameter set variants multiplexed by the variants.
-    const [constants, requiredParameters] = values(parameters).linq.bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
+    const [constants, requiredParameters] = values(parameters).bifurcate(parameter => parameter.details.default.constantValue || parameter.details.default.fromHost ? true : false);
     const constantParameters = constants.map(each => `'${each.details.default.constantValue}'`);
 
     // the body parameter
@@ -379,7 +379,7 @@ export /* @internal */ class Inferrer {
     const bodyParameterName = operation.requestBody ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
 
     // all the properties in the body parameter
-    const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).linq.where(property => !property.details.default.readOnly).linq.toArray() : [];
+    const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).where(property => !property.details.default.readOnly).toArray() : [];
 
     // smash body property names together
     const bodyPropertyNames = bodyProperties.joinWith(each => each.details.default.name);
@@ -396,7 +396,7 @@ export /* @internal */ class Inferrer {
     state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
-    const [pathParams, otherParams] = values(requiredParameters).linq.bifurcate(each => each.in === ParameterLocation.Path);
+    const [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each.in === ParameterLocation.Path);
     const dvi = await state.getValue('disable-via-identity', false);
 
     if (!dvi && pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
