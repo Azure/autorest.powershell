@@ -6,7 +6,7 @@
 
 import { intersect } from '@azure-tools/codegen';
 import { Class, ClassType, Expression, IInterface, LiteralExpression, Namespace, TypeDeclaration } from '@azure-tools/codegen-csharp';
-import { ClientRuntime } from './llcsharp/exports';
+import { ClientRuntime } from '../llcsharp/exports';
 
 const sma = new Namespace('System.Management.Automation');
 const rest = new Namespace('Microsoft.Rest');

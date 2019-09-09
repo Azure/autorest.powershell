@@ -3,17 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { deconstruct, pascalCase, } from '@azure-tools/codegen';
-import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from './llcsharp/exports';
+import { Dictionary } from '@azure-tools/linq';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-import { SupportNamespace } from './namespaces/support';
-import { ModelExtensionsNamespace } from './namespaces/model-extensions';
-import { ModelCmdletNamespace } from './namespaces/model-cmdlet';
-import { ServiceNamespace } from './namespaces/service';
-import { CmdletNamespace } from './namespaces/cmdlet';
-import { Host, Channel } from '@azure-tools/autorest-extension-base';
+import { SupportNamespace } from '../enums/support';
+import { ModelExtensionsNamespace } from '../models/model-extensions';
+
+import { ModuleNamespace } from '../module/module-namespace';
+import { CmdletNamespace } from '../cmdlets/cmdlet';
+import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
@@ -50,7 +49,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
 export class Project extends codeDomProject {
   public azure!: boolean;
   public cmdletFolder!: string;
-  public modelCmdletFolder!: string;
+
   public customFolder!: string;
   public internalFolder!: string;
   public testFolder!: string;
@@ -81,15 +80,15 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
   public profiles!: Array<string>;
-  public skipModelCmdlets!: boolean;
+
   public prefix!: string;
   public subjectPrefix!: string;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  public serviceNamespace!: ServiceNamespace;
+  public serviceNamespace!: ModuleNamespace;
   public supportNamespace!: SupportNamespace;
   public cmdlets!: CmdletNamespace;
-  public modelCmdlets!: ModelCmdletNamespace;
+
   public modelsExtensions!: ModelExtensionsNamespace;
   public accountsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
@@ -137,7 +136,6 @@ export class Project extends codeDomProject {
     this.metadata = await this.state.getValue<Metadata>('metadata');
 
     // Flags
-    this.skipModelCmdlets = true;
     this.azure = this.model.details.default.isAzure;
 
     // Names
@@ -151,7 +149,7 @@ export class Project extends codeDomProject {
     this.baseFolder = await this.state.getValue('current-folder');
     this.moduleFolder = await this.state.getValue('module-folder');
     this.cmdletFolder = await this.state.getValue('cmdlet-folder');
-    this.modelCmdletFolder = await this.state.getValue('model-cmdlet-folder');
+
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
     this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
     this.testFolder = await this.state.getValue('test-folder');
@@ -180,19 +178,14 @@ export class Project extends codeDomProject {
     this.readme = `${this.baseFolder}/readme.md`;
 
     // add project namespace
-    this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
+    this.addNamespace(this.serviceNamespace = new ModuleNamespace(this.state));
     this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
-    this.addNamespace(this.modelCmdlets = new ModelCmdletNamespace(this.serviceNamespace, this.state));
 
     this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas')));
 
     // add cmdlet namespace
     this.addNamespace(this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init());
 
-
-    if (!this.skipModelCmdlets) {
-      this.modelCmdlets.createModelCmdlets();
-    }
 
     // abort now if we have any errors.
     this.state.checkpoint();

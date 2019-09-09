@@ -5,8 +5,8 @@
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass } from '../llcsharp/exports';
-import { State } from '../state';
-import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../powershell-declarations';
+import { State } from '../internal/state';
+import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../internal/powershell-declarations';
 import { join } from 'path';
 
 

@@ -12,7 +12,7 @@ import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation } from '../schema/object';
 import { SchemaDefinitionResolver } from '../schema/schema-resolver';
-import { EnumClass } from '../support/enum';
+import { EnumClass } from '../enums/enum';
 import * as validation from '../validations';
 import { ModelInterface } from './interface';
 import { ModelClass } from './model-class';

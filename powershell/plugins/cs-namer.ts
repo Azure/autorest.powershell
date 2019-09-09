@@ -10,8 +10,8 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { Schema, SchemaDetails } from './code-model';
-import { SchemaDefinitionResolver } from './schema/schema-resolver';
+import { Schema, SchemaDetails } from '../llcsharp/code-model';
+import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 
 type State = ModelState<codemodel.Model>;
 

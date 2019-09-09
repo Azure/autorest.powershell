@@ -11,7 +11,7 @@ import { State } from './generator';
 import { ModelsNamespace } from './model/namespace';
 import { ApiClass } from './operation/api-class';
 import { ServiceNamespace } from './operation/namespace';
-import { SupportNamespace } from './support/namespace';
+import { SupportNamespace } from './enums/namespace';
 
 export class Project extends codeDomProject {
 

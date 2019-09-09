@@ -5,9 +5,9 @@
 import { Host } from '@azure-tools/autorest-extension-base';
 import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
-import { Model } from './code-model';
-import { State } from './generator';
-import { Project } from './project';
+import { Model } from '../llcsharp/code-model';
+import { State } from '../llcsharp/generator';
+import { Project } from '../llcsharp/project';
 
 const resources = `${__dirname}/../resources`;
 
