@@ -15,44 +15,31 @@ In this repository
  - `tests/` - **WORK IN PROGRESS** scripts to generate some tests to validate the code generator.
 
 ### The `powershell` plugin
- 
- - `generators/` - 
- - `file-formats/` - 
- - `namespaces/` -  
- - `llcsharp/` - 
- - `resources/` - 
- - `test/` - 
+- `cmdlets/` - code for creating the cmdlet classes
+- `enums/` - code for creating extensions on the enum types
+- `file-formats/` - classes to assist generating simple file formats
+- `generators/` - generators to create specific output types (project files, psm1,psd1,etc)
+- `internal/` - internal classes for creating powershell code 
+- `llcsharp/` - all the code for generating the low-level c# code
+- `models/` - code that extends the lowlevel c# models
+- `module/` - code that creates the main module class
+- `plugins/` - the autorest plugins that are implemented in this repository.
+- `resources/` - the static files that are copied to the generated folder
+- `test/` - unit test files
 
- - `main.ts` - entrypoint for this autorest extension
- - `autorest-extension.ts` - 
+- `main.ts` - the entrypoint for this extension.
 
- - `cmdlet-parameter.ts` - 
- - `project.ts` - 
- - `powershell-declarations.ts` - 
- - `plugin-powershell.ts` -  
- - `plugin-add-azure-completers.ts` - 
- 
- - `name-inferrer.ts` - 
- - `module-class.ts` - 
- - `model-cmdlet.ts` - 
- 
- - `state.ts` - 
- - `verbs.ts` - 
- - `type-converter.ts` - 
- 
- - `plugin-namer.ts` - 
- - `plugin-create-commands.ts` - 
- - `cmdlet-class.ts` - 
- - `modifiers.ts` - 
 
-- `readme.md` - 
-- `autorest-configuration.md` - 
+#### AutoRest configuration files 
+- `autorest-configuration.md` - the detailed configuration file
+- `readme.md` - contains just the stubs for the configuration.
 
-- `tsconfig.json` - 
-- `package.json` - 
-- `.eslintrc.yaml` - 
-- `.eslintignore` - 
+### TypeScript Project files 
+- `package.json` - NPM Package info
+- `tsconfig.json` -  typescript configuration 
+- `.eslintrc.yaml` - eslint linter configuration
 - `dist/` - output folder for compiled typescript files (*.js)
+
 ### Dependencies
 
 The generator relies on shared components from the [Azure Perks](https://github.com/azure/perks) project

@@ -6,7 +6,7 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../internal/state';
-import { CmdletClass } from './cmdlet-class';
+import { CmdletClass } from './class';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();

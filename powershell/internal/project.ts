@@ -7,11 +7,11 @@ import { Dictionary } from '@azure-tools/linq';
 import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-import { SupportNamespace } from '../enums/support';
+import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
 
 import { ModuleNamespace } from '../module/module-namespace';
-import { CmdletNamespace } from '../cmdlets/cmdlet';
+import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
 
@@ -86,7 +86,7 @@ export class Project extends codeDomProject {
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
   public serviceNamespace!: ModuleNamespace;
-  public supportNamespace!: SupportNamespace;
+  public supportNamespace!: EnumNamespace;
   public cmdlets!: CmdletNamespace;
 
   public modelsExtensions!: ModelExtensionsNamespace;
@@ -179,7 +179,7 @@ export class Project extends codeDomProject {
 
     // add project namespace
     this.addNamespace(this.serviceNamespace = new ModuleNamespace(this.state));
-    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
+    this.addNamespace(this.supportNamespace = new EnumNamespace(this.serviceNamespace, this.state));
 
     this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas')));
 

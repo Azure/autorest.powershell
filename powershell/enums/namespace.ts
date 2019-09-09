@@ -9,12 +9,12 @@ import { State } from '../internal/state';
 import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from '../internal/powershell-declarations';
 import { join } from 'path';
 
-export class SupportNamespace extends Namespace {
+export class EnumNamespace extends Namespace {
   public get outputFolder(): string {
     return join(this.state.project.apiFolder, 'Support');
   }
 
-  constructor(parent: Namespace, public state: State, objectInitializer?: Partial<SupportNamespace>) {
+  constructor(parent: Namespace, public state: State, objectInitializer?: Partial<EnumNamespace>) {
     super('Support', parent);
     this.apply(objectInitializer);
 
