@@ -8,8 +8,8 @@ import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties
 import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import * as linq from '@azure-tools/linq';
-import { singularize } from './name-inferrer';
-import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
+import { singularize } from '../internal/name-inferrer';
+
 type State = ModelState<codemodel.Model>;
 
 function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {

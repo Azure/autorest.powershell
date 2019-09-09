@@ -6,11 +6,11 @@
 import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@azure-tools/codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { Schema } from './llcsharp/exports';
+import { Schema } from '../llcsharp/exports';
 import { Channel, Host } from '@azure-tools/autorest-extension-base';
 import { Lazy } from '@azure-tools/tasks';
 import { clone } from '@azure-tools/linq';
-import { verbs } from './verbs';
+import { verbs } from '../internal/verbs';
 
 type State = ModelState<codemodel.Model>;
 

@@ -4,17 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../llcsharp/exports';
-import { State } from '../state';
-import { ModuleClass } from '../module-class';
+import { State } from '../internal/state';
+import { ModuleClass } from './module-class';
 
-export class ServiceNamespace extends Namespace {
+export class ModuleNamespace extends Namespace {
   public moduleClass: ModuleClass;
 
   public get outputFolder(): string {
     return this.state.project.moduleFolder;
   }
 
-  constructor(public state: State, objectInitializer?: Partial<ServiceNamespace>) {
+  constructor(public state: State, objectInitializer?: Partial<ModuleNamespace>) {
     super(state.model.details.csharp.namespace || 'INVALID.NAMESPACE', state.project);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));

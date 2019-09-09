@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Project } from '../project';
+import { Project } from '../internal/project';
 import { MdFile } from '../file-formats/md-file';
 
 export async function generateReadme(project: Project) {

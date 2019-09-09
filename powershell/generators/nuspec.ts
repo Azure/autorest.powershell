@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { Project } from '../project';
+import { Project } from '../internal/project';
 
 function removeCd(path: string): string {
   return path.startsWith('./') ? path.replace('./', '') : path;

@@ -5,8 +5,8 @@
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
-import { State } from '../state';
-import { CmdletClass } from '../cmdlet-class';
+import { State } from '../internal/state';
+import { CmdletClass } from './class';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
@@ -29,10 +29,6 @@ export class CmdletNamespace extends Namespace {
         continue;
       }
       this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
-
-      for (const p of operation.parameters) {
-        this.state.project.modelCmdlets.addInputSchema(<Schema>p.schema);
-      }
     }
     return this;
   }

@@ -7,20 +7,20 @@ import { codemodel } from '@azure-tools/codemodel-v3';
 import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { join } from 'path';
-import { Project } from './project';
-import { State } from './state';
-import { generatePsm1 } from './generators/psm1';
-import { generateCsproj } from './generators/csproj';
-import { generatePsm1Custom } from './generators/psm1.custom';
-import { generatePsm1Internal } from './generators/psm1.internal';
-import { generateNuspec } from './generators/nuspec';
-import { generateGitIgnore } from './generators/gitignore';
-import { generateGitAttributes } from './generators/gitattributes';
-import { generateReadme } from './generators/readme';
-import { generateScriptCmdlets } from './generators/script-cmdlet';
+import { Project } from '../internal/project';
+import { State } from '../internal/state';
+import { generatePsm1 } from '../generators/psm1';
+import { generateCsproj } from '../generators/csproj';
+import { generatePsm1Custom } from '../generators/psm1.custom';
+import { generatePsm1Internal } from '../generators/psm1.internal';
+import { generateNuspec } from '../generators/nuspec';
+import { generateGitIgnore } from '../generators/gitignore';
+import { generateGitAttributes } from '../generators/gitattributes';
+import { generateReadme } from '../generators/readme';
+import { generateScriptCmdlets } from '../generators/script-cmdlet';
 
 const sourceFileCSharp = 'source-file-csharp';
-const resources = `${__dirname}/../resources`;
+const resources = `${__dirname}/../../resources`;
 
 
 async function copyRequiredFiles(project: Project) {
@@ -30,7 +30,7 @@ async function copyRequiredFiles(project: Project) {
   await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
 
   // Runtime files
-  await copyResources(join(resources, 'runtime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+  await copyResources(join(resources, 'psruntime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
   // Modules files
   await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
