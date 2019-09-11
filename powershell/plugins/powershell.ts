@@ -43,8 +43,11 @@ async function copyRequiredFiles(project: Project) {
 
 
 export async function powershell(service: Host) {
+  const debug = await service.GetValue('debug') || false;
+
   try {
     const project = await new Project(service).init();
+
     await project.writeFiles(async (filename, content) => project.state.writeFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
 
     await service.ProtectFiles(project.psd1);
@@ -69,7 +72,9 @@ export async function powershell(service: Host) {
     await generateScriptCmdlets(project);
 
   } catch (E) {
-    console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+    if (debug) {
+      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+    }
     throw E;
   }
 }
