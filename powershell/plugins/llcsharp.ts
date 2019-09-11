@@ -52,7 +52,6 @@ export async function llcsharp(service: Host) {
       'internal bool IsReadOnly': 'public bool IsReadOnly',
       'internal (.*) int Count': 'public $1 int Count',
       'internal bool Contains\\(': 'public bool Contains(',
-      // 'internal (.*) JsonType': 'public $1 JsonType',
       'internal(.*) bool Equals': 'public$1 bool Equals',
       'internal (.*) int GetHashCode': 'public $1 int GetHashCode',
       'internal void Dispose': 'public void Dispose',
@@ -60,9 +59,6 @@ export async function llcsharp(service: Host) {
       'internal object FromJson\\(': 'public object FromJson(',
       'internal JsonNode ToJson\\(': 'public JsonNode ToJson(',
 
-      // 'internal partial class JsonNumber': 'public partial class JsonNumber'
-      // 'internal partial class JsonNumber': 'public partial class JsonNumber'
-      // 'internal partial class JsonNumber': 'public partial class JsonNumber'
     });
 
     if (project.xmlSerialization) {

@@ -14,7 +14,7 @@ The pipeline is configured to do the following:
 1. AutoRest-core produces the Processed/Merged OpenAPI document ( `openapi-document/multi-api/identity` ) 
 > outputs: `openapi-document`
 
-2. `new-transform` 
+2. `@autorest/core` - `new-transform` 
 > inputs: `openapi-document`
 
 > outputs: `openapi-document`
