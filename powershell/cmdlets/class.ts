@@ -487,19 +487,12 @@ export class CmdletClass extends Class {
           yield `WriteError( new ${ErrorRecord}(innerException,string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
         });
       });
-
-      const exceptionWhenTerminatingError = new Parameter('exception', System.Exception);
-      yield Catch(exceptionWhenTerminatingError, function* () {
-        yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exceptionWhenTerminatingError.use}.GetType().Name} - {${exceptionWhenTerminatingError.use}.Message} : {${exceptionWhenTerminatingError.use}.StackTrace}"`));
-        yield `ThrowTerminatingError( new ${ErrorRecord}(${exceptionWhenTerminatingError.use},string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
-      }, { when: new LiteralExpression('(exception as System.Management.Automation.PipelineStoppedException)!= null && (exception as System.Management.Automation.PipelineStoppedException).InnerException == null') });
-
       const exception = new Parameter('exception', System.Exception);
       yield Catch(exception, function* () {
         yield $this.eventListener.syncSignal(Events.CmdletException, new LiteralExpression(`$"{${exception.use}.GetType().Name} - {${exception.use}.Message} : {${exception.use}.StackTrace}"`));
         yield '// Write exception out to error channel.';
         yield `WriteError( new ${ErrorRecord}(${exception.use},string.Empty, ${ErrorCategory('NotSpecified')}, null) );`;
-      });
+      }, { when: new LiteralExpression('(exception as System.Management.Automation.PipelineStoppedException)== null || (exception as System.Management.Automation.PipelineStoppedException).InnerException != null') });
 
       yield Finally(function* () {
         yield $this.eventListener.syncSignalNoCheck(Events.CmdletProcessRecordEnd);
@@ -879,7 +872,10 @@ export class CmdletClass extends Class {
       });
       const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
       yield Catch(ure, function* () {
-        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}}));`;
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
+{
+  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ure.value}.Message) { RecommendedAction = ${ure.value}.Action }
+});`;
       });
       yield Finally(function* () {
         yield $this.eventListener.signalNoCheck(Events.CmdletProcessRecordAsyncEnd);

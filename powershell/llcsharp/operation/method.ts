@@ -396,6 +396,10 @@ export class CallMethod extends Method {
 
           }
 
+          const asyncOperation = Local('asyncOperation', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
+          yield asyncOperation;
+          const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
+          yield location;
 
           yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
@@ -412,10 +416,8 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield '// while we wait, let\'s grab the headers and get ready to poll. ';
-            const asyncOperation = Local('asyncOperation', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
-            yield asyncOperation;
-            const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
-            yield location;
+            yield asyncOperation.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
+            yield location.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
 
             const uriLocal = Local('_uri', Ternery(
               System.String.IsNullOrEmpty(asyncOperation),
@@ -429,7 +431,7 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield '// and let\'s look at the current response body and see if we have some information we can give back to the listener';
-            const content = Local('content', new LiteralExpression(`${response.value}.Content.ReadAsStringAsync()`));
+            const content = Local('content', new LiteralExpression(`await ${response.value}.Content.ReadAsStringAsync()`));
             yield content;
 
             yield 'await waiting;';
@@ -448,57 +450,75 @@ export class CallMethod extends Method {
             yield '// make the polling call';
             yield `${response.value} = await ${opMethod.senderParameter}.SendAsync(${reqParameter.value}, ${opMethod.contextParameter});`;
 
+
             yield EOL;
             yield `
-if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.IsNullOrEmpty('asyncOperation')})
+// if we got back an OK, take a peek inside and see if it's done
+if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
 {
     try {
-        // we have a 200, and a should have a provisioning state.
-        if( ${ClientRuntime.JsonNode.Parse(toExpression('await _response.Content.ReadAsStringAsync()'))} is ${ClientRuntime.JsonObject} json)
+        if( ${ClientRuntime.JsonNode.Parse(toExpression(`await ${response.value}.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
         {
-            var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState");
-            await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", _response); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
-            if( state?.ToString() != "Succeeded")
+            var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState") ?? json.PropertyT<${ClientRuntime.JsonString}>("status");
+            if( state is null ) 
             {
-                _response.StatusCode = ${System.Net.HttpStatusCode.Created};
+              // the body doesn't contain any information that has the state of the LRO
+              // we're going to just get out, and let the consumer have the result
+              break;
+            }
+            await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", ${response.value}); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
+
+            switch( state?.ToString()?.ToLower() )
+            {
+              case "succeeded":
+              case "failed":
+              case "canceled":
+                // we're done polling.
+                break;
+
+              default: 
+                // need to keep polling!
+                ${response.value}.StatusCode = ${System.Net.HttpStatusCode.Created};
+                continue;
             }
         }
     } catch {
-        // um.. whatever.
+        // if we run into a problem peeking into the result, 
+        // we really don't want to do anything special.
     }
 }`;
 
             yield EOL;
             yield '// check for terminal status code';
-            yield If(new LiteralExpression(`${response.value}.StatusCode != ${System.Net.HttpStatusCode[201].value} && ${response.value}.StatusCode != ${System.Net.HttpStatusCode[202].value} `), function* () {
-              yield '// we\'re done polling, do a request on final target?';
+            yield If(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), 'continue;');
 
-              switch (fsv) {
-                case 'original-uri':
-                case 'azure-asyncoperation':
-                case 'azure-async-operation':
-                case 'location':
-                  // perform a final GET on the specified final URI.
+            yield '// we are done polling, do a request on final target?';
+
+            switch (fsv) {
+              case 'original-uri':
+              case 'azure-asyncoperation':
+              case 'azure-async-operation':
+              case 'location':
+                // perform a final GET on the specified final URI.
+                yield $this.finalGet(finalUri, reqParameter, response);
+                break;
+
+              default:
+                yield If(`!string.IsNullOrWhiteSpace(${finalUri})`, function* () {
                   yield $this.finalGet(finalUri, reqParameter, response);
-                  break;
-
-                default:
-                  yield If(`!string.IsNullOrWhiteSpace(${finalUri})`, function* () {
-                    yield $this.finalGet(finalUri, reqParameter, response);
-                  });
-                  break;
-              }
-            });
+                });
+                break;
+            }
           });
+
         }
         yield responder();
       });
 
-
       yield Finally(function* () {
         yield '// finally statements';
         yield eventListener.signalNoCheck(ClientRuntime.Events.Finally, 'request', '_response');
-        yield '_response?.Dispose();';
+        yield `${response.value}?.Dispose();`;
         yield `${reqParameter.use}?.Dispose();`;
       });
 
@@ -511,7 +531,8 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
     this.opMethod.emitCall($this.returnNull);
   }
 
-  private *finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
+  private * finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
+    yield '// create a new request with the final uri';
     yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(${System.Uri.new(finalLocation)}, ${ClientRuntime.Method.Get})`);
 
     yield EOL;
@@ -526,7 +547,7 @@ if( _response.StatusCode == ${System.Net.HttpStatusCode.OK} && ${System.String.I
     yield 'break;';
   }
 
-  private *responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<NewResponse>, eventListener: EventListener) {
+  private * responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<NewResponse>, eventListener: EventListener) {
     if (length(responses) > 1) {
       yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
