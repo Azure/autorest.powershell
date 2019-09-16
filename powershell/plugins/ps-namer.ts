@@ -26,7 +26,7 @@ export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { s
 
   // figure out what belongs to the subject
   const reversedFinalSubject = new Array<string>();
-  for (let mCount = dedupedMerge.length - 1, sCount = dedupedSubject.length - 1; sCount >= 0 && mCount >= 0; mCount-- , sCount--) {
+  for (let mCount = length(dedupedMerge) - 1, sCount = length(dedupedSubject) - 1; sCount >= 0 && mCount >= 0; mCount-- , sCount--) {
     if (dedupedMerge[mCount] !== dedupedSubject[sCount]) {
       break;
     }

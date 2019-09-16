@@ -17,6 +17,7 @@ import { HttpOperationParameter, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
+import { DeepPartial } from '@azure-tools/codegen';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
 export class OperationParameter extends Parameter implements EnhancedVariable {
@@ -24,7 +25,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
 
   public param: HttpOperationParameter;
 
-  constructor(parent: Method, param: HttpOperationParameter, state: State, objectInitializer?: Partial<OperationParameter>) {
+  constructor(parent: Method, param: HttpOperationParameter, state: State, objectInitializer?: DeepPartial<OperationParameter>) {
     const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(param.schema, param.required, state.path('schema'));
     super(param.details.csharp.name, typeDeclaration);
     this.param = param;
@@ -106,7 +107,7 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
 
   public typeDeclaration: EnhancedTypeDeclaration;
 
-  constructor(parent: Method, name: string, description: string, schema: Schema, required: boolean, state: State, objectInitializer?: Partial<OperationBodyParameter>) {
+  constructor(parent: Method, name: string, description: string, schema: Schema, required: boolean, state: State, objectInitializer?: DeepPartial<OperationBodyParameter>) {
     const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(schema, required, state.path('schema'));
     super(name, typeDeclaration);
     this.typeDeclaration = typeDeclaration;
@@ -131,7 +132,7 @@ export class CallbackParameter extends Parameter {
   responseType: (EnhancedTypeDeclaration) | null;
   headerType: (EnhancedTypeDeclaration) | null;
 
-  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: Partial<CallbackParameter>) {
+  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: DeepPartial<CallbackParameter>) {
     // regular pipeline style. (callback happens after the pipline is called)
     if (responseType) {
       if (headerType) {

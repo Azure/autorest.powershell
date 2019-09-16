@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 
-import { camelCase, deconstruct } from '@azure-tools/codegen';
+import { camelCase, deconstruct, DeepPartial } from '@azure-tools/codegen';
 import { items, values } from '@azure-tools/linq';
 import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
@@ -95,7 +95,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
   // public hasHeaderProperties: boolean;
 
-  constructor(namespace: Namespace, schemaWithFeatures: ObjectImplementation, state: State, objectInitializer?: Partial<ModelClass>) {
+  constructor(namespace: Namespace, schemaWithFeatures: ObjectImplementation, state: State, objectInitializer?: DeepPartial<ModelClass>) {
     super(namespace, schemaWithFeatures.schema.details.csharp.name);
     this.featureImplementation = schemaWithFeatures;
     this.schema.details.csharp.classImplementation = this; // mark the code-model with the class we're creating.
@@ -359,7 +359,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         return this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema.additionalProperties, true, this.state);
       }
     } else
-      for (const each of aSchema.allOf) {
+      for (const each of values(aSchema.allOf)) {
         const r = this.additionalPropertiesType(each);
         if (r) {
           return r;

@@ -23,6 +23,7 @@ import { Variable } from '@azure-tools/codegen-csharp';
 import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;
@@ -75,7 +76,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     return this.implementation.isRequired;
   }
 
-  constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: Partial<EnumClass>) {
+  constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: DeepPartial<EnumClass>) {
     if (!schemaWithFeatures.schema.details.csharp.enum) {
       throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.details.csharp.name}`);
     }

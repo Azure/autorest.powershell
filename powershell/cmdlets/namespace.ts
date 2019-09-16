@@ -7,6 +7,7 @@ import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../internal/state';
 import { CmdletClass } from './class';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
@@ -14,7 +15,7 @@ export class CmdletNamespace extends Namespace {
     return this.state.project.cmdletFolder;
   }
 
-  constructor(parent: Namespace, private state: State, objectInitializer?: Partial<CmdletNamespace>) {
+  constructor(parent: Namespace, private state: State, objectInitializer?: DeepPartial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
   }

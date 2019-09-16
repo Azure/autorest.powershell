@@ -8,6 +8,7 @@ import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMeth
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { ClientRuntime } from '../llcsharp/exports';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class ModuleClass extends Class {
 
@@ -69,7 +70,7 @@ export class ModuleClass extends Class {
   fHandler = this.add(new Field('_handler', System.Net.Http.HttpClientHandler, { initialValue: System.Net.Http.HttpClientHandler.new() }));
   fWebProxy = this.add(new Field('_webProxy', System.Net.WebProxy, { initialValue: System.Net.WebProxy.new() }));
 
-  constructor(namespace: Namespace, private readonly state: State, objectInitializer?: Partial<ModuleClass>) {
+  constructor(namespace: Namespace, private readonly state: State, objectInitializer?: DeepPartial<ModuleClass>) {
     super(namespace, 'Module');
     this.apply(objectInitializer);
     this.partial = true;

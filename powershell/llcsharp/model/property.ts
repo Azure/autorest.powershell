@@ -16,6 +16,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
 import { State } from '../generator';
 import { ModelClass } from './model-class';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class ModelProperty extends BackedProperty implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
@@ -60,7 +61,7 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   private typeDeclaration: EnhancedTypeDeclaration;
   public details: any;
 
-  constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: Partial<ModelProperty>) {
+  constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: DeepPartial<ModelProperty>) {
     const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path('schema'));
     super(name, decl);
     this.typeDeclaration = decl;

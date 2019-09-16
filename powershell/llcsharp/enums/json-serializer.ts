@@ -13,10 +13,11 @@ import { Namespace } from '@azure-tools/codegen-csharp';
 import { Parameter } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State } from '../generator';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class JsonSerializerClass extends Class {
 
-  constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<JsonSerializerClass>) {
+  constructor(namespace: Namespace, protected state: State, objectInitializer?: DeepPartial<JsonSerializerClass>) {
     super(namespace, 'JsonSerialization');
     this.apply(objectInitializer);
 

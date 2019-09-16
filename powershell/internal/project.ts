@@ -14,6 +14,7 @@ import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
@@ -97,7 +98,7 @@ export class Project extends codeDomProject {
   public helpLinkPrefix!: string;
   get model() { return <codemodel.Model>this.state.model; }
 
-  constructor(protected service: Host, objectInitializer?: Partial<Project>) {
+  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from '@azure-tools/codemodel-v3';
-import { Initializer, EOL } from '@azure-tools/codegen';
-import { items, values } from '@azure-tools/linq';
+import { Initializer, EOL, DeepPartial } from '@azure-tools/codegen';
+import { items, values, } from '@azure-tools/linq';
 
 import { Access, Modifier, StringExpression, Expression, System, TypeContainer, TypeDeclaration, LocalVariable, And } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
@@ -32,7 +32,7 @@ import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
 
 export class SerializationPartialClass extends Initializer {
-  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializationPartialClass>) {
+  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
     super();
     this.apply(objectInitializer);
   }
@@ -46,7 +46,8 @@ export class SerializationPartialClass extends Initializer {
   }
   protected get allVirtualProperties() {
     const vp = this.virtualProperties;
-    return [...vp.owned, ...vp.inherited, ...vp.inlined];
+    // return [...vp.owned, ...vp.inherited, ...vp.inlined];
+    return values(vp.owned, vp.inherited, vp.inlined).toArray();
   }
 
   protected contentParameter = new Parameter('content', this.serializationType, { description: `The ${this.serializationType.declaration} content that should be used.` });
@@ -70,7 +71,7 @@ export class SerializationPartialClass extends Initializer {
 export class DeserializerPartialClass extends SerializationPartialClass {
   private beforeDeserialize!: Method;
   private afterDeserialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<DeserializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<DeserializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }
@@ -96,9 +97,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 
       yield `${$this.beforeDeserialize.name}(${$this.contentParameter}, ref ${returnNow.value});`;
       yield If(returnNow, 'return;');
-
       yield $this.deserializeStatements;
-
       if ($this.hasAadditionalProperties($this.schema)) {
         // this type has an additional properties dictionary
         yield '// this type is a dictionary; copy elements from source to here.';
@@ -113,7 +112,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
     if (aSchema.additionalProperties) {
       return true;
     } else
-      for (const each of aSchema.allOf) {
+      for (const each of values(aSchema.allOf)) {
         const r = this.hasAadditionalProperties(each);
         if (r) {
           return r;
@@ -128,7 +127,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
     return function* () {
       yield '// actually deserialize ';
 
-      for (const virtualProperty of $this.allVirtualProperties) {
+      for (const virtualProperty of values($this.allVirtualProperties)) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
         const type = $this.resolver(<Schema>virtualProperty.property.schema, virtualProperty.property.details.default.required);
 
@@ -178,7 +177,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 export class SerializerPartialClass extends SerializationPartialClass {
   private beforeSerialize!: Method;
   private afterSerialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: Partial<SerializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }

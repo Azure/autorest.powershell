@@ -3,6 +3,7 @@ import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 import { getAllVirtualProperties } from '@azure-tools/codemodel-v3';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class DictionaryImplementation extends Class {
   private get state() { return this.modelClass.state; }
@@ -10,7 +11,7 @@ export class DictionaryImplementation extends Class {
   public valueType!: TypeDeclaration | EnhancedTypeDeclaration;
   public ownsDictionary = false;
 
-  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<DictionaryImplementation>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: DeepPartial<DictionaryImplementation>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
   }

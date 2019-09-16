@@ -44,8 +44,8 @@ interface CommandVariant {
 
 
 function fn<T>(active: Array<T>, remaining: Array<T>, result: Array<Array<T>>): Array<Array<T>> {
-  if (active.length || remaining.length) {
-    if (remaining.length) {
+  if (length(active) || length(remaining)) {
+    if (length(remaining)) {
       fn([...active, remaining[0]], remaining.slice(1), result);
       fn(active, remaining.slice(1), result);
     } else {
@@ -129,6 +129,10 @@ export /* @internal */ class Inferrer {
 
   async createCommands() {
     const model = this.state.model;
+    this.state.model.commands = <any>{
+      operations: new Dictionary<any>(),
+      parameters: new Dictionary<any>(),
+    };
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
 
@@ -136,8 +140,6 @@ export /* @internal */ class Inferrer {
       for (const variant of await this.inferCommandNames(operation, this.state)) {
         // no common parameters (standard variations)
         await this.addVariants(operation.parameters, operation, variant, '', this.state);
-
-
       }
     }
     return model;
@@ -146,7 +148,7 @@ export /* @internal */ class Inferrer {
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {
     operation = operation.filter(each => each !== 'all');
     // no instant match 
-    switch (operation.length) {
+    switch (length(operation)) {
       case 0:
         throw new Error('Missing operation id?');
 
@@ -199,14 +201,14 @@ export /* @internal */ class Inferrer {
     }
 
     // if not, then seek out a verb from there.
-    for (let i = 0; i < operation.length; i++) {
+    for (let i = 0; i < length(operation); i++) {
       if (verbs.has(operation[i])) {
         // if the action is first
         if (i === 0) {
           // everything else is the subject
           return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)];
         }
-        if (i === operation.length - 1) {
+        if (i === length(operation) - 1) {
           // if it's last, the subject would be the first thing
           return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)];
         }
@@ -310,12 +312,12 @@ export /* @internal */ class Inferrer {
 
     // if vname is > 64 characters, let's trim it
     // after trimming it, make sure there aren't any other operation with a name that's exactly the same
-    if (vname.length > 64) {
+    if (length(vname) > 64) {
       const names = deconstruct(vname);
       let newVName = '';
-      for (let i = 0; i < names.length; i++) {
+      for (let i = 0; i < length(names); i++) {
         newVName = pascalCase(names.slice(0, i));
-        if (newVName.length > 60) {
+        if (length(newVName) > 60) {
           break;
         }
       }
@@ -385,7 +387,7 @@ export /* @internal */ class Inferrer {
     const bodyPropertyNames = bodyProperties.joinWith(each => each.details.default.name);
 
     // for each polymorphic body, we should do a separate variant that takes the polymorphic body type instead of the base type
-    const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && body.schema.details.default.polymorphicChildren.length) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
+    const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && length(body.schema.details.default.polymorphicChildren)) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
 
     // wait! "update" should be "set" if it's a POST
     if (variant.verb === 'Update' && operation.method === http.HttpMethod.Put) {
@@ -399,7 +401,7 @@ export /* @internal */ class Inferrer {
     const [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each.in === ParameterLocation.Path);
     const dvi = await state.getValue('disable-via-identity', false);
 
-    if (!dvi && pathParams.length > 0 && variant.action.toLowerCase() != 'list') {
+    if (!dvi && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
       // we have an operation that has path parameters, a good canididate for piping for identity.
       await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
     }

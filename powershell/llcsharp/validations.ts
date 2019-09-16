@@ -6,6 +6,7 @@
 import { JsonType, Schema } from '@azure-tools/codemodel-v3';
 import { State } from './generator';
 import * as message from './messages';
+import { length } from '@azure-tools/linq';
 
 export function objectWithFormat(schema: Schema, state: State): boolean {
   if (schema.type === JsonType.Object && schema.format) {
@@ -16,7 +17,7 @@ export function objectWithFormat(schema: Schema, state: State): boolean {
 }
 
 export function schemaHasEnum(schema: Schema, state: State): boolean {
-  if (schema.enum.length > 0) {
+  if (length(schema.enum) > 0) {
     state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' does not support 'enum' value restrictions.`, message.DoesNotSupportEnum);
     return true;
   }
@@ -24,8 +25,8 @@ export function schemaHasEnum(schema: Schema, state: State): boolean {
 }
 
 export function hasXmsEnum(schema: Schema, state: State): boolean {
-  if (schema.enum.length > 0) {
-    if (schema.extensions['x-ms-enum']) {
+  if (length(schema.enum) > 0) {
+    if (schema.extensions && schema.extensions['x-ms-enum']) {
       state.error(`Schema with type:'${schema.type} and 'format:'${schema.format}' does not support 'x-ms-enum' generation `, message.SchemaDoeNotSupportXMSEnum);
       return true;
     }

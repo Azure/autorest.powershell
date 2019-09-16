@@ -12,6 +12,7 @@ import { ModelsNamespace } from './model/namespace';
 import { ApiClass } from './operation/api-class';
 import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './enums/namespace';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class Project extends codeDomProject {
 
@@ -27,7 +28,7 @@ export class Project extends codeDomProject {
   runtimefolder!: string;
   azure!: boolean;
 
-  constructor(protected service: Host, objectInitializer?: Partial<Project>) {
+  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }

@@ -7,6 +7,7 @@ import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Primitive } from './primitive';
+import { length } from '@azure-tools/linq';
 
 export class Char extends Primitive {
   public isXmlAttribute = false;
@@ -15,7 +16,7 @@ export class Char extends Primitive {
 
   constructor(schema: Schema, public isRequired: boolean) {
     super(schema);
-    this.choices = schema.enum.length > 0 ? schema.enum : undefined;
+    this.choices = length(schema.enum) > 0 ? schema.enum : undefined;
   }
 
   get declaration(): string {

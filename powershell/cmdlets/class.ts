@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { escapeString, docComment, serialize, pascalCase } from '@azure-tools/codegen';
+import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
@@ -239,7 +239,7 @@ export class CmdletClass extends Class {
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
 
-  constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
+  constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
     const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
@@ -318,7 +318,7 @@ export class CmdletClass extends Class {
     for (const httpOperation of values(this.operation.callGraph)) {
       ops = `${ops}\n[OpenAPI] ${httpOperation.operationId}=>${httpOperation.method.toUpperCase()}:"${httpOperation.path}"`;
       if (this.debugMode) {
-        const m = httpOperation.extensions['x-ms-metadata'] || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
+        const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
         if (m) {
           ops = `${ops}\n [METADATA]\n${serialize(m)}`;
         }
@@ -686,7 +686,7 @@ export class CmdletClass extends Class {
             }
           }
 
-          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${each.mimeTypes.join('/')}`;
+          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${values(each.mimeTypes).join('/')}`;
           if (each.schema) {
             const schema = each.schema;
 
@@ -741,7 +741,7 @@ export class CmdletClass extends Class {
               // ok, let's see if the response type
             }
             const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
-            const outValue = (props.length === 1) ? `(await response).${props[0].name}` : '(await response)';
+            const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
 
             // we expect to get back some data from this call.
@@ -1174,7 +1174,7 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
           // add aliases if there is any
-          if (vParam.alias.length > 0) {
+          if (length(vParam.alias) > 0) {
             cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
           }
 
@@ -1223,7 +1223,7 @@ export class CmdletClass extends Class {
       idParam.add(new Attribute(ParameterAttribute, { parameters }));
       idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
     }
-    for (const vParam of vps.operation) {
+    for (const vParam of values(vps.operation)) {
       const vSchema = vParam.schema;
       const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
 
@@ -1281,7 +1281,7 @@ export class CmdletClass extends Class {
       addDefaultInfo(regularCmdletParameter, vParam);
 
       // add aliases if there is any
-      if (vParam.alias.length > 0) {
+      if (length(vParam.alias) > 0) {
         regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
       }
 
@@ -1351,7 +1351,7 @@ export class CmdletClass extends Class {
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     // add alias attribute if there is any aliases for this cmdlet
-    if (operation.details.csharp.alias.length > 0) {
+    if (length(operation.details.csharp.alias) > 0) {
       this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => '"' + x + '"') }));
     }
 
@@ -1365,7 +1365,7 @@ export class CmdletClass extends Class {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?
-          const resultSchema = props.length !== 1 ? <Schema>schema : <Schema>props[0].schema;
+          const resultSchema = length(props) !== 1 ? <Schema>schema : <Schema>props[0].schema;
 
           // make sure return type for boolean stays boolean!
           if (resultSchema.type === JsonType.Boolean) {
@@ -1423,7 +1423,7 @@ export class CmdletClass extends Class {
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
     this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
-      const profileNames = Object.keys(operation.extensions['x-ms-metadata'].profiles);
+      const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
       // wrap profile names
       profileNames.forEach((element, index) => {
         profileNames[index] = `"${element}"`;
