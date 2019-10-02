@@ -1,18 +1,32 @@
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [string[]]
+    $swaggers
+)
 # generates the AutoRest tests into separate modules
 
-$root = $PSScriptRoot
-$outputRoot = "$root/output"
+$root = ( resolve-path "$PSScriptRoot/..").Path
+$outputRoot = ( resolve-path "$root/tests").Path
+
+cd $root
+
+# start @autorest/test-server
+./powershell/node_modules/.bin/start-autorest-testserver
 
 # source location for swagger files
-$swaggerRoot = "https://raw.githubusercontent.com/Azure/autorest.testserver/master/swagger/"
+$swaggerRoot = "http://localhost:3000/swagger/"
  
 # AutoRest Choice
 $autorest = (get-command autorest-beta).Source 
- 
-# PowerShell Generator Choice.
-# $powershell-generator= '--powershell'
-$powershellGenerator="--use:$(resolve-path $root/..)"
-$remodeler="--use:$(resolve-path $root/../../autorest.remodeler/remodeler)"
+
+# use local generator
+$powershellGenerator="--use:$(resolve-path $root/powershell)"
+
+# use local remodeler if it's here.
+if( test-path $root/../autorest.remodeler/remodeler ) {
+  $remodeler="--use:$(resolve-path $root/../autorest.remodeler/remodeler)"
+}
 
 $success = @{}
 $errors = @{}
@@ -42,6 +56,7 @@ function run-autorest($src) {
     }
   }
 }
+
 
 $inputs = @(
     "extensible-enums-swagger.json",
@@ -106,11 +121,17 @@ $azureInputs = @(
    "azure-resource.json", # ERROR COMPILING
    "azure-resource-x.json"# ERROR COMPILING 
 )
+
+if( $swaggers -ne $null) {
+  $azureInputs = $azureInputs |% { if( $swaggers.indexOf( $_ ) -gt -1 )  { return $_ } }
+  $inputs = $inputs |% { if( $swaggers.indexOf( $_ ) -gt -1 )  { return $_ } }
+}
+
 $n = 0;
 
 $inputs |% {
  if( $n -le 99 ) {
-   run-autorest $_
+    run-autorest $_
   }
   $n = $n + 1
 }
@@ -119,15 +140,17 @@ $azureInputs |% {
   run-autorest $_ --azure 
 }
 
+# stop @autorest/test-server
+cd $root
+./powershell/node_modules/.bin/stop-autorest-testserver
+
+
 $success.Keys |% {
-    $each = $errors[$_]
-    write-host -fore GREEN $_  # : $each
+    write-host -fore GREEN $_  
 }
 $errors.Keys |% {
-    $each = $errors[$_]
-    write-host -fore RED $_  # : $each
+    write-host -fore RED $_  
 }
 $broken.Keys |% {
-    $each = $broken[$_]
-    write-host -fore YELLOW $_  # : $each
+    write-host -fore YELLOW $_  
 }
