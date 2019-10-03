@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-CustomHeaderNamedRequestId' {
-    It 'Custom' {
+    It 'Custom' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

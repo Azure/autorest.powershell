@@ -8,6 +8,6 @@ while(-not $mockingPath) {
 
 Describe 'Get-ArrayNotProvided' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+      { Get-ArrayNotProvided | Should -be $null } | Should -Not -Throw
     }
 }

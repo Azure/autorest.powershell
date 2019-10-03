@@ -7,27 +7,27 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-ValidationRedis' {
-    It 'Validation' {
+    It 'Validation' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'ValidationExpanded' {
+    It 'ValidationExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Validation1' {
+    It 'Validation1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'ValidationViaIdentityExpanded' {
+    It 'ValidationViaIdentityExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'ValidationViaIdentity1' {
+    It 'ValidationViaIdentity1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'ValidationViaIdentity' {
+    It 'ValidationViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

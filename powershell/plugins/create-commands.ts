@@ -227,13 +227,20 @@ export /* @internal */ class Inferrer {
   }
 
   async inferCommandNames(op: http.HttpOperation, state: State): Promise<Array<CommandVariant>> {
-    const operationId = op.operationId;
+    const operationId = op.operationId || '';
 
     let [group, method] = operationId.split('_', 2);
     if (!method) {
-      // no group given.
-      method = group;
+      if (!group) {
+        // no operation id at all?
+        const path = op.path.replace(/{.*?}/g, '').replace(/\/+/g, '/').replace(/\/$/g, '');
+        method = path.split('/').last;
+      } else {
+        // no group given, use string as method
+        method = group;
+      }
       group = pascalCase(op.tags) || '';
+
     }
 
     const groupWords = deconstruct(group);
@@ -378,7 +385,7 @@ export /* @internal */ class Inferrer {
 
     // the body parameter
     const body = operation.requestBody;
-    const bodyParameterName = operation.requestBody ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
+    const bodyParameterName = (operation.requestBody && operation.requestBody.extensions) ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
 
     // all the properties in the body parameter
     const bodyProperties = (body && body.schema) ? values(getAllProperties(body.schema)).where(property => !property.details.default.readOnly).toArray() : [];

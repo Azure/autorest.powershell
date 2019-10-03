@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Base64PathUrl' {
-    It 'Base64' {
+    It 'Base64' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Base64ViaIdentity' {
+    It 'Base64ViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

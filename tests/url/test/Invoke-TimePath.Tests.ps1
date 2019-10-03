@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-TimePath' {
-    It 'Time' {
+    It 'Time' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'TimeViaIdentity' {
+    It 'TimeViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

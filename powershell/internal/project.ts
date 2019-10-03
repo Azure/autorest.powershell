@@ -38,12 +38,21 @@ export class PSSwitch extends Boolean {
 }
 
 export class PSSchemaResolver extends SchemaDefinitionResolver {
-
+  inResolve = false;
   resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
-    if (schema && schema.type === JsonType.Boolean) {
-      return new PSSwitch(schema, required);
+    const before = this.inResolve;
+    try {
+      if (!this.inResolve) {
+        this.inResolve = true;
+        if (schema && schema.type === JsonType.Boolean) {
+          return new PSSwitch(schema, required);
+        }
+      }
+
+      return super.resolveTypeDeclaration(schema, required, state);
+    } finally {
+      this.inResolve = before;
     }
-    return super.resolveTypeDeclaration(schema, required, state);
   }
 }
 

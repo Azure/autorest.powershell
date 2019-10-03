@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-SubscriptionInMethodLocalNull' {
-    It 'Post' {
+    It 'Post' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'PostViaIdentity' {
+    It 'PostViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

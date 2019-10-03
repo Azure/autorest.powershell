@@ -8,6 +8,13 @@ while(-not $mockingPath) {
 
 Describe 'Get-DictionaryValid' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        { 
+          $d = Get-DictionaryValid
+          $d.keys.Count | should -be 4
+          $p = [Hashtable]$d.AdditionalProperties 
+          $p['xls'] | should -be 'excel'
+          $p['txt'] | should -be 'notepad'
+          $p['exe'] | should -be ''
+         } | Should -Not -Throw
     }
 }

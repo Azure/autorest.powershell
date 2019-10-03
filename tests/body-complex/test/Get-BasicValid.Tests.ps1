@@ -8,6 +8,11 @@ while(-not $mockingPath) {
 
 Describe 'Get-BasicValid' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        {
+          $v = Get-BasicValid
+          $v.Id | should -be 2
+          $v.name | should -be 'abc'
+          $v.Color | should -be ([Sample.API.Support.CmykColors]::Yellow)
+        } | Should -Not -Throw
     }
 }

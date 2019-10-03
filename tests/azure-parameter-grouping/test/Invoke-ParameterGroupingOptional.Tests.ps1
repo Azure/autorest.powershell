@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-ParameterGroupingOptional' {
-    It 'Post' {
+    It 'Post' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

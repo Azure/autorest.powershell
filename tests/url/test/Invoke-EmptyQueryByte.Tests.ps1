@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-EmptyQueryByte' {
-    It 'Empty' {
+    It 'Empty' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

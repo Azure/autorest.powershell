@@ -1,0 +1,30 @@
+{
+  "Get-ArrayValid+[NoContext]+Get+$GET+http://localhost:3000/complex/array/valid+1": {
+    "Request": {
+      "Method": "GET",
+      "RequestUri": "http://localhost:3000/complex/array/valid",
+      "Content": null,
+      "Headers": {
+      },
+      "ContentHeaders": {
+      }
+    },
+    "Response": {
+      "StatusCode": 200,
+      "Headers": {
+        "X-Powered-By": [ "Express" ],
+        "Vary": [ "Origin" ],
+        "Access-Control-Allow-Credentials": [ "true" ],
+        "Access-Control-Expose-Headers": [ "x-ms-request-id,foo-request-id,Content-Type,value,Location,Azure-AsyncOperation,Retry-After" ],
+        "Date": [ "Thu, 18 Oct 2018 17:39:21 GMT" ],
+        "Matched-Stub-Id": [ "1f7c8fe0-4537-4a9f-9dda-a27be2ad60a6" ],
+        "Matched-Stub-Name": [ "complex_array_valid" ],
+        "Transfer-Encoding": [ "chunked" ],
+        "Server": [ "Jetty(9.2.z-SNAPSHOT)" ]
+      },
+      "ContentHeaders": {
+      },
+      "Content": "{\"array\":[\"1, 2, 3, 4\",\"\",null,\"\u0026S#$(*Y\",\"The quick brown fox jumps over the lazy dog\"]}"
+    }
+  }
+}

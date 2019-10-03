@@ -7,19 +7,19 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Set-Redis' {
-    It 'UpdateExpanded' {
+    It 'UpdateExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Update' {
+    It 'Update' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'UpdateViaIdentityExpanded' {
+    It 'UpdateViaIdentityExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'UpdateViaIdentity' {
+    It 'UpdateViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

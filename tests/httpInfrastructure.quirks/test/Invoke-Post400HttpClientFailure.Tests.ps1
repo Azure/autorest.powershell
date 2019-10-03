@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Post400HttpClientFailure' {
-    It 'Post400' {
+    It 'Post400' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

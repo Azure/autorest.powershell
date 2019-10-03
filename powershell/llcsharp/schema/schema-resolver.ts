@@ -37,7 +37,8 @@ export class SchemaDefinitionResolver {
     switch (schema.type) {
       case JsonType.Array: {
         // can be recursive!
-        const elementType = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
+        // handle boolean arrays as booleans (powershell will try to turn it into switches!)
+        const elementType = (schema.items && schema.items.type === JsonType.Boolean) ? new Boolean(schema, true) : this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
         return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
       }
 

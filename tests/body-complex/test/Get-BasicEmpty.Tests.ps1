@@ -8,6 +8,10 @@ while(-not $mockingPath) {
 
 Describe 'Get-BasicEmpty' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        { 
+          $v = Get-BasicEmpty
+          $v.getType().name |should -be 'basic'
+          $v.ToJsonString() | should -be "{`r`n}"   
+         } | Should -Not -Throw
     }
 }

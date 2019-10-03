@@ -8,6 +8,8 @@
     "debug": "node --max_old_space_size=4096 --inspect-brk ./powershell/dist/main",
     "prepare": "(pwsh -v || npm --silent run show-error) && pwsh -noprofile ./.scripts/verify-install.ps1",
     "show-error": "echo ====== &echo ====== & echo ====== & echo REQUIRED: Install PowerShell-core 6.1 or greater (see readme.md) & echo ====== & echo ====== & echo ====== & exit 1",
-    "pack": "rush publish --publish --pack --include-all --tag preview"
+    "pack": "rush publish --publish --pack --include-all --tag preview",
+    "stop-wiremock": "node -e \"http.request( {port: 3000, host:'localhost', method: 'POST', path: '/__admin/shutdown'} ).end()\"",
+    "start-wiremock": "node -e \"p = child_process.spawn( 'node' ,['./powershell/node_modules/wiremock/jdeploy-bundle/jdeploy.js','--root-dir', '../../testserverv2', '--port', '3000'],{ detatched: true,   stdio: 'ignore'} ) ; setTimeout( () => { p.unref(); process.exit()},1000 )  \""
   }
 }

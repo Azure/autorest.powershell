@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Set-ArrayEmpty' {
-    It 'PutExpanded' {
+    It 'PutExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Put' {
+    It 'Put' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

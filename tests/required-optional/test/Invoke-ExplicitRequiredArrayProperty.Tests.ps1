@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-ExplicitRequiredArrayProperty' {
-    It 'PostExpanded' {
+    It 'PostExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Post' {
+    It 'Post' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

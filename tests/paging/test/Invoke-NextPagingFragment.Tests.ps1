@@ -7,19 +7,19 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-NextPagingFragment' {
-    It 'Next' {
+    It 'Next' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Next1' {
+    It 'Next1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'NextViaIdentity1' {
+    It 'NextViaIdentity1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'NextViaIdentity' {
+    It 'NextViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

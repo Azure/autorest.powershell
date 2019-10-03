@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-BytePathNull' {
-    It 'Byte' {
+    It 'Byte' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'ByteViaIdentity' {
+    It 'ByteViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

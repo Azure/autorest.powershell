@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Head200HeadException' {
-    It 'Head200' {
+    It 'Head200' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-DatePathNull' {
-    It 'Date' {
+    It 'Date' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'DateViaIdentity' {
+    It 'DateViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

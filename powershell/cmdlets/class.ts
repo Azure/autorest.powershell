@@ -307,6 +307,11 @@ export class CmdletClass extends Class {
     // json serialization
     this.implementSerialization(this.operation);
 
+    for (const prop of this.properties) {
+      if (prop.name === 'Host') {
+        prop['new'] = Modifier.New;
+      }
+    }
 
     return this;
   }
@@ -515,7 +520,11 @@ export class CmdletClass extends Class {
     PAR.add(function* () {
       if ($this.apProp && $this.bodyParameter && $this.bodyParameterInfo) {
         // yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
-        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
+        let vt = $this.bodyParameterInfo.valueType.declaration;
+        if (vt.endsWith('SwitchParameter')) {
+          vt = 'bool';
+        }
+        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${vt}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
       }
 
       // construct the call to the operation

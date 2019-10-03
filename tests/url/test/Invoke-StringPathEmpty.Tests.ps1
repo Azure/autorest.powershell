@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-StringPathEmpty' {
-    It 'String' {
+    It 'String' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'StringViaIdentity' {
+    It 'StringViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

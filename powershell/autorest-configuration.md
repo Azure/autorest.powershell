@@ -87,6 +87,7 @@ declare-directive:
         transform: "$.details.default['skip-inline'] = true;"
       };
     })()
+
 ```
 
 # Pipeline Configuration
@@ -153,12 +154,12 @@ pipeline:
   llcsharp/emitter:
     input: text-transform
     scope: scope-here
-    output-artifact: source-file-csharp
+    # output-artifact: source-file-csharp
 
   powershell/emitter:
     input: text-transform
     scope: scope-here
-    output-artifact: source-file-csharp
+    # output-artifact: source-file-csharp
 
 scope-here:
   is-object: false

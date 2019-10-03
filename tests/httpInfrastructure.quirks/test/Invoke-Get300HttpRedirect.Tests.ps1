@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Get300HttpRedirect' {
-    It 'Get300' {
+    It 'Get300' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

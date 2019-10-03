@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-EnumPathNull' {
-    It 'Enum' {
+    It 'Enum' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'EnumViaIdentity' {
+    It 'EnumViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

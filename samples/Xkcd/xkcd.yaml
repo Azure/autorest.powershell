@@ -10,10 +10,10 @@ info:
   x-apisguru-categories:
     - media
   x-logo:
-    url: 'https: //api.apis.guru/v2/cache/logo/http_imgs.xkcd.com_static_terrible_small_logo.png'
+    url: 'https://api.apis.guru/v2/cache/logo/http_imgs.xkcd.com_static_terrible_small_logo.png'
   x-origin:
     - format: swagger
-      url: 'https: //raw.githubusercontent.com/APIs-guru/unofficial_openapi_specs/master/xkcd.com/1.0.0/swagger.yaml'
+      url: 'https://raw.githubusercontent.com/APIs-guru/unofficial_openapi_specs/master/xkcd.com/1.0.0/swagger.yaml'
       version: '2.0'
   x-preferred: true
   x-providerName: xkcd.com
@@ -22,7 +22,7 @@ info:
     - comics
   x-unofficialSpec: true
 externalDocs:
-  url: 'https: //xkcd.com/json.html'
+  url: 'https://xkcd.com/json.html'
 securityDefinitions: {}
 produces: 
   - application/json

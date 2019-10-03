@@ -8,6 +8,27 @@ while(-not $mockingPath) {
 
 Describe 'Get-InheritanceValid' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        { 
+          throw "help!"
+          $v = Get-InheritanceValid 
+          $v.Name | should -be Siameeee 
+          $v.id | should -be 2
+          $v.Breed | should -be persian
+          $v.Color | should -be green
+        } | Should -Not -Throw
     }
+}
+
+
+Describe 'more Get-InheritanceValid' {
+  It 'Get' {
+      { 
+        throw "help!"
+        $v = Get-InheritanceValid 
+        $v.Name | should -be Siameeee 
+        $v.id | should -be 2
+        $v.Breed | should -be persian
+        $v.Color | should -be green
+      } | Should -Not -Throw
+  }
 }

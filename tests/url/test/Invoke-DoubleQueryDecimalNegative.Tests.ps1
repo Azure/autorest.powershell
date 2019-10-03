@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-DoubleQueryDecimalNegative' {
-    It 'Double' {
+    It 'Double' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

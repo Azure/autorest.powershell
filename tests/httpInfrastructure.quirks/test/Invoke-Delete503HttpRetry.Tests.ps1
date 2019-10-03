@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Delete503HttpRetry' {
-    It 'Delete503' {
+    It 'Delete503' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

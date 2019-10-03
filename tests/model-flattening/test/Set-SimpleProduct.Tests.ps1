@@ -7,27 +7,27 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Set-SimpleProduct' {
-    It 'PutExpanded1' {
+    It 'PutExpanded1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'PutExpanded' {
+    It 'PutExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Put' {
+    It 'Put' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'PutViaIdentityExpanded' {
+    It 'PutViaIdentityExpanded' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'PutViaIdentity' {
+    It 'PutViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Put1' {
+    It 'Put1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

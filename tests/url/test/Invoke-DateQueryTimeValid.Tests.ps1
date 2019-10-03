@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-DateQueryTimeValid' {
-    It 'Date' {
+    It 'Date' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

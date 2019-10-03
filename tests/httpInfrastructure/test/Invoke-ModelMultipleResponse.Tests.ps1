@@ -7,27 +7,27 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-ModelMultipleResponse' {
-    It 'Model' {
+    It 'Model' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Model9' {
+    It 'Model9' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Model8' {
+    It 'Model8' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Model7' {
+    It 'Model7' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Model11' {
+    It 'Model11' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Model10' {
+    It 'Model10' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

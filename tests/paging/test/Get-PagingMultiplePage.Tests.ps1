@@ -7,15 +7,15 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Get-PagingMultiplePage' {
-    It 'Get' {
+    It 'Get' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'Get1' {
+    It 'Get1' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'GetViaIdentity' {
+    It 'GetViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

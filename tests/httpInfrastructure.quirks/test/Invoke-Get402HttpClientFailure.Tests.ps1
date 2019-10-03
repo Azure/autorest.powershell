@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-Get402HttpClientFailure' {
-    It 'Get402' {
+    It 'Get402' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

@@ -32,7 +32,7 @@ export class String implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {

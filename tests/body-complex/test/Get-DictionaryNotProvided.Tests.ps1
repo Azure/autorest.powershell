@@ -8,6 +8,9 @@ while(-not $mockingPath) {
 
 Describe 'Get-DictionaryNotProvided' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        {  
+          $d = Get-DictionaryNotProvided
+          $d.count | should -be 0
+         } | Should -Not -Throw
     }
 }

@@ -7,11 +7,11 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-EmptyPathByte' {
-    It 'Empty' {
+    It 'Empty' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 
-    It 'EmptyViaIdentity' {
+    It 'EmptyViaIdentity' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

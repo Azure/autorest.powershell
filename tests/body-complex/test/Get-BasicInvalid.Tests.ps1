@@ -8,6 +8,11 @@ while(-not $mockingPath) {
 
 Describe 'Get-BasicInvalid' {
     It 'Get' {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
+        { 
+          $v = Get-BasicInvalid
+          $v.id | should -be $null        # id is a string in the response body.
+          $v.Name | should -be 'abc'
+
+         } | Should -Not -Throw
     }
 }

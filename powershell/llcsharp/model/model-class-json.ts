@@ -96,7 +96,11 @@ export class JsonSerializableClass extends Class {
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
+      if ((<EnhancedTypeDeclaration>each.typeDeclaration).schema.additionalProperties) {
+        deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
+      } else {
+        deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
+      }
     }
 
     pushTempVar();

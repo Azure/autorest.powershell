@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Invoke-FloatPathScientificNegative' {
-    It 'Float' {
+    It 'Float' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }

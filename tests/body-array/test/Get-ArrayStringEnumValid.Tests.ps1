@@ -7,7 +7,7 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Get-ArrayStringEnumValid' {
-    It 'Get' {
+    It 'Get' -skip {
         { throw [System.NotImplementedException] } | Should -Not -Throw
     }
 }
