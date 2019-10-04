@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { EnumDetails } from '@azure-tools/codemodel-v3';
-import { If, Parameter, Method, Namespace, System, Struct } from '@azure-tools/codegen-csharp';
+import { If, Parameter, Method, Namespace, System, Struct, Attribute, Class, dotnet, LambdaMethod, LiteralExpression, Modifier } from '@azure-tools/codegen-csharp';
 import { State } from '../internal/state';
-import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType } from '../internal/powershell-declarations';
+import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, TypeConverterAttribute, PSTypeConverter } from '../internal/powershell-declarations';
 import { join } from 'path';
 import { DeepPartial } from '@azure-tools/codegen';
 
@@ -38,6 +38,7 @@ export class EnumNamespace extends Namespace {
         continue;
       }
 
+      // generate a typeconverter for the enum class too.
 
       const enumValues = values(enumInfo.details.values).select(v => <string>v.value).toArray();
       const enumClass = new Struct(this, enumInfo.details.name, undefined, {
@@ -59,6 +60,62 @@ export class EnumNamespace extends Namespace {
             `yield return new ${CompletionResult.declaration}("${enumValue}", "${enumValue}", ${CompletionResultType.declaration}.ParameterValue, "${enumValue}");`);
         }
       });
+
+
+      // generate a typeconverter for the enum class too.
+
+      const converterClass = new Class(this, `${enumInfo.details.name}TypeConverter`, undefined, {
+        interfaces: [PSTypeConverter],
+        partial: true,
+        description: enumInfo.description || `TypeConverter implementation for ${enumInfo.details.name}.`,
+        fileName: `${enumInfo.details.name}.TypeConverter`
+      });
+
+      converterClass.add(new LambdaMethod('CanConvertFrom', dotnet.Bool, dotnet.True, {
+        override: Modifier.Override,
+        parameters: [
+          new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+          new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
+        ],
+        description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
+        returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
+      }));
+
+      converterClass.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
+        override: Modifier.Override,
+        parameters: [
+          new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+          new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
+        ],
+        description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
+        returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
+      }));
+
+      converterClass.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression(`${enumInfo.details.name}.CreateFrom(sourceValue)`), {
+        override: Modifier.Override,
+        parameters: [
+          new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+          new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' }),
+          new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
+          new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
+        ],
+        description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> ',
+        returnsDescription: `an instance of <see cref="${enumInfo.details.name}" />, or <c>null</c> if there is no suitable conversion.`
+      }));
+
+      converterClass.add(new LambdaMethod('ConvertTo', dotnet.Object, dotnet.Null, {
+        override: Modifier.Override,
+        parameters: [
+          new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
+          new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' }),
+          new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
+          new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
+        ], description: 'NotImplemented -- this will return <c>null</c>',
+        returnsDescription: 'will always return <c>null</c>.'
+      }));
+
+      enumClass.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
+
     }
   }
 }
