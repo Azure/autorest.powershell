@@ -8,7 +8,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 ``` yaml !isLoaded('@autorest/remodeler') 
 use-extension:
-  "@autorest/remodeler" : "~2.0.4" 
+  "@autorest/remodeler" : "~2.1.0" 
 
 # will use highest 2.0.x 
 ```

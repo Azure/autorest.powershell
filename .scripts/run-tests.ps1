@@ -23,8 +23,9 @@ if( $swaggers -ne $null) {
   $azureInputs = $azureInputs |% { if( $swaggers.indexOf( $_ ) -gt -1 )  { return $_ } }
   $inputs = $inputs |% { if( $swaggers.indexOf( $_ ) -gt -1 )  { return $_ } }
 }
-
-& (get-command powershell/node_modules/.bin/start-autorest-testserver).Path
+if( $Live -or $Record ) {
+  & (get-command powershell/node_modules/.bin/start-autorest-testserver).Path
+}
 
 $total = 0
 $errors = @{}
@@ -86,5 +87,6 @@ if( $total -ne 0) {
   write-error "Not Successful."
   exit $total
 }
-
-& (get-command powershell/node_modules/.bin/stop-autorest-testserver).Path
+if( $Live -or $Record ) {
+  & (get-command powershell/node_modules/.bin/stop-autorest-testserver).Path
+}

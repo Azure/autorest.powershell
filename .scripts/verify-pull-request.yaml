@@ -20,5 +20,11 @@ steps:
     npx @microsoft/rush update 
     npx @microsoft/rush rebuild 
     npx @microsoft/rush test 
+
+    # generate the test modules
+    pwsh .scripts/generate-tests.ps1
+
+    # run the test module tests
+    pwsh .scripts/run-tests.ps1
     
   displayName: 'Rush install, build and test'
