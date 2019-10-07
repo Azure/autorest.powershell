@@ -21,6 +21,9 @@ steps:
     npx @microsoft/rush rebuild 
     npx @microsoft/rush test 
 
+    # install pester
+    pwsh install-module -scope currentuser -name pester -force
+
     # generate the test modules
     pwsh .scripts/generate-tests.ps1
 
