@@ -29,8 +29,7 @@ $root = ( resolve-path "$PSScriptRoot/..").Path
 if( ($outputRoot -eq $null ) -or ($outputRoot -eq ''))  {
   $outputRoot = ( resolve-path "$root/tests").Path
 }
-$null = mkdir $outputRoot -force 
-
+$null = New-Item $outputRoot  -force -ItemType Directory 
 cd $root
 
 # start @autorest/test-server
@@ -46,7 +45,10 @@ if( $useLocalAutorest) {
   $autorest='node' 
   $autorestArgs = @(  (resolve-path $root/../autorest), "--version:$(resolve-path $root/../autorest)" )
 } else {
-  $autorest = (get-command autorest-beta).Source 
+  $autorest = (get-command autorest-beta -ea 0 ).Source 
+  if( -not $autorest )  {
+    $autorest = resolve-path "$root/powershell/node_modules/.bin/autorest-beta"
+  }
 }
 
 
