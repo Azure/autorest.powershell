@@ -11,7 +11,7 @@ Describe 'Get-BasicEmpty' {
         { 
           $v = Get-BasicEmpty
           $v.getType().name |should -be 'basic'
-          $v.ToJsonString() | should -be "{`r`n}"   
+          $v.ToJsonString() | should -be "{$([System.Environment]::NewLine)}"   
          } | Should -Not -Throw
     }
 }
