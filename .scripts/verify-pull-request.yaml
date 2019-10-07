@@ -22,7 +22,7 @@ steps:
     npx @microsoft/rush test 
 
     # install pester
-    pwsh install-module -scope currentuser -name pester -force
+    pwsh -command install-module -scope currentuser -name pester -force
 
     # generate the test modules
     pwsh .scripts/generate-tests.ps1
