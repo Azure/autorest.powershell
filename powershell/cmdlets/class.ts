@@ -22,13 +22,13 @@ const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
 const Verbs = {
-  Common: 'System.Management.Automation.VerbsCommon',
-  Data: 'System.Management.Automation.VerbsData',
-  Lifecycle: 'System.Management.Automation.VerbsLifecycle',
-  Diagnostic: 'System.Management.Automation.VerbsDiagnostic',
-  Communications: 'System.Management.Automation.VerbsCommunications',
-  Security: 'System.Management.Automation.VerbsSecurity',
-  Other: 'System.Management.Automation.VerbsOther'
+  Common: 'global::System.Management.Automation.VerbsCommon',
+  Data: 'global::System.Management.Automation.VerbsData',
+  Lifecycle: 'global::System.Management.Automation.VerbsLifecycle',
+  Diagnostic: 'global::System.Management.Automation.VerbsDiagnostic',
+  Communications: 'global::System.Management.Automation.VerbsCommunications',
+  Security: 'global::System.Management.Automation.VerbsSecurity',
+  Other: 'global::System.Management.Automation.VerbsOther'
 };
 
 const category: { [verb: string]: string } = {
@@ -648,7 +648,7 @@ export class CmdletClass extends Class {
 
               yield ex.declarationStatement;
 
-              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
+              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
 { 
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
 });`;
@@ -678,7 +678,7 @@ export class CmdletClass extends Class {
                 yield laction;
 
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
 {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
 });`
@@ -763,8 +763,8 @@ export class CmdletClass extends Class {
               provider.initializer = undefined;
               const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
               yield paths.declarationStatement;
-              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
 
               if (rType.declaration === System.IO.Stream.declaration) {
                 // this is a stream output. write to outfile
@@ -881,7 +881,7 @@ export class CmdletClass extends Class {
       });
       const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
       yield Catch(ure, function* () {
-        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
 {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ure.value}.Message) { RecommendedAction = ${ure.value}.Action }
 });`;
@@ -992,7 +992,7 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
-          yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
+          yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
           yield Return();
         }),
       ]);
@@ -1158,8 +1158,8 @@ export class CmdletClass extends Class {
                 provider.initializer = undefined;
                 const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(value, out ${provider.declarationExpression})`);
                 yield paths.declarationStatement;
-                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid input path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
-                yield If(`${paths.value}.Count > 1`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple input paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid input path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
+                yield If(`${paths.value}.Count > 1`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple input paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
                 yield cmdletParameter.assign(`global::System.IO.File.ReadAllBytes(${paths.value}[0])`);
               },
               description: `Input File for ${cmdletParameter.name} (${escapeString(desc)})`
