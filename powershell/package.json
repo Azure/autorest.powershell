@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "~2.0.0",
     "@typescript-eslint/parser": "~2.0.0",
     "@autorest/test-server": "~3.0.26",
-    "@autorest/autorest": "~3.0.6116",
+    "@autorest/autorest": "~3.0.6118",
     "eslint": "~6.2.2"
   },
   "dependencies": {
