@@ -105,6 +105,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                 Directory.CreateDirectory(variantGroup.OutputFolder);
                 File.WriteAllText(variantGroup.FilePath, sb.ToString());
+
+                File.AppendAllText(Path.Combine(variantGroup.OutputFolder, "ProxyCmdletDefinitions.ps1"), sb.ToString());
             }
 
             if (!ExcludeDocs)

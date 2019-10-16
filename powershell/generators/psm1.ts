@@ -70,7 +70,13 @@ export async function generatePsm1(project: Project) {
     Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. Please open a new PowerShell session and import this module again.\`nAdditionally, this error could indicate that multiple incompatible versions of Azure PowerShell modules are installed on your system. For troubleshooting information, please see: https://aka.ms/azps-version-error" -ErrorAction Stop
   }
   Write-Information "Loaded Module '$($accountsModule.Name)'"
-  
+
+  # Load the private module dll
+  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
+
+  # Get the private module's instance
+  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
+
   # Ask for the shared functionality table
   $VTable = Register-AzModule
   
@@ -95,11 +101,6 @@ export async function generatePsm1(project: Project) {
   }
 
   psm1.prepend('Generated', `
-  # Load the private module dll
-  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
-  
-  # Get the private module's instance
-  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
 ${azureInitialize}
   # Load the custom module
   $customModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
