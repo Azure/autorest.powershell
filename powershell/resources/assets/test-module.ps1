@@ -9,7 +9,14 @@ if(-not $Isolated) {
 }
 
 $ProgressPreference = 'SilentlyContinue'
-. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$${$project.azure} -Pester
+$baseName = $PSScriptRoot.BaseName
+$requireResourceModule = (($baseName -ne "Resources") -and ($Record.IsPresent -or $Live.IsPresent))
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$false -Pester -Resources:$requireResourceModule
+
+if ($requireResourceModule) {
+  $resourceModulePSD = Get-Item -Path (Join-Path $HOME '.PSSharedModules\Resources\Az.Resources.TestSupport.psd1')
+  Import-Module -Name $resourceModulePSD.FullName
+}
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
 if(Test-Path -Path $localModulesPath) {
