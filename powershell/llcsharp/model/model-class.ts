@@ -18,7 +18,11 @@ import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } f
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 
-function getVirtualPropertyName(vp?: VirtualProperty) {
+export function getVirtualPropertyName(vp?: VirtualProperty): string {
+
+  if (vp && vp.accessViaMember && vp.accessViaProperty?.accessViaMember) {
+    return getVirtualPropertyName(vp.accessViaMember);
+  }
   return vp ? vp.name : '';
 }
 export interface BackingField {
@@ -113,15 +117,20 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // create an interface for this model class
     if (!this.schema.details.csharp.interfaceImplementation) {
-      (this.schema.details.csharp.interfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.interfaceName || `I${this.schema.details.csharp.name}`, this, this.state)).init();
+      (this.schema.details.csharp.interfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.interfaceName || `I${this.schema.details.csharp.name}`, this, this.state));
+
     }
     this.interfaces.push(this.modelInterface);
 
     if (!this.schema.details.csharp.internalInterfaceImplementation) {
-      (this.schema.details.csharp.internalInterfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.internalInterfaceName || `I${this.schema.details.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal })).init();
+      (this.schema.details.csharp.internalInterfaceImplementation = new ModelInterface(this.namespace, this.schema.details.csharp.internalInterfaceName || `I${this.schema.details.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal }));
+
     }
 
     this.interfaces.push(this.internalModelInterface);
+
+    this.schema.details.csharp.internalInterfaceImplementation.init();
+    this.schema.details.csharp.interfaceImplementation.init();
 
     // add default constructor
     this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
@@ -152,9 +161,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   private nested(virtualProperty: VirtualProperty, internal: boolean): string {
     if (virtualProperty.accessViaProperty) {
       if (virtualProperty.accessViaProperty.accessViaProperty) {
+        // return `/*1*/${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
         return `${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
       }
     }
+    //return `/*2*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
     return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
@@ -163,10 +174,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       const prefix = virtualProperty.accessViaProperty.accessViaProperty ? this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal) : '';
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
       if (containingProperty && virtualProperty.accessViaMember) {
+        //return `/*3*/((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
         return `((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
       }
     }
-    return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
+    //    return `/*4* ${virtualProperty.name}/${virtualProperty.accessViaMember?.name}/${virtualProperty.accessViaProperty?.name} */${getVirtualPropertyName(virtualProperty.accessViaMember) || '/*!!*/' + virtualProperty.name}`;
+    return `${getVirtualPropertyName(virtualProperty.accessViaMember) || virtualProperty.name}`;
   }
 
   private createProperties() {
@@ -230,6 +243,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (myProperty.getAccess !== Access.Public || myProperty.setAccess !== Access.Public || myProperty.set === undefined) {
           /* internal interface property */
+
           this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, decl, {
             description: `Internal Acessors for ${virtualProperty.name}`,
             getAccess: Access.Explicit,
@@ -252,12 +266,13 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.details.csharp.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
 
         const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
+        const opsType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.originalContainingSchema, false, this.state);
         const via = <VirtualProperty>virtualProperty.accessViaProperty;
         const parentCast = `(${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName})`;
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.details.csharp.description,
-          get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
-          set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
+          get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
+          set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value`)
         }));
 
         if (virtualProperty.property.details.csharp.constantValue !== undefined) {

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType } from '@azure-tools/codemodel-v3';
+import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties, JsonType, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { Initializer, EOL, DeepPartial } from '@azure-tools/codegen';
 import { items, values, } from '@azure-tools/linq';
 
@@ -30,6 +30,8 @@ import { popTempVar, pushTempVar } from '../schema/primitive';
 import { ModelProperty } from './property';
 import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
+
+import { getVirtualPropertyName } from './model-class';
 
 export class SerializationPartialClass extends Initializer {
   constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
@@ -135,7 +137,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
         const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
 
-        yield `${t}.${virtualProperty.name} = ${tt} ${$this.contentParameter}.GetValueForProperty("${virtualProperty.name}",${t}.${virtualProperty.name}, ${cvt});`;
+        yield `${t}.${getVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${getVirtualPropertyName(virtualProperty)}",${t}.${getVirtualPropertyName(virtualProperty)}, ${cvt});`;
       }
     };
   }

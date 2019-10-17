@@ -3,21 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
+import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
-import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
-  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
-  LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case, IsExpressionDeclaration
+  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
+  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '../llcsharp/exports';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
-
+import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
@@ -296,7 +295,7 @@ export class CmdletClass extends Class {
     this.implementIEventListener();
 
     // add constructors
-    this.implementConstructors(this.operation);
+    this.implementConstructors();
 
     // processRecord
     this.implementProcessRecord(this.operation);
@@ -930,8 +929,7 @@ export class CmdletClass extends Class {
     }
   }
 
-  private implementConstructors(operation: command.CommandOperation) {
-    const $this = this;
+  private implementConstructors() {
     // default constructor
     this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
   }
@@ -1104,9 +1102,9 @@ export class CmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, (<VirtualProperty>vParam.origin).property.details.csharp.required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
-            get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+            get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
             // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
-            set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
+            set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 
@@ -1153,7 +1151,6 @@ export class CmdletClass extends Class {
             const inputFileParameter = new Property(ifname, dotnet.String, {
               // get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
               set: function* () {
-                const outfile = $this.outFileParameter;
                 const provider = Local('provider');
                 provider.initializer = undefined;
                 const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(value, out ${provider.declarationExpression})`);
@@ -1317,25 +1314,8 @@ export class CmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
-    const ifmatch = this.properties.find((v, i, p) => v.name.toLowerCase() === 'ifmatch');
+    const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {
-      //this.properties[9].type.schema.details.csharp.virtualProperties.owned[1]
-      const q = this.properties.find((v, i, p) => {
-        const pp = <any>v;
-        if (pp.type.schema) {
-          const etag = getAllVirtualProperties(pp.type.schema.details.csharp.virtualProperties).find(each => each.property.serializedName.toLowerCase() === 'etag');
-          if (etag) {
-            const et = `this.${v.name}.${etag.name}`;
-            ifmatch.get = toExpression(`${ifmatch.get}?? ${et}`);
-            const pattr = ifmatch.attributes.find(attr => attr.type === ParameterAttribute);
-            if (pattr) {
-              pattr.parameters = pattr.parameters.map((p) => valueOf(p).startsWith('Mandatory') ? toExpression('Mandatory = false') : p);
-            }
-          }
-          return true;
-        }
-        return false;
-      });
     }
 
   }
