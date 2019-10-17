@@ -11,32 +11,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\csharp-v2\resources\runtime\csharp\client\IAssociativeArray.cs" Link="IAssociativeArray.cs" />
-    <Compile Include="..\..\csharp-v2\resources\runtime\csharp\client\InfoAttribute.cs" Link="InfoAttribute.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportModelSurface.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportCmdletSurface.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportExampleStub.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\GetModuleGuid.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportPsd1.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\GetCommonParameter.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsMarkdownTypes.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsHelpTypes.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsFormatTypes.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\GetScriptCmdlet.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportProxyCmdlet.cs" />
-    <Compile Include="runtime\BuildTime\Cmdlets\ExportTestStub.cs" />
-    <Compile Include="runtime\BuildTime\MarkdownRenderer.cs" />
-    <Compile Include="runtime\BuildTime\PsHelpers.cs" />
-    <Compile Include="runtime\BuildTime\PsAttributes.cs" />
-    <Compile Include="runtime\BuildTime\PsExtensions.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsProxyOutputs.cs" />
-    <Compile Include="runtime\BuildTime\Models\PsProxyTypes.cs" />
-    <Compile Include="runtime\BuildTime\CollectionExtensions.cs" />
-    <Compile Include="runtime\BuildTime\StringExtensions.cs" />
-    <Compile Include="runtime\BuildTime\XmlExtensions.cs" />
+    <Compile Include="runtime\csharp\client\IAssociativeArray.cs" Link="IAssociativeArray.cs" />
+    <Compile Include="runtime\csharp\client\InfoAttribute.cs" Link="InfoAttribute.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportModelSurface.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportCmdletSurface.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportHelpMarkdown.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportFormatPs1xml.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportExampleStub.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\GetModuleGuid.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportPsd1.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\GetCommonParameter.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsMarkdownTypes.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsHelpTypes.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsFormatTypes.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\GetScriptCmdlet.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportProxyCmdlet.cs" />
+    <Compile Include="psruntime\BuildTime\Cmdlets\ExportTestStub.cs" />
+    <Compile Include="psruntime\BuildTime\MarkdownRenderer.cs" />
+    <Compile Include="psruntime\BuildTime\PsHelpers.cs" />
+    <Compile Include="psruntime\BuildTime\PsAttributes.cs" />
+    <Compile Include="psruntime\BuildTime\PsExtensions.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsProxyOutputs.cs" />
+    <Compile Include="psruntime\BuildTime\Models\PsProxyTypes.cs" />
+    <Compile Include="psruntime\BuildTime\CollectionExtensions.cs" />
+    <Compile Include="psruntime\BuildTime\StringExtensions.cs" />
+    <Compile Include="psruntime\BuildTime\XmlExtensions.cs" />
   </ItemGroup>
 
 </Project>
