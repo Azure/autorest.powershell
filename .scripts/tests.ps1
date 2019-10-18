@@ -30,7 +30,7 @@ $inputs = @(
   "body-file",
 
   "complex-model",
-  "model-flattening",
+  
   "body-string.quirks",
   "body-dictionary"
 ) 
@@ -47,6 +47,7 @@ $unsupported = @(
   # "xml-service", -- xml not currently supported
   # "xms-error-responses" -- xml not currently supported
   # "parameter-flattening" -- tags has multiple types when proxies combine. 
+  # "model-flattening", - needs directive to work around circular reference
   # "lro",   -- location property conflicts with Location header property.
 
   # P1 Error compiling

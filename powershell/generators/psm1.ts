@@ -98,10 +98,20 @@ export async function generatePsm1(project: Project) {
   # The name of the currently selected Azure profile
   $instance.ProfileName = $VTable.ProfileName
 `;
+  } else {
+    azureInitialize = `
+  # Load the private module dll
+  $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
+
+  # Get the private module's instance
+  $instance = [${project.serviceNamespace.moduleClass.declaration}]::Instance
+`;
   }
+
 
   psm1.prepend('Generated', `
 ${azureInitialize}
+ 
   # Load the custom module
   $customModulePath = Join-Path $PSScriptRoot '${project.psm1Custom}'
   if(Test-Path $customModulePath) {

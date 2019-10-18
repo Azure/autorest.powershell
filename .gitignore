@@ -377,6 +377,7 @@ package-deps.json
 /tests/**/*.psd1
 /tests/**/*.psm1
 /tests/**/*.md
+/tests/**/tools/**
 /tests/**/license.txt
 
 !/tests/**/test/*
