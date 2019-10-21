@@ -16,10 +16,11 @@ import { EnumClass } from '../enums/enum';
 import * as validation from '../validations';
 import { ModelInterface } from './interface';
 import { ModelClass } from './model-class';
+import { DeepPartial } from '@azure-tools/codegen';
 
 
 class ApiVersionNamespace extends Namespace {
-  constructor(namespace: string, objectInitializer?: Partial<ApiVersionNamespace>) {
+  constructor(namespace: string, objectInitializer?: DeepPartial<ApiVersionNamespace>) {
     super(namespace);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
@@ -35,7 +36,7 @@ export class ModelsNamespace extends Namespace {
 
   resolver = new SchemaDefinitionResolver();
 
-  constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelsNamespace>) {
+  constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: DeepPartial<ModelsNamespace>) {
     super('Models', parent);
     this.subNamespaces[this.fullName] = this;
 
@@ -90,7 +91,7 @@ export class ModelsNamespace extends Namespace {
       if (td instanceof EnumImplementation) {
         if (schema.details.csharp.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
-          if (ec.length === 0) {
+          if (length(ec) === 0) {
             new EnumClass(td, state);
             // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
           }

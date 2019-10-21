@@ -9,11 +9,12 @@ import { Class, Namespace } from '@azure-tools/codegen-csharp';
 import { State } from '../generator';
 import { CallMethod, OperationMethod, ValidationMethod } from '../operation/method';
 import { ParameterLocation } from '@azure-tools/codemodel-v3';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class ApiClass extends Class {
 
   // protected sender: Property;
-  constructor(namespace: Namespace, protected state: State, objectInitializer?: Partial<ApiClass>) {
+  constructor(namespace: Namespace, protected state: State, objectInitializer?: DeepPartial<ApiClass>) {
     super(namespace, state.model.details.csharp.name);
     this.apply(objectInitializer);
 

@@ -1,6 +1,6 @@
 {
   "name": "@autorest/powershell",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "AutoRest PowerShell Cmdlet Generator",
   "main": "dist/exports.js",
   "typings": "dist/exports.d.ts",
@@ -16,6 +16,8 @@
     "eslint-fix": "eslint  . --fix --ext .ts",
     "eslint": "eslint  . --ext .ts",
     "build": "tsc -p .",
+    "start-testserver": "./node_modules/.bin/start-autorest-testserver",
+    "stop-testserver": "./node_modules/.bin/stop-autorest-testserver",
     "watch": "tsc -p . --watch",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
@@ -45,21 +47,23 @@
     "@types/node": "12.7.2",
     "mocha": "5.2.0",
     "mocha-typescript": "1.1.17",
-    "typescript": "~3.6.2",
+    "typescript": "~3.7.0-beta",
     "@types/xmlbuilder": "0.0.34",
     "@typescript-eslint/eslint-plugin": "~2.0.0",
     "@typescript-eslint/parser": "~2.0.0",
+    "@autorest/test-server": "~3.0.26",
+    "@autorest/autorest": "~3.0.6118",
     "eslint": "~6.2.2"
   },
   "dependencies": {
-    "@azure-tools/codegen": "~2.0.0",
+    "@azure-tools/codegen": "~2.1.0",
     "@azure-tools/codegen-csharp": "~3.0.0",
-    "@azure-tools/codemodel-v3": "~3.0.0",
-    "@azure-tools/autorest-extension-base": "~3.0.0",
-    "@azure-tools/linq": "~3.0.0",
+    "@azure-tools/codemodel-v3": "~3.1.0",
+    "@azure-tools/autorest-extension-base": "~3.1.0",
+    "@azure-tools/linq": "~3.1.0",
     "@azure-tools/tasks": "~3.0.0",
     "@azure-tools/async-io": "~3.0.0",
-    "source-map-support": "0.5.9",
+    "source-map-support": "0.5.13",
     "xmlbuilder": "10.1.1"
   }
 }

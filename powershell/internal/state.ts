@@ -7,6 +7,7 @@ import { codemodel, ModelState } from '@azure-tools/codemodel-v3';
 
 import { Host, JsonPath } from '@azure-tools/autorest-extension-base';
 import { Project } from './project';
+import { DeepPartial } from '@azure-tools/codegen';
 
 
 export interface GeneratorSettings {
@@ -24,7 +25,7 @@ export interface GeneratorSettings {
 export class State extends ModelState<codemodel.Model> {
   project!: Project;
 
-  public constructor(service: Host, objectInitializer?: Partial<State>) {
+  public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
     super(service);
     this.apply(objectInitializer);
   }
@@ -37,9 +38,10 @@ export class State extends ModelState<codemodel.Model> {
   }
 
   path(...childPath: JsonPath) {
-    const result = new State(this.service, this);
-    result.currentPath = [...this.currentPath, ...childPath];
-    return result;
+    // const result = new State(this.service, this);
+    // result.currentPath = [...this.currentPath, ...childPath];
+    // return result;
+    return this;
   }
 }
 

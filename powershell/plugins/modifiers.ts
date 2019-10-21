@@ -64,7 +64,7 @@ function hasSpecialChars(str: string): boolean {
 
 function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
   let error = '';
-  for (const each of prohibitedFilters) {
+  for (const each of values(prohibitedFilters)) {
     if (whereObject[each] !== undefined) {
       error += `Can't filter by ${each} when selecting command. `;
     }
@@ -75,7 +75,7 @@ function getFilterError(whereObject: any, prohibitedFilters: Array<string>, sele
 
 function getSetError(setObject: any, prohibitedSetters: Array<string>, selectionType: string): string {
   let error = '';
-  for (const each of prohibitedSetters) {
+  for (const each of values(prohibitedSetters)) {
     if (setObject[each] !== undefined) {
       error += `Can't set ${each} when a ${selectionType} is selected. `;
     }
@@ -185,7 +185,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
       }
     }
 
-    if (modelSelectNameConflict.length > 0) {
+    if (length(modelSelectNameConflict) > 0) {
       error += `Can't select ${modelSelectNameType} and ${modelSelectNameConflict} at the same time`;
     }
 
@@ -305,7 +305,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
           .where(parameter => !!`${parameter.name}`.match(parameterRegex))
           .toArray();
-        for (const p of parameters) {
+        for (const p of values(parameters)) {
           const parameter = <any>p;
           const prevName = parameter.name;
           parameter.name = parameterReplacer ? parameterRegex ? parameter.name.replace(parameterRegex, parameterReplacer) : parameterReplacer : parameter.name;
@@ -322,11 +322,11 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
           if (alias) {
             const parsedAlias = new Array<string>();
-            for (const each of alias) {
+            for (const each of values(alias)) {
               parsedAlias.push(hasSpecialChars(each) ? prevName.replace(parameterRegex, each) : each);
             }
 
-            parameter.alias = [...new Set([...parameter.alias, ...parsedAlias])];
+            parameter.alias = [...new Set(values(parameter.alias, parsedAlias).toArray())];
             state.message({
               Channel: Channel.Debug, Text: `[DIRECTIVE] Added alias ${parsedAlias} to parameter ${parameter.name}.`
             });
@@ -346,7 +346,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         }
 
       } else if (operations) {
-        for (const operation of operations) {
+        for (const operation of values(operations)) {
           const getCmdletName = (verb: string, subjectPrefix: string, subject: string, variantName: string): string => {
             return `${verb}-${subjectPrefix}${subject}${variantName ? `_${variantName}` : ''}`;
           };
@@ -394,11 +394,11 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             };
 
             const parsedAlias = new Array<string>();
-            for (const each of alias) {
+            for (const each of values(alias)) {
               parsedAlias.push(getParsedAlias(each));
             }
 
-            operation.details.csharp.alias = [...new Set([...operation.details.csharp.alias, ...parsedAlias])];
+            operation.details.csharp.alias = [...new Set(values(operation.details.csharp.alias, parsedAlias).toArray())];
             state.message({
               Channel: Channel.Debug, Text: `[DIRECTIVE] Added alias ${parsedAlias} to command ${newCommandName}.`
             });
@@ -457,7 +457,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .selectMany(model => allVirtualProperties(model.details.csharp.virtualProperties))
           .where(property => !!`${property.name}`.match(propertyNameRegex))
           .toArray();
-        for (const property of properties) {
+        for (const property of values(properties)) {
           const prevName = property.name;
           property.name = propertyNameReplacer ? propertyNameRegex ? property.name.replace(propertyNameRegex, propertyNameReplacer) : propertyNameReplacer : property.name;
           property.description = propertyDescriptionReplacer ? propertyDescriptionReplacer : property.description;
@@ -473,7 +473,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
         }
 
       } else if (models) {
-        for (const model of models) {
+        for (const model of values(models)) {
 
           if (suppressFormat) {
             model.details.csharp.suppressFormat = true;
@@ -491,7 +491,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 parsedLabels[label.key.toLowerCase()] = label.value;
               }
 
-              for (const property of properties) {
+              for (const property of values(properties)) {
                 if (Object.keys(parsedLabels).includes(property.name.toLowerCase())) {
                   if (property.format === undefined) {
                     property.format = {};
@@ -508,7 +508,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 parsedWidths[w.key.toLowerCase()] = w.value;
               }
 
-              for (const property of properties) {
+              for (const property of values(properties)) {
                 if (Object.keys(parsedWidths).includes(property.name.toLowerCase())) {
                   if (property.format === undefined) {
                     property.format = {};
@@ -525,7 +525,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
                 indexes[item.value.toLowerCase()] = item.key;
               }
 
-              for (const property of properties) {
+              for (const property of values(properties)) {
                 if (propertiesToInclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
                   if (property.format === undefined) {
                     property.format = {};
@@ -539,7 +539,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             }
 
             if (propertiesToExclude) {
-              for (const property of properties) {
+              for (const property of values(properties)) {
                 if (propertiesToExclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
                   property.format = { suppressFormat: true };
                 }
@@ -580,7 +580,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           .selectMany(each => each.details.csharp.enum ? each.details.csharp.enum.values : [])
           .where(each => !!`${each.name}`.match(enumValueNameRegex))
           .toArray();
-        for (const enumValue of enumsValues) {
+        for (const enumValue of values(enumsValues)) {
           const prevName = enumValue.name;
           enumValue.name = enumValueNameReplacer ? enumNameRegex ? enumValue.name.replace(enumValueNameRegex, enumValueNameReplacer) : enumValueNameReplacer : prevName;
           if (enumValueNameRegex) {
@@ -593,7 +593,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
           }
         }
       } else {
-        for (const each of enums) {
+        for (const each of values(enums)) {
           const prevName = each.details.csharp.name;
           each.details.csharp.name = enumNameReplacer ? enumNameRegex ? each.details.csharp.name.replace(enumNameRegex, enumNameReplacer) : enumNameReplacer : prevName;
           state.message({
@@ -657,7 +657,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
             .toArray());
         }
 
-        for (const key of operationsToRemoveKeys) {
+        for (const key of values(operationsToRemoveKeys)) {
           const operationInfo = state.model.commands.operations[key].details.csharp;
           state.message({
             Channel: Channel.Debug, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ''}`

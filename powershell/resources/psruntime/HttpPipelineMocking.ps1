@@ -18,9 +18,10 @@ switch ($TestMode) {
   }
   'playback' {
     if (-not (Test-Path $TestRecordingFile)) {
-      Write-Error "Recording file '$TestRecordingFile' is not present. Unable to continue in 'playback' mode."
+      Write-Host -fore:yellow "Recording file '$TestRecordingFile' is not present. Tests expecting recorded responses will fail"
+    } else {
+      Write-Host -ForegroundColor Green "Using recording $TestRecordingFile"
     }
-    Write-Host -ForegroundColor Green "Using recording $TestRecordingFile"
     $Mock.SetPlayback()
     $Mock.ForceResponseHeaders["Retry-After"] = "0";
   }

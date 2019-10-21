@@ -11,7 +11,9 @@ import { Schema } from '../code-model';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelClass } from './model-class';
-import { TypeContainer } from '@azure-tools/codegen-csharp/dist/type-container';
+import { TypeContainer } from '@azure-tools/codegen-csharp';
+import { DeepPartial } from '@azure-tools/codegen';
+import { values } from '@azure-tools/linq';
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -130,7 +132,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     // return this.classImplementation.hasHeaderProperties; 
     return false;
   }
-  constructor(parent: TypeContainer, interfaceName: string, public classImplementation: ModelClass, public state: State, objectInitializer?: Partial<ModelInterface>) {
+  constructor(parent: TypeContainer, interfaceName: string, public classImplementation: ModelClass, public state: State, objectInitializer?: DeepPartial<ModelInterface>) {
     super(parent, interfaceName);
     this.partial = true;
     this.apply(objectInitializer);
@@ -154,7 +156,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     };
     if (this.schema.details.csharp.virtualProperties) {
 
-      for (const virtualProperty of [...virtualProperties.owned]) {
+      for (const virtualProperty of values(virtualProperties.owned)) {
         if (virtualProperty.private && !this.isInternal) {
           continue;
         }
@@ -177,7 +179,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         }
       }
 
-      for (const virtualProperty of [...virtualProperties.inlined]) {
+      for (const virtualProperty of values(virtualProperties.inlined)) {
 
         // don't publicly expose the 'private' properties.
         if (virtualProperty.private && !this.isInternal) {

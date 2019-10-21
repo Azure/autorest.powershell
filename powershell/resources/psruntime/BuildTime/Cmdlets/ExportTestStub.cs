@@ -77,7 +77,7 @@ while(-not $mockingPath) {
 
             foreach (var variant in variants)
             {
-              sb.AppendLine($"{Indent}It '{variant.VariantName}' {{");
+              sb.AppendLine($"{Indent}It '{variant.VariantName}' -skip {{");
               sb.AppendLine($"{Indent}{Indent}{{ throw [System.NotImplementedException] }} | Should -Not -Throw");
               var variantSeparator = variants.IndexOf(variant) == variants.Count - 1 ? String.Empty : Environment.NewLine;
               sb.AppendLine($"{Indent}}}{variantSeparator}");

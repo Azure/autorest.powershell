@@ -8,13 +8,14 @@ import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, 
 import { State } from '../internal/state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../internal/powershell-declarations';
 import { join } from 'path';
+import { DeepPartial } from '@azure-tools/codegen';
 
 
 class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return `${this.baseFolder}/${this.apiVersion.replace(/.*\./g, '')}`;
   }
-  constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: Partial<ModelExtensionsNamespace>) {
+  constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super(apiVersion);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
@@ -34,7 +35,7 @@ export class ModelExtensionsNamespace extends Namespace {
   }
   resolver = new SchemaDefinitionResolver();
 
-  constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: Partial<ModelExtensionsNamespace>) {
+  constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super('Models', parent);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));

@@ -5,6 +5,7 @@
 
 import { pascalCase, EnglishPluralizationService } from '@azure-tools/codegen';
 import { Channel, Message } from '@azure-tools/autorest-extension-base';
+import { length } from '@azure-tools/linq';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -232,7 +233,7 @@ const cmdVerbMap = { ...cmdVerbMapGetVerb, ...cmdVerbMapCustom };
 function mapVerb(verb: string): Array<string> {
   verb = verb.toLowerCase();
   const keyHits = Object.keys(cmdVerbMap).filter(key => key.toLowerCase() === verb);
-  if (keyHits.length === 0) { return []; }
+  if (length(keyHits) === 0) { return []; }
   let value = cmdVerbMap[keyHits[0]];
   if (!Array.isArray(value)) { value = [value]; }
   return value;
@@ -246,8 +247,8 @@ export function getCommandName(operationId: string, onMessage: (message: Message
   const opIdValues = operationId.split('_', 2);
 
   // OperationId can be specified without '_' (Underscore), Verb will retrieved by the below logic for non-approved verbs.
-  let cmdNoun = opIdValues.length === 2 ? getSingularizedValue(opIdValues[0]) : '';
-  let cmdVerb = opIdValues.length === 2 ? opIdValues[1] : getSingularizedValue(operationId);
+  let cmdNoun = length(opIdValues) === 2 ? getSingularizedValue(opIdValues[0]) : '';
+  let cmdVerb = length(opIdValues) === 2 ? opIdValues[1] : getSingularizedValue(operationId);
   let cmdVerbs: Array<string> = [cmdVerb];
   const variant = operationId;
 
@@ -277,7 +278,7 @@ export function getCommandName(operationId: string, onMessage: (message: Message
       let buildFirstWord = false;
       let firstWordEnd = -1;
       let verbMatchEnd = -1;
-      for (let i = 0; i < unapprovedVerb.length; ++i) {
+      for (let i = 0; i < length(unapprovedVerb); ++i) {
         // Add the start condition of the first word so that the end condition is easier
         if (!firstWordStarted) {
           firstWordStarted = true;

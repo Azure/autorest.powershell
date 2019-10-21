@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from '@azure-tools/codemodel-v3';
-import { EOL, } from '@azure-tools/codegen';
+import { EOL, DeepPartial, } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Access, Modifier, StringExpression, Expression, System } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
@@ -36,7 +36,7 @@ export class JsonSerializableClass extends Class {
   private afj!: Method;
   private excludes: string;
 
-  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<JsonSerializableClass>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: DeepPartial<JsonSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
@@ -96,7 +96,11 @@ export class JsonSerializableClass extends Class {
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
+      if ((<EnhancedTypeDeclaration>each.typeDeclaration).schema.additionalProperties) {
+        deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
+      } else {
+        deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
+      }
     }
 
     pushTempVar();

@@ -3,32 +3,31 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { command, getAllProperties, JsonType, KnownMediaType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { escapeString, docComment, serialize, pascalCase } from '@azure-tools/codegen';
-import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
+import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
+import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
-  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, IsDeclaration,
-  LambdaMethod, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, Ternery, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, CatchStatement, TerminalDefaultCase, xmlize, TypeDeclaration, For, And, IsNotNull, PartialMethod, Case, IsExpressionDeclaration
+  Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
+  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, EnhancedTypeDeclaration, ObjectImplementation, EnumImplementation } from '../llcsharp/exports';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
-
+import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
 const Verbs = {
-  Common: 'System.Management.Automation.VerbsCommon',
-  Data: 'System.Management.Automation.VerbsData',
-  Lifecycle: 'System.Management.Automation.VerbsLifecycle',
-  Diagnostic: 'System.Management.Automation.VerbsDiagnostic',
-  Communications: 'System.Management.Automation.VerbsCommunications',
-  Security: 'System.Management.Automation.VerbsSecurity',
-  Other: 'System.Management.Automation.VerbsOther'
+  Common: 'global::System.Management.Automation.VerbsCommon',
+  Data: 'global::System.Management.Automation.VerbsData',
+  Lifecycle: 'global::System.Management.Automation.VerbsLifecycle',
+  Diagnostic: 'global::System.Management.Automation.VerbsDiagnostic',
+  Communications: 'global::System.Management.Automation.VerbsCommunications',
+  Security: 'global::System.Management.Automation.VerbsSecurity',
+  Other: 'global::System.Management.Automation.VerbsOther'
 };
 
 const category: { [verb: string]: string } = {
@@ -239,7 +238,7 @@ export class CmdletClass extends Class {
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
 
-  constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: Partial<CmdletClass>) {
+  constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
     const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
@@ -296,7 +295,7 @@ export class CmdletClass extends Class {
     this.implementIEventListener();
 
     // add constructors
-    this.implementConstructors(this.operation);
+    this.implementConstructors();
 
     // processRecord
     this.implementProcessRecord(this.operation);
@@ -307,6 +306,11 @@ export class CmdletClass extends Class {
     // json serialization
     this.implementSerialization(this.operation);
 
+    for (const prop of this.properties) {
+      if (prop.name === 'Host') {
+        prop['new'] = Modifier.New;
+      }
+    }
 
     return this;
   }
@@ -318,7 +322,7 @@ export class CmdletClass extends Class {
     for (const httpOperation of values(this.operation.callGraph)) {
       ops = `${ops}\n[OpenAPI] ${httpOperation.operationId}=>${httpOperation.method.toUpperCase()}:"${httpOperation.path}"`;
       if (this.debugMode) {
-        const m = httpOperation.extensions['x-ms-metadata'] || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
+        const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
         if (m) {
           ops = `${ops}\n [METADATA]\n${serialize(m)}`;
         }
@@ -515,7 +519,11 @@ export class CmdletClass extends Class {
     PAR.add(function* () {
       if ($this.apProp && $this.bodyParameter && $this.bodyParameterInfo) {
         // yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
-        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
+        let vt = $this.bodyParameterInfo.valueType.declaration;
+        if (vt.endsWith('SwitchParameter')) {
+          vt = 'bool';
+        }
+        yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${vt}>(${$this.apProp.value},${$this.bodyParameter}.AdditionalProperties);`;
       }
 
       // construct the call to the operation
@@ -639,7 +647,7 @@ export class CmdletClass extends Class {
 
               yield ex.declarationStatement;
 
-              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
+              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
 { 
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
 });`;
@@ -669,7 +677,7 @@ export class CmdletClass extends Class {
                 yield laction;
 
                 yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
 {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
 });`
@@ -686,7 +694,7 @@ export class CmdletClass extends Class {
             }
           }
 
-          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${each.mimeTypes.join('/')}`;
+          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${values(each.mimeTypes).join('/')}`;
           if (each.schema) {
             const schema = each.schema;
 
@@ -741,7 +749,7 @@ export class CmdletClass extends Class {
               // ok, let's see if the response type
             }
             const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
-            const outValue = (props.length === 1) ? `(await response).${props[0].name}` : '(await response)';
+            const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
 
             // we expect to get back some data from this call.
@@ -754,8 +762,8 @@ export class CmdletClass extends Class {
               provider.initializer = undefined;
               const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
               yield paths.declarationStatement;
-              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
 
               if (rType.declaration === System.IO.Stream.declaration) {
                 // this is a stream output. write to outfile
@@ -872,7 +880,7 @@ export class CmdletClass extends Class {
       });
       const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
       yield Catch(ure, function* () {
-        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
 {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ure.value}.Message) { RecommendedAction = ${ure.value}.Action }
 });`;
@@ -921,8 +929,7 @@ export class CmdletClass extends Class {
     }
   }
 
-  private implementConstructors(operation: command.CommandOperation) {
-    const $this = this;
+  private implementConstructors() {
     // default constructor
     this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
   }
@@ -983,7 +990,7 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Error.value, function* () {
-          yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
+          yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
           yield Return();
         }),
       ]);
@@ -1095,9 +1102,9 @@ export class CmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, (<VirtualProperty>vParam.origin).property.details.csharp.required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
-            get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`),
+            get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
             // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
-            set: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name} = value`),
+            set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 
@@ -1144,13 +1151,12 @@ export class CmdletClass extends Class {
             const inputFileParameter = new Property(ifname, dotnet.String, {
               // get: toExpression(`${expandedBodyParameter.value}.${vParam.origin.name}${vParam.required ? '' : ` ?? ${propertyType.defaultOfType}`}`),
               set: function* () {
-                const outfile = $this.outFileParameter;
                 const provider = Local('provider');
                 provider.initializer = undefined;
                 const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(value, out ${provider.declarationExpression})`);
                 yield paths.declarationStatement;
-                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid input path."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
-                yield If(`${paths.value}.Count > 1`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple input paths not allowed."),string.Empty, System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid input path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
+                yield If(`${paths.value}.Count > 1`, 'ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple input paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, value) );');
                 yield cmdletParameter.assign(`global::System.IO.File.ReadAllBytes(${paths.value}[0])`);
               },
               description: `Input File for ${cmdletParameter.name} (${escapeString(desc)})`
@@ -1174,7 +1180,7 @@ export class CmdletClass extends Class {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
           // add aliases if there is any
-          if (vParam.alias.length > 0) {
+          if (length(vParam.alias) > 0) {
             cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
           }
 
@@ -1223,7 +1229,7 @@ export class CmdletClass extends Class {
       idParam.add(new Attribute(ParameterAttribute, { parameters }));
       idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
     }
-    for (const vParam of vps.operation) {
+    for (const vParam of values(vps.operation)) {
       const vSchema = vParam.schema;
       const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
 
@@ -1281,7 +1287,7 @@ export class CmdletClass extends Class {
       addDefaultInfo(regularCmdletParameter, vParam);
 
       // add aliases if there is any
-      if (vParam.alias.length > 0) {
+      if (length(vParam.alias) > 0) {
         regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
       }
 
@@ -1308,25 +1314,8 @@ export class CmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
-    const ifmatch = this.properties.find((v, i, p) => v.name.toLowerCase() === 'ifmatch');
+    const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {
-      //this.properties[9].type.schema.details.csharp.virtualProperties.owned[1]
-      const q = this.properties.find((v, i, p) => {
-        const pp = <any>v;
-        if (pp.type.schema) {
-          const etag = getAllVirtualProperties(pp.type.schema.details.csharp.virtualProperties).find(each => each.property.serializedName.toLowerCase() === 'etag');
-          if (etag) {
-            const et = `this.${v.name}.${etag.name}`;
-            ifmatch.get = toExpression(`${ifmatch.get}?? ${et}`);
-            const pattr = ifmatch.attributes.find(attr => attr.type === ParameterAttribute);
-            if (pattr) {
-              pattr.parameters = pattr.parameters.map((p) => valueOf(p).startsWith('Mandatory') ? toExpression('Mandatory = false') : p);
-            }
-          }
-          return true;
-        }
-        return false;
-      });
     }
 
   }
@@ -1351,7 +1340,7 @@ export class CmdletClass extends Class {
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     // add alias attribute if there is any aliases for this cmdlet
-    if (operation.details.csharp.alias.length > 0) {
+    if (length(operation.details.csharp.alias) > 0) {
       this.add(new Attribute(Alias, { parameters: operation.details.csharp.alias.map((x: string) => '"' + x + '"') }));
     }
 
@@ -1365,7 +1354,7 @@ export class CmdletClass extends Class {
           const props = getAllProperties(schema);
 
           // does the target type just wrap a single output?
-          const resultSchema = props.length !== 1 ? <Schema>schema : <Schema>props[0].schema;
+          const resultSchema = length(props) !== 1 ? <Schema>schema : <Schema>props[0].schema;
 
           // make sure return type for boolean stays boolean!
           if (resultSchema.type === JsonType.Boolean) {
@@ -1423,7 +1412,7 @@ export class CmdletClass extends Class {
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
     this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
-      const profileNames = Object.keys(operation.extensions['x-ms-metadata'].profiles);
+      const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
       // wrap profile names
       profileNames.forEach((element, index) => {
         profileNames[index] = `"${element}"`;

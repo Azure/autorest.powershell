@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { KnownMediaType, HeaderProperty, HeaderPropertyType } from '@azure-tools/codemodel-v3';
-import { EOL } from '@azure-tools/codegen';
+import { EOL, DeepPartial } from '@azure-tools/codegen';
 import { items, values } from '@azure-tools/linq';
 
 import { Access, Class, Constructor, dotnet, If, IsDeclaration, Method, Modifier, Not, Parameter, ParameterModifier, PartialMethod, Return, Statements, Switch, System, TerminalCase, Ternery } from '@azure-tools/codegen-csharp';
@@ -21,7 +21,7 @@ export class XmlSerializableClass extends Class {
   private bfj!: Method;
   private afj!: Method;
 
-  constructor(protected modelClass: ModelClass, objectInitializer?: Partial<XmlSerializableClass>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: DeepPartial<XmlSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;

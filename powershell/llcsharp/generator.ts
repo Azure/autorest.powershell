@@ -9,11 +9,12 @@ import { Host, JsonPath } from '@azure-tools/autorest-extension-base';
 
 import { Project } from './project';
 import { Dictionary } from '@azure-tools/linq';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export class State extends ModelState<Model> {
   project!: Project;
 
-  public constructor(service: Host, objectInitializer?: Partial<State>) {
+  public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
     super(service);
     this.apply(objectInitializer);
   }
@@ -26,8 +27,9 @@ export class State extends ModelState<Model> {
   }
 
   path(...childPath: JsonPath) {
-    const result = new State(this.service, this);
-    result.currentPath = [...this.currentPath, ...childPath];
-    return result;
+    // const result = new State(this.service, this);
+    // result.currentPath = [...this.currentPath, ...childPath];
+    //return result;
+    return this;
   }
 }

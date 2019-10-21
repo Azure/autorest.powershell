@@ -1,0 +1,30 @@
+{
+  "Get-BasicNull+[NoContext]+Get+$GET+http://localhost:3000/complex/basic/null+1": {
+    "Request": {
+      "Method": "GET",
+      "RequestUri": "http://localhost:3000/complex/basic/null",
+      "Content": null,
+      "Headers": {
+      },
+      "ContentHeaders": {
+      }
+    },
+    "Response": {
+      "StatusCode": 200,
+      "Headers": {
+        "X-Powered-By": [ "Express" ],
+        "Vary": [ "Origin" ],
+        "Access-Control-Allow-Credentials": [ "true" ],
+        "Access-Control-Expose-Headers": [ "x-ms-request-id,foo-request-id,Content-Type,value,Location,Azure-AsyncOperation,Retry-After" ],
+        "Date": [ "Thu, 18 Oct 2018 17:39:21 GMT" ],
+        "Matched-Stub-Id": [ "ef8e62ef-8db1-48ec-935c-700cd1b2b8d0" ],
+        "Matched-Stub-Name": [ "complex_basic_null" ],
+        "Transfer-Encoding": [ "chunked" ],
+        "Server": [ "Jetty(9.2.z-SNAPSHOT)" ]
+      },
+      "ContentHeaders": {
+      },
+      "Content": "{ \"id\": null, \"name\": null }"
+    }
+  }
+}

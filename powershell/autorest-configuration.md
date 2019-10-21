@@ -8,7 +8,7 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 ``` yaml !isLoaded('@autorest/remodeler') 
 use-extension:
-  "@autorest/remodeler" : "~2.0.4" 
+  "@autorest/remodeler" : "~2.1.0" 
 
 # will use highest 2.0.x 
 ```
@@ -87,6 +87,7 @@ declare-directive:
         transform: "$.details.default['skip-inline'] = true;"
       };
     })()
+
 ```
 
 # Pipeline Configuration
@@ -153,12 +154,12 @@ pipeline:
   llcsharp/emitter:
     input: text-transform
     scope: scope-here
-    output-artifact: source-file-csharp
+    # output-artifact: source-file-csharp
 
   powershell/emitter:
     input: text-transform
     scope: scope-here
-    output-artifact: source-file-csharp
+    # output-artifact: source-file-csharp
 
 scope-here:
   is-object: false

@@ -14,6 +14,7 @@ import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { length } from '@azure-tools/linq';
 
 /** A ETD for the c# string type. */
 export class String implements EnhancedTypeDeclaration {
@@ -31,7 +32,7 @@ export class String implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
@@ -200,7 +201,7 @@ ${this.validateEnum(eventListener, property)}
     return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${this.schema.pattern}");`;
   }
   private validateEnum(eventListener: Variable, property: Variable): string {
-    if (!this.schema.enum || this.schema.enum.length === 0) {
+    if (!this.schema.enum || length(this.schema.enum) === 0) {
       return '';
     }
     return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${this.schema.enum.joinWith((v) => `@"${v}"`)});`;

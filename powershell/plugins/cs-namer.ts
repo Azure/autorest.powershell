@@ -58,10 +58,10 @@ function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceName
 
     // create the namespace if required
     if (azure) {
-      const metadata = schema.extensions['x-ms-metadata'];
+      const metadata = schema.extensions && schema.extensions['x-ms-metadata'];
       if (metadata) {
         const apiVersions = <Array<string> | undefined>metadata.apiVersions;
-        if (apiVersions && apiVersions.length > 0) {
+        if (apiVersions && length(apiVersions) > 0) {
           thisApiversion = minimum(apiVersions);
           thisNamespace = subNamespace.get(thisApiversion) || new Set<string>();
           subNamespace.set(thisApiversion, thisNamespace);

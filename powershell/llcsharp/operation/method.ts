@@ -5,7 +5,7 @@
 
 import { NewResponse, ParameterLocation } from '@azure-tools/codemodel-v3';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { EOL } from '@azure-tools/codegen';
+import { EOL, DeepPartial } from '@azure-tools/codegen';
 import { Access, Modifier } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
 
@@ -33,7 +33,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
   const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
-  return pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
+  return pp.param.extensions && pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
 
 
@@ -43,19 +43,19 @@ export class EventListener {
 
   *signalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
       yield `await ${this.expression.value}.Signal(${eventName}${params});`;
     }
   }
   *syncSignalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait();`;
     }
   }
   *signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
       yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
       yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()}; }`;
@@ -63,7 +63,7 @@ export class EventListener {
   }
   *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
-      const params = additionalParameters.length > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
+      const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
       yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
     } else {
       yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()} }`;
@@ -83,7 +83,7 @@ export class OperationMethod extends Method {
 
   protected callName: string;
 
-  constructor(protected parent: Class, public operation: HttpOperation, public viaIdentity: boolean, protected state: State, objectInitializer?: Partial<OperationMethod>) {
+  constructor(protected parent: Class, public operation: HttpOperation, public viaIdentity: boolean, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(viaIdentity ? `${operation.details.csharp.name}ViaIdentity` : operation.details.csharp.name, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
@@ -101,7 +101,7 @@ export class OperationMethod extends Method {
       this.addParameter(identity);
     }
 
-    for (let index = 0; index < this.operation.parameters.length; index++) {
+    for (let index = 0; index < length(this.operation.parameters); index++) {
       const value = this.operation.parameters[index];
 
       const p = new OperationParameter(this, value, this.state.path('parameters', index));
@@ -230,7 +230,7 @@ export class OperationMethod extends Method {
       yield eventListener.signal(ClientRuntime.Events.RequestCreated, urlV.value);
       yield EOL;
 
-      if (headerParams.length > 0) {
+      if (length(headerParams) > 0) {
         yield '// add headers parameters';
         for (const hp of headerParams) {
           if (hp.param.name === 'Content-Length') {
@@ -265,7 +265,7 @@ export class OperationMethod extends Method {
 
     // remove constant parameters and make them locals instead.
     this.insert('// Constant Parameters');
-    for (let i = this.parameters.length; i--; i < 0) {
+    for (let i = length(this.parameters); i--; i < 0) {
       const p = this.parameters[i];
       if (p && p.defaultInitializer) {
         this.parameters.splice(i, 1);
@@ -277,7 +277,7 @@ export class OperationMethod extends Method {
 
 export class CallMethod extends Method {
   public returnNull = false;
-  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
+  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Call`, System.Threading.Tasks.Task());
     this.description = `Actual wire call for <see cref="${opMethod.operation.details.csharp.name}" /> method.`;
     this.returnsDescription = opMethod.returnsDescription;
@@ -551,7 +551,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     if (length(responses) > 1) {
       yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
-          const mimetype = eachResponse.mimeTypes.length > 0 ? eachResponse.mimeTypes[0] : '';
+          const mimetype = length(eachResponse.mimeTypes) > 0 ? eachResponse.mimeTypes[0] : '';
           const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === eachResponse.details.csharp.name);
 
           let count = length(eachResponse.mimeTypes);
@@ -573,7 +573,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
       const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === response.details.csharp.name);
       // all mimeTypes per for this response code.
       yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
-      yield $this.responseHandler(response.mimeTypes[0], response, callbackParameter);
+      yield $this.responseHandler(values(response.mimeTypes).first() || '', response, callbackParameter);
     }
   }
 
@@ -613,7 +613,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
 
 export class ValidationMethod extends Method {
 
-  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: Partial<OperationMethod>) {
+  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(`${opMethod.operation.details.csharp.name}_Validate`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.description = `Validation method for <see cref="${opMethod.operation.details.csharp.name}" /> method. Call this like the actual call, but you will get validation events back.`;

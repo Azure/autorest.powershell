@@ -37,12 +37,13 @@ export class SchemaDefinitionResolver {
     switch (schema.type) {
       case JsonType.Array: {
         // can be recursive!
-        const elementType = this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
+        // handle boolean arrays as booleans (powershell will try to turn it into switches!)
+        const elementType = (schema.items && schema.items.type === JsonType.Boolean) ? new Boolean(schema, true) : this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
         return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
       }
 
       case JsonType.Object: {
-        const result = this.cache.get(schema.details.csharp.fullname || '');
+        const result = schema.details.csharp && this.cache.get(schema.details.csharp.fullname || '');
         if (result) {
           return result;
         }
@@ -85,11 +86,11 @@ export class SchemaDefinitionResolver {
           case StringFormat.None:
           case undefined:
           case null:
-            if (schema.extensions['x-ms-enum']) {
+            if (schema.extensions && schema.extensions['x-ms-enum']) {
               return new EnumImplementation(schema, required);
             }
             /*
-            if (schema.extensions['x-ms-header-collection-prefix']) {
+            if(schema.extensions && schema.extensions['x-ms-header-collection-prefix']) {
               return new Wildcard(schema, new String(<any>{}, required));
             }
             */
@@ -131,7 +132,7 @@ export class SchemaDefinitionResolver {
         return new Numeric(schema, required, required ? 'float' : 'float?');
 
       case undefined:
-        if (schema.extensions['x-ms-enum']) {
+        if (schema.extensions && schema.extensions['x-ms-enum']) {
           return new EnumImplementation(schema, required);
         }
 

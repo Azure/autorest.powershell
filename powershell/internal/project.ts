@@ -14,6 +14,7 @@ import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
+import { DeepPartial } from '@azure-tools/codegen';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
@@ -37,12 +38,21 @@ export class PSSwitch extends Boolean {
 }
 
 export class PSSchemaResolver extends SchemaDefinitionResolver {
-
+  inResolve = false;
   resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
-    if (schema && schema.type === JsonType.Boolean) {
-      return new PSSwitch(schema, required);
+    const before = this.inResolve;
+    try {
+      if (!this.inResolve) {
+        this.inResolve = true;
+        if (schema && schema.type === JsonType.Boolean) {
+          return new PSSwitch(schema, required);
+        }
+      }
+
+      return super.resolveTypeDeclaration(schema, required, state);
+    } finally {
+      this.inResolve = before;
     }
-    return super.resolveTypeDeclaration(schema, required, state);
   }
 }
 
@@ -97,7 +107,7 @@ export class Project extends codeDomProject {
   public helpLinkPrefix!: string;
   get model() { return <codemodel.Model>this.state.model; }
 
-  constructor(protected service: Host, objectInitializer?: Partial<Project>) {
+  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }
