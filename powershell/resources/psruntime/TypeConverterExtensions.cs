@@ -41,7 +41,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 try
                 {
-                    result.Add((T)converter(source));
+                    result.Add((T)converter(each));
                 }
 #if DEBUG
                 catch (System.Exception E)
