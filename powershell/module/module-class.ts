@@ -62,6 +62,7 @@ export class ModuleClass extends Class {
   pGetEventData = new Parameter('getEventData', System.Func(System.EventArgs), { description: 'A delegate to get the detailed event data' });
 
   pParameterSetName = new Parameter('parameterSetName', dotnet.String, { description: 'the cmdlet\'s parameterset name.' });
+  pParameterSetNameWithDefault = new Parameter('parameterSetName', dotnet.String, { description: 'the cmdlet\'s parameterset name.', defaultInitializer: dotnet.Null });
   pProcessRecordId = new Parameter('processRecordId', dotnet.String, { description: 'the cmdlet\'s process record correlation id.' });
   pException = new Parameter('exception', System.Exception, { description: 'the exception that is being thrown (if available)' });
 
@@ -240,7 +241,7 @@ export class ModuleClass extends Class {
     });
 
     this.createPipelineMethod = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
-      parameters: [this.pInvocationInfo, this.pCorrelationId, this.pProcessRecordId,],
+      parameters: [this.pInvocationInfo, this.pCorrelationId, this.pProcessRecordId, this.pParameterSetNameWithDefault],
       description: 'Creates an instance of the HttpPipeline for each call.',
       returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the remote call.`
     }));
@@ -252,6 +253,7 @@ export class ModuleClass extends Class {
       yield `BeforeCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
       yield pip.assign(`(${pip} ?? (${$this.fHandler}.UseProxy ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
       yield `AfterCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
+      yield `pipeline.Append(new Runtime.CmdInfoHandler(${$this.pProcessRecordId}, ${$this.pInvocationInfo.use}, ${$this.pParameterSetName}).SendAsync);`;
       yield `${OnNewRequest.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
       yield Return(pip);
     });

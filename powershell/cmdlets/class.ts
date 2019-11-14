@@ -534,9 +534,9 @@ export class CmdletClass extends Class {
       const pipeline = $this.$<Property>('Pipeline');
 
       if ($this.state.project.azure) {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId})`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName)`));
       } else {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo})`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, this.ParameterSetName)`));
       }
 
       yield If(IsNotNull($this.$<Property>('HttpPipelinePrepend')), pipeline.invokeMethod('Prepend', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelinePrepend')}) ?? ${$this.$<Property>('HttpPipelinePrepend')}`)));
