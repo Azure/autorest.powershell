@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
+using System.Text.RegularExpressions;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
@@ -44,11 +45,28 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
           throw new ArgumentException($"Custom folder '{CustomFolder}' does not exist");
         }
 
+        string version = Convert.ToString(@"${$project.moduleVersion}");
+        // Validate the module version should be semantic version
+        // Following regex is official from https://semver.org/
+        Regex rx = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$", RegexOptions.Compiled);
+        if (rx.Matches(version).Count != 1)
+        {
+            throw new ArgumentException("Module-version is not a valid Semantic Version");
+        }
+
+        string previewVersion = null;
+        if (version.Contains('-'))
+        {
+            string[] versions = version.Split("-".ToCharArray(), 2);
+            version = versions[0];
+            previewVersion = versions[1];
+        }
+
         var sb = new StringBuilder();
         sb.AppendLine("@{");
         sb.AppendLine($@"{GuidStart} = '{ModuleGuid}'");
         sb.AppendLine($@"{Indent}RootModule = '{"${$project.psm1}"}'");
-        sb.AppendLine($@"{Indent}ModuleVersion = '{"${$project.moduleVersion}"}'");
+        sb.AppendLine($@"{Indent}ModuleVersion = '{version}'");
         sb.AppendLine($@"{Indent}CompatiblePSEditions = 'Core', 'Desktop'");
         sb.AppendLine($@"{Indent}Author = '{"${$project.metadata.authors}"}'");
         sb.AppendLine($@"{Indent}CompanyName = '{"${$project.metadata.companyName}"}'");
@@ -73,6 +91,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         sb.AppendLine($@"{Indent}PrivateData = @{{");
         sb.AppendLine($@"{Indent}{Indent}PSData = @{{");
 
+        if (previewVersion != null)
+        {
+            sb.AppendLine($@"{Indent}{Indent}{Indent}Prerelease = {previewVersion}");
+        }
         sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".Split(' ').ToPsList().NullIfEmpty() ?? "''"}");
         sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{"${$project.metadata.licenseUri}"}'");
         sb.AppendLine($@"{Indent}{Indent}{Indent}ProjectUri = '{"${$project.metadata.projectUri}"}'");
