@@ -426,3 +426,6 @@ azure-parameter-grouping
 azure-resource-x
 ```
 
+You can also specify a set of modules to run tests for:
+
+> `.scripts/run-tests.ps1 body-complex,body-number`
