@@ -257,7 +257,10 @@ Running 'live' mode...
   Describing Get-ArrayEmpty
     [+] Get 232ms
 [etc...]
+```
 
+At the bottom, you will see the summary:
+``` haskell
 Tests completed in 12.93s
 Tests Passed: 14, Failed: 0, Skipped: 64, Pending: 0, Inconclusive: 0
 -------------Done-------------
@@ -273,6 +276,44 @@ Running 'live' mode...
     [!] Get, is skipped 0ms
 ```
 
-### 
+#### Checking in the test:
 
-#
+Run the tests in record mode first:
+
+> `.\test-module.ps1 -Record`
+
+look at the changed/added files
+
+> `git status . `
+
+```
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   test/Get-PrimitiveBool.Tests.ps1
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        test/Get-PrimitiveBool.Recording.json        
+```
+
+You can then add the test and recording files, and commit them:
+
+> `git add ./test/Get-PrimitiveBool.Tests.ps1` <br>
+> `git add ./test/Get-PrimitiveBool.Recording.json` <br>
+> `git commit -m "implemented get-primitivebool test"` 
+
+## Running Tests 
+
+In order to run the tests in a fresh clone of the repository:
+
+> `git clone https://github.com/azure/autorest.powershell`<br>
+> `cd .\autorest.powershell\` <br>
+> `rush update` <br>
+> `rush rebuild` <br>
+
+
+
+
