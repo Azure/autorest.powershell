@@ -1136,7 +1136,7 @@ export class CmdletClass extends Class {
 
           }
 
-          const desc = (vParam.description || 'HELP MESSAGE MISSING').replace(/[\r?\n]/gm, '');
+          const desc = (vParam.description || '').replace(/[\r?\n]/gm, '');
           cmdletParameter.description = desc;
 
           // check if this parameter is a byte array, which would indicate that it should really be a file input
@@ -1272,7 +1272,7 @@ export class CmdletClass extends Class {
 
       this.thingsToSerialize.push(regularCmdletParameter);
 
-      const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || 'HELP MESSAGE MISSING'}"`)];
+      const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || ''}"`)];
       if (origin.details.csharp.isBodyParameter) {
         parameters.push(new LiteralExpression('ValueFromPipeline = true'));
         this.bodyParameter = regularCmdletParameter;
