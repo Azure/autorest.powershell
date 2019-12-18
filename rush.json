@@ -39,7 +39,7 @@
      * The default value is false to avoid legacy compatibility issues.
      * It is strongly recommended to set strictPeerDependencies=true.
      */
-    "strictPeerDependencies": true
+    "strictPeerDependencies": false
   },
   /**
    * Older releases of the NodeJS engine may be missing features required by your system.
