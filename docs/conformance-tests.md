@@ -309,11 +309,120 @@ You can then add the test and recording files, and commit them:
 
 In order to run the tests in a fresh clone of the repository:
 
+Clone and build :
 > `git clone https://github.com/azure/autorest.powershell`<br>
 > `cd .\autorest.powershell\` <br>
 > `rush update` <br>
 > `rush rebuild` <br>
 
+Generate the test modules:
+> `.\.scripts\generate-tests.ps1`
 
+Run the whole test suite (defaults to `-Playback` mode):
+> `.\.scripts\run-tests.ps1`
 
+You will see all the tests run by (skipped tests will be highlighted):
+
+``` haskell
+--------------------------------------------------------
+Testing Module [azure-resource-x]
+--------------------------------------------------------
+
+Creating isolated process...
+    ____            __
+   / __ \___  _____/ /____  _____
+  / /_/ / _ \/ ___/ __/ _ \/ ___/
+ / ____/  __(__  ) /_/  __/ /
+/_/    \___/____/\__/\___/_/
+Pester v4.9.0
+Executing all tests in 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test'
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-Array.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-Array.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Get-Array
+    [!] Get, is skipped 0ms
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-Dictionary.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-Dictionary.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Get-Dictionary
+    [!] Get, is skipped 0ms
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-ResourceCollection.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Get-ResourceCollection.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Get-ResourceCollection
+    [!] Get, is skipped 0ms
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-Array.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-Array.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Set-Array
+    [!] Put, is skipped 0ms
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-Dictionary.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-Dictionary.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Set-Dictionary
+    [!] PutExpanded, is skipped 0ms
+    [!] Put, is skipped 0ms
+
+Executing script C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-ResourceCollection.Tests.ps1
+Running 'playback' mode...
+Recording file 'C:\tmp\ps\autorest.powershell\tests\azure-resource-x\test\Set-ResourceCollection.Recording.json' is not present. Tests expecting recorded responses will fail
+
+  Describing Set-ResourceCollection
+    [!] PutExpanded, is skipped 0ms
+    [!] Put, is skipped 0ms
+Tests completed in 1.45s
+Tests Passed: 0, Failed: 0, Skipped: 8, Pending: 0, Inconclusive: 0
+-------------Done-------------
+
+[etc...]
+```
+
+The script will tell you which modules passed/failed at the end:
+
+``` haskell
+Modules passing: 32
+--------------------------------------------------------
+httpInfrastructure
+body-complex
+head-exceptions
+url
+paging
+body-datetime
+required-optional
+azure-special-properties
+azure-report
+body-date
+body-file
+body-string
+complex-model
+head
+body-byte
+body-dictionary
+validation
+extensible-enums-swagger
+url-multi-collectionFormat
+subscriptionId-apiVersion
+azure-resource
+body-boolean
+body-duration
+body-datetime-rfc1123
+custom-baseUrl-more-options
+custom-baseUrl
+body-array
+body-integer
+report
+body-number
+azure-parameter-grouping
+azure-resource-x
+```
 
