@@ -1,0 +1,28 @@
+{
+  "Get-PrimitiveBool+[NoContext]+Get+$GET+http://localhost:3000/complex/primitive/bool+1": {
+    "Request": {
+      "Method": "GET",
+      "RequestUri": "http://localhost:3000/complex/primitive/bool",
+      "Content": null,
+      "Headers": {
+      },
+      "ContentHeaders": {
+      }
+    },
+    "Response": {
+      "StatusCode": 200,
+      "Headers": {
+        "X-Powered-By": [ "Express" ],
+        "Vary": [ "Origin" ],
+        "Access-Control-Allow-Credentials": [ "true" ],
+        "Access-Control-Expose-Headers": [ "x-ms-request-id,foo-request-id,Content-Type,value,Location,Azure-AsyncOperation,Retry-After" ],
+        "Date": [ "Wed, 18 Dec 2019 20:01:01 GMT" ],
+        "Connection": [ "keep-alive" ]
+      },
+      "ContentHeaders": {
+        "Content-Length": [ "39" ]
+      },
+      "Content": "{\"field_true\":true,\"field_false\":false}"
+    }
+  }
+}
