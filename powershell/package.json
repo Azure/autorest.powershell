@@ -16,8 +16,6 @@
     "eslint-fix": "eslint  . --fix --ext .ts",
     "eslint": "eslint  . --ext .ts",
     "build": "tsc -p .",
-    "start-testserver": "./node_modules/.bin/start-autorest-testserver",
-    "stop-testserver": "./node_modules/.bin/stop-autorest-testserver",
     "watch": "tsc -p . --watch",
     "prepare": "npm run build",
     "test": "npm run build && mocha dist/test",
@@ -51,7 +49,7 @@
     "@types/xmlbuilder": "0.0.34",
     "@typescript-eslint/eslint-plugin": "~2.0.0",
     "@typescript-eslint/parser": "~2.0.0",
-    "@autorest/test-server": "~3.0.26",
+    "@microsoft.azure/autorest.testserver": "C:/work/2019/autorest.testserver/microsoft.azure-autorest.testserver-2.9.3.tgz",
     "@autorest/autorest": "~3.0.6118",
     "eslint": "~6.2.2"
   },
