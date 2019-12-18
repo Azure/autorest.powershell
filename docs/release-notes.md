@@ -60,19 +60,19 @@ Which should show output like:
 AutoRest code generation utility [version: 3.0.5141; node: v10.15.0]
 (C) 2018 Microsoft Corporation.
 https://aka.ms/autorest
-   Loading AutoRest core      'C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@3.0.5336\node_modules\@microsoft.azure\autorest-core\dist' (3.0.5336)
+   Loading AutoRest core      '...\.autorest\@autorest/core@3.0.5336\node_modules\@autorest\core\dist' (3.0.5336)
 
 C:\> autorest-beta --powershell --help                                                                                                                                                                            AutoRest code generation utility [version: 3.0.5141; node: v10.15.0]
 (C) 2018 Microsoft Corporation.
 
 https://aka.ms/autorest
-   Loading AutoRest core      'C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@3.0.5336\node_modules\@microsoft.azure\autorest-core\dist' (3.0.5336)
-   Installing AutoRest extension '@microsoft.azure/autorest.powershell' (beta)
-   Installed AutoRest extension '@microsoft.azure/autorest.powershell' (beta->1.0.111)
-   Installing AutoRest extension '@microsoft.azure/autorest.remodeler' (beta)
-   Installed AutoRest extension '@microsoft.azure/autorest.remodeler' (beta->1.0.95)
-   Installing AutoRest extension '@microsoft.azure/autorest.csharp-v2' (beta)
-   Installed AutoRest extension '@microsoft.azure/autorest.csharp-v2' (beta->1.0.97)
+   Loading AutoRest core      '...\.autorest\@autorest/core@3.0.5336\node_modules\@autorest\core\dist' (3.0.5336)
+   Installing AutoRest extension '@autorest/powershell' (beta)
+   Installed AutoRest extension '@autorest/powershell' (beta->1.0.111)
+   Installing AutoRest extension '@autorest/remodeler' (beta)
+   Installed AutoRest extension '@autorest/remodeler' (beta->1.0.95)
+   Installing AutoRest extension '@autorest/csharp-v2' (beta)
+   Installed AutoRest extension '@autorest/csharp-v2' (beta->1.0.97)
 
 ... etc
 
@@ -92,8 +92,8 @@ https://aka.ms/autorest
 Showing All Installed Extensions
 
  Type       Extension Name                           Version      Location
- core       @microsoft.azure/autorest-core           3.0.5336     C:\Users\garretts\.autorest\@microsoft.azure_autorest-core@3.0.5336
- extension  @microsoft.azure/autorest.csharp-v2      1.0.97       C:\Users\garretts\.autorest\@microsoft.azure_autorest.csharp-v2@1.0.97
- extension  @microsoft.azure/autorest.powershell     1.0.111      C:\Users\garretts\.autorest\@microsoft.azure_autorest.powershell@1.0.111
- extension  @microsoft.azure/autorest.remodeler      1.0.95       C:\Users\garretts\.autorest\@microsoft.azure_autorest.remodeler@1.0.95
+ core       @autorst/core           3.0.5336     C:\Users\garretts\.autorest\@autorest/core@3.0.5336
+ extension  @autorest/csharp-v2      1.0.97       C:\Users\garretts\.autorest\@autorest\csharp-v2@1.0.97
+ extension  @autorest/powershell     1.0.111      C:\Users\garretts\.autorest\@autorest\powershell@1.0.111
+ extension  @autorest/remodeler      1.0.95       C:\Users\garretts\.autorest\@autorest\remodeler@1.0.95
 ```
