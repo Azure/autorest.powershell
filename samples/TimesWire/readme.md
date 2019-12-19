@@ -12,7 +12,7 @@ To build the SDK for TimesWire Search, simply [Install AutoRest](https://aka.ms/
 
 To see additional help and options, run:
 
-> `autorest --help`
+> `autorest-beta --help`
 ---
 
 ## Configuration
