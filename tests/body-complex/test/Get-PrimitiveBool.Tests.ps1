@@ -7,7 +7,16 @@ while(-not $mockingPath) {
 . ($mockingPath | Select-Object -First 1).FullName
 
 Describe 'Get-PrimitiveBool' {
-    It 'Get' -skip {
-        { throw [System.NotImplementedException] } | Should -Not -Throw
-    }
+    It 'Get' {
+      {
+        $value = Get-PrimitiveBool 
+
+        # ensure we got back a result
+        $value | Should -not -be $null
+
+        # and that the values are as expected
+        $value.FieldFalse | Should -be $false
+        $value.FieldTrue | Should -be $true
+      } | Should -Not -Throw
+    } 
 }

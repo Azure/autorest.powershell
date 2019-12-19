@@ -7,9 +7,7 @@ $inputs = @(
   "validation"
   "custom-baseUrl-more-options", 
   "body-number", 
-  "body-number.quirks",
   "body-boolean",
-  "body-boolean.quirks",
   "body-byte",
   "body-date",
   "body-datetime",
@@ -17,7 +15,6 @@ $inputs = @(
   "body-duration",
   "body-integer",
   "httpInfrastructure",
-  "httpInfrastructure.quirks",
   "required-optional",
   "body-string",
   "report",
@@ -28,10 +25,7 @@ $inputs = @(
   "body-array",
   "body-complex",
   "body-file",
-
   "complex-model",
-  
-  "body-string.quirks",
   "body-dictionary"
 ) 
 
@@ -46,20 +40,17 @@ $unsupported = @(
   # "storage", -- some problems with implementation of virtual properties 
   # "xml-service", -- xml not currently supported
   # "xms-error-responses" -- xml not currently supported
-  # "parameter-flattening" -- tags has multiple types when proxies combine. 
-  # "model-flattening", - needs directive to work around circular reference
+  # "parameter-flattening" -- parameter flattening isn't used in powershell
+  # "model-flattening", - model flattening isn't used in powershell.
   # "lro",   -- location property conflicts with Location header property.
 
-  # P1 Error compiling
-  
-  
 )
 
 $azureInputs = @(
- "azure-special-properties", # ERROR GENERATING
- "azure-parameter-grouping", # ERROR GENERATING
+ "azure-special-properties", 
+ "azure-parameter-grouping", 
 
- "azure-report", # ERROR COMPILING
- "azure-resource", # ERROR COMPILING
- "azure-resource-x"# ERROR COMPILING 
+ "azure-report", 
+ "azure-resource", 
+ "azure-resource-x"
 )

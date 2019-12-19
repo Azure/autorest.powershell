@@ -16,13 +16,11 @@
         "Vary": [ "Origin" ],
         "Access-Control-Allow-Credentials": [ "true" ],
         "Access-Control-Expose-Headers": [ "x-ms-request-id,foo-request-id,Content-Type,value,Location,Azure-AsyncOperation,Retry-After" ],
-        "Date": [ "Thu, 18 Oct 2018 17:39:21 GMT" ],
-        "Matched-Stub-Id": [ "e0f3221c-06aa-4007-9ceb-c13dfc48af52" ],
-        "Matched-Stub-Name": [ "complex_array_notprovided" ],
-        "Transfer-Encoding": [ "chunked" ],
-        "Server": [ "Jetty(9.2.z-SNAPSHOT)" ]
+        "Date": [ "Wed, 18 Dec 2019 20:00:55 GMT" ],
+        "Connection": [ "keep-alive" ]
       },
       "ContentHeaders": {
+        "Content-Length": [ "2" ]
       },
       "Content": "{}"
     }
