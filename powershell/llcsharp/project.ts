@@ -27,6 +27,7 @@ export class Project extends codeDomProject {
   apifolder!: string;
   runtimefolder!: string;
   azure!: boolean;
+  license!: string;
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
@@ -40,6 +41,8 @@ export class Project extends codeDomProject {
     this.apifolder = await this.state.getValue('api-folder', '');
     this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
     this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);
+    this.license = await this.state.getValue('header-text', '');
+
 
     // add project namespace
     this.projectNamespace = this.state.model.details.csharp.namespace;
@@ -59,14 +62,19 @@ export class Project extends codeDomProject {
       'Microsoft.Rest': this.projectNamespace
     };
 
-
-    this.addNamespace(this.serviceNamespace = new ServiceNamespace(this.state));
+    this.serviceNamespace = new ServiceNamespace(this.state);
+    this.serviceNamespace.header = this.license;
+    this.addNamespace(this.serviceNamespace);
 
     // add support namespace
-    this.addNamespace(this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state));
+    this.supportNamespace = new SupportNamespace(this.serviceNamespace, this.state);
+    this.supportNamespace.header = this.license;
+    this.addNamespace(this.supportNamespace);
 
     // add model classes
-    this.addNamespace(this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas')));
+    this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas'));
+    this.modelsNamespace.header = this.license;
+    this.addNamespace(this.modelsNamespace);
 
     // create API class
     new ApiClass(this.serviceNamespace, this.state, { description: `Low-level API implementation for the ${this.state.model.info.title} service. \n${this.state.model.info.description || ''}` });

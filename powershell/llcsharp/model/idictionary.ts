@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, ForEach, And, LocalVariable } from '@azure-tools/codegen-csharp';
 
 export function implementIDictionary(targetClass: Class, name: string, keyType: TypeDeclaration, valueType: TypeDeclaration, accessViaMember?: Expression) {

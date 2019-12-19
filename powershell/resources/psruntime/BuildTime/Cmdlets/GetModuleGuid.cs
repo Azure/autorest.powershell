@@ -1,4 +1,8 @@
-﻿using System.Management.Automation;
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+using System.Management.Automation;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell

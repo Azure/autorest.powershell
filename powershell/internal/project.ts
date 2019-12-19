@@ -58,6 +58,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
 
 export class Project extends codeDomProject {
   public azure!: boolean;
+  public license!: string;
   public cmdletFolder!: string;
 
   public customFolder!: string;
@@ -144,6 +145,7 @@ export class Project extends codeDomProject {
     this.accountsVersionMinimum = '1.6.0';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
+    this.license = await this.state.getValue('header-text', '');
 
     // Flags
     this.azure = this.model.details.default.isAzure;
@@ -188,13 +190,22 @@ export class Project extends codeDomProject {
     this.readme = `${this.baseFolder}/readme.md`;
 
     // add project namespace
-    this.addNamespace(this.serviceNamespace = new ModuleNamespace(this.state));
-    this.addNamespace(this.supportNamespace = new EnumNamespace(this.serviceNamespace, this.state));
+    this.serviceNamespace = new ModuleNamespace(this.state);
+    this.serviceNamespace.header = this.license;
+    this.addNamespace(this.serviceNamespace);
 
-    this.addNamespace(this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas')));
+    this.supportNamespace = new EnumNamespace(this.serviceNamespace, this.state);
+    this.supportNamespace.header = this.license;
+    this.addNamespace(this.supportNamespace);
+
+    this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas'));
+    this.modelsExtensions.header = this.license;
+    this.addNamespace(this.modelsExtensions);
 
     // add cmdlet namespace
-    this.addNamespace(this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init());
+    this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init();
+    this.cmdlets.header = this.license;
+    this.addNamespace(this.cmdlets);
 
 
     // abort now if we have any errors.
