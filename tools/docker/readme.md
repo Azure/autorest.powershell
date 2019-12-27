@@ -9,7 +9,7 @@ Packages contained in the image.
 `docker build -t autorest ./`
 
 # Lauch the Image
-`docker tun -it -v <path-to-your-source>:/src autorest`
+`docker run -it -v <path-to-your-source>:/src autorest`
 
 # Code Generation vs Build vs Run
 ## Code Generation
