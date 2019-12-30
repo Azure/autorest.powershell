@@ -8,8 +8,8 @@ Packages contained in the image.
 # How to Build the Image
 `docker build -t autorest ./`
 
-# Lauch the Image
-`docker tun -it -v <path-to-your-source>:/src autorest`
+# Launch the Image
+`docker run -it -v <path-to-your-source>:/src autorest`
 
 # Code Generation vs Build vs Run
 ## Code Generation
