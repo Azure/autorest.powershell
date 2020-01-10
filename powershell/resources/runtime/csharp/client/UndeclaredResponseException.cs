@@ -28,7 +28,9 @@ namespace Microsoft.Rest.ClientRuntime
         public RestException(System.Net.Http.HttpResponseMessage response)
         {
             StatusCode = response.StatusCode;
-            RequestMessage = response.RequestMessage.CloneWithContent().Result;
+            //CloneWithContent will not work here since the content is disposed after sendAsync
+            //Besides, it seems there is no need for the request content cloned here.
+            RequestMessage = response.RequestMessage.Clone();
             ResponseBody = response.Content.ReadAsStringAsync().Result;
             ResponseHeaders = response.Headers;
 
@@ -39,7 +41,7 @@ namespace Microsoft.Rest.ClientRuntime
             {
                 // try to parse the body as JSON, and see if a code and message are in there.
                 var json = Microsoft.Rest.ClientRuntime.Json.JsonNode.Parse(ResponseBody) as Microsoft.Rest.ClientRuntime.Json.JsonObject;
-                
+
                 // see if there is an error block in the body
                 json = json.Property("error") ?? json;
 
@@ -48,7 +50,7 @@ namespace Microsoft.Rest.ClientRuntime
                 { Action = If(json?.PropertyT<Microsoft.Rest.ClientRuntime.Json.JsonString>("action"), out var a) ? (string)a : (string)Action; }
             }
 #if DEBUG
-            catch(System.Exception E)
+            catch (System.Exception E)
             {
                 System.Console.Error.WriteLine($"{E.GetType().Name}/{E.Message}/{E.StackTrace}");
             }
