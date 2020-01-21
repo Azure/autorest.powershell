@@ -14,8 +14,8 @@ The built-in directives for PowerShell consist of three parts:
   *Note*: Depending of the filters, AutoRest infers the type of object that needs to be selected. For example:
   ```yaml $false
     # This selects the parameters
-    # ---> where the parameter-name is VirtualMachine, and the cmdlet verb is Get
-    # ---> sets the parameter alias to VM
+    # ---> where the parameter-name is Foo, and the cmdlet verb is Get
+    # ---> sets the parameter alias to Bar
     directive:
       - where:
           verb: Get
