@@ -54,8 +54,8 @@ export class DateTime extends Primitive {
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
         return toExpression(this.isRequired ?
-          `${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
-          `(null == ${value} ? ${System.String.Empty} : ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
+          `"${serializedName}=" + ${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
+          `(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
         );
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
