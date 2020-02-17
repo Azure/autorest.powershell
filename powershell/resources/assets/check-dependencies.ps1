@@ -55,6 +55,7 @@ if ($Resources.IsPresent -and (-not (Test-Path -Path $resourceModule))) {
   Write-Host -ForegroundColor Green "Building local Resource module used for test..."
   Set-Location $resourceDir
   $null = autorest-beta .\readme.md --output-folder=$HOME/.PSSharedModules/Resources
+  $null = Copy-Item custom/* $HOME/.PSSharedModules/Resources/custom/
   Set-Location $HOME/.PSSharedModules/Resources
   $null = .\build-module.ps1
   Set-Location $PSScriptRoot
