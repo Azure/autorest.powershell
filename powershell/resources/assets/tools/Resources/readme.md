@@ -188,6 +188,10 @@ directive:
     set:
       parameter-name: DeploymentPropertyParameter
   - where:
+      verb: New
+      subject: Deployment
+    hide: true
+  - where:
       verb: Test
       subject: Deployment
       variant: Validate.*Expanded.*
