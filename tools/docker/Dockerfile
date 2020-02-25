@@ -9,7 +9,7 @@ RUN apt-get update \
     && npm config set unsafe-perm true \
     && npm install -g @autorest/autorest \
     && npm install -g dotnet-sdk-2.1 \
-    && apt-get install -y \
+    && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && locale-gen $LANG && update-locale
