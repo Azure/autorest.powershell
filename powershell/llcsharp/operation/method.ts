@@ -153,6 +153,15 @@ export class OperationMethod extends Method {
     this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
 
     let rx = this.operation.path;
+    // For post API, Some URI may contain an action string .e.x '/start' at the end
+    // of the URI, for such cases, we will drop the action string if identityCorrection
+    // is set in the configuration
+    if (this.operation.method === 'post' && this.state.project.identityCorrection) {
+      const idx = rx.lastIndexOf('/');
+      rx = rx.substr(0, idx);
+    }
+
+
     let url = `${this.operation.baseUrl}${this.operation.path.startsWith('/') ? this.operation.path.substr(1) : this.operation.path}`;
 
 
