@@ -425,9 +425,12 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield '// while we wait, let\'s grab the headers and get ready to poll. ';
-            yield asyncOperation.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
-            yield location.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
-
+            yield 'if (!System.String.IsNullOrEmpty(_response.GetFirstHeader(@"Azure-AsyncOperation"))) {'
+            yield '    ' + asyncOperation.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
+            yield '}'
+            yield 'if (!global::System.String.IsNullOrEmpty(_response.GetFirstHeader(@"Location"))) {'
+            yield '    ' + location.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
+            yield '}'
             const uriLocal = Local('_uri', Ternery(
               System.String.IsNullOrEmpty(asyncOperation),
               Ternery(System.String.IsNullOrEmpty(location),
