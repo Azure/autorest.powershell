@@ -44,8 +44,8 @@ $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 
 # Load DLL to use build-time cmdlets
-Import-Module -Name (Join-Path $PSScriptRoot '${$project.dll}')
 Import-Module -Name $modulePath
+Import-Module -Name (Join-Path $PSScriptRoot '${$project.dll}')
 $instance = [${$project.serviceNamespace.moduleClass.declaration}]::Instance
 # Module info is shared per profile
 $moduleInfo = Get-Module -Name $moduleName
