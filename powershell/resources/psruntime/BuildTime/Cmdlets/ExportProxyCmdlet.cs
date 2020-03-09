@@ -10,6 +10,7 @@ using System.Text;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsHelpers;
 using static Microsoft.Rest.ClientRuntime.PowerShell.MarkdownRenderer;
 using static Microsoft.Rest.ClientRuntime.PowerShell.PsProxyTypeExtensions;
+using System.Collections.Generic;
 
 namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
@@ -71,7 +72,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variantGroup in variantGroups)
             {
                 var parameterGroups = variantGroup.ParameterGroups.ToList();
-
+                var isValidProfile = !String.IsNullOrEmpty(variantGroup.ProfileName) && variantGroup.ProfileName != NoProfiles;
+                var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, variantGroup.ProfileName) : ExamplesFolder;
+                var markdownInfo = new MarkdownHelpInfo(variantGroup, examplesFolder);
+                List<PsHelpExampleInfo> examples = new List<PsHelpExampleInfo>();
+                foreach (var it in markdownInfo.Examples)
+                {
+                    examples.Add(it);
+                }
+                variantGroup.HelpInfo.Examples = examples.ToArray();
                 var sb = new StringBuilder();
                 sb.Append(@"
 # ----------------------------------------------------------------------------------
@@ -88,6 +97,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 ");
+                sb.Append($"{Environment.NewLine}");
                 sb.Append(variantGroup.ToHelpCommentOutput());
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
