@@ -38,7 +38,7 @@ export class Duration extends Primitive {
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
     switch (mediaType) {
       case KnownMediaType.Json:
-        if (this.isRequired) {
+        if (!this.isRequired) {
           return toExpression(`(null != ${value} ? ${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})`)}: null)`).Cast(ClientRuntime.JsonNode);
         }
         return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})`)}`).Cast(ClientRuntime.JsonNode);
