@@ -105,7 +105,6 @@ export class ModuleClass extends Class {
 
         yield $this.fPipeline.assignPrivate(ClientRuntime.HttpPipeline.new(ClientRuntime.HttpClientFactory.new(System.Net.Http.HttpClient.new())));
         yield $this.fPipelineWithProxy.assignPrivate(ClientRuntime.HttpPipeline.new(ClientRuntime.HttpClientFactory.new(System.Net.Http.HttpClient.new($this.fHandler))));
-        yield "Init();";
       }
     }));
 
