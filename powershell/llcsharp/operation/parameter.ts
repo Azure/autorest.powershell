@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '@azure-tools/codegen-csharp';
-
+import { Parameter as NewHttpOperationParameter } from '@azure-tools/codemodel';
 import { KnownMediaType } from '@azure-tools/codemodel-v3';
 import { System } from '@azure-tools/codegen-csharp';
 import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';
@@ -16,7 +16,7 @@ import { Variable } from '@azure-tools/codegen-csharp';
 import { HttpOperationParameter, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { State } from '../generator';
+import { State, NewState } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
@@ -32,6 +32,53 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
     this.typeDeclaration = typeDeclaration;
     this.apply(objectInitializer);
     this.description = param.details.csharp.description || '';
+  }
+
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
+    // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this))
+    return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
+  }
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression {
+    return this.typeDeclaration.deserializeFromNode(mediaType, node, this);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, serializedName: string, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName, mode);
+  }
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this, mode);
+  }
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName, mode);
+  }
+
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
+  }
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
+  }
+}
+
+export class NewOperationParameter extends Parameter implements EnhancedVariable {
+  public typeDeclaration: EnhancedTypeDeclaration;
+
+  public param: NewHttpOperationParameter;
+
+  constructor(parent: Method, param: NewHttpOperationParameter, state: NewState, objectInitializer?: DeepPartial<OperationParameter>) {
+    const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(param.schema, !!param.required, state);
+    super(param.language.csharp?.name || '', typeDeclaration);
+    this.param = param;
+    this.typeDeclaration = typeDeclaration;
+    this.apply(objectInitializer);
+    this.description = param.language.csharp?.description || '';
   }
 
   /** emits an expression to deserialize a property from a member inside a container */
@@ -133,6 +180,36 @@ export class CallbackParameter extends Parameter {
   headerType: (EnhancedTypeDeclaration) | null;
 
   constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: DeepPartial<CallbackParameter>) {
+    // regular pipeline style. (callback happens after the pipline is called)
+    if (responseType) {
+      if (headerType) {
+        // both
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
+      } else {
+        // just response
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(responseType), System.Threading.Tasks.Task()));
+      }
+    } else {
+      if (headerType) {
+        // just headers
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task(headerType), System.Threading.Tasks.Task()));
+      } else {
+        // no content?
+        super(name, System.Func(System.Net.Http.HttpResponseMessage, System.Threading.Tasks.Task()));
+      }
+    }
+
+    this.responseType = responseType;
+    this.headerType = headerType;
+    this.apply(objectInitializer);
+  }
+}
+
+export class NewCallbackParameter extends Parameter {
+  responseType: (EnhancedTypeDeclaration) | null;
+  headerType: (EnhancedTypeDeclaration) | null;
+
+  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: NewState, objectInitializer?: DeepPartial<CallbackParameter>) {
     // regular pipeline style. (callback happens after the pipline is called)
     if (responseType) {
       if (headerType) {

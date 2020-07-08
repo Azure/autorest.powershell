@@ -232,6 +232,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
 async function tweakModel(state: State): Promise<codemodel.Model> {
 
   // only look at directives without the `transform` node.
+  // dolauli for directives with transform are implemented in autorest core
   for (const directive of directives.filter(each => !each.transform)) {
     const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
       return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
@@ -689,6 +690,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 }
 
 export async function applyModifiers(service: Host) {
+  // dolauli implement directives
   const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives)
     // .select(directive => directive)

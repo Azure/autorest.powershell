@@ -30,6 +30,7 @@ consumes:
   - application/json
   
 paths:
+
   /info.0.json:
     get:
       operationId: xkcd_getComicForToday
@@ -39,45 +40,5 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/comic'
-  '/{comicId}/info.0.json':
-    get:
-      operationId: xkcd_getComic
-      description: |
-        Fetch comics and metadata  by comic id.
-      parameters:
-        - in: path
-          name: comicId
-          required: true
-          type: number
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/comic'
-definitions:
-  comic:
-    properties:
-      alt:
-        type: string
-      day:
-        type: string
-      img:
-        type: string
-      link:
-        type: string
-      month:
-        type: string
-      news:
-        type: string
-      num:
-        type: number
-      safe_title:
-        type: string
-      title:
-        type: string
-      transcript:
-        type: string
-      year:
-        type: string
-    type: object
+            type: string
+  

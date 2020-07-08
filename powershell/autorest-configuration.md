@@ -4,11 +4,18 @@
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
+> modelerfour configuration
+``` yaml
+modelerfour:
+  emit-yaml-tags: false
+```
+
 > if the modeler is loaded already, use that one, otherwise grab it.
 
-``` yaml !isLoaded('@autorest/remodeler') 
+``` yaml 
 use-extension:
   "@autorest/remodeler" : "~2.1.0" 
+  "@autorest/modelerfour": "4.13.351"
 
 # will use highest 2.0.x 
 ```
@@ -111,6 +118,27 @@ pipeline:
   tweakcodemodelazure:
     input: tweakcodemodel
 
+# --- extension powershell based on modelerfour
+  tweakcodemodel-v2:
+    input: modelerfour/identity
+
+  create-commands-v2:
+    input: tweakcodemodel-v2
+  
+  create-virtual-properties-v2:
+    input: create-commands-v2
+
+  csnamer-v2:
+    input: create-virtual-properties-v2
+
+  psnamer-v2:
+    input: csnamer-v2
+
+  llcsharp-v2:
+    input: psnamer-v2
+  
+  # powershell-v2:
+  #   input: psnamer-v2
 # --- extension powershell ---
 
   # creates high-level commands
@@ -144,7 +172,7 @@ pipeline:
     input: modifiers
 
   llcsharp/text-transform:
-    input: llcsharp
+    input: llcsharp-v2
     scope: scope-here
 
   powershell/text-transform:
@@ -174,10 +202,10 @@ scope-here:
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
-  input-artifact: code-model-v3
+  input-artifact: code-model-v4
   is-object: true
   output-uri-expr: |
-    "code-model-v3"
+    "code-model-v4"
 
 # testing:  ask for the files we need
 output-artifact:

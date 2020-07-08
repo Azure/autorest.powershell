@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { Project } from '../internal/project';
+import { Project, NewProject } from '../internal/project';
 
 function removeCd(path: string): string {
   return path.startsWith('./') ? path.replace('./', '') : path;
 }
-export async function generateNuspec(project: Project) {
+export async function generateNuspec(project: Project | NewProject) {
   const dependencies = project.azure ? `
     <dependencies>
       <dependency id="Az.Accounts" version="${project.accountsVersionMinimum}" />

@@ -3,14 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@azure-tools/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, ParameterLocation, isMediaTypeMultipartFormData, VirtualParameter } from '@azure-tools/codemodel-v3';
-import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase } from '@azure-tools/codegen';
+import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { Host, Channel, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, isMediaTypeMultipartFormData, VirtualParameter } from '@azure-tools/codemodel-v3';
+import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import * as linq from '@azure-tools/linq';
 import { singularize } from '../internal/name-inferrer';
+import { PwshModel } from '../utils/PwshModel';
+import { NewModelState } from '../utils/model-state';
 
-type State = ModelState<codemodel.Model>;
+type State = NewModelState<PwshModel>;
 
 function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
   return `${verb}-${subjectPrefix}${subject}`;
@@ -43,7 +46,7 @@ export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { s
   return { subjectPrefix: pascalCase(finalPrefix), subject: pascalCase(reversedFinalSubject.reverse()) };
 }
 
-async function tweakModel(state: State): Promise<codemodel.Model> {
+async function tweakModel(state: State): Promise<PwshModel> {
   // get the value 
   const isAzure = await state.getValue('azure', false);
   // without setting snitize-names, isAzure is applied
@@ -51,7 +54,7 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
   // make sure recursively that every details field has csharp
   for (const { index, instance } of linq.visitor(state.model)) {
-    if (index === 'details' && instance.default && !instance.csharp) {
+    if (index === 'language' && instance.default && !instance.csharp) {
       instance.csharp = linq.clone(instance.default, false, undefined, undefined, ['schema', 'origin']);
     }
   }
@@ -122,53 +125,55 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
       }
     }
 
-    for (const schema of values(state.model.schemas)) {
-      const virtualProperties = [...allVirtualProperties(schema.details.csharp.virtualProperties)];
+    for (const schemaGroup of values(<Dictionary<Array<Schema>>><any>state.model.schemas)) {
+      for (const schema of schemaGroup) {
+        const virtualProperties = [...allVirtualProperties(schema.language.csharp?.virtualProperties)];
 
-      for (const property of virtualProperties) {
-        let prevName = property.name;
-        const otherPropertiesNames = values(virtualProperties)
-          .select(each => each.name)
-          .where(name => name !== property.name)
-          .toArray();
+        for (const property of virtualProperties) {
+          let prevName = property.name;
+          const otherPropertiesNames = values(virtualProperties)
+            .select(each => each.name)
+            .where(name => name !== property.name)
+            .toArray();
 
-        // first try to singularize the property
-        const singularName = singularize(property.name);
-        if (prevName != singularName) {
-          property.name = singularName;
-          state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.details.csharp.name}` });
-        }
+          // first try to singularize the property
+          const singularName = singularize(property.name);
+          if (prevName != singularName) {
+            property.name = singularName;
+            state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.language.csharp?.name}` });
+          }
 
-        // save the name again to compare in case it was modified
-        prevName = property.name;
+          // save the name again to compare in case it was modified
+          prevName = property.name;
 
-        // now remove the model=name from the beginning of the property-name
-        // to reduce naming redundancy
-        const sanitizedName = removeProhibitedPrefix(
-          property.name,
-          schema.details.csharp.name,
-          otherPropertiesNames
-        );
+          // now remove the model=name from the beginning of the property-name
+          // to reduce naming redundancy
+          const sanitizedName = removeProhibitedPrefix(
+            property.name,
+            schema.language.csharp?.name ? schema.language.csharp?.name : '',
+            otherPropertiesNames
+          );
 
-        if (prevName !== sanitizedName) {
-          property.alias = property.alias || [];
+          if (prevName !== sanitizedName) {
+            property.alias = property.alias || [];
 
-          // saved the prev name as alias
-          property.alias.push(property.name);
+            // saved the prev name as alias
+            property.alias.push(property.name);
 
-          // change name
-          property.name = sanitizedName;
-          state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.details.csharp.name}` });
-          state.message({ Channel: Channel.Debug, Text: `                        -> And, added alias '${prevName}'` });
+            // change name
+            property.name = sanitizedName;
+            state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to ${property.name} from model ${schema.language.csharp?.name}` });
+            state.message({ Channel: Channel.Debug, Text: `                        -> And, added alias '${prevName}'` });
 
-          // update shared properties too
-          if (property.sharedWith) {
-            for (const sharedProperty of property.sharedWith) {
-              if (sharedProperty.name !== sanitizedName) {
-                state.message({ Channel: Channel.Debug, Text: `Changing shared property ${sharedProperty.name} to ${sanitizedName}` });
-                sharedProperty.alias = sharedProperty.alias || [];
-                sharedProperty.alias.push(sharedProperty.name);
-                sharedProperty.name = sanitizedName;
+            // update shared properties too
+            if (property.sharedWith) {
+              for (const sharedProperty of property.sharedWith) {
+                if (sharedProperty.name !== sanitizedName) {
+                  state.message({ Channel: Channel.Debug, Text: `Changing shared property ${sharedProperty.name} to ${sanitizedName}` });
+                  sharedProperty.alias = sharedProperty.alias || [];
+                  sharedProperty.alias.push(sharedProperty.name);
+                  sharedProperty.name = sanitizedName;
+                }
               }
             }
           }
@@ -179,23 +184,29 @@ async function tweakModel(state: State): Promise<codemodel.Model> {
 
   // do collision detection work.
   for (const command of values(state.model.commands.operations)) {
-    const vp = command.details.csharp.virtualParameters;
+    const vp = command.details.csharp?.virtualParameters;
     if (vp) {
       resolveParameterNames([], vp);
     }
   }
 
-  for (const schema of values(state.model.schemas)) {
-    const vp = schema.details.csharp.virtualProperties;
-    if (vp) {
-      resolvePropertyNames([schema.details.csharp.name], vp);
+  for (const schemaGroup of values(<Dictionary<Array<Schema>>><any>state.model.schemas)) {
+    for (const schema of schemaGroup) {
+      const vp = schema.language.csharp?.virtualProperties;
+      if (vp) {
+        resolvePropertyNames(schema.language.csharp?.name ? [schema.language.csharp?.name] : [], vp);
+      }
     }
   }
   return state.model;
 }
 
 
-export async function namer(service: Host) {
+export async function namerV2(service: Host) {
   // dolauli add csharp for cmdlets in the command->operation node
-  return processCodeModel(tweakModel, service, 'psnamer');
+  //return processCodeModel(tweakModel, service, 'psnamer');
+  //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
+  //const result = tweakModelV2(session);
+  const state = await new NewModelState<PwshModel>(service).init();
+  await service.WriteFile('code-model-v4-psnamer-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Schema as NewSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
@@ -12,7 +13,7 @@ import {
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
-import { State } from '../internal/state';
+import { State, NewState } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
@@ -1174,7 +1175,7 @@ export class CmdletClass extends Class {
             addDefaultInfo(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+          const isEnum = !(propertyType.schema instanceof NewSchema) && propertyType.schema.details.csharp.enum !== undefined;
           const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
           if (isEnum || hasEnum) {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
@@ -1308,7 +1309,7 @@ export class CmdletClass extends Class {
         // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
       }
 
-      const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+      const isEnum = !(propertyType.schema instanceof NewSchema) && propertyType.schema.details.csharp.enum !== undefined;
       const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
       if (isEnum || hasEnum) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
@@ -1316,6 +1317,7 @@ export class CmdletClass extends Class {
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {
+      //no sure why there is an empty block
     }
 
   }
@@ -1372,7 +1374,7 @@ export class CmdletClass extends Class {
               let type = '';
               if (typeDeclaration instanceof ArrayOf) {
                 type = typeDeclaration.elementTypeDeclaration;
-              } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+              } else if (!(typeDeclaration.schema instanceof NewSchema) && pageableInfo && pageableInfo.responseType === 'pageable') {
                 if (typeDeclaration === undefined || typeDeclaration.schema.properties[pageableInfo.itemName] === undefined) {
                   throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
                 }

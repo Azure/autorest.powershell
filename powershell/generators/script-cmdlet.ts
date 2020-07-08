@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Project } from '../internal/project';
+import { Project, NewProject } from '../internal/project';
 import { serialize, indent, setIndentation, applyOverrides, pascalCase } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { State } from '../internal/state';
@@ -52,7 +52,7 @@ function getType(type: string) {
   return type;
 }
 
-export async function generateScriptCmdlets(project: Project) {
+export async function generateScriptCmdlets(project: Project | NewProject) {
   const commands = await project.state.getValue<Array<ScenarioCommand>>('command', []);
   for (const command of values(commands)) {
     if (!command.action) {

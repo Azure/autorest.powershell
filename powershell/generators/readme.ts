@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Project } from '../internal/project';
+import { Project, NewProject } from '../internal/project';
 import { MdFile } from '../file-formats/md-file';
 
-export async function generateReadme(project: Project) {
+export async function generateReadme(project: Project | NewProject) {
   const md = new MdFile(await project.state.readFile(project.readme) || '');
   let azureInfo = '';
   if (project.azure) {
