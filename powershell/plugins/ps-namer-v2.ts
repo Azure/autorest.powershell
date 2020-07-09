@@ -5,13 +5,14 @@
 
 import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 import { Host, Channel, Session, startSession } from '@azure-tools/autorest-extension-base';
-import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames, ModelState, isMediaTypeMultipartFormData, VirtualParameter } from '@azure-tools/codemodel-v3';
+//import { allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '@azure-tools/codemodel-v3';
 import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import * as linq from '@azure-tools/linq';
 import { singularize } from '../internal/name-inferrer';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
+import { allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '../utils/resolve-conflicts';
 
 type State = NewModelState<PwshModel>;
 

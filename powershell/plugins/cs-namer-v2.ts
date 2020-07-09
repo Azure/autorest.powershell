@@ -5,7 +5,6 @@
 
 import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 //import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { ModelState } from '@azure-tools/codemodel-v3';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';

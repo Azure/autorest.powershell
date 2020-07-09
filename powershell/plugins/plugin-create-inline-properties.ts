@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-import { Schema, codemodel, JsonType, processCodeModel, VirtualProperty, VirtualParameter, resolveParameterNames, ModelState, getAllProperties, getAllPublicVirtualProperties } from '@azure-tools/codemodel-v3';
+//import { VirtualParameter } from '@azure-tools/codemodel-v3';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { Host, Session, startSession } from '@azure-tools/autorest-extension-base';
-import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
+//import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
+import { CommandOperation } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
-
+import { VirtualParameter } from '../utils/command-operation';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();

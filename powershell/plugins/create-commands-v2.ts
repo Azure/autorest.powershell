@@ -3,9 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 //import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@azure-tools/codemodel-v3';
-import { JsonType, processCodeModel, codemodel, components, command, http, ModelState, Schema as SchemaV3 } from '@azure-tools/codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
@@ -16,6 +15,8 @@ import { verbs } from '../internal/verbs';
 import { PwshModel } from '../utils/PwshModel';
 import { IParameterPwsh } from '../utils/components';
 import { NewModelState } from '../utils/model-state';
+import { Schema as SchemaV3 } from '../utils/schema';
+import { CommandOperation } from '../utils/command-operation';
 
 type State = NewModelState<PwshModel>;
 
@@ -303,20 +304,20 @@ export /* @internal */ class Inferrer {
     }
   }
 
-
-  isNameConflict(model: codemodel.Model, variant: CommandVariant, vname: string) {
-    for (const each of values(model.commands.operations)) {
-      if (each.details.default.name === vname) {
-        return true;
-      }
-    }
-    return false;
-  }
+  // skip-for-time-being
+  // isNameConflict(model: codemodel.Model, variant: CommandVariant, vname: string) {
+  //   for (const each of values(model.commands.operations)) {
+  //     if (each.details.default.name === vname) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
 
   // for tracking unique operation identities 
   operationIdentities = new Set<string>();
 
-  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<command.CommandOperation> {
+  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<CommandOperation> {
     // skip-for-time-being following code seems redundant -----
     // let apiversion = '';
 
@@ -358,7 +359,7 @@ export /* @internal */ class Inferrer {
     // skip-for-time-being x-ms-metadata looks not supported any more.
     //const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
 
-    return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new command.CommandOperation(operation.language.default.name, {
+    return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new CommandOperation(operation.language.default.name, {
       asjob: operation.language.default.asjob ? true : false,
       extensions: {
 
@@ -421,7 +422,7 @@ export /* @internal */ class Inferrer {
     //const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && length(body.schema.details.default.polymorphicChildren)) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
 
     // wait! "update" should be "set" if it's a POST
-    if (variant.verb === 'Update' && operation.requests && operation.requests[0].protocol?.http?.method === http.HttpMethod.Put) {
+    if (variant.verb === 'Update' && operation.requests && operation.requests[0].protocol?.http?.method === HttpMethod.Put) {
       variant.verb = 'Set';
     }
 

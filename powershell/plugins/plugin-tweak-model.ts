@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-import { ModelState } from '@azure-tools/codemodel-v3';
+//import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize } from '@azure-tools/codegen';
 import { items, keys, values, Dictionary, length } from '@azure-tools/linq';

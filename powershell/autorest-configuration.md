@@ -137,8 +137,8 @@ pipeline:
   llcsharp-v2:
     input: psnamer-v2
   
-  # powershell-v2:
-  #   input: psnamer-v2
+  powershell-v2:
+    input: psnamer-v2
 # --- extension powershell ---
 
   # creates high-level commands
@@ -164,7 +164,7 @@ pipeline:
 
   # creates powershell cmdlets for high-level commands. (leverages llc# code)
   powershell:
-    input: add-azure-completers # and the generated c# files
+   input: add-azure-completers # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
@@ -176,7 +176,7 @@ pipeline:
     scope: scope-here
 
   powershell/text-transform:
-    input:  powershell
+    input:  powershell-v2
     scope: scope-here
 
   llcsharp/emitter:
