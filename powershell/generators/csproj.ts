@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Project } from '../internal/project';
+import { NewProject } from '../internal/project';
 
 function removeCd(path: string): string {
   return path.startsWith('./') ? path.replace('./', '') : path;
 }
-export async function generateCsproj(project: Project) {
+export async function generateCsproj(project: Project | NewProject) {
   const release = project.azure ? `    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>

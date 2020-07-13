@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Project } from '../internal/project';
+import { Project, NewProject } from '../internal/project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
+
 
 export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
   return `
@@ -39,7 +40,7 @@ export function getProfileExportScript(exportFolderScript: string, isAzure: bool
 `;
 }
 
-export async function generatePsm1(project: Project) {
+export async function generatePsm1(project: Project | NewProject) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
   let azureInitialize = '';
   if (project.azure) {

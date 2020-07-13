@@ -48,7 +48,7 @@ function setPropertyNames(schema: Schema) {
 function setSchemaNames(schemas: Dictionary<Schema>, azure: boolean, serviceNamespace: string) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
-
+  // dolauli need to notice this -- schemas in the namespace of the lowest supported api version
   // in Azure Mode, we want to always put schemas into the namespace of the lowest supported apiversion.
   // otherwise, we just want to differientiate with a simple incremental numbering scheme.
 
@@ -222,6 +222,7 @@ async function nameStuffRight(state: State): Promise<codemodel.Model> {
   const azure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
   const clientName = getPascalIdentifier(model.details.default.name);
 
+  // dolauli see model.details.csharp for c# related staff
   // set c# client details (name)
   model.details.csharp = {
     ...model.details.default, // copy everything by default
@@ -238,6 +239,7 @@ async function nameStuffRight(state: State): Promise<codemodel.Model> {
 
 
 export async function csnamer(service: Host) {
+  // dolauli add names for http operations and schemas
   return processCodeModel(nameStuffRight, service, 'csnamer');
 }
 
