@@ -13,7 +13,7 @@ import { csnamer } from './plugins/cs-namer';
 import { llcsharp } from './plugins/llcsharp';
 import { createInlinedPropertiesPlugin } from './plugins/plugin-create-inline-properties';
 import { tweakModelPlugin } from './plugins/plugin-tweak-model';
-import { tweakModelAzurePlugin } from './plugins/plugin-tweak-model-azure';
+import { tweakModelAzurePluginV2 } from './plugins/plugin-tweak-model-azure-v2';
 import { createCommandsV2 } from './plugins/create-commands-v2';
 import { csnamerV2 } from './plugins/cs-namer-v2';
 import { namerV2 } from './plugins/ps-namer-v2';
@@ -33,7 +33,7 @@ export async function main() {
   pluginHost.Add('llcsharp', llcsharp);
   // Following are plugins moved from remodeler
   pluginHost.Add('tweakcodemodel-v2', tweakModelPlugin);
-  pluginHost.Add('tweakcodemodelazure-v2', tweakModelAzurePlugin);
+  pluginHost.Add('tweakcodemodelazure-v2', tweakModelAzurePluginV2);
   pluginHost.Add('create-virtual-properties-v2', createInlinedPropertiesPlugin);
   pluginHost.Add('create-commands-v2', createCommandsV2);
   pluginHost.Add('csnamer-v2', csnamerV2);

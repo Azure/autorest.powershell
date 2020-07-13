@@ -121,9 +121,12 @@ pipeline:
 # --- extension powershell based on modelerfour
   tweakcodemodel-v2:
     input: modelerfour/identity
+  
+  tweakcodemodelazure-v2:
+    input: tweakcodemodel-v2
 
   create-commands-v2:
-    input: tweakcodemodel-v2
+    input: tweakcodemodelazure-v2
   
   create-virtual-properties-v2:
     input: create-commands-v2
