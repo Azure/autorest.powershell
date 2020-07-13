@@ -8,6 +8,7 @@ import { Extensions } from './extensions';
 import { DeepPartial, } from '@azure-tools/codegen';
 import { Dictionary, values } from '@azure-tools/linq';
 import { uid } from './uid';
+import { Schema, ObjectSchema, Property, SchemaType } from '@azure-tools/codemodel';
 
 export interface PropertyDetails extends ImplementationDetails {
   required: boolean;
@@ -94,36 +95,42 @@ export interface SchemaDetails extends ImplementationDetails {
   suppressFormat?: boolean;
 }
 
-export class Schema extends Extensions implements Schema {
-  public details: LanguageDetails<SchemaDetails>;
-  public required = new Array<string>();
-  public enum = new Array<any>();
-  public allOf = new Array<Schema>();
-  public oneOf = new Array<Schema>();
-  public anyOf = new Array<Schema>();
-  public properties = new Dictionary<Property>();
-  public extensions = new Dictionary<any>();
+// export class Schema extends Extensions implements Schema {
+//   public details: LanguageDetails<SchemaDetails>;
+//   public required = new Array<string>();
+//   public enum = new Array<any>();
+//   public allOf = new Array<Schema>();
+//   public oneOf = new Array<Schema>();
+//   public anyOf = new Array<Schema>();
+//   public properties = new Dictionary<Property>();
+//   public extensions = new Dictionary<any>();
 
-  constructor(name: string, initializer?: DeepPartial<Schema>) {
-    super();
-    this.details = {
-      default: {
-        uid: `schema:${uid()}`,
-        description: '',
-        name
-      }
-    };
-    this.apply(initializer);
-  }
-}
+//   constructor(name: string, initializer?: DeepPartial<Schema>) {
+//     super();
+//     this.details = {
+//       default: {
+//         uid: `schema:${uid()}`,
+//         description: '',
+//         name
+//       }
+//     };
+//     this.apply(initializer);
+//   }
+// }
 
 export function getPolymorphicBases(schema: Schema): Array<Schema> {
   // are any of my parents polymorphic directly, or any of their parents?
-  return [...values(schema.allOf).where(parent => parent.discriminator ? true : false), ...values(schema.allOf).selectMany(getPolymorphicBases)];
+  // skip-for-time-being
+  // return [...values(schema).where(parent => parent.discriminator ? true : false), ...values(schema.allOf).selectMany(getPolymorphicBases)];
+  return [];
 }
 
 export function getAllProperties(schema: Schema): Array<Property> {
-  return [...values(schema.allOf).selectMany(getAllProperties), ...values(schema.properties)];
+  if (schema instanceof ObjectSchema) {
+    return [...values(schema.parents ? schema.parents.immediate : []).selectMany(getAllProperties), ...values(schema.properties)];
+  } else {
+    return [];
+  }
 }
 
 export function getAllPublicVirtualProperties(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
@@ -156,35 +163,35 @@ export function getVirtualPropertyFromPropertyName(virtualProperties: VirtualPro
 }
 
 
-export interface Property extends Extensions {
-  details: LanguageDetails<PropertyDetails>;
+// export interface Property extends Extensions {
+//   details: LanguageDetails<PropertyDetails>;
 
-  /** description can be on the property reference, so that properties can have a description different from the type description. */
-  description?: string;
+//   /** description can be on the property reference, so that properties can have a description different from the type description. */
+//   description?: string;
 
-  schema: Schema;
-}
+//   schema: Schema;
+// }
 
-export class Property extends Extensions implements Property {
-  public serializedName: string;
-  public details: LanguageDetails<PropertyDetails>;
-  public extensions = new Dictionary<any>();
+// export class Property extends Extensions implements Property {
+//   public serializedName: string;
+//   public details: LanguageDetails<PropertyDetails>;
+//   public extensions = new Dictionary<any>();
 
-  constructor(name: string, initializer?: DeepPartial<Property>) {
-    super();
-    this.serializedName = name;
-    this.details = {
-      default: {
-        readOnly: false,
-        uid: `property:${uid()}`,
-        description: initializer?.description || '',
-        name,
-        required: false
-      }
-    };
-    this.apply(initializer);
-  }
-}
+//   constructor(name: string, initializer?: DeepPartial<Property>) {
+//     super();
+//     this.serializedName = name;
+//     this.details = {
+//       default: {
+//         readOnly: false,
+//         uid: `property:${uid()}`,
+//         description: initializer?.description || '',
+//         name,
+//         required: false
+//       }
+//     };
+//     this.apply(initializer);
+//   }
+// }
 
 export class Discriminator extends Extensions implements Discriminator {
   public extensions = new Dictionary<any>();
@@ -211,7 +218,7 @@ export enum JsonType {
 }
 
 export function isJsonType(type: JsonType, schema?: Schema): schema is Schema {
-  return schema ? schema.type === type : false;
+  return schema ? schema.type === SchemaType.Object : false;
 }
 
 export function isSchemaObject(schema?: Schema): schema is Schema {
@@ -237,60 +244,60 @@ export interface XML extends Extensions {
   wrapped: boolean;
 }
 
-export interface Schema extends Extensions {
+// export interface Schema extends Extensions {
 
-  details: LanguageDetails<SchemaDetails>;
+//   details: LanguageDetails<SchemaDetails>;
 
-  /* common properties */
-  type?: JsonType;
-  title?: string;
-  description?: string;
-  format?: string;
-  nullable: boolean;
-  readOnly: boolean;
-  writeOnly: boolean;
-  deprecated: boolean;
-  required: Array<string>;
+//   /* common properties */
+//   type?: JsonType;
+//   title?: string;
+//   description?: string;
+//   format?: string;
+//   nullable: boolean;
+//   readOnly: boolean;
+//   writeOnly: boolean;
+//   deprecated: boolean;
+//   required: Array<string>;
 
-  /* number restrictions */
-  multipleOf?: number;
-  maximum?: number;
-  exclusiveMaximum?: boolean;
-  minimum?: number;
-  exclusiveMinimum?: boolean;
+//   /* number restrictions */
+//   multipleOf?: number;
+//   maximum?: number;
+//   exclusiveMaximum?: boolean;
+//   minimum?: number;
+//   exclusiveMinimum?: boolean;
 
-  /* string restrictions */
-  maxLength?: number;
-  minLength?: number;
-  pattern?: string; // regex
+//   /* string restrictions */
+//   maxLength?: number;
+//   minLength?: number;
+//   pattern?: string; // regex
 
-  /* array restrictions */
-  maxItems?: number;
-  minItems?: number;
-  uniqueItems?: boolean;
+//   /* array restrictions */
+//   maxItems?: number;
+//   minItems?: number;
+//   uniqueItems?: boolean;
 
-  /* object restrictions */
-  maxProperties?: number;
-  minProperties?: number;
+//   /* object restrictions */
+//   maxProperties?: number;
+//   minProperties?: number;
 
-  /* unbounded properties */
-  example?: any;
-  default?: any;
+//   /* unbounded properties */
+//   example?: any;
+//   default?: any;
 
-  /* Properties that are objects */
-  discriminator?: Discriminator;
-  externalDocs?: ExternalDocumentation;
-  xml?: XML;
+//   /* Properties that are objects */
+//   discriminator?: Discriminator;
+//   externalDocs?: ExternalDocumentation;
+//   xml?: XML;
 
-  /* Properties that are collections of things that are not references */
-  enum: Array<any>;
+//   /* Properties that are collections of things that are not references */
+//   enum: Array<any>;
 
-  /* properties with potential references */
-  not?: Schema;
-  allOf: Array<Schema>;
-  oneOf: Array<Schema>;
-  anyOf: Array<Schema>;
-  items?: Schema;
-  properties: Dictionary<Property>;
-  additionalProperties?: boolean | Schema;
-}
+//   /* properties with potential references */
+//   not?: Schema;
+//   allOf: Array<Schema>;
+//   oneOf: Array<Schema>;
+//   anyOf: Array<Schema>;
+//   items?: Schema;
+//   properties: Dictionary<Property>;
+//   additionalProperties?: boolean | Schema;
+// }

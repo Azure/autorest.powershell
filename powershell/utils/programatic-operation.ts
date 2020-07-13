@@ -5,7 +5,8 @@
 
 import { ImplementationDetails, IOperation, IParameter, LanguageDetails } from './components';
 import { Extensions } from './extensions';
-import { Schema } from './schema';
+//import { Schema } from './schema';
+import { Schema } from '@azure-tools/codemodel';
 import { Dictionary } from '@azure-tools/linq';
 import { uid } from './uid';
 import { DeepPartial } from '@azure-tools/codegen';

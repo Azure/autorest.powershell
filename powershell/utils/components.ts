@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import { DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema } from '@azure-tools/codemodel';
 import { Extensions } from './extensions';
-import { Schema } from './schema';
+//import { Schema } from './schema';
 import { uid } from './uid';
 
 export interface IOperationBase {
@@ -42,11 +42,7 @@ export class IParameter extends Extensions {
   }
 }
 
-export class IParameterPwsh extends IParameter {
-  constructor(public name: string, public schema: Schema, public newSchema: NewSchema, initializer?: DeepPartial<IParameter>) {
-    super(name, schema);
-  }
-}
+
 export interface IOperation<TParameterType extends IParameter> extends IOperationBase {
   operationId: string;
   description: string;

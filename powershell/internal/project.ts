@@ -379,7 +379,7 @@ export class NewProject extends codeDomProject {
 
     this.supportNamespace = new NewEnumNamespace(this.serviceNamespace, this.state);
     this.supportNamespace.header = this.license;
-    //this.addNamespace(this.supportNamespace);
+    this.addNamespace(this.supportNamespace);
 
     this.modelsExtensions = new NewModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas'));
     this.modelsExtensions.header = this.license;

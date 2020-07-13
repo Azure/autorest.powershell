@@ -5,7 +5,7 @@
 import { Schema as NewSchema } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@azure-tools/codegen-csharp';
-import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, DeserializerPartialClass, NewSchemaDefinitionResolver, NewDeserializerPartialClass } from '../llcsharp/exports';
+import { Schema, ClientRuntime, SchemaDefinitionResolver, ObjectImplementation, NewObjectImplementation, DeserializerPartialClass, NewSchemaDefinitionResolver, NewDeserializerPartialClass } from '../llcsharp/exports';
 import { State, NewState } from '../internal/state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../internal/powershell-declarations';
 import { join } from 'path';
@@ -285,11 +285,11 @@ export class NewModelExtensionsNamespace extends Namespace {
         }
 
         const td = this.resolver.resolveTypeDeclaration(schema, true, state);
-        if (td instanceof ObjectImplementation) {
+        if (td instanceof NewObjectImplementation) {
 
           // it's a class object.
-          const className = td.schema.details.csharp.name;
-          const interfaceName = td.schema.details.csharp.interfaceName || '';
+          const className = td.schema.language.csharp?.name || '';
+          const interfaceName = td.schema.language.csharp?.interfaceName || '';
           const converterClass = `${className}TypeConverter`;
 
           if (this.findClassByName(className).length > 0) {
@@ -304,7 +304,7 @@ export class NewModelExtensionsNamespace extends Namespace {
           // 2. A partial interface with the type converter attribute
           const modelInterface = new Interface(ns, interfaceName, {
             partial: true,
-            description: td.schema.details.csharp.description,
+            description: td.schema.language.csharp?.description,
             fileName: `${interfaceName}.PowerShell` // make sure that the interface ends up in the same file as the class.
           });
           modelInterface.add(new Attribute(TypeConverterAttribute, { parameters: [new LiteralExpression(`typeof(${converterClass})`)] }));
@@ -312,7 +312,7 @@ export class NewModelExtensionsNamespace extends Namespace {
           // 1. A partial class with the type converter attribute
           const model = new Class(ns, className, undefined, {
             partial: true,
-            description: td.schema.details.csharp.description,
+            description: td.schema.language.csharp?.description,
             fileName: `${className}.PowerShell`
           });
 
@@ -341,7 +341,7 @@ export class NewModelExtensionsNamespace extends Namespace {
           model.add(new LambdaMethod('FromJsonString', modelInterface, new LiteralExpression(`FromJson(${ClientRuntime.JsonNode.declaration}.Parse(jsonText))`), {
             static: Modifier.Static,
             parameters: [new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this model.' })],
-            description: `Creates a new instance of <see cref="${td.schema.details.csharp.name}" />, deserializing the content from a json string.`,
+            description: `Creates a new instance of <see cref="${td.schema.language.csharp?.name}" />, deserializing the content from a json string.`,
             returnsDescription: 'an instance of the <see cref="className" /> model class.'
           }));
 

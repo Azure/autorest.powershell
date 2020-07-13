@@ -5,10 +5,11 @@
 
 import { Components, IParameter, LanguageDetails } from './components';
 import { Extensions } from './extensions';
-import { HttpOperation } from './http-operation';
 import { ProgramaticOperationDetails, ProgrammaticOperation } from './programatic-operation';
-import { Schema, VirtualProperty } from './schema';
+import { VirtualProperty } from './schema';
+import { Schema } from '@azure-tools/codemodel';
 import { DeepPartial } from '@azure-tools/codegen';
+import { Operation } from '@azure-tools/codemodel';
 
 import { uid } from './uid';
 import { Dictionary } from '@azure-tools/linq';
@@ -35,7 +36,7 @@ export interface CommandOperation extends ProgrammaticOperation {
   variant: string;
   category: string;
   asjob: boolean;
-  callGraph: Array<HttpOperation>;
+  callGraph: Array<Operation>;
 }
 
 export interface VirtualParameter {

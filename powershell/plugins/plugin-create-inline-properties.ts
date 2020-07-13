@@ -309,7 +309,7 @@ function createVirtualParameters(operation: CommandOperation) {
 
     if (dropBodyParameter && parameter.details.default.isBodyParameter) {
       // the client will make a hidden body parameter for this, and we're expected to fill it.
-      const vps = parameter.schema.details.default.virtualProperties;
+      const vps = parameter.schema.language.default.virtualProperties;
       if (vps) {
         for (const virtualProperty of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
           // dolauli add virtual parameter for virtual property

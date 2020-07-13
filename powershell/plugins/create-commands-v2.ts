@@ -13,9 +13,9 @@ import { Lazy } from '@azure-tools/tasks';
 import { clone } from '@azure-tools/linq';
 import { verbs } from '../internal/verbs';
 import { PwshModel } from '../utils/PwshModel';
-import { IParameterPwsh } from '../utils/components';
+import { IParameter } from '../utils/components';
 import { NewModelState } from '../utils/model-state';
-import { Schema as SchemaV3 } from '../utils/schema';
+//import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation } from '../utils/command-operation';
 
 type State = NewModelState<PwshModel>;
@@ -276,7 +276,7 @@ export /* @internal */ class Inferrer {
     // if this has a body with it, let's add that parameter
     if (body && body.schema) {
       op.details.default.hasBody = true;
-      op.parameters.push(new IParameterPwsh(bodyParameterName, new SchemaV3('not used'), body.schema, {
+      op.parameters.push(new IParameter(bodyParameterName, body.schema, {
         details: {
           default: {
             description: body.schema.language.default.description,
@@ -291,7 +291,7 @@ export /* @internal */ class Inferrer {
       if (body.schema.type === SchemaType.Object) {
         const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state);
         opExpanded.details.default.dropBodyParameter = true;
-        opExpanded.parameters.push(new IParameterPwsh(`${bodyParameterName}Body`, new SchemaV3('not used'), body.schema, {
+        opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
           details: {
             default: {
               description: body.schema.language.default.description,
@@ -396,7 +396,7 @@ export /* @internal */ class Inferrer {
         return each;
       }),
       // skip-for-time-being, this callGraph is used in the header comments
-      callGraph: [],
+      callGraph: [operation],
     });
   }
 
