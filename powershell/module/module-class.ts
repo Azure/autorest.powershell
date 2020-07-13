@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@azure-tools/codegen-csharp';
+import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable, If } from '@azure-tools/codegen-csharp';
 
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
@@ -180,7 +180,7 @@ export class ModuleClass extends Class {
 
     signalImpl.push(Using('NoSynchronizationContext', ''));
     signalImpl.add(function* () {
-      yield `await ${EventListener.value}?.Invoke(${$this.pId.value},${$this.pToken.value},${$this.pGetEventData.value}, ${pSignal.value}, ${$this.pInvocationInfo}, ${$this.pParameterSetName},${$this.pException});`;
+      yield If(`${EventListener.value} != null`, `await ${EventListener.value}.Invoke(${$this.pId.value},${$this.pToken.value},${$this.pGetEventData.value}, ${pSignal.value}, ${$this.pInvocationInfo}, ${$this.pParameterSetName},${$this.pException});`)
     });
   }
 
