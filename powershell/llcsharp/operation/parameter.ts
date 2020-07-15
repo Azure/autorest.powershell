@@ -15,7 +15,7 @@ import { Variable } from '@azure-tools/codegen-csharp';
 
 import { HttpOperationParameter, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State, NewState } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
@@ -68,7 +68,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
 }
 
 export class NewOperationParameter extends Parameter implements EnhancedVariable {
-  public typeDeclaration: EnhancedTypeDeclaration;
+  public typeDeclaration: NewEnhancedTypeDeclaration;
 
   public param: NewHttpOperationParameter;
 
@@ -206,10 +206,10 @@ export class CallbackParameter extends Parameter {
 }
 
 export class NewCallbackParameter extends Parameter {
-  responseType: (EnhancedTypeDeclaration) | null;
-  headerType: (EnhancedTypeDeclaration) | null;
+  responseType: (NewEnhancedTypeDeclaration) | null;
+  headerType: (NewEnhancedTypeDeclaration) | null;
 
-  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: NewState, objectInitializer?: DeepPartial<CallbackParameter>) {
+  constructor(name: string, responseType: (NewEnhancedTypeDeclaration) | null, headerType: (NewEnhancedTypeDeclaration) | null, state: NewState, objectInitializer?: DeepPartial<CallbackParameter>) {
     // regular pipeline style. (callback happens after the pipline is called)
     if (responseType) {
       if (headerType) {

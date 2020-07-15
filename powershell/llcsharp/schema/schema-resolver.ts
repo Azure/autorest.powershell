@@ -3,25 +3,25 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 
 import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
-import { ArrayOf } from './array';
-import { Binary } from './binary';
-import { Boolean } from './boolean';
-import { ByteArray } from './byte-array';
-import { Char } from './char';
-import { Date } from './date';
-import { DateTime, DateTime1123, UnixTime } from './date-time';
-import { Duration } from './duration';
-import { EnumImplementation } from './enum';
-import { Numeric } from './integer';
+import { ArrayOf, NewArrayOf } from './array';
+import { Binary, NewBinary } from './binary';
+import { Boolean, NewBoolean } from './boolean';
+import { ByteArray, NewByteArray } from './byte-array';
+import { Char, NewChar } from './char';
+import { Date, NewDate } from './date';
+import { DateTime, DateTime1123, UnixTime, NewDateTime, NewDateTime1123, NewUnixTime } from './date-time';
+import { Duration, NewDuration } from './duration';
+import { EnumImplementation, NewEnumImplementation } from './enum';
+import { Numeric, NewNumeric } from './integer';
 import { ObjectImplementation, NewObjectImplementation } from './object';
 import { String, NewString } from './string';
-import { Uuid } from './Uuid';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { Uuid, NewUuid } from './Uuid';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-type-declaration';
 import { PwshModel } from '../../utils/PwshModel';
 import { NewModelState } from '../../utils/model-state';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
@@ -153,76 +153,74 @@ export class SchemaDefinitionResolver {
 }
 
 export class NewSchemaDefinitionResolver {
-  private readonly cache = new Map<string, EnhancedTypeDeclaration>();
-  private add(schema: NewSchema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
+  private readonly cache = new Map<string, NewEnhancedTypeDeclaration>();
+  private add(schema: NewSchema, value: NewEnhancedTypeDeclaration): NewEnhancedTypeDeclaration {
     this.cache.set(schema.language?.csharp?.fullname || '', value);
     return value;
   }
 
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewModelState<PwshModel>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewModelState<PwshModel>): NewEnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
 
     // determine if we need a new model class for the type or just a known type object
     switch (schema.type) {
-      // case SchemaType.Array: {
-      //   // can be recursive!
-      //   // handle boolean arrays as booleans (powershell will try to turn it into switches!)
-      //   const ar = <ArraySchema>schema;
-      //   const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(schema, true) : this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
-      //   return new ArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
-      // }
+      case SchemaType.Array: {
+        // can be recursive!
+        // handle boolean arrays as booleans (powershell will try to turn it into switches!)
+        const ar = <ArraySchema>schema;
+        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new NewBoolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
+        return new NewArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
+      }
 
       case SchemaType.Object: {
         const result = schema.language.csharp && this.cache.get(schema.language.csharp.fullname || '');
         if (result) {
           return result;
         }
-        return this.add(schema, new NewObjectImplementation(schema));
+        return this.add(schema, new NewObjectImplementation(<ObjectSchema>schema));
       }
       case SchemaType.String: {
         return new NewString(<StringSchema>schema, required);
 
       }
 
-      // case JsonType.Boolean:
-      //   return new Boolean(schema, required);
+      case SchemaType.Boolean:
+        return new NewBoolean(<BooleanSchema>schema, required);
 
-      // case JsonType.Integer:
-      //   switch (schema.format) {
-      //     case IntegerFormat.Int64:
-      //     case IntegerFormat.None:
-      //       return new Numeric(schema, required, required ? 'long' : 'long?');
-      //     case IntegerFormat.UnixTime:
-      //       return new UnixTime(schema, required);
-      //     case IntegerFormat.Int32:
-      //       return new Numeric(schema, required, required ? 'int' : 'int?');
-      //   }
-      //   // fallback to int if the format isn't recognized
-      //   return new Numeric(schema, required, required ? 'int' : 'int?');
+      case SchemaType.Integer:
+        switch ((<NumberSchema>schema).precision) {
+          case 64:
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'long' : 'long?');
+          // skip-for-time-being
+          // case IntegerFormat.UnixTime:
+          //   return new UnixTime(schema, required);
+          case 32:
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
+        }
+        // fallback to int if the format isn't recognized
+        return new NewNumeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
 
-      // case JsonType.Number:
-      //   switch (schema.format) {
-      //     case NumberFormat.None:
-      //     case NumberFormat.Double:
-      //       return new Numeric(schema, required, required ? 'double' : 'double?');
-      //     case NumberFormat.Float:
-      //       return new Numeric(schema, required, required ? 'float' : 'float?');
-      //     case NumberFormat.Decimal:
-      //       return new Numeric(schema, required, required ? 'decimal' : 'decimal?');
-      //   }
-      //   // fallback to float if the format isn't recognized
-      //   return new Numeric(schema, required, required ? 'float' : 'float?');
+      case SchemaType.Number:
+        switch ((<NumberSchema>schema).precision) {
+          case 64:
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
+          case 32:
+            new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+          case 128:
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
+        }
+        // fallback to float if the format isn't recognized
+        return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
 
-      // case undefined:
-      //   if (schema.extensions && schema.extensions['x-ms-enum']) {
-      //     return new EnumImplementation(schema, required);
-      //   }
-
-      // "any" case
-      // this can happen when a model is just an all-of something else. (sub in the other type?)
       case undefined:
+        if (schema.extensions && schema.extensions['x-ms-enum']) {
+          return new NewEnumImplementation(<StringSchema>schema, required);
+        }
+
+        // "any" case
+        // this can happen when a model is just an all-of something else. (sub in the other type?)
         break;
 
     }

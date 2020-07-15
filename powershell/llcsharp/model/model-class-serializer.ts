@@ -24,7 +24,7 @@ import { ClientRuntime } from '../clientruntime';
 
 import { dotnet } from '@azure-tools/codegen-csharp';
 import { ModelClass } from './model-class';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
@@ -72,7 +72,7 @@ export class SerializationPartialClass extends Initializer {
 }
 
 export class NewSerializationPartialClass extends Initializer {
-  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, protected resolver: (s: NewSchema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
+  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, protected resolver: (s: NewSchema, req: boolean) => NewEnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
     super();
     this.apply(objectInitializer);
   }
@@ -216,7 +216,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
 export class NewDeserializerPartialClass extends NewSerializationPartialClass {
   private beforeDeserialize!: Method;
   private afterDeserialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, resolver: (s: NewSchema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<DeserializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, resolver: (s: NewSchema, req: boolean) => NewEnhancedTypeDeclaration, objectInitializer?: DeepPartial<DeserializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }

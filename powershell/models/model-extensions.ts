@@ -414,7 +414,7 @@ export class NewModelExtensionsNamespace extends Namespace {
             const t = new LocalVariable('type', System.Type, { initializer: 'sourceValue.GetType()' });
             yield t.declarationStatement;
 
-            if (schema.language.default.uid === 'universal-parameter-type' || schema.language.csharp?.byReference) {
+            if (schema.language.default.uid || schema.language.csharp?.byReference) {
               yield '// we allow string conversion too.';
               yield If(`${t.value} == typeof(${System.String})`, Return(dotnet.True));
             }

@@ -10,7 +10,7 @@ import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Schema as NewSchema, Language } from '@azure-tools/codemodel';
 import { State, NewState } from '../generator';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelClass, NewModelClass } from './model-class';
 import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
@@ -223,7 +223,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
   }
 }
 
-export class NewModelInterface extends Interface implements EnhancedTypeDeclaration {
+export class NewModelInterface extends Interface implements NewEnhancedTypeDeclaration {
   get schema(): NewSchema {
     return this.classImplementation.schema;
   }

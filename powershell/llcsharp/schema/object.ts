@@ -14,9 +14,9 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, ObjectSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-type-declaration';
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
@@ -181,7 +181,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
 
 }
 
-export class NewObjectImplementation implements EnhancedTypeDeclaration {
+export class NewObjectImplementation implements NewEnhancedTypeDeclaration {
   public isXmlAttribute = false;
 
   get defaultOfType() {
@@ -330,7 +330,7 @@ export class NewObjectImplementation implements EnhancedTypeDeclaration {
 
   isRequired = false;
 
-  constructor(public schema: NewSchema) {
+  constructor(public schema: ObjectSchema) {
   }
 
   public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {

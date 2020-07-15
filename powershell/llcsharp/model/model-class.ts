@@ -9,7 +9,7 @@ import { items, values } from '@azure-tools/linq';
 import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { State, NewState } from '../generator';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
 import { ModelInterface, NewModelInterface } from './interface';
 import { JsonSerializableClass, NewJsonSerializableClass } from './model-class-json';
@@ -493,7 +493,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   }
 }
 
-export class NewModelClass extends Class implements EnhancedTypeDeclaration {
+export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     return this.featureImplementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
   }
