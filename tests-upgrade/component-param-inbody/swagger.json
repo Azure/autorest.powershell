@@ -1,0 +1,78 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/subscriptions/workspaces": {
+        "put": {
+          "tags": [
+            "Workspaces"
+          ],
+          "operationId": "Workspaces_CreateOrUpdate",
+          "description": "Creates a new workspace.",
+          "parameters": [
+            {
+                "name": "workspace",
+                "in": "body",
+                "required": true,
+                "description": "The workspace to create or update.",
+                "schema": {
+                  "required": [
+                      "properties"
+                   ],
+                  "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Workspace name"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "Workspace region"
+                    }
+                  }
+                }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Created or updated the workspace."
+            },
+            "default": {
+              "description": "Error response describing why the operation failed."
+            }
+          }
+        }
+      }
+    }
+  }
