@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary } from '@azure-tools/linq';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean, NewSchemaDefinitionResolver } from '../llcsharp/exports';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewEnhancedTypeDeclaration, Boolean, NewSchemaDefinitionResolver } from '../llcsharp/exports';
 import { State, NewState } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace, NewEnumNamespace } from '../enums/namespace';
@@ -61,7 +61,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
 
 export class NewPSSchemaResolver extends NewSchemaDefinitionResolver {
   inResolve = false;
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewModelState<PwshModel>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewModelState<PwshModel>): NewEnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
       // skip-for-time-being

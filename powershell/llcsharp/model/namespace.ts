@@ -9,13 +9,13 @@ import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State, NewState } from '../generator';
-import { EnumImplementation } from '../schema/enum';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnumImplementation, NewEnumImplementation } from '../schema/enum';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
 import { SchemaDefinitionResolver, NewSchemaDefinitionResolver } from '../schema/schema-resolver';
 import { EnumClass } from '../enums/enum';
 import * as validation from '../validations';
-import { ModelInterface } from './interface';
+import { ModelInterface, NewModelInterface } from './interface';
 import { ModelClass, NewModelClass } from './model-class';
 import { DeepPartial } from '@azure-tools/codegen';
 
@@ -116,7 +116,7 @@ export class ModelsNamespace extends Namespace {
     }
     return td;
   }
-  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewState): EnhancedTypeDeclaration {
+  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewState): NewEnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -135,14 +135,14 @@ export class ModelsNamespace extends Namespace {
         const mc = schema.language.csharp?.classImplementation || new NewModelClass(ns, td, <NewState>this.state, { description: schema.language.csharp?.description });
 
         // this gets implicity created during class creation:
-        return <ModelInterface>schema.language.csharp?.interfaceImplementation;
+        return <NewModelInterface>schema.language.csharp?.interfaceImplementation;
       }
 
       if (state.project.azure && /^api-?version$/i.exec(schema.language.csharp?.name || '')) {
         return td;
       }
 
-      if (td instanceof EnumImplementation) {
+      if (td instanceof NewEnumImplementation) {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {
@@ -193,7 +193,7 @@ export class NewModelsNamespace extends Namespace {
     return 'Models';
   }
 
-  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewState): EnhancedTypeDeclaration {
+  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewState): NewEnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -212,14 +212,14 @@ export class NewModelsNamespace extends Namespace {
         const mc = schema.language.csharp?.classImplementation || new NewModelClass(ns, td, <NewState>this.state, { description: schema.language.csharp?.description });
 
         // this gets implicity created during class creation:
-        return <ModelInterface>schema.language.csharp?.interfaceImplementation;
+        return <NewModelInterface>schema.language.csharp?.interfaceImplementation;
       }
 
       if (state.project.azure && /^api-?version$/i.exec(schema.language.csharp?.name || '')) {
         return td;
       }
 
-      if (td instanceof EnumImplementation) {
+      if (td instanceof NewEnumImplementation) {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {

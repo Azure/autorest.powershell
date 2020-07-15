@@ -291,7 +291,7 @@ export class NewOperationMethod extends Method {
   public contextParameter!: Parameter;
   public senderParameter!: Parameter;
   public resourceUri!: Parameter;
-  public callbacks = new Array<CallbackParameter>();
+  public callbacks = new Array<NewCallbackParameter>();
 
   protected callName: string;
 

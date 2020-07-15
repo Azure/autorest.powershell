@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
@@ -13,7 +13,7 @@ import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
+import { ClientRuntime, EventListener, Schema, ArrayOf, NewArrayOf, EnumImplementation, NewEnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
 import { State, NewState } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
@@ -2408,10 +2408,10 @@ export class NewCmdletClass extends Class {
             addDefaultInfo(cmdletParameter, vParam);
           }
 
-          const isEnum = !(propertyType.schema instanceof NewSchema) && propertyType.schema.details.csharp.enum !== undefined;
-          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
+          const isEnum = propertyType.schema.language.csharp?.enum !== undefined;
+          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof NewEnumImplementation;
           if (isEnum || hasEnum) {
-            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
           // add aliases if there is any
           if (length(vParam.alias) > 0) {
@@ -2549,10 +2549,10 @@ export class NewCmdletClass extends Class {
         // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
       }
 
-      const isEnum = !(propertyType.schema instanceof NewSchema) && propertyType.schema.details.csharp.enum !== undefined;
-      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
+      const isEnum = propertyType.schema.language.csharp?.enum !== undefined;
+      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof NewEnumImplementation;
       if (isEnum || hasEnum) {
-        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
@@ -2614,15 +2614,15 @@ export class NewCmdletClass extends Class {
           } else {
 
             let type = '';
-            if (typeDeclaration instanceof ArrayOf) {
+            if (typeDeclaration instanceof NewArrayOf) {
               type = typeDeclaration.elementTypeDeclaration;
-            } else if (!(typeDeclaration.schema instanceof NewSchema) && pageableInfo && pageableInfo.responseType === 'pageable') {
-              if (typeDeclaration === undefined || typeDeclaration.schema.properties[pageableInfo.itemName] === undefined) {
+            } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.[pageableInfo.itemName] === undefined) {
                 //skip-for-time-being, since operationId does not support in m4 any more
                 //throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
                 throw new Error('An error needs to be more specific');
               }
-              const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
+              const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.[pageableInfo.itemName].schema;
               // skip-for-time-being
               //const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
               //type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;

@@ -14,7 +14,7 @@ import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Schema as NewSchema, StringSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
-import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-type-declaration';
 import { length } from '@azure-tools/linq';
 
 /** A ETD for the c# string type. */
@@ -210,7 +210,7 @@ ${this.validateEnum(eventListener, property)}
 }
 
 /** A ETD for the c# string type. */
-export class NewString implements EnhancedTypeDeclaration {
+export class NewString implements NewEnhancedTypeDeclaration {
   public isXmlAttribute = false;
 
   get defaultOfType() {
