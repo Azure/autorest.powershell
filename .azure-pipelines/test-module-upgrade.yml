@@ -10,7 +10,7 @@ steps:
     verbose: false
     customCommand: 'install -g "@autorest/autorest"'
 
-- script: |
-   .\AutoRestUpgradeTest.ps1 -Configuration
-  displayName: VerifyUpgrade
+- powershell: './AutoRestUpgradeTest.ps1 -Configuration'
+  pwsh: true
   workingDirectory: 'tests-upgrade'
+  displayName: VerifyUpgrade
