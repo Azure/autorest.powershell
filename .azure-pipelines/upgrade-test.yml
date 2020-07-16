@@ -1,0 +1,11 @@
+steps:
+- task: Npm@1
+  displayName: 'Install autorest@beta'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g "@autorest/autorest"'
+- script: |
+   .\AutoRestUpgradeTest.ps1 -Configuration
+  displayName: VerifyUpgrade
+  workingDirectory: 'tests-upgrade'
