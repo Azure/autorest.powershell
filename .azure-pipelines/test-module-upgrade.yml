@@ -11,7 +11,7 @@ steps:
     customCommand: 'install -g "@autorest/autorest"'
 
 - task: PowerShell@2
-  displayName: VerifyUpgrade
+  displayName: Verify Upgrade
   inputs:
     targetType: inline
     script: './AutoRestUpgradeTest.ps1 -Configuration'
