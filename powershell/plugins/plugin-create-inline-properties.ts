@@ -355,6 +355,7 @@ function createVirtualParameters(operation: CommandOperation) {
   operation.details.default.virtualParameters = virtualParameters;
 }
 
+
 async function createVirtuals(state: State): Promise<PwshModel> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
@@ -363,16 +364,12 @@ async function createVirtuals(state: State): Promise<PwshModel> {
  
     Individual models can change the $THRESHOLD for generate
   */
-  // dolauli this plugin is used to expand the property in an object.
-  // dolauli inline-threshold could be set in readme.md
-  // skip-for-time-being
-  const threshold = await state.getValue('inlining-threshold', 24);
+  // const threshold = await state.getValue('inlining-threshold', 24);
+  const threshold = 24;
   const conflicts = new Array<string>();
 
   for (const schema of values(state.model.schemas.objects)) {
-
-    // did we already inline this object
-    // dolauli skip if inlined
+    // did we already inline this objecct
     if (schema.language.default.inlined) {
       continue;
     }

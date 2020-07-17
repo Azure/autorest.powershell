@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, codeModelSchema, CodeModel, Schema, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { Property, codeModelSchema, CodeModel, Schema, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize } from '@azure-tools/codegen';
@@ -75,86 +75,97 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   state.setValue('service-name', serviceName);
 
   const model = state.model;
-
-  const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
-  universalId.apiVersions = universalId.apiVersions || [];
-  state.model.schemas.objects = state.model.schemas.objects || [];
-  (<any>universalId.language.default).uid = true;
-
-  universalId.properties = universalId.properties || new Array<Property>();
-  const urlParam = new Set<string>();
-  for (const operationGroup of values(model.operationGroups)) {
-    for (const operation of values(operationGroup.operations)) {
-      for (const param of values(operation.parameters).where(each => each.protocol.http?.in === ParameterLocation.Path)) {
-        const name = param.language.default.name;
-
-        if (!urlParam.has(name)) {
-          urlParam.add(name);
-          universalId.addProperty(new Property(name, '', param.schema, {
-            serializedName: name, language: {
-              default: {
-                description: param.summary,
-                name: name,
-                required: false,
-                readOnly: false,
-                uid: 'universal-parameter:resource identity'
-              }
-            }
-          }));
-        }
-      }
+  const schemas = model.schemas;
+  const allSchemas: Schema[] = [];
+  for (const prop of Object.values(schemas)) {
+    if (Array.isArray(prop) && prop.length > 0 && prop[0] instanceof Schema) {
+      allSchemas.push(...prop);
     }
   }
 
-  if (await state.getValue('azure', false)) {
-    universalId.addProperty(new Property('id', '', new StringSchema('_identity_type_', 'Resource identity path'),
-      {
-        serializedName: 'id', language: {
-          default: {
-            description: 'Resource identity path',
-            name: 'id',
-            required: false,
-            readOnly: false,
-            uid: 'universal-parameter:resource identity'
-          }
-        }
-      }
-    ));
-  }
-  // universalId.properties['id'] = new Property('id', {
-  //   schema: new Schema('_identity_type_', { type: JsonType.String, description: 'Resource identity path' }),
-  //   description: 'Resource identity path', serializedName: 'id', details: {
-  //     default: {
-  //       description: 'Resource identity path',
-  //       name: 'id',
-  //       required: false,
-  //       readOnly: false,
-  //       uid: 'universal-parameter:resource identity'
-  //     }
-  //   }
-  // });
-
-
-  // if (await state.getValue('azure', false)) {
-  //   universalId.properties['id'] = new Property('id', {
-  //     schema: new Schema('_identity_type_', { type: JsonType.String, description: 'Resource identity path' }),
-  //     description: 'Resource identity path', serializedName: 'id', details: {
-  //       default: {
-  //         description: 'Resource identity path',
-  //         name: 'id',
-  //         required: false,
-  //         readOnly: false,
-  //         uid: 'universal-parameter:resource identity'
-  //       }
-  //     }
-  //   });
-  // }
-  state.model.schemas.objects.push(universalId);
+  // const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
+  // universalId.apiVersions = universalId.apiVersions || [];
+  // state.model.schemas.objects = state.model.schemas.objects || [];
+  // state.model.schemas.objects.push(universalId);
 
   model.commands = <any>{
     operations: new Dictionary<any>(),
     parameters: new Dictionary<any>(),
   };
+
+  // we're going to create a schema that represents the distinct sum 
+  // of all operation PATH parameters
+  const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
+  universalId.apiVersions = universalId.apiVersions || [];
+  state.model.schemas.objects = state.model.schemas.objects || [];
+  state.model.schemas.objects.push(universalId);
+
+  for (const group of values(model.operationGroups)) {
+    for (const operation of values(group.operations)) {
+      for (const param of values(operation.parameters).where(each => each.protocol?.http?.in === ParameterLocation.Path)) {
+        const name = param.language.default.name;
+        const hasName = universalId.properties?.findIndex((prop) => prop.language.default.name === name);
+        if (!hasName) {
+          if (!universalId.properties) {
+            universalId.properties = [];
+          }
+          const newProp = new Property(name, param.language.default.description, param.schema);
+          newProp.required = false;
+          newProp.readOnly = false;
+          newProp.serializedName = name;
+          universalId.properties.push(newProp);
+        }
+      }
+    }
+  }
+
+  // identify models that are polymorphic in nature
+  for (const schema of allSchemas) {
+    if (schema instanceof ObjectSchema) {
+      const objSchema = schema as ObjectSchema;
+      // if this actual type is polymorphic, make sure we know that.
+      // parent class
+      if (objSchema.discriminator) {
+        objSchema.language.default.isPolymorphic = true;
+        if (objSchema.children) {
+          objSchema.language.default.polymorphicChildren = objSchema.children?.all;
+        }
+      }
+
+      // sub class
+      if (objSchema.discriminatorValue) {
+        objSchema.language.default.discriminatorValue = objSchema.extensions?.['x-ms-discriminator-value'];
+      }
+    }
+  }
+
+  // identify parameters that are constants
+  for (const group of values(model.operationGroups)) {
+    for (const operation of values(group.operations)) {
+      for (const parameter of values(operation.parameters)) {
+        if (parameter.required && parameter.schema instanceof ChoiceSchema) {
+          const choiceSchema = parameter.schema as ChoiceSchema;
+          if (choiceSchema.choices.length === 1) {
+            parameter.language.default.constantValue = choiceSchema.choices[0].value;
+          }
+        }
+      }
+    }
+  }
+
+  // identify properties that are constants
+  for (const schema of values(schemas.objects)) {
+    for (const property of values(schema.properties)) {
+      if (property.required && property.schema instanceof ChoiceSchema) {
+        const choiceSchema = property.schema as ChoiceSchema;
+        if (choiceSchema.choices.length === 1) {
+          // properties with an enum single value are constants
+          // add the constant value
+          property.language.default.constantValue = choiceSchema.choices[0].value;
+        }
+      }
+    }
+  }
 
   return model;
 }

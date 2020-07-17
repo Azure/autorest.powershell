@@ -56,7 +56,7 @@ export class NewCmdletNamespace extends Namespace {
         continue;
       }
       // skip-for-time-being
-      this.addClass(await new NewCmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
+      // this.addClass(await new NewCmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
     }
     return this;
   }
