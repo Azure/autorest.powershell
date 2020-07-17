@@ -13,11 +13,13 @@ import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/e
 import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
 import { ModelInterface, NewModelInterface } from './interface';
 import { JsonSerializableClass, NewJsonSerializableClass } from './model-class-json';
-import { ModelProperty } from './property';
+import { ModelProperty, NewModelProperty } from './property';
 import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
-import { Languages, Language } from '@azure-tools/codemodel';
+import { Languages, Language, Schema as NewSchema } from '@azure-tools/codemodel';
+
+import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
 
 export function getVirtualPropertyName(vp?: VirtualProperty): string {
 
@@ -26,6 +28,15 @@ export function getVirtualPropertyName(vp?: VirtualProperty): string {
   }
   return vp ? vp.name : '';
 }
+
+export function NewGetVirtualPropertyName(vp?: NewVirtualProperty): string {
+
+  if (vp && vp.accessViaMember && vp.accessViaProperty?.accessViaMember) {
+    return NewGetVirtualPropertyName(vp.accessViaMember);
+  }
+  return vp ? vp.name : '';
+}
+
 export interface BackingField {
   field: Field;
   typeDeclaration: TypeDeclaration;
@@ -556,8 +567,8 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   /* @internal */  dictionaryImpl?: DictionaryImplementation;
 
   private readonly validationStatements = new Statements();
-  public ownedProperties = new Array<ModelProperty>();
-  private pMap = new Map<VirtualProperty, ModelProperty>();
+  public ownedProperties = new Array<NewModelProperty>();
+  private pMap = new Map<NewVirtualProperty, NewModelProperty>();
 
   // public hasHeaderProperties: boolean;
 
@@ -623,28 +634,28 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     }
   }
 
-  private nested(virtualProperty: VirtualProperty, internal: boolean): string {
+  private nested(virtualProperty: NewVirtualProperty, internal: boolean): string {
     if (virtualProperty.accessViaProperty) {
       if (virtualProperty.accessViaProperty.accessViaProperty) {
         // return `/*1*/${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
-        return `${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
+        return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
       }
     }
     //return `/*2*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
-    return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
+    return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
-  private accessor(virtualProperty: VirtualProperty, internal = false): string {
+  private accessor(virtualProperty: NewVirtualProperty, internal = false): string {
     if (virtualProperty.accessViaProperty) {
       const prefix = virtualProperty.accessViaProperty.accessViaProperty ? this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal) : '';
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
       if (containingProperty && virtualProperty.accessViaMember) {
         //return `/*3*/((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
-        return `((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
+        return `((${virtualProperty.accessViaMember.originalContainingSchema.language.csharp?.fullInternalInterfaceName})${containingProperty.name}${prefix}).${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}`;
       }
     }
     //    return `/*4* ${virtualProperty.name}/${virtualProperty.accessViaMember?.name}/${virtualProperty.accessViaProperty?.name} */${getVirtualPropertyName(virtualProperty.accessViaMember) || '/*!!*/' + virtualProperty.name}`;
-    return `${getVirtualPropertyName(virtualProperty.accessViaMember) || virtualProperty.name}`;
+    return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember) || virtualProperty.name}`;
   }
 
   private createProperties() {
@@ -653,7 +664,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
 
     // add properties
     if (this.schema.language.csharp?.virtualProperties) {
-      const addFormatAttributesToProperty = (property: Property, virtualProperty: VirtualProperty) => {
+      const addFormatAttributesToProperty = (property: Property, virtualProperty: NewVirtualProperty) => {
         if (virtualProperty.format) {
           if (virtualProperty.format.suppressFormat) {
             property.add(new Attribute(DoNotFormatAttribute));
@@ -676,138 +687,138 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
         }
       };
       // skip-for-time-being
-      // /* Owned Properties */
-      // for (const virtualProperty of values(this.schema.language.csharp.virtualProperties.owned)) {
-      //   const actualProperty = virtualProperty.property;
-      //   let n = 0;
-      //   const decl = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>actualProperty.schema, actualProperty.details.csharp.required, this.state.path('schema'));
+      /* Owned Properties */
+      for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.owned))) {
+        const actualProperty = virtualProperty.property;
+        let n = 0;
+        const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, this.state.path('schema'));
 
-      //   /* public property */
-      //   const myProperty = new ModelProperty(virtualProperty.name, <Schema>actualProperty.schema, actualProperty.details.csharp.required, actualProperty.serializedName, actualProperty.details.csharp.description, this.state.path('properties', n++), {
-      //     initializer: actualProperty.details.csharp.constantValue ? typeof actualProperty.details.csharp.constantValue === 'string' ? new StringExpression(actualProperty.details.csharp.constantValue) : new LiteralExpression(actualProperty.details.csharp.constantValue) : undefined
-      //   });
+        /* public property */
+        const myProperty = new NewModelProperty(virtualProperty.name, <NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, actualProperty.serializedName, actualProperty.language.csharp?.description || '', this.state.path('properties', n++), {
+          initializer: actualProperty.language.csharp?.constantValue ? typeof actualProperty.language.csharp.constantValue === 'string' ? new StringExpression(actualProperty.language.csharp.constantValue) : new LiteralExpression(actualProperty.language.csharp.constantValue) : undefined
+        });
 
-      //   if (actualProperty.details.csharp.readOnly) {
-      //     myProperty.set = undefined;
-      //   }
-      //   myProperty.details = virtualProperty.property.details;
+        if (actualProperty.language.csharp?.readOnly) {
+          myProperty.set = undefined;
+        }
+        myProperty.language = virtualProperty.property.language;
 
-      //   if (actualProperty.details.csharp.constantValue !== undefined) {
-      //     myProperty.setAccess = Access.Internal;
-      //     myProperty.set = undefined;
-      //   }
+        if (actualProperty.language.csharp?.constantValue !== undefined) {
+          myProperty.setAccess = Access.Internal;
+          myProperty.set = undefined;
+        }
 
-      //   if (virtualProperty.private) {
-      //     // when properties are inlined, the container accessor can be internalized. I think.
-      //     myProperty.setAccess = Access.Internal;
-      //     myProperty.getAccess = Access.Internal;
-      //     this.pMap.set(virtualProperty, myProperty);
-      //   }
+        if (virtualProperty.private) {
+          // when properties are inlined, the container accessor can be internalized. I think.
+          myProperty.setAccess = Access.Internal;
+          myProperty.getAccess = Access.Internal;
+          this.pMap.set(virtualProperty, myProperty);
+        }
 
-      //   this.ownedProperties.push(this.add(myProperty));
+        this.ownedProperties.push(this.add(myProperty));
 
-      //   if (myProperty.getAccess !== Access.Public || myProperty.setAccess !== Access.Public || myProperty.set === undefined) {
-      //     /* internal interface property */
+        if (myProperty.getAccess !== Access.Public || myProperty.setAccess !== Access.Public || myProperty.set === undefined) {
+          /* internal interface property */
 
-      //     this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, decl, {
-      //       description: `Internal Acessors for ${virtualProperty.name}`,
-      //       getAccess: Access.Explicit,
-      //       setAccess: Access.Explicit,
-      //       get: myProperty.get,
-      //       set: myProperty.assignPrivate('value')
-      //     }));
-      //   }
+          this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, decl, {
+            description: `Internal Acessors for ${virtualProperty.name}`,
+            getAccess: Access.Explicit,
+            setAccess: Access.Explicit,
+            get: myProperty.get,
+            set: myProperty.assignPrivate('value')
+          }));
+        }
 
-      //   if (this.state.getValue('powershell')) {
-      //     myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
-      //     addFormatAttributesToProperty(myProperty, virtualProperty);
-      //   }
-      // }
+        if (this.state.getValue('powershell')) {
+          myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+          addFormatAttributesToProperty(myProperty, virtualProperty);
+        }
+      }
 
-      // /* Inherited properties. */
-      // for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.inherited)) {
-      //   // so each parent property that is getting exposed
-      //   // has to be accessed via the field in this.backingFields
-      //   const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.details.csharp.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
+      /* Inherited properties. */
+      for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.inherited))) {
+        // so each parent property that is getting exposed
+        // has to be accessed via the field in this.backingFields
+        const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.language.csharp?.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
 
-      //   const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
-      //   const opsType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.originalContainingSchema, false, this.state);
-      //   const via = <VirtualProperty>virtualProperty.accessViaProperty;
-      //   const parentCast = `(${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName})`;
-      //   const vp = this.add(new Property(virtualProperty.name, propertyType, {
-      //     description: virtualProperty.property.details.csharp.description,
-      //     get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
-      //     set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value`)
-      //   }));
+        const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.csharp?.required, this.state);
+        const opsType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.originalContainingSchema, false, this.state);
+        const via = <NewVirtualProperty>virtualProperty.accessViaProperty;
+        const parentCast = `(${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName})`;
+        const vp = this.add(new Property(virtualProperty.name, propertyType, {
+          description: virtualProperty.property.language.csharp?.description,
+          get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
+          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value`)
+        }));
 
-      //   if (virtualProperty.property.details.csharp.constantValue !== undefined) {
-      //     vp.setAccess = Access.Internal;
-      //     vp.set = undefined;
-      //   }
+        if (virtualProperty.property.language.csharp?.constantValue !== undefined) {
+          vp.setAccess = Access.Internal;
+          vp.set = undefined;
+        }
 
-      //   if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
+        if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
 
-      //     this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
-      //       description: `Internal Acessors for ${virtualProperty.name}`,
-      //       getAccess: Access.Explicit,
-      //       setAccess: Access.Explicit,
-      //       get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
-      //       set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
-      //     }));
-      //   }
+          this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
+            description: `Internal Acessors for ${virtualProperty.name}`,
+            getAccess: Access.Explicit,
+            setAccess: Access.Explicit,
+            get: toExpression(`(${parentCast}${parentField.field.name}).${via.name}`),
+            set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
+          }));
+        }
 
-      //   if (this.state.getValue('powershell')) {
-      //     vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
-      //     addFormatAttributesToProperty(vp, virtualProperty);
-      //   }
-      // }
+        if (this.state.getValue('powershell')) {
+          vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
+          addFormatAttributesToProperty(vp, virtualProperty);
+        }
+      }
 
-      // /* Inlined properties. */
-      // for (const virtualProperty of values(this.schema.details.csharp.virtualProperties.inlined)) {
-      //   if (virtualProperty.private) {
-      //     // continue;
-      //     // can't remove it, it has to be either public or internally implemented.
-      //   }
+      /* Inlined properties. */
+      for (const virtualProperty of values(<Array<NewVirtualProperty>>this.schema.language.csharp.virtualProperties.inlined)) {
+        if (virtualProperty.private) {
+          // continue;
+          // can't remove it, it has to be either public or internally implemented.
+        }
 
-      //   if (virtualProperty.accessViaProperty) {
-      //     const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
-      //     if (containingProperty) {
+        if (virtualProperty.accessViaProperty) {
+          const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
+          if (containingProperty) {
 
-      //       const propertyType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>virtualProperty.property.schema, virtualProperty.property.details.csharp.required, this.state);
+            const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.csharp?.required, this.state);
 
-      //       // regular inlined property
-      //       const vp = new Property(virtualProperty.name, propertyType, {
-      //         description: virtualProperty.property.details.csharp.description,
-      //         get: toExpression(`${this.accessor(virtualProperty)}`),
-      //         set: (virtualProperty.property.details.csharp.readOnly || virtualProperty.property.details.csharp.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
-      //       });
+            // regular inlined property
+            const vp = new Property(virtualProperty.name, propertyType, {
+              description: virtualProperty.property.language.csharp?.description,
+              get: toExpression(`${this.accessor(virtualProperty)}`),
+              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
+            });
 
-      //       if (!virtualProperty.private) {
-      //         this.add(vp);
-      //       }
+            if (!virtualProperty.private) {
+              this.add(vp);
+            }
 
-      //       if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
-      //         this.add(new Property(`${virtualProperty.originalContainingSchema.details.csharp.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
-      //           description: `Internal Acessors for ${virtualProperty.name}`,
-      //           getAccess: Access.Explicit,
-      //           setAccess: Access.Explicit,
-      //           get: vp.get,
-      //           set: toExpression(`${this.accessor(virtualProperty)} = value`)
-      //         }));
-      //       }
+            if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
+              this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
+                description: `Internal Acessors for ${virtualProperty.name}`,
+                getAccess: Access.Explicit,
+                setAccess: Access.Explicit,
+                get: vp.get,
+                set: toExpression(`${this.accessor(virtualProperty)} = value`)
+              }));
+            }
 
-      //       if (virtualProperty.property.details.csharp.constantValue !== undefined) {
-      //         vp.setAccess = Access.Internal;
-      //         vp.set = undefined;
-      //       }
+            if (virtualProperty.property.language.csharp?.constantValue !== undefined) {
+              vp.setAccess = Access.Internal;
+              vp.set = undefined;
+            }
 
-      //       if (this.state.getValue('powershell')) {
-      //         vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
-      //         addFormatAttributesToProperty(vp, virtualProperty);
-      //       }
-      //     }
-      //   }
-      // }
+            if (this.state.getValue('powershell')) {
+              vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
+              addFormatAttributesToProperty(vp, virtualProperty);
+            }
+          }
+        }
+      }
 
     }
   }

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { Property, codeModelSchema, CodeModel, Schema, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize } from '@azure-tools/codegen';
@@ -12,6 +12,7 @@ import { NewModelState } from '../utils/model-state';
 
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { defaultCipherList } from 'constants';
+import { NewString } from '../llcsharp/schema/string';
 
 export const HeaderProperty = 'HeaderProperty';
 export enum HeaderPropertyType {
@@ -79,6 +80,75 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   universalId.apiVersions = universalId.apiVersions || [];
   state.model.schemas.objects = state.model.schemas.objects || [];
   (<any>universalId.language.default).uid = true;
+
+  universalId.properties = universalId.properties || new Array<Property>();
+  const urlParam = new Set<string>();
+  for (const operationGroup of values(model.operationGroups)) {
+    for (const operation of values(operationGroup.operations)) {
+      for (const param of values(operation.parameters).where(each => each.protocol.http?.in === ParameterLocation.Path)) {
+        const name = param.language.default.name;
+
+        if (!urlParam.has(name)) {
+          urlParam.add(name);
+          universalId.addProperty(new Property(name, '', param.schema, {
+            serializedName: name, language: {
+              default: {
+                description: param.summary,
+                name: name,
+                required: false,
+                readOnly: false,
+                uid: 'universal-parameter:resource identity'
+              }
+            }
+          }));
+        }
+      }
+    }
+  }
+
+  if (await state.getValue('azure', false)) {
+    universalId.addProperty(new Property('id', '', new StringSchema('_identity_type_', 'Resource identity path'),
+      {
+        serializedName: 'id', language: {
+          default: {
+            description: 'Resource identity path',
+            name: 'id',
+            required: false,
+            readOnly: false,
+            uid: 'universal-parameter:resource identity'
+          }
+        }
+      }
+    ));
+  }
+  // universalId.properties['id'] = new Property('id', {
+  //   schema: new Schema('_identity_type_', { type: JsonType.String, description: 'Resource identity path' }),
+  //   description: 'Resource identity path', serializedName: 'id', details: {
+  //     default: {
+  //       description: 'Resource identity path',
+  //       name: 'id',
+  //       required: false,
+  //       readOnly: false,
+  //       uid: 'universal-parameter:resource identity'
+  //     }
+  //   }
+  // });
+
+
+  // if (await state.getValue('azure', false)) {
+  //   universalId.properties['id'] = new Property('id', {
+  //     schema: new Schema('_identity_type_', { type: JsonType.String, description: 'Resource identity path' }),
+  //     description: 'Resource identity path', serializedName: 'id', details: {
+  //       default: {
+  //         description: 'Resource identity path',
+  //         name: 'id',
+  //         required: false,
+  //         readOnly: false,
+  //         uid: 'universal-parameter:resource identity'
+  //       }
+  //     }
+  //   });
+  // }
   state.model.schemas.objects.push(universalId);
 
   model.commands = <any>{

@@ -21,29 +21,32 @@ type State = NewModelState<PwshModel>;
 function setPropertyNames(schema: Schema) {
   // name each property in this schema
   // skip-for-time-being
-  // for (const propertySchema of values(schema.properties)) {
-  //   const propertyDetails = propertySchema.details.default;
+  if (!isObjectSchema(schema)) {
+    return;
+  }
+  for (const propertySchema of values(schema.properties)) {
+    const propertyDetails = propertySchema.language.default;
 
-  //   const className = schema.details.csharp.name;
+    const className = schema.language.csharp?.name;
 
-  //   let pname = getPascalIdentifier(propertyDetails.name);
-  //   if (pname === className) {
-  //     pname = `${pname}Property`;
-  //   }
+    let pname = getPascalIdentifier(propertyDetails.name);
+    if (pname === className) {
+      pname = `${pname}Property`;
+    }
 
-  //   if (pname === 'default') {
-  //     pname = '@default';
-  //   }
+    if (pname === 'default') {
+      pname = '@default';
+    }
 
-  //   propertySchema.details.csharp = {
-  //     ...propertyDetails,
-  //     name: pname // and so are the propertyNmaes
-  //   };
+    propertySchema.language.csharp = {
+      ...propertyDetails,
+      name: pname // and so are the propertyNmaes
+    };
 
-  //   if (propertyDetails.isNamedStream) {
-  //     propertySchema.details.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
-  //   }
-  // }
+    if (propertyDetails.isNamedStream) {
+      propertySchema.language.csharp.namedStreamPropertyName = pascalCase(fixLeadingNumber([...deconstruct(propertyDetails.name), 'filename']));
+    }
+  }
 
 }
 
