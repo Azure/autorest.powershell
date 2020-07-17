@@ -186,6 +186,60 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
   while (pt.elementType) {
     switch (pt.elementType.schema.type) {
       case JsonType.Object:
+        if (pt.elementType.schema.details.csharp.interfaceImplementation) {
+          pt = {
+            declaration: pt.elementType.schema.details.csharp.interfaceImplementation.declaration,
+            schema: pt.elementType.schema,
+          };
+        } else {
+          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          pt = {
+            declaration: `${pt.elementType.schema.details.csharp.namespace}.${pt.elementType.schema.details.csharp.interfaceName}`,
+            schema: pt.elementType.schema,
+          };
+        }
+        break;
+
+      case JsonType.Array:
+        pt = pt.elementType;
+        break;
+
+      default:
+        pt = pt.elementType;
+        break;
+    }
+  }
+  const ptypes = new Array<string>();
+  if (pt.schema && pt.schema && pt.schema.details.csharp.byReference) {
+    ptypes.push(`typeof(${pt.schema.details.csharp.namespace}.${pt.schema.details.csharp.interfaceName}_Reference)`);
+    // do we need polymorphic types for by-resource ? Don't think so.
+  } else {
+    ptypes.push(`typeof(${pt.declaration})`);
+    if (pt.schema && pt.schema.details.csharp.classImplementation && pt.schema.details.csharp.classImplementation.discriminators) {
+      ptypes.push(...[...pt.schema.details.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+    }
+  }
+
+  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
+    ]
+  }));
+
+
+}
+
+
+export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+
+  let pt = <any>pType;
+  while (pt.elementType) {
+    switch (pt.elementType.schema.type) {
+      case JsonType.Object:
         if (pt.elementType.schema.language.csharp.interfaceImplementation) {
           pt = {
             declaration: pt.elementType.schema.language.csharp.interfaceImplementation.declaration,
@@ -2403,7 +2457,7 @@ export class NewCmdletClass extends Class {
           } else {
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
+            NewAddInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
             NewAddCompleterInfo(cmdletParameter, vParam);
             addDefaultInfo(cmdletParameter, vParam);
           }
@@ -2522,7 +2576,7 @@ export class NewCmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
 
-      addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
+      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
 
@@ -2644,7 +2698,7 @@ export class NewCmdletClass extends Class {
     shouldAddPassThru = shouldAddPassThru || values(operation.callGraph)
       .selectMany(httpOperation => values(httpOperation.responses))
       //.selectMany(responsesItem => responsesItem.value)
-      .any(value => value instanceof SchemaResponse);
+      .any(value => (<SchemaResponse>value).schema === undefined);
     if (outputTypes.size === 0) {
       outputTypes.add(`typeof(${dotnet.Bool})`);
     }
