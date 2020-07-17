@@ -2,9 +2,9 @@
 
     "swagger": "2.0",
     "info": {
-      "title": "DatabricksClient",
+      "title": "AutoRestUpgradeClient",
       "version": "2018-04-01",
-      "description": "ARM Databricks"
+      "description": "ARM AutoRestUpgrade"
     },
     "host": "management.azure.com",
     "schemes": [
@@ -43,38 +43,11 @@
           "operationId": "Workspaces_Get",
           "description": "Gets the workspace.",
           "responses": {
-            "200": {
-                "description": "OK-Return workspace.",
-                "schema": {
-                  "$ref": "#/definitions/BasicErrorModel"
-                }
+            "default": {
+              "description": "Error response describing why the operation failed."
             }
           }
         }
       }
-    },
-    "definitions": {
-        "BasicErrorModel": {
-            "type": "object",
-            "required":[
-                "message",
-                "code"
-            ],
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "code": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                }
-            }
-        }
     }
 }

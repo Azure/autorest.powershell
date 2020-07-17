@@ -61,9 +61,6 @@
         "responses": {
           "200": {
             "description": "OK - Returns the workspace."
-          },
-          "default": {
-            "description": "Error response describing why the operation failed."
           }
         }
       },
@@ -93,9 +90,6 @@
         "responses": {
           "200": {
             "description": "OK - Deleted the workspace."
-          },
-          "default": {
-            "description": "Error response describing why the operation failed."
           }
         }
       },
@@ -125,9 +119,6 @@
         "responses": {
           "200": {
             "description": "OK - Created or updated the workspace."
-          },
-          "default": {
-            "description": "Error response describing why the operation failed."
           }
         }
       },
@@ -157,9 +148,6 @@
         "responses": {
           "200": {
             "description": "OK - Updated the workspace."
-          },
-          "default": {
-            "description": "Error response describing why the operation failed."
           }
         }
       }

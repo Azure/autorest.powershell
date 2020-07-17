@@ -46,8 +46,8 @@
             "200": {
                 "description": "OK - Returns the workspace."
             },
-            "default": {
-              "description": "Error response describing why the operation failed."
+            "201": {
+                "description": "OK - Returns the workspace."
             }
           }
         }

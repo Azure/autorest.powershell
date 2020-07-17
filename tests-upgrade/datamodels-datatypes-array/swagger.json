@@ -48,9 +48,6 @@
                 "schema":{
                   "$ref": "#/definitions/Workspace"
                 }
-            },
-            "default": {
-              "description": "Error response describing why the operation failed."
             }
           }
         }
