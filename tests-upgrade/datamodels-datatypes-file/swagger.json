@@ -44,40 +44,20 @@
           "description": "Gets the workspace.",
           "responses": {
             "200": {
-                "description": "OK-Return workspace.",
-                "schema": {
-                  "$ref": "#/definitions/BasicErrorModel"
-                }
+                "description": "OK-Return workspace."
             }
           }
         }
       }
     },
     "definitions": {
-        "BasicErrorModel": {
+        "FilesModel": {
             "type": "object",
-            "required":[
-                "message",
-                "code"
-            ],
             "properties": {
-                "datetime": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "host": {
-                    "type": "string",
-                    "pattern":"^\\d{3}-\\d{2}-\\d{4}$",
-                    "nullable": true
-                },
-                "message": {
-                    "type": "string",
-                    "minLength": 3,
-                    "maxLength": 300
-                },
-                "code": {
-                    "type": "integer"
-                }
+              "file": {
+                "type": "string",
+                "format": "binary"
+              }
             }
         }
     }

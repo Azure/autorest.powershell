@@ -45,12 +45,6 @@
                 "responses": {
                   "200": {
                       "description": "OK - Returns an array of workspaces."
-                  },
-                  "default": {
-                      "description": "Error response describing why the operation failed.",
-                      "schema": {
-                      "$ref": "#/definitions/ErrorResponse"
-                      }
                   }
                 }
             }

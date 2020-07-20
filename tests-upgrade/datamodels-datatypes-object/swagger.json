@@ -51,40 +51,81 @@
       }
     },
     "definitions": {
-        "BasicErrorModel": {
+        "Model": {
             "type": "object",
-            "required":[
-                "message",
-                "code"
-            ],
             "properties": {
                 "message": {
                     "type": "string"
                 },
                 "code": {
-                    "type": "integer",
-                    "minimum": 100,
-                    "maximum": 600
+                    "type": "integer"
                 }
             }
         },
-        "ExtendedErrorModel": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/BasicErrorModel"
+        "Model2": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 },
-                {
-                    "type": "object",
-                    "required": [
-                        "rootCause"
-                    ],
-                    "properties": {
-                        "rootCause": {
-                            "type": "string"
-                        }
-                    }
+                "username": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
+            },
+            "required": [
+                "id",
+                "username"
             ]
+        },
+        "Model3": {
+          "type": "object",
+          "properties": {
+              "id": {
+                  "type": "integer",
+                  "readOnly": true
+              },
+              "password": {
+                "type": "string"
+              }
+          },
+          "required": [
+              "id",
+              "username"
+          ]
+      },
+      "ContactInfo": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          }
         }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "contact_info": {
+            "$ref": "#/definitions/ContactInfo"
+          }
+        }
+      },
+      "Model4": {
+        "type": "object",
+        "minProperties": 2,
+        "maxProperties": 10
+      }
     }
 }

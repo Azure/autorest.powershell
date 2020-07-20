@@ -1,3 +1,36 @@
 {
-	"WhiteList":["basic-get","basic-get-delete"]
+	"WhiteList":[
+		"basic-disableazure-get",
+		"basic-disableazure-response"
+	],
+	"BlackList":[
+		"basic-get-querystr",
+		"basic-get-delete",
+		"basic-get-delete-put-patch",
+		"basic-request-methods",
+		"basic-get-response-operation",
+		"basic-response-multioperation",
+		"basic-response-defaultoperation",
+		"basic-disableazure-get",
+		"component-param",
+		"component-multiparam",
+		"component-param-remote",
+		"component--param-localremote",
+		"component-param-inbody",
+		"component-definitions-local",
+		"component-definitions-remote",
+		"component-definitions-combined",
+		"datamodels-datatypes-mixedtypes",
+		"datamodels-datatypes-integer",
+		"datamodels-datatypes-string",
+		"datamodels-datatypes-nullable",
+		"datamodels-datatypes-array",
+		"datamodels-datatypes-object",
+		"datamodels-datatypes-file",
+		"datamodels-datatypes-anytype",
+		"datamodels-enums",
+		"datamodels-keyvalue",
+		"datamodels-combineschema",
+		"datamodels-inheritpolymorphism"
+	]
 }
