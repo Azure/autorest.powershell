@@ -44,3 +44,10 @@ steps:
     script: './AutoRestUpgradeTest.ps1 -AllowList'
     workingDirectory: 'tests-upgrade'
     failOnStderr: true
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Save artifacts'
+  inputs:
+    artifactName: CompareResult
+    targetPath: tests-upgrade\CompareResult
+  condition: succeededOrFailed()
