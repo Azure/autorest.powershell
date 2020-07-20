@@ -364,8 +364,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
  
     Individual models can change the $THRESHOLD for generate
   */
-  // const threshold = await state.getValue('inlining-threshold', 24);
-  const threshold = 24;
+  const threshold = await state.getValue('inlining-threshold', 24);
   const conflicts = new Array<string>();
 
   for (const schema of values(state.model.schemas.objects)) {

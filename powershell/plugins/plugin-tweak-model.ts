@@ -119,6 +119,17 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     }
   }
 
+  if (await state.getValue('azure', false)) {
+    const idScheam = new Schema('_identity_type_', 'Resource identity path', SchemaType.String);
+    const idProp = new Property('id', 'Resource identity path', idScheam);
+    idProp.readOnly = false;
+    idProp.required = false;
+    if (!universalId.properties) {
+      universalId.properties = [];
+    }
+    universalId.properties.push(idProp);
+  }
+
   // identify models that are polymorphic in nature
   for (const schema of allSchemas) {
     if (schema instanceof ObjectSchema) {

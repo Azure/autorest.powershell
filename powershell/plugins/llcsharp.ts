@@ -25,7 +25,7 @@ export async function llcsharp(service: Host) {
   try {
     const project = await new Project(service).init();
 
-    // await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), test(content, project.overrides), undefined, 'source-file-csharp'));
+    await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), test(content, project.overrides), undefined, 'source-file-csharp'));
     await project.writeFiles(async (fname, content) => outerTest(service, project, fname, content));
 
     // recursive copy resources
