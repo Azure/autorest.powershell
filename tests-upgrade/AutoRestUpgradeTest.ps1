@@ -1,6 +1,6 @@
 ﻿param([switch]$Generate,[string]$TestName,[switch]$M3,[switch]$M4,[switch]$AllowList,[switch]$BlackList)
 #need to use the right version of node.js
-nvs use 10.16.0
+#nvs use 10.16.0
 # #please use substring to select the compare path
 #     $m3Path='.\generate\m3'
 #     $m4Path='.\generate\m4'
@@ -59,16 +59,14 @@ function Generate()
         ##generate m3 code
         autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug
         ##generate m4 code
-        # autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
-        autorest-beta --use:D:\comparetest\ModuleFour\autorest.powershell --output-folder:.\generate\m4 --Debug
+        autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
 
     }elseif($M3)
     {
         autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug
     }else
     {
-        # autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
-        autorest-beta --use:D:\comparetest\ModuleFour\autorest.powershell --output-folder:.\generate\m4 --Debug
+        autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
     }
 }
 
