@@ -140,8 +140,8 @@ pipeline:
   llcsharp-v2:
     input: psnamer-v2
   
-  # powershell-v2:
-  #   input: psnamer-v2
+  powershell-v2:
+    input: psnamer-v2
 # --- extension powershell ---
 
   # creates high-level commands
@@ -179,8 +179,7 @@ pipeline:
     scope: scope-here
 
   powershell/text-transform:
-    # input:  powershell-v2
-    input:  powershell
+    input:  powershell-v2
     scope: scope-here
 
   llcsharp/emitter:
