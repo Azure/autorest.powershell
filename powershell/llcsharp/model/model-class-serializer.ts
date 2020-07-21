@@ -32,7 +32,8 @@ import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
 import { Schema as NewSchema } from '@azure-tools/codemodel';
 
-import { getVirtualPropertyName } from './model-class';
+import { getVirtualPropertyName, NewGetVirtualPropertyName } from './model-class';
+import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
 
 export class SerializationPartialClass extends Initializer {
   constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
@@ -273,16 +274,16 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
     return function* () {
       yield '// actually deserialize ';
       // skip-for-time-being
-      // for (const virtualProperty of values($this.allVirtualProperties)) {
-      //   // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
-      //   const type = $this.resolver(<Schema>virtualProperty.property.schema, virtualProperty.property.details.default.required);
+      for (const virtualProperty of values(<Array<NewVirtualProperty>>$this.allVirtualProperties)) {
+        // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
+        const type = $this.resolver(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.default.required);
 
-      //   const cvt = type.convertObjectMethod;
-      //   const t = `((${virtualProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
-      //   const tt = type ? `(${type.declaration})` : '';
+        const cvt = type.convertObjectMethod;
+        const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
+        const tt = type ? `(${type.declaration})` : '';
 
-      //   yield `${t}.${getVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${getVirtualPropertyName(virtualProperty)}",${t}.${getVirtualPropertyName(virtualProperty)}, ${cvt});`;
-      // }
+        yield `${t}.${NewGetVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${NewGetVirtualPropertyName(virtualProperty)}",${t}.${NewGetVirtualPropertyName(virtualProperty)}, ${cvt});`;
+      }
     };
   }
 
