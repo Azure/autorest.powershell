@@ -1837,7 +1837,7 @@ export class NewCmdletClass extends Class {
               name: p.language.csharp?.name,
               param: values($this.properties).
                 where(each => each.metadata.parameterDefinition).
-                first(each => each.metadata.parameterDefinition.details.csharp.uid === p.language.csharp?.uid),
+                first(each => each.metadata.parameterDefinition.schema === p.schema),
               isPathParam: $this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
             };
 
@@ -2576,7 +2576,7 @@ export class NewCmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
 
-      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
+      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, origin.details.default.name);
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
 
@@ -2586,16 +2586,15 @@ export class NewCmdletClass extends Class {
       }
 
       const httpParam = origin.details.csharp.httpParameter;
-      const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
+      //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
-      // skip-for-time-being
-      // const cat = values(operation.callGraph[0].parameters).
-      //   where(each => !(each.details.csharp.constantValue)).
-      //   first(each => each.details.csharp.uid === uid);
+      const cat = values(operation.callGraph[0].parameters).
+        where(each => !(each.language.csharp?.constantValue)).
+        first(each => each.schema === httpParam.schema);
 
-      // if (cat) {
-      //   regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
-      // }
+      if (cat) {
+        regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+      }
 
 
       if (origin.details.csharp.completer) {
