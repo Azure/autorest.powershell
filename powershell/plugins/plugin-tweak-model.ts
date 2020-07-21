@@ -98,6 +98,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
   universalId.apiVersions = universalId.apiVersions || [];
   state.model.schemas.objects = state.model.schemas.objects || [];
+  (<any>universalId.language.default).uid = 'universal-parameter-type';
   state.model.schemas.objects.push(universalId);
 
   for (const group of values(model.operationGroups)) {
