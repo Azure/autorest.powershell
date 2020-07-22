@@ -1872,7 +1872,7 @@ export class NewCmdletClass extends Class {
       }
 
       // create the response handlers
-      const responses = [...values(apiCall.responses)];
+      const responses = [...values(apiCall.responses), ...values(apiCall.exceptions)];
 
       const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
 
