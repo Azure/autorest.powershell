@@ -44,10 +44,13 @@
           "description": "Gets the workspace.",
           "responses": {
             "200": {
-                "description": "OK-Return workspace.",
-                "schema": {
+                "description": "OK-Return workspace."
+            },
+            "default": {
+              "description": "Error response describing why the operation failed.",
+              "schema": {
                   "$ref": "#/definitions/BasicErrorModel"
-                }
+              }
             }
           }
         }

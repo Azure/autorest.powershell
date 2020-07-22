@@ -46,8 +46,8 @@
             "200": {
               "description": "OK - Returns the workspace."
             },
-            "201": {
-              "description": "OK - Returns the workspace."
+            "default": {
+              "description": "Error response describing why the operation failed."
             }
           }
         },
@@ -59,10 +59,10 @@
           "description": "Deletes the workspace",
           "responses": {
             "200": {
-              "description": "OK - Returns the workspace."
+              "description": "OK - Deleted the workspace."
             },
-            "201": {
-              "description": "OK - Returns the workspace."
+            "default": {
+              "description": "Error response describing why the operation failed."
             }
           }
         },
@@ -73,12 +73,12 @@
           "operationId": "Workspaces_CreateOrUpdate",
           "description": "Creates a new workspace.",
           "responses": {
-            "200": {
-              "description": "OK - Returns the workspace."
-            },
-            "201": {
-              "description": "OK - Returns the workspace."
-            }
+              "200": {
+                "description": "OK - Created or updated the workspace."
+              },
+              "default": {
+                "description": "Error response describing why the operation failed."
+              }
           }
         },
         "patch": {
@@ -89,10 +89,13 @@
           "description": "Updates a workspace.",
           "responses": {
             "200": {
-              "description": "OK - Returns the workspace."
+              "description": "OK - Updated the workspace."
             },
-            "201": {
-              "description": "OK - Returns the workspace."
+            "202": {
+              "description": "Accepted"
+            },
+            "default": {
+              "description": "Error response describing why the operation failed."
             }
           }
         }
