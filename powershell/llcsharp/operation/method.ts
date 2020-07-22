@@ -356,7 +356,7 @@ export class NewOperationMethod extends Method {
     //   this.addParameter(this.bodyParameter);
     // }
 
-    for (const response of values(this.operation.responses)) {
+    for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
 
       const responseType = (<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null;
       //skip-for-time-being
@@ -887,7 +887,7 @@ export class NewCallMethod extends Method {
 
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
-            for (const responses of values(opMethod.operation.responses)) {
+            for (const responses of [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)]) {
               if (responses.protocol.http?.statusCodes[0] !== 'default') {
                 const responseCode = responses.protocol.http?.statusCodes[0];
                 // will use enum when it can, fall back to casting int when it can't

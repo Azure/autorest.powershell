@@ -65,16 +65,16 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 
       // create the namespace if required
       if (azure) {
-        const metadata = schema.extensions && schema.extensions['x-ms-metadata'];
-        if (metadata) {
-          const apiVersions = <Array<string> | undefined>metadata.apiVersions;
-          if (apiVersions && length(apiVersions) > 0) {
-            thisApiversion = minimum(apiVersions);
+        const versions = [...values(schema.apiVersions).select(v => v.version)];
+        if (schema.language.default?.uid !== 'universal-parameter-type') {
+          if (versions && length(versions) > 0) {
+            thisApiversion = minimum(versions);
             thisNamespace = subNamespace.get(thisApiversion) || new Set<string>();
             subNamespace.set(thisApiversion, thisNamespace);
           }
         }
       }
+
 
       // for each schema, we're going to set the name
       // to the suggested name, unless we have collisions
@@ -195,7 +195,9 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
         };
       }
 
-      for (const rsp of values(operation.responses)) {
+      const responses = [...values(operation.responses), ...values(operation.exceptions)];
+
+      for (const rsp of responses) {
         // per responseCode
         const response = <SchemaResponse>rsp;
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state) : undefined;
@@ -205,6 +207,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
         if (response.protocol.http?.statusCodes[0] === 'default' || rawValue === 'default' || '') {
           rawValue = 'any response code not handled elsewhere';
           code = 'default';
+          response.language.default.isErrorResponse = true;
         }
         response.language.csharp = {
           ...response.language.default,
