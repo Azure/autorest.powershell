@@ -1,29 +1,28 @@
-﻿param([switch]$Generate,[string]$TestName,[switch]$M3,[switch]$M4,[switch]$AllowList,[switch]$BlackList)
-#need to use the right version of node.js
-# nvs use 10.16.0
-# #please use substring to select the compare path
-#     $m3Path='.\generate\m3'
-#     $m4Path='.\generate\m4'
-$scriptPath = Get-Location
+﻿param([switch]$Generate,[string]$TestName,[switch]$SourceVersion,[switch]$TargetVersion,[switch]$AllowList,[switch]$BlackList)
+#Need to use the right version of node.js
+#nvs use 10.16.0
+#Create folder to save Compare Results
+New-Item CompareResult -ItemType "directory"
+#Define the global param 'isError' to determine wheather throw the error
 $global:isError = $false
+#Import the Configuration Json 
 $conf = (Get-Content 'Configuration.json') | ConvertFrom-Json
-$conf
 if($AllowList)
 {
-    # $configurationFileName = $scriptPath.path +'\AllowListConfiguration.csv'
-    # $testList = import-Csv $configurationFileName
-    $testList = $conf.WhiteList
+    #Get the whiteList from json
+    $whiteList = $conf.WhiteList
 }
 if($BlackList)
 {
-    # $blackConfigurationFileName = $scriptPath.path +'\BlackListConfiguration.csv'
-    # $blackTestList = import-Csv $blackConfigurationFileName
+    #Get the blackList from json
     $blackTestList = $conf.BlackList
 }
-function isCommand([Object]$Object1 , [Object]$Object2)
+
+#Determine whether the difference is command
+function IsCommand([Object]$SourceFile , [Object]$TargetFile)
 {
     $isCommandResult = $True
-    $difference = Compare-Object $Object1 $Object2
+    $difference = Compare-Object $SourceFile $TargetFile
     foreach($line in $difference)
     {
         $lineInfo = $line.InputObject.Replace(' ','')
@@ -37,7 +36,8 @@ function isCommand([Object]$Object1 , [Object]$Object2)
     return $isCommandResult
 }
 
-function isNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
+#Determine whether the file needs to be ignored
+function IsNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
 {
     $Ignore = $false
     foreach($ignoreDetail in $ignoreArray)
@@ -47,46 +47,62 @@ function isNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
            $Ignore =$True
            break
         }
-    }    
+    }
     return $Ignore
 }
 
-function Generate()
+#Code generation
+function GenerateCode()
 {
-    ##m3 and m4 all need to be generated
-    if((-not $M3) -and (-not $M4))
+    $GenerateResult=$Ture
+    #source and generate codes all need to be generated
+    if((-not $SourceVersion) -and (-not $TargetVersion))
     {
-        ##generate m3 code
-        autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug
-        ##generate m4 code
-        autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
-    }elseif($M3)
+        #generate source code
+        Write-Host -ForegroundColor Green 'M3'
+        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug | Out-string
+        #generate target code
+        Write-Host -ForegroundColor Green 'M4'
+        $GenerateTargetResult = autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug | Out-string
+        if(!$GenerateSourceResult.Contains('Generation Complete') -or !$GenerateTargetResult.Contains('Generation Complete'))
+        {
+            $GenerateResult = $false
+        }
+    }elseif($SourceVersion)
     {
-        autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug
+        Write-Host -ForegroundColor Green 'M3'
+        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug | Out-string
+        if(!$GenerateSourceResult.Contains('Generation Complete'))
+        {
+            $GenerateResult = $false
+        }
     }else
     {
-        autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug
+        Write-Host -ForegroundColor Green 'M4'
+        $GenerateTargetResult = autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug | Out-string
+        if(!$GenerateTargetResult.Contains('Generation Complete'))
+        {
+            $GenerateResult = $false
+        }
     }
+    return $GenerateResult
 }
 
-function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFileName)
+#Compare the gap between the two versions
+function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,[string]$testFileName)
 {
-    $testFileName
     #to creare ecah dictionary (the struct is (string,obj))
     #the key is the path of each file,and the obj has two parameters(hashcodevalue,status)
     $initialDict =  @{}
     #in m3Path
-    cd $inputm3Path
+    cd $inputSourcePath
     $initFileList = Get-ChildItem -Recurse -force
-    # $initIgnoreFileList = $inputm3Path + '\generated\modules'
-    # $targetIgnoreFileList = $inputm4Path + '\generated\modules'
-    $initIgnoreFileList = (($inputm3Path+'\generated\modules'), ($inputm3Path+'\.gitignore'))
-    $targetIgnoreFileList = (($inputm4Path+'\generated\modules'), ($inputm4Path+'\.gitignore'))
-    # $initFileList
+    $initIgnoreFileList = (($inputSourcePath+'\generated\modules'), ($inputSourcePath+'\.gitignore'),($inputSourcePath+'\tools\Resources\.gitignore'))
+    $targetIgnoreFileList = (($inputTargetPath+'\generated\modules'), ($inputTargetPath+'\.gitignore'),($inputTargetPath+'\tools\Resources\.gitignore'))
     #foreach initFileList and get the hashcode of them
     foreach( $initFile in $initFileList)
     {
-        $ignoreResult = isNeedIgnore -inputFileName $initFile.FullName -ignoreArray $initIgnoreFileList
+        $ignoreResult = IsNeedIgnore -inputFileName $initFile.FullName -ignoreArray $initIgnoreFileList
         if(!$ignoreResult)
         {
             # if(!$initFile.FullName.Startswith($initIgnoreFileList)){
@@ -100,19 +116,19 @@ function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFile
                 # $hashTable
                 $obj.HashCode = $hashTable.Hash
                 #get the path of the file
-                $detailPath = $hashTable.Path.Replace($inputm3Path,'')
+                $detailPath = $hashTable.Path.Replace($inputSourcePath,'')
                 $initialDict.Add($detailPath,$obj)
             }
         }
     }
     $targetDict =  @{}
-    #in m4Path
-    cd $inputm4Path
+    #in TargetPath
+    cd $inputTargetPath
     $targetFileList = Get-ChildItem -Recurse -force
     #foreach initFileList and get the hashcode of them
     foreach( $targetFile in $targetFileList)
     {
-        $ignoreResult = isNeedIgnore -inputFileName $targetFile.FullName -ignoreArray $targetIgnoreFileList
+        $ignoreResult = IsNeedIgnore -inputFileName $targetFile.FullName -ignoreArray $targetIgnoreFileList
         if(!$ignoreResult)
         {
             $obj = "waht2" | Select-Object -Property HashCode, Status
@@ -123,7 +139,7 @@ function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFile
                 $hashTable = $targetFile.PSPath.Replace('Microsoft.PowerShell.Core\FileSystem::','') | get-filehash
                 $obj.HashCode = $hashTable.Hash
                 #get the path of the file
-                $detailPath = $hashTable.path.Replace($inputm4Path,'')
+                $detailPath = $hashTable.path.Replace($inputTargetPath,'')
                 $targetDict.Add($detailPath,$obj)
             }
         }
@@ -150,9 +166,9 @@ function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFile
             $difArray+= $difDetail
         }elseif($targetDict[$initDictDetail].HashCode -ne $initialDict[$initDictDetail].HashCode)
         {
-            $M3CompareFile = Get-Content ($inputm3Path + $initDictDetail)
-            $M4CompareFile = Get-Content ($inputm4Path + $initDictDetail)
-            $isCommandResult = isCommand -Object1 $M3CompareFile -Object2 $M4CompareFile
+            $M3CompareFile = Get-Content ($inputSourcePath + $initDictDetail)
+            $M4CompareFile = Get-Content ($inputTargetPath + $initDictDetail)
+            $isCommandResult = IsCommand -SourceFile $M3CompareFile -TargetFile $M4CompareFile
             if( $isCommandResult -ne $True)
             {
                 $difDetail.Path = $initDictDetail
@@ -193,7 +209,8 @@ function CompareTest([string]$inputm3Path,[string]$inputm4Path,[string]$testFile
     {
         $global:isError=$True
     }
-    $filename = $scriptPath.Path + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
+    #Export the differ csv to the 'CompareResult' folder
+    $filename = $PSScriptRoot + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
     $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
 }
 
@@ -202,55 +219,69 @@ $fileList = Get-ChildItem
 #if only one case
 if($TestName -ne $null -and ($TestName -ne ''))
 {
-    $currentDetailPath = Get-Location
-    cd ($currentDetailPath.Path+'\'+$TestName)
-    $deatilPath = $currentDetailPath.Path + 'generate'
-    Generate
-    if(-not $Generate)
+    cd ($PSScriptRoot+'\'+$TestName)
+    $deatilPath = $PSScriptRoot + 'generate'
+    try
     {
-        $m3FilePath = $currentDetailPath.Path +'\'+$TestName + '\generate\m3'
-        $m4FilePath =$currentDetailPath.Path +'\'+$TestName + '\generate\m4'
-        CompareTest -inputm3Path $m3FilePath -inputm4Path $m4FilePath -testFileName $TestName
+        $IsGenerateSuccess = GenerateCode
+        if(-not $Generate -and $IsGenerateSuccess)
+        {
+            $sourceFilePath = $PSScriptRoot +'\'+$TestName + '\generate\m3'
+            $targetFilePath = $PSScriptRoot +'\'+$TestName + '\generate\m4'
+            CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $TestName
+        }
+    }
+    catch
+    {
+        Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
     }
 }elseif($AllowList)
 {
-    $currentDetailPath = Get-Location
-    #get each testfolder
-    foreach($eachTest in $testList)
+    #get each testfolder in whiteList
+    foreach($eachTest in $whiteList)
     {
-        # Write-Host -ForegroundColor green $eachTest
-        # if(($fileDeatil.Mode -eq 'd----') -and ($fileDeatil.Name -eq $TestName))
-        # {
-            cd ($currentDetailPath.Path+'\'+$eachTest)
-            $deatilPath = $currentDetailPath.Path + 'generate'
-            Generate
-        # }
-        if(-not $Generate)
+        $eachTest
+        cd ($PSScriptRoot+'\'+$eachTest)
+        $deatilPath = $PSScriptRoot + 'generate'
+        try
         {
-            $m3FilePath = $currentDetailPath.Path +'\'+$eachTest + '\generate\m3'
-            $m4FilePath =$currentDetailPath.Path +'\'+$eachTest + '\generate\m4'
-            CompareTest -inputm3Path $m3FilePath -inputm4Path $m4FilePath -testFileName $eachTest
+            $IsGenerateSuccess = GenerateCode
+            if(-not $Generate -and $IsGenerateSuccess)
+            {
+                $sourceFilePath = $PSScriptRoot +'\'+$eachTest + '\generate\m3'
+                $targetFilePath = $PSScriptRoot +'\'+$eachTest + '\generate\m4'
+                CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $eachTest
+            }
+        }
+        catch
+        {
+            Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
         }
     }
 }elseif($BlackList)
 {
-    $currentDetailPath = Get-Location
-    $currentDetailPath
-    #get each testfolder
+    #get each testfolder and except those tests in blacklist
     foreach($fileDetail in $fileList)
     {
         foreach($blackTestName in $blackTestList)
         {
             if(($fileDetail.Mode -eq 'd----') -and (!$fileDetail.Name.Startswith($blackTestName)))
             {
-                cd ($currentDetailPath.Path+'\'+$fileDetail.Name)
-                $deatilPath = $currentDetailPath.Path + 'generate'
-                Generate
-                if(-not $Generate)
+                try
                 {
-                    $m3FilePath = $currentDetailPath.Path +'\'+$fileDetail.Name + '\generate\m3'
-                    $m4FilePath =$currentDetailPath.Path +'\'+$fileDetail.Name + '\generate\m4'
-                    CompareTest -inputm3Path $m3FilePath -inputm4Path $m4FilePath -testFileName $fileDeatil.path
+                    cd ($PSScriptRoot+'\'+$fileDetail.Name)
+                    $deatilPath = $PSScriptRoot + 'generate'
+                    $IsGenerateSuccess = GenerateCode
+                    if(-not $Generate -and $IsGenerateSuccess)
+                    {
+                        $sourceFilePath = $PSScriptRoot +'\'+$fileDetail.Name + '\generate\m3'
+                        $targetFilePath = $PSScriptRoot +'\'+$fileDetail.Name + '\generate\m4'
+                        CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDeatil.path
+                    }
+                }
+                catch
+                {
+                    Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
                 }
             }
         }    
@@ -260,25 +291,35 @@ else
 {
     foreach($fileDetail in $fileList)
     {
-        # $currentDetailPath = Get-Location
         if($fileDetail.Mode -eq 'd----' -and (!$fileDetail.Name.Startswith('Compare')))
         {
-            $g1 = $scriptPath.Path +'\' +$fileDetail.Name
-            cd ($scriptPath.Path +'\' +$fileDetail.Name)
-            $deatilPath = $scriptPath.Path +'\' +$fileDetail.Name
-            Generate
-            if(-not $Generate)
+            $g1 = $PSScriptRoot +'\' +$fileDetail.Name
+            cd ($PSScriptRoot +'\' +$fileDetail.Name)
+            $deatilPath = $PSScriptRoot +'\' +$fileDetail.Name
+            try
             {
-                $m3FilePath = $deatilPath + '\generate\m3'
-                $m4FilePath = $deatilPath + '\generate\m4'
-                CompareTest -inputm3Path $m3FilePath -inputm4Path $m4FilePath -testFileName $fileDetail.Name
-                # CompareTest -inputm3Path (($currentDetailPath.Path +'\'+$fileDetail.Name+'\generate\m3') -inputm4Path ($currentDetailPath.Path +'\'+$fileDetail.Name+'\generate\m4')) -testFileName $fileDeatil.path
+                Write-Host -ForegroundColor Blue $fileDetail.Name
+                $IsGenerateSuccess = GenerateCode
+                if(-not $Generate -and $IsGenerateSuccess)
+                {
+                    $sourceFilePath = $deatilPath + '\generate\m3'
+                    $targetFilePath = $deatilPath + '\generate\m4'
+                    CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDetail.Name
+                }
+            }
+            catch
+            {
+                Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
             }
         }
     }
 }
-cd $currentPath.Path
+cd $PSScriptRoot
+#Throw error if there are some different
 if($global:isError)
 {
     throw 'Error: The code generated by the target file is different from the code generated by the source file.'
+}else
+{
+    Write-Host -ForegroundColor blue 'All generated codes are the same'
 }
