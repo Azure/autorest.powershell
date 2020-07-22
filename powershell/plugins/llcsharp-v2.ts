@@ -10,6 +10,7 @@ import { Model } from '../llcsharp/code-model';
 import { State } from '../llcsharp/generator';
 import { Project, NewProject } from '../llcsharp/project';
 import { PwshModel } from '../utils/PwshModel';
+import { Dictionary } from '@azure-tools/linq';
 
 const resources = `${__dirname}/../../resources`;
 

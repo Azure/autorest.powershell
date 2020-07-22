@@ -37,6 +37,11 @@ function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMed
   return pp.param.extensions && pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
 
+function newRemoveEncoding(pp: NewOperationParameter, paramName: string, kmt: KnownMediaType): string {
+  const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
+  return pp.param.extensions && pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
+}
+
 
 export class EventListener {
   constructor(protected expression: Expression, protected emitSignals: boolean) {
@@ -371,6 +376,7 @@ export class NewOperationMethod extends Method {
     this.senderParameter = this.addParameter(new Parameter('sender', ClientRuntime.ISendAsync, { description: `an instance of an ${ClientRuntime.ISendAsync} pipeline to use to make the request.` }));
 
     let rx = this.operation.requests ? this.operation.requests[0].protocol.http?.path : '';
+    const path = rx;
     // For post API, Some URI may contain an action string .e.x '/start' at the end
     // of the URI, for such cases, we will drop the action string if identityCorrection
     // is set in the configuration
@@ -399,19 +405,19 @@ export class NewOperationMethod extends Method {
     //     + "`);
     // }
 
-    // for (const pp of pathParams) {
-    //   rx = rx.replace(`{${pp.param.name}}`, `(?<${pp.param.name}>[^/]+)`);
+    for (const pp of pathParams) {
+      rx = rx.replace(`{${pp.param.language.default.name}}`, `(?<${pp.param.language.default.name}>[^/]+)`);
 
-    //   if (this.viaIdentity) {
-    //     url = url.replace(`{${pp.param.name}}`, `"
-    //     + ${pp.name}
-    //     + "`);
-    //   } else {
-    //     url = url.replace(`{${pp.param.name}}`, `"
-    //     + ${removeEncoding(pp, '', KnownMediaType.UriParameter)}
-    //     + "`);
-    //   }
-    // }
+      if (this.viaIdentity) {
+        url = url.replace(`{${pp.param.language.default.name}}`, `"
+        + ${pp.name}
+        + "`);
+      } else {
+        url = url.replace(`{${pp.param.language.default.name}}`, `"
+        + ${newRemoveEncoding(pp, '', KnownMediaType.UriParameter)}
+        + "`);
+      }
+    }
     rx = `"^${rx}$"`;
     url = url.replace(/\s*\+ ""/gm, '');
 
@@ -429,30 +435,20 @@ export class NewOperationMethod extends Method {
 
         const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
         yield match.declarationStatement;
-        yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${rx}'");`);
+        yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${path}'");`);
         yield EOL;
         yield '// replace URI parameters with values from identity';
-        // skip-for-time-being
-        // for (const pp of pathParams) {
-        //   yield `var ${pp.name} = ${match.value}.Groups["${pp.param.name}"].Value;`;
-        // }
+        for (const pp of pathParams) {
+          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.language.default.name}"].Value;`;
+        }
       }
 
       yield '// construct URL';
-      // const urlV = new LocalVariable('_url', dotnet.Var, {
-      //   initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
-      //   "${url}"
-      //   ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-      //   + ${removeEncoding(pp, pp.param.name, KnownMediaType.QueryParameter)}`, `
-      //   + "&"`
-      //   )}
-      //   ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
-      // });
       const urlV = new LocalVariable('_url', dotnet.Var, {
         initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${''}`, `
+        + ${newRemoveEncoding(pp, pp.param.language.default.name, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))

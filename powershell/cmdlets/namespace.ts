@@ -55,7 +55,6 @@ export class NewCmdletNamespace extends Namespace {
       if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
         continue;
       }
-      // skip-for-time-being
       this.addClass(await new NewCmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
     }
     return this;

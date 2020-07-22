@@ -18,7 +18,6 @@ import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } f
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 import { Languages, Language, Schema as NewSchema } from '@azure-tools/codemodel';
-
 import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
 
 export function getVirtualPropertyName(vp?: VirtualProperty): string {
