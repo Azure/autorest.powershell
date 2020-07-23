@@ -1,7 +1,9 @@
 {
   "WhiteList": [
     "basic-disableazure-get",
-    "basic-disableazure-response"
+    "basic-disableazure-response",
+    "basic-get",
+    "basic-get-delete"
   ],
   "BlackList": [
     "basic-get-querystr",

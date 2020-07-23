@@ -2695,7 +2695,7 @@ export class NewCmdletClass extends Class {
     // if any response does not return,
     // the cmdlet should have a PassThru parameter
     shouldAddPassThru = shouldAddPassThru || values(operation.callGraph)
-      .selectMany(httpOperation => values(httpOperation.responses))
+      .selectMany(httpOperation => values((httpOperation.responses || []).concat(httpOperation.exceptions || [])))
       //.selectMany(responsesItem => responsesItem.value)
       .any(value => (<SchemaResponse>value).schema === undefined);
     if (outputTypes.size === 0) {
