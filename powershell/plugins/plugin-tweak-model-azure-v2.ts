@@ -125,34 +125,34 @@ async function tweakModel(state: State): Promise<PwshModel> {
   // Api Version parameter handling for Azure.
   // if there is only a single api-version for the operation, let's just make it a constant
   // otherwise, we need to make it selectable, but default to the 'latest' version there is.
-  // for (const group of values(model.operationGroups)) {
-  //   for (const operation of values(group.operations)) {
-  //     const apiVersions = operation.pathExtensions && operation.pathExtensions['x-ms-metadata'] ? operation.pathExtensions['x-ms-metadata'].apiVersions : undefined;
-  //     for (const parameter of values(operation.parameters)) {
+  for (const group of values(model.operationGroups)) {
+    for (const operation of values(group.operations)) {
+      const apiVersions = operation.apiVersions;
+      for (const parameter of values(operation.parameters)) {
 
-  //       if (parameter.name === 'api-version') {
-  //         // only set it if it hasn't been set yet.
-  //         // if (parameter.details.default.constantValue) {
-  //         //continue;
-  //         //}
+        if (parameter.language.default.serializedName === 'api-version') {
+          // only set it if it hasn't been set yet.
+          // if (parameter.details.default.constantValue) {
+          //continue;
+          //}
 
-  //         if (apiVersions) {
-  //           // set the constant value to the first one
-  //           if (length(apiVersions) === 1) {
-  //             parameter.details.default.constantValue = apiVersions[0];
-  //             continue;
-  //           }
+          if (apiVersions) {
+            // set the constant value to the first one
+            if (length(apiVersions) === 1) {
+              parameter.language.default.constantValue = apiVersions[0].version;
+              continue;
+            }
 
-  //           // otherwise, the parameter can't have a constant value
-  //           parameter.details.default.constantValue = undefined;
+            // otherwise, the parameter can't have a constant value
+            parameter.language.default.constantValue = undefined;
 
-  //           // mark it so that we can add profile support in the method generation
-  //           parameter.details.default.apiversion = true;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+            // mark it so that we can add profile support in the method generation
+            parameter.language.default.apiversion = true;
+          }
+        }
+      }
+    }
+  }
 
   // when make-sub-resources-byreference is specified, mark models with a writable id as byref.
   if (await state.getValue('azure', false) && await state.getValue('make-sub-resources-byreference', false)) {

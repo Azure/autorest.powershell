@@ -41,7 +41,7 @@ export class NewCmdletNamespace extends Namespace {
     return this.state.project.cmdletFolder;
   }
 
-  constructor(parent: Namespace, private state: NewState, objectInitializer?: DeepPartial<CmdletNamespace>) {
+  constructor(parent: Namespace, private state: NewState, objectInitializer?: DeepPartial<NewCmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
   }

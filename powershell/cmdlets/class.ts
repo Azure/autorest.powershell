@@ -1592,23 +1592,29 @@ export class NewCmdletClass extends Class {
 
   public get headerComment(): string {
     const header = super.headerComment;
-    const ops = '';
+    let ops = '';
 
     for (const httpOperation of values(this.operation.callGraph)) {
-      // ops = `${ops}\n[OpenAPI] ${httpOperation.operationId}=>${httpOperation.method.toUpperCase()}:"${httpOperation.path}"`;
-      // skip-for-time-being
-      //   if (this.debugMode) {
-      //     const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
-      //     if (m) {
-      //       ops = `${ops}\n [METADATA]\n${serialize(m)}`;
-      //     }
+      const request = httpOperation.requests?.[0];
+      if (!request) {
+        continue;
+      }
+      const httpMethod = request.protocol.http?.method ?? '';
+      const httpPath = request.protocol.http?.path ?? '';
+      ops = `${ops}\n[OpenAPI] ${httpOperation.language.default.name}=>${httpMethod.toUpperCase()}:"${httpPath}"`;
+      if (this.debugMode) {
+        // x-ms-metadata seems no longer exists
+        // const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
+        // if (m) {
+        //   ops = `${ops}\n [METADATA]\n${serialize(m)}`;
+        // }
 
-      //     ops = `${ops}\n [DETAILS]`;
-      //     ops = `${ops}\n verb: ${this.operation.details.csharp.verb}`;
-      //     ops = `${ops}\n subjectPrefix: ${this.operation.details.csharp.subjectPrefix}`;
-      //     ops = `${ops}\n subject: ${this.operation.details.csharp.subject}`;
-      //     ops = `${ops}\n variant: ${this.operation.details.csharp.name}`;
-      //   }
+        ops = `${ops}\n [DETAILS]`;
+        ops = `${ops}\n verb: ${this.operation.details.csharp.verb}`;
+        ops = `${ops}\n subjectPrefix: ${this.operation.details.csharp.subjectPrefix}`;
+        ops = `${ops}\n subject: ${this.operation.details.csharp.subject}`;
+        ops = `${ops}\n variant: ${this.operation.details.csharp.name}`;
+      }
     }
 
     return ops ? `${header}\n${docComment(xmlize('remarks', ops))}` : header;
@@ -2086,72 +2092,71 @@ export class NewCmdletClass extends Class {
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
-          // skip-for-time-being, viaidentity
-          // const idschema = values($this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
+          const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
 
-          // if ($this.isViaIdentity) {
-          //   const identityFromPathParams = function* () {
-          //     yield '// try to call with PATH parameters from Input Object';
+          if ($this.isViaIdentity) {
+            const identityFromPathParams = function* () {
+              yield '// try to call with PATH parameters from Input Object';
 
-          //     if (idschema) {
-          //       const allVPs = getAllPublicVirtualProperties(idschema.details.csharp.virtualProperties);
-          //       const props = [...values(idschema.properties)];
+              if (idschema) {
+                const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
+                const props = [...values(idschema.properties)];
 
-          //       const idOpParams = operationParameters.map(each => {
-          //         const pascalName = pascalCase(`${each.name}`);
+                const idOpParams = operationParameters.map(each => {
+                  const pascalName = pascalCase(`${each.name}`);
 
-          //         if (!each.isPathParam) {
-          //           return {
-          //             name: undefined,
-          //             value: valueOf(each.expression)
-          //           };
-          //         }
-          //         const match = props.find(p => pascalCase(p.serializedName) === pascalName);
-          //         if (match) {
+                  if (!each.isPathParam) {
+                    return {
+                      name: undefined,
+                      value: valueOf(each.expression)
+                    };
+                  }
+                  const match = props.find(p => pascalCase(p.serializedName) === pascalName);
+                  if (match) {
 
-          //           const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>match.schema, true, $this.state).defaultOfType;
-          //           // match up vp name
-          //           const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
-          //           if (vp) {
-          //             return {
-          //               name: `InputObject.${vp.name}`,
-          //               value: `InputObject.${vp.name} ?? ${defaultOfType}`
-          //             };
-          //           }
-          //           // fall back!
+                    const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
+                    // match up vp name
+                    const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
+                    if (vp) {
+                      return {
+                        name: `InputObject.${vp.name}`,
+                        value: `InputObject.${vp.name} ?? ${defaultOfType}`
+                      };
+                    }
+                    // fall back!
 
-          //           console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.details.csharp.name)}').`);
-          //           return {
-          //             name: `InputObject.${pascalCase(match.details.csharp.name)}`,
-          //             value: `InputObject.${pascalCase(match.details.csharp.name)} ?? ${defaultOfType}`
-          //           };
-          //         }
-          //         console.error(`Unable to match idenity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
-          //         return {
-          //           name: `InputObject.${pascalName}`,
-          //           value: `InputObject.${pascalName}`
-          //         };
-          //       });
-          //       for (const opParam of idOpParams) {
-          //         if (opParam.name) {
-          //           yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`);
-          //         }
-          //       }
-          //       yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                    console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
+                    return {
+                      name: `InputObject.${pascalCase(match.language.csharp?.name ?? '')}`,
+                      value: `InputObject.${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
+                    };
+                  }
+                  console.error(`Unable to match idenity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
+                  return {
+                    name: `InputObject.${pascalName}`,
+                    value: `InputObject.${pascalName}`
+                  };
+                });
+                for (const opParam of idOpParams) {
+                  if (opParam.name) {
+                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`);
+                  }
+                }
+                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
 
-          //     }
-          //   };
+              }
+            };
 
-          //   if (idschema && values(idschema.properties).first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
-          //     yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
-          //     yield Else(identityFromPathParams);
-          //   } else {
-          //     yield identityFromPathParams;
-          //   }
-          // } else {
-          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-          //}
+            if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
+              yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+              yield Else(identityFromPathParams);
+            } else {
+              yield identityFromPathParams;
+            }
+          } else {
+            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+          }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };
 
@@ -2305,6 +2310,10 @@ export class NewCmdletClass extends Class {
       if ($this.state.project.azure) {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
+        yield If(`${token.value}.IsCancellationRequested`, Return());
+      } else {
+        // In Non-Azure Modes, emit the Signal method without coorelation and processrecordid
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
@@ -2505,19 +2514,18 @@ export class NewCmdletClass extends Class {
       }
     }
 
-    // skip-for-time-being
-    // if (this.isViaIdentity) {
-    //   // add in the pipeline parameter for the identity
+    if (this.isViaIdentity) {
+      // add in the pipeline parameter for the identity
 
-    //   const idschema = values(this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
-    //   const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
-    //   const idParam = this.add(new BackedProperty('InputObject', idtd, {
-    //     description: 'Identity Parameter'
-    //   }));
-    //   const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression('HelpMessage = "Identity Parameter"'), new LiteralExpression('ValueFromPipeline = true')];
-    //   idParam.add(new Attribute(ParameterAttribute, { parameters }));
-    //   idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
-    // }
+      const idschema = values(this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
+      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state);
+      const idParam = this.add(new BackedProperty('InputObject', idtd, {
+        description: 'Identity Parameter'
+      }));
+      const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression('HelpMessage = "Identity Parameter"'), new LiteralExpression('ValueFromPipeline = true')];
+      idParam.add(new Attribute(ParameterAttribute, { parameters }));
+      idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
+    }
     for (const vParam of values(vps.operation)) {
       if (vParam.name === 'Host') {
         // skip 'Host'
@@ -2588,12 +2596,14 @@ export class NewCmdletClass extends Class {
       const httpParam = origin.details.csharp.httpParameter;
       //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
-      const cat = values(operation.callGraph[0].parameters).
-        where(each => !(each.language.csharp?.constantValue)).
-        first(each => each.schema === httpParam.schema);
+      if (httpParam) {
+        const cat = values(operation.callGraph[0].parameters).
+          where(each => !(each.language.csharp?.constantValue)).
+          first(each => each.schema === httpParam.schema);
 
-      if (cat) {
-        regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+        if (cat) {
+          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+        }
       }
 
 

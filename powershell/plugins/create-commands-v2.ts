@@ -406,10 +406,11 @@ export /* @internal */ class Inferrer {
     const constantParameters = constants.map(each => `'${each.language.default.constantValue}'`);
 
     // the body parameter
+    // xichen: How to handle if has multiple requests?
     const body = (operation.requests && operation.requests[0].parameters) ? operation.requests[0].parameters[0] : null;
     // skip-for-time-being, looks x-ms-requestBody-name is not supported any more
     //const bodyParameterName = (operation.requestBody && operation.requestBody.extensions) ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
-    const bodyParameterName = body ? 'bodyParameter' : '';
+    const bodyParameterName = body ? body.language.default.name : '';
 
     // all the properties in the body parameter
     const bodyProperties = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly).toArray() : [];

@@ -83,11 +83,6 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     }
   }
 
-  // const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
-  // universalId.apiVersions = universalId.apiVersions || [];
-  // state.model.schemas.objects = state.model.schemas.objects || [];
-  // state.model.schemas.objects.push(universalId);
-
   model.commands = <any>{
     operations: new Dictionary<any>(),
     parameters: new Dictionary<any>(),
@@ -96,6 +91,8 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   // we're going to create a schema that represents the distinct sum 
   // of all operation PATH parameters
   const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
+  // xichen: Add 'universal-parameter-type' in language.default.uid, so that we can find it later
+  universalId.language.default.uid = 'universal-parameter-type';
   universalId.apiVersions = universalId.apiVersions || [];
   state.model.schemas.objects = state.model.schemas.objects || [];
   (<any>universalId.language.default).uid = 'universal-parameter-type';
@@ -105,7 +102,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     for (const operation of values(group.operations)) {
       for (const param of values(operation.parameters).where(each => each.protocol?.http?.in === ParameterLocation.Path)) {
         const name = param.language.default.name;
-        const hasName = universalId.properties?.findIndex((prop) => prop.language.default.name === name);
+        const hasName = universalId.properties?.find((prop) => prop.language.default.name === name);
         if (!hasName) {
           if (!universalId.properties) {
             universalId.properties = [];
@@ -125,6 +122,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     const idProp = new Property('id', 'Resource identity path', idScheam);
     idProp.readOnly = false;
     idProp.required = false;
+    idProp.language.default.uid = 'universal-parameter:resource identity';
     if (!universalId.properties) {
       universalId.properties = [];
     }

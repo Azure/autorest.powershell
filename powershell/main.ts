@@ -19,6 +19,7 @@ import { csnamerV2 } from './plugins/cs-namer-v2';
 import { namerV2 } from './plugins/ps-namer-v2';
 import { llcsharpV2 } from './plugins/llcsharp-v2';
 import { powershellV2 } from './plugins/powershell-v2';
+import { addCompleterV2 } from './plugins/add-azure-completers-v2';
 
 require('source-map-support').install();
 
@@ -38,6 +39,7 @@ export async function main() {
   pluginHost.Add('create-commands-v2', createCommandsV2);
   pluginHost.Add('csnamer-v2', csnamerV2);
   pluginHost.Add('psnamer-v2', namerV2);
+  pluginHost.Add('add-azure-completers-v2', addCompleterV2);
   pluginHost.Add('llcsharp-v2', llcsharpV2);
   pluginHost.Add('powershell-v2', powershellV2);
 

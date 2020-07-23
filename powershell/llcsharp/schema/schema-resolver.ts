@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema } from '@azure-tools/codemodel';
 
 import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
@@ -213,6 +213,15 @@ export class NewSchemaDefinitionResolver {
         }
         // fallback to float if the format isn't recognized
         return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+
+      case SchemaType.Constant:
+        switch ((<ConstantSchema>schema).valueType.type) {
+          case SchemaType.String:
+            return new NewEnumImplementation(<StringSchema>schema, required);
+          default:
+            state.error(`Unsupported constant type. Schema '${schema.language.csharp?.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
+            throw new Error('Unknown Model. Fatal.');
+        }
 
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {

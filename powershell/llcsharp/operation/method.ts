@@ -25,7 +25,7 @@ import { Local, LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
 import { State, NewState } from '../generator';
-import { CallbackParameter, NewCallbackParameter, OperationBodyParameter, OperationParameter, NewOperationParameter } from '../operation/parameter';
+import { CallbackParameter, NewCallbackParameter, OperationBodyParameter, OperationParameter, NewOperationParameter, NewOperationBodyParameter } from '../operation/parameter';
 
 import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure-tools/codemodel-v3';
 import { ClassType, dotnet, System } from '@azure-tools/codegen-csharp';
@@ -292,7 +292,7 @@ export class OperationMethod extends Method {
 
 export class NewOperationMethod extends Method {
   public methodParameters: Array<NewOperationParameter>;
-  public bodyParameter?: OperationBodyParameter;
+  public bodyParameter?: NewOperationBodyParameter;
   public contextParameter!: Parameter;
   public senderParameter!: Parameter;
   public resourceUri!: Parameter;
@@ -347,14 +347,16 @@ export class NewOperationMethod extends Method {
 
     // add body paramter if there should be one.
     // skip-for-time-being
-    // if (this.operation.requestBody) {
-    //   // this request does have a request body.
-    //   this.bodyParameter = new OperationBodyParameter(this, 'body', this.operation.requestBody.description || '', <Schema>this.operation.requestBody.schema, this.operation.requestBody.required, this.state.path('requestBody'), {
-    //     mediaType: knownMediaType(this.operation.requestBody.contentType),
-    //     contentType: this.operation.requestBody.contentType
-    //   });
-    //   this.addParameter(this.bodyParameter);
-    // }
+    if (this.operation.requests && this.operation.requests.length && this.operation.requests[0].parameters && this.operation.requests[0].parameters.length) {
+      // this request does have a request body.
+      const param = this.operation.requests[0].parameters[0];
+      this.bodyParameter = new NewOperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
+        // TODO: temp solution. We need a class like NewKnowMediaType
+        mediaType: knownMediaType(KnownMediaType.Json),
+        contentType: KnownMediaType.Json
+      });
+      this.addParameter(this.bodyParameter);
+    }
 
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
 
@@ -380,11 +382,10 @@ export class NewOperationMethod extends Method {
     // For post API, Some URI may contain an action string .e.x '/start' at the end
     // of the URI, for such cases, we will drop the action string if identityCorrection
     // is set in the configuration
-    // skip-for-time-being
-    // if (this.operation.method === 'post' && this.state.project.identityCorrection) {
-    //   const idx = rx.lastIndexOf('/');
-    //   rx = rx.substr(0, idx);
-    // }
+    if (this.operation.requests && this.operation.requests.length && this.operation.requests[0].protocol.http?.method === 'post' && this.state.project.identityCorrection) {
+      const idx = rx.lastIndexOf('/');
+      rx = rx.substr(0, idx);
+    }
 
 
     let url = `${baseUrl}/${rx.startsWith('/') ? rx.substr(1) : rx}`;
@@ -398,12 +399,11 @@ export class NewOperationMethod extends Method {
     const cookieParams = this.methodParameters.filter(each => each.param.protocol.http?.in === ParameterLocation.Cookie);
 
     // replace any server params in the uri
-    // skip-for-time-being
-    // for (const pp of serverParams) {
-    //   url = url.replace(`{${pp.param.name}}`, `"
-    //     + ${pp.name}
-    //     + "`);
-    // }
+    for (const pp of serverParams) {
+      url = url.replace(`{${pp.param.language.default.name}}`, `"
+        + ${pp.name}
+        + "`);
+    }
 
     for (const pp of pathParams) {
       rx = rx.replace(`{${pp.param.language.default.name}}`, `(?<${pp.param.language.default.name}>[^/]+)`);
@@ -448,7 +448,7 @@ export class NewOperationMethod extends Method {
         initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${newRemoveEncoding(pp, pp.param.language.default.name, KnownMediaType.QueryParameter)}`, `
+        + ${newRemoveEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
@@ -466,18 +466,17 @@ export class NewOperationMethod extends Method {
       yield eventListener.signal(ClientRuntime.Events.RequestCreated, urlV.value);
       yield EOL;
 
-      // skip-for-time-being
-      // if (length(headerParams) > 0) {
-      //   yield '// add headers parameters';
-      //   for (const hp of headerParams) {
-      //     if (hp.param.name === 'Content-Length') {
-      //       // content length is set when the request body is set
-      //       continue;
-      //     }
-      //     yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.name, ClientRuntime.SerializationMode.None);
-      //   }
-      //   yield EOL;
-      // }
+      if (length(headerParams) > 0) {
+        yield '// add headers parameters';
+        for (const hp of headerParams) {
+          if (hp.param.language.default.name === 'Content-Length') {
+            // content length is set when the request body is set
+            continue;
+          }
+          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.language.default.name, ClientRuntime.SerializationMode.None);
+        }
+        yield EOL;
+      }
       yield eventListener.signal(ClientRuntime.Events.HeaderParametersAdded, urlV.value);
 
       if (bp) {
