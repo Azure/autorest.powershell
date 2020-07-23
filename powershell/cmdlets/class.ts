@@ -1843,7 +1843,7 @@ export class NewCmdletClass extends Class {
               name: p.language.csharp?.name,
               param: values($this.properties).
                 where(each => each.metadata.parameterDefinition).
-                first(each => each.metadata.parameterDefinition.schema === p.schema),
+                first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
               isPathParam: $this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
             };
 
@@ -2584,7 +2584,7 @@ export class NewCmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
 
-      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, origin.details.default.name);
+      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.details.default.name);
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
 
@@ -2597,9 +2597,8 @@ export class NewCmdletClass extends Class {
       //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
       if (httpParam) {
-        const cat = values(operation.callGraph[0].parameters).
-          where(each => !(each.language.csharp?.constantValue)).
-          first(each => each.schema === httpParam.schema);
+        // xichen: Is it safe to compare by csharp serializedName? Because we no longer have uid
+        const cat = operation.callGraph[0].parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
 
         if (cat) {
           regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
