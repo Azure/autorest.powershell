@@ -54,7 +54,7 @@ function IsNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
 #Code generation
 function GenerateCode()
 {
-    $GenerateResult=$Ture
+    $GenerateResult=$True
     #source and generate codes all need to be generated
     if((-not $SourceVersion) -and (-not $TargetVersion))
     {
@@ -208,10 +208,10 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
     if($difArray.Count -gt 0)
     {
         $global:isError=$True
+        #Export the differ csv to the 'CompareResult' folder
+        $filename = $PSScriptRoot + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
+        $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
     }
-    #Export the differ csv to the 'CompareResult' folder
-    $filename = $PSScriptRoot + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
-    $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
 }
 
 $currentPath = Get-Location
