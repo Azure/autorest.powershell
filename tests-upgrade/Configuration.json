@@ -3,7 +3,16 @@
     "basic-disableazure-get",
     "basic-disableazure-response",
     "basic-get",
-    "basic-get-delete"
+    "basic-get-delete",
+    "basic-get-delete-put-patch",
+    "basic-get-response-operation",
+    "basic-response-multioperation",
+    "basic-spec-required",
+    "basic-spec-root",
+    "component-definitions-local",
+    "component-param",
+    "datamodels-datatypes-array",
+    "datamodels-datatypes-integer"
   ],
   "BlackList": [
     "basic-get-querystr",
