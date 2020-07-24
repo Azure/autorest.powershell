@@ -205,6 +205,7 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
             $difArray+=$difDetail
         }
     }
+    Write-Host -ForegroundColor yellow $difArray.Count
     if($difArray.Count -gt 0)
     {
         $global:isError=$True
