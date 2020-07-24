@@ -319,7 +319,7 @@ function createVirtualParameters(operation: CommandOperation) {
       if (vps) {
         for (const virtualProperty of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
           // dolauli add virtual parameter for virtual property
-          if (virtualProperty.private || virtualProperty.property.readonly || virtualProperty.property.language.default.constantValue !== undefined || virtualProperty.property.language.default.HeaderProperty === 'Header') {
+          if (virtualProperty.private || virtualProperty.property.readOnly || virtualProperty.property.language.default.constantValue !== undefined || virtualProperty.property.language.default.HeaderProperty === 'Header') {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
