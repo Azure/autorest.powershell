@@ -39,6 +39,7 @@ steps:
 
 - task: PowerShell@2
   displayName: Verify Upgrade
+  pwsh: true
   inputs:
     targetType: inline
     script: './AutoRestUpgradeTest.ps1 -AllowList'
