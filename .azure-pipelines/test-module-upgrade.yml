@@ -37,13 +37,10 @@ steps:
   inputs:
     script: 'rush rebuild' 
 
-- task: PowerShell@2
-  displayName: Verify Upgrade
-  inputs:
-    targetType: inline
-    script: './AutoRestUpgradeTest.ps1 -AllowList'
-    workingDirectory: 'tests-upgrade'
-    failOnStderr: true
+- pwsh: |
+   ./AutoRestUpgradeTest.ps1 -AllowList
+  workingDirectory: 'tests-upgrade'
+  displayName: 'Verify Upgrad'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Save artifacts'
