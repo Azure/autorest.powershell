@@ -172,6 +172,8 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           // properties with an enum single value are constants
           // add the constant value
           property.language.default.constantValue = choiceSchema.choices[0].value;
+
+          // xichen: Do we need skip?
         }
       }
     }
