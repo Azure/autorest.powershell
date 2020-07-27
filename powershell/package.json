@@ -58,7 +58,7 @@
     "@azure-tools/codegen": "~2.1.0",
     "@azure-tools/codegen-csharp": "~3.0.0",
     "@azure-tools/codemodel-v3": "~3.1.0",
-    "@azure-tools/codemodel": "~4.13.327",
+    "@azure-tools/codemodel": "~4.13.342",
     "@azure-tools/autorest-extension-base": "~3.1.0",
     "@azure-tools/linq": "~3.1.0",
     "@azure-tools/tasks": "~3.0.0",
