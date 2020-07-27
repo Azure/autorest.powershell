@@ -105,9 +105,10 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
         $ignoreResult = IsNeedIgnore -inputFileName $initFile.FullName -ignoreArray $initIgnoreFileList
         if(!$ignoreResult)
         {
-            $obj = "what" | Select-Object -Property HashCode, Status
+            #create an object with HashCode, Status
+            $obj = New-Object psobject | Select-Object -Property HashCode, Status
             #if the file is not filefolder
-            if($initFile.mode.Startswith('-a'))
+            if(!((Get-Item $initFile.PSPath) -is [System.IO.DirectoryInfo]))
             {
                 #get the hashcode of the file
                 $hashTable = $initFile.PSPath.Replace('Microsoft.PowerShell.Core\FileSystem::','') | get-filehash
@@ -129,9 +130,9 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
         $ignoreResult = IsNeedIgnore -inputFileName $targetFile.FullName -ignoreArray $targetIgnoreFileList
         if(!$ignoreResult)
         {
-            $obj = "what2" | Select-Object -Property HashCode, Status
+            $obj = New-Object psobject | Select-Object -Property HashCode, Status
             #if the file is not filefolder
-            if($targetFile.mode.Startswith('-a'))
+            if(!((Get-Item $targetFile.PSPath) -is [System.IO.DirectoryInfo]))
             {
                 #get the hashcode of the file
                 $hashTable = $targetFile.PSPath.Replace('Microsoft.PowerShell.Core\FileSystem::','') | get-filehash
@@ -150,7 +151,7 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
     #                   2 the hashcode of the file is different from that in another filefolder
     foreach($initDictDetail in $initialDict.Keys)
     {
-        $difDetail = "what"| Select-Object -Property fileName,Path,fileFolderName,Status
+        $difDetail = New-Object psobject | Select-Object -Property fileName,Path,fileFolderName,Status
         #if the file not exists in targetDict
         if($targetDict[$initDictDetail] -eq $null)
         {
@@ -192,7 +193,7 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
     #search those files which status is null 
     foreach($targetDetail in $targetDict.Keys)
     {
-        $difDetail = "what"| Select-Object -Property fileName,Path,fileFolderName,Status
+        $difDetail = New-Object psobject | Select-Object -Property fileName,Path,fileFolderName,Status
         if($targetDict[$targetDetail].Status -eq $null)
         {
             $difDetail.Path = $targetDetail
@@ -203,13 +204,12 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
             $difArray+=$difDetail
         }
     }
-    Write-Host -ForegroundColor yellow $difArray.Count
     if($difArray.Count -gt 0)
     {
         $global:isError=$True
-        #Export the differ csv to the 'CompareResult' folder
-        $filename = $PSScriptRoot + '\CompareResult\' + $testFileName + (get-date -format 'yyyyMMddhhmmss')+'.csv'
+        $filename = Join-Path $PSScriptRoot 'CompareResult' ($testFileName + (get-date -format 'yyyyMMddhhmmss') + '.csv')
         $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
+        Write-Warning ('There are ' + $difArray.Count + ' different files')
     }
 }
 
@@ -219,14 +219,13 @@ $fileList = Get-ChildItem
 if($TestName -ne $null -and ($TestName -ne ''))
 {
     cd ($PSScriptRoot+'\'+$TestName)
-    $deatilPath = $PSScriptRoot + 'generate'
     try
     {
         $IsGenerateSuccess = GenerateCode
         if(-not $Generate -and $IsGenerateSuccess)
         {
-            $sourceFilePath = $PSScriptRoot +'\'+$TestName + '\generate\m3'
-            $targetFilePath = $PSScriptRoot +'\'+$TestName + '\generate\m4'
+            $sourceFilePath = Join-Path $PSScriptRoot $TestName 'generate\m3'
+            $targetFilePath = Join-Path $PSScriptRoot $TestName 'generate\m4'
             CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $TestName
         }
     }
@@ -241,14 +240,13 @@ if($TestName -ne $null -and ($TestName -ne ''))
     {
         $eachTest
         cd ($PSScriptRoot+'\'+$eachTest)
-        $deatilPath = $PSScriptRoot + 'generate'
         try
         {
             $IsGenerateSuccess = GenerateCode
             if(-not $Generate -and $IsGenerateSuccess)
             {
-                $sourceFilePath = $PSScriptRoot +'\'+$eachTest + '\generate\m3'
-                $targetFilePath = $PSScriptRoot +'\'+$eachTest + '\generate\m4'
+                $sourceFilePath = Join-Path $PSScriptRoot $eachTest 'generate\m3'
+                $targetFilePath = Join-Path $PSScriptRoot $eachTest 'generate\m4'
                 CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $eachTest
             }
         }
@@ -264,17 +262,17 @@ if($TestName -ne $null -and ($TestName -ne ''))
     {
         foreach($blackTestName in $blackTestList)
         {
-            if(($fileDetail.Mode.Startswith('d')) -and (!$fileDetail.Name.Startswith($blackTestName)))
+            
+            if(((Get-Item $fileDetail.PSPath) -is [System.IO.DirectoryInfo]) -and (!$fileDetail.Name.Startswith($blackTestName)))
             {
                 try
                 {
                     cd ($PSScriptRoot+'\'+$fileDetail.Name)
-                    $deatilPath = $PSScriptRoot + 'generate'
                     $IsGenerateSuccess = GenerateCode
                     if(-not $Generate -and $IsGenerateSuccess)
                     {
-                        $sourceFilePath = $PSScriptRoot +'\'+$fileDetail.Name + '\generate\m3'
-                        $targetFilePath = $PSScriptRoot +'\'+$fileDetail.Name + '\generate\m4'
+                        $sourceFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m3'
+                        $targetFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m4'
                         CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDeatil.path
                     }
                 }
@@ -290,19 +288,19 @@ else
 {
     foreach($fileDetail in $fileList)
     {
-        if($fileDetail.Mode.Startswith('d') -and (!$fileDetail.Name.Startswith('Compare')))
+        if(((Get-Item $fileDetail.PSPath) -is [System.IO.DirectoryInfo]) -and (!$fileDetail.Name.Startswith('Compare')))
         {
-            $g1 = $PSScriptRoot +'\' +$fileDetail.Name
+            $g1 = Join-Path $PSScriptRoot $fileDetail.Name
             cd ($PSScriptRoot +'\' +$fileDetail.Name)
-            $deatilPath = $PSScriptRoot +'\' +$fileDetail.Name
+            $deatilPath =Join-Path $PSScriptRoot $fileDetail.Name
             try
             {
                 Write-Host -ForegroundColor Blue $fileDetail.Name
                 $IsGenerateSuccess = GenerateCode
                 if(-not $Generate -and $IsGenerateSuccess)
                 {
-                    $sourceFilePath = $deatilPath + '\generate\m3'
-                    $targetFilePath = $deatilPath + '\generate\m4'
+                    $sourceFilePath = Join-Path $deatilPath 'generate\m3'
+                    $targetFilePath = Join-Path $deatilPath 'generate\m4'
                     CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDetail.Name
                 }
             }
