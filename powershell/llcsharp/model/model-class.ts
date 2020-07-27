@@ -697,7 +697,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
           initializer: actualProperty.language.csharp?.constantValue ? typeof actualProperty.language.csharp.constantValue === 'string' ? new StringExpression(actualProperty.language.csharp.constantValue) : new LiteralExpression(actualProperty.language.csharp.constantValue) : undefined
         });
 
-        if (actualProperty.language.csharp?.readOnly) {
+        if (actualProperty.language.csharp?.readOnly || actualProperty.readOnly) {
           myProperty.set = undefined;
         }
         myProperty.language = virtualProperty.property.language;

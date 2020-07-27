@@ -90,7 +90,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
   // we're going to create a schema that represents the distinct sum 
   // of all operation PATH parameters
-  const universalId = new ObjectSchema(`${serviceName}Identity`, 'Resource Identity');
+  const universalId = new ObjectSchema(`${serviceName}Identity`, '');
   // xichen: Add 'universal-parameter-type' in language.default.uid, so that we can find it later
   universalId.language.default.uid = 'universal-parameter-type';
   universalId.apiVersions = universalId.apiVersions || [];

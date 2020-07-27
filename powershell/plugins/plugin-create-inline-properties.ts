@@ -14,6 +14,7 @@ import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
 import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties } from '../utils/schema';
+import { resolveParameterNames } from '../utils/resolve-conflicts';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -348,7 +349,7 @@ function createVirtualParameters(operation: CommandOperation) {
     }
   }
 
-  //resolveParameterNames([], virtualParameters);
+  resolveParameterNames([], virtualParameters);
 
   // dolauli see operation.details.default.virtualParameters
   operation.details.default.virtualParameters = virtualParameters;
