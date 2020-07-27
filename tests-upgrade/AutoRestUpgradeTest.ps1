@@ -105,14 +105,12 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
         $ignoreResult = IsNeedIgnore -inputFileName $initFile.FullName -ignoreArray $initIgnoreFileList
         if(!$ignoreResult)
         {
-            # if(!$initFile.FullName.Startswith($initIgnoreFileList)){
             $obj = "what" | Select-Object -Property HashCode, Status
             #if the file is not filefolder
-            if($initFile.mode -eq '-a---')
+            if($initFile.mode.Startswith('-a'))
             {
                 #get the hashcode of the file
                 $hashTable = $initFile.PSPath.Replace('Microsoft.PowerShell.Core\FileSystem::','') | get-filehash
-                # $initFile.FullName
                 # $hashTable
                 $obj.HashCode = $hashTable.Hash
                 #get the path of the file
@@ -131,9 +129,9 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
         $ignoreResult = IsNeedIgnore -inputFileName $targetFile.FullName -ignoreArray $targetIgnoreFileList
         if(!$ignoreResult)
         {
-            $obj = "waht2" | Select-Object -Property HashCode, Status
+            $obj = "what2" | Select-Object -Property HashCode, Status
             #if the file is not filefolder
-            if($targetFile.mode -eq '-a---')
+            if($targetFile.mode.Startswith('-a'))
             {
                 #get the hashcode of the file
                 $hashTable = $targetFile.PSPath.Replace('Microsoft.PowerShell.Core\FileSystem::','') | get-filehash
@@ -266,7 +264,7 @@ if($TestName -ne $null -and ($TestName -ne ''))
     {
         foreach($blackTestName in $blackTestList)
         {
-            if(($fileDetail.Mode -eq 'd----') -and (!$fileDetail.Name.Startswith($blackTestName)))
+            if(($fileDetail.Mode.Startswith('d')) -and (!$fileDetail.Name.Startswith($blackTestName)))
             {
                 try
                 {
@@ -292,7 +290,7 @@ else
 {
     foreach($fileDetail in $fileList)
     {
-        if($fileDetail.Mode -eq 'd----' -and (!$fileDetail.Name.Startswith('Compare')))
+        if($fileDetail.Mode.Startswith('d') -and (!$fileDetail.Name.Startswith('Compare')))
         {
             $g1 = $PSScriptRoot +'\' +$fileDetail.Name
             cd ($PSScriptRoot +'\' +$fileDetail.Name)
