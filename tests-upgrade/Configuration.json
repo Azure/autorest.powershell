@@ -9,10 +9,7 @@
     "basic-response-multioperation",
     "basic-spec-required",
     "basic-spec-root",
-    "component-definitions-local",
-    "component-param",
-    "datamodels-datatypes-array",
-    "datamodels-datatypes-integer"
+    "datamodels-datatypes-array"
   ],
   "BlackList": [
     "basic-get-querystr",
