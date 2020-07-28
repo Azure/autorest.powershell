@@ -137,8 +137,11 @@ pipeline:
   psnamer-v2:
     input: csnamer-v2
 
-  add-azure-completers-v2:
+  modifiers-v2:
     input: psnamer-v2
+
+  add-azure-completers-v2:
+    input: modifiers-v2
 
   llcsharp-v2:
     input: add-azure-completers-v2

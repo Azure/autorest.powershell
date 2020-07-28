@@ -110,7 +110,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           const newProp = new Property(name, param.language.default.description, param.schema);
           newProp.required = false;
           newProp.readOnly = false;
-          newProp.serializedName = name;
+          newProp.serializedName = param.language.default.serializedName;
           universalId.properties.push(newProp);
         }
       }
