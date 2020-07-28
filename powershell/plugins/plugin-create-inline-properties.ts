@@ -14,6 +14,7 @@ import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
 import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties } from '../utils/schema';
+import { resolveParameterNames } from '../utils/resolve-conflicts';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -300,8 +301,7 @@ function createVirtualParameters(operation: CommandOperation) {
     body: new Array<VirtualParameter>()
   };
 
-  /// const dropBodyParameter = !!operation.details.default.dropBodyParameter;
-  const dropBodyParameter = false;
+  const dropBodyParameter = !!operation.details.default.dropBodyParameter;
   // loop thru the parameters of the command operation, and if there is a body parameter, expand it if necessary.
   for (const parameter of values(operation.parameters)) {
     if (parameter.details.default.constantValue) {
@@ -320,13 +320,13 @@ function createVirtualParameters(operation: CommandOperation) {
       if (vps) {
         for (const virtualProperty of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
           // dolauli add virtual parameter for virtual property
-          if (virtualProperty.private || virtualProperty.property.details.default.readOnly || virtualProperty.property.details.default.constantValue !== undefined || virtualProperty.property.details.default.HeaderProperty === 'Header') {
+          if (virtualProperty.private || virtualProperty.property.readOnly || virtualProperty.property.language.default.constantValue !== undefined || virtualProperty.property.language.default.HeaderProperty === 'Header') {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
           virtualParameters.body.push({
             name: virtualProperty.name,
-            description: virtualProperty.property.details.default.description,
+            description: virtualProperty.property.language.default.description,
             nameOptions: virtualProperty.nameOptions,
             required: virtualProperty.required,
             schema: virtualProperty.property.schema,
@@ -349,7 +349,7 @@ function createVirtualParameters(operation: CommandOperation) {
     }
   }
 
-  //resolveParameterNames([], virtualParameters);
+  resolveParameterNames([], virtualParameters);
 
   // dolauli see operation.details.default.virtualParameters
   operation.details.default.virtualParameters = virtualParameters;

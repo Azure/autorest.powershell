@@ -26,6 +26,8 @@ function setPropertyNames(schema: Schema) {
   }
   for (const propertySchema of values(schema.properties)) {
     const propertyDetails = propertySchema.language.default;
+    propertyDetails.required = propertySchema.required ?? false;
+    propertyDetails.readOnly = propertySchema.readOnly ?? false;
 
     const className = schema.language.csharp?.name;
 

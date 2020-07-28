@@ -102,7 +102,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
         // now remove the subject from the beginning of the parameter
         // to reduce naming redundancy, but just for path parameters
         // e.g. get-vm -vmname ---> get-vm -name
-        if ((<any>parameter.origin).in === ParameterLocation.Path) {
+        if ((<any>parameter.origin).protocol?.http?.in === ParameterLocation.Path) {
           const sanitizedName = removeProhibitedPrefix(
             parameter.name,
             operation.details.csharp.subject,

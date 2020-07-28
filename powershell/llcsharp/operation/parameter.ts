@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '@azure-tools/codegen-csharp';
-import { Parameter as NewHttpOperationParameter } from '@azure-tools/codemodel';
+import { Parameter as NewHttpOperationParameter, Schema as NewSchema } from '@azure-tools/codemodel';
 import { KnownMediaType } from '@azure-tools/codemodel-v3';
 import { System } from '@azure-tools/codegen-csharp';
 import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';
@@ -163,6 +163,66 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
 
     this.apply(objectInitializer);
     this.description = description || schema.details.csharp.description;
+  }
+
+  public get jsonSerializationStatement(): OneOrMoreStatements {
+    // get the body serialization from the typeDeclaration.
+
+    return '/* body parameter */';//  (<TypeDeclaration>this.type).jsonserialize(this.name);
+  }
+  public get jsonDeserializationStatement(): OneOrMoreStatements {
+    return '/* body parameter */';// (<TypeDeclaration>this.type).jsonDeserializationImplementation(this.name);
+  }
+}
+
+export class NewOperationBodyParameter extends Parameter implements EnhancedVariable {
+  /** emits an expression to deserialize a property from a member inside a container */
+  deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
+    // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
+    return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
+  }
+
+  /** emits an expression to deserialze a container as the value itself. */
+  deserializeFromNode(mediaType: KnownMediaType, node: ExpressionOrLiteral): Expression {
+    // return this.assign(this.typeDeclaration.deserializeFromNode(mediaType, node, this));
+    return this.typeDeclaration.deserializeFromNode(mediaType, node, this);
+  }
+
+  /** emits an expression serialize this to the value required by the container */
+  serializeToNode(mediaType: KnownMediaType, serializedName: string, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToNode(mediaType, this, serializedName, mode);
+  }
+
+  /** emits an expression serialize this to a HttpContent */
+  serializeToContent(mediaType: KnownMediaType, mode: Expression): Expression {
+    return this.typeDeclaration.serializeToContent(mediaType, this, mode);
+  }
+
+  /** emits the code required to serialize this into a container */
+  serializeToContainerMember(mediaType: KnownMediaType, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    return this.typeDeclaration.serializeToContainerMember(mediaType, this, container, serializedName, mode);
+  }
+
+  public validatePresenceStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validatePresence(eventListener, this);
+  }
+  public validationStatement(eventListener: Variable): OneOrMoreStatements {
+    return this.typeDeclaration.validateValue(eventListener, this);
+  }
+  public mediaType: KnownMediaType;
+  public contentType: string;
+
+  public typeDeclaration: NewEnhancedTypeDeclaration;
+
+  constructor(parent: Method, name: string, description: string, schema: NewSchema, required: boolean, state: NewState, objectInitializer?: DeepPartial<NewOperationBodyParameter>) {
+    const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(schema, required, state.path('schema'));
+    super(name, typeDeclaration);
+    this.typeDeclaration = typeDeclaration;
+    this.mediaType = KnownMediaType.Json;
+    this.contentType = KnownMediaType.Json;
+
+    this.apply(objectInitializer);
+    this.description = description || schema.language.csharp?.description || '';
   }
 
   public get jsonSerializationStatement(): OneOrMoreStatements {
