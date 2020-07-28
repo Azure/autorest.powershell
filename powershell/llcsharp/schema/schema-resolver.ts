@@ -207,7 +207,7 @@ export class NewSchemaDefinitionResolver {
           case 64:
             return new NewNumeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
           case 32:
-            new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
           case 128:
             return new NewNumeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
         }

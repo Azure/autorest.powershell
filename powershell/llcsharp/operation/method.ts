@@ -933,23 +933,22 @@ export class NewCallMethod extends Method {
               finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
               yield finalUri;
               break;
-            // skip-for-time-being
-            // case 'azure-asyncoperation':
-            // case 'azure-async-operation':
-            //   // depending on the type of request, do the appropriate behavior
-            //   switch ($this.opMethod.operation.method.toLowerCase()) {
-            //     case 'post':
-            //     case 'delete':
-            //       finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
-            //       yield finalUri;
-            //       break;
-            //     case 'patch':
-            //     case 'put':
-            //       // perform a final GET on the original URI.
-            //       finalUri = originalUri;
-            //       break;
-            //   }
-            //   break;
+            case 'azure-asyncoperation':
+            case 'azure-async-operation':
+              //depending on the type of request, do the appropriate behavior
+              switch ($this.opMethod.operation.requests?.[0].protocol.http?.method.toLowerCase()) {
+                case 'post':
+                case 'delete':
+                  finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Azure-AsyncOperation')));
+                  yield finalUri;
+                  break;
+                case 'patch':
+                case 'put':
+                  // perform a final GET on the original URI.
+                  finalUri = originalUri;
+                  break;
+              }
+              break;
 
             default:
               // depending on the type of request, fall back to the appropriate behavior
