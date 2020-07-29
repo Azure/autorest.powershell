@@ -15,7 +15,7 @@ modelerfour:
 ``` yaml 
 use-extension:
   "@autorest/remodeler" : "~2.1.0" 
-  "@autorest/modelerfour": "4.13.351"
+  "@autorest/modelerfour": "4.15.378"
 
 # will use highest 2.0.x 
 ```

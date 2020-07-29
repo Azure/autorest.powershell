@@ -273,7 +273,6 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
 
     return function* () {
       yield '// actually deserialize ';
-      // skip-for-time-being
       for (const virtualProperty of values(<Array<NewVirtualProperty>>$this.allVirtualProperties)) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
         const type = $this.resolver(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.default.required);
@@ -281,7 +280,6 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
-
         yield `${t}.${NewGetVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${NewGetVirtualPropertyName(virtualProperty)}",${t}.${NewGetVirtualPropertyName(virtualProperty)}, ${cvt});`;
       }
     };

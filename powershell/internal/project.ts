@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary } from '@azure-tools/linq';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewEnhancedTypeDeclaration, Boolean, NewSchemaDefinitionResolver } from '../llcsharp/exports';
+import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewEnhancedTypeDeclaration, Boolean, NewBoolean, NewSchemaDefinitionResolver } from '../llcsharp/exports';
 import { State, NewState } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace, NewEnumNamespace } from '../enums/namespace';
@@ -17,7 +17,7 @@ import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, 
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, BooleanSchema, SchemaType } from '@azure-tools/codemodel';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
@@ -59,18 +59,23 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
   }
 }
 
+export class NewPSSwitch extends NewBoolean {
+  get declaration(): string {
+    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
+  }
+
+}
 export class NewPSSchemaResolver extends NewSchemaDefinitionResolver {
   inResolve = false;
   resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewModelState<PwshModel>): NewEnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
-      // skip-for-time-being
-      // if (!this.inResolve) {
-      //   this.inResolve = true;
-      //   if (schema && schema.type === JsonType.Boolean) {
-      //     return new PSSwitch(schema, required);
-      //   }
-      // }
+      if (!this.inResolve) {
+        this.inResolve = true;
+        if (schema && schema.type === SchemaType.Boolean) {
+          return new NewPSSwitch(<BooleanSchema>schema, required);
+        }
+      }
 
       return super.resolveTypeDeclaration(schema, required, state);
     } finally {

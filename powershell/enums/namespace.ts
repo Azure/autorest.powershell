@@ -129,7 +129,8 @@ export class NewEnumNamespace extends Namespace {
   constructor(parent: Namespace, public state: NewState, objectInitializer?: DeepPartial<EnumNamespace>) {
     super('Support', parent);
     this.apply(objectInitializer);
-    const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]
+    //const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]
+    const enumInfos = [...state.model.schemas.sealedChoices || []]
       .filter((choice) => !choice.language.csharp?.skip)
       .map((choice) => {
         return {

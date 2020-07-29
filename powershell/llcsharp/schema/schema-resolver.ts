@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema } from '@azure-tools/codemodel';
+import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema } from '@azure-tools/codemodel';
 
 import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
@@ -207,7 +207,7 @@ export class NewSchemaDefinitionResolver {
           case 64:
             return new NewNumeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
           case 32:
-            new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+            return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
           case 128:
             return new NewNumeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
         }
@@ -223,6 +223,7 @@ export class NewSchemaDefinitionResolver {
             throw new Error('Unknown Model. Fatal.');
         }
       case SchemaType.Choice:
+        return new NewString(schema, required);
       case SchemaType.SealedChoice:
         return new NewEnumImplementation(schema, required);
       case undefined:

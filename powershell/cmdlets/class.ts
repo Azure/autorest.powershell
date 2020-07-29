@@ -1939,15 +1939,15 @@ export class NewCmdletClass extends Class {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
 });`;
             };
-            if (each instanceof SchemaResponse) {
+            if ((<SchemaResponse>each).schema !== undefined) {
               // the schema should be the error information.
               // this supports both { error { message, code} } and { message, code} 
 
-              let props = getAllPublicVirtualProperties(each.schema.language.csharp?.virtualProperties);
-              const errorProperty = values(props).first(p => p.property.details.csharp.name === 'error');
+              let props = NewGetAllPublicVirtualProperties((<SchemaResponse>each).schema.language.csharp?.virtualProperties);
+              const errorProperty = values(props).first(p => p.property.serializedName === 'error');
               let ep = '';
               if (errorProperty) {
-                props = getAllPublicVirtualProperties(errorProperty.property.schema.details.csharp.virtualProperties);
+                props = NewGetAllPublicVirtualProperties(errorProperty.property.schema.language.csharp?.virtualProperties);
                 ep = `${errorProperty.name}?.`;
               }
 
@@ -1992,42 +1992,41 @@ export class NewCmdletClass extends Class {
               yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
               switch (pageable.responseType) {
                 // the result is (or works like a x-ms-pageable)
-                // skip-for-time-being
-                // case 'pageable':
-                // case 'nested-array': {
-                //   const valueProperty = schema.properties[pageable.itemName];
-                //   const nextLinkProperty = schema.properties[pageable.nextLinkName];
-                //   if (valueProperty && nextLinkProperty) {
-                //     // it's pageable!
-                //     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('await response') });
-                //     yield result.declarationStatement;
-                //     // write out the current contents
-                //     const vp = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
-                //     if (vp) {
-                //       yield `WriteObject(${result.value}.${vp.name},true);`;
-                //     }
-                //     const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.serializedName);
-                //     if (nl) {
-                //       const nextLinkName = `${result.value}.${nl.name}`;
-                //       yield (If(`${nextLinkName} != null`,
-                //         If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
-                //           yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
-                //           yield $this.eventListener.signal(Events.FollowingNextLink);
-                //           yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-                //         })
-                //       ));
-                //     }
-                //     return;
-                //   } else if (valueProperty) {
-                //     // it's just a nested array
-                //     const p = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
-                //     if (p) {
-                //       yield `WriteObject((await response).${p.name}, true);`;
-                //     }
-                //     return;
-                //   }
-                // }
-                //   break;
+                case 'pageable':
+                case 'nested-array': {
+                  const valueProperty = (<ObjectSchema>schema).properties?.find(p => p.serializedName === pageable.itemName);
+                  const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
+                  if (valueProperty && nextLinkProperty) {
+                    // it's pageable!
+                    const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('await response') });
+                    yield result.declarationStatement;
+                    // write out the current contents
+                    const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
+                    if (vp) {
+                      yield `WriteObject(${result.value}.${vp.name},true);`;
+                    }
+                    const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
+                    if (nl) {
+                      const nextLinkName = `${result.value}.${nl.name}`;
+                      yield (If(`${nextLinkName} != null`,
+                        If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
+                          yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
+                          yield $this.eventListener.signal(Events.FollowingNextLink);
+                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                        })
+                      ));
+                    }
+                    return;
+                  } else if (valueProperty) {
+                    // it's just a nested array
+                    const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
+                    if (p) {
+                      yield `WriteObject((await response).${p.name}, true);`;
+                    }
+                    return;
+                  }
+                }
+                  break;
 
                 // it's just an array,
                 case 'array':
@@ -2037,7 +2036,7 @@ export class NewCmdletClass extends Class {
               }
               // ok, let's see if the response type
             }
-            const props = getAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
+            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
 
@@ -2675,15 +2674,14 @@ export class NewCmdletClass extends Class {
             if (typeDeclaration instanceof NewArrayOf) {
               type = typeDeclaration.elementTypeDeclaration;
             } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.[pageableInfo.itemName] === undefined) {
+              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined) {
                 //skip-for-time-being, since operationId does not support in m4 any more
                 //throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
                 throw new Error('An error needs to be more specific');
               }
-              const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.[pageableInfo.itemName].schema;
-              // skip-for-time-being
-              //const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
-              //type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+              const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)?.schema;
+              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+              type = (<NewArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
             } else {
               type = typeDeclaration.declaration;
             }

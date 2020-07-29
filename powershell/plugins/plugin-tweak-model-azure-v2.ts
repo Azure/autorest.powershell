@@ -114,8 +114,9 @@ async function tweakModel(state: State): Promise<PwshModel> {
         };
 
         // LRO 201 and 202 responses are handled internally, so remove any 201/202 responses in the operation
-        // delete operation.responses['201'];
-        // delete operation.responses['202'];
+        operation.responses = (<Array<Response>>(operation.responses)).filter(each => each.protocol.http?.statusCodes[0] !== '201' && each.protocol.http?.statusCodes[0] !== '202');
+        //delete operation.responses['201'];
+        //delete operation.responses['202'];
       }
     }
   }

@@ -13,4 +13,4 @@ export * from './schema/schema-resolver';
 export * from './schema/extended-type-declaration';
 export * from './model/model-class-serializer';
 export * from './schema/enum';
-export { Boolean } from './schema/boolean';
+export { Boolean, NewBoolean } from './schema/boolean';
