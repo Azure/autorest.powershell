@@ -13,7 +13,7 @@ import { EnumImplementation, NewEnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
 import { SchemaDefinitionResolver, NewSchemaDefinitionResolver } from '../schema/schema-resolver';
-import { EnumClass } from '../enums/enum';
+import { EnumClass, NewEnumClass } from '../enums/enum';
 import * as validation from '../validations';
 import { ModelInterface, NewModelInterface } from './interface';
 import { ModelClass, NewModelClass } from './model-class';
@@ -146,9 +146,8 @@ export class ModelsNamespace extends Namespace {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {
-            // skip-for-time-being
-            //new EnumClass(td, state);
-            // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
+            new NewEnumClass(td, state);
+            // return schema.language.csharp.typeDeclaration = <NewEnumClass>ec[0];
           }
         }
         schema.language.csharp = schema.language.csharp || new Language();
@@ -223,9 +222,8 @@ export class NewModelsNamespace extends Namespace {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {
-            // skip-for-time-being
-            //new EnumClass(td, state);
-            // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
+            new NewEnumClass(td, state);
+            // return schema.language.csharp.typeDeclaration = <NewEnumClass>ec[0];
           }
         }
         schema.language.csharp = schema.language.csharp || new Language();
