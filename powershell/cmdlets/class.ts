@@ -1994,8 +1994,8 @@ export class NewCmdletClass extends Class {
                 // the result is (or works like a x-ms-pageable)
                 case 'pageable':
                 case 'nested-array': {
-                  const valueProperty = (<ObjectSchema>schema)?.properties?.[pageable.itemName];
-                  const nextLinkProperty = (<ObjectSchema>schema)?.properties?.[pageable.nextLinkName];
+                  const valueProperty = (<ObjectSchema>schema).properties?.find(p => p.serializedName === pageable.itemName);
+                  const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
                   if (valueProperty && nextLinkProperty) {
                     // it's pageable!
                     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('await response') });
@@ -2036,7 +2036,7 @@ export class NewCmdletClass extends Class {
               }
               // ok, let's see if the response type
             }
-            const props = getAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
+            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
 
@@ -2674,7 +2674,7 @@ export class NewCmdletClass extends Class {
             if (typeDeclaration instanceof NewArrayOf) {
               type = typeDeclaration.elementTypeDeclaration;
             } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.[pageableInfo.itemName] === undefined) {
+              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined) {
                 //skip-for-time-being, since operationId does not support in m4 any more
                 //throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
                 throw new Error('An error needs to be more specific');

@@ -280,10 +280,7 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
-        yield '// 11111111111 ';
-        const res = `${t}.${NewGetVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${NewGetVirtualPropertyName(virtualProperty)}",${t}.${NewGetVirtualPropertyName(virtualProperty)}, ${cvt});`;
         yield `${t}.${NewGetVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${NewGetVirtualPropertyName(virtualProperty)}",${t}.${NewGetVirtualPropertyName(virtualProperty)}, ${cvt});`;
-        yield '// 11111111112 ' + res;
       }
     };
   }

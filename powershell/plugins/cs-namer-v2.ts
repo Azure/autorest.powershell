@@ -175,7 +175,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
 
       operation.language.csharp = {
         ...details, // inherit
-        name: operationGroup.language.default.name + operationName,
+        name: getPascalIdentifier(operationGroup.language.default.name + '_' + operationName),
       };
 
       // parameters are camelCased.
