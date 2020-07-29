@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Schema } from '../code-model';
-import { StringSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema } from '@azure-tools/codemodel';
 import { String, NewString } from './string';
 import { dotnet, toExpression } from '@azure-tools/codegen-csharp';
 
@@ -36,7 +36,7 @@ export class NewEnumImplementation extends NewString {
     return !this.isRequired;
   }
 
-  constructor(schema: StringSchema, isRequired: boolean) {
+  constructor(schema: NewSchema, isRequired: boolean) {
 
     super(schema, isRequired);
   }

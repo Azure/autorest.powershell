@@ -9,6 +9,9 @@ import { DeepPartial, } from '@azure-tools/codegen';
 import { Dictionary, values } from '@azure-tools/linq';
 import { uid } from './uid';
 import { Schema, ObjectSchema, Property, SchemaType } from '@azure-tools/codemodel';
+import { NewEnhancedTypeDeclaration } from '../llcsharp/schema/extended-type-declaration';
+import { NewModelClass } from '../llcsharp/model/model-class';
+import { NewModelInterface } from '../llcsharp/model/interface';
 
 export interface PropertyDetails extends ImplementationDetails {
   required: boolean;
@@ -93,6 +96,15 @@ export interface SchemaDetails extends ImplementationDetails {
   discriminatorValue?: string;
 
   suppressFormat?: boolean;
+
+  typeDeclaration?: NewEnhancedTypeDeclaration;
+  classImplementation?: NewModelClass;
+  interfaceImplementation?: NewModelInterface;
+  internalInterfaceImplementation?: NewModelInterface;
+  interfaceName?: string;
+  internalInterfaceName?: string;
+  fullInternalInterfaceName?: string;
+  fullname?: string;
 }
 
 // export class Schema extends Extensions implements Schema {

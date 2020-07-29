@@ -393,6 +393,7 @@ export /* @internal */ class Inferrer {
           name: pascalCase(each.language.default.name),
           httpParameter
         };
+        each.name = each.language.default.serializedName;
         return each;
       }),
       // skip-for-time-being, this callGraph is used in the header comments

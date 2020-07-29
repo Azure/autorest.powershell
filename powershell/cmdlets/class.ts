@@ -2579,7 +2579,7 @@ export class NewCmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
 
-      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.details.default.serializedName);
+      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
 

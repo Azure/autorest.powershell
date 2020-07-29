@@ -222,7 +222,9 @@ export class NewSchemaDefinitionResolver {
             state.error(`Unsupported constant type. Schema '${schema.language.csharp?.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
             throw new Error('Unknown Model. Fatal.');
         }
-
+      case SchemaType.Choice:
+      case SchemaType.SealedChoice:
+        return new NewEnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
           return new NewEnumImplementation(<StringSchema>schema, required);

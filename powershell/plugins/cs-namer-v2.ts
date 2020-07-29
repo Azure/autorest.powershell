@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 //import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
@@ -14,6 +14,7 @@ import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver, NewSchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
+import { SchemaDetails as NewSchemaDetails } from '../utils/schema';
 
 type State = NewModelState<PwshModel>;
 
@@ -106,27 +107,27 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           namespace: pascalCase([serviceNamespace, '.', 'Models', ...ns]),  // objects have a namespace
           fullname: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${getPascalIdentifier(schemaName)}`,
         };
-      } else if (schema.type === SchemaType.String && schema.language.default.enum) {
+      } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type
-        // Skip for time-being
-        // schema.language.csharp = <SchemaDetails>{
-        //   ...details,
-        //   interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
-        //   name: getPascalIdentifier(schema.language.default.enum.name),
-        //   namespace: pascalCase([serviceNamespace, '.', 'Support']),
-        //   fullname: `${pascalCase([serviceNamespace, '.', 'Support'])}.${getPascalIdentifier(schema.language.default.enum.name)}`,
-        //   enum: {
-        //     ...schema.language.default.enum,
-        //     name: getPascalIdentifier(schema.language.default.enum.name),
-        //     values: schema.language.default.enum.values.map(each => {
-        //       return {
-        //         ...each,
-        //         name: getPascalIdentifier(each.name),
-        //         description: each.description
-        //       };
-        //     })
-        //   }
-        // };
+        const choiceSchema = <ChoiceSchema<StringSchema> | SealedChoiceSchema<StringSchema>>schema;
+        schema.language.csharp = <SchemaDetails>{
+          ...details,
+          interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
+          name: getPascalIdentifier(schemaName),
+          namespace: pascalCase([serviceNamespace, '.', 'Support']),
+          fullname: `${pascalCase([serviceNamespace, '.', 'Support'])}.${getPascalIdentifier(schemaName)}`,
+          enum: {
+            ...schema.language.default.enum,
+            name: getPascalIdentifier(schema.language.default.name),
+            values: choiceSchema.choices.map(each => {
+              return {
+                ...each,
+                name: getPascalIdentifier(each.language.default.name),
+                description: each.language.default.description
+              };
+            })
+          }
+        };
       } else {
         schema.language.csharp = <SchemaDetails>{
           ...details,
@@ -139,21 +140,17 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       }
 
       // name each property in this schema
-      setPropertyNames(<Schema><any>schema);
+      setPropertyNames(schema);
 
       // fix enum names
-      // skip-for-time-being
-      // if (schema.details.default.enum) {
-      //   schema.details.csharp.enum = {
-      //     ...schema.details.default.enum,
-      //     name: getPascalIdentifier(schema.details.default.enum.name)
-      //   };
+      if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
+        schema.language.csharp.enum.name = getPascalIdentifier(schema.language.default.name);
 
-      //   // and the value names themselves
-      //   for (const value of values(schema.details.csharp.enum.values)) {
-      //     value.name = getPascalIdentifier(value.name);
-      //   }
-      // }
+        // and the value names themselves
+        for (const value of values(schema.language.csharp.enum.values)) {
+          (<any>value).name = getPascalIdentifier((<any>value).name);
+        }
+      }
     }
   }
 
