@@ -238,7 +238,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
           property: inlinedProperty.property,
           private: inlinedProperty.private,
           nameComponents: components,
-          nameOptions: getNameOptions(inlinedProperty.property.schema.details.default.name, components),
+          nameOptions: getNameOptions(inlinedProperty.property.schema.language.default.name, components),
           accessViaProperty: privateProperty,
           accessViaMember: inlinedProperty,
           accessViaSchema: schema,
