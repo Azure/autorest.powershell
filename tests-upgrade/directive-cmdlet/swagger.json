@@ -1,0 +1,188 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/VirtualMachine": {
+        "get": {
+          "tags": [
+            "VirtualMachine"
+          ],
+          "operationId": "VirtualMachine_Get",
+          "description": "rename the cmdlet 'Get-VirtualMachine' to 'Get-VM'",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/ConfigurationStore": {
+        "get": {
+          "tags": [
+            "ConfigurationStore"
+          ],
+          "operationId": "ConfigurationStore_Get",
+          "description": "This will change every cmdlet where the subject starts with 'Configuration'",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/ObjectId/Id/{Id}": {
+        "get": {
+          "tags": [
+            "Object"
+          ],
+          "operationId": "Object_Get",
+          "description": "rename the cmdlet.",
+          "parameters": [
+            {"$ref": "#/parameters/Id"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/ResourceGroup": {
+        "get": {
+          "tags": [
+            "ResourceGroup"
+          ],
+          "operationId": "ResourceGroup_Get",
+          "description": "rename the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/MultipleAlias": {
+        "get": {
+          "tags": [
+            "MultipleAlias"
+          ],
+          "operationId": "MultipleAlias_Get",
+          "description": "rename the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/CmdletHide": {
+        "get": {
+          "tags": [
+            "CmdletHide"
+          ],
+          "operationId": "CmdletHide_Get",
+          "description": "Hide the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        },
+        "patch": {
+          "tags": [
+            "CmdletHide"
+          ],
+          "operationId": "CmdletHide_Update",
+          "description": "Hide the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/HideRegexCmdlet": {
+        "get": {
+          "tags": [
+            "HideRegexCmdlet"
+          ],
+          "operationId": "ConfigHide_Get",
+          "description": "Hide the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/Remove": {
+        "get": {
+          "tags": [
+            "Remove"
+          ],
+          "operationId": "Remove_Get",
+          "description": "Remove the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/RegexRemove": {
+        "get": {
+          "tags": [
+            "RegexRemove"
+          ],
+          "operationId": "RegexRemoveTest_Get",
+          "description": "Regex Remove the cmdlet.",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "Id",
+        "in": "path",
+        "type": "string",
+        "required": true
+      }
+    }
+}
