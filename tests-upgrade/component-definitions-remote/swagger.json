@@ -35,30 +35,25 @@
       }
     },
     "paths": {
-      "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}": {
-        "get": {
-          "tags": [
-            "Workspaces"
-          ],
-          "operationId": "Workspaces_Get",
-          "description": "Gets the workspace.",
-          "x-ms-examples": {
-            "Get a workspace": {
-              "$ref": "../examples/WorkspaceGet.json"
-            },
-            "Get a workspace with custom parameters": {
-              "$ref": "../examples/WorkspaceGetParameters.json"
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "OK - Returns the workspace."
-            },
-            "default": {
-              "description": "Error response describing why the operation failed."
-            }
+      "/subscriptions/xxxx-xxxx-xxxx/providers/Microsoft.Databricks/workspaces": {
+          "get": {
+              "tags": [
+                "Workspaces"
+              ],
+              "operationId": "Workspaces_ListBySubscription",
+              "description": "Gets all the workspaces within a subscription.",
+              "responses": {
+                "200": {
+                    "description": "OK - Returns an array of workspaces."
+                },
+                "default": {
+                    "description": "Error response describing why the operation failed.",
+                    "schema": {
+                      "$ref": "../examples/RemoteDefinitions.json#/definitions/ErrorResponse"
+                    }
+                }
+              }
           }
-        }
       }
     }
 }

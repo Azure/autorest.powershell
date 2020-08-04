@@ -552,10 +552,10 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   public get schema() { return this.featureImplementation.schema; }
 
   /* @internal */ validateMethod?: Method;
-  /* @internal */ discriminators: Map<string, ModelClass> = new Map<string, ModelClass>();
-  /* @internal */ parentModelClasses: Array<ModelClass> = new Array<ModelClass>();
-  /* @internal */ get modelInterface(): ModelInterface { return <ModelInterface>this.schema.language.csharp?.interfaceImplementation; }
-  /* @internal */ get internalModelInterface(): ModelInterface { return <ModelInterface>this.schema.language.csharp?.internalInterfaceImplementation; }
+  /* @internal */ discriminators: Map<string, NewModelClass> = new Map<string, NewModelClass>();
+  /* @internal */ parentModelClasses: Array<NewModelClass> = new Array<NewModelClass>();
+  /* @internal */ get modelInterface(): NewModelInterface { return <NewModelInterface>this.schema.language.csharp?.interfaceImplementation; }
+  /* @internal */ get internalModelInterface(): NewModelInterface { return <NewModelInterface>this.schema.language.csharp?.internalInterfaceImplementation; }
 
   /* @internal */  state: NewState;
   /* @internal */  backingFields = new Array<BackingField>();
@@ -586,8 +586,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     // must be a partial class
     this.partial = true;
 
-    //skip-for-time-being
-    //this.handleDiscriminator();
+    this.handleDiscriminator();
 
     // create an interface for this model class
     if (!this.schema.language.csharp.interfaceImplementation) {
@@ -611,12 +610,12 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
 
     // skip-for-time-being
     // handle parent interface implementation
-    // if (!this.handleAllOf()) {
-    //   // handle the AdditionalProperties if used
-    //   if (this.schema.additionalProperties) {
-    //     this.dictionaryImpl = new DictionaryImplementation(this).init();
-    //   }
-    // }
+    if (!this.handleAllOf()) {
+      // handle the AdditionalProperties if used
+      // if (this.schema.additionalProperties) {
+      //   this.dictionaryImpl = new DictionaryImplementation(this).init();
+      // }
+    }
 
     // create the properties for ths schema
     this.createProperties();
@@ -838,7 +837,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     }
   }
 
-  private additionalPropertiesType(aSchema: Schema): TypeDeclaration | undefined {
+  private additionalPropertiesType(aSchema: NewSchema): TypeDeclaration | undefined {
     // skip-for-time-being
     // if (aSchema.additionalProperties) {
 
@@ -859,76 +858,75 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     return undefined;
   }
 
-  // skip-for-time-being
-  // private handleAllOf() {
-  //   let hasAdditionalPropertiesInParent = false;
-  //   // handle <allOf>s
-  //   // add an 'implements' for the interface for the allOf.
-  //   for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.allOf)) {
-  //     const aSchema = eachSchemaValue;
-  //     const aState = this.state.path('allOf', eachSchemaIndex);
+  private handleAllOf() {
+    let hasAdditionalPropertiesInParent = false;
+    // handle <allOf>s
+    // add an 'implements' for the interface for the allOf.
+    for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.parents?.immediate)) {
+      const aSchema = eachSchemaValue;
+      const aState = this.state.path('allOf', eachSchemaIndex);
 
-  //     const td = this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema, true, aState);
-  //     const parentClass = (<ModelClass>aSchema.details.csharp.classImplementation);
-  //     const className = parentClass.fullName;
-  //     const fieldName = camelCase(deconstruct(className.replace(/^.*\./, '')));
+      const td = this.state.project.modelsNamespace.NewResolveTypeDeclaration(aSchema, true, aState);
+      const parentClass = (<ModelClass>aSchema.language.csharp?.classImplementation);
+      const className = parentClass.fullName;
+      const fieldName = camelCase(deconstruct(className.replace(/^.*\./, '')));
 
-  //     // add the interface as a parent to our interface.
-  //     const iface = <ModelInterface>aSchema.details.csharp.interfaceImplementation;
+      // add the interface as a parent to our interface.
+      const iface = <ModelInterface>aSchema.language.csharp?.interfaceImplementation;
 
-  //     // add a field for the inherited values
-  //     const backingField = this.addField(new Field(`__${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for Inherited model <see cref= "${td.declaration}" /> ` }));
-  //     this.backingFields.push({
-  //       className,
-  //       typeDeclaration: td,
-  //       field: backingField
-  //     });
-  //     this.validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
-  //     this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
+      // add a field for the inherited values
+      const backingField = this.addField(new Field(`__${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for Inherited model <see cref= "${td.declaration}" /> ` }));
+      this.backingFields.push({
+        className,
+        typeDeclaration: td,
+        field: backingField
+      });
+      this.validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
+      this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
 
-  //     this.internalModelInterface.interfaces.push(<ModelInterface>aSchema.details.csharp.internalInterfaceImplementation);
-  //     this.modelInterface.interfaces.push(iface);
+      this.internalModelInterface.interfaces.push(<ModelInterface>aSchema.language.csharp?.internalInterfaceImplementation);
+      this.modelInterface.interfaces.push(iface);
 
-  //     //
-  //     const addlPropType = this.additionalPropertiesType(aSchema);
-  //     if (addlPropType) {
-  //       this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
-  //       hasAdditionalPropertiesInParent = true;
-  //     }
-  //   }
-  //   return hasAdditionalPropertiesInParent;
-  // }
+      //
+      const addlPropType = this.additionalPropertiesType(aSchema);
+      if (addlPropType) {
+        // this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
+        // hasAdditionalPropertiesInParent = true;
+      }
+    }
+    return hasAdditionalPropertiesInParent;
+  }
 
-  // private handleDiscriminator() {
-  //   if (this.schema.discriminator) {
-  //     // this has a discriminator property.
-  //     // our children are expected to tell us who they are
-  //     this.isPolymorphic = true;
-  //     // we'll add a deserializer factory method a bit later..
-  //   }
+  private handleDiscriminator() {
+    if (this.schema.discriminator) {
+      // this has a discriminator property.
+      // our children are expected to tell us who they are
+      this.isPolymorphic = true;
+      // we'll add a deserializer factory method a bit later..
+    }
 
-  //   if (this.schema.details.csharp.discriminatorValue) {
-  //     // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
-  //     // um. just how do we *really* know which allOf is polymorphic?
-  //     // that's really sad.
-  //     for (const { key: eachAllOfIndex, value: eachAllOfValue } of items(this.schema.allOf)) {
-  //       const parentSchema = eachAllOfValue;
-  //       const aState = this.state.path('allOf', eachAllOfIndex);
+    if (this.schema.language.csharp?.discriminatorValue) {
+      // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
+      // um. just how do we *really* know which allOf is polymorphic?
+      // that's really sad.
+      for (const { key: eachAllOfIndex, value: eachAllOfValue } of items(this.schema.parents?.immediate)) {
+        const parentSchema = eachAllOfValue;
+        const aState = this.state.path('allOf', eachAllOfIndex);
 
-  //       // ensure the parent schema has it's class created first.
-  //       this.state.project.modelsNamespace.resolveTypeDeclaration(parentSchema, true, aState);
+        // ensure the parent schema has it's class created first.
+        this.state.project.modelsNamespace.NewResolveTypeDeclaration(parentSchema, true, aState);
 
-  //       const parentClass = <ModelClass>parentSchema.details.csharp.classImplementation;
-  //       if (parentClass.isPolymorphic) {
-  //         // remember this class for later.
-  //         this.parentModelClasses.push(parentClass);
+        const parentClass = <NewModelClass>parentSchema.language.csharp?.classImplementation;
+        if (parentClass.isPolymorphic) {
+          // remember this class for later.
+          this.parentModelClasses.push(parentClass);
 
-  //         // tell that parent who we are.
-  //         parentClass.addDiscriminator(this.schema.details.csharp.discriminatorValue, this);
-  //       }
-  //     }
-  //   }
-  // }
+          // tell that parent who we are.
+          parentClass.addDiscriminator(this.schema.language.csharp.discriminatorValue, this);
+        }
+      }
+    }
+  }
   private addHeaderDeserializer() {
     const avp = getAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
     const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
@@ -960,7 +958,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     return this.featureImplementation.validatePresence(eventListener, property);
   }
 
-  public addDiscriminator(discriminatorValue: string, modelClass: ModelClass) {
+  public addDiscriminator(discriminatorValue: string, modelClass: NewModelClass) {
     this.discriminators.set(discriminatorValue, modelClass);
 
     // tell any polymorphic parents incase we're doing subclass of a subclass.

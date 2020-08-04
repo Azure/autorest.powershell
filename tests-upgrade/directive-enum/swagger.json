@@ -35,27 +35,41 @@
       }
     },
     "paths": {
-      "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}": {
+      "/subscriptions/resourceGroup": {
         "get": {
           "tags": [
             "Workspaces"
           ],
           "operationId": "Workspaces_Get",
           "description": "Gets the workspace.",
-          "x-ms-examples": {
-            "Get a workspace": {
-              "$ref": "../examples/WorkspaceGet.json"
-            },
-            "Get a workspace with custom parameters": {
-              "$ref": "../examples/WorkspaceGetParameters.json"
-            }
-          },
           "responses": {
             "200": {
-              "description": "OK - Returns the workspace."
-            },
-            "default": {
-              "description": "Error response describing why the operation failed."
+                "description": "OK-Return workspace."
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "CanonicalSupportPlanProperties": {
+        "type": "object",
+        "description": "The properties of the Canonical support plan.",
+        "properties": {
+          "provisioningState": {
+            "type": "string",
+            "description": "The provisioning state of the resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Cancelled",
+              "Purchasing",
+              "Downgrading",
+              "Cancelling",
+              "Upgrading"
+            ],
+            "x-ms-enum": {
+              "name": "ProvisioningState",
+              "modelAsString": true
             }
           }
         }

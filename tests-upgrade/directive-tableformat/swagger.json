@@ -35,30 +35,41 @@
       }
     },
     "paths": {
-      "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}": {
+      "/TableFormatting": {
         "get": {
           "tags": [
-            "Workspaces"
+            "TableFormatting"
           ],
-          "operationId": "Workspaces_Get",
-          "description": "Gets the workspace.",
-          "x-ms-examples": {
-            "Get a workspace": {
-              "$ref": "../examples/WorkspaceGet.json"
-            },
-            "Get a workspace with custom parameters": {
-              "$ref": "../examples/WorkspaceGetParameters.json"
-            }
-          },
+          "operationId": "TableFormatting_Get",
+          "description": "Table Formatting",
           "responses": {
             "200": {
-              "description": "OK - Returns the workspace."
-            },
-            "default": {
-              "description": "Error response describing why the operation failed."
+              "description": "OK"
             }
           }
         }
+      }
+    },
+    "definitions": {
+      "VirtualMachine": {
+        "description": "The core properties of ARM resources",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "Fully qualified VirtualMachine Id for the VirtualMachine. "
+          },
+          "name": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The name of the VirtualMachine"
+          },
+          "ResourceGroup": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The type of the resource."
+          }
+        }      
       }
     }
 }
