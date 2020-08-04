@@ -398,10 +398,10 @@ ${this.validateEnum(eventListener, property)}
     return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${pattern}");`;
   }
   private validateEnum(eventListener: Variable, property: Variable): string {
-    if (this.schema.type !== SchemaType.Choice && this.schema.type !== SchemaType.SealedChoice) {
+    if (this.schema.type !== SchemaType.SealedChoice) {
       return '';
     }
-    const choiceValues = (<ChoiceSchema | SealedChoiceSchema>this.schema).choices.map((c) => c.value);
+    const choiceValues = (<SealedChoiceSchema>this.schema).choices.map((c) => c.value);
     return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${choiceValues.joinWith((v) => `@"${v}"`)});`;
   }
 }
