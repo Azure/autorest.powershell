@@ -35,27 +35,24 @@
       }
     },
     "paths": {
-      "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}": {
+      "/users": {
         "get": {
           "tags": [
-            "Workspaces"
+            "users"
           ],
-          "operationId": "Workspaces_Get",
-          "description": "Gets the workspace.",
-          "x-ms-examples": {
-            "Get a workspace": {
-              "$ref": "../examples/WorkspaceGet.json"
-            },
-            "Get a workspace with custom parameters": {
-              "$ref": "../examples/WorkspaceGetParameters.json"
+          "operationId": "users_Get",
+          "description": "get user list.",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "role",
+              "type": "string",
+              "required": true
             }
-          },
+          ],
           "responses": {
             "200": {
-              "description": "OK - Returns the workspace."
-            },
-            "default": {
-              "description": "Error response describing why the operation failed."
+              "description": "OK"
             }
           }
         }
