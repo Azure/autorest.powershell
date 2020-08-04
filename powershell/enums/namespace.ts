@@ -130,7 +130,7 @@ export class NewEnumNamespace extends Namespace {
     super('Support', parent);
     this.apply(objectInitializer);
     //const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]
-    const enumInfos = [...state.model.schemas.sealedChoices || []]
+    const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]
       .filter((choice) => !choice.language.csharp?.skip)
       .map((choice) => {
         return {
