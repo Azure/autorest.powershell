@@ -128,7 +128,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
         alias: [],
-        required: virtualProperty.required, //|| !!values(schema.required).first(each => !!each && !!each.toLowerCase && each.toLowerCase() === virtualProperty.property.details.default.name.toLowerCase()),
+        required: virtualProperty.required || !!values(<Array<any>>virtualProperty.originalContainingSchema.properties).first(each => !!each && !!each.required && !!each.serializedName && each.serializedName.toLowerCase() === virtualProperty.property.language.default.name.toLowerCase()),
         sharedWith: virtualProperty.sharedWith,
       };
       // add it to the list of virtual properties that share this property.
@@ -190,7 +190,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         description: property.summary || '',
         originalContainingSchema: schema,
         alias: [],
-        required: property.language.default.required,
+        required: !!property.required,
       };
       virtualProperties.owned.push(privateProperty);
 
@@ -268,7 +268,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       description: property.summary || '',
       originalContainingSchema: schema,
       alias: [],
-      required: property.language.default.required
+      required: !!property.required
     });
   }
 
