@@ -8,7 +8,7 @@ import { Extensions } from './extensions';
 import { DeepPartial, } from '@azure-tools/codegen';
 import { Dictionary, values } from '@azure-tools/linq';
 import { uid } from './uid';
-import { Schema, ObjectSchema, Property, SchemaType } from '@azure-tools/codemodel';
+import { Schema, ObjectSchema, Property, SchemaType, isObjectSchema } from '@azure-tools/codemodel';
 import { NewEnhancedTypeDeclaration } from '../llcsharp/schema/extended-type-declaration';
 import { NewModelClass } from '../llcsharp/model/model-class';
 import { NewModelInterface } from '../llcsharp/model/interface';
@@ -138,7 +138,7 @@ export function getPolymorphicBases(schema: Schema): Array<Schema> {
 }
 
 export function getAllProperties(schema: Schema): Array<Property> {
-  if (schema instanceof ObjectSchema) {
+  if (isObjectSchema(schema)) {
     return [...values(schema.parents ? schema.parents.immediate : []).selectMany(getAllProperties), ...values(schema.properties)];
   } else {
     return [];

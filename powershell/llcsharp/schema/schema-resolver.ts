@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema } from '@azure-tools/codemodel';
+import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema } from '@azure-tools/codemodel';
 
 import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
@@ -185,6 +185,9 @@ export class NewSchemaDefinitionResolver {
         return new NewString(<StringSchema>schema, required);
 
       }
+
+      case SchemaType.DateTime:
+        return new NewDateTime(<DateTimeSchema>schema, required);
 
       case SchemaType.Boolean:
         return new NewBoolean(<BooleanSchema>schema, required);
