@@ -200,7 +200,8 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
         // per responseCode
         const response = <SchemaResponse>rsp;
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state) : undefined;
-        // const headerTypeDefinition = response.headerSchema ? resolver.resolveTypeDeclaration(<any>response.headerSchema, true, state.path('schemas', response.headerSchema.details.default.name)) : undefined;
+        const headerSchema = response.language.default.headerSchema;
+        const headerTypeDefinition = headerSchema ? resolver.resolveTypeDeclaration(<any>headerSchema, true, state.path('schemas', headerSchema.language.default.name)) : undefined;
         let code = (System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]] ? System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]].value : response.protocol.http?.statusCodes[0]).replace('global::System.Net.HttpStatusCode', '');
         let rawValue = code.replace(/\./, '');
         if (response.protocol.http?.statusCodes[0] === 'default' || rawValue === 'default' || '') {
@@ -211,7 +212,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
         response.language.csharp = {
           ...response.language.default,
           responseType: responseTypeDefinition ? responseTypeDefinition.declaration : '',
-          headerType: '',
+          headerType: headerTypeDefinition ? headerTypeDefinition.declaration : '',
           name: (length(response.protocol.http?.mimeTypes) <= 1) ?
             camelCase(fixLeadingNumber(deconstruct(`on ${code}`))) : // the common type (or the only one.)
             camelCase(fixLeadingNumber(deconstruct(`on ${code} ${response.protocol.http?.mimeTypes[0]}`))),

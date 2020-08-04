@@ -184,6 +184,11 @@ export class NewModelsNamespace extends Namespace {
         this.NewResolveTypeDeclaration(schema, true, <NewState>state);
       }
     }
+    if (schemas.sealedChoices) {
+      for (const schema of schemas.sealedChoices) {
+        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+      }
+    }
     //todo, need to add support for other types
 
   }

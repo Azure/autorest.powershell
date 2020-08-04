@@ -181,6 +181,7 @@ export class NewSchemaDefinitionResolver {
         }
         return this.add(schema, new NewObjectImplementation(<ObjectSchema>schema));
       }
+      case SchemaType.SealedChoice:
       case SchemaType.String: {
         return new NewString(<StringSchema>schema, required);
 
@@ -226,8 +227,6 @@ export class NewSchemaDefinitionResolver {
             throw new Error('Unknown Model. Fatal.');
         }
       case SchemaType.Choice:
-        return new NewString(schema, required);
-      case SchemaType.SealedChoice:
         return new NewEnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
