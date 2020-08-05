@@ -21,6 +21,7 @@ import { llcsharpV2 } from './plugins/llcsharp-v2';
 import { powershellV2 } from './plugins/powershell-v2';
 import { addCompleterV2 } from './plugins/add-azure-completers-v2';
 import { applyModifiersV2 } from './plugins/modifiers-v2';
+import { tweakM4ModelPlugin } from './plugins/plugin-tweak-m4-model';
 
 require('source-map-support').install();
 
@@ -34,6 +35,7 @@ export async function main() {
   pluginHost.Add('csnamer', csnamer);
   pluginHost.Add('llcsharp', llcsharp);
   // Following are plugins moved from remodeler
+  pluginHost.Add('tweakm4codemodel', tweakM4ModelPlugin);
   pluginHost.Add('tweakcodemodel-v2', tweakModelPlugin);
   pluginHost.Add('tweakcodemodelazure-v2', tweakModelAzurePluginV2);
   pluginHost.Add('create-virtual-properties-v2', createInlinedPropertiesPlugin);

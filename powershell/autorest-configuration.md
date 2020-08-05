@@ -119,8 +119,14 @@ pipeline:
     input: tweakcodemodel
 
 # --- extension powershell based on modelerfour
-  tweakcodemodel-v2:
+
+  # Fix the code model gap between m3 and m4
+  tweakm4codemodel:
     input: modelerfour/identity
+
+  tweakcodemodel-v2:
+    input: tweakm4codemodel
+    # input: clicommon/identity
   
   tweakcodemodelazure-v2:
     input: tweakcodemodel-v2
@@ -446,4 +452,17 @@ verb-mapping:
   Write: Write
 ```
 
-
+``` yaml 
+cli:
+    reason: 'Keep same as modelerfour'
+    naming:
+        default:
+            parameter: 'camel'
+            property: 'camel'
+            operation: 'pascal'
+            operationGroup:  'pascal'
+            choice:  'pascal'
+            choiceValue:  'pascal'
+            constant:  'pascal'
+            type:  'pascal'
+```
