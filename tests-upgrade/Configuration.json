@@ -31,7 +31,8 @@
     "extension-ms-discriminatorvalue",
     "extension-ms-examples",
     "extension-ms-longruningoperation",
-    "extension-ms-pageable"
+    "extension-ms-pageable",
+    "datamodels-combineschema"
   ],
   "BlackList": [
     "basic-get-querystr",
