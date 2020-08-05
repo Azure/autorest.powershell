@@ -17,7 +17,7 @@ import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, 
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
-import { Schema as NewSchema, BooleanSchema, SchemaType } from '@azure-tools/codemodel';
+import { BooleanSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 

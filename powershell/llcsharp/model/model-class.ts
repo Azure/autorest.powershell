@@ -18,7 +18,7 @@ import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } f
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 import { Languages, Language, Schema as NewSchema } from '@azure-tools/codemodel';
-import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
+import { VirtualProperty as NewVirtualProperty, getAllVirtualProperties as newGetAllVirtualProperties } from '../../utils/schema';
 
 export function getVirtualPropertyName(vp?: VirtualProperty): string {
 
@@ -928,23 +928,23 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     }
   }
   private addHeaderDeserializer() {
-    const avp = getAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
+    const avp = newGetAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
     const headers = new Parameter('headers', System.Net.Http.Headers.HttpResponseHeaders);
     const readHeaders = new Method(`${ClientRuntime.IHeaderSerializable}.ReadHeaders`, undefined, {
       access: Access.Explicit,
       parameters: [headers],
     });
 
-    const used = false;
+    let used = false;
 
-    // skip-for-time-being
-    // for (const headerProperty of values(avp).where(each => each.property.details.csharp[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.details.csharp[HeaderProperty] === HeaderPropertyType.Header)) {
-    //   used = true;
-    //   const t = `((${headerProperty.originalContainingSchema.details.csharp.fullInternalInterfaceName})this)`;
-    //   const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
-    //   const td = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>headerProperty.property.schema, false, this.state.path('schema'));
-    //   readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values, td.defaultOfType)};`));
-    // }
+    for (const headerProperty of values(avp).where(each => each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.Header)) {
+      used = true;
+      headerProperty.property.schema
+      const t = `((${headerProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
+      const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
+      const td = this.state.project.modelsNamespace.NewResolveTypeDeclaration(headerProperty.property.schema, false, this.state);
+      readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values, td.defaultOfType)};`));
+    }
     if (used) {
       this.interfaces.push(ClientRuntime.IHeaderSerializable);
       this.add(readHeaders);
