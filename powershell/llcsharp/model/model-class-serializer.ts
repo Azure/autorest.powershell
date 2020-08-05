@@ -30,7 +30,7 @@ import { popTempVar, pushTempVar } from '../schema/primitive';
 import { ModelProperty } from './property';
 import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
 import { getVirtualPropertyName, NewGetVirtualPropertyName } from './model-class';
 import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
@@ -244,27 +244,33 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
       yield `${$this.beforeDeserialize.name}(${$this.contentParameter}, ref ${returnNow.value});`;
       yield If(returnNow, 'return;');
       yield $this.deserializeStatements;
-      // skip-for-time-being
-      // if ($this.hasAadditionalProperties($this.schema)) {
-      //   // this type has an additional properties dictionary
-      //   yield '// this type is a dictionary; copy elements from source to here.';
-      //   yield `CopyFrom(${$this.contentParameter.value});`;
-      // }
+
+      if ($this.hasAadditionalProperties($this.schema)) {
+        // this type has an additional properties dictionary
+        yield '// this type is a dictionary; copy elements from source to here.';
+        yield `CopyFrom(${$this.contentParameter.value});`;
+      }
 
       yield `${$this.afterDeserialize.name}(${$this.contentParameter});`;
     });
   }
 
-  private hasAadditionalProperties(aSchema: Schema): boolean {
-    if (aSchema.additionalProperties) {
+  private hasAadditionalProperties(aSchema: NewSchema): boolean {
+    if (aSchema.type === SchemaType.Dictionary) {
       return true;
-    } else
-      for (const each of values(aSchema.allOf)) {
-        const r = this.hasAadditionalProperties(each);
-        if (r) {
-          return r;
-        }
+    }
+    if (aSchema.type !== SchemaType.Object) {
+      return false;
+    }
+    const objSchema = (<ObjectSchema>aSchema).parents?.immediate;
+    if (!objSchema || objSchema.length === 0) {
+      return false;
+    }
+    for (const parent of objSchema) {
+      if (this.hasAadditionalProperties(parent)) {
+        return true;
       }
+    }
     return false;
   }
 

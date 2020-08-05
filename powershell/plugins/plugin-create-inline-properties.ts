@@ -158,11 +158,11 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     // this happens if there is a circular reference.
     // this means that this class should not attempt any inlining of that property at all .
     // dolauli pay attention to the condition check
+    const isDict = property.schema.type === SchemaType.Dictionary || (<ObjectSchema>property.schema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary);
     const canInline =
       // (!property.schema.details.default['skip-inline']) &&
       (!<ObjectSchema>property.schema.language.default.byReference) &&
-      // no additionalProperties in m4
-      //(!(<ObjectSchema>property.schema).additionalProperties) &&
+      (!isDict) &&
       (<ObjectSchema>property.schema).language.default.inline === 'yes';
 
     // the target has properties that we can inline
@@ -190,7 +190,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         description: property.summary || '',
         originalContainingSchema: schema,
         alias: [],
-        required: !!property.required,
+        required: property.required || property.language.default.required,
       };
       virtualProperties.owned.push(privateProperty);
 
@@ -268,7 +268,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       description: property.summary || '',
       originalContainingSchema: schema,
       alias: [],
-      required: !!property.required
+      required: property.required || property.language.default.required
     });
   }
 
