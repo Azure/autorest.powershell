@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { CodeModel, HttpHeader, ObjectSchema, Property } from '@azure-tools/codemodel';
+import { CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@azure-tools/codemodel';
 import { serialize } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
@@ -10,13 +10,16 @@ import { StatusCodes } from '../utils/http-definitions';
 
 import { Host } from '@azure-tools/autorest-extension-base';
 
-
 type State = NewModelState<PwshModel>;
 
 async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
 
   addResponseHeaderSchema(model);
+
+  addDictionaryApiVersion(model);
+
+  removeDictionaryDefaultDescription(model);
 
   return model;
 }
@@ -76,8 +79,60 @@ function addResponseHeaderSchema(model: CodeModel) {
   });
 }
 
+function addDictionaryApiVersion(model: CodeModel) {
+  // If object has dictionary property, this property's schema does not have api version information in m4. We should add this back.
+
+  model.schemas.objects?.forEach((schema) => {
+    if (!schema.apiVersions) {
+      return;
+    }
+
+    for (const prop of getAllProperties(schema)) {
+      if (prop.schema.type !== SchemaType.Dictionary || prop.schema.apiVersions) {
+        continue;
+      }
+      const dictSchema = prop.schema as DictionarySchema;
+      dictSchema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
+    }
+  })
+}
+
+function removeDictionaryDefaultDescription(model: CodeModel) {
+  // For dictionary schema and property, if there is no description assigned, m4 will set a default description like: Dictionary of <type>
+  // To keep same action as m3, we will set it to empty string
+
+  const visited = new Set<Schema>();
+  [...model.schemas.objects ?? [], ...model.schemas.dictionaries ?? []].forEach((schema) => {
+    recursiveRemoveDefaultDescription(schema, visited);
+  })
+}
+
+function recursiveRemoveDefaultDescription(schema: Schema, visited: Set<Schema>) {
+  if (visited.has(schema) || (schema.type !== SchemaType.Object && schema.type !== SchemaType.Dictionary)) {
+    return;
+  }
+  // Default description pattern in m4
+  const defaultDescPattern = /Dictionary of <.*>$/;
+  visited.add(schema);
+  if (schema.type === SchemaType.Dictionary) {
+    const dictSchema = schema as DictionarySchema;
+    recursiveRemoveDefaultDescription(dictSchema.elementType, visited);
+    if (defaultDescPattern.test(dictSchema.language.default.description)) {
+      dictSchema.language.default.description = '';
+    }
+  } else if (schema.type === SchemaType.Object) {
+    const objSchema = schema as ObjectSchema;
+    for (const prop of getAllProperties(objSchema)) {
+      recursiveRemoveDefaultDescription(prop.schema, visited);
+      if (prop.schema.type === SchemaType.Dictionary && defaultDescPattern.test(prop.language.default.description)) {
+        prop.language.default.description = '';
+      }
+    }
+  }
+}
+
 
 export async function tweakM4ModelPlugin(service: Host) {
   const state = await new NewModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-tweakm4codemodel.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  service.WriteFile('code-model-v4-tweakm4codemodel.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

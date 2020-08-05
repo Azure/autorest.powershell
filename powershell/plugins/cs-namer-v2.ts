@@ -95,7 +95,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       thisNamespace.add(schemaName);
 
       // object types.
-      if (schema.type === SchemaType.Object) {
+      if (schema.type === SchemaType.Object || schema.type === SchemaType.Dictionary) {
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
