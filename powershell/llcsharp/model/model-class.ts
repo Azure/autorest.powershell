@@ -16,8 +16,8 @@ import { JsonSerializableClass, NewJsonSerializableClass } from './model-class-j
 import { ModelProperty, NewModelProperty } from './property';
 import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
-import { DictionaryImplementation } from './model-class-dictionary';
-import { Languages, Language, Schema as NewSchema } from '@azure-tools/codemodel';
+import { DictionaryImplementation, NewDictionaryImplementation } from './model-class-dictionary';
+import { Languages, Language, Schema as NewSchema, SchemaType, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
 import { VirtualProperty as NewVirtualProperty, getAllVirtualProperties as newGetAllVirtualProperties } from '../../utils/schema';
 
 export function getVirtualPropertyName(vp?: VirtualProperty): string {
@@ -563,7 +563,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   /* @internal */  validationEventListener: Parameter = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
   /* @internal */  jsonSerializer?: NewJsonSerializableClass;
   // /* @internal */  xmlSerializer?: XmlSerializableClass;
-  /* @internal */  dictionaryImpl?: DictionaryImplementation;
+  /* @internal */  dictionaryImpl?: NewDictionaryImplementation;
 
   private readonly validationStatements = new Statements();
   public ownedProperties = new Array<NewModelProperty>();
@@ -608,13 +608,14 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     // add default constructor
     this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
 
-    // skip-for-time-being
     // handle parent interface implementation
     if (!this.handleAllOf()) {
       // handle the AdditionalProperties if used
-      // if (this.schema.additionalProperties) {
-      //   this.dictionaryImpl = new DictionaryImplementation(this).init();
-      // }
+      const dictSchema = (<NewSchema>this.schema).type === SchemaType.Dictionary ? this.schema :
+        this.schema.parents?.immediate?.find((schema) => schema.type === SchemaType.Dictionary);
+      if (dictSchema) {
+        this.dictionaryImpl = new NewDictionaryImplementation(this).init();
+      }
     }
 
     // create the properties for ths schema
@@ -684,7 +685,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
           }
         }
       };
-      // skip-for-time-being
+
       /* Owned Properties */
       for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.owned))) {
         const actualProperty = virtualProperty.property;
@@ -838,23 +839,25 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   }
 
   private additionalPropertiesType(aSchema: NewSchema): TypeDeclaration | undefined {
-    // skip-for-time-being
-    // if (aSchema.additionalProperties) {
+    const schema = aSchema.type === SchemaType.Dictionary ? aSchema :
+      aSchema.type === SchemaType.Object ? (<ObjectSchema>aSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+        undefined;
+    if (schema) {
+      const dictSchema = schema as DictionarySchema;
+      if (dictSchema.elementType.type === SchemaType.Any) {
+        return System.Object;
 
-    //   if (aSchema.additionalProperties === true) {
-    //     return System.Object;
-
-    //   } else {
-    //     // we're going to implement IDictionary<string, schema.additionalProperties>
-    //     return this.state.project.modelsNamespace.resolveTypeDeclaration(aSchema.additionalProperties, true, this.state);
-    //   }
-    // } else
-    //   for (const each of values(aSchema.allOf)) {
-    //     const r = this.additionalPropertiesType(each);
-    //     if (r) {
-    //       return r;
-    //     }
-    //   }
+      } else {
+        // we're going to implement IDictionary<string, schema.additionalProperties>
+        return this.state.project.modelsNamespace.NewResolveTypeDeclaration(dictSchema.elementType, true, this.state);
+      }
+    } else
+      for (const each of values((<ObjectSchema>aSchema).parents?.immediate)) {
+        const r = this.additionalPropertiesType(each);
+        if (r) {
+          return r;
+        }
+      }
     return undefined;
   }
 
@@ -863,6 +866,9 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     // handle <allOf>s
     // add an 'implements' for the interface for the allOf.
     for (const { key: eachSchemaIndex, value: eachSchemaValue } of items(this.schema.parents?.immediate)) {
+      if (eachSchemaValue.type === SchemaType.Dictionary) {
+        continue;
+      }
       const aSchema = eachSchemaValue;
       const aState = this.state.path('allOf', eachSchemaIndex);
 
@@ -890,8 +896,8 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       //
       const addlPropType = this.additionalPropertiesType(aSchema);
       if (addlPropType) {
-        // this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
-        // hasAdditionalPropertiesInParent = true;
+        this.dictionaryImpl = new NewDictionaryImplementation(this).init(addlPropType, backingField);
+        hasAdditionalPropertiesInParent = true;
       }
     }
     return hasAdditionalPropertiesInParent;

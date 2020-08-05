@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
@@ -2412,21 +2412,23 @@ export class NewCmdletClass extends Class {
             // }
             cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
           }
-          //skip-for-time-being
-          // if (vSchema.additionalProperties) {
-          //   // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
-          //   // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
-          //   // if it's a standalone dictionary, we can just use hashtable instead
-          //   if (length(vSchema.properties) === 0) {
-          //     // it's a pure dictionary
-          //     // add an attribute for changing the exported type.
-          //     cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
-          //   } else {
-          //     // it's a hybrid. We need to add an additional property that puts its items into the target container
+          const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
+            vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+              undefined;
+          if (dictSchema) {
+            // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
+            // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
+            // if it's a standalone dictionary, we can just use hashtable instead
+            if (length((<ObjectSchema>vSchema).properties) === 0) {
+              // it's a pure dictionary
+              // add an attribute for changing the exported type.
+              cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+            } else {
+              // it's a hybrid. We need to add an additional property that puts its items into the target container
 
-          //   }
+            }
 
-          // }
+          }
 
           const desc = (vParam.description || '.').replace(/[\r?\n]/gm, '');
           cmdletParameter.description = desc;
@@ -2478,31 +2480,34 @@ export class NewCmdletClass extends Class {
 
           this.add(cmdletParameter);
         }
-        // skip-for-time-being
-        // if (parameter.schema.additionalProperties) {
-        //   // if there is an additional properties on this type
-        //   // add a hashtable parameter for additionalProperties
-        //   let apPropName = '';
-        //   const options = ['AdditionalProperties', 'MoreProperties', 'ExtendedProperties', 'Properties'];
-        //   for (const n of options) {
-        //     if (this.properties.find(each => each.name === n)) {
-        //       continue;
-        //     }
-        //     apPropName = n;
-        //     break;
-        //   }
+        const paramDictSchema = parameter.schema.type === SchemaType.Dictionary ? parameter.schema :
+          parameter.schema.type === SchemaType.Object ? (<ObjectSchema>parameter.schema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+            undefined;
+        if (paramDictSchema) {
+          // if there is an additional properties on this type
+          // add a hashtable parameter for additionalProperties
+          let apPropName = '';
+          const options = ['AdditionalProperties', 'MoreProperties', 'ExtendedProperties', 'Properties'];
+          for (const n of options) {
+            if (this.properties.find(each => each.name === n)) {
+              continue;
+            }
+            apPropName = n;
+            break;
+          }
 
-        //   this.apProp = this.add(new Property(apPropName, System.Collections.Hashtable));
-        //   this.apProp.add(new Attribute(ParameterAttribute, {
-        //     parameters: ['Mandatory = false', 'HelpMessage = "Additional Parameters"']
-        //   }));
-        //   this.bodyParameterInfo = {
-        //     type: {
-        //       declaration: parameter.schema.details.csharp.fullname
-        //     },
-        //     valueType: parameter.schema.additionalProperties === true ? System.Object : this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema.additionalProperties, true, this.state)
-        //   };
-        // }
+          this.apProp = this.add(new Property(apPropName, System.Collections.Hashtable));
+          this.apProp.add(new Attribute(ParameterAttribute, {
+            parameters: ['Mandatory = false', 'HelpMessage = "Additional Parameters"']
+          }));
+          this.bodyParameterInfo = {
+            type: {
+              declaration: parameter.schema.language.csharp?.fullname
+            },
+            valueType: (<DictionarySchema>paramDictSchema).elementType.type === SchemaType.Any ? System.Object :
+              this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<DictionarySchema>paramDictSchema).elementType, true, this.state)
+          };
+        }
 
         this.bodyParameter = expandedBodyParameter;
         continue;
@@ -2550,22 +2555,24 @@ export class NewCmdletClass extends Class {
           description: vParam.description
         }));
 
-      // skip-for-time-being
-      // if (vSchema.additionalProperties) {
-      //   // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
-      //   // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
-      //   // if it's a standalone dictionary, we can just use hashtable instead
-      //   if (length(vSchema.properties) === 0) {
-      //     // it's a pure dictionary
-      //     // change the property type to hashtable.
-      //     // add an attribute to change the exported type.
-      //     regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
-      //   } else {
-      //     // it's a hybrid. We need to add an additional property that puts its items into the target container
+      const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
+        vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+          undefined;
+      if (dictSchema) {
+        // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
+        // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
+        // if it's a standalone dictionary, we can just use hashtable instead
+        if (length((<ObjectSchema>vSchema).properties) === 0) {
+          // it's a pure dictionary
+          // change the property type to hashtable.
+          // add an attribute to change the exported type.
+          regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+        } else {
+          // it's a hybrid. We need to add an additional property that puts its items into the target container
 
-      //   }
+        }
 
-      // }
+      }
 
       this.thingsToSerialize.push(regularCmdletParameter);
 

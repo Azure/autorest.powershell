@@ -174,6 +174,8 @@ export class NewSchemaDefinitionResolver {
         return new NewArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
       }
 
+      case SchemaType.Any:
+      case SchemaType.Dictionary:
       case SchemaType.Object: {
         const result = schema.language.csharp && this.cache.get(schema.language.csharp.fullname || '');
         if (result) {

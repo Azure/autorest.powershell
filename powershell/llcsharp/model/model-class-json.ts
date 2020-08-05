@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Schema as NewSchema, ObjectSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, ObjectSchema, SchemaType } from '@azure-tools/codemodel';
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from '@azure-tools/codemodel-v3';
 import { getAllProperties as newGetAllProperties } from '@azure-tools/codemodel';
 import { EOL, DeepPartial, } from '@azure-tools/codegen';
@@ -25,7 +25,7 @@ import { ClientRuntime } from '../clientruntime';
 
 import { dotnet } from '@azure-tools/codegen-csharp';
 import { ModelClass, NewModelClass } from './model-class';
-import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
@@ -310,8 +310,11 @@ export class NewJsonSerializableClass extends Class {
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      const sch = (<EnhancedTypeDeclaration>each.typeDeclaration).schema;
-      if (!(sch instanceof NewSchema) && (sch.additionalProperties)) {
+      const sch = (<NewEnhancedTypeDeclaration>each.typeDeclaration).schema;
+      const dictSchema = sch.type === SchemaType.Dictionary ? sch :
+        sch.type === SchemaType.Object ? (<ObjectSchema>sch).parents?.immediate.find((s) => s.type === SchemaType.Dictionary) :
+          undefined;
+      if (dictSchema) {
         deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
       } else {
         deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
