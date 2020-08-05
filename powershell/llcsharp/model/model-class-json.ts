@@ -389,16 +389,15 @@ export class NewJsonSerializableClass extends Class {
         yield If(Not(json.check), Return(dotnet.Null));
         yield '// Polymorphic type -- select the appropriate constructor using the discriminator';
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
-        // skip-for-time-being
-        // if ($this.schema.discriminator) {
-        //   yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.propertyName}")`), function* () {
-        //     for (const { key, value } of items(d)) {
-        //       yield TerminalCase(`"${key}"`, function* () {
-        //         yield Return(value.new(json));
-        //       });
-        //     }
-        //   });
-        // }
+        if ($this.schema.discriminator) {
+          yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.property.serializedName}")`), function* () {
+            for (const { key, value } of items(d)) {
+              yield TerminalCase(`"${key}"`, function* () {
+                yield Return(value.new(json));
+              });
+            }
+          });
+        }
         yield Return($this.new(json, toExpression($excludes.substring(1))));
       } else {
         // just tell it to create the instance (providing that it's a JSonObject)

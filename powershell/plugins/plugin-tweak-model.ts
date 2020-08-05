@@ -2,10 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, codeModelSchema, CodeModel, Schema, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema } from '@azure-tools/codemodel';
+import { Property, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
-import { pascalCase, deconstruct, fixLeadingNumber, serialize } from '@azure-tools/codegen';
+import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
 import { items, keys, values, Dictionary, length } from '@azure-tools/linq';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
@@ -13,6 +13,7 @@ import { NewModelState } from '../utils/model-state';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { defaultCipherList } from 'constants';
 import { NewString } from '../llcsharp/schema/string';
+import { JsonType } from '../utils/schema';
 
 export const HeaderProperty = 'HeaderProperty';
 export enum HeaderPropertyType {
@@ -76,12 +77,8 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
   const model = state.model;
   const schemas = model.schemas;
-  const allSchemas: Schema[] = [];
-  for (const prop of Object.values(schemas)) {
-    if (Array.isArray(prop) && prop.length > 0 && prop[0] instanceof Schema) {
-      allSchemas.push(...prop);
-    }
-  }
+  // xichen: do we need other schema types?
+  const allSchemas: Schema[] = [...schemas.objects ?? [], ...schemas.choices ?? [], ...schemas.sealedChoices ?? []];
 
   model.commands = <any>{
     operations: new Dictionary<any>(),
@@ -129,6 +126,133 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     universalId.properties.push(idProp);
   }
 
+  // xichen: do nothing in m3 logic. Comment it out
+  // if an operation has a response that has a schema with string/binary we should make the response  application/octet-stream
+  // for (const operationGroups of values(model.operationGroups)) {
+  //   for (const operation of values(operationGroups.operations)) {
+  //     for (const response of values(operation.responses)) {
+  //       if ((response as any).schema) {
+  //         const respSchema = response as any;
+  //         if (respSchema.type === SchemaType.String && respSchema.format === StringFormat.Binary) {
+  //           // WHY WAS THIS HERE?!
+  //           // response.mimeTypes = [KnownMediaType.Stream];
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  // xichen: should be no duplicate properties in m4. Skip
+  // schemas that have parents and implement properties that are in the parent schemas
+  // will have the property dropped in the child schema
+  // for (const schema of values(model.schemas)) {
+  //   if (length(schema.allOf) > 0) {
+  //     if (!dropDuplicatePropertiesInChildSchemas(schema, state)) {
+  //       throw new Error('Schemas are in conflict.');
+  //     }
+  //   }
+  // }
+
+
+  if (await state.getValue('use-storage-pipeline', false)) {
+    // we're going to create new models for the reponse headers ?
+
+  } else {
+
+    // if an operation has a body parameter with string/binary, we should make the request application/octet-stream
+
+    // === Header Schemas ===
+    // go thru the operations, find responses that have header values, and add a property to the schemas that are returned with those values
+    for (const operationGroups of values(model.operationGroups)) {
+      for (const operation of values(operationGroups.operations)) {
+        for (const response of values(operation.responses)) {
+          // for a given response, find the possible models that can be returned from the service
+          for (const header of values(response.protocol.http?.headers)) {
+
+            if (!(response as any).schema) {
+              // no response schema? can we fake one?
+              // service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
+              continue;
+            }
+
+
+            // if the method response has a schema and it's an object, we're going to add our properties to the schema object.
+            // yes, this means that the reponse model may have properties that are undefined if the server doesn't send back the header
+            // and other operations might add other headers that are not the same.
+
+            // if the method's response is a primitive value (string, boolean, null, number) or an array, we can't modify that type obviously
+            // in which case, we're going to add a header
+
+            // work with schemas that have objects only.
+
+            if ((response as any).schema.type === SchemaType.Object) {
+              const respSchema = (response as any).schema as ObjectSchema;
+              const curHeader = header as any;
+              const headerKey = curHeader as string;
+
+              respSchema.language.default.hasHeaders = true;
+
+              const property = values(getAllProperties(respSchema)).first((each) => each.language.default.name === headerKey);
+              if (!property) {
+                state.message({ Channel: Channel.Debug, Text: `Adding header property '${headerKey}' to model ${respSchema.language.default.name}` });
+
+                // create a property for the header value
+                const newProperty = new Property(headerKey, curHeader.description, curHeader.schema);
+                newProperty.language.default.required = false;
+
+                // mark it that it's a header-only property
+                newProperty.language.default[HeaderProperty] = HeaderPropertyType.Header;
+
+                // add it to this model.
+                if (!respSchema.properties) {
+                  respSchema.properties = [];
+                }
+                respSchema.properties.push(newProperty);
+              } else {
+                // there is a property with this name already.
+                // was this previously declared as a header only property?
+                if (!property.language.default[HeaderProperty]) {
+
+                  state.message({ Channel: Channel.Debug, Text: `Property ${headerKey} in model ${respSchema.language.default.name} can also come from the header.` });
+                  // no.. There is duplication between header and body property. Probably because of etags.
+                  // tell it to be a header-and-body property.
+                  property.language.default[HeaderProperty] = HeaderPropertyType.HeaderAndBody;
+                  property.language.default.name = headerKey;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // remove well-known header parameters from operations and add mark the operation has supporting that feature
+
+  for (const operationGruops of values(model.operationGroups)) {
+    for (const operation of values(operationGruops.operations)) {
+      // if we have an operation with a body, and content-type is a multipart/formdata
+      // then we should go thru the parameters of the body and look for a string/binary parameters
+      // and remember to add another parameter for the filename of the string/binary
+      const request = operation.requests?.[0];
+      request?.parameters?.filter((param) => param.schema.type !== SchemaType.Object && param.protocol.http?.in === 'body' && param.protocol.http?.style === KnownMediaType.Multipart)
+        .forEach((param) => {
+          for (const prop of values(getAllProperties(param.schema as ObjectSchema))) {
+            if (prop.schema.type === SchemaType.Binary) {
+              prop.language.default.isNamedStream = true;
+            }
+          }
+        });
+
+      // move well-known hearder parameters into details, and we can process them in the generator how we please.
+      // operation.details.default.headerparameters = values(operation.parameters).where(p => p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name)).toArray();
+
+      // remove if-match and if-none-match parameters from the operation itself.
+      // operation.parameters = values(operation.parameters).where(p => !(p.in === ParameterLocation.Header && ['If-Match', 'If-None-Match'].includes(p.name))).toArray();
+
+    }
+  }
+
   // identify models that are polymorphic in nature
   for (const schema of allSchemas) {
     if (schema instanceof ObjectSchema) {
@@ -172,12 +296,38 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           // properties with an enum single value are constants
           // add the constant value
           property.language.default.constantValue = choiceSchema.choices[0].value;
-
-          // xichen: Do we need skip?
         }
       }
     }
   }
+
+  // xichen: Do we need skip?
+  //   const enumsToSkip = new Set<string>();
+  //   // identify properties that are constants
+  //   for (const schema of values(model.schemas)) {
+  //     for (const property of values(schema.properties)) {
+  //       if (property.details.default.required && length(property.schema.enum) === 1) {
+  //         // properties with an enum single value are constants
+  //         // add the constant value
+  //         property.details.default.constantValue = property.schema.enum[0];
+
+  //         // mark as skip the generation of this model
+  //         enumsToSkip.add(property.schema.details.default.uid);
+
+  //         // make it a string and keep its name
+  //         property.schema = new Schema(property.schema.details.default.name, { type: property.schema.type });
+  //       } else {
+  //         enumsToSkip.delete(property.schema.details.default.uid);
+  //       }
+  //     }
+  //   }
+
+  //   // mark enums that shouldn't be generated
+  //   for (const schema of values(model.schemas)) {
+  //     if (enumsToSkip.has(schema.details.default.uid)) {
+  //       schema.details.default.skip = true;
+  //     }
+  //   }
 
   return model;
 }

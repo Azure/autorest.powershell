@@ -12,7 +12,7 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { ChoiceSchema, Schema as NewSchema, StringSchema } from '@azure-tools/codemodel';
+import { ChoiceSchema, Schema as NewSchema, SchemaType, SealedChoiceSchema, StringSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-type-declaration';
 import { length } from '@azure-tools/linq';
@@ -398,10 +398,10 @@ ${this.validateEnum(eventListener, property)}
     return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${pattern}");`;
   }
   private validateEnum(eventListener: Variable, property: Variable): string {
-    if (!(this.schema instanceof ChoiceSchema)) {
+    if (this.schema.type !== SchemaType.SealedChoice) {
       return '';
     }
-    const choiceValues = this.schema.choices.map((c) => c.value);
+    const choiceValues = (<SealedChoiceSchema>this.schema).choices.map((c) => c.value);
     return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${choiceValues.joinWith((v) => `@"${v}"`)});`;
   }
 }

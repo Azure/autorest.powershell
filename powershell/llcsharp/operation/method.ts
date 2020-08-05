@@ -346,7 +346,6 @@ export class NewOperationMethod extends Method {
     this.description = this.operation.language.csharp?.description || '';
 
     // add body paramter if there should be one.
-    // skip-for-time-being
     if (this.operation.requests && this.operation.requests.length && this.operation.requests[0].parameters && this.operation.requests[0].parameters.length) {
       // this request does have a request body.
       const param = this.operation.requests[0].parameters[0];
@@ -359,11 +358,8 @@ export class NewOperationMethod extends Method {
     }
 
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
-
       const responseType = (<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null;
-      //skip-for-time-being
-      //const headerType = response.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<Schema>response.headerSchema, true, state) : null;
-      const headerType = null;
+      const headerType = response.language.default.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>response.language.default.headerSchema, true, state) : null;
       const newCallbackParameter = new NewCallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
       this.addParameter(newCallbackParameter);
       this.callbacks.push(newCallbackParameter);
@@ -473,7 +469,7 @@ export class NewOperationMethod extends Method {
             // content length is set when the request body is set
             continue;
           }
-          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.language.csharp?.name || hp.param.language.default.name, ClientRuntime.SerializationMode.None);
+          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.language.csharp?.serializedName || hp.param.language.default.serializedName, ClientRuntime.SerializationMode.None);
         }
         yield EOL;
       }
