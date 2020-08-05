@@ -23,6 +23,7 @@
     "datamodels-datatypes-array",
     "datamodels-datatypes-integer",
     "datamodels-datatypes-string",
+    "datamodels-combineschema",
     "directive-model",
     "directive-tableformat",
     "extension-ms-azureresource",
