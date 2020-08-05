@@ -9,6 +9,7 @@
     "basic-response-multioperation",
     "basic-spec-required",
     "basic-spec-root",
+    "basic-polymorphism",
     "component-definitions-combined",
     "component-definitions-local",
     "component-multiparam",
