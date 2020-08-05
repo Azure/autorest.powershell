@@ -905,11 +905,11 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       // we'll add a deserializer factory method a bit later..
     }
 
-    if (this.schema.language.csharp?.discriminatorValue) {
+    if (this.schema.discriminatorValue) {
       // we have a discriminator value, and we should tell our parent who we are so that they can build a proper deserializer method.
       // um. just how do we *really* know which allOf is polymorphic?
       // that's really sad.
-      for (const { key: eachAllOfIndex, value: eachAllOfValue } of items(this.schema.parents?.immediate)) {
+      for (const { key: eachAllOfIndex, value: eachAllOfValue } of items(this.schema.parents?.all)) {
         const parentSchema = eachAllOfValue;
         const aState = this.state.path('allOf', eachAllOfIndex);
 
@@ -922,7 +922,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
           this.parentModelClasses.push(parentClass);
 
           // tell that parent who we are.
-          parentClass.addDiscriminator(this.schema.language.csharp.discriminatorValue, this);
+          parentClass.addDiscriminator(this.schema.discriminatorValue, this);
         }
       }
     }

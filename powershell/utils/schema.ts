@@ -130,11 +130,9 @@ export interface SchemaDetails extends ImplementationDetails {
 //   }
 // }
 
-export function getPolymorphicBases(schema: Schema): Array<Schema> {
+export function getPolymorphicBases(schema: ObjectSchema): Array<Schema> {
   // are any of my parents polymorphic directly, or any of their parents?
-  // skip-for-time-being
-  // return [...values(schema).where(parent => parent.discriminator ? true : false), ...values(schema.allOf).selectMany(getPolymorphicBases)];
-  return [];
+  return [...values(schema.parents?.all).where(parent => (<ObjectSchema>parent).discriminator ? true : false)];
 }
 
 export function getAllProperties(schema: Schema): Array<Property> {
