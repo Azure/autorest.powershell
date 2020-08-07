@@ -2,7 +2,10 @@
 #Need to use the right version of node.js
 #nvs use 10.16.0
 #Create folder to save Compare Results
-New-Item CompareResult -ItemType "directory"
+if(!(Test-Path CompareResult))
+{
+    New-Item CompareResult -ItemType "directory"
+}
 #Define the global param 'isError' to determine wheather throw the error
 $global:isError = $false
 #Import the Configuration Json 
