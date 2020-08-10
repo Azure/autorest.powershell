@@ -360,7 +360,6 @@ export class NewModelInterface extends Interface implements NewEnhancedTypeDecla
       inherited: [],
       inlined: []
     };
-    // skip-for-time-being
     if (this.schema.language.csharp.virtualProperties) {
 
       for (const virtualProperty of values(virtualProperties.owned)) {

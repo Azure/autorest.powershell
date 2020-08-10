@@ -26,6 +26,9 @@ function setPropertyNames(schema: Schema) {
     return;
   }
   for (const propertySchema of values(schema.properties)) {
+    if (propertySchema.schema.type === SchemaType.Any) {
+      continue;
+    }
     const propertyDetails = propertySchema.language.default;
     propertyDetails.required = propertySchema.required ?? false;
     propertyDetails.readOnly = propertySchema.readOnly ?? false;
@@ -95,7 +98,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       thisNamespace.add(schemaName);
 
       // object types.
-      if (schema.type === SchemaType.Object || schema.type === SchemaType.Dictionary) {
+      if (schema.type === SchemaType.Object || schema.type === SchemaType.Dictionary || schema.type === SchemaType.Any) {
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
@@ -164,7 +167,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
       const details = operation.language.default;
 
       // come up with a name
-      const oName = getPascalIdentifier(details.name);
+      const oName = getPascalIdentifier(operationGroup.$key + '_' + details.name);
       let i = 1;
       let operationName = oName;
       while (operationNames.has(operationName)) {
@@ -175,7 +178,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
 
       operation.language.csharp = {
         ...details, // inherit
-        name: getPascalIdentifier(operationGroup.language.default.name + '_' + operationName),
+        name: getPascalIdentifier(operationName),
       };
 
       // parameters are camelCased.
