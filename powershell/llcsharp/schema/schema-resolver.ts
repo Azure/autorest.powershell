@@ -183,7 +183,7 @@ export class NewSchemaDefinitionResolver {
         }
         return this.add(schema, new NewObjectImplementation(<ObjectSchema>schema));
       }
-      case SchemaType.Choice:
+      case SchemaType.Time:
       case SchemaType.String: {
         return new NewString(<StringSchema>schema, required);
 
@@ -193,8 +193,12 @@ export class NewSchemaDefinitionResolver {
       case SchemaType.Uuid:
         return new NewUuid(<StringSchema>schema, required);
       case SchemaType.DateTime:
+        if ((<DateTimeSchema>schema).format === StringFormat.DateTimeRfc1123) {
+          return new NewDateTime1123(<DateTimeSchema>schema, required);
+        }
         return new NewDateTime(<DateTimeSchema>schema, required);
-
+      case SchemaType.ByteArray:
+        return new NewByteArray(<ByteArraySchema>schema, required);
       case SchemaType.Boolean:
         return new NewBoolean(<BooleanSchema>schema, required);
 
@@ -227,10 +231,22 @@ export class NewSchemaDefinitionResolver {
         switch ((<ConstantSchema>schema).valueType.type) {
           case SchemaType.String:
             return new NewEnumImplementation(<StringSchema>schema, required);
+          case SchemaType.DateTime:
+            if ((<any>schema).valueType.format === StringFormat.DateTimeRfc1123) {
+              return new NewDateTime1123(<DateTimeSchema>schema, required);
+            }
+            return new NewDateTime(<DateTimeSchema>schema, required);
           default:
             state.error(`Unsupported constant type. Schema '${schema.language.csharp?.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
             throw new Error('Unknown Model. Fatal.');
         }
+      case SchemaType.Choice: {
+        const choiceSchema = schema as ChoiceSchema;
+        if ((<any>choiceSchema.choiceType).type === SchemaType.DateTime && (<any>choiceSchema.choiceType).format === StringFormat.DateTimeRfc1123) {
+          return new NewDateTime1123(schema as DateTimeSchema, required);
+        }
+        return new NewString(schema, required);
+      }
       case SchemaType.SealedChoice:
         return new NewEnumImplementation(schema, required);
       case undefined:
