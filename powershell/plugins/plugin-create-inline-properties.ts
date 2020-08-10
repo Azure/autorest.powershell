@@ -340,7 +340,7 @@ function createVirtualParameters(operation: CommandOperation) {
       virtualParameters.operation.push({
         name: parameter.details.default.name,
         nameOptions: [parameter.details.default.name],
-        description: '', //It should be 'parameter.details.default.description'. But in remodeler, it's using schema.description which is always empty
+        description: parameter.details.default.description,
         required: parameter.details.default.isBodyParameter ? true : parameter.required,
         schema: parameter.schema,
         origin: parameter,
