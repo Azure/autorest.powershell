@@ -2,7 +2,10 @@
 #Need to use the right version of node.js
 #nvs use 10.16.0
 #Create folder to save Compare Results
-New-Item CompareResult -ItemType "directory"
+if(!(Test-Path CompareResult))
+{
+    New-Item CompareResult -ItemType "directory"
+}
 #Define the global param 'isError' to determine wheather throw the error
 $global:isError = $false
 #Import the Configuration Json 
@@ -34,6 +37,21 @@ function IsCommand([Object]$SourceFile , [Object]$TargetFile)
         }
     }
     return $isCommandResult
+}
+
+#Determine the filefolder in BlackList
+function IsInBlackList([Object]$JudgList,[Array]$BlackContent)
+{
+    $isInBlackListResult = $false
+    foreach($BlackDetail in $BlackContent)
+    {
+        if((!((Get-Item $JudgList.PSPath) -is [System.IO.DirectoryInfo])) -or ($JudgList.Name.Startswith($BlackDetail)) -or ($JudgList.Name.Startswith('Compare')))
+        {
+            $isInBlackListResult = $True
+            break
+        }
+    }
+    return $isInBlackListResult
 }
 
 #Determine whether the file needs to be ignored
@@ -239,7 +257,7 @@ if($TestName -ne $null -and ($TestName -ne ''))
     foreach($eachTest in $whiteList)
     {
         $eachTest
-        cd ($PSScriptRoot+'\'+$eachTest)
+        cd (Join-Path $PSScriptRoot $eachTest)
         try
         {
             $IsGenerateSuccess = GenerateCode
@@ -260,28 +278,26 @@ if($TestName -ne $null -and ($TestName -ne ''))
     #get each testfolder and except those tests in blacklist
     foreach($fileDetail in $fileList)
     {
-        foreach($blackTestName in $blackTestList)
+        $InBlackListResult = IsInBlackList -JudgList $fileDetail -BlackContent $blackTestList
+        if(!$InBlackListResult)
         {
-            
-            if(((Get-Item $fileDetail.PSPath) -is [System.IO.DirectoryInfo]) -and (!$fileDetail.Name.Startswith($blackTestName)))
+            try
             {
-                try
+                Write-Host $fileDetail.Name
+                cd (Join-Path $PSScriptRoot $fileDetail.Name)
+                $IsGenerateSuccess = GenerateCode
+                if(-not $Generate -and $IsGenerateSuccess)
                 {
-                    cd ($PSScriptRoot+'\'+$fileDetail.Name)
-                    $IsGenerateSuccess = GenerateCode
-                    if(-not $Generate -and $IsGenerateSuccess)
-                    {
-                        $sourceFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m3'
-                        $targetFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m4'
-                        CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDeatil.path
-                    }
-                }
-                catch
-                {
-                    Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
+                    $sourceFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m3'
+                    $targetFilePath = Join-Path $PSScriptRoot $fileDetail.Name 'generate\m4'
+                    CompareGeneratedCode -inputSourcePath $sourceFilePath -inputTargetPath $targetFilePath -testFileName $fileDeatil.Name
                 }
             }
-        }    
+            catch
+            {
+                Write-Host -ForegroundColor yellow 'Generate error:' + $fileDetail.Name
+            }
+        }
     }
 }
 else
