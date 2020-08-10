@@ -279,10 +279,6 @@ export class NewModelExtensionsNamespace extends Namespace {
 
     // Add typeconverters to model classes (partial)
     for (const schemaGroup of values(schemas)) {
-      if (schemaGroup.length > 0 && (schemaGroup[0].type === SchemaType.Any)) {
-        // skip any
-        continue;
-      }
       for (const schema of values(schemaGroup)) {
         if (!schema || (schema.language.csharp && schema.language.csharp.skip)) {
           continue;

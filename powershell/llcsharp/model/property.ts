@@ -139,7 +139,7 @@ export class NewModelProperty extends BackedProperty implements EnhancedVariable
     this.apply(objectInitializer);
     this.description = description;
     this.required = isRequired;
-    if ((this.schema.type === SchemaType.Object || this.schema.type === SchemaType.Dictionary) && isAnExpression(this.get) && schema.language.csharp?.classImplementation) {
+    if ((this.schema.type === SchemaType.Object || this.schema.type === SchemaType.Dictionary || this.schema.type === SchemaType.Any) && isAnExpression(this.get) && schema.language.csharp?.classImplementation) {
       // for objects, the getter should auto-create a new object 
       this.get = toExpression(`(${this.get.value} = ${this.get.value} ?? new ${schema.language.csharp?.fullname}())`);
     }

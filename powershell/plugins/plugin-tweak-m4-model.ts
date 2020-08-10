@@ -88,10 +88,10 @@ function addDictionaryApiVersion(model: CodeModel) {
     }
 
     for (const prop of getAllProperties(schema)) {
-      if (prop.schema.type !== SchemaType.Dictionary || prop.schema.apiVersions) {
+      if ((prop.schema.type !== SchemaType.Dictionary && prop.schema.type !== SchemaType.Any) || prop.schema.apiVersions) {
         continue;
       }
-      const dictSchema = prop.schema as DictionarySchema;
+      const dictSchema = prop.schema;
       dictSchema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
     }
   })
