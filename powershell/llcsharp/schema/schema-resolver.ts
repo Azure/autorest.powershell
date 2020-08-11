@@ -184,6 +184,7 @@ export class NewSchemaDefinitionResolver {
         return this.add(schema, new NewObjectImplementation(<ObjectSchema>schema));
       }
       case SchemaType.Time:
+      case SchemaType.Credential:
       case SchemaType.String: {
         return new NewString(<StringSchema>schema, required);
 
