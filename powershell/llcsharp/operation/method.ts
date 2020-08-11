@@ -396,20 +396,20 @@ export class NewOperationMethod extends Method {
 
     // replace any server params in the uri
     for (const pp of serverParams) {
-      url = url.replace(`{${pp.param.language.csharp?.name}}`, `"
+      url = url.replace(`{${pp.param.language.default.serializedName}}`, `"
         + ${pp.name}
         + "`);
     }
 
     for (const pp of pathParams) {
-      rx = rx.replace(`{${pp.param.language.csharp?.name}}`, `(?<${pp.param.language.csharp?.name}>[^/]+)`);
+      rx = rx.replace(`{${pp.param.language.default.serializedName}}`, `(?<${pp.param.language.default.serializedName}>[^/]+)`);
 
       if (this.viaIdentity) {
-        url = url.replace(`{${pp.param.language.csharp?.name}}`, `"
+        url = url.replace(`{${pp.param.language.default.serializedName}}`, `"
         + ${pp.name}
         + "`);
       } else {
-        url = url.replace(`{${pp.param.language.csharp?.name}}`, `"
+        url = url.replace(`{${pp.param.language.default.serializedName}}`, `"
         + ${newRemoveEncoding(pp, '', KnownMediaType.UriParameter)}
         + "`);
       }
@@ -435,7 +435,7 @@ export class NewOperationMethod extends Method {
         yield EOL;
         yield '// replace URI parameters with values from identity';
         for (const pp of pathParams) {
-          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.language.csharp?.name}"].Value;`;
+          yield `var ${pp.name} = ${match.value}.Groups["${pp.param.language.default.serializedName}"].Value;`;
         }
       }
 
@@ -469,7 +469,7 @@ export class NewOperationMethod extends Method {
             // content length is set when the request body is set
             continue;
           }
-          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.language.csharp?.serializedName || hp.param.language.default.serializedName, ClientRuntime.SerializationMode.None);
+          yield hp.serializeToContainerMember(KnownMediaType.Header, new LocalVariable('request.Headers', dotnet.Var), hp.param.language.default.serializedName, ClientRuntime.SerializationMode.None);
         }
         yield EOL;
       }
