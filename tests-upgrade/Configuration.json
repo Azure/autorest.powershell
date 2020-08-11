@@ -33,7 +33,6 @@
     "extension-ms-examples",
     "extension-ms-longruningoperation",
     "extension-ms-pageable",
-    "datamodels-datatypes-object",
     "directive-aliasremoval",
     "directive-cmdlet",
     "directive-parameter"
