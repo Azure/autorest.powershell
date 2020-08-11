@@ -2469,7 +2469,7 @@ export class NewCmdletClass extends Class {
           }
 
           const isEnum = propertyType.schema.language.csharp?.enum !== undefined;
-          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof NewEnumImplementation;
+          const hasEnum = propertyType instanceof NewArrayOf && propertyType.elementType instanceof NewEnumImplementation;
           if (isEnum || hasEnum) {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
@@ -2614,7 +2614,7 @@ export class NewCmdletClass extends Class {
       }
 
       const isEnum = propertyType.schema.language.csharp?.enum !== undefined;
-      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof NewEnumImplementation;
+      const hasEnum = propertyType instanceof NewArrayOf && propertyType.elementType instanceof NewEnumImplementation;
       if (isEnum || hasEnum) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
