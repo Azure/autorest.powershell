@@ -1,0 +1,8 @@
+{
+  "parameters": {
+    "dateBody": "9999-12-31"
+  },
+  "responses": {
+    "200": {}
+  }
+}

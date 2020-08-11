@@ -45,38 +45,19 @@
           "responses": {
             "200": {
                 "description": "OK-Return workspace."
-            },
-            "default": {
-              "description": "Error response describing why the operation failed.",
-              "schema": {
-                  "$ref": "#/definitions/BasicErrorModel"
-              }
             }
           }
         }
       }
     },
     "definitions": {
-        "BasicErrorModel": {
+        "FilesModel": {
             "type": "object",
-            "required":[
-                "message",
-                "code"
-            ],
             "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "code": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                }
+              "file": {
+                "type": "string",
+                "format": "binary"
+              }
             }
         }
     }
