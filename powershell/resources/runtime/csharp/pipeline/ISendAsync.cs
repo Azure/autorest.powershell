@@ -255,7 +255,8 @@ namespace Microsoft.Rest.ClientRuntime
 
             foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers)
             {
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                var authorization = original.Headers.First(x => System.Net.HttpRequestHeader.Authorization.ToString().Equals(x.Key));
+                clone.Headers.TryAddWithoutValidation(authorization.Key, authorization.Value);
             }
 
             return clone;
