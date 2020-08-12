@@ -140,6 +140,8 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           namespace: '<INVALID_NAMESPACE>',
           fullname: '<INVALID_FULLNAME>'
         };
+        // xichen: for invalid namespace case, we won't create model class. So we do not need consider dup case
+        thisNamespace.delete(schemaName);
       }
 
       // name each property in this schema

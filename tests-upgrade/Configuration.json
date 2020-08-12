@@ -32,7 +32,10 @@
     "extension-ms-discriminatorvalue",
     "extension-ms-examples",
     "extension-ms-longruningoperation",
-    "extension-ms-pageable"
+    "extension-ms-pageable",
+    "directive-aliasremoval",
+    "directive-cmdlet",
+    "directive-parameter"
   ],
   "BlackList": [
     "basic-get-querystr",
