@@ -141,11 +141,6 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           fullname: '<INVALID_FULLNAME>'
         };
         // xichen: for invalid namespace case, we won't create model class. So we do not need consider dup case
-        // This might case model class has different from m3. But it should be rare case.
-        // One reason for adding this is that if there are parameter and definition with same name in swagger.
-        // It will cause name conflict in m4. But in m3, parameter's name has prefix and postfix. For example, 
-        // resourceGroup parameter's name will be: components·p0vhhr·parameters·resourcegroup·schema.
-        // We consider this confilct is more possible to happen.
         thisNamespace.delete(schemaName);
       }
 
