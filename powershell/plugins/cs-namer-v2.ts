@@ -153,7 +153,9 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 
         // and the value names themselves
         for (const value of values(schema.language.csharp.enum.values)) {
-          (<any>value).name = getPascalIdentifier((<any>value).name);
+          // In m3, enum.name and enum.value are same. But in m4, enum.name is named by m4.
+          // To keep same action as m3, use enum.value here
+          (<any>value).name = getPascalIdentifier((<any>value).value);
         }
       }
     }

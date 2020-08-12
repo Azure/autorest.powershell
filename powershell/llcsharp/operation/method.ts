@@ -383,8 +383,7 @@ export class NewOperationMethod extends Method {
       rx = rx.substr(0, idx);
     }
 
-
-    let url = `${baseUrl}/${rx.startsWith('/') ? rx.substr(1) : rx}`;
+    let url = `${baseUrl}/${path.startsWith('/') ? path.substr(1) : path}`;
 
 
     const serverParams = this.methodParameters.filter(each => each.param.protocol.http?.in === ParameterLocation.Uri);
