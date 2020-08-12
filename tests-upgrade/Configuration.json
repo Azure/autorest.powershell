@@ -32,7 +32,9 @@
     "extension-ms-discriminatorvalue",
     "extension-ms-examples",
     "extension-ms-longruningoperation",
+    "extension-ms-mutability",
     "extension-ms-pageable",
+    "extension-ms-paramlocation",
     "directive-aliasremoval",
     "directive-cmdlet",
     "directive-parameter"

@@ -1,0 +1,188 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "DatabricksClient",
+    "version": "2018-04-01",
+    "description": "ARM Databricks"
+  },
+  "host": "management.azure.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "security": [
+    {
+      "azure_auth": [
+        "user_impersonation"
+      ]
+    }
+  ],
+  "securityDefinitions": {
+    "azure_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+      "flow": "implicit",
+      "description": "Azure Active Directory OAuth2 Flow",
+      "scopes": {
+        "user_impersonation": "impersonate your user account"
+      }
+    }
+  },
+  "paths": {
+    "/byte/null": {
+        "get": {
+            "operationId": "byte_getNull",
+            "description": "Get null byte value",
+            "x-ms-examples": {
+                "byte_getNull": {
+                    "$ref": "./examples/byte_getNull.json"
+                }
+            },
+            "tags": [
+                "Byte Operations"
+            ],
+            "responses": {
+                "200": {
+                    "description": "The null byte value",
+                    "schema": {
+                        "description": "The null byte value",
+                        "type": "string",
+                        "format":  "byte"
+                    }
+                },
+                "default": {
+                    "description": "Unexpected error",
+                    "schema": {
+                        "$ref": "#/definitions/Error"
+                    }
+                }
+            }
+        }
+    },
+    "/byte/empty": {
+        "get": {
+            "operationId": "byte_getEmpty",
+            "description": "Get empty byte value ''",
+            "tags": [
+                "Byte Operations"
+            ],
+            "responses": {
+                "200": {
+                    "description": "The empty byte value ''",
+                    "schema": {
+                        "description": "The empty byte value ''",
+                        "type": "string",
+                        "format":  "byte"
+                    }
+                },
+                "default": {
+                    "description": "Unexpected error",
+                    "schema": {
+                        "$ref": "#/definitions/Error"
+                    }
+                }
+            }
+        }
+    },
+    "/byte/nonAscii": {
+        "get": {
+            "operationId": "byte_getNonAscii",
+            "description": "Get non-ascii byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+            "tags": [
+                "Byte Operations"
+            ],
+            "responses": {
+                "200": {
+                    "description": "Non-ascii base-64 encoded byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+                    "schema": {
+                       "description": "Non-ascii base-64 encoded byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+                       "type": "string",
+                        "format":  "byte"
+                    }
+                },
+                "default": {
+                    "description": "Unexpected error",
+                    "schema": {
+                        "$ref": "#/definitions/Error"
+                    }
+                }
+            }
+        },
+        "put": {
+            "operationId": "byte_putNonAscii",
+            "description": "Put non-ascii byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+            "parameters": [
+                {
+                    "name": "byteBody",
+                    "in": "body",
+                    "description": "Base64-encoded non-ascii byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+                    "schema" : {
+                       "description": "Base64-encoded non-ascii byte string hex(FF FE FD FC FB FA F9 F8 F7 F6)",
+                       "type": "string",
+                       "format":  "byte"
+                    },
+                    "required": true
+                }
+            ],
+            "tags": [
+                "Byte Operations"
+            ],
+            "responses": {
+                "200": {
+                    "description": "Empty Response"
+                },
+                "default": {
+                    "description": "Unexpected error",
+                    "schema": {
+                        "$ref": "#/definitions/Error"
+                    }
+                }
+            }
+        }
+    },
+    "/byte/invalid": {
+        "get": {
+            "operationId": "byte_getInvalid",
+            "description": "Get invalid byte value ':::SWAGGER::::'",
+            "tags": [
+                "Byte Operations"
+            ],
+            "responses": {
+                "200": {
+                    "description": "The invalid byte value '::::SWAGGER::::'",
+                    "schema": {
+                        "description": "The invalid byte value '::::SWAGGER::::'",
+                        "type": "string",
+                        "format":  "byte"
+                    }
+                },
+                "default": {
+                    "description": "Unexpected error",
+                    "schema": {
+                        "$ref": "#/definitions/Error"
+                    }
+                }
+            }
+        }
+    }
+},
+"definitions": {
+    "Error": {
+        "type":  "object",
+        "properties": {
+            "status": {
+                "type": "integer",
+                "format": "int32"
+            },
+            "message": {
+                "type": "string"
+            }
+        }
+    }
+}
+}
