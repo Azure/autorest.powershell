@@ -1,9 +1,0 @@
-{
-  "parameters": {
-    "boolBody": true
-  },
-  "responses": {
-    "200": {
-    }
-  }
-}
