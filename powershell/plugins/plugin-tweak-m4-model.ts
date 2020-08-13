@@ -91,8 +91,12 @@ function addDictionaryApiVersion(model: CodeModel) {
       if ((prop.schema.type !== SchemaType.Dictionary && prop.schema.type !== SchemaType.Any) || prop.schema.apiVersions) {
         continue;
       }
-      const dictSchema = prop.schema;
-      dictSchema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
+      const dictSchema = prop.schema as DictionarySchema;
+      if (dictSchema.elementType && dictSchema.elementType.apiVersions) {
+        dictSchema.apiVersions = JSON.parse(JSON.stringify(dictSchema.elementType.apiVersions));
+      } else {
+        dictSchema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
+      }
     }
   })
 }
