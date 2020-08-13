@@ -6,6 +6,8 @@ if(!(Test-Path CompareResult))
 {
     New-Item CompareResult -ItemType "directory"
 }
+#Define the success code names
+$global:testNameStr
 #Define the global param 'isError' to determine wheather throw the error
 $global:isError = $false
 #Import the Configuration Json 
@@ -226,8 +228,11 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
     {
         $global:isError=$True
         $filename = Join-Path $PSScriptRoot 'CompareResult' ($testFileName + (get-date -format 'yyyyMMddhhmmss') + '.csv')
-        $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Export-CSV -path $filename
+        $difArray | Select-Object -Property fileName,Path,fileFolderName,Status | Sort-Object -Property fileName | Export-CSV -path $filename
         Write-Warning ('There are ' + $difArray.Count + ' different files')
+    }else
+    {
+        $global:testNameStr+= $testFileName +"`n"
     }
 }
 
@@ -328,6 +333,8 @@ else
     }
 }
 cd $PSScriptRoot
+write-Host $global:testNameStr
+$global:testNameStr | Out-File .\CompareResult\GenerateSuccessList.Txt
 #Throw error if there are some different
 if($global:isError)
 {
