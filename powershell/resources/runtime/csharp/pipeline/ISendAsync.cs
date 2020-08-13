@@ -252,11 +252,17 @@ namespace Microsoft.Rest.ClientRuntime
             {
                 clone.Properties.Add(prop);
             }
-
-            var authorization = System.Net.HttpRequestHeader.Authorization.ToString();
-            if (original.Headers.Contains(authorization))
-            {
-                clone.Headers.TryAddWithoutValidation(authorization, original.Headers.GetValues(authorization));
+            
+            foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers)
+            {   
+                /*
+                **temporarily skip cloning telemetry related headers**
+                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                */
+                if (!"x-ms-unique-id".Equals(header.Key) || !"x-ms-client-request-id".Equals(header.Key) || !"CommandName".Equals(header.Key) || !"FullCommandName".Equals(header.Key) || !"ParameterSetName".Equals(header.Key) || !"User-Agent".Equals(header.Key))
+                {
+                    clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                }
             }
             
             return clone;
