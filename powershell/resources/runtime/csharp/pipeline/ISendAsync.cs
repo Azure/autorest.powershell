@@ -253,12 +253,12 @@ namespace Microsoft.Rest.ClientRuntime
                 clone.Properties.Add(prop);
             }
 
-            foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers)
+            var authorization = original.Headers.First(x => System.Net.HttpRequestHeader.Authorization.ToString().Equals(x.Key));
+            if (authorization != null)
             {
-                var authorization = original.Headers.First(x => System.Net.HttpRequestHeader.Authorization.ToString().Equals(x.Key));
                 clone.Headers.TryAddWithoutValidation(authorization.Key, authorization.Value);
             }
-
+            
             return clone;
         }
 
