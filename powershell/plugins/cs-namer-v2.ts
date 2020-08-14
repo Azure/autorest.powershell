@@ -26,9 +26,6 @@ function setPropertyNames(schema: Schema) {
     return;
   }
   for (const propertySchema of values(schema.properties)) {
-    if (propertySchema.schema.type === SchemaType.Any) {
-      continue;
-    }
     const propertyDetails = propertySchema.language.default;
     propertyDetails.required = propertySchema.required ?? false;
     propertyDetails.readOnly = propertySchema.readOnly ?? false;
