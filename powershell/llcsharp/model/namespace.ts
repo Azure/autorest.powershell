@@ -179,6 +179,13 @@ export class NewModelsNamespace extends Namespace {
         this.NewResolveTypeDeclaration(schema, true, <NewState>state);
       }
     }
+
+    if (schemas.any) {
+      for (const schema of schemas.any) {
+        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+      }
+    }
+
     if (schemas.strings) {
       for (const schema of schemas.strings) {
         this.NewResolveTypeDeclaration(schema, true, <NewState>state);

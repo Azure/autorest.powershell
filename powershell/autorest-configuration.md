@@ -8,6 +8,8 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 ``` yaml
 modelerfour:
   emit-yaml-tags: false
+  lenient-model-deduplication: true
+  additional-checks: false
 ```
 
 > if the modeler is loaded already, use that one, otherwise grab it.
