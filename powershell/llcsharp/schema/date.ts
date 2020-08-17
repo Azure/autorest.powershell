@@ -5,7 +5,7 @@
 
 import { StringExpression } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, DateTimeSchema } from '@azure-tools/codemodel';
+import { DateSchema } from '@azure-tools/codemodel';
 import { DateTime, NewDateTime } from './date-time';
 
 export class Date extends DateTime {
@@ -17,7 +17,7 @@ export class Date extends DateTime {
 
 export class NewDate extends NewDateTime {
   public DateTimeFormat = new StringExpression('yyyy-MM-dd');
-  constructor(schema: DateTimeSchema, isRequired: boolean) {
+  constructor(schema: DateSchema, isRequired: boolean) {
     super(schema, isRequired);
   }
 }

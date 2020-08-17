@@ -11,7 +11,7 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from '@azure-tools/codemodel';
 import { Primitive, NewPrimitive } from './primitive';
 
 export class DateTime extends Primitive {
@@ -183,7 +183,7 @@ export class NewDateTime extends NewPrimitive {
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
-  constructor(schema: DateTimeSchema, public isRequired: boolean) {
+  constructor(schema: DateTimeSchema | DateSchema, public isRequired: boolean) {
     super(schema);
   }
   // public static string DateFormat = "yyyy-MM-dd";

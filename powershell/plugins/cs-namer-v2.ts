@@ -182,14 +182,14 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
 
       operation.language.csharp = {
         ...details, // inherit
-        name: getPascalIdentifier(operationName),
+        name: operationName,
       };
 
       // parameters are camelCased.
       for (const parameter of values(operation.parameters)) {
         const parameterDetails = parameter.language.default;
 
-        let propName = camelCase(fixLeadingNumber(deconstruct(parameterDetails.name)));
+        let propName = camelCase(fixLeadingNumber(deconstruct(parameterDetails.serializedName)));
 
         if (propName === 'default') {
           propName = '@default';

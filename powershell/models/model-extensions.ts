@@ -284,57 +284,6 @@ export class NewModelExtensionsNamespace extends Namespace {
           continue;
         }
 
-        if (schema.type === SchemaType.Dictionary) {
-          // xichen: 
-          // Case1: dictionary schema is only used in parents:
-          // "definitions": {
-          //   "PetAPInPropertiesWithAPString": {
-          //     "type": "object",
-          //       "properties": {
-          //       "id": {
-          //         "type": "integer"
-          //       }
-          //     },
-          //     "additionalProperties": {
-          //       "type": "string"
-          //     }
-          //   }
-          // } 
-          //
-          // Case2: we will have a dictionary property:
-          // "definitions": {
-          //   "PetAPInProperties": {
-          //     "type": "object",
-          //       "properties": {
-          //       "id": {
-          //         "type": "integer"
-          //       },
-          //       "additionalProperties": {
-          //         "type": "object",
-          //           "additionalProperties": {
-          //           "type": "number"
-          //         }
-          //       }
-          //     }
-          //   }
-          // }
-          //
-          // We only create model class for case 2, because in m3 case 2 will has independent scheam for additionalProperties, 
-          // But for case 1, PetAPInPropertiesWithAPString will only have additionalProperties.
-          //
-          // This is to make generated code same as m3. Actually there wont be side effect if we skip this check.
-          const objSchemas = schemas['objects'];
-          const usedByProp = schemas['objects']?.some((objSchema) => {
-            if ((<ObjectSchema>objSchema).properties?.some((prop) => prop.schema === schema)) {
-              return true;
-            }
-            return false;
-          });
-          if (!usedByProp) {
-            continue;
-          }
-        }
-
         const td = this.resolver.resolveTypeDeclaration(schema, true, state);
         if (td instanceof NewObjectImplementation) {
 
