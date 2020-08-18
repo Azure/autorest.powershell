@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema } from '@azure-tools/codemodel';
+import { Property, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
@@ -99,7 +99,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     for (const operation of values(group.operations)) {
       for (const param of values(operation.parameters).where(each => each.protocol?.http?.in === ParameterLocation.Path)) {
         const name = param.language.default.name;
-        const hasName = universalId.properties?.find((prop) => prop.language.default.name === name);
+        const hasName = universalId.properties?.find((prop) => prop.language.default.name.toLocaleLowerCase() === name.toLocaleLowerCase());
         if (!hasName) {
           if (!universalId.properties) {
             universalId.properties = [];
@@ -277,10 +277,15 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   for (const group of values(model.operationGroups)) {
     for (const operation of values(group.operations)) {
       for (const parameter of values(operation.parameters)) {
-        if (parameter.required && parameter.schema instanceof ChoiceSchema) {
-          const choiceSchema = parameter.schema as ChoiceSchema;
-          if (choiceSchema.choices.length === 1) {
-            parameter.language.default.constantValue = choiceSchema.choices[0].value;
+        if (parameter.required) {
+          if (parameter.schema.type === SchemaType.Choice) {
+            const choiceSchema = parameter.schema as ChoiceSchema;
+            if (choiceSchema.choices.length === 1) {
+              parameter.language.default.constantValue = choiceSchema.choices[0].value;
+            }
+          } else if (parameter.schema.type === SchemaType.Constant) {
+            const constantSchema = parameter.schema as ConstantSchema;
+            parameter.language.default.constantValue = constantSchema.value.value;
           }
         }
       }
@@ -290,12 +295,17 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   // identify properties that are constants
   for (const schema of values(schemas.objects)) {
     for (const property of values(schema.properties)) {
-      if (property.required && property.schema instanceof ChoiceSchema) {
-        const choiceSchema = property.schema as ChoiceSchema;
-        if (choiceSchema.choices.length === 1) {
-          // properties with an enum single value are constants
-          // add the constant value
-          property.language.default.constantValue = choiceSchema.choices[0].value;
+      if (property.required) {
+        if (property.schema.type === SchemaType.Choice) {
+          const choiceSchema = property.schema as ChoiceSchema;
+          if (choiceSchema.choices.length === 1) {
+            // properties with an enum single value are constants
+            // add the constant value
+            property.language.default.constantValue = choiceSchema.choices[0].value;
+          }
+        } else if (property.schema.type === SchemaType.Constant) {
+          const constantSchema = property.schema as ConstantSchema;
+          property.language.default.constantValue = constantSchema.value.value;
         }
       }
     }
