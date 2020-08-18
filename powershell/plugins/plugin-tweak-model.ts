@@ -188,7 +188,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
             if ((response as any).schema.type === SchemaType.Object) {
               const respSchema = (response as any).schema as ObjectSchema;
               const curHeader = header as any;
-              const headerKey = curHeader as string;
+              const headerKey = curHeader.header as string;
 
               respSchema.language.default.hasHeaders = true;
 
@@ -197,7 +197,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
                 state.message({ Channel: Channel.Debug, Text: `Adding header property '${headerKey}' to model ${respSchema.language.default.name}` });
 
                 // create a property for the header value
-                const newProperty = new Property(headerKey, curHeader.description, curHeader.schema);
+                const newProperty = new Property(headerKey, curHeader.description || '', curHeader.schema);
                 newProperty.language.default.required = false;
 
                 // mark it that it's a header-only property

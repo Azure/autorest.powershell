@@ -25,7 +25,8 @@ async function tweakModel(state: State): Promise<PwshModel> {
 }
 
 function addResponseHeaderSchema(model: CodeModel) {
-  // In remodler, each operations response headers will has its own scheam. Each header will be schema's property. But in m4, there won't be a schema for headers.
+  // In remodeler, each operations response headers will has its own scheam. Each header will be schema's property. 
+  // But in m4, if 'schema' is not explicitly defined, even 'headers' is specified, there won't be a schema for headers.
   // To keep backward compatiable, we will create headers schema here
 
   model.operationGroups.forEach((group) => {
@@ -34,6 +35,10 @@ function addResponseHeaderSchema(model: CodeModel) {
         return;
       }
       op.responses.forEach((resp) => {
+        if ((<any>resp).schema) {
+          return;
+        }
+
         const headers = resp.protocol.http?.headers as Array<HttpHeader>;
         if (headers === undefined) {
           return;
