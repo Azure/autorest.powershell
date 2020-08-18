@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { codeModelSchema, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 //import { VirtualParameter } from '@azure-tools/codemodel-v3';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
@@ -270,6 +270,11 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       alias: [],
       required: property.required || property.language.default.required
     });
+    // dolauli, set constant value and make it readonly, if it is constant
+    if (property.schema.type === SchemaType.Constant) {
+      property.language.default.readOnly = true;
+      property.language.default.constantValue = (<ConstantSchema>property.schema).value.value;
+    }
   }
 
   // resolve name collisions.

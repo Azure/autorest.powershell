@@ -235,6 +235,7 @@ export class NewSchemaDefinitionResolver {
 
       case SchemaType.Constant:
         return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
+
       case SchemaType.Choice: {
         const choiceSchema = schema as ChoiceSchema;
         if ((<any>choiceSchema.choiceType).type === SchemaType.DateTime && (<any>choiceSchema.choiceType).format === StringFormat.DateTimeRfc1123) {
