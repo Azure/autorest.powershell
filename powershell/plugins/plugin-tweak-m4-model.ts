@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@azure-tools/codemodel';
+import { ArraySchema, CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@azure-tools/codemodel';
 import { serialize } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
@@ -19,7 +19,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
   addDictionaryApiVersion(model);
 
-  removeDictionaryDefaultDescription(model);
+  removeM4DefaultDescription(model);
 
   return model;
 }
@@ -80,7 +80,17 @@ function addResponseHeaderSchema(model: CodeModel) {
 }
 
 function addDictionaryApiVersion(model: CodeModel) {
-  // If object has dictionary property, this property's schema does not have api version information in m4. We should add this back.
+
+  model.schemas.dictionaries?.forEach((schema) => {
+    if (schema.apiVersions) {
+      return;
+    }
+    if (schema.elementType && schema.elementType.apiVersions) {
+      schema.apiVersions = JSON.parse(JSON.stringify(schema.elementType.apiVersions));
+    }
+  })
+
+  // If we cannot find api version from element type, try to get it from object schema who refers the dict or any.
 
   model.schemas.objects?.forEach((schema) => {
     if (!schema.apiVersions) {
@@ -88,53 +98,54 @@ function addDictionaryApiVersion(model: CodeModel) {
     }
 
     for (const prop of getAllProperties(schema)) {
-      if ((prop.schema.type !== SchemaType.Dictionary && prop.schema.type !== SchemaType.Any) || prop.schema.apiVersions) {
+      if (prop.schema.type !== SchemaType.Dictionary || prop.schema.apiVersions) {
         continue;
       }
-      const dictSchema = prop.schema as DictionarySchema;
-      if (dictSchema.elementType && dictSchema.elementType.apiVersions) {
-        dictSchema.apiVersions = JSON.parse(JSON.stringify(dictSchema.elementType.apiVersions));
-      } else {
-        dictSchema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
-      }
+      prop.schema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
     }
   })
 }
 
-function removeDictionaryDefaultDescription(model: CodeModel) {
-  // For dictionary schema and property, if there is no description assigned, m4 will set a default description like: Dictionary of <type>
+function removeM4DefaultDescription(model: CodeModel) {
+  // For dictionary and arrya schema and property, if there is no description assigned, m4 will set a default description like: Dictionary of <type> or Array of <type>
   // To keep same action as m3, we will set it to empty string
 
   const visited = new Set<Schema>();
-  [...model.schemas.objects ?? [], ...model.schemas.dictionaries ?? []].forEach((schema) => {
-    recursiveRemoveDefaultDescription(schema, visited);
+  [...model.schemas.objects ?? [], ...model.schemas.dictionaries ?? [], ...model.schemas.arrays ?? []].forEach((schema) => {
+    recursiveRemoveM4DefaultDescription(schema, visited);
   })
 }
 
-function recursiveRemoveDefaultDescription(schema: Schema, visited: Set<Schema>) {
-  if (visited.has(schema) || (schema.type !== SchemaType.Object && schema.type !== SchemaType.Dictionary)) {
+function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema>) {
+  if (visited.has(schema) || (schema.type !== SchemaType.Object && schema.type !== SchemaType.Dictionary && schema.type !== SchemaType.Array)) {
     return;
   }
   // Default description pattern in m4
-  const defaultDescPattern = /Dictionary of <.*>$/;
+  const defaultDictDescPattern = /Dictionary of <.?>$/;
+  const defaultArrayDescPattern = /Array of .?$/;
   visited.add(schema);
   if (schema.type === SchemaType.Dictionary) {
     const dictSchema = schema as DictionarySchema;
-    recursiveRemoveDefaultDescription(dictSchema.elementType, visited);
-    if (defaultDescPattern.test(dictSchema.language.default.description)) {
+    recursiveRemoveM4DefaultDescription(dictSchema.elementType, visited);
+    if (defaultDictDescPattern.test(dictSchema.language.default.description)) {
       dictSchema.language.default.description = '';
+    }
+  } else if (schema.type === SchemaType.Array) {
+    const arrSchema = schema as ArraySchema;
+    recursiveRemoveM4DefaultDescription(arrSchema.elementType, visited);
+    if (defaultArrayDescPattern.test(schema.language.default.description)) {
+      schema.language.default.description = '';
     }
   } else if (schema.type === SchemaType.Object) {
     const objSchema = schema as ObjectSchema;
     for (const prop of getAllProperties(objSchema)) {
-      recursiveRemoveDefaultDescription(prop.schema, visited);
-      if (prop.schema.type === SchemaType.Dictionary && defaultDescPattern.test(prop.language.default.description)) {
+      recursiveRemoveM4DefaultDescription(prop.schema, visited);
+      if (prop.schema.type === SchemaType.Dictionary && (defaultDictDescPattern.test(prop.language.default.description) || defaultArrayDescPattern.test(prop.language.default.description))) {
         prop.language.default.description = '';
       }
     }
   }
 }
-
 
 export async function tweakM4ModelPlugin(service: Host) {
   const state = await new NewModelState<PwshModel>(service).init();

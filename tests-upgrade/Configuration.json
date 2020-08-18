@@ -37,7 +37,8 @@
     "extension-ms-paramlocation",
     "directive-aliasremoval",
     "directive-cmdlet",
-    "directive-parameter"
+    "directive-parameter",
+    "datamodels-datatypes-file"
   ],
   "BlackList": [
     "basic-get-querystr",

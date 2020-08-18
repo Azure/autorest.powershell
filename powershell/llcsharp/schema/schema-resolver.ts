@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema, DurationSchema } from '@azure-tools/codemodel';
+import { codeModelSchema, ArraySchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema, DurationSchema, BinarySchema, DateSchema } from '@azure-tools/codemodel';
 
 import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
@@ -189,6 +189,8 @@ export class NewSchemaDefinitionResolver {
         return new NewString(<StringSchema>schema, required);
 
       }
+      case SchemaType.Binary:
+        return new NewBinary(<BinarySchema>schema, required);
       case SchemaType.Duration:
         return new NewDuration(<DurationSchema>schema, required);
       case SchemaType.Uuid:
@@ -198,6 +200,8 @@ export class NewSchemaDefinitionResolver {
           return new NewDateTime1123(<DateTimeSchema>schema, required);
         }
         return new NewDateTime(<DateTimeSchema>schema, required);
+      case SchemaType.Date:
+        return new NewDate(<DateSchema>schema, required);
       case SchemaType.ByteArray:
         return new NewByteArray(<ByteArraySchema>schema, required);
       case SchemaType.Boolean:
@@ -210,6 +214,7 @@ export class NewSchemaDefinitionResolver {
           // skip-for-time-being
           // case IntegerFormat.UnixTime:
           //   return new UnixTime(schema, required);
+          case 16:
           case 32:
             return new NewNumeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
         }
@@ -229,18 +234,8 @@ export class NewSchemaDefinitionResolver {
         return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
 
       case SchemaType.Constant:
-        switch ((<ConstantSchema>schema).valueType.type) {
-          case SchemaType.String:
-            return new NewString(schema, required);
-          case SchemaType.DateTime:
-            if ((<any>schema).valueType.format === StringFormat.DateTimeRfc1123) {
-              return new NewDateTime1123(<DateTimeSchema>schema, required);
-            }
-            return new NewDateTime(<DateTimeSchema>schema, required);
-          default:
-            state.error(`Unsupported constant type. Schema '${schema.language.csharp?.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
-            throw new Error('Unknown Model. Fatal.');
-        }
+        return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
+
       case SchemaType.Choice: {
         const choiceSchema = schema as ChoiceSchema;
         if ((<any>choiceSchema.choiceType).type === SchemaType.DateTime && (<any>choiceSchema.choiceType).format === StringFormat.DateTimeRfc1123) {
