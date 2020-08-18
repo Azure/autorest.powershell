@@ -231,7 +231,7 @@ export class NewSchemaDefinitionResolver {
       case SchemaType.Constant:
         switch ((<ConstantSchema>schema).valueType.type) {
           case SchemaType.String:
-            return new NewEnumImplementation(<StringSchema>schema, required);
+            return new NewString(schema, required);
           case SchemaType.DateTime:
             if ((<any>schema).valueType.format === StringFormat.DateTimeRfc1123) {
               return new NewDateTime1123(<DateTimeSchema>schema, required);
