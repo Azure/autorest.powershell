@@ -53,7 +53,7 @@ In this directory, run AutoRest:
 require:
   - $(this-folder)/../../../readme.azure.noprofile.md
 input-file:
-  #- $(repo)/specification/storage/resource-manager/Microsoft.Storage/stable/2019-04-01/storage.json
+  - $(repo)/specification/storage/resource-manager/Microsoft.Storage/stable/2019-04-01/storage.json
   - $(repo)/specification/storage/resource-manager/Microsoft.Storage/stable/2019-04-01/blob.json
 
 subject-prefix: ''

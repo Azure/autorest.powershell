@@ -11,7 +11,9 @@ subject-prefix: ''
 
 directive:
   # Remove unnedded cmdlets
-  - remove-operation: Operations_List
+  - where:
+      subject: ^Operation$
+    remove: true
 
   # Hide Storage Account cmdlets
   - where:
