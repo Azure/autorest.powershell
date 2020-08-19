@@ -25,6 +25,7 @@ import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-
 import { PwshModel } from '../../utils/PwshModel';
 import { NewModelState } from '../../utils/model-state';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { schemaHasEnum } from '../validations';
 
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
@@ -244,6 +245,9 @@ export class NewSchemaDefinitionResolver {
         return new NewString(schema, required);
       }
       case SchemaType.SealedChoice:
+        if (schema.language.default.skip === true) {
+          return new NewString(schema, required);
+        }
         return new NewEnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
