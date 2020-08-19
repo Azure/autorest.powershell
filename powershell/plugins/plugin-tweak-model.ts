@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema } from '@azure-tools/codemodel';
+import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
@@ -286,6 +286,21 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           } else if (parameter.schema.type === SchemaType.Constant) {
             const constantSchema = parameter.schema as ConstantSchema;
             parameter.language.default.constantValue = constantSchema.value.value;
+          } else if (parameter.schema.type === SchemaType.SealedChoice) {
+            const sealedChoiceSchema = parameter.schema as SealedChoiceSchema;
+            if (sealedChoiceSchema.choices.length === 1) {
+              parameter.language.default.constantValue = sealedChoiceSchema.choices[0].value;
+              if (sealedChoiceSchema.language.default.skip !== false) {
+                sealedChoiceSchema.language.default.skip = true;
+              }
+            }
+          }
+        } else {
+          if (parameter.schema.type === SchemaType.SealedChoice) {
+            const sealedChoiceSchema = parameter.schema as SealedChoiceSchema;
+            if (sealedChoiceSchema.choices.length === 1) {
+              sealedChoiceSchema.language.default.skip = false;
+            }
           }
         }
       }
@@ -306,6 +321,21 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
         } else if (property.schema.type === SchemaType.Constant) {
           const constantSchema = property.schema as ConstantSchema;
           property.language.default.constantValue = constantSchema.value.value;
+        } else if (property.schema.type === SchemaType.SealedChoice) {
+          const sealedChoiceSchema = property.schema as SealedChoiceSchema;
+          if (sealedChoiceSchema.choices.length === 1) {
+            property.language.default.constantValue = sealedChoiceSchema.choices[0].value;
+            if (sealedChoiceSchema.language.default.skip !== false) {
+              sealedChoiceSchema.language.default.skip = true;
+            }
+          }
+        }
+      } else {
+        if (property.schema.type === SchemaType.SealedChoice) {
+          const sealedChoiceSchema = property.schema as SealedChoiceSchema;
+          if (sealedChoiceSchema.choices.length === 1) {
+            sealedChoiceSchema.language.default.skip = false;
+          }
         }
       }
     }

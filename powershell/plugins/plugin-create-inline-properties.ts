@@ -270,11 +270,6 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       alias: [],
       required: property.required || property.language.default.required
     });
-    // dolauli, set constant value and make it readonly, if it is constant
-    if (property.schema.type === SchemaType.Constant) {
-      property.language.default.readOnly = true;
-      property.language.default.constantValue = (<ConstantSchema>property.schema).value.value;
-    }
   }
 
   // resolve name collisions.
