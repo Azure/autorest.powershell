@@ -10,8 +10,6 @@ input-file:
 # subject-prefix: ''
 
 directive:
-  # Remove unnedded cmdlets
-  - remove-operation: Operations_List
   # hide all cmdlets
   - where:
       subject: ^VaultDeleted$|^Vault$|^VaultNameAvailability$|^VaultAccessPolicy$
