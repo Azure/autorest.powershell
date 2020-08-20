@@ -408,7 +408,7 @@ export /* @internal */ class Inferrer {
 
     // the body parameter
     // xichen: How to handle if has multiple requests?
-    const body = (operation.requests && operation.requests[0].parameters) ? operation.requests[0].parameters[0] : null;
+    const body = operation.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
     // skip-for-time-being, looks x-ms-requestBody-name is not supported any more
     //const bodyParameterName = (operation.requestBody && operation.requestBody.extensions) ? operation.requestBody.extensions['x-ms-requestBody-name'] || 'bodyParameter' : '';
     const bodyParameterName = body ? body.language.default.name : '';

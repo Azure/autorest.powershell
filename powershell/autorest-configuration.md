@@ -10,6 +10,7 @@ modelerfour:
   emit-yaml-tags: false
   lenient-model-deduplication: true
   additional-checks: false
+  always-create-content-type-parameter: false
 ```
 
 > if the modeler is loaded already, use that one, otherwise grab it.

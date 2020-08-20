@@ -348,13 +348,15 @@ export class NewOperationMethod extends Method {
     // add body paramter if there should be one.
     if (this.operation.requests && this.operation.requests.length && this.operation.requests[0].parameters && this.operation.requests[0].parameters.length) {
       // this request does have a request body.
-      const param = this.operation.requests[0].parameters[0];
-      this.bodyParameter = new NewOperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
-        // TODO: temp solution. We need a class like NewKnowMediaType
-        mediaType: knownMediaType(KnownMediaType.Json),
-        contentType: KnownMediaType.Json
-      });
-      this.addParameter(this.bodyParameter);
+      const param = this.operation.requests[0].parameters.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0);
+      if (param) {
+        this.bodyParameter = new NewOperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
+          // TODO: temp solution. We need a class like NewKnowMediaType
+          mediaType: knownMediaType(KnownMediaType.Json),
+          contentType: KnownMediaType.Json
+        });
+        this.addParameter(this.bodyParameter);
+      }
     }
 
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
