@@ -11,6 +11,7 @@ modelerfour:
   lenient-model-deduplication: true
   additional-checks: false
   always-create-content-type-parameter: false
+  always-seal-x-ms-enums: false
 ```
 
 > if the modeler is loaded already, use that one, otherwise grab it.
@@ -18,7 +19,8 @@ modelerfour:
 ``` yaml 
 use-extension:
   "@autorest/remodeler" : "~2.1.0" 
-  "@autorest/modelerfour": "4.15.378"
+  #"@autorest/modelerfour": "4.15.378"
+  "@autorest/modelerfour": "http://tinyurl.com/y2r8qhs4"
 
 # will use highest 2.0.x 
 ```
