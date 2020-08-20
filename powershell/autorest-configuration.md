@@ -11,7 +11,7 @@ modelerfour:
   lenient-model-deduplication: true
   additional-checks: false
   always-create-content-type-parameter: false
-  always-seal-x-ms-enums: false
+  always-seal-x-ms-enums: true
 ```
 
 > if the modeler is loaded already, use that one, otherwise grab it.
