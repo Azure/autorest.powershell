@@ -17,7 +17,7 @@ import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, 
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
-import { BooleanSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
@@ -72,7 +72,9 @@ export class NewPSSchemaResolver extends NewSchemaDefinitionResolver {
     try {
       if (!this.inResolve) {
         this.inResolve = true;
-        if (schema && (schema.type === SchemaType.Boolean || (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.Boolean))) {
+        if (schema && (schema.type === SchemaType.Boolean
+          || (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.Boolean)
+          || (schema.type === SchemaType.Choice && (<any>schema).choiceType.type === SchemaType.Boolean))) {
           return new NewPSSwitch(<BooleanSchema>schema, required);
         }
       }
