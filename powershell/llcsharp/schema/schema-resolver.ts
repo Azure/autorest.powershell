@@ -238,11 +238,7 @@ export class NewSchemaDefinitionResolver {
         return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
 
       case SchemaType.Choice: {
-        const choiceSchema = schema as ChoiceSchema;
-        if ((<any>choiceSchema.choiceType).type === SchemaType.DateTime && (<any>choiceSchema.choiceType).format === StringFormat.DateTimeRfc1123) {
-          return new NewDateTime1123(schema as DateTimeSchema, required);
-        }
-        return new NewString(schema, required);
+        return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
       }
       case SchemaType.SealedChoice:
         if (schema.language.default.skip === true) {
