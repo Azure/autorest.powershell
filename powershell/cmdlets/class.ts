@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
@@ -2665,7 +2665,9 @@ export class NewCmdletClass extends Class {
         const resultSchema = length(props) !== 1 ? <NewSchema>schema : <NewSchema>props[0].schema;
 
         // make sure return type for boolean stays boolean!
-        if (resultSchema.type === SchemaType.Boolean) {
+        if (resultSchema.type === SchemaType.Boolean ||
+          (resultSchema.type === SchemaType.Choice && (<any>resultSchema).choiceType.type === SchemaType.Boolean && (<ChoiceSchema>resultSchema).choices.length === 1) ||
+          (resultSchema.type === SchemaType.SealedChoice && (<any>resultSchema).choiceType.type === SchemaType.Boolean && (<SealedChoiceSchema>resultSchema).choices.length === 1)) {
           outputTypes.add(`typeof(${dotnet.Bool})`);
         } else {
           const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state);
