@@ -44,7 +44,4 @@ directive:
     set:
       default:
         script: '(Get-AzContext).Subscription.Id'
-  - from: swagger-document
-    where: $
-    transform: return $.replace(/"modelAsString":\ true/g, '"modelAsString":\ false')
 ```
