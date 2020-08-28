@@ -1,0 +1,15 @@
+trigger:
+  branches:
+    include:
+      - '*'
+
+pool:
+  vmImage: "windows-2019"
+
+steps:
+- task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-credscan.CredScan@2
+  displayName: 'Run CredScan'
+  continueOnError: true
+  inputs:
+    toolMajorVersion: "V2"
+    suppressionsFile: .azure-pipelines\credscan-suppressions.json
