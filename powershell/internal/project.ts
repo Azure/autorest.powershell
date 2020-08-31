@@ -92,6 +92,7 @@ export class Project extends codeDomProject {
   public cmdletFolder!: string;
 
   public customFolder!: string;
+  public utilsFolder!: string;
   public internalFolder!: string;
   public testFolder!: string;
   public runtimeFolder!: string;
@@ -193,6 +194,7 @@ export class Project extends codeDomProject {
     this.cmdletFolder = await this.state.getValue('cmdlet-folder');
 
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
+    this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
     this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
     this.testFolder = await this.state.getValue('test-folder');
     this.runtimeFolder = await this.state.getValue('runtime-folder');
@@ -250,6 +252,7 @@ export class NewProject extends codeDomProject {
   public cmdletFolder!: string;
 
   public customFolder!: string;
+  public utilsFolder!: string;
   public internalFolder!: string;
   public testFolder!: string;
   public runtimeFolder!: string;
@@ -353,6 +356,7 @@ export class NewProject extends codeDomProject {
     this.cmdletFolder = await this.state.getValue('cmdlet-folder');
 
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
+    this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
     this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
     this.testFolder = await this.state.getValue('test-folder');
     this.runtimeFolder = await this.state.getValue('runtime-folder');
