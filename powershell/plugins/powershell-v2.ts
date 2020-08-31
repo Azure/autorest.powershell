@@ -32,6 +32,9 @@ async function copyRequiredFiles(project: NewProject) {
   // Runtime files
   await copyResources(join(resources, 'psruntime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
+  // utils cmdlets
+  await copyResources(join(resources, 'utils'), async (fname, content) => project.state.writeFile(join(project.utilsFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+
   // Modules files
   await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
 

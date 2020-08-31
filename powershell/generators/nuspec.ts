@@ -41,6 +41,7 @@ export async function generateNuspec(project: Project | NewProject) {
     <file src="${removeCd(project.customFolder)}/**/*.*" exclude="${removeCd(project.customFolder)}/readme.md;${removeCd(project.customFolder)}/**/*.cs" />
     <file src="${removeCd(project.docsFolder)}/**/*.md" exclude="${removeCd(project.docsFolder)}/readme.md" />
     <file src="${removeCd(project.exportsFolder)}/**/ProxyCmdletDefinitions.ps1" />
+    <file src="${removeCd(project.utilsFolder)}/**/*.*" />
   </files>
 </package>`, undefined, 'source-file-other');
 }

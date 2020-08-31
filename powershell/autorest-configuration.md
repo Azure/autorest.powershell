@@ -63,6 +63,7 @@ module-folder: $(current-folder)/generated
 cmdlet-folder: $(module-folder)/cmdlets
 model-cmdlet-folder: $(module-folder)/model-cmdlets
 custom-cmdlet-folder: $(current-folder)/custom
+utils-cmdlet-folder: $(current-folder)/utils
 internal-cmdlet-folder: $(current-folder)/internal
 test-folder: $(current-folder)/test
 runtime-folder: $(module-folder)/runtime

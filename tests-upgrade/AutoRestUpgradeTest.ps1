@@ -66,6 +66,9 @@ function IsNeedIgnore([string]$inputFileName , [Array]$ignoreArray)
         {
            $Ignore =$True
            break
+        } elseif ($ignoreDetail.Contains("*.") -and $inputFileName.EndsWith($ignoreDetail.Split(".")[-1])) {
+            $Ignore =$True
+            break
         }
     }
     return $Ignore
@@ -117,8 +120,8 @@ function CompareGeneratedCode([string]$inputSourcePath,[string]$inputTargetPath,
     #in m3Path
     cd $inputSourcePath
     $initFileList = Get-ChildItem -Recurse -force
-    $initIgnoreFileList = (($inputSourcePath+'\generated\modules'), ($inputSourcePath+'\.gitignore'),($inputSourcePath+'\tools\Resources\.gitignore'))
-    $targetIgnoreFileList = (($inputTargetPath+'\generated\modules'), ($inputTargetPath+'\.gitignore'),($inputTargetPath+'\tools\Resources\.gitignore'))
+    $initIgnoreFileList = (($inputSourcePath+'\generated\modules'), ($inputSourcePath+'\utils'), ($inputSourcePath+'\*.nuspec'), ($inputSourcePath+'\.gitignore'),($inputSourcePath+'\tools\Resources\.gitignore'))
+    $targetIgnoreFileList = (($inputTargetPath+'\generated\modules'), ($inputTargetPath+'\utils'),($inputTargetPath+'\*.nuspec'),($inputTargetPath+'\.gitignore'),($inputTargetPath+'\tools\Resources\.gitignore'))
     #foreach initFileList and get the hashcode of them
     foreach( $initFile in $initFileList)
     {
