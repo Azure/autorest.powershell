@@ -24,6 +24,7 @@
     "datamodels-datatypes-integer",
     "datamodels-datatypes-string",
     "datamodels-datatypes-object",
+    "datamodels-datatypes-unixtime",
     "datamodels-combineschema",
     "directive-model",
     "directive-tableformat",
