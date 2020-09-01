@@ -30,6 +30,7 @@ import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ModelProperty } from './property';
 import { ObjectImplementation } from '../schema/object';
+import { NewModelInterface } from './interface';
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -299,8 +300,9 @@ export class NewJsonSerializableClass extends Class {
           // wildcard style
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
 
-        } else if (vType instanceof ObjectImplementation) {
-          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${this.modelClass.fullName}.FromJson(j) ,${exclusions.value} );`));
+        } else if (vType instanceof NewModelInterface) {
+          // use the class of the dictionary value to deserialize values
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${vType.classImplementation.fullName}.FromJson(j) ,${exclusions.value} );`));
         } else {
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, null ,${exclusions.value} );`));
         }
