@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema } from '@azure-tools/codemodel';
+import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema, ConditionalValue } from '@azure-tools/codemodel';
 //import { ModelState } from '@azure-tools/codemodel-v3';
 //import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
@@ -35,38 +35,40 @@ export function titleToAzureServiceName(title: string): string {
 }
 
 
-// function dropDuplicatePropertiesInChildSchemas(schema: Schema, state: State, map: Map<string, Property> = new Map()) {
-//   let success = true;
-//   for (const parent of values(schema.allOf)) {
-//     handle parents first
-//     if (!dropDuplicatePropertiesInChildSchemas(parent, state, map)) {
-//       return false;
-//     }
-//   }
-//   for (const { key: id, value: property } of items(schema.properties)) {
-//     see if it's in the parent.
-//     const pProp = map.get(property.serializedName);
-//     if (pProp) {
-//       if the parent prop is the same type as the child prop
-//       we're going to drop the child property.
-//       if (pProp.schema.type === property.schema.type) {
-//         if it's an object type, it has to be the exact same schema type too
-//         if (pProp.schema.type != JsonType.Object || pProp.schema === property.schema) {
-//           state.verbose(`Property '${property.serializedName}' in '${schema.details.default.name}' has a property the same as the parent, and is dropping the duplicate.`, {});
-//           delete schema.properties[id];
-//         } else {
-//           const conflict = `Property '${property.serializedName}' in '${schema.details.default.name}' has a conflict with a parent schema (allOf ${schema.allOf.joinWith(each => each.details.default.name)}.`;
-//           state.error(conflict, [], {});
-//           success = false;
-//         }
-//       }
-//     }
-//     else {
-//       map.set(property.serializedName, property);
-//     }
-//   }
-//   return success;
-// }
+function dropDuplicatePropertiesInChildSchemas(schema: ObjectSchema, state: State, map: Map<string, Property> = new Map()) {
+  let success = true;
+  for (const parent of values(schema.parents?.immediate)) {
+    //handle parents first
+    if (!dropDuplicatePropertiesInChildSchemas(<ObjectSchema>parent, state, map)) {
+      return false;
+    }
+  }
+  for (const { key: id, value: property } of items(schema.properties)) {
+    //see if it's in the parent.
+    const pProp = map.get(property.serializedName);
+    if (pProp) {
+      //if the parent prop is the same type as the child prop
+      //we're going to drop the child property.
+      if (pProp.schema.type === property.schema.type) {
+        //if it's an object type, it has to be the exact same schema type too
+        if (pProp.schema.type != SchemaType.Object || pProp.schema === property.schema) {
+          state.verbose(`Property '${property.serializedName}' in '${schema.language.default.name}' has a property the same as the parent, and is dropping the duplicate.`, {});
+          if (schema.properties) {
+            delete schema.properties[id];
+          }
+        } else {
+          const conflict = `Property '${property.serializedName}' in '${schema.language.default.name}' has a conflict with a parent schema (allOf ${schema.parents?.immediate.joinWith(each => each.language.default.name)}.`;
+          state.error(conflict, [], {});
+          success = false;
+        }
+      }
+    }
+    else {
+      map.set(property.serializedName, property);
+    }
+  }
+  return success;
+}
 
 async function tweakModelV2(state: State): Promise<PwshModel> {
   const title = pascalCase(fixLeadingNumber(deconstruct(await state.getValue('title', state.model.info.title))));
@@ -142,16 +144,15 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   //   }
   // }
 
-  // xichen: should be no duplicate properties in m4. Skip
   // schemas that have parents and implement properties that are in the parent schemas
   // will have the property dropped in the child schema
-  // for (const schema of values(model.schemas)) {
-  //   if (length(schema.allOf) > 0) {
-  //     if (!dropDuplicatePropertiesInChildSchemas(schema, state)) {
-  //       throw new Error('Schemas are in conflict.');
-  //     }
-  //   }
-  // }
+  for (const schema of values(model.schemas.objects)) {
+    if (length(schema.parents?.immediate) > 0) {
+      if (!dropDuplicatePropertiesInChildSchemas(schema, state)) {
+        throw new Error('Schemas are in conflict.');
+      }
+    }
+  }
 
 
   if (await state.getValue('use-storage-pipeline', false)) {
@@ -310,6 +311,9 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   // identify properties that are constants
   for (const schema of values(schemas.objects)) {
     for (const property of values(schema.properties)) {
+      if (property === undefined) {
+        continue;
+      }
       if (property.required) {
         if (property.schema.type === SchemaType.Choice) {
           const choiceSchema = property.schema as ChoiceSchema;
