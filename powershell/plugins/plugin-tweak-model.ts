@@ -144,7 +144,6 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   //   }
   // }
 
-  // xichen: should be no duplicate properties in m4. Skip
   // schemas that have parents and implement properties that are in the parent schemas
   // will have the property dropped in the child schema
   for (const schema of values(model.schemas.objects)) {
