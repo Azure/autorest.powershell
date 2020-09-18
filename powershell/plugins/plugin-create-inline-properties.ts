@@ -160,7 +160,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     // dolauli pay attention to the condition check
     const isDict = property.schema.type === SchemaType.Dictionary || (<ObjectSchema>property.schema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary);
     const canInline =
-      // (!property.schema.details.default['skip-inline']) &&
+      (!property.schema.language.default['skip-inline']) &&
       (!<ObjectSchema>property.schema.language.default.byReference) &&
       (!isDict) &&
       (<ObjectSchema>property.schema).language.default.inline === 'yes';

@@ -7,10 +7,13 @@ import { serialize } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { NewModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
+import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 
 import { Host } from '@azure-tools/autorest-extension-base';
 
 type State = NewModelState<PwshModel>;
+
+let directives: Array<any> = [];
 
 async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
@@ -21,9 +24,22 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
   removeM4DefaultDescription(model);
 
+  handleNoinlineDirective(state);
+
   return model;
 }
 
+function handleNoinlineDirective(state: State) {
+  var inlineModels: string[] = new Array;
+  for (const directive of directives.filter(each => each['no-inline'])) {
+    inlineModels = inlineModels.concat(<ConcatArray<string>>values(directive['no-inline']).toArray());
+  }
+  for (const model of state.model.schemas.objects || []) {
+    if (inlineModels.includes(model.language.default.name)) {
+      model.language.default['skip-inline'] = true;
+    }
+  }
+}
 function addResponseHeaderSchema(model: CodeModel) {
   // In remodeler, each operations response headers will has its own scheam. Each header will be schema's property. 
   // But in m4, if 'schema' is not explicitly defined, even 'headers' is specified, there won't be a schema for headers.
@@ -153,6 +169,8 @@ function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema
 }
 
 export async function tweakM4ModelPlugin(service: Host) {
+  const allDirectives = await service.GetValue('directive');
+  directives = values(allDirectives).toArray();
   const state = await new NewModelState<PwshModel>(service).init();
   service.WriteFile('code-model-v4-tweakm4codemodel.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }
