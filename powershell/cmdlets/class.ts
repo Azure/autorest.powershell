@@ -2314,6 +2314,10 @@ export class NewCmdletClass extends Class {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
         yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
+      } else {
+        // In Non-Azure Modes, emit the Signal method without coorelation and processrecordid
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, null );`;
+        yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
       // any handling of the signal on our side...
