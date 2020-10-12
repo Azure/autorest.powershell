@@ -13,6 +13,7 @@ obj
 generated
 internal
 exports
+tools
 custom/*.psm1
 test/*-TestResults.xml
 /*.ps1

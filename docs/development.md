@@ -71,7 +71,8 @@ To use the locally built version of the plugin, add `--use:<path>` to the comman
 
 ### Debugging 
 
-COMING SOON.
+1. Start generating: `autorest-beta --use:C:\path\to\local\autorest.powershell --powershell.debugger`. It will wait for debugger to attach.
+1. Start debugging: open autorest.powershell repo in vscode; press `F5`. You will see "Debugger attached." in your autorest console, then you can start debugging.
 
 ### Testing
 

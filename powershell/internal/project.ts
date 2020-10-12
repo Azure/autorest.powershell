@@ -173,7 +173,7 @@ export class Project extends codeDomProject {
     // Values
     this.moduleVersion = await this.state.getValue('module-version');
     this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
-    this.accountsVersionMinimum = '1.7.4';
+    this.accountsVersionMinimum = '1.8.1';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.license = await this.state.getValue('header-text', '');

@@ -129,6 +129,21 @@ export class ModuleClass extends Class {
 
   createInitAndPipeline(namespace: Namespace) {
     const $this = this;
+    // Custom Event Listener without Azure Spefic concepts. (ProcessId and CorelationId)
+    const customEventListenerFunc = System.Func(
+      dotnet.String,
+      System.Threading.CancellationToken,
+      System.Func(System.EventArgs),
+      this.incomingSignalFunc,
+      InvocationInfo,
+      dotnet.String,
+      System.Exception,
+    /* returns */ System.Threading.Tasks.Task());
+
+    const incomingSignalDelegate = namespace.add(new Alias('SignalDelegate', this.incomingSignalFunc));
+    const eventListenerDelegate = namespace.add(new Alias('EventListenerDelegate', customEventListenerFunc));
+    const EventListener = this.add(new Property('EventListener', eventListenerDelegate, { description: 'A delegate that gets called for each signalled event' }));
+
     // non-azure init method
     this.initMethod.add(function* () {
       yield '// called at module init time...';
@@ -152,6 +167,22 @@ export class ModuleClass extends Class {
     });
 
     this.add(new LambdaProperty('Name', dotnet.String, new StringExpression(this.state.project.moduleName), { description: 'The Name of this module ' }));
+
+    // Add Signal extensibility point
+    const pSignal = new Parameter('signal', incomingSignalDelegate, { description: 'The callback for the event dispatcher ' });
+    // Emit signal extensibility points that called EventListenerDelegate, allowing us to handle Signals emitted by the Pipeline in the Auth Module
+    const signalImpl = this.add(new Method('Signal', System.Threading.Tasks.Task(), {
+      parameters: [this.pId, this.pToken, this.pGetEventData, pSignal, this.pInvocationInfo, this.pParameterSetName, this.pException], async: Modifier.Async,
+      description: 'Called to dispatch events to the common module listener',
+      returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the event is completed.`
+    }));
+
+    signalImpl.push(Using('NoSynchronizationContext', ''));
+    signalImpl.add(function* () {
+      // Emit call to EventListener after explicit null check.
+      // Not using Null-Conditional operator causes Null Reference exception when Func<Task> is null, due to awaiting null Task.
+      yield If(`${EventListener.value} != null`, `await ${EventListener.value}.Invoke(${$this.pId.value},${$this.pToken.value},${$this.pGetEventData.value}, ${pSignal.value}, ${$this.pInvocationInfo}, ${$this.pParameterSetName},${$this.pException});`)
+    });
   }
 
   createAzureInitAndPipeline(namespace: Namespace) {

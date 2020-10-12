@@ -83,7 +83,7 @@ function GenerateCode()
     {
         #generate source code
         Write-Host -ForegroundColor Green 'M3'
-        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug | Out-string
+        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.400 --output-folder:.\generate\m3 --Debug | Out-string
         #generate target code
         Write-Host -ForegroundColor Green 'M4'
         $GenerateTargetResult = autorest-beta --use:..\..\ --output-folder:.\generate\m4 --Debug | Out-string
@@ -94,7 +94,7 @@ function GenerateCode()
     }elseif($SourceVersion)
     {
         Write-Host -ForegroundColor Green 'M3'
-        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.386 --output-folder:.\generate\m3 --Debug | Out-string
+        $GenerateSourceResult = autorest-beta --use:@autorest/powershell@2.1.400 --output-folder:.\generate\m3 --Debug | Out-string
         if(!$GenerateSourceResult.Contains('Generation Complete'))
         {
             $GenerateResult = $false
