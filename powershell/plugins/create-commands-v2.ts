@@ -288,7 +288,7 @@ export /* @internal */ class Inferrer {
 
       // let's add a variant where it's expanded out.
       // *IF* the body is an object or dictionary
-      if (body.schema.type === SchemaType.Object || body.schema.type === SchemaType.Dictionary) {
+      if (body.schema.type === SchemaType.Object || body.schema.type === SchemaType.Dictionary || body.schema.type === SchemaType.Any) {
         const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state);
         opExpanded.details.default.dropBodyParameter = true;
         opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
