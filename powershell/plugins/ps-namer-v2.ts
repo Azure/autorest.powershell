@@ -11,10 +11,10 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import * as linq from '@azure-tools/linq';
 import { singularize } from '../internal/name-inferrer';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '../utils/resolve-conflicts';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 function getCmdletName(verb: string, subjectPrefix: string, subject: string): string {
   return `${verb}-${subjectPrefix}${subject}`;
@@ -208,6 +208,6 @@ export async function namerV2(service: Host) {
   //return processCodeModel(tweakModel, service, 'psnamer');
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-psnamer-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

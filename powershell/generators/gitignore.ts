@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { Project, NewProject } from '../internal/project';
+import { NewProject } from '../internal/project';
 
-export async function generateGitIgnore(project: Project | NewProject) {
+export async function generateGitIgnore(project: NewProject) {
   project.state.writeFile(project.gitIgnore, `bin
 obj
 .vs

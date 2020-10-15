@@ -4,19 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
-//import { codemodel, JsonType, ModelState, processCodeModel, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
 
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
-import { SchemaDefinitionResolver, NewSchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
+import { NewSchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { SchemaDetails as NewSchemaDetails } from '../utils/schema';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 
 function setPropertyNames(schema: Schema) {
@@ -260,7 +259,7 @@ export async function csnamerV2(service: Host) {
   //return processCodeModel(nameStuffRight, service, 'csnamer');
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-csnamer-v2.yaml', serialize(await nameStuffRight(state)), undefined, 'code-model-v4');
 }
 

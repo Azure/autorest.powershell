@@ -7,8 +7,7 @@ import { codeModelSchema } from '@azure-tools/codemodel';
 import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
 import { Model } from '../llcsharp/code-model';
-import { State } from '../llcsharp/generator';
-import { Project, NewProject } from '../llcsharp/project';
+import { NewProject } from '../llcsharp/project';
 import { PwshModel } from '../utils/PwshModel';
 import { Dictionary } from '@azure-tools/linq';
 

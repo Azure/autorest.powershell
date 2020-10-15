@@ -7,7 +7,7 @@ import { Channel, Host, JsonPath, Mapping, RawSourceMap, Message } from '@azure-
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
 
-export class NewModelState<T extends Dictionary<any>> extends Initializer {
+export class ModelState<T extends Dictionary<any>> extends Initializer {
   public model!: T;
   protected documentName!: string;
   protected currentPath: JsonPath = new Array<string>();
@@ -15,13 +15,13 @@ export class NewModelState<T extends Dictionary<any>> extends Initializer {
   private _debug = false;
   private _verbose = false;
 
-  public constructor(protected service: Host, objectInitializer?: DeepPartial<NewModelState<T>>) {
+  public constructor(protected service: Host, objectInitializer?: DeepPartial<ModelState<T>>) {
     super();
     this.apply(objectInitializer);
   }
 
   async init(project?: any) {
-    const m = await NewModelState.getModel<T>(this.service);
+    const m = await ModelState.getModel<T>(this.service);
     this.model = m.model;
     this.documentName = m.filename;
     this.initContext(project);

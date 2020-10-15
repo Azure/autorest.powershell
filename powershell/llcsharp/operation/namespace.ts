@@ -6,12 +6,12 @@
 import { ImportDirective } from '@azure-tools/codegen-csharp';
 import { Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
-import { State, NewState } from '../generator';
+import { NewState } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
 export class ServiceNamespace extends Namespace {
-  constructor(public state: State | NewState, objectInitializer?: DeepPartial<ServiceNamespace>) {
-    super(state instanceof NewState ? state.model.language.csharp?.namespace : state.model.details.csharp.namespace || 'INVALID-NAMESPACE', state.project);
+  constructor(public state: NewState, objectInitializer?: DeepPartial<ServiceNamespace>) {
+    super(state.model.language.csharp?.namespace, state.project);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
   }

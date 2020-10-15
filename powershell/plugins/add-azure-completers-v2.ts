@@ -6,10 +6,10 @@
 import { values } from '@azure-tools/linq';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { serialize } from '@azure-tools/codegen';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 const resourceGroupNames = new Set<string>([
   'resourcegroupname',
@@ -45,6 +45,6 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
 
 export async function addCompleterV2(service: Host) {
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-add-azure-completers-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

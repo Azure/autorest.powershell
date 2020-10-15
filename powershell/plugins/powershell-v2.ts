@@ -7,8 +7,7 @@
 import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { join } from 'path';
-import { Project, NewProject } from '../internal/project';
-import { State } from '../internal/state';
+import { NewProject } from '../internal/project';
 import { generatePsm1 } from '../generators/psm1';
 import { generateCsproj } from '../generators/csproj';
 import { generatePsm1Custom } from '../generators/psm1.custom';

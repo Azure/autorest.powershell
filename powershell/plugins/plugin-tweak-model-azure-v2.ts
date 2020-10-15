@@ -7,11 +7,11 @@
 import { keys, length, values } from '@azure-tools/linq';
 
 import { Channel, Host } from '@azure-tools/autorest-extension-base';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
 import { getAllProperties, ObjectSchema, Response, SchemaType, Schema } from '@azure-tools/codemodel';
 import { serialize } from '@azure-tools/codegen';
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 const xmsPageable = 'x-ms-pageable';
 
@@ -197,6 +197,6 @@ function getSchema(response: Response): Schema {
 // Additional tweaks the code model to adjust things so that the code will generate better.
 
 export async function tweakModelAzurePluginV2(service: Host) {
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-tweakcodemodelazure-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

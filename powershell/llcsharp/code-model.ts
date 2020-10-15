@@ -4,17 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codemodel, command, components, exportedModels as T, http, schema } from '@azure-tools/codemodel-v3';
-import { ModelInterface } from './model/interface';
-import { ModelClass } from './model/model-class';
+import { NewModelInterface } from './model/interface';
+import { NewModelClass } from './model/model-class';
 import { EnhancedTypeDeclaration } from './schema/extended-type-declaration';
 
 // C# specific details for components
 
 export interface SchemaDetails extends schema.SchemaDetails {
   typeDeclaration?: EnhancedTypeDeclaration;
-  classImplementation?: ModelClass;
-  interfaceImplementation?: ModelInterface;
-  internalInterfaceImplementation?: ModelInterface;
+  classImplementation?: NewModelClass;
+  interfaceImplementation?: NewModelInterface;
+  internalInterfaceImplementation?: NewModelInterface;
   interfaceName?: string;
   internalInterfaceName?: string;
   fullInternalInterfaceName?: string;
