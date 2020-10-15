@@ -15,7 +15,6 @@ import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 
 type State = ModelState<codemodel.Model>;
 
-
 function setPropertyNames(schema: Schema) {
   // name each property in this schema
   for (const propertySchema of values(schema.properties)) {
