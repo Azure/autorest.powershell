@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AutoRestExtension, } from '@azure-tools/autorest-extension-base';
-import { applyModifiers } from './plugins/modifiers';
-import { createCommands } from './plugins/create-commands';
-import { namer } from './plugins/ps-namer';
-import { powershell } from './plugins/powershell';
-import { addCompleter } from './plugins/add-azure-completers';
-import { csnamer } from './plugins/cs-namer';
-import { llcsharp } from './plugins/llcsharp';
+//import { applyModifiers } from './plugins/modifiers';
+//import { createCommands } from './plugins/create-commands';
+//import { namer } from './plugins/ps-namer';
+//import { powershell } from './plugins/powershell';
+//import { addCompleter } from './plugins/add-azure-completers';
+//import { csnamer } from './plugins/cs-namer';
+//import { llcsharp } from './plugins/llcsharp';
 import { createInlinedPropertiesPlugin } from './plugins/plugin-create-inline-properties';
 import { tweakModelPlugin } from './plugins/plugin-tweak-model';
 import { tweakModelAzurePluginV2 } from './plugins/plugin-tweak-model-azure-v2';
@@ -27,13 +27,6 @@ require('source-map-support').install();
 
 export async function main() {
   const pluginHost = new AutoRestExtension();
-  pluginHost.Add('powershell', powershell);
-  pluginHost.Add('create-commands', createCommands);
-  pluginHost.Add('psnamer', namer);
-  pluginHost.Add('modifiers', applyModifiers);
-  pluginHost.Add('add-azure-completers', addCompleter);
-  pluginHost.Add('csnamer', csnamer);
-  pluginHost.Add('llcsharp', llcsharp);
   // Following are plugins moved from remodeler
   pluginHost.Add('tweakm4codemodel', tweakM4ModelPlugin);
   pluginHost.Add('tweakcodemodel-v2', tweakModelPlugin);
