@@ -3,7 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
+import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
+import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
@@ -15,6 +18,7 @@ import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, Cmdle
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
+import { IParameter as NewIParameter } from '../utils/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
 import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
@@ -152,6 +156,17 @@ export function addCompleterInfo(targetProperty: Property, parameter: VirtualPar
   }
 }
 
+export function NewAddCompleterInfo(targetProperty: Property, parameter: NewVirtualParameter) {
+  if (parameter.completerInfo && parameter.completerInfo.script) {
+    targetProperty.add(new Attribute(ClientRuntime.CompleterInfoAttribute, {
+      parameters: [
+        new LiteralExpression(`\nName = ${new StringExpression(parameter.completerInfo.name || '').value}`),
+        new LiteralExpression(`\nDescription =${new StringExpression(parameter.completerInfo.description || '').value}`),
+        new LiteralExpression(`\nScript = ${new StringExpression(parameter.completerInfo.script).value}`)
+      ]
+    }));
+  }
+}
 
 export function addDefaultInfo(targetProperty: Property, parameter: any) {
   if (parameter.defaultInfo && parameter.defaultInfo.script) {
@@ -218,6 +233,60 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
 
 }
 
+
+export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+
+  let pt = <any>pType;
+  while (pt.elementType) {
+    switch (pt.elementType.schema.type) {
+      case JsonType.Object:
+        if (pt.elementType.schema.language.csharp.interfaceImplementation) {
+          pt = {
+            declaration: pt.elementType.schema.language.csharp.interfaceImplementation.declaration,
+            schema: pt.elementType.schema,
+          };
+        } else {
+          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          pt = {
+            declaration: `${pt.elementType.schema.language.csharp.namespace}.${pt.elementType.schema.language.csharp.interfaceName}`,
+            schema: pt.elementType.schema,
+          };
+        }
+        break;
+
+      case JsonType.Array:
+        pt = pt.elementType;
+        break;
+
+      default:
+        pt = pt.elementType;
+        break;
+    }
+  }
+  const ptypes = new Array<string>();
+  if (pt.schema && pt.schema && pt.schema.language.csharp.byReference) {
+    ptypes.push(`typeof(${pt.schema.language.csharp.namespace}.${pt.schema.language.csharp.interfaceName}_Reference)`);
+    // do we need polymorphic types for by-resource ? Don't think so.
+  } else {
+    ptypes.push(`typeof(${pt.declaration})`);
+    if (pt.schema && pt.schema.language.csharp.classImplementation && pt.schema.language.csharp.classImplementation.discriminators) {
+      ptypes.push(...[...pt.schema.language.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+    }
+  }
+
+  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description).value}`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
+    ]
+  }));
+
+
+}
+
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
   public state: State;
@@ -231,14 +300,14 @@ export class CmdletClass extends Class {
   private bodyParameter?: Variable;
   private bodyParameterInfo?: { type: TypeDeclaration; valueType: TypeDeclaration };
   private apProp?: Property;
-  private operation: command.CommandOperation;
+  private operation: CommandOperation;
   private debugMode?: boolean;
   private variantName: string;
   private isViaIdentity: boolean;
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
 
-  constructor(namespace: Namespace, operation: command.CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
+  constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
     const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
@@ -281,7 +350,7 @@ export class CmdletClass extends Class {
     }));
 
     // construct the class
-    this.addClassAttributes(this.operation, this.variantName);
+    this.NewAddClassAttributes(this.operation, this.variantName);
     if (this.hasStreamOutput) {
       this.outFileParameter = this.add(new Property('OutFile', System.String, { attributes: [], description: 'Path to write output file to.' }));
       this.outFileParameter.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', 'HelpMessage = "Path to write output file to"'] }));
@@ -289,7 +358,7 @@ export class CmdletClass extends Class {
       this.outFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
     }
 
-    this.addPowershellParameters(this.operation);
+    this.NewAddPowershellParameters(this.operation);
 
     // implement IEventListener
     this.implementIEventListener();
@@ -298,13 +367,13 @@ export class CmdletClass extends Class {
     this.implementConstructors();
 
     // processRecord
-    this.implementProcessRecord(this.operation);
+    this.NewImplementProcessRecord(this.operation);
 
-    this.implementProcessRecordAsync(this.operation);
+    this.NewImplementProcessRecordAsync(this.operation);
     this.debugMode = await this.state.getValue('debug', false);
 
     // json serialization
-    this.implementSerialization(this.operation);
+    this.NewImplementSerialization(this.operation);
 
     for (const prop of this.properties) {
       if (prop.name === 'Host') {
@@ -320,12 +389,19 @@ export class CmdletClass extends Class {
     let ops = '';
 
     for (const httpOperation of values(this.operation.callGraph)) {
-      ops = `${ops}\n[OpenAPI] ${httpOperation.operationId}=>${httpOperation.method.toUpperCase()}:"${httpOperation.path}"`;
+      const request = httpOperation.requests?.[0];
+      if (!request) {
+        continue;
+      }
+      const httpMethod = request.protocol.http?.method ?? '';
+      const httpPath = request.protocol.http?.path ?? '';
+      ops = `${ops}\n[OpenAPI] ${httpOperation.language.default.name}=>${httpMethod.toUpperCase()}:"${httpPath}"`;
       if (this.debugMode) {
-        const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
-        if (m) {
-          ops = `${ops}\n [METADATA]\n${serialize(m)}`;
-        }
+        // x-ms-metadata seems no longer exists
+        // const m = (httpOperation.extensions && httpOperation.extensions['x-ms-metadata']) || (httpOperation.pathExtensions ? httpOperation.pathExtensions['x-ms-metadata'] : undefined);
+        // if (m) {
+        //   ops = `${ops}\n [METADATA]\n${serialize(m)}`;
+        // }
 
         ops = `${ops}\n [DETAILS]`;
         ops = `${ops}\n verb: ${this.operation.details.csharp.verb}`;
@@ -356,7 +432,7 @@ export class CmdletClass extends Class {
     this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
 
     // client API property (gs01: fill this in correctly)
-    const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new ClassType(this.state.model.language.csharp?.namespace, this.state.model.language.csharp?.name || '');
     this.add(new LambdaProperty('Client', clientAPI, new LiteralExpression(`${this.state.project.serviceNamespace.moduleClass.declaration}.Instance.ClientAPI`), { description: 'The reference to the client API class.' }));
 
     this.add(new Method('StopProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Interrupts currently running code within the command.' })).add(function* () {
@@ -409,20 +485,24 @@ export class CmdletClass extends Class {
     }
   }
 
-  private isWritableCmdlet(operation: command.CommandOperation): boolean {
-    switch (operation.callGraph[0].method.toLowerCase()) {
-      case 'put':
-      case 'post':
-      case 'delete':
-      case 'patch':
-        return true;
+
+  private NewIsWritableCmdlet(operation: CommandOperation): boolean {
+    if (operation.callGraph[0].requests) {
+      switch (operation.callGraph[0].requests[0]?.protocol.http?.method.toLowerCase()) {
+        case 'put':
+        case 'post':
+        case 'delete':
+        case 'patch':
+          return true;
+      }
     }
     return false;
   }
 
-  private implementProcessRecord(operation: command.CommandOperation) {
+
+  private NewImplementProcessRecord(operation: CommandOperation) {
     const $this = this;
-    const writable = this.isWritableCmdlet(operation);
+    const writable = this.NewIsWritableCmdlet(operation);
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: 'Performs execution of the command.' })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
@@ -477,7 +557,7 @@ export class CmdletClass extends Class {
         } : normal;
 
         if (writable) {
-          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].details.csharp.name}' operation")`, work);
+          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].language.csharp?.name}' operation")`, work);
         } else {
           yield work;
         }
@@ -505,7 +585,8 @@ export class CmdletClass extends Class {
 
   }
 
-  private implementProcessRecordAsync(operation: command.CommandOperation) {
+
+  private NewImplementProcessRecordAsync(operation: CommandOperation) {
     const $this = this;
     const PAR = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
@@ -549,22 +630,22 @@ export class CmdletClass extends Class {
       const operationParameters =
         values(apiCall.parameters).
           // filter out constants and path parameters when using piping for identity
-          where(each => !(each.details.csharp.constantValue) /* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
+          where(each => !(each.language.csharp?.constantValue) && each.language.default?.name !== '$host'/* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
 
           select(p => {
             return {
-              name: p.details.csharp.name,
+              name: p.language.csharp?.name,
               param: values($this.properties).
                 where(each => each.metadata.parameterDefinition).
-                first(each => each.metadata.parameterDefinition.details.csharp.uid === p.details.csharp.uid),
-              isPathParam: $this.isViaIdentity && p.in === ParameterLocation.Path
+                first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
+              isPathParam: $this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
             };
 
           }).
           select(each => {
             if (each.param) {
 
-              const httpParam = (<http.HttpOperationParameter>(each.param.metadata.parameterDefinition));
+              const httpParam = (<HttpParameter>(each.param.metadata.parameterDefinition));
               if (httpParam.required) {
                 return {
                   name: each.param,
@@ -573,7 +654,7 @@ export class CmdletClass extends Class {
                 };
               }
 
-              const httpParamTD = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<Schema>httpParam.schema), httpParam.required, $this.state);
+              const httpParamTD = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, $this.state);
               return {
                 name: each.param,
                 expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
@@ -591,9 +672,9 @@ export class CmdletClass extends Class {
       }
 
       // create the response handlers
-      const responses = [...values(apiCall.responses).selectMany(each => each)];
+      const responses = [...values(apiCall.responses), ...values(apiCall.exceptions)];
 
-      const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.details.csharp.name));
+      const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
 
       // make callback methods
       for (const each of values(responses)) {
@@ -601,27 +682,27 @@ export class CmdletClass extends Class {
         const parameters = new Array<Parameter>();
         parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
 
-        if (each.details.csharp.responseType) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.details.csharp.responseType }), { description: `the body result as a <see cref="${each.details.csharp.responseType}" /> from the remote call` }));
+        if (each.language.csharp?.responseType) {
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), { description: `the body result as a <see cref="${each.language.csharp.responseType}" /> from the remote call` }));
         }
-        if (each.details.csharp.headerType) {
-          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.details.csharp.headerType }), { description: `the header result as a <see cref="${each.details.csharp.headerType}" /> from the remote call` }));
+        if (each.language.csharp?.headerType) {
+          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
         }
 
-        const override = `override${pascalCase(each.details.csharp.name)}`;
-        const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.details.csharp.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
+        const override = `override${pascalCase(each.language.csharp?.name || '')}`;
+        const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.language.csharp?.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
         const overrideResponseMethod = new PartialMethod(override, dotnet.Void, {
           parameters: [...parameters, returnNow],
-          description: `<c>${override}</c> will be called before the regular ${each.details.csharp.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
+          description: `<c>${override}</c> will be called before the regular ${each.language.csharp?.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
           returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
         });
         $this.add(overrideResponseMethod);
 
-        const responseMethod = new Method(`${each.details.csharp.name}`, System.Threading.Tasks.Task(), {
+        const responseMethod = new Method(`${each.language.csharp?.name}`, System.Threading.Tasks.Task(), {
           access: Access.Private,
           parameters,
           async: Modifier.Async,
-          description: each.details.csharp.description,
+          description: each.language.csharp?.description,
           returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
         });
         responseMethod.push(Using('NoSynchronizationContext', ''));
@@ -634,15 +715,15 @@ export class CmdletClass extends Class {
           yield `// if ${override} has returned true, then return right away.`;
           yield If(And(IsNotNull(skip), `await ${skip}`), Return());
 
-          if (each.details.csharp.isErrorResponse) {
+          if (each.language.csharp?.isErrorResponse) {
             // this should write an error to the error channel.
-            yield `// Error Response : ${each.responseCode}`;
+            yield `// Error Response : ${each.protocol.http?.statusCodes[0]}`;
 
 
             const unexpected = function* () {
               yield '// Unrecognized Response. Create an error record based on what we have.';
-              const ex = (each.details.csharp.responseType) ?
-                Local('ex', `new ${ClientRuntime.name}.RestException<${each.details.csharp.responseType}>(responseMessage, await response)`) :
+              const ex = (each.language.csharp?.responseType) ?
+                Local('ex', `new ${ClientRuntime.name}.RestException<${each.language.csharp.responseType}>(responseMessage, await response)`) :
                 Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
 
               yield ex.declarationStatement;
@@ -652,15 +733,15 @@ export class CmdletClass extends Class {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
 });`;
             };
-            if (each.schema) {
+            if ((<SchemaResponse>each).schema !== undefined) {
               // the schema should be the error information.
               // this supports both { error { message, code} } and { message, code} 
 
-              let props = getAllPublicVirtualProperties(each.schema.details.csharp.virtualProperties);
-              const errorProperty = values(props).first(p => p.property.details.csharp.name === 'error');
+              let props = NewGetAllPublicVirtualProperties((<SchemaResponse>each).schema.language.csharp?.virtualProperties);
+              const errorProperty = values(props).first(p => p.property.serializedName === 'error');
               let ep = '';
               if (errorProperty) {
-                props = getAllPublicVirtualProperties(errorProperty.property.schema.details.csharp.virtualProperties);
+                props = NewGetAllPublicVirtualProperties(errorProperty.property.schema.language.csharp?.virtualProperties);
                 ep = `${errorProperty.name}?.`;
               }
 
@@ -694,44 +775,45 @@ export class CmdletClass extends Class {
             }
           }
 
-          yield `// ${each.details.csharp.name} - response for ${each.responseCode} / ${values(each.mimeTypes).join('/')}`;
-          if (each.schema) {
-            const schema = each.schema;
+          yield `// ${each.language.csharp?.name} - response for ${each.protocol.http?.statusCodes[0]} / ${values(each.protocol.http?.mediaTypes).join('/')}`;
 
-            if (apiCall.details.csharp.pageable) {
-              const pageable = apiCall.details.csharp.pageable;
+          if ('schema' in each) {
+            const schema = (<SchemaResponse>each).schema;
+
+            if (apiCall.language.csharp?.pageable) {
+              const pageable = apiCall.language.csharp.pageable;
               yield '// response should be returning an array of some kind. +Pageable';
               yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
               switch (pageable.responseType) {
                 // the result is (or works like a x-ms-pageable)
                 case 'pageable':
                 case 'nested-array': {
-                  const valueProperty = schema.properties[pageable.itemName];
-                  const nextLinkProperty = schema.properties[pageable.nextLinkName];
+                  const valueProperty = (<ObjectSchema>schema).properties?.find(p => p.serializedName === pageable.itemName);
+                  const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
                   if (valueProperty && nextLinkProperty) {
                     // it's pageable!
                     const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('await response') });
                     yield result.declarationStatement;
                     // write out the current contents
-                    const vp = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
+                    const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
                       yield `WriteObject(${result.value}.${vp.name},true);`;
                     }
-                    const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.serializedName);
+                    const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
                     if (nl) {
                       const nextLinkName = `${result.value}.${nl.name}`;
                       yield (If(`${nextLinkName} != null`,
                         If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
                           yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
                           yield $this.eventListener.signal(Events.FollowingNextLink);
-                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
                         })
                       ));
                     }
                     return;
                   } else if (valueProperty) {
                     // it's just a nested array
-                    const p = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, valueProperty.serializedName);
+                    const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (p) {
                       yield `WriteObject((await response).${p.name}, true);`;
                     }
@@ -748,13 +830,13 @@ export class CmdletClass extends Class {
               }
               // ok, let's see if the response type
             }
-            const props = getAllPublicVirtualProperties(schema.details.csharp.virtualProperties);
+            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
 
             // we expect to get back some data from this call.
 
-            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>schema, true, $this.state);
+            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
             yield `// (await response) // should be ${rType.declaration}`;
             if ($this.hasStreamOutput && $this.outFileParameter) {
               const outfile = $this.outFileParameter;
@@ -803,7 +885,7 @@ export class CmdletClass extends Class {
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
-          const idschema = values($this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
+          const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
 
           if ($this.isViaIdentity) {
@@ -811,7 +893,7 @@ export class CmdletClass extends Class {
               yield '// try to call with PATH parameters from Input Object';
 
               if (idschema) {
-                const allVPs = getAllPublicVirtualProperties(idschema.details.csharp.virtualProperties);
+                const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
                 const props = [...values(idschema.properties)];
 
                 const idOpParams = operationParameters.map(each => {
@@ -826,7 +908,7 @@ export class CmdletClass extends Class {
                   const match = props.find(p => pascalCase(p.serializedName) === pascalName);
                   if (match) {
 
-                    const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>match.schema, true, $this.state).defaultOfType;
+                    const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
                     // match up vp name
                     const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
                     if (vp) {
@@ -837,10 +919,10 @@ export class CmdletClass extends Class {
                     }
                     // fall back!
 
-                    console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.details.csharp.name)}').`);
+                    console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
                     return {
-                      name: `InputObject.${pascalCase(match.details.csharp.name)}`,
-                      value: `InputObject.${pascalCase(match.details.csharp.name)} ?? ${defaultOfType}`
+                      name: `InputObject.${pascalCase(match.language.csharp?.name ?? '')}`,
+                      value: `InputObject.${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
                     };
                   }
                   console.error(`Unable to match idenity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
@@ -854,19 +936,19 @@ export class CmdletClass extends Class {
                     yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`);
                   }
                 }
-                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
 
               }
             };
 
-            if (idschema && values(idschema.properties).first(each => each.details.csharp.uid === 'universal-parameter:resource identity')) {
-              yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+            if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
+              yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
               yield Else(identityFromPathParams);
             } else {
               yield identityFromPathParams;
             }
           } else {
-            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
           }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };
@@ -891,7 +973,8 @@ export class CmdletClass extends Class {
     });
   }
 
-  private implementSerialization(operation: command.CommandOperation) {
+
+  private NewImplementSerialization(operation: CommandOperation) {
     const $this = this;
     // clone
     if (operation.asjob) {
@@ -928,7 +1011,6 @@ export class CmdletClass extends Class {
       });
     }
   }
-
   private implementConstructors() {
     // default constructor
     this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
@@ -1032,7 +1114,8 @@ export class CmdletClass extends Class {
     });
   }
 
-  private addPowershellParameters(operation: command.CommandOperation) {
+
+  private NewAddPowershellParameters(operation: CommandOperation) {
     const vps = operation.details.csharp.virtualParameters || {
       body: [],
       operation: [],
@@ -1040,7 +1123,8 @@ export class CmdletClass extends Class {
 
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
-      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema, true, this.state);
+      parameter.schema;
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>parameter.schema, true, this.state);
 
       if (parameter.details.csharp.constantValue) {
         // this parameter has a constant value -- SKIP IT
@@ -1092,7 +1176,7 @@ export class CmdletClass extends Class {
         const expandedBodyParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
           description: parameter.details.csharp.description,
 
-          initializer: (parameter.schema.type === JsonType.Array) ? 'null' : `new ${parameter.schema.details.csharp.fullname}()`,
+          initializer: (parameter.schema.type === SchemaType.Array) ? 'null' : `new ${parameter.schema.language.csharp?.fullname}()`,
           setAccess: Access.Private,
           getAccess: Access.Private,
         }));
@@ -1100,10 +1184,11 @@ export class CmdletClass extends Class {
 
         for (const vParam of vps.body) {
           const vSchema = vParam.schema;
-          const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
+          vParam.origin;
+          const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
 
           // we need to know if the actual underlying property is actually nullable.
-          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, (<VirtualProperty>vParam.origin).property.details.csharp.required, this.state).isNullable;
+          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, (<NewVirtualProperty>vParam.origin).property.language.csharp?.required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
             get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
@@ -1112,24 +1197,27 @@ export class CmdletClass extends Class {
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 
-          if (vParam.schema.details.csharp.byReference) {
+          if (vParam.schema.language.csharp?.byReference) {
             // this parameter's schema is marked as 'by-reference' which means we should 
             // tag it with an ExportAs attribute for the I*Reference type.
-            cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.details.csharp.referenceInterface})`] }));
+            cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.language.csharp.referenceInterface})`] }));
           }
 
-          if (vParam.schema.type === JsonType.Array) {
-            if (vParam.schema.items && vParam.schema.items.details.csharp.byReference) {
-              cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.items.details.csharp.referenceInterface}[])`] }));
-            }
+          if (vParam.schema.type === SchemaType.Array) {
+            //skip-for-time-being
+            // if ((<ArraySchema>vParam.schema). && vParam.schema.items.details.csharp.byReference) {
+            //   cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.items.details.csharp.referenceInterface}[])`] }));
+            // }
             cmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
           }
-
-          if (vSchema.additionalProperties) {
+          const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
+            vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+              undefined;
+          if (dictSchema) {
             // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
             // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
             // if it's a standalone dictionary, we can just use hashtable instead
-            if (length(vSchema.properties) === 0) {
+            if (length((<ObjectSchema>vSchema).properties) === 0) {
               // it's a pure dictionary
               // add an attribute for changing the exported type.
               cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
@@ -1173,12 +1261,12 @@ export class CmdletClass extends Class {
           } else {
             cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
-            addInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<VirtualProperty>vParam.origin).property.serializedName);
-            addCompleterInfo(cmdletParameter, vParam);
+            NewAddInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
+            NewAddCompleterInfo(cmdletParameter, vParam);
             addDefaultInfo(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+          const isEnum = propertyType instanceof EnumImplementation;;
           const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
           if (isEnum || hasEnum) {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
@@ -1190,8 +1278,10 @@ export class CmdletClass extends Class {
 
           this.add(cmdletParameter);
         }
-
-        if (parameter.schema.additionalProperties) {
+        const paramDictSchema = parameter.schema.type === SchemaType.Dictionary ? parameter.schema :
+          parameter.schema.type === SchemaType.Object ? (<ObjectSchema>parameter.schema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+            undefined;
+        if (paramDictSchema) {
           // if there is an additional properties on this type
           // add a hashtable parameter for additionalProperties
           let apPropName = '';
@@ -1210,9 +1300,10 @@ export class CmdletClass extends Class {
           }));
           this.bodyParameterInfo = {
             type: {
-              declaration: parameter.schema.details.csharp.fullname
+              declaration: parameter.schema.language.csharp?.fullname
             },
-            valueType: parameter.schema.additionalProperties === true ? System.Object : this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>parameter.schema.additionalProperties, true, this.state)
+            valueType: (<DictionarySchema>paramDictSchema).elementType.type === SchemaType.Any ? System.Object :
+              this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<DictionarySchema>paramDictSchema).elementType, true, this.state)
           };
         }
 
@@ -1224,8 +1315,8 @@ export class CmdletClass extends Class {
     if (this.isViaIdentity) {
       // add in the pipeline parameter for the identity
 
-      const idschema = values(this.state.project.model.schemas).first(each => each.details.default.uid === 'universal-parameter-type');
-      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>idschema, true, this.state);
+      const idschema = values(this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
+      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state);
       const idParam = this.add(new BackedProperty('InputObject', idtd, {
         description: 'Identity Parameter'
       }));
@@ -1234,11 +1325,15 @@ export class CmdletClass extends Class {
       idParam.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Path`] }));
     }
     for (const vParam of values(vps.operation)) {
+      if (vParam.name === 'Host') {
+        // skip 'Host'
+        continue;
+      }
       const vSchema = vParam.schema;
-      const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<Schema>vSchema, true, this.state);
+      const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
 
 
-      const origin = <IParameter>vParam.origin;
+      const origin = <NewIParameter>vParam.origin;
 
       const regularCmdletParameter = (this.state.project.azure && vParam.name === 'SubscriptionId' && operation.details.csharp.verb.toLowerCase() === 'get') ?
 
@@ -1258,11 +1353,14 @@ export class CmdletClass extends Class {
           description: vParam.description
         }));
 
-      if (vSchema.additionalProperties) {
+      const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
+        vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+          undefined;
+      if (dictSchema) {
         // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
         // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
         // if it's a standalone dictionary, we can just use hashtable instead
-        if (length(vSchema.properties) === 0) {
+        if (length((<ObjectSchema>vSchema).properties) === 0) {
           // it's a pure dictionary
           // change the property type to hashtable.
           // add an attribute to change the exported type.
@@ -1282,12 +1380,12 @@ export class CmdletClass extends Class {
         this.bodyParameter = regularCmdletParameter;
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
-      if (vParam.schema.type === JsonType.Array) {
+      if (vParam.schema.type === SchemaType.Array) {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
 
-      addInfoAttribute(regularCmdletParameter, propertyType, vParam.required, false, vParam.description, vParam.origin.name);
-      addCompleterInfo(regularCmdletParameter, vParam);
+      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
+      NewAddCompleterInfo(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
 
       // add aliases if there is any
@@ -1296,14 +1394,15 @@ export class CmdletClass extends Class {
       }
 
       const httpParam = origin.details.csharp.httpParameter;
-      const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
+      //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
-      const cat = values(operation.callGraph[0].parameters).
-        where(each => !(each.details.csharp.constantValue)).
-        first(each => each.details.csharp.uid === uid);
+      if (httpParam) {
+        // xichen: Is it safe to compare by csharp serializedName? Because we no longer have uid
+        const cat = operation.callGraph[0].parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
 
-      if (cat) {
-        regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase(cat.in)}`] }));
+        if (cat) {
+          regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+        }
       }
 
 
@@ -1312,7 +1411,7 @@ export class CmdletClass extends Class {
         // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
       }
 
-      const isEnum = propertyType.schema.details.csharp.enum !== undefined;
+      const isEnum = propertyType instanceof EnumImplementation;
       const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
       if (isEnum || hasEnum) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
@@ -1320,17 +1419,19 @@ export class CmdletClass extends Class {
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {
+      //no sure why there is an empty block
     }
 
   }
 
-  private addClassAttributes(operation: command.CommandOperation, variantName: string) {
+
+  private NewAddClassAttributes(operation: CommandOperation, variantName: string) {
     const cmdletAttribParams: Array<ExpressionOrLiteral> = [
       category[operation.details.csharp.verb] ? verbEnum(category[operation.details.csharp.verb], operation.details.csharp.verb) : `"${operation.details.csharp.verb}"`,
       new StringExpression(variantName)
     ];
 
-    if (this.isWritableCmdlet(operation)) {
+    if (this.NewIsWritableCmdlet(operation)) {
       cmdletAttribParams.push('SupportsShouldProcess = true');
     }
 
@@ -1352,56 +1453,61 @@ export class CmdletClass extends Class {
     // set to hold the output types
     const outputTypes = new Set<string>();
     for (const httpOperation of values(operation.callGraph)) {
-      const pageableInfo = httpOperation.details.csharp.pageable;
-      for (const item of items(httpOperation.responses).where(each => each.key !== 'default')) {
-        for (const schema of values(item.value).selectNonNullable(each => each.schema)) {
-          const props = getAllProperties(schema);
+      const pageableInfo = httpOperation.language.csharp?.pageable;
+      const v = httpOperation.responses && httpOperation.responses.length > 0 && httpOperation.responses[0] instanceof SchemaResponse;
+      for (const schema of values(httpOperation.responses).selectNonNullable(each => (<SchemaResponse>each).schema)) {
 
-          // does the target type just wrap a single output?
-          const resultSchema = length(props) !== 1 ? <Schema>schema : <Schema>props[0].schema;
+        const props = NewGetAllProperties(schema);
 
-          // make sure return type for boolean stays boolean!
-          if (resultSchema.type === JsonType.Boolean) {
+        // does the target type just wrap a single output?
+        const resultSchema = length(props) !== 1 ? <NewSchema>schema : <NewSchema>props[0].schema;
+
+        // make sure return type for boolean stays boolean!
+        if (resultSchema.type === SchemaType.Boolean ||
+          (resultSchema.type === SchemaType.Choice && (<any>resultSchema).choiceType.type === SchemaType.Boolean && (<ChoiceSchema>resultSchema).choices.length === 1) ||
+          (resultSchema.type === SchemaType.SealedChoice && (<any>resultSchema).choiceType.type === SchemaType.Boolean && (<SealedChoiceSchema>resultSchema).choices.length === 1)) {
+          outputTypes.add(`typeof(${dotnet.Bool})`);
+        } else {
+          const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state);
+
+          if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
+            // if this is a stream, skip the output type.
+            this.hasStreamOutput = true;
+            shouldAddPassThru = true;
             outputTypes.add(`typeof(${dotnet.Bool})`);
           } else {
-            const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state);
 
-            if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
-              // if this is a stream, skip the output type.
-              this.hasStreamOutput = true;
-              shouldAddPassThru = true;
-              outputTypes.add(`typeof(${dotnet.Bool})`);
+            let type = '';
+            if (typeDeclaration instanceof ArrayOf) {
+              type = typeDeclaration.elementTypeDeclaration;
+            } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
+              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined) {
+                //skip-for-time-being, since operationId does not support in m4 any more
+                //throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
+                throw new Error('An error needs to be more specific');
+              }
+              const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)?.schema;
+              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+              type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
             } else {
-
-              let type = '';
-              if (typeDeclaration instanceof ArrayOf) {
-                type = typeDeclaration.elementTypeDeclaration;
-              } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-                if (typeDeclaration === undefined || typeDeclaration.schema.properties[pageableInfo.itemName] === undefined) {
-                  throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
-                }
-                const nestedSchema = typeDeclaration.schema.properties[pageableInfo.itemName].schema;
-                const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
-                type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
-              } else {
-                type = typeDeclaration.declaration;
-              }
-              // check if this is a stream output
-              if (type) {
-                outputTypes.add(`typeof(${type})`);
-              }
+              type = typeDeclaration.declaration;
+            }
+            // check if this is a stream output
+            if (type) {
+              outputTypes.add(`typeof(${type})`);
             }
           }
         }
+
       }
     }
 
     // if any response does not return,
     // the cmdlet should have a PassThru parameter
     shouldAddPassThru = shouldAddPassThru || values(operation.callGraph)
-      .selectMany(httpOperation => items(httpOperation.responses))
-      .selectMany(responsesItem => responsesItem.value)
-      .any(value => value.schema === undefined);
+      .selectMany(httpOperation => values((httpOperation.responses || []).concat(httpOperation.exceptions || [])))
+      //.selectMany(responsesItem => responsesItem.value)
+      .any(value => (<SchemaResponse>value).schema === undefined);
     if (outputTypes.size === 0) {
       outputTypes.add(`typeof(${dotnet.Bool})`);
     }

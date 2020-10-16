@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '@azure-tools/codegen-csharp';
-
+import { Parameter as NewHttpOperationParameter, Schema as NewSchema } from '@azure-tools/codemodel';
 import { KnownMediaType } from '@azure-tools/codemodel-v3';
 import { System } from '@azure-tools/codegen-csharp';
 import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';
@@ -20,18 +20,19 @@ import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
+
 export class OperationParameter extends Parameter implements EnhancedVariable {
   public typeDeclaration: EnhancedTypeDeclaration;
 
-  public param: HttpOperationParameter;
+  public param: NewHttpOperationParameter;
 
-  constructor(parent: Method, param: HttpOperationParameter, state: State, objectInitializer?: DeepPartial<OperationParameter>) {
-    const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(param.schema, param.required, state.path('schema'));
-    super(param.details.csharp.name, typeDeclaration);
+  constructor(parent: Method, param: NewHttpOperationParameter, state: State, objectInitializer?: DeepPartial<OperationParameter>) {
+    const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(param.schema, !!param.required, state);
+    super(param.language.csharp?.name || '', typeDeclaration);
     this.param = param;
     this.typeDeclaration = typeDeclaration;
     this.apply(objectInitializer);
-    this.description = param.details.csharp.description || '';
+    this.description = param.language.csharp?.description || '';
   }
 
   /** emits an expression to deserialize a property from a member inside a container */
@@ -68,6 +69,7 @@ export class OperationParameter extends Parameter implements EnhancedVariable {
 }
 
 /** represents a method parameter for an http operation (body) */
+
 export class OperationBodyParameter extends Parameter implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
@@ -107,15 +109,15 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
 
   public typeDeclaration: EnhancedTypeDeclaration;
 
-  constructor(parent: Method, name: string, description: string, schema: Schema, required: boolean, state: State, objectInitializer?: DeepPartial<OperationBodyParameter>) {
-    const typeDeclaration = state.project.modelsNamespace.resolveTypeDeclaration(schema, required, state.path('schema'));
+  constructor(parent: Method, name: string, description: string, schema: NewSchema, required: boolean, state: State, objectInitializer?: DeepPartial<OperationBodyParameter>) {
+    const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(schema, required, state.path('schema'));
     super(name, typeDeclaration);
     this.typeDeclaration = typeDeclaration;
     this.mediaType = KnownMediaType.Json;
     this.contentType = KnownMediaType.Json;
 
     this.apply(objectInitializer);
-    this.description = description || schema.details.csharp.description;
+    this.description = description || schema.language.csharp?.description || '';
   }
 
   public get jsonSerializationStatement(): OneOrMoreStatements {
@@ -127,6 +129,7 @@ export class OperationBodyParameter extends Parameter implements EnhancedVariabl
     return '/* body parameter */';// (<TypeDeclaration>this.type).jsonDeserializationImplementation(this.name);
   }
 }
+
 
 export class CallbackParameter extends Parameter {
   responseType: (EnhancedTypeDeclaration) | null;

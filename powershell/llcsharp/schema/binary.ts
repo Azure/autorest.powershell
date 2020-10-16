@@ -11,10 +11,12 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { BinarySchema } from '@azure-tools/codemodel';
+
 
 export class Binary implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
-  constructor(public schema: Schema, public isRequired: boolean) {
+  constructor(public schema: BinarySchema, public isRequired: boolean) {
   }
 
   get convertObjectMethod() {

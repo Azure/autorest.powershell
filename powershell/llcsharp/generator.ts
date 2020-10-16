@@ -3,15 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState } from '@azure-tools/codemodel-v3';
+import { codeModelSchema } from '@azure-tools/codemodel';
 import { Model } from './code-model';
-import { Host, JsonPath } from '@azure-tools/autorest-extension-base';
+import { Host, JsonPath, Session, startSession } from '@azure-tools/autorest-extension-base';
 
 import { Project } from './project';
 import { Dictionary } from '@azure-tools/linq';
 import { DeepPartial } from '@azure-tools/codegen';
+import { PwshModel } from '../utils/PwshModel';
+import { ModelState } from '../utils/model-state';
 
-export class State extends ModelState<Model> {
+export class State extends ModelState<PwshModel> {
   project!: Project;
 
   public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
@@ -23,7 +25,9 @@ export class State extends ModelState<Model> {
     if (project) {
       this.project = project;
     }
+    //const session = await startSession<PwshModel>(this.service, {}, codeModelSchema);
     return await super.init(project);
+    //return await super.init(project);
   }
 
   path(...childPath: JsonPath) {

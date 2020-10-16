@@ -1,0 +1,135 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/ModelRename": {
+        "get": {
+          "tags": [
+            "ModelRename"
+          ],
+          "operationId": "ModelRename_Get",
+          "description": "rename the Model",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Resource": {
+        "description": "The core properties of ARM resources",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "Fully qualified resource Id for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}"
+          },
+          "name": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The name of the resource"
+          },
+          "type": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The type of the resource. Ex- Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts."
+          }
+        }      
+      },
+      "KeyValue": {
+        "description": "The core properties Key value",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "Fully qualified Key value Id for the Key value."
+          },
+          "name": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The name of the Key value"
+          },
+          "type": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The type of the Key value. "
+          }
+        }      
+      },
+      "VirtualMachine": {
+        "description": "The core properties of VirtualMachine",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "Fully qualified VirtualMachine Id for the VirtualMachine."
+          },
+          "VirtualMachineName": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The name of the VirtualMachine"
+          },
+          "type": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The type of the VirtualMachine."
+          }
+        }      
+      },
+      "AzureEnv": {
+        "description": "The core properties of AzureEnv",
+        "properties": {
+          "id": {
+            "readOnly": true,
+            "type": "string",
+            "description": "Fully qualified AzureEnv Id for the AzureEnv."
+          },
+          "Name": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The name of the AzureEnv"
+          },
+          "typeAzure": {
+            "readOnly": true,
+            "type": "string",
+            "description": "The type of the AzureEnv."
+          }
+        }      
+      }
+    }
+}

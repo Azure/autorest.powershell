@@ -3,11 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codemodel, ModelState } from '@azure-tools/codemodel-v3';
+import { codemodel } from '@azure-tools/codemodel-v3';
 
-import { Host, JsonPath } from '@azure-tools/autorest-extension-base';
+import { Host, JsonPath, Session } from '@azure-tools/autorest-extension-base';
 import { Project } from './project';
 import { DeepPartial } from '@azure-tools/codegen';
+import { PwshModel } from '../utils/PwshModel';
+import { ModelState } from '../utils/model-state';
 
 
 export interface GeneratorSettings {
@@ -22,7 +24,7 @@ export interface GeneratorSettings {
   apiFolder: string;
 }
 
-export class State extends ModelState<codemodel.Model> {
+export class State extends ModelState<PwshModel> {
   project!: Project;
 
   public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
@@ -40,8 +42,7 @@ export class State extends ModelState<codemodel.Model> {
   path(...childPath: JsonPath) {
     // const result = new State(this.service, this);
     // result.currentPath = [...this.currentPath, ...childPath];
-    // return result;
+    //return result;
     return this;
   }
 }
-

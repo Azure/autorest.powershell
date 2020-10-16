@@ -2,8 +2,9 @@ dependencies:
   '@autorest/autorest': 3.0.6187
   '@azure-tools/async-io': 3.0.252
   '@azure-tools/autorest-extension-base': 3.1.266
-  '@azure-tools/codegen': 2.1.240
+  '@azure-tools/codegen': 2.5.290
   '@azure-tools/codegen-csharp': 3.0.262
+  '@azure-tools/codemodel': 4.13.348
   '@azure-tools/codemodel-v3': 3.1.264
   '@azure-tools/linq': 3.1.261
   '@azure-tools/tasks': 3.0.252
@@ -16,6 +17,7 @@ dependencies:
   '@typescript-eslint/eslint-plugin': 2.0.0_b7c2671679a3bd4e1f52a3d3da16606f
   '@typescript-eslint/parser': 2.0.0_eslint@6.2.2
   eslint: 6.2.2
+  js-yaml: 3.13.1
   mocha: 5.2.0
   mocha-typescript: 1.1.17
   source-map-support: 0.5.13
@@ -55,15 +57,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-hNEmbvlEY87AmmVoDRyYEZDG4iHwfYx6G9B7M8n0JvdwyOHn/gb4qUb1ULaPmbFWxMnVFzW070ab61/1VpYVog==
-  /@azure-tools/codegen/2.1.240:
-    dependencies:
-      '@azure-tools/async-io': 3.0.252
-      '@azure-tools/linq': 3.1.261
-      js-yaml: 3.13.1
-      semver: 5.7.1
-    dev: false
-    resolution:
-      integrity: sha512-w33tuViWhjGCmTmfQqfH+D1Qmg2CJ/Z1F9QOQjomhPWs9DRLyFeil+uRpnEtn90OSUFN0/R/90fiAbrkWvfpGw==
   /@azure-tools/codegen/2.5.290:
     dependencies:
       '@azure-tools/async-io': 3.0.252
@@ -81,6 +74,14 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Zh/as7gux7ifD3J7JUHwRW/e7DrG7rSJBpIyysGZEHbhErxsiPeLTZsS5pDpzwXD3CsEA2hDxrNSDFpVNXNqog==
+  /@azure-tools/codemodel/4.13.348:
+    dependencies:
+      '@azure-tools/autorest-extension-base': 3.1.266
+      '@azure-tools/codegen': 2.5.290
+      '@azure-tools/linq': 3.1.261
+    dev: false
+    resolution:
+      integrity: sha512-/5tjloDiPLNdqBdNN1PHudqMQlgCb+8o6L/8Pd3nYHc20cnbg3y3c23N5xpsGqmwwhJhCRrrW2XKrJeP55i09Q==
   /@azure-tools/linq/3.1.261:
     dev: false
     engines:
@@ -994,7 +995,7 @@ packages:
       imurmurhash: 0.1.4
       inquirer: 6.5.2
       is-glob: 4.0.1
-      js-yaml: 3.14.0
+      js-yaml: 3.13.1
       json-stable-stringify-without-jsonify: 1.0.1
       levn: 0.3.0
       lodash: 4.17.20
@@ -1579,14 +1580,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
-  /js-yaml/3.14.0:
-    dependencies:
-      argparse: 1.0.10
-      esprima: 4.0.1
-    dev: false
-    hasBin: true
-    resolution:
-      integrity: sha512-/4IbIeHcD9VMHFqDR/gQ7EdZdLimOvW2DdcxFjdyyZ9NsbS+ccrXqVWDtab/lRl5AlUqmpBx8EhPaWR+OtY17A==
   /jsbn/0.1.1:
     dev: false
     resolution:
@@ -3106,8 +3099,9 @@ packages:
       '@autorest/autorest': 3.0.6187
       '@azure-tools/async-io': 3.0.252
       '@azure-tools/autorest-extension-base': 3.1.266
-      '@azure-tools/codegen': 2.1.240
+      '@azure-tools/codegen': 2.5.290
       '@azure-tools/codegen-csharp': 3.0.262
+      '@azure-tools/codemodel': 4.13.348
       '@azure-tools/codemodel-v3': 3.1.264
       '@azure-tools/linq': 3.1.261
       '@azure-tools/tasks': 3.0.252
@@ -3119,6 +3113,7 @@ packages:
       '@typescript-eslint/eslint-plugin': 2.0.0_b7c2671679a3bd4e1f52a3d3da16606f
       '@typescript-eslint/parser': 2.0.0_eslint@6.2.2
       eslint: 6.2.2
+      js-yaml: 3.13.1
       mocha: 5.2.0
       mocha-typescript: 1.1.17
       source-map-support: 0.5.13
@@ -3127,15 +3122,16 @@ packages:
     dev: false
     name: '@rush-temp/powershell'
     resolution:
-      integrity: sha512-5R44rBmf2Dr0D+pThmzmAX4T8s7O55nqKq2LiSvlhkff1upIbUcrogOihhsGkSr+1XRm7vubVX76LJ9G6HH7HQ==
+      integrity: sha512-p6zFKQmmQo1rntIeAg/ELKH+i12IV+ZcTM9J3luYZeV7zc1mZ3A+DReEuxshx+3oR0WyOCw9jUgTm0hGHJQXWA==
       tarball: 'file:projects/powershell.tgz'
     version: 0.0.0
 specifiers:
   '@autorest/autorest': ~3.0.6118
   '@azure-tools/async-io': ~3.0.0
   '@azure-tools/autorest-extension-base': ~3.1.0
-  '@azure-tools/codegen': ~2.1.0
+  '@azure-tools/codegen': ^2.5.276
   '@azure-tools/codegen-csharp': ~3.0.0
+  '@azure-tools/codemodel': ~4.13.342
   '@azure-tools/codemodel-v3': ~3.1.0
   '@azure-tools/linq': ~3.1.0
   '@azure-tools/tasks': ~3.0.0
@@ -3148,6 +3144,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ~2.0.0
   '@typescript-eslint/parser': ~2.0.0
   eslint: ~6.2.2
+  js-yaml: 3.13.1
   mocha: 5.2.0
   mocha-typescript: 1.1.17
   source-map-support: 0.5.13

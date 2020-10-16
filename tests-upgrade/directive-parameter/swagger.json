@@ -1,0 +1,185 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/SkuName/{Sku}": {
+        "get": {
+          "tags": [
+            "Sku"
+          ],
+          "operationId": "Sku_Get",
+          "description": "Gets the Sku.",
+          "parameters": [
+            {"$ref": "#/parameters/Sku"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Sku."
+            }
+          }
+        }
+      },
+      "/VirtualMachineSize/{VirtualMachineSize}": {
+        "get": {
+          "tags": [
+            "VirtualMachine"
+          ],
+          "operationId": "VirtualMachineSize_Get",
+          "description": "Get the Virtual Machine.",
+          "parameters": [
+            {"$ref": "#/parameters/VirtualMachineSize"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Virtual Machine."
+            }
+          }
+        }
+      },
+      "/VirtualMachine/{VirtualMachine}": {
+        "get": {
+          "tags": [
+            "VirtualMachine"
+          ],
+          "operationId": "VirtualMachine_Get",
+          "description": "Get the Virtual Machine.",
+          "parameters": [
+            {"$ref": "#/parameters/VirtualMachine"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Virtual Machine."
+            }
+          }
+        }
+      },
+      "/Workspace/WorksapceName/{WorkspaceName}": {
+        "get": {
+          "tags":[
+            "Workspace"
+          ],
+          "operationId": "Workspace_Get",
+          "description": "Get workspace",
+          "parameters": [
+            {"$ref": "#/parameters/WorkspaceName"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Workspace."
+            }
+          }
+        }
+      },
+      "/ResourceGroup/{ResourceGroup}": {
+        "get": {
+          "tags":[
+            "ResourceGroup"
+          ],
+          "operationId": "ResourceGroup_Get",
+          "description": "Get ResourceGroup",
+          "parameters": [
+            {"$ref": "#/parameters/ResourceGroup"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Resource Group."
+            }
+          }
+        }
+      },
+      "/SubscriptionId/{SubscriptionId}": {
+        "get": {
+          "tags":[
+            "Subscription"
+          ],
+          "operationId": "Subscription_Get",
+          "description": "Get SubscriptionId",
+          "parameters": [
+            {"$ref": "#/parameters/SubscriptionId"}
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the Subscription."
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Sku": {
+        "name": "Sku",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "SKU for the resource."
+      },
+      "VirtualMachineSize": {
+        "name": "VirtualMachineSize",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "Virtual machine size."
+      },
+      "VirtualMachine": {
+        "name": "VirtualMachine",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "Virtual machine size."
+      },
+      "WorkspaceName": {
+        "name": "WorkspaceName",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "Workspace Name."
+      },
+      "ResourceGroup": {
+        "name": "ResourceGroup",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "Resource Group Name."
+      },
+      "SubscriptionId": {
+        "name": "SubscriptionId",
+        "in": "path",
+        "type": "string",
+        "required": true,
+        "description": "Subscription Id."
+      }
+    }
+}

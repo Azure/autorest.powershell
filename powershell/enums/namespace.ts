@@ -10,6 +10,8 @@ import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType,
 import { join } from 'path';
 import { DeepPartial } from '@azure-tools/codegen';
 
+import { EnumDetails as NewEnumDetails } from '../utils/schema';
+
 export class EnumNamespace extends Namespace {
   public get outputFolder(): string {
     return join(this.state.project.apiFolder, 'Support');
@@ -18,14 +20,17 @@ export class EnumNamespace extends Namespace {
   constructor(parent: Namespace, public state: State, objectInitializer?: DeepPartial<EnumNamespace>) {
     super('Support', parent);
     this.apply(objectInitializer);
-
-    const enumInfos = values(state.model.schemas)
-      .where(each => each.details.csharp.enum !== undefined && !each.details.csharp.skip)
-      .select(each => ({ details: <EnumDetails>each.details.csharp.enum, description: each.details.csharp.description }))
-      .toArray();
+    //const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]
+    const enumInfos = [...state.model.schemas.sealedChoices ?? []]
+      .filter((choice) => !choice.language.csharp?.skip)
+      .map((choice) => {
+        return {
+          details: <NewEnumDetails>choice.language.csharp?.enum,
+          description: choice.language.csharp?.description
+        }
+      });
 
     const done = new Set<string>();
-
 
     for (const enumInfo of enumInfos) {
       if (done.has(enumInfo.details.name)) {

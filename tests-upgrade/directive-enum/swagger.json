@@ -1,0 +1,78 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/subscriptions/resourceGroup": {
+        "get": {
+          "tags": [
+            "Workspaces"
+          ],
+          "operationId": "Workspaces_Get",
+          "description": "Gets the workspace.",
+          "responses": {
+            "200": {
+                "description": "OK-Return workspace."
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "CanonicalSupportPlanProperties": {
+        "type": "object",
+        "description": "The properties of the Canonical support plan.",
+        "properties": {
+          "provisioningState": {
+            "type": "string",
+            "description": "The provisioning state of the resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Cancelled",
+              "Purchasing",
+              "Downgrading",
+              "Cancelling",
+              "Upgrading"
+            ],
+            "x-ms-enum": {
+              "name": "ProvisioningState",
+              "modelAsString": true
+            }
+          }
+        }
+      }
+    }
+}

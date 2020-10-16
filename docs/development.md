@@ -14,11 +14,9 @@ Use of this project requires the following:
 
 ## Cloning this repository
 
-Make sure that you clone this repository with `--recurse` - there is a submodule with common code that we pull from the `https://github.com/azure/perks` project.
-
 ``` powershell
 # clone recursively
-git clone https://github.com/azure/autorest.powershell --recurse
+git clone https://github.com/azure/autorest.powershell
 
 # one-time
 cd autorest.powershell

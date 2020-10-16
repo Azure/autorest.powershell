@@ -7,6 +7,7 @@ import { Project } from '../internal/project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
 
+
 export function getProfileExportScript(exportFolderScript: string, isAzure: boolean): string {
   return `
   # Export proxy cmdlet scripts

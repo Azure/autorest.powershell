@@ -15,6 +15,9 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
+import { Schema as NewSchema } from '@azure-tools/codemodel';
+
+
 import { popTempVar, pushTempVar } from '../schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
@@ -25,19 +28,20 @@ export class ArrayOf implements EnhancedTypeDeclaration {
     return toExpression('null /* arrayOf */');
   }
 
-  constructor(public schema: Schema, public isRequired: boolean, public elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
+  constructor(public schema: NewSchema, public isRequired: boolean, public elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
   }
 
+
   protected get isWrapped(): boolean {
-    return this.schema.xml && this.schema.xml.wrapped || false;
+    return this.schema.serialization?.xml && this.schema.serialization?.xml.wrapped || false;
   }
 
   protected get wrapperName(): string | undefined {
-    return this.schema.xml && this.isWrapped ? this.schema.xml.name : undefined;
+    return this.schema.serialization?.xml && this.isWrapped ? this.schema.serialization.xml.name : undefined;
   }
 
   protected get serializedName(): string | undefined {
-    return this.schema.xml ? this.schema.xml.name : undefined;
+    return this.schema.serialization?.xml ? this.schema.serialization.xml.name : undefined;
   }
   get elementTypeDeclaration(): string {
     return this.elementType.declaration;
@@ -48,6 +52,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
+    this.schema.extensions = this.schema.extensions || {};
     return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
   }
 
@@ -150,10 +155,9 @@ export class ArrayOf implements EnhancedTypeDeclaration {
           const serArray = `global::System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.XNodeArray}(${serArray}) : null`);
         }
-
         case KnownMediaType.Xml: {
           if (this.isWrapped) {
-            const name = this.elementType.schema.xml ? this.elementType.schema.xml.name || serializedName : serializedName;
+            const name = this.elementType.schema.serialization?.xml ? this.elementType.schema.serialization?.xml.name || serializedName : serializedName;
             return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
           } else {
             throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
@@ -185,10 +189,10 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Xml: {
           // if the reference doesn't define an XML schema then use its default name
-          const defaultName = this.elementType.schema.details.csharp.name;
+          const defaultName = this.elementType.schema.language.csharp?.name || '';
           return System.Net.Http.StringContent.new(Ternery(
             IsNotNull(value),
-            `${this.serializeToNode(mediaType, value, this.schema.xml ? this.schema.xml.name || defaultName : defaultName, mode)}).ToString()`,
+            `${this.serializeToNode(mediaType, value, this.schema.serialization?.xml ? this.schema.serialization.xml?.name || defaultName : defaultName, mode)}).ToString()`,
             System.String.Empty
           ), System.Text.Encoding.UTF8);
         }
@@ -226,8 +230,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         }
         case KnownMediaType.Xml:
           if (this.isWrapped) {
-
-            return `AddIf( ${System.Xml.Linq.XElement.new('"{this.serializedName || serializedName}"', `${this.serializeToNode(mediaType, value, this.elementType.schema.xml ? this.elementType.schema.xml.name || '!!!' : serializedName, mode)}):null`)}, ${container}.Add); `;
+            return `AddIf( ${System.Xml.Linq.XElement.new('"{this.serializedName || serializedName}"', `${this.serializeToNode(mediaType, value, this.elementType.schema.serialization?.xml ? this.elementType.schema.serialization?.xml.name || '!!!' : serializedName, mode)}):null`)}, ${container}.Add); `;
           } else {
             return If(`null != ${value}`, ForEach(each, toExpression(value), `AddIf(${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}, ${container}.Add);`));
           }
@@ -260,3 +263,4 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       `.trim();
   }
 }
+
