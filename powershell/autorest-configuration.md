@@ -16,9 +16,8 @@ modelerfour:
 
 > if the modeler is loaded already, use that one, otherwise grab it.
 
-``` yaml 
+``` yaml !isLoaded('@autorest/modelerfour')
 use-extension:
-  "@autorest/remodeler" : "~2.1.0" 
   "@autorest/modelerfour": "4.15.414"
 
 # will use highest 2.0.x 
@@ -105,24 +104,6 @@ declare-directive:
 # Pipeline Configuration
 ``` yaml
 pipeline:
-# --- extension remodeler ---
-
-  # "Shake the tree", and normalize the model
-  remodeler:
-    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
-  
-  # allow developer to do transformations on the code model. 
-  remodeler/new-transform: 
-    input: remodeler 
-
-  # Make some interpretations about what some things in the model mean
-  tweakcodemodel:
-    input: remodeler/new-transform
-
-  # Specific things for Azure
-  tweakcodemodelazure:
-    input: tweakcodemodel
-
 # --- extension powershell based on modelerfour
 
   # Fix the code model gap between m3 and m4
@@ -159,44 +140,15 @@ pipeline:
   
   powershell-v2:
     input: add-azure-completers-v2
-# --- extension powershell ---
-
-  # creates high-level commands
-  create-commands:
-    input: tweakcodemodelazure # brings the code-model-v3 with it.
-
-  create-virtual-properties:
-    input: create-commands
-    
-  # Choose names for everything in c#
-  csnamer:
-    input: create-virtual-properties # and the generated c# files
-
-  # ensures that names/descriptions are properly set for powershell
-  psnamer:
-    input: csnamer 
-
-  modifiers:
-    input: psnamer
-
-  add-azure-completers:
-    input: modifiers
-
-  # creates powershell cmdlets for high-level commands. (leverages llc# code)
-  powershell:
-   input: add-azure-completers # and the generated c# files
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
-  llcsharp:
-    input: modifiers
-
   llcsharp/text-transform:
     input: llcsharp-v2
     scope: scope-here
 
   powershell/text-transform:
-    input:  powershell-v2
+    input: powershell-v2
     scope: scope-here
 
   llcsharp/emitter:

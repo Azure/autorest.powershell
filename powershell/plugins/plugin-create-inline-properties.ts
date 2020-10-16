@@ -11,7 +11,7 @@ import { Host, Session, startSession } from '@azure-tools/autorest-extension-bas
 //import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
 import { CommandOperation } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties } from '../utils/schema';
 import { resolveParameterNames } from '../utils/resolve-conflicts';
@@ -23,7 +23,7 @@ function getPluralizationService(): EnglishPluralizationService {
   return result;
 }
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 export function singularize(word: string): string {
   return getPluralizationService().singularize(word);
@@ -397,7 +397,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
 export async function createInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-create-virtual-properties-v2.yaml', serialize(await createVirtuals(state)), undefined, 'code-model-v4');
   //return processCodeModel(createVirtuals, service, 'create-virtual-properties-v2');
 }

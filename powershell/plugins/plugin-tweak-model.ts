@@ -3,16 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema, ConditionalValue } from '@azure-tools/codemodel';
-//import { ModelState } from '@azure-tools/codemodel-v3';
-//import { KnownMediaType, knownMediaType, ParameterLocation, getPolymorphicBases, isSchemaObject, JsonType, Property, Schema, processCodeModel, StringFormat, codemodel, ModelState } from '@azure-tools/codemodel-v3';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
 import { items, keys, values, Dictionary, length } from '@azure-tools/linq';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { defaultCipherList } from 'constants';
-import { NewString } from '../llcsharp/schema/string';
+import { String } from '../llcsharp/schema/string';
 import { JsonType } from '../utils/schema';
 
 export const HeaderProperty = 'HeaderProperty';
@@ -20,7 +18,7 @@ export enum HeaderPropertyType {
   Header = 'Header',
   HeaderAndBody = 'HeaderAndBody'
 }
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
@@ -637,7 +635,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
 export async function tweakModelPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   //const result = tweakModelV2(session);
   await service.WriteFile('code-model-v4-tweakcodemodel-v2.yaml', serialize(await tweakModelV2(state)), undefined, 'code-model-v4');
   //return processCodeModel(tweakModelV2, service, 'tweakcodemodel-v2');

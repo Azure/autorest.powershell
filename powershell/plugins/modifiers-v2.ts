@@ -3,19 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import { codemodel, processCodeModel, allVirtualParameters, allVirtualProperties, ModelState, command } from '@azure-tools/codemodel-v3';
 import { Host, Channel } from '@azure-tools/autorest-extension-base';
 import { pascalCase, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
 import { CommandOperation } from '../utils/command-operation';
 // import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
 import { allVirtualParameters, allVirtualProperties } from '../utils/resolve-conflicts';
 import { EnumValue } from '../utils/schema';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 let directives: Array<any> = [];
 
@@ -709,7 +708,7 @@ export async function applyModifiersV2(service: Host) {
     .where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
     .toArray();
 
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   const result = await tweakModel(state);
 
   await service.WriteFile('code-model-v4-modifiers-v2.yaml', serialize(result), undefined, 'code-model-v4');

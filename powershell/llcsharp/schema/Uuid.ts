@@ -7,25 +7,10 @@ import { nameof } from '@azure-tools/codegen';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
 import { StringSchema } from '@azure-tools/codemodel';
-import { String, NewString } from './string';
+import { String } from './string';
+
 
 export class Uuid extends String {
-  constructor(schema: Schema, isRequired: boolean) {
-    super(schema, isRequired);
-  }
-
-  get declaration(): string {
-    return 'string';
-  }
-  public validatePresence(eventListener: Variable, property: Variable): string {
-    return this.isRequired ? `await ${eventListener}.AssertNotNull(${nameof(property.value)},${property});`.trim() : '';
-  }
-  validateValue(eventListener: Variable, property: Variable): string {
-    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$");`;
-  }
-}
-
-export class NewUuid extends NewString {
   constructor(schema: StringSchema, isRequired: boolean) {
     super(schema, isRequired);
   }

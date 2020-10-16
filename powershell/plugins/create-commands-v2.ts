@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-//import { JsonType, processCodeModel, codemodel, components, command, http, getAllProperties, ModelState, ParameterLocation, } from '@azure-tools/codemodel-v3';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
@@ -14,11 +13,11 @@ import { clone } from '@azure-tools/linq';
 import { verbs } from '../internal/verbs';
 import { PwshModel } from '../utils/PwshModel';
 import { IParameter } from '../utils/components';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation } from '../utils/command-operation';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 
 // UNUSED: Moved to plugin-tweak-model.ts in remodeler
@@ -478,7 +477,7 @@ export async function createCommandsV2(service: Host) {
   // return processCodeModel(commandCreator, service);
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   await service.WriteFile('code-model-v4-createcommands-v2.yaml', serialize(await (await new Inferrer(state).init()).createCommands()), undefined, 'code-model-v4');
 
   // return processCodeModel(async (state) => {

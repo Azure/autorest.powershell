@@ -5,13 +5,13 @@
 import { ArraySchema, CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@azure-tools/codemodel';
 import { serialize } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
-import { NewModelState } from '../utils/model-state';
+import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 
 import { Host } from '@azure-tools/autorest-extension-base';
 
-type State = NewModelState<PwshModel>;
+type State = ModelState<PwshModel>;
 
 let directives: Array<any> = [];
 
@@ -171,6 +171,6 @@ function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema
 export async function tweakM4ModelPlugin(service: Host) {
   const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives).toArray();
-  const state = await new NewModelState<PwshModel>(service).init();
+  const state = await new ModelState<PwshModel>(service).init();
   service.WriteFile('code-model-v4-tweakm4codemodel.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }
