@@ -13,14 +13,14 @@ import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, ArrayOf, NewArrayOf, EnumImplementation, NewEnumImplementation } from '../llcsharp/exports';
+import { ClientRuntime, EventListener, Schema, NewArrayOf, NewEnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
-import { NewState } from '../internal/state';
+import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
 import { IParameter as NewIParameter } from '../utils/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
-import { NewGetVirtualPropertyName } from '../llcsharp/model/model-class';
+import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
@@ -287,9 +287,9 @@ export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
 
 }
 
-export class NewCmdletClass extends Class {
+export class CmdletClass extends Class {
   private cancellationToken!: Expression;
-  public state: NewState;
+  public state: State;
   private readonly eventListener: EventListener;
   private readonly dropBodyParameter: boolean;
   private invocationInfo!: Property;
@@ -307,7 +307,7 @@ export class NewCmdletClass extends Class {
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
 
-  constructor(namespace: Namespace, operation: CommandOperation, state: NewState, objectInitializer?: DeepPartial<NewCmdletClass>) {
+  constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
     const noun = `${state.project.prefix}${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
     const variantName = `${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
@@ -1191,9 +1191,9 @@ export class NewCmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, (<NewVirtualProperty>vParam.origin).property.language.csharp?.required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
-            get: toExpression(`${expandedBodyParameter.value}.${NewGetVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
+            get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
             // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
-            set: toExpression(`${expandedBodyParameter.value}.${NewGetVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
+            set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
             new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
           });
 

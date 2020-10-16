@@ -8,33 +8,33 @@ import { codeModelSchema, ArraySchema, UnixTimeSchema, CodeModel, Schema as NewS
 import { codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
-import { ArrayOf, NewArrayOf } from './array';
-import { Binary, NewBinary } from './binary';
-import { Boolean, NewBoolean } from './boolean';
-import { ByteArray, NewByteArray } from './byte-array';
-import { Char, NewChar } from './char';
-import { Date, NewDate } from './date';
-import { DateTime, DateTime1123, UnixTime, NewDateTime, NewDateTime1123, NewUnixTime } from './date-time';
-import { Duration, NewDuration } from './duration';
-import { EnumImplementation, NewEnumImplementation } from './enum';
-import { Numeric, NewNumeric } from './integer';
-import { ObjectImplementation, NewObjectImplementation } from './object';
-import { String, NewString } from './string';
-import { Uuid, NewUuid } from './Uuid';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from './extended-type-declaration';
+import { NewArrayOf } from './array';
+import { NewBinary } from './binary';
+import { NewBoolean } from './boolean';
+import { NewByteArray } from './byte-array';
+import { NewChar } from './char';
+import { NewDate } from './date';
+import { NewDateTime, NewDateTime1123, NewUnixTime } from './date-time';
+import { NewDuration } from './duration';
+import { NewEnumImplementation } from './enum';
+import { NewNumeric } from './integer';
+import { ObjectImplementation } from './object';
+import { NewString } from './string';
+import { NewUuid } from './Uuid';
+import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { PwshModel } from '../../utils/PwshModel';
 import { ModelState } from '../../utils/model-state';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { schemaHasEnum } from '../validations';
 
-export class NewSchemaDefinitionResolver {
-  private readonly cache = new Map<string, NewEnhancedTypeDeclaration>();
-  private add(schema: NewSchema, value: NewEnhancedTypeDeclaration): NewEnhancedTypeDeclaration {
+export class SchemaDefinitionResolver {
+  private readonly cache = new Map<string, EnhancedTypeDeclaration>();
+  private add(schema: NewSchema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
     this.cache.set(schema.language?.csharp?.fullname || '', value);
     return value;
   }
 
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): NewEnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -56,7 +56,7 @@ export class NewSchemaDefinitionResolver {
         if (result) {
           return result;
         }
-        return this.add(schema, new NewObjectImplementation(<ObjectSchema>schema));
+        return this.add(schema, new ObjectImplementation(<ObjectSchema>schema));
       }
       case SchemaType.Time:
       case SchemaType.Credential:

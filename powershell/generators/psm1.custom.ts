@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { NewProject } from '../internal/project';
+import { Project } from '../internal/project';
 import { PSScriptFile } from '../file-formats/psscript-file';
 import { relative } from 'path';
 
-export async function generatePsm1Custom(project: NewProject) {
+export async function generatePsm1Custom(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1Custom) || '');
   const dllPath = relative(project.customFolder, project.dll);
   const internalPath = relative(project.customFolder, project.psm1Internal);

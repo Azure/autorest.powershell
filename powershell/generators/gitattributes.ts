@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NewProject } from '../internal/project';
+import { Project } from '../internal/project';
 
-export async function generateGitAttributes(project: NewProject) {
+export async function generateGitAttributes(project: Project) {
   project.state.writeFile(project.gitAttributes, '* text=auto', undefined, 'source-file-other');
 }

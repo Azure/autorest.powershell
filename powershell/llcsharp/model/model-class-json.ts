@@ -24,22 +24,22 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 
 import { dotnet } from '@azure-tools/codegen-csharp';
-import { NewModelClass } from './model-class';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ModelClass } from './model-class';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ObjectImplementation } from '../schema/object';
-import { NewModelInterface } from './interface';
+import { ModelInterface } from './interface';
 
 
-export class NewJsonSerializableClass extends Class {
+export class JsonSerializableClass extends Class {
   private btj!: Method;
   private atj!: Method;
   private bfj!: Method;
   private afj!: Method;
   private excludes: string;
 
-  constructor(protected modelClass: NewModelClass, objectInitializer?: DeepPartial<NewJsonSerializableClass>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: DeepPartial<JsonSerializableClass>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
     this.partial = true;
@@ -88,7 +88,7 @@ export class NewJsonSerializableClass extends Class {
           // wildcard style
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
 
-        } else if (vType instanceof NewModelInterface) {
+        } else if (vType instanceof ModelInterface) {
           // use the class of the dictionary value to deserialize values
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${vType.classImplementation.fullName}.FromJson(j) ,${exclusions.value} );`));
         } else {
@@ -100,7 +100,7 @@ export class NewJsonSerializableClass extends Class {
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      const sch = (<NewEnhancedTypeDeclaration>each.typeDeclaration).schema;
+      const sch = (<EnhancedTypeDeclaration>each.typeDeclaration).schema;
       const dictSchema = sch.type === SchemaType.Dictionary ? sch :
         sch.type === SchemaType.Object ? (<ObjectSchema>sch).parents?.immediate.find((s) => s.type === SchemaType.Dictionary) :
           undefined;

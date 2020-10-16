@@ -6,7 +6,7 @@
 import { codemodel } from '@azure-tools/codemodel-v3';
 
 import { Host, JsonPath, Session } from '@azure-tools/autorest-extension-base';
-import { NewProject } from './project';
+import { Project } from './project';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
@@ -24,15 +24,15 @@ export interface GeneratorSettings {
   apiFolder: string;
 }
 
-export class NewState extends ModelState<PwshModel> {
-  project!: NewProject;
+export class State extends ModelState<PwshModel> {
+  project!: Project;
 
-  public constructor(service: Host, objectInitializer?: DeepPartial<NewState>) {
+  public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
     super(service);
     this.apply(objectInitializer);
   }
 
-  async init(project?: NewProject) {
+  async init(project?: Project) {
     if (project) {
       this.project = project;
     }

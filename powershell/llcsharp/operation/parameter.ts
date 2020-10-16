@@ -15,18 +15,18 @@ import { Variable } from '@azure-tools/codegen-csharp';
 
 import { HttpOperationParameter, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { NewState } from '../generator';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
 /** represents a method parameter for an http operation (header/cookie/query/path) */
 
-export class NewOperationParameter extends Parameter implements EnhancedVariable {
-  public typeDeclaration: NewEnhancedTypeDeclaration;
+export class OperationParameter extends Parameter implements EnhancedVariable {
+  public typeDeclaration: EnhancedTypeDeclaration;
 
   public param: NewHttpOperationParameter;
 
-  constructor(parent: Method, param: NewHttpOperationParameter, state: NewState, objectInitializer?: DeepPartial<NewOperationParameter>) {
+  constructor(parent: Method, param: NewHttpOperationParameter, state: State, objectInitializer?: DeepPartial<OperationParameter>) {
     const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(param.schema, !!param.required, state);
     super(param.language.csharp?.name || '', typeDeclaration);
     this.param = param;
@@ -70,7 +70,7 @@ export class NewOperationParameter extends Parameter implements EnhancedVariable
 
 /** represents a method parameter for an http operation (body) */
 
-export class NewOperationBodyParameter extends Parameter implements EnhancedVariable {
+export class OperationBodyParameter extends Parameter implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
     // return this.assign(this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this));
@@ -107,9 +107,9 @@ export class NewOperationBodyParameter extends Parameter implements EnhancedVari
   public mediaType: KnownMediaType;
   public contentType: string;
 
-  public typeDeclaration: NewEnhancedTypeDeclaration;
+  public typeDeclaration: EnhancedTypeDeclaration;
 
-  constructor(parent: Method, name: string, description: string, schema: NewSchema, required: boolean, state: NewState, objectInitializer?: DeepPartial<NewOperationBodyParameter>) {
+  constructor(parent: Method, name: string, description: string, schema: NewSchema, required: boolean, state: State, objectInitializer?: DeepPartial<OperationBodyParameter>) {
     const typeDeclaration = state.project.modelsNamespace.NewResolveTypeDeclaration(schema, required, state.path('schema'));
     super(name, typeDeclaration);
     this.typeDeclaration = typeDeclaration;
@@ -131,11 +131,11 @@ export class NewOperationBodyParameter extends Parameter implements EnhancedVari
 }
 
 
-export class NewCallbackParameter extends Parameter {
-  responseType: (NewEnhancedTypeDeclaration) | null;
-  headerType: (NewEnhancedTypeDeclaration) | null;
+export class CallbackParameter extends Parameter {
+  responseType: (EnhancedTypeDeclaration) | null;
+  headerType: (EnhancedTypeDeclaration) | null;
 
-  constructor(name: string, responseType: (NewEnhancedTypeDeclaration) | null, headerType: (NewEnhancedTypeDeclaration) | null, state: NewState, objectInitializer?: DeepPartial<NewCallbackParameter>) {
+  constructor(name: string, responseType: (EnhancedTypeDeclaration) | null, headerType: (EnhancedTypeDeclaration) | null, state: State, objectInitializer?: DeepPartial<CallbackParameter>) {
     // regular pipeline style. (callback happens after the pipline is called)
     if (responseType) {
       if (headerType) {

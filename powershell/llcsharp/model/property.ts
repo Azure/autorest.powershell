@@ -11,14 +11,14 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Property, Schema } from '../code-model';
 import { EnhancedVariable } from '../extended-variable';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
 
-import { NewState } from '../generator';
+import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 import { Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
-export class NewModelProperty extends BackedProperty implements EnhancedVariable {
+export class ModelProperty extends BackedProperty implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string): Expression {
     return this.typeDeclaration.deserializeFromContainerMember(mediaType, container, serializedName, this);
@@ -58,10 +58,10 @@ export class NewModelProperty extends BackedProperty implements EnhancedVariable
   // public IsHeaderProperty: boolean;
   public schema: NewSchema;
   public serializedName: string;
-  private typeDeclaration: NewEnhancedTypeDeclaration;
+  private typeDeclaration: EnhancedTypeDeclaration;
   public language: any;
 
-  constructor(name: string, schema: NewSchema, isRequired: boolean, serializedName: string, description: string, state: NewState, objectInitializer?: DeepPartial<NewModelProperty>) {
+  constructor(name: string, schema: NewSchema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: DeepPartial<ModelProperty>) {
     const decl = state.project.modelsNamespace.NewResolveTypeDeclaration(schema, isRequired, state.path('schema'));
     super(name, decl);
     this.typeDeclaration = decl;

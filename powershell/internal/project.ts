@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary } from '@azure-tools/linq';
-import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewEnhancedTypeDeclaration, Boolean, NewBoolean, NewSchemaDefinitionResolver } from '../llcsharp/exports';
-import { NewState } from './state';
+import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewBoolean, SchemaDefinitionResolver } from '../llcsharp/exports';
+import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-import { NewEnumNamespace } from '../enums/namespace';
-import { NewModelExtensionsNamespace } from '../models/model-extensions';
+import { EnumNamespace } from '../enums/namespace';
+import { ModelExtensionsNamespace } from '../models/model-extensions';
 
-import { NewModuleNamespace } from '../module/module-namespace';
-import { NewCmdletNamespace } from '../cmdlets/namespace';
+import { ModuleNamespace } from '../module/module-namespace';
+import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
@@ -33,12 +33,6 @@ export interface Metadata {
   projectUri: string;
 }
 
-export class PSSwitch extends Boolean {
-  get declaration(): string {
-    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
-  }
-
-}
 
 
 export class NewPSSwitch extends NewBoolean {
@@ -47,9 +41,9 @@ export class NewPSSwitch extends NewBoolean {
   }
 
 }
-export class NewPSSchemaResolver extends NewSchemaDefinitionResolver {
+export class PSSchemaResolver extends SchemaDefinitionResolver {
   inResolve = false;
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): NewEnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
       if (!this.inResolve) {
@@ -69,7 +63,7 @@ export class NewPSSchemaResolver extends NewSchemaDefinitionResolver {
 }
 
 
-export class NewProject extends codeDomProject {
+export class Project extends codeDomProject {
   public azure!: boolean;
   public license!: string;
   public cmdletFolder!: string;
@@ -102,7 +96,7 @@ export class NewProject extends codeDomProject {
   public apiFolder!: string;
   public baseFolder!: string;
   public moduleFolder!: string;
-  public schemaDefinitionResolver!: NewSchemaDefinitionResolver;
+  public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
   public profiles!: Array<string>;
 
@@ -110,19 +104,19 @@ export class NewProject extends codeDomProject {
   public subjectPrefix!: string;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  public serviceNamespace!: NewModuleNamespace;
-  public supportNamespace!: NewEnumNamespace;
-  public cmdlets!: NewCmdletNamespace;
+  public serviceNamespace!: ModuleNamespace;
+  public supportNamespace!: EnumNamespace;
+  public cmdlets!: CmdletNamespace;
 
-  public modelsExtensions!: NewModelExtensionsNamespace;
+  public modelsExtensions!: ModelExtensionsNamespace;
   public accountsVersionMinimum!: string;
   public dependencyModuleFolder!: string;
   public metadata!: Metadata;
-  public state!: NewState;
+  public state!: State;
   public helpLinkPrefix!: string;
   get model() { return <PwshModel>this.state.model; }
 
-  constructor(protected service: Host, objectInitializer?: DeepPartial<NewProject>) {
+  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }
@@ -130,9 +124,9 @@ export class NewProject extends codeDomProject {
 
   public async init(): Promise<this> {
     await super.init();
-    this.state = await new NewState(this.service).init(this);
+    this.state = await new State(this.service).init(this);
 
-    this.schemaDefinitionResolver = new NewPSSchemaResolver();
+    this.schemaDefinitionResolver = new PSSchemaResolver();
 
     this.projectNamespace = this.state.model.language.csharp?.namespace || '';
 
@@ -207,20 +201,20 @@ export class NewProject extends codeDomProject {
     this.readme = `${this.baseFolder}/readme.md`;
 
     // add project namespace
-    this.serviceNamespace = new NewModuleNamespace(this.state);
+    this.serviceNamespace = new ModuleNamespace(this.state);
     this.serviceNamespace.header = this.license;
     this.addNamespace(this.serviceNamespace);
 
-    this.supportNamespace = new NewEnumNamespace(this.serviceNamespace, this.state);
+    this.supportNamespace = new EnumNamespace(this.serviceNamespace, this.state);
     this.supportNamespace.header = this.license;
     this.addNamespace(this.supportNamespace);
 
-    this.modelsExtensions = new NewModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas'));
+    this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas'));
     this.modelsExtensions.header = this.license;
     this.addNamespace(this.modelsExtensions);
 
     // add cmdlet namespace
-    this.cmdlets = await new NewCmdletNamespace(this.serviceNamespace, this.state).init();
+    this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init();
     this.cmdlets.header = this.license;
     this.addNamespace(this.cmdlets);
 

@@ -5,17 +5,17 @@
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
-import { NewState } from '../internal/state';
-import { NewCmdletClass } from './class';
+import { State } from '../internal/state';
+import { CmdletClass } from './class';
 import { DeepPartial } from '@azure-tools/codegen';
 
-export class NewCmdletNamespace extends Namespace {
+export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
   public get outputFolder(): string {
     return this.state.project.cmdletFolder;
   }
 
-  constructor(parent: Namespace, private state: NewState, objectInitializer?: DeepPartial<NewCmdletNamespace>) {
+  constructor(parent: Namespace, private state: State, objectInitializer?: DeepPartial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
   }
@@ -29,7 +29,7 @@ export class NewCmdletNamespace extends Namespace {
       if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
         continue;
       }
-      this.addClass(await new NewCmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
+      this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
     }
     return this;
   }

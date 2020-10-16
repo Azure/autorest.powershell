@@ -7,7 +7,7 @@
 import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { join } from 'path';
-import { NewProject } from '../internal/project';
+import { Project } from '../internal/project';
 import { generatePsm1 } from '../generators/psm1';
 import { generateCsproj } from '../generators/csproj';
 import { generatePsm1Custom } from '../generators/psm1.custom';
@@ -22,7 +22,7 @@ const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
 
 
-async function copyRequiredFiles(project: NewProject) {
+async function copyRequiredFiles(project: Project) {
   const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); };
 
   // Project assets
@@ -48,7 +48,7 @@ export async function powershellV2(service: Host) {
   const debug = await service.GetValue('debug') || false;
 
   try {
-    const project = await new NewProject(service).init();
+    const project = await new Project(service).init();
 
     await project.writeFiles(async (filename, content) => project.state.writeFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
 

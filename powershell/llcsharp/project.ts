@@ -7,14 +7,14 @@ import { Host } from '@azure-tools/autorest-extension-base';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 
-import { NewState } from './generator';
-import { NewModelsNamespace } from './model/namespace';
+import { State } from './generator';
+import { ModelsNamespace } from './model/namespace';
 import { ApiClass } from './operation/api-class';
 import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './enums/namespace';
 import { DeepPartial } from '@azure-tools/codegen';
 
-export class NewProject extends codeDomProject {
+export class Project extends codeDomProject {
 
   public jsonSerialization = true;
   public xmlSerialization = false;
@@ -22,7 +22,7 @@ export class NewProject extends codeDomProject {
   public emitSignals = true;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  protected state!: NewState;
+  protected state!: State;
 
   apifolder!: string;
   runtimefolder!: string;
@@ -30,7 +30,7 @@ export class NewProject extends codeDomProject {
   license!: string;
   identityCorrection!: boolean;
 
-  constructor(protected service: Host, objectInitializer?: DeepPartial<NewProject>) {
+  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }
@@ -38,7 +38,7 @@ export class NewProject extends codeDomProject {
   public async init(): Promise<this> {
     await super.init();
 
-    this.state = await new NewState(this.service).init(this);
+    this.state = await new State(this.service).init(this);
     this.apifolder = await this.state.getValue('api-folder', '');
     this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
     this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);
@@ -74,7 +74,7 @@ export class NewProject extends codeDomProject {
     this.addNamespace(this.supportNamespace);
 
     // add model classes
-    this.modelsNamespace = new NewModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas'));
+    this.modelsNamespace = new ModelsNamespace(this.serviceNamespace, this.state.model.schemas, this.state.path('components', 'schemas'));
     this.modelsNamespace.header = this.license;
     this.addNamespace(this.modelsNamespace);
 
@@ -88,6 +88,6 @@ export class NewProject extends codeDomProject {
   }
 
   public serviceNamespace!: ServiceNamespace;
-  public modelsNamespace!: NewModelsNamespace;
+  public modelsNamespace!: ModelsNamespace;
   public supportNamespace!: SupportNamespace;
 }

@@ -7,7 +7,7 @@ import { codeModelSchema } from '@azure-tools/codemodel';
 import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
 import { Model } from '../llcsharp/code-model';
-import { NewProject } from '../llcsharp/project';
+import { Project } from '../llcsharp/project';
 import { PwshModel } from '../utils/PwshModel';
 import { Dictionary } from '@azure-tools/linq';
 
@@ -15,7 +15,7 @@ const resources = `${__dirname}/../../resources`;
 
 export async function llcsharpV2(service: Host) {
   try {
-    const project = await new NewProject(service).init();
+    const project = await new Project(service).init();
 
     await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 

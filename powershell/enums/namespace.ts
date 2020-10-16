@@ -5,19 +5,19 @@
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { EnumDetails } from '@azure-tools/codemodel-v3';
 import { If, Parameter, Method, Namespace, System, Struct, Attribute, Class, dotnet, LambdaMethod, LiteralExpression, Modifier } from '@azure-tools/codegen-csharp';
-import { NewState } from '../internal/state';
+import { State } from '../internal/state';
 import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, TypeConverterAttribute, PSTypeConverter } from '../internal/powershell-declarations';
 import { join } from 'path';
 import { DeepPartial } from '@azure-tools/codegen';
 
 import { EnumDetails as NewEnumDetails } from '../utils/schema';
 
-export class NewEnumNamespace extends Namespace {
+export class EnumNamespace extends Namespace {
   public get outputFolder(): string {
     return join(this.state.project.apiFolder, 'Support');
   }
 
-  constructor(parent: Namespace, public state: NewState, objectInitializer?: DeepPartial<NewEnumNamespace>) {
+  constructor(parent: Namespace, public state: State, objectInitializer?: DeepPartial<EnumNamespace>) {
     super('Support', parent);
     this.apply(objectInitializer);
     //const enumInfos = [...state.model.schemas.sealedChoices ?? [], ...state.model.schemas.choices ?? []]

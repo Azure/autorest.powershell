@@ -8,22 +8,22 @@ import { camelCase, deconstruct, DeepPartial } from '@azure-tools/codegen';
 import { items, values } from '@azure-tools/linq';
 import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
-import { NewState } from '../generator';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
-import { NewModelInterface } from './interface';
-import { NewJsonSerializableClass } from './model-class-json';
-import { NewModelProperty } from './property';
+import { State } from '../generator';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ObjectImplementation } from '../schema/object';
+import { ModelInterface } from './interface';
+import { JsonSerializableClass } from './model-class-json';
+import { ModelProperty } from './property';
 import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
-import { NewDictionaryImplementation } from './model-class-dictionary';
+import { DictionaryImplementation } from './model-class-dictionary';
 import { Languages, Language, Schema as NewSchema, SchemaType, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
 import { VirtualProperty as NewVirtualProperty, getAllVirtualProperties as newGetAllVirtualProperties } from '../../utils/schema';
 
-export function NewGetVirtualPropertyName(vp?: NewVirtualProperty): string {
+export function getVirtualPropertyName(vp?: NewVirtualProperty): string {
 
   if (vp && vp.accessViaMember && vp.accessViaProperty?.accessViaMember) {
-    return NewGetVirtualPropertyName(vp.accessViaMember);
+    return getVirtualPropertyName(vp.accessViaMember);
   }
   return vp ? vp.name : '';
 }
@@ -34,7 +34,7 @@ export interface BackingField {
   className: string;
 }
 
-export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
+export class ModelClass extends Class implements EnhancedTypeDeclaration {
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
     return this.featureImplementation.deserializeFromContainerMember(mediaType, container, serializedName, defaultValue);
   }
@@ -83,26 +83,26 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
   public get schema() { return this.featureImplementation.schema; }
 
   /* @internal */ validateMethod?: Method;
-  /* @internal */ discriminators: Map<string, NewModelClass> = new Map<string, NewModelClass>();
-  /* @internal */ parentModelClasses: Array<NewModelClass> = new Array<NewModelClass>();
-  /* @internal */ get modelInterface(): NewModelInterface { return <NewModelInterface>this.schema.language.csharp?.interfaceImplementation; }
-  /* @internal */ get internalModelInterface(): NewModelInterface { return <NewModelInterface>this.schema.language.csharp?.internalInterfaceImplementation; }
+  /* @internal */ discriminators: Map<string, ModelClass> = new Map<string, ModelClass>();
+  /* @internal */ parentModelClasses: Array<ModelClass> = new Array<ModelClass>();
+  /* @internal */ get modelInterface(): ModelInterface { return <ModelInterface>this.schema.language.csharp?.interfaceImplementation; }
+  /* @internal */ get internalModelInterface(): ModelInterface { return <ModelInterface>this.schema.language.csharp?.internalInterfaceImplementation; }
 
-  /* @internal */  state: NewState;
+  /* @internal */  state: State;
   /* @internal */  backingFields = new Array<BackingField>();
-  /* @internal */  featureImplementation: NewObjectImplementation;
+  /* @internal */  featureImplementation: ObjectImplementation;
   /* @internal */  validationEventListener: Parameter = new Parameter('eventListener', ClientRuntime.IEventListener, { description: `an <see cref="${ClientRuntime.IEventListener}" /> instance that will receive validation events.` });
-  /* @internal */  jsonSerializer?: NewJsonSerializableClass;
+  /* @internal */  jsonSerializer?: JsonSerializableClass;
   // /* @internal */  xmlSerializer?: XmlSerializableClass;
-  /* @internal */  dictionaryImpl?: NewDictionaryImplementation;
+  /* @internal */  dictionaryImpl?: DictionaryImplementation;
 
   private readonly validationStatements = new Statements();
-  public ownedProperties = new Array<NewModelProperty>();
-  private pMap = new Map<NewVirtualProperty, NewModelProperty>();
+  public ownedProperties = new Array<ModelProperty>();
+  private pMap = new Map<NewVirtualProperty, ModelProperty>();
 
   // public hasHeaderProperties: boolean;
 
-  constructor(namespace: Namespace, schemaWithFeatures: NewObjectImplementation, state: NewState, objectInitializer?: DeepPartial<NewModelClass>) {
+  constructor(namespace: Namespace, schemaWithFeatures: ObjectImplementation, state: State, objectInitializer?: DeepPartial<ModelClass>) {
     super(namespace, schemaWithFeatures.schema.language.csharp?.name || '');
     this.featureImplementation = schemaWithFeatures;
     this.schema.language.csharp = this.schema.language.csharp || new Language();
@@ -121,13 +121,13 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
 
     // create an interface for this model class
     if (!this.schema.language.csharp.interfaceImplementation) {
-      (this.schema.language.csharp.interfaceImplementation = new NewModelInterface(this.namespace, this.schema.language.csharp.interfaceName || `I${this.schema.language.csharp.name}`, this, this.state));
+      (this.schema.language.csharp.interfaceImplementation = new ModelInterface(this.namespace, this.schema.language.csharp.interfaceName || `I${this.schema.language.csharp.name}`, this, this.state));
 
     }
     this.interfaces.push(this.modelInterface);
 
     if (!this.schema.language.csharp.internalInterfaceImplementation) {
-      (this.schema.language.csharp.internalInterfaceImplementation = new NewModelInterface(this.namespace, this.schema.language.csharp.internalInterfaceName || `I${this.schema.language.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal }));
+      (this.schema.language.csharp.internalInterfaceImplementation = new ModelInterface(this.namespace, this.schema.language.csharp.internalInterfaceName || `I${this.schema.language.csharp.name}Internal`, this, this.state, { accessModifier: Access.Internal }));
 
     }
 
@@ -145,7 +145,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       const dictSchema = (<NewSchema>this.schema).type === SchemaType.Dictionary ? this.schema :
         this.schema.parents?.immediate?.find((schema) => schema.type === SchemaType.Dictionary);
       if (dictSchema) {
-        this.dictionaryImpl = new NewDictionaryImplementation(this).init();
+        this.dictionaryImpl = new DictionaryImplementation(this).init();
       }
     }
 
@@ -160,7 +160,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     this.addHeaderDeserializer();
 
     if (this.state.project.jsonSerialization) {
-      this.jsonSerializer = new NewJsonSerializableClass(this);
+      this.jsonSerializer = new JsonSerializableClass(this);
     }
   }
 
@@ -168,11 +168,11 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     if (virtualProperty.accessViaProperty) {
       if (virtualProperty.accessViaProperty.accessViaProperty) {
         // return `/*1*/${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
-        return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
+        return `${getVirtualPropertyName(virtualProperty.accessViaMember)}.${this.nested(virtualProperty.accessViaProperty.accessViaProperty, internal)}`;
       }
     }
     //return `/*2*/${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
-    return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}`;
+    return `${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
   }
 
   private accessor(virtualProperty: NewVirtualProperty, internal = false): string {
@@ -181,11 +181,11 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
       if (containingProperty && virtualProperty.accessViaMember) {
         //return `/*3*/((${virtualProperty.accessViaMember.originalContainingSchema.details.csharp.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
-        return `((${virtualProperty.accessViaMember.originalContainingSchema.language.csharp?.fullInternalInterfaceName})${containingProperty.name}${prefix}).${NewGetVirtualPropertyName(virtualProperty.accessViaMember)}`;
+        return `((${virtualProperty.accessViaMember.originalContainingSchema.language.csharp?.fullInternalInterfaceName})${containingProperty.name}${prefix}).${getVirtualPropertyName(virtualProperty.accessViaMember)}`;
       }
     }
     //    return `/*4* ${virtualProperty.name}/${virtualProperty.accessViaMember?.name}/${virtualProperty.accessViaProperty?.name} */${getVirtualPropertyName(virtualProperty.accessViaMember) || '/*!!*/' + virtualProperty.name}`;
-    return `${NewGetVirtualPropertyName(virtualProperty.accessViaMember) || virtualProperty.name}`;
+    return `${getVirtualPropertyName(virtualProperty.accessViaMember) || virtualProperty.name}`;
   }
 
   private createProperties() {
@@ -224,7 +224,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
         const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, this.state.path('schema'));
 
         /* public property */
-        const myProperty = new NewModelProperty(virtualProperty.name, <NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, actualProperty.serializedName, actualProperty.language.csharp?.description || '', this.state.path('properties', n++), {
+        const myProperty = new ModelProperty(virtualProperty.name, <NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, actualProperty.serializedName, actualProperty.language.csharp?.description || '', this.state.path('properties', n++), {
           initializer: actualProperty.language.csharp?.constantValue ? typeof actualProperty.language.csharp.constantValue === 'string' ? new StringExpression(actualProperty.language.csharp.constantValue) : new LiteralExpression(actualProperty.language.csharp.constantValue) : undefined
         });
 
@@ -404,12 +404,12 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       const aState = this.state.path('allOf', eachSchemaIndex);
 
       const td = this.state.project.modelsNamespace.NewResolveTypeDeclaration(aSchema, true, aState);
-      const parentClass = (<NewModelClass>aSchema.language.csharp?.classImplementation);
+      const parentClass = (<ModelClass>aSchema.language.csharp?.classImplementation);
       const className = parentClass.fullName;
       const fieldName = camelCase(deconstruct(className.replace(/^.*\./, '')));
 
       // add the interface as a parent to our interface.
-      const iface = <NewModelInterface>aSchema.language.csharp?.interfaceImplementation;
+      const iface = <ModelInterface>aSchema.language.csharp?.interfaceImplementation;
 
       // add a field for the inherited values
       const backingField = this.addField(new Field(`__${fieldName}`, td, { initialValue: `new ${className}()`, access: Access.Private, description: `Backing field for Inherited model <see cref= "${td.declaration}" /> ` }));
@@ -421,13 +421,13 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
       this.validationStatements.add(td.validatePresence(this.validationEventListener, backingField));
       this.validationStatements.add(td.validateValue(this.validationEventListener, backingField));
 
-      this.internalModelInterface.interfaces.push(<NewModelInterface>aSchema.language.csharp?.internalInterfaceImplementation);
+      this.internalModelInterface.interfaces.push(<ModelInterface>aSchema.language.csharp?.internalInterfaceImplementation);
       this.modelInterface.interfaces.push(iface);
 
       //
       const addlPropType = this.additionalPropertiesType(aSchema);
       if (addlPropType) {
-        this.dictionaryImpl = new NewDictionaryImplementation(this).init(addlPropType, backingField);
+        this.dictionaryImpl = new DictionaryImplementation(this).init(addlPropType, backingField);
         hasAdditionalPropertiesInParent = true;
       }
     }
@@ -453,7 +453,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
         // ensure the parent schema has it's class created first.
         this.state.project.modelsNamespace.NewResolveTypeDeclaration(parentSchema, true, aState);
 
-        const parentClass = <NewModelClass>parentSchema.language.csharp?.classImplementation;
+        const parentClass = <ModelClass>parentSchema.language.csharp?.classImplementation;
         if (parentClass.isPolymorphic) {
           // remember this class for later.
           this.parentModelClasses.push(parentClass);
@@ -495,7 +495,7 @@ export class NewModelClass extends Class implements NewEnhancedTypeDeclaration {
     return this.featureImplementation.validatePresence(eventListener, property);
   }
 
-  public addDiscriminator(discriminatorValue: string, modelClass: NewModelClass) {
+  public addDiscriminator(discriminatorValue: string, modelClass: ModelClass) {
     this.discriminators.set(discriminatorValue, modelClass);
 
     // tell any polymorphic parents incase we're doing subclass of a subclass.

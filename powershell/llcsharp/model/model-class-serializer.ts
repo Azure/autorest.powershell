@@ -23,55 +23,19 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 
 import { dotnet } from '@azure-tools/codegen-csharp';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
 import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
-import { NewGetVirtualPropertyName } from './model-class';
+import { getVirtualPropertyName } from './model-class';
 import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';
 
+
 export class SerializationPartialClass extends Initializer {
-  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, protected resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
-    super();
-    this.apply(objectInitializer);
-  }
-
-  protected get virtualProperties() {
-    return this.schema.details.csharp.virtualProperties || {
-      owned: [],
-      inherited: [],
-      inlined: []
-    };
-  }
-  protected get allVirtualProperties() {
-    const vp = this.virtualProperties;
-    // return [...vp.owned, ...vp.inherited, ...vp.inlined];
-    return values(vp.owned, vp.inherited, vp.inlined).toArray();
-  }
-
-  protected contentParameter = new Parameter('content', this.serializationType, { description: `The ${this.serializationType.declaration} content that should be used.` });
-  protected refContainerParameter = new Parameter('container', this.serializationType, { modifier: ParameterModifier.Ref, description: `The ${this.serializationType.declaration} container that the serialization result will be placed in.` });
-  protected returnNowParameter = new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' });
-
-  protected get typeCref() {
-    return `<see cref="${this.serializationType.declaration}" />`;
-  }
-
-  protected get thisCref() {
-    return `<see cref="${this.targetClass.declaration}" />`;
-  }
-
-  protected get interfaceCref() {
-    return `<see cref="${this.targetInterface.declaration}" />`;
-  }
-
-}
-
-export class NewSerializationPartialClass extends Initializer {
-  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, protected resolver: (s: NewSchema, req: boolean) => NewEnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
+  constructor(protected targetClass: Class, protected targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, protected resolver: (s: NewSchema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializationPartialClass>) {
     super();
     this.apply(objectInitializer);
   }
@@ -107,10 +71,10 @@ export class NewSerializationPartialClass extends Initializer {
 
 }
 
-export class NewDeserializerPartialClass extends NewSerializationPartialClass {
+export class DeserializerPartialClass extends SerializationPartialClass {
   private beforeDeserialize!: Method;
   private afterDeserialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, resolver: (s: NewSchema, req: boolean) => NewEnhancedTypeDeclaration, objectInitializer?: DeepPartial<NewDeserializerPartialClass>) {
+  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: NewSchema, resolver: (s: NewSchema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<DeserializerPartialClass>) {
     super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
     this.apply(objectInitializer);
   }
@@ -179,7 +143,7 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
-        yield `${t}.${NewGetVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${NewGetVirtualPropertyName(virtualProperty)}",${t}.${NewGetVirtualPropertyName(virtualProperty)}, ${cvt});`;
+        yield `${t}.${getVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${getVirtualPropertyName(virtualProperty)}",${t}.${getVirtualPropertyName(virtualProperty)}, ${cvt});`;
       }
     };
   }
@@ -218,46 +182,4 @@ export class NewDeserializerPartialClass extends NewSerializationPartialClass {
   }
 }
 
-export class SerializerPartialClass extends SerializationPartialClass {
-  private beforeSerialize!: Method;
-  private afterSerialize!: Method;
-  constructor(targetClass: Class, targetInterface: TypeDeclaration, protected serializationType: TypeDeclaration, protected serializationFormat: string, protected schema: Schema, resolver: (s: Schema, req: boolean) => EnhancedTypeDeclaration, objectInitializer?: DeepPartial<SerializerPartialClass>) {
-    super(targetClass, targetInterface, serializationType, serializationFormat, schema, resolver);
-    this.apply(objectInitializer);
-  }
-
-  async init() {
-    this.addPartialMethods();
-    this.addSerializer();
-
-  }
-
-  protected addSerializer() {
-    const serializeMethod = this.targetClass.addMethod(new Method(`SerializeTo${this.serializationFormat}`, this.serializationType, {
-      parameters: [this.refContainerParameter],
-      description: `Serializes this instance of ${this.thisCref} into a ${this.typeCref}.`,
-      returnsDescription: `a serialized instance of ${this.thisCref} /> as a ${this.typeCref}.`
-    }));
-
-  }
-
-  protected addPartialMethods() {
-    const before = `BeforeSerialize${this.serializationFormat}`;
-    const after = `AfterSerialize${this.serializationFormat}`;
-    // add partial methods for future customization
-    this.beforeSerialize = this.targetClass.addMethod(new PartialMethod(before, dotnet.Void, {
-      access: Access.Default,
-      parameters: [this.refContainerParameter, this.returnNowParameter],
-      description: `<c>${before}</c> will be called before the serialization has commenced, allowing complete customization of the object before it is serialized.
-      If you wish to disable the default serialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
-      Implement this method in a partial class to enable this behavior.`
-    }));
-
-    this.afterSerialize = this.targetClass.addMethod(new PartialMethod(after, dotnet.Void, {
-      access: Access.Default,
-      parameters: [this.refContainerParameter],
-      description: `<c>${after}</c> will be called after the serialization has finished, allowing customization of the ${this.typeCref} before it is returned. Implement this method in a partial class to enable this behavior `
-    }));
-  }
-}
 

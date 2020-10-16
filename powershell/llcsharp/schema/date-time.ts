@@ -12,99 +12,8 @@ import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from '@azure-tools/codemodel';
-import { Primitive, NewPrimitive } from './primitive';
+import { NewPrimitive } from './primitive';
 
-export class DateTime extends Primitive {
-  public isXmlAttribute = false;
-  public jsonType = ClientRuntime.JsonString;
-  // public DateFormat = new StringExpression('yyyy-MM-dd');
-  public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
-
-  get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
-  }
-
-  get declaration(): string {
-    return `global::System.DateTime${this.isRequired ? '' : '?'}`;
-  }
-  protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `global::System.DateTime.TryParse((string)${tmpValue}, global::System.Globalization.CultureInfo.InvariantCulture, global::System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
-  }
-  protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `global::System.DateTime.TryParse((string)${tmpValue}, global::System.Globalization.CultureInfo.InvariantCulture, global::System.Globalization.DateTimeStyles.AdjustToUniversal, out var ${tmpValue}Value) ? ${tmpValue}Value : ${defaultValue}`;
-  }
-
-  get convertObjectMethod() {
-    return '(v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified)';
-  }
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
-    switch (mediaType) {
-      case KnownMediaType.Json:
-        return this.isRequired ?
-          toExpression(`(${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`) :
-          toExpression(`null != ${value} ? (${ClientRuntime.JsonNode}) new ${this.jsonType}(${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)) : null`);
-
-      case KnownMediaType.Xml:
-        return this.isRequired ?
-          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`) :
-          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)) : null`);
-
-      case KnownMediaType.Cookie:
-      case KnownMediaType.QueryParameter:
-      case KnownMediaType.Header:
-      case KnownMediaType.Text:
-      case KnownMediaType.UriParameter:
-        return toExpression(this.isRequired ?
-          `"${serializedName}=" + ${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
-          `(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
-        );
-    }
-    return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
-  }
-  serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-    switch (mediaType) {
-      case KnownMediaType.Json:
-        // container : JsonObject
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${valueOf(container)}.Add );`;
-
-      case KnownMediaType.Xml:
-        // container : XElement
-        return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, ${valueOf(container)}.Add );`;
-
-      case KnownMediaType.Header:
-        // container : HttpRequestHeaders
-        return this.isRequired ?
-          `${valueOf(container)}.Add("${serializedName}",${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture));` :
-          If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}",${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture));`);
-
-      case KnownMediaType.QueryParameter:
-        // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
-        return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
-
-      case KnownMediaType.UriParameter:
-        // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
-        return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
-    }
-    return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
-  }
-  constructor(schema: Schema, public isRequired: boolean) {
-    super(schema);
-  }
-  // public static string DateFormat = "yyyy-MM-dd";
-  // public static string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
-  // public static string DateTimeRfc1123Format = "R";
-  // public static JsonString CreateDate(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateFormat, CultureInfo.InvariantCulture)) : null;
-  // public static JsonString CreateDateTime(DateTime? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeFormat, CultureInfo.InvariantCulture)) : null;
-  // public static JsonString CreateDateTimeRfc1123(DateTime ? value) => value is DateTime date ? new JsonString(date.ToString(DateTimeRfc1123Format, CultureInfo.InvariantCulture)) : null;
-
-  validateValue(eventListener: Variable, property: Variable): string {
-    return '';
-  }
-}
 
 export class NewDateTime extends NewPrimitive {
   public isXmlAttribute = false;
@@ -198,95 +107,12 @@ export class NewDateTime extends NewPrimitive {
   }
 }
 
-export class DateTime1123 extends DateTime {
-  public DateTimeFormat = new StringExpression('R');
-  constructor(schema: Schema, isRequired: boolean) {
-    super(schema, isRequired);
-  }
-}
+
 
 export class NewDateTime1123 extends NewDateTime {
   public DateTimeFormat = new StringExpression('R');
   constructor(schema: DateTimeSchema, isRequired: boolean) {
     super(schema, isRequired);
-  }
-}
-
-export class UnixTime extends Primitive {
-  public isXmlAttribute = false;
-  public jsonType = ClientRuntime.JsonNumber;
-
-  private EpochDate = System.DateTime.new('1970', '1', '1', '0', '0', '0', System.DateTimeKind.Utc);
-
-  get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
-  }
-
-
-  protected castJsonTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
-  }
-  protected castXmlTypeToPrimitive(tmpValue: string, defaultValue: string) {
-    return `long.TryParse((string)${tmpValue}, out var ${tmpValue}Value) ? ${this.EpochDate}.AddSeconds(${tmpValue}Value) : ${defaultValue}`;
-  }
-
-  serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
-    switch (mediaType) {
-      case KnownMediaType.Json:
-        return this.isRequired ?
-          this.jsonType.new(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds))`).Cast(ClientRuntime.JsonNode) :
-          Ternery(IsNotNull(value), this.jsonType.new(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds)??0)`).Cast(ClientRuntime.JsonNode), dotnet.Null);
-
-      case KnownMediaType.Xml:
-        return this.isRequired ?
-          toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value})`) :
-          toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
-
-      case KnownMediaType.QueryParameter:
-        if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + ${this.encode}(${value}.ToString())`);
-        } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
-        }
-
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
-
-      case KnownMediaType.Cookie:
-      case KnownMediaType.Header:
-      case KnownMediaType.Text:
-      case KnownMediaType.UriParameter:
-        return toExpression(this.isRequired ?
-          `(${value}.ToString())` :
-          `(null == ${value} ? ${System.String.Empty} : ${value}.ToString())`
-        );
-    }
-    return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
-  }
-
-  /** emits an expression serialize this to the value required by the container */
-  _serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
-    return super.serializeToNode(mediaType, new LiteralExpression(`((${this.longType})(${value}${this.q}.Subtract(${valueOf(this.EpochDate)}).TotalSeconds))`), serializedName, mode);
-  }
-
-  get q(): string {
-    return this.isRequired ? '' : '?';
-  }
-
-  get longType(): string {
-    return this.isRequired ? 'long' : 'long?';
-  }
-
-
-  constructor(schema: Schema, public isRequired: boolean) {
-    super(schema);
-  }
-
-  validateValue(eventListener: Variable, property: Variable): string {
-    return '';
-  }
-
-  get declaration(): string {
-    return `global::System.DateTime${this.isRequired ? '' : '?'}`;
   }
 }
 

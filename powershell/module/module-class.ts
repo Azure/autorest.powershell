@@ -6,7 +6,7 @@
 import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, If, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@azure-tools/codegen-csharp';
 
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
-import { NewState } from '../internal/state';
+import { State } from '../internal/state';
 import { ClientRuntime } from '../llcsharp/exports';
 import { DeepPartial } from '@azure-tools/codegen';
 
@@ -71,7 +71,7 @@ export class NewModuleClass extends Class {
   fHandler = this.add(new Field('_handler', System.Net.Http.HttpClientHandler, { initialValue: System.Net.Http.HttpClientHandler.new() }));
   fWebProxy = this.add(new Field('_webProxy', System.Net.WebProxy, { initialValue: System.Net.WebProxy.new() }));
 
-  constructor(namespace: Namespace, private readonly state: NewState, objectInitializer?: DeepPartial<NewModuleClass>) {
+  constructor(namespace: Namespace, private readonly state: State, objectInitializer?: DeepPartial<NewModuleClass>) {
     super(namespace, 'Module');
     this.apply(objectInitializer);
     this.partial = true;

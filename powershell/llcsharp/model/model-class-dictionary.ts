@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Field, System, Property, toExpression, dotnet, Parameter, ParameterModifier, Method, Class, TypeDeclaration, Indexer, Access, Variable, Expression, If, And, ForEach, LocalVariable, ImplicitCastOperator } from '@azure-tools/codegen-csharp';
-import { NewModelClass } from './model-class';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ModelClass } from './model-class';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 import { getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
 import { DictionarySchema, ObjectSchema, SchemaType, Schema } from '@azure-tools/codemodel';
 
-export class NewDictionaryImplementation extends Class {
+export class DictionaryImplementation extends Class {
   private get state() { return this.modelClass.state; }
   private get schema() { return this.modelClass.schema; }
-  public valueType!: TypeDeclaration | NewEnhancedTypeDeclaration;
+  public valueType!: TypeDeclaration | EnhancedTypeDeclaration;
   public ownsDictionary = false;
 
-  constructor(protected modelClass: NewModelClass, objectInitializer?: DeepPartial<NewDictionaryImplementation>) {
+  constructor(protected modelClass: ModelClass, objectInitializer?: DeepPartial<DictionaryImplementation>) {
     super(modelClass.namespace, modelClass.name);
     this.apply(objectInitializer);
   }

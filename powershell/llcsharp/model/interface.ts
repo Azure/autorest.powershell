@@ -9,9 +9,9 @@ import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStateme
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Schema as NewSchema, Language, ObjectSchema } from '@azure-tools/codemodel';
-import { NewState } from '../generator';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { NewModelClass } from './model-class';
+import { State } from '../generator';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ModelClass } from './model-class';
 import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
 import { values } from '@azure-tools/linq';
@@ -125,7 +125,7 @@ export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
 
 
 
-export class NewModelInterface extends Interface implements NewEnhancedTypeDeclaration {
+export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
   get schema(): NewSchema {
     return this.classImplementation.schema;
   }
@@ -187,7 +187,7 @@ export class NewModelInterface extends Interface implements NewEnhancedTypeDecla
     // return this.classImplementation.hasHeaderProperties; 
     return false;
   }
-  constructor(parent: TypeContainer, interfaceName: string, public classImplementation: NewModelClass, public state: NewState, objectInitializer?: DeepPartial<NewModelInterface>) {
+  constructor(parent: TypeContainer, interfaceName: string, public classImplementation: ModelClass, public state: State, objectInitializer?: DeepPartial<ModelInterface>) {
     super(parent, interfaceName);
     this.partial = true;
     this.apply(objectInitializer);

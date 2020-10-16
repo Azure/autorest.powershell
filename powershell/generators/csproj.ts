@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NewProject } from '../internal/project';
+import { Project } from '../internal/project';
 
 function removeCd(path: string): string {
   return path.startsWith('./') ? path.replace('./', '') : path;
 }
-export async function generateCsproj(project: NewProject) {
+export async function generateCsproj(project: Project) {
   const release = project.azure ? `    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>

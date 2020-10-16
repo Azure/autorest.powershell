@@ -8,15 +8,15 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { NewState } from '../generator';
-import { EnumImplementation, NewEnumImplementation } from '../schema/enum';
-import { EnhancedTypeDeclaration, NewEnhancedTypeDeclaration } from '../schema/extended-type-declaration';
-import { ObjectImplementation, NewObjectImplementation } from '../schema/object';
-import { NewSchemaDefinitionResolver } from '../schema/schema-resolver';
-import { NewEnumClass } from '../enums/enum';
+import { State } from '../generator';
+import { NewEnumImplementation } from '../schema/enum';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
+import { ObjectImplementation } from '../schema/object';
+import { SchemaDefinitionResolver } from '../schema/schema-resolver';
+import { EnumClass } from '../enums/enum';
 import * as validation from '../validations';
-import { NewModelInterface } from './interface';
-import { NewModelClass } from './model-class';
+import { ModelInterface } from './interface';
+import { ModelClass } from './model-class';
 import { DeepPartial } from '@azure-tools/codegen';
 
 
@@ -32,12 +32,12 @@ class ApiVersionNamespace extends Namespace {
   }
 }
 
-export class NewModelsNamespace extends Namespace {
+export class ModelsNamespace extends Namespace {
   private subNamespaces = new Dictionary<Namespace>();
 
-  resolver = new NewSchemaDefinitionResolver();
-  newResolver = new NewSchemaDefinitionResolver();
-  constructor(parent: Namespace, private schemas: NewSchemas, private state: NewState, objectInitializer?: DeepPartial<NewModelsNamespace>) {
+  resolver = new SchemaDefinitionResolver();
+  newResolver = new SchemaDefinitionResolver();
+  constructor(parent: Namespace, private schemas: NewSchemas, private state: State, objectInitializer?: DeepPartial<ModelsNamespace>) {
     super('Models', parent);
     this.subNamespaces[this.fullName] = this;
 
@@ -50,29 +50,29 @@ export class NewModelsNamespace extends Namespace {
 
     if (schemas.objects) {
       for (const schema of schemas.objects) {
-        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
     }
     if (schemas.dictionaries) {
       for (const schema of schemas.dictionaries) {
-        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
     }
 
     if (schemas.any) {
       for (const schema of schemas.any) {
-        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
     }
 
     if (schemas.strings) {
       for (const schema of schemas.strings) {
-        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
     }
     if (schemas.sealedChoices) {
       for (const schema of schemas.sealedChoices) {
-        this.NewResolveTypeDeclaration(schema, true, <NewState>state);
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
     }
     //todo, need to add support for other types
@@ -83,7 +83,7 @@ export class NewModelsNamespace extends Namespace {
     return 'Models';
   }
 
-  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: NewState): NewEnhancedTypeDeclaration {
+  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: State): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -91,7 +91,7 @@ export class NewModelsNamespace extends Namespace {
     const td = this.newResolver.resolveTypeDeclaration(schema, required, state);
 
     if (!schema.language.csharp?.skip) {
-      if (td instanceof NewObjectImplementation) {
+      if (td instanceof ObjectImplementation) {
         // it's a class object.
         // create it if necessary
 
@@ -99,10 +99,10 @@ export class NewModelsNamespace extends Namespace {
 
         const ns = this.subNamespaces[fullname] || this.add(new ApiVersionNamespace(fullname));
 
-        const mc = schema.language.csharp?.classImplementation || new NewModelClass(ns, td, <NewState>this.state, { description: schema.language.csharp?.description });
+        const mc = schema.language.csharp?.classImplementation || new ModelClass(ns, td, <State>this.state, { description: schema.language.csharp?.description });
 
         // this gets implicity created during class creation:
-        return <NewModelInterface>schema.language.csharp?.interfaceImplementation;
+        return <ModelInterface>schema.language.csharp?.interfaceImplementation;
       }
 
       if (state.project.azure && /^api-?version$/i.exec(schema.language.csharp?.name || '')) {
@@ -113,8 +113,8 @@ export class NewModelsNamespace extends Namespace {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {
-            new NewEnumClass(td, state);
-            // return schema.language.csharp.typeDeclaration = <NewEnumClass>ec[0];
+            new EnumClass(td, state);
+            // return schema.language.csharp.typeDeclaration = <EnumClass>ec[0];
           }
         }
         schema.language.csharp = schema.language.csharp || new Language();

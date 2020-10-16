@@ -10,7 +10,7 @@ import { System } from '@azure-tools/codegen-csharp';
 
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
-import { NewSchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
+import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { SchemaDetails as NewSchemaDetails } from '../utils/schema';
@@ -159,7 +159,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 
 }
 
-async function setOperationNames(state: State, resolver: NewSchemaDefinitionResolver) {
+async function setOperationNames(state: State, resolver: SchemaDefinitionResolver) {
   // keep a list of operation names that we've assigned.
   const operationNames = new Set<string>();
   for (const operationGroup of values(state.model.operationGroups)) {
@@ -230,7 +230,7 @@ async function setOperationNames(state: State, resolver: NewSchemaDefinitionReso
 }
 
 async function nameStuffRight(state: State): Promise<PwshModel> {
-  const resolver = new NewSchemaDefinitionResolver();
+  const resolver = new SchemaDefinitionResolver();
   const model = state.model;
 
   // set the namespace for the service

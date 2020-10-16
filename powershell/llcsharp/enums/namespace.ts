@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Namespace } from '@azure-tools/codegen-csharp';
-import { NewState } from '../generator';
+import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
 export class SupportNamespace extends Namespace {
-  constructor(parent: Namespace, private state: NewState, objectInitializer?: DeepPartial<SupportNamespace>) {
+  constructor(parent: Namespace, private state: State, objectInitializer?: DeepPartial<SupportNamespace>) {
     super('Support', parent);
     this.apply(objectInitializer);
   }

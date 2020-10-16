@@ -7,24 +7,7 @@ import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { Schema as NewSchema, BooleanSchema } from '@azure-tools/codemodel';
-import { Primitive, NewPrimitive } from './primitive';
-
-export class Boolean extends Primitive {
-  isXmlAttribute = false;
-  jsonType = ClientRuntime.JsonBoolean;
-
-  constructor(schema: Schema, public isRequired: boolean) {
-    super(schema);
-  }
-
-  get declaration(): string {
-    return `bool${this.isRequired ? '' : '?'}`;
-  }
-
-  validateValue(eventListener: Variable, property: Variable): string {
-    return '';
-  }
-}
+import { NewPrimitive } from './primitive';
 
 export class NewBoolean extends NewPrimitive {
   isXmlAttribute = false;

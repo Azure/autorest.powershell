@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../llcsharp/exports';
-import { NewState } from '../internal/state';
+import { State } from '../internal/state';
 import { NewModuleClass } from './module-class';
 import { DeepPartial } from '@azure-tools/codegen';
 
-export class NewModuleNamespace extends Namespace {
+export class ModuleNamespace extends Namespace {
   public moduleClass: NewModuleClass;
 
   public get outputFolder(): string {
     return this.state.project.moduleFolder;
   }
 
-  constructor(public state: NewState, objectInitializer?: DeepPartial<NewModuleNamespace>) {
+  constructor(public state: State, objectInitializer?: DeepPartial<ModuleNamespace>) {
     super(state.model.language.csharp?.namespace || 'INVALID.NAMESPACE', state.project);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));

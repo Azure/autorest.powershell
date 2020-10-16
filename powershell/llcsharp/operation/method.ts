@@ -24,8 +24,8 @@ import { Using } from '@azure-tools/codegen-csharp';
 import { Local, LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
-import { NewState } from '../generator';
-import { NewCallbackParameter, NewOperationParameter, NewOperationBodyParameter } from '../operation/parameter';
+import { State } from '../generator';
+import { CallbackParameter, OperationParameter, OperationBodyParameter } from '../operation/parameter';
 
 import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure-tools/codemodel-v3';
 import { ClassType, dotnet, System } from '@azure-tools/codegen-csharp';
@@ -33,7 +33,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 
 
 
-function newRemoveEncoding(pp: NewOperationParameter, paramName: string, kmt: KnownMediaType): string {
+function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
   const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
   return pp.param.extensions && pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
 }
@@ -75,17 +75,17 @@ export class EventListener {
 }
 
 
-export class NewOperationMethod extends Method {
-  public methodParameters: Array<NewOperationParameter>;
-  public bodyParameter?: NewOperationBodyParameter;
+export class OperationMethod extends Method {
+  public methodParameters: Array<OperationParameter>;
+  public bodyParameter?: OperationBodyParameter;
   public contextParameter!: Parameter;
   public senderParameter!: Parameter;
   public resourceUri!: Parameter;
-  public callbacks = new Array<NewCallbackParameter>();
+  public callbacks = new Array<CallbackParameter>();
 
   protected callName: string;
 
-  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: NewState, objectInitializer?: DeepPartial<NewOperationMethod>) {
+  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(viaIdentity ? `${operation.language.csharp?.name}ViaIdentity` : operation.language.csharp?.name || '', System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.async = Modifier.Async;
@@ -110,7 +110,7 @@ export class NewOperationMethod extends Method {
         baseUrl = value.clientDefaultValue;
         continue;
       }
-      const p = new NewOperationParameter(this, value, this.state.path('parameters', index));
+      const p = new OperationParameter(this, value, this.state.path('parameters', index));
 
       if (value.language.csharp?.constantValue) {
         const constTd = state.project.modelsNamespace.NewResolveTypeDeclaration(value.schema, true, state);
@@ -135,7 +135,7 @@ export class NewOperationMethod extends Method {
       // this request does have a request body.
       const param = this.operation.requests[0].parameters.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0);
       if (param) {
-        this.bodyParameter = new NewOperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
+        this.bodyParameter = new OperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
           // TODO: temp solution. We need a class like NewKnowMediaType
           mediaType: knownMediaType(KnownMediaType.Json),
           contentType: KnownMediaType.Json
@@ -147,7 +147,7 @@ export class NewOperationMethod extends Method {
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
       const responseType = (<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null;
       const headerType = response.language.default.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>response.language.default.headerSchema, true, state) : null;
-      const newCallbackParameter = new NewCallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
+      const newCallbackParameter = new CallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
       this.addParameter(newCallbackParameter);
       this.callbacks.push(newCallbackParameter);
 
@@ -196,7 +196,7 @@ export class NewOperationMethod extends Method {
         + "`);
       } else {
         url = url.replace(`{${pp.param.language.default.serializedName}}`, `"
-        + ${newRemoveEncoding(pp, '', KnownMediaType.UriParameter)}
+        + ${removeEncoding(pp, '', KnownMediaType.UriParameter)}
         + "`);
       }
     }
@@ -230,7 +230,7 @@ export class NewOperationMethod extends Method {
         initializer: System.Uri.new(`${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
-        + ${newRemoveEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
+        + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''))
@@ -292,9 +292,9 @@ export class NewOperationMethod extends Method {
     }
   }
 }
-export class NewCallMethod extends Method {
+export class CallMethod extends Method {
   public returnNull = false;
-  constructor(protected parent: Class, protected opMethod: NewOperationMethod, protected state: NewState, objectInitializer?: DeepPartial<NewOperationMethod>) {
+  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(`${opMethod.name}_Call`, System.Threading.Tasks.Task());
     this.description = `Actual wire call for <see cref="${opMethod.name}" /> method.`;
     this.returnsDescription = opMethod.returnsDescription;
@@ -334,9 +334,9 @@ export class NewCallMethod extends Method {
               if (responses.protocol.http?.statusCodes[0] !== 'default') {
                 const responseCode = responses.protocol.http?.statusCodes[0];
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.NewResponsesEmitter($this, opMethod, [responses], eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, [responses], eventListener));
               } else {
-                yield DefaultCase($this.NewResponsesEmitter($this, opMethod, [responses], eventListener));
+                yield DefaultCase($this.responsesEmitter($this, opMethod, [responses], eventListener));
               }
             }
 
@@ -568,42 +568,12 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield 'break;';
   }
 
-  private * responsesEmitter($this: NewCallMethod, opMethod: NewOperationMethod, responses: Array<NewResponse>, eventListener: EventListener) {
-    if (length(responses) > 1) {
-      yield Switch('_contentType', function* () {
-        for (const eachResponse of values(responses)) {
-          const mimetype = length(eachResponse.mimeTypes) > 0 ? eachResponse.mimeTypes[0] : '';
-          const callbackParameter = <NewCallbackParameter>values(opMethod.callbacks).first(each => each.name === eachResponse.details.csharp.name);
-
-          let count = length(eachResponse.mimeTypes);
-          for (const mt of values(eachResponse.mimeTypes)) {
-            count--;
-            const mediaType = normalizeMediaType(mt);
-            if (mediaType) {
-              if (count === 0) {
-                yield Case(new StringExpression(mediaType).toString(), $this.responseHandler(mimetype, eachResponse, callbackParameter));
-              } else {
-                yield TerminalCase(new StringExpression(mediaType).toString(), '');
-              }
-            }
-          }
-        }
-      });
-    } else {
-      const response = responses[0];
-      const callbackParameter = <NewCallbackParameter>values(opMethod.callbacks).first(each => each.name === response.details.csharp.name);
-      // all mimeTypes per for this response code.
-      yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
-      yield $this.responseHandler(values(response.mimeTypes).first() || '', response, callbackParameter);
-    }
-  }
-
-  private * NewResponsesEmitter($this: NewCallMethod, opMethod: NewOperationMethod, responses: Array<Response>, eventListener: EventListener) {
+  private * responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<Response>, eventListener: EventListener) {
     if (length(responses) > 1) {
       yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
           const mimetype = length(eachResponse.protocol.http?.mediaTypes) > 0 ? eachResponse.protocol.http?.mimeTypes[0] : '';
-          const callbackParameter = <NewCallbackParameter>values(opMethod.callbacks).first(each => each.name === eachResponse.language.csharp?.name);
+          const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === eachResponse.language.csharp?.name);
 
           let count = length(eachResponse.protocol.http?.mediaTypes);
           for (const mt of values(eachResponse.protocol.http?.mediaTypes)) {
@@ -621,14 +591,14 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
       });
     } else {
       const response = responses[0];
-      const callbackParameter = <NewCallbackParameter>values(opMethod.callbacks).first(each => each.name === response.language.csharp?.name);
+      const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === response.language.csharp?.name);
       // all mimeTypes per for this response code.
       yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
       yield $this.NewResponseHandler(<string>values(response.protocol.http?.mediaTypes).first() || '', response, callbackParameter);
     }
   }
 
-  private * responseHandlerForNormalPipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: NewCallbackParameter) {
+  private * responseHandlerForNormalPipeline(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     const callbackParameters = new Array<ExpressionOrLiteral>();
 
     if (callbackParameter.responseType) {
@@ -656,7 +626,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield `await ${eachResponse.details.csharp.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(valueOf)});`;
   }
 
-  private * NewResponseHandlerForNormalPipeline(mimetype: string, eachResponse: Response, callbackParameter: NewCallbackParameter) {
+  private * NewResponseHandlerForNormalPipeline(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter) {
     const callbackParameters = new Array<ExpressionOrLiteral>();
 
     if (callbackParameter.responseType) {
@@ -684,16 +654,16 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield `await ${eachResponse.language.csharp?.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(valueOf)});`;
   }
 
-  private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: NewCallbackParameter) {
+  private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     return this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
   }
-  private NewResponseHandler(mimetype: string, eachResponse: Response, callbackParameter: NewCallbackParameter) {
+  private NewResponseHandler(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter) {
     return this.NewResponseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
   }
 }
-export class NewValidationMethod extends Method {
+export class ValidationMethod extends Method {
 
-  constructor(protected parent: Class, protected opMethod: NewOperationMethod, protected state: NewState, objectInitializer?: DeepPartial<NewOperationMethod>) {
+  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
     super(`${opMethod.name}_Validate`, System.Threading.Tasks.Task());
     this.apply(objectInitializer);
     this.description = `Validation method for <see cref="${opMethod.name}" /> method. Call this like the actual call, but you will get validation events back.`;

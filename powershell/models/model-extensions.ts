@@ -5,8 +5,8 @@
 import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@azure-tools/codegen-csharp';
-import { Schema, ClientRuntime, ObjectImplementation, NewObjectImplementation, NewSchemaDefinitionResolver, NewDeserializerPartialClass } from '../llcsharp/exports';
-import { NewState } from '../internal/state';
+import { Schema, ClientRuntime, ObjectImplementation, SchemaDefinitionResolver, DeserializerPartialClass } from '../llcsharp/exports';
+import { State } from '../internal/state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../internal/powershell-declarations';
 import { join } from 'path';
 import { DeepPartial } from '@azure-tools/codegen';
@@ -16,14 +16,14 @@ class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return `${this.baseFolder}/${this.apiVersion.replace(/.*\./g, '')}`;
   }
-  constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: DeepPartial<NewModelExtensionsNamespace>) {
+  constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super(apiVersion);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
   }
 }
 
-export class NewModelExtensionsNamespace extends Namespace {
+export class ModelExtensionsNamespace extends Namespace {
   CreateReferenceType(): Class {
     const rt = new Class(this, 'ReferenceType');
     rt.add(new Property('Id', dotnet.String, { setAccess: Access.Internal }));
@@ -34,9 +34,9 @@ export class NewModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return join(this.state.project.apiFolder, 'Models');
   }
-  resolver = new NewSchemaDefinitionResolver();
+  resolver = new SchemaDefinitionResolver();
 
-  constructor(parent: Namespace, private schemas: Dictionary<Array<NewSchema>>, private state: NewState, objectInitializer?: DeepPartial<NewModelExtensionsNamespace>) {
+  constructor(parent: Namespace, private schemas: Dictionary<Array<NewSchema>>, private state: State, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super('Models', parent);
     this.apply(objectInitializer);
     this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
@@ -53,7 +53,7 @@ export class NewModelExtensionsNamespace extends Namespace {
         }
 
         const td = this.resolver.resolveTypeDeclaration(schema, true, state);
-        if (td instanceof NewObjectImplementation) {
+        if (td instanceof ObjectImplementation) {
 
           // it's a class object.
           const className = td.schema.language.csharp?.name || '';
@@ -118,8 +118,8 @@ export class NewModelExtensionsNamespace extends Namespace {
             returnsDescription: 'a <see cref="System.String" /> containing this model serialized to JSON text.'
           }));
 
-          const hashDeseralizer = new NewDeserializerPartialClass(model, modelInterface, System.Collections.IDictionary, 'Dictionary', schema, resolver).init();
-          const psDeseralizer = new NewDeserializerPartialClass(model, modelInterface, PSObject, 'PSObject', schema, resolver).init();
+          const hashDeseralizer = new DeserializerPartialClass(model, modelInterface, System.Collections.IDictionary, 'Dictionary', schema, resolver).init();
+          const psDeseralizer = new DeserializerPartialClass(model, modelInterface, PSObject, 'PSObject', schema, resolver).init();
 
           // + static <interfaceType> FromJsonString(string json);
           // + string ToJsonString()
