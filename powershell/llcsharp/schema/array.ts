@@ -21,7 +21,7 @@ import { Schema as NewSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
-export class NewArrayOf implements EnhancedTypeDeclaration {
+export class ArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
   public isNullable = true;
   get defaultOfType() {

@@ -11,7 +11,7 @@ import { NewPrimitive } from './primitive';
 import { length } from '@azure-tools/linq';
 
 
-export class NewChar extends NewPrimitive {
+export class Char extends NewPrimitive {
   public isXmlAttribute = false;
   private choices?: Array<ChoiceValue>;
   jsonType = ClientRuntime.JsonString;

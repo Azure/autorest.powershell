@@ -9,7 +9,7 @@ import { Schema } from '../code-model';
 import { Schema as NewSchema, BooleanSchema } from '@azure-tools/codemodel';
 import { NewPrimitive } from './primitive';
 
-export class NewBoolean extends NewPrimitive {
+export class Boolean extends NewPrimitive {
   isXmlAttribute = false;
   jsonType = ClientRuntime.JsonBoolean;
 

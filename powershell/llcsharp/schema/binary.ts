@@ -14,7 +14,7 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { BinarySchema } from '@azure-tools/codemodel';
 
 
-export class NewBinary implements EnhancedTypeDeclaration {
+export class Binary implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
   constructor(public schema: BinarySchema, public isRequired: boolean) {
   }

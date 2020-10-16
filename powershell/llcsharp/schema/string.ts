@@ -20,7 +20,7 @@ import { length } from '@azure-tools/linq';
 
 
 /** A ETD for the c# string type. */
-export class NewString implements EnhancedTypeDeclaration {
+export class String implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
 
   get defaultOfType() {

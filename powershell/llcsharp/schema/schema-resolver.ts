@@ -8,19 +8,19 @@ import { codeModelSchema, ArraySchema, UnixTimeSchema, CodeModel, Schema as NewS
 import { codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
-import { NewArrayOf } from './array';
-import { NewBinary } from './binary';
-import { NewBoolean } from './boolean';
-import { NewByteArray } from './byte-array';
-import { NewChar } from './char';
-import { NewDate } from './date';
-import { NewDateTime, NewDateTime1123, NewUnixTime } from './date-time';
-import { NewDuration } from './duration';
-import { NewEnumImplementation } from './enum';
-import { NewNumeric } from './integer';
+import { ArrayOf } from './array';
+import { Binary } from './binary';
+import { Boolean } from './boolean';
+import { ByteArray } from './byte-array';
+import { Char } from './char';
+import { Date } from './date';
+import { DateTime, DateTime1123, UnixTime } from './date-time';
+import { Duration } from './duration';
+import { EnumImplementation } from './enum';
+import { Numeric } from './integer';
 import { ObjectImplementation } from './object';
-import { NewString } from './string';
-import { NewUuid } from './Uuid';
+import { String } from './string';
+import { Uuid } from './Uuid';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { PwshModel } from '../../utils/PwshModel';
 import { ModelState } from '../../utils/model-state';
@@ -45,8 +45,8 @@ export class SchemaDefinitionResolver {
         // can be recursive!
         // handle boolean arrays as booleans (powershell will try to turn it into switches!)
         const ar = <ArraySchema>schema;
-        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new NewBoolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
-        return new NewArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
+        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
+        return new ArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
       }
 
       case SchemaType.Any:
@@ -61,55 +61,55 @@ export class SchemaDefinitionResolver {
       case SchemaType.Time:
       case SchemaType.Credential:
       case SchemaType.String: {
-        return new NewString(<StringSchema>schema, required);
+        return new String(<StringSchema>schema, required);
 
       }
       case SchemaType.Binary:
-        return new NewBinary(<BinarySchema>schema, required);
+        return new Binary(<BinarySchema>schema, required);
       case SchemaType.Duration:
-        return new NewDuration(<DurationSchema>schema, required);
+        return new Duration(<DurationSchema>schema, required);
       case SchemaType.Uuid:
-        return new NewUuid(<StringSchema>schema, required);
+        return new Uuid(<StringSchema>schema, required);
       case SchemaType.DateTime:
         if ((<DateTimeSchema>schema).format === StringFormat.DateTimeRfc1123) {
-          return new NewDateTime1123(<DateTimeSchema>schema, required);
+          return new DateTime1123(<DateTimeSchema>schema, required);
         }
-        return new NewDateTime(<DateTimeSchema>schema, required);
+        return new DateTime(<DateTimeSchema>schema, required);
       case SchemaType.Date:
-        return new NewDate(<DateSchema>schema, required);
+        return new Date(<DateSchema>schema, required);
       case SchemaType.ByteArray:
-        return new NewByteArray(<ByteArraySchema>schema, required);
+        return new ByteArray(<ByteArraySchema>schema, required);
       case SchemaType.Boolean:
-        return new NewBoolean(<BooleanSchema>schema, required);
+        return new Boolean(<BooleanSchema>schema, required);
 
       case SchemaType.Integer:
         switch ((<NumberSchema>schema).precision) {
           case 64:
-            return new NewNumeric(<NumberSchema>schema, required, required ? 'long' : 'long?');
+            return new Numeric(<NumberSchema>schema, required, required ? 'long' : 'long?');
           // skip-for-time-being
           // case IntegerFormat.UnixTime:
           //   return new UnixTime(schema, required);
           case 16:
           case 32:
-            return new NewNumeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
+            return new Numeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
         }
         // fallback to int if the format isn't recognized
-        return new NewNumeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
+        return new Numeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
 
       case SchemaType.UnixTime:
-        return new NewUnixTime(<UnixTimeSchema>schema, required);
+        return new UnixTime(<UnixTimeSchema>schema, required);
 
       case SchemaType.Number:
         switch ((<NumberSchema>schema).precision) {
           case 64:
-            return new NewNumeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
+            return new Numeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
           case 32:
-            return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+            return new Numeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
           case 128:
-            return new NewNumeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
+            return new Numeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
         }
         // fallback to float if the format isn't recognized
-        return new NewNumeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+        return new Numeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
 
       case SchemaType.Constant:
         return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
@@ -119,12 +119,12 @@ export class SchemaDefinitionResolver {
       }
       case SchemaType.SealedChoice:
         if (schema.language.default.skip === true) {
-          return new NewString(schema, required);
+          return new String(schema, required);
         }
-        return new NewEnumImplementation(schema, required);
+        return new EnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
-          return new NewEnumImplementation(<StringSchema>schema, required);
+          return new EnumImplementation(<StringSchema>schema, required);
         }
 
         // "any" case

@@ -10,7 +10,7 @@ import { ModelState } from '../utils/model-state';
 
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { defaultCipherList } from 'constants';
-import { NewString } from '../llcsharp/schema/string';
+import { String } from '../llcsharp/schema/string';
 import { JsonType } from '../utils/schema';
 
 export const HeaderProperty = 'HeaderProperty';

@@ -7,10 +7,10 @@ import { nameof } from '@azure-tools/codegen';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
 import { StringSchema } from '@azure-tools/codemodel';
-import { NewString } from './string';
+import { String } from './string';
 
 
-export class NewUuid extends NewString {
+export class Uuid extends String {
   constructor(schema: StringSchema, isRequired: boolean) {
     super(schema, isRequired);
   }

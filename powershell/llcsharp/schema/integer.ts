@@ -11,7 +11,7 @@ import { NumberSchema } from '@azure-tools/codemodel';
 import { NewPrimitive } from './primitive';
 
 
-export class NewNumeric extends NewPrimitive {
+export class Numeric extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 

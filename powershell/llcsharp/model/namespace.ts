@@ -9,7 +9,7 @@ import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
 import { State } from '../generator';
-import { NewEnumImplementation } from '../schema/enum';
+import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ObjectImplementation } from '../schema/object';
 import { SchemaDefinitionResolver } from '../schema/schema-resolver';
@@ -109,7 +109,7 @@ export class ModelsNamespace extends Namespace {
         return td;
       }
 
-      if (td instanceof NewEnumImplementation) {
+      if (td instanceof EnumImplementation) {
         if (schema.language.csharp?.enum) {
           const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {

@@ -20,7 +20,7 @@ import { Property } from '@azure-tools/codegen-csharp';
 import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Struct } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
-import { NewEnumImplementation } from '../schema/enum';
+import { EnumImplementation } from '../schema/enum';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
@@ -28,7 +28,7 @@ import { DeepPartial } from '@azure-tools/codegen';
 import { Schema as NewSchema } from '@azure-tools/codemodel';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
-  implementation: NewEnumImplementation;
+  implementation: EnumImplementation;
   get schema(): NewSchema {
     return this.implementation.schema;
   }
@@ -78,7 +78,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     return this.implementation.isRequired;
   }
 
-  constructor(schemaWithFeatures: NewEnumImplementation, state: State, objectInitializer?: DeepPartial<EnumClass>) {
+  constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: DeepPartial<EnumClass>) {
     if (!schemaWithFeatures.schema.language.csharp?.enum) {
       throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.language.csharp?.name}`);
     }

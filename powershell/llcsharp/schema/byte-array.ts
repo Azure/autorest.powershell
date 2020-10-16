@@ -15,7 +15,7 @@ import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 
-export class NewByteArray implements EnhancedTypeDeclaration {
+export class ByteArray implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
 
   get declaration(): string {

@@ -13,7 +13,7 @@ import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
-import { ClientRuntime, EventListener, Schema, NewArrayOf, NewEnumImplementation } from '../llcsharp/exports';
+import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
@@ -1266,10 +1266,10 @@ export class CmdletClass extends Class {
             addDefaultInfo(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType instanceof NewEnumImplementation;;
-          const hasEnum = propertyType instanceof NewArrayOf && propertyType.elementType instanceof NewEnumImplementation;
+          const isEnum = propertyType instanceof EnumImplementation;;
+          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
           if (isEnum || hasEnum) {
-            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
           // add aliases if there is any
           if (length(vParam.alias) > 0) {
@@ -1411,10 +1411,10 @@ export class CmdletClass extends Class {
         // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
       }
 
-      const isEnum = propertyType instanceof NewEnumImplementation;
-      const hasEnum = propertyType instanceof NewArrayOf && propertyType.elementType instanceof NewEnumImplementation;
+      const isEnum = propertyType instanceof EnumImplementation;
+      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
       if (isEnum || hasEnum) {
-        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<NewArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
@@ -1478,7 +1478,7 @@ export class CmdletClass extends Class {
           } else {
 
             let type = '';
-            if (typeDeclaration instanceof NewArrayOf) {
+            if (typeDeclaration instanceof ArrayOf) {
               type = typeDeclaration.elementTypeDeclaration;
             } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
               if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined) {
@@ -1488,7 +1488,7 @@ export class CmdletClass extends Class {
               }
               const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)?.schema;
               const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
-              type = (<NewArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
+              type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
             } else {
               type = typeDeclaration.declaration;
             }

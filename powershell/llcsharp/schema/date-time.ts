@@ -15,7 +15,7 @@ import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from 
 import { NewPrimitive } from './primitive';
 
 
-export class NewDateTime extends NewPrimitive {
+export class DateTime extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
   // public DateFormat = new StringExpression('yyyy-MM-dd');
@@ -109,14 +109,14 @@ export class NewDateTime extends NewPrimitive {
 
 
 
-export class NewDateTime1123 extends NewDateTime {
+export class DateTime1123 extends DateTime {
   public DateTimeFormat = new StringExpression('R');
   constructor(schema: DateTimeSchema, isRequired: boolean) {
     super(schema, isRequired);
   }
 }
 
-export class NewUnixTime extends NewPrimitive {
+export class UnixTime extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 

@@ -13,7 +13,7 @@ import { NewPrimitive } from './primitive';
 import { ClientRuntime } from '../clientruntime';
 
 
-export class NewDuration extends NewPrimitive {
+export class Duration extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
 

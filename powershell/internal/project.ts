@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary } from '@azure-tools/linq';
-import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, NewBoolean, SchemaDefinitionResolver } from '../llcsharp/exports';
+import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean, SchemaDefinitionResolver } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace } from '../enums/namespace';
@@ -35,7 +35,7 @@ export interface Metadata {
 
 
 
-export class NewPSSwitch extends NewBoolean {
+export class NewPSSwitch extends Boolean {
   get declaration(): string {
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
   }
