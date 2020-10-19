@@ -8,6 +8,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 import { getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
+import { DictionarySchema, ObjectSchema, SchemaType, Schema } from '@azure-tools/codemodel';
 
 export class DictionaryImplementation extends Class {
   private get state() { return this.modelClass.state; }
@@ -27,9 +28,10 @@ export class DictionaryImplementation extends Class {
 
     }
     else {
-      if (this.schema.additionalProperties) {
+      const dictSchema = (<Schema>this.schema).type === SchemaType.Dictionary ? this.schema : this.schema.parents?.immediate?.find((s) => s.type === SchemaType.Dictionary);
+      if (dictSchema) {
         this.ownsDictionary = true;
-        this.valueType = this.schema.additionalProperties === true ? System.Object : this.state.project.modelsNamespace.resolveTypeDeclaration(this.schema.additionalProperties, true, this.state);
+        this.valueType = (<DictionarySchema>dictSchema).elementType.type === SchemaType.Any ? System.Object : this.state.project.modelsNamespace.NewResolveTypeDeclaration((<DictionarySchema>dictSchema).elementType, true, this.state);
         this.modelClass.modelInterface.interfaces.push(this.implementIDictionary(this, 'additionalProperties', System.String, this.valueType));
       }
     }
@@ -85,7 +87,7 @@ export class DictionaryImplementation extends Class {
 
     targetClass.add(new Method('TryGetValue', dotnet.Bool, { parameters: [pKey, pOutValue], body: toExpression(`${accessViaMember}.TryGetValue( ${pKey}, out ${pOutValue})`), access: Access.Public }));
 
-    const all = getAllVirtualProperties(this.schema.details.csharp.virtualProperties);
+    const all = getAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
     const exclusions = all.map(each => `"${each.name}"`).join(',');
 
     // add a CopyFrom that takes an IDictionary or PSObject and copies the values into this dictionary

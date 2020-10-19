@@ -1,0 +1,103 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+    },
+    "definitions": {
+        "ErrorDetail": {
+            "title": "Error details.",
+            "type": "object",
+            "properties": {
+                    "code": {
+                    "description": "The error's code.",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "A human readable error message.",
+                    "type": "string"
+                },
+                "target": {
+                    "description": "Indicates which property in the request is responsible for the error.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "code",
+                "message"
+            ]
+        },
+        "ErrorInfo": {
+            "title": "The code and message for an error.",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "A machine readable error code.",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "A human readable error message.",
+                    "type": "string"
+                },
+                "details": {
+                    "description": "error details.",
+                    "type": "string" 
+                },
+                "innererror": {
+                    "description": "Inner error details if they exist.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "code",
+                "message"
+            ]
+        },
+        "ErrorResponse": {
+            "title": "Error response.",
+            "description": "Contains details when the response code indicates an error.",
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "The error details.",
+                    "type": "string"            
+                }
+            },
+            "required": [
+                "error"
+            ]
+        }
+    }
+}

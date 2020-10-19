@@ -15,8 +15,8 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
 
 import { State } from '../generator';
-import { ModelClass } from './model-class';
 import { DeepPartial } from '@azure-tools/codegen';
+import { Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
 export class ModelProperty extends BackedProperty implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */
@@ -56,26 +56,27 @@ export class ModelProperty extends BackedProperty implements EnhancedVariable {
   private required: boolean;
   // DISABLED
   // public IsHeaderProperty: boolean;
-  public schema: Schema;
+  public schema: NewSchema;
   public serializedName: string;
   private typeDeclaration: EnhancedTypeDeclaration;
-  public details: any;
+  public language: any;
 
-  constructor(name: string, schema: Schema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: DeepPartial<ModelProperty>) {
-    const decl = state.project.modelsNamespace.resolveTypeDeclaration(schema, isRequired, state.path('schema'));
+  constructor(name: string, schema: NewSchema, isRequired: boolean, serializedName: string, description: string, state: State, objectInitializer?: DeepPartial<ModelProperty>) {
+    const decl = state.project.modelsNamespace.NewResolveTypeDeclaration(schema, isRequired, state.path('schema'));
     super(name, decl);
     this.typeDeclaration = decl;
     this.serializedName = serializedName;
     this.schema = schema;
-    if (this.schema.readOnly) {
-      this.set = undefined;
-    }
+    // skip-for-time-being
+    // if (this.schema.readOnly) {
+    //   this.set = undefined;
+    // }
     this.apply(objectInitializer);
     this.description = description;
     this.required = isRequired;
-    if (this.schema.type === JsonType.Object && isAnExpression(this.get) && schema.details.csharp.classImplementation) {
+    if ((this.schema.type === SchemaType.Object || this.schema.type === SchemaType.Dictionary || this.schema.type === SchemaType.Any) && isAnExpression(this.get) && schema.language.csharp?.classImplementation) {
       // for objects, the getter should auto-create a new object 
-      this.get = toExpression(`(${this.get.value} = ${this.get.value} ?? new ${schema.details.csharp.fullname}())`);
+      this.get = toExpression(`(${this.get.value} = ${this.get.value} ?? new ${schema.language.csharp?.fullname}())`);
     }
   }
 

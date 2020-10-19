@@ -8,12 +8,14 @@ import { KnownMediaType, JsonType, getPolymorphicBases } from '@azure-tools/code
 import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, InterfaceProperty, Attribute, StringExpression, LiteralExpression, Property, TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
+import { Schema as NewSchema, Language, ObjectSchema } from '@azure-tools/codemodel';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelClass } from './model-class';
 import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
 import { values } from '@azure-tools/linq';
+import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties } from '../../utils/schema'
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -69,9 +71,62 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
   }));
 }
 
+export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+
+  let pt = <any>pType;
+  while (pt.elementType) {
+    switch (pt.elementType.schema.type) {
+      case JsonType.Object:
+        if (pt.elementType.schema.language.csharp.interfaceImplementation) {
+          pt = {
+            declaration: pt.elementType.schema.language.csharp.interfaceImplementation.declaration,
+            schema: pt.elementType.schema,
+          };
+        } else {
+          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          pt = {
+            declaration: `${pt.elementType.schema.language.csharp.namespace}.${pt.elementType.schema.language.csharp.interfaceName}`,
+            schema: pt.elementType.schema,
+          };
+        }
+        break;
+
+      case JsonType.Array:
+        pt = pt.elementType;
+        break;
+
+      default:
+        pt = pt.elementType;
+        break;
+    }
+  }
+  const ptypes = new Array<string>();
+
+  if (pt.schema && pt.schema.language.csharp.byReference) {
+    ptypes.push(`typeof(${pt.schema.language.csharp.namespace}.${pt.schema.language.csharp.interfaceName}_Reference)`);
+    // do we need polymorphic types for by-resource ? Don't think so.
+  } else {
+    ptypes.push(`typeof(${pt.declaration})`);
+    if (pt.schema && pt.schema.language.csharp.classImplementation && pt.schema.language.csharp.classImplementation.discriminators) {
+      ptypes.push(...[...pt.schema.language.csharp.classImplementation.discriminators.values()].map(each => `typeof(${each.modelInterface.fullName})`));
+    }
+  }
+
+  targetProperty.add(new Attribute(ClientRuntime.InfoAttribute, {
+    parameters: [
+      new LiteralExpression(`\nRequired = ${isRequired}`),
+      new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nDescription = ${new StringExpression(description ?? '').value}`),
+      new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
+      new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
+    ]
+  }));
+}
+
+
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
-  get schema(): Schema {
+  get schema(): NewSchema {
     return this.classImplementation.schema;
   }
 
@@ -144,17 +199,17 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
   init() {
     (<any>this).init = () => { }; // only allow a single init!
-
-    const implData = (this.schema.details.csharp = this.schema.details.csharp || {});
+    this.schema.language.csharp = this.schema.language.csharp || new Language();
+    const implData = (this.schema.language.csharp = this.schema.language.csharp || {});
     //implData.interfaceImplementation = this;
-    this.description = `${this.schema.details.csharp.description}`;
+    this.description = `${this.schema.language.csharp.description}`;
 
-    const virtualProperties = this.schema.details.csharp.virtualProperties || {
+    const virtualProperties: NewVirtualProperties = this.schema.language.csharp.virtualProperties || {
       owned: [],
       inherited: [],
       inlined: []
     };
-    if (this.schema.details.csharp.virtualProperties) {
+    if (this.schema.language.csharp.virtualProperties) {
 
       for (const virtualProperty of values(virtualProperties.owned)) {
         if (virtualProperty.private && !this.isInternal) {
@@ -163,18 +218,18 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
         const modelProperty = virtualProperty.property;
 
-        const internalSet = !!(!this.isInternal && (modelProperty.details.csharp.readOnly || modelProperty.details.csharp.constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
-        const isRequired = !!modelProperty.details.csharp.required;
-        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>modelProperty.schema, isRequired, this.state.path('schema'));
+        const isRequired = !!modelProperty.required;
+        const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
-          description: modelProperty.details.csharp.description,
+          description: modelProperty.language.default.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
 
-        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.details.csharp.description, modelProperty.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.language.default.description, modelProperty.serializedName);
 
-        if (!this.isInternal && modelProperty.details.csharp.constantValue !== undefined) {
+        if (!this.isInternal && (<any>modelProperty.language.csharp).constantValue !== undefined) {
           p.setAccess = Access.Internal;
         }
       }
@@ -187,23 +242,23 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         }
 
         const modelProperty = virtualProperty.property;
-        const isRequired = !!modelProperty.details.csharp.required;
-        const pType = this.state.project.modelsNamespace.resolveTypeDeclaration(<Schema>modelProperty.schema, isRequired, this.state.path('schema'));
+        const isRequired = !!modelProperty.required;
+        const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
 
-        const internalSet = !!(!this.isInternal && (modelProperty.details.csharp.readOnly || modelProperty.details.csharp.constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
-          description: modelProperty.details.csharp.description,
+          description: modelProperty.language.default.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
-        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.details.csharp.description, modelProperty.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.language.default.description, modelProperty.serializedName);
 
       }
     }
 
     if (!this.isInternal) {
       // mark it as json serializable
-      if (!this.schema.details.csharp.isHeaderModel) {
+      if (!this.schema.language.csharp.isHeaderModel) {
         if (this.state.project.jsonSerialization) {
           this.interfaces.push(ClientRuntime.IJsonSerializable);
         }
@@ -217,8 +272,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
   addInfoAttribute(p: Property, pType: TypeDeclaration, isRequired: boolean, internalSet: boolean, description: string, serializedName: string) {
     if (!this.isInternal) {
-      return addInfoAttribute(p, pType, isRequired, internalSet, description, serializedName);
+      return newAddInfoAttribute(p, pType, isRequired, internalSet, description, serializedName);
     }
   }
 }
-

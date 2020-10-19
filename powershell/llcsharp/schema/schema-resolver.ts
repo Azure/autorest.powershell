@@ -3,7 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ModelState, codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
+import { codeModelSchema, ArraySchema, UnixTimeSchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema, DurationSchema, BinarySchema, DateSchema } from '@azure-tools/codemodel';
+
+import { codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
 import * as message from '../messages';
 import { ArrayOf } from './array';
@@ -20,120 +22,109 @@ import { ObjectImplementation } from './object';
 import { String } from './string';
 import { Uuid } from './Uuid';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+import { PwshModel } from '../../utils/PwshModel';
+import { ModelState } from '../../utils/model-state';
+import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { schemaHasEnum } from '../validations';
 
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
-  private add(schema: Schema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
-    this.cache.set(schema.details.csharp.fullname || '', value);
+  private add(schema: NewSchema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
+    this.cache.set(schema.language?.csharp?.fullname || '', value);
     return value;
   }
 
-  resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
 
     // determine if we need a new model class for the type or just a known type object
     switch (schema.type) {
-      case JsonType.Array: {
+      case SchemaType.Array: {
         // can be recursive!
         // handle boolean arrays as booleans (powershell will try to turn it into switches!)
-        const elementType = (schema.items && schema.items.type === JsonType.Boolean) ? new Boolean(schema, true) : this.resolveTypeDeclaration(<Schema>schema.items, true, state.path('items'));
-        return new ArrayOf(schema, required, elementType, schema.minItems, schema.maxItems, schema.uniqueItems);
+        const ar = <ArraySchema>schema;
+        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
+        return new ArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
       }
 
-      case JsonType.Object: {
-        const result = schema.details.csharp && this.cache.get(schema.details.csharp.fullname || '');
+      case SchemaType.Any:
+      case SchemaType.Dictionary:
+      case SchemaType.Object: {
+        const result = schema.language.csharp && this.cache.get(schema.language.csharp.fullname || '');
         if (result) {
           return result;
         }
-        return this.add(schema, new ObjectImplementation(schema));
+        return this.add(schema, new ObjectImplementation(<ObjectSchema>schema));
       }
-      case JsonType.String:
-        switch (schema.format) {
-          case StringFormat.Base64Url:
-          case StringFormat.Byte:
-            // member should be byte array
-            // on wire format should be base64url
-            return new ByteArray(schema, required);
+      case SchemaType.Time:
+      case SchemaType.Credential:
+      case SchemaType.String: {
+        return new String(<StringSchema>schema, required);
 
-          case StringFormat.Binary:
-            // represent as a stream
-            // wire format is stream of bytes
-            return new Binary(schema, required);
-
-          case StringFormat.Char:
-            // a single character
-            return new Char(schema, required);
-
-          case StringFormat.Date:
-            return new Date(schema, required);
-
-          case StringFormat.DateTime:
-            return new DateTime(schema, required);
-
-          case StringFormat.DateTimeRfc1123:
-            return new DateTime1123(schema, required);
-
-          case StringFormat.Duration:
-            return new Duration(schema, required);
-
-          case StringFormat.Uuid:
-            return new Uuid(schema, required);
-
-          case StringFormat.Url:
-          case StringFormat.Password:
-          case StringFormat.None:
-          case undefined:
-          case null:
-            if (schema.extensions && schema.extensions['x-ms-enum']) {
-              return new EnumImplementation(schema, required);
-            }
-            /*
-            if(schema.extensions && schema.extensions['x-ms-header-collection-prefix']) {
-              return new Wildcard(schema, new String(<any>{}, required));
-            }
-            */
-            // just a regular old string.
-            return new String(schema, required);
-
-          default:
-            state.warning(`Schema with type:'${schema.type} and 'format:'${schema.format}' is not recognized.`, message.DoesNotSupportEnum);
-            return new String(schema, required);
+      }
+      case SchemaType.Binary:
+        return new Binary(<BinarySchema>schema, required);
+      case SchemaType.Duration:
+        return new Duration(<DurationSchema>schema, required);
+      case SchemaType.Uuid:
+        return new Uuid(<StringSchema>schema, required);
+      case SchemaType.DateTime:
+        if ((<DateTimeSchema>schema).format === StringFormat.DateTimeRfc1123) {
+          return new DateTime1123(<DateTimeSchema>schema, required);
         }
+        return new DateTime(<DateTimeSchema>schema, required);
+      case SchemaType.Date:
+        return new Date(<DateSchema>schema, required);
+      case SchemaType.ByteArray:
+        return new ByteArray(<ByteArraySchema>schema, required);
+      case SchemaType.Boolean:
+        return new Boolean(<BooleanSchema>schema, required);
 
-      case JsonType.Boolean:
-        return new Boolean(schema, required);
-
-      case JsonType.Integer:
-        switch (schema.format) {
-          case IntegerFormat.Int64:
-          case IntegerFormat.None:
-            return new Numeric(schema, required, required ? 'long' : 'long?');
-          case IntegerFormat.UnixTime:
-            return new UnixTime(schema, required);
-          case IntegerFormat.Int32:
-            return new Numeric(schema, required, required ? 'int' : 'int?');
+      case SchemaType.Integer:
+        switch ((<NumberSchema>schema).precision) {
+          case 64:
+            return new Numeric(<NumberSchema>schema, required, required ? 'long' : 'long?');
+          // skip-for-time-being
+          // case IntegerFormat.UnixTime:
+          //   return new UnixTime(schema, required);
+          case 16:
+          case 32:
+            return new Numeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
         }
         // fallback to int if the format isn't recognized
-        return new Numeric(schema, required, required ? 'int' : 'int?');
+        return new Numeric(<NumberSchema>schema, required, required ? 'int' : 'int?');
 
-      case JsonType.Number:
-        switch (schema.format) {
-          case NumberFormat.None:
-          case NumberFormat.Double:
-            return new Numeric(schema, required, required ? 'double' : 'double?');
-          case NumberFormat.Float:
-            return new Numeric(schema, required, required ? 'float' : 'float?');
-          case NumberFormat.Decimal:
-            return new Numeric(schema, required, required ? 'decimal' : 'decimal?');
+      case SchemaType.UnixTime:
+        return new UnixTime(<UnixTimeSchema>schema, required);
+
+      case SchemaType.Number:
+        switch ((<NumberSchema>schema).precision) {
+          case 64:
+            return new Numeric(<NumberSchema>schema, required, required ? 'double' : 'double?');
+          case 32:
+            return new Numeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
+          case 128:
+            return new Numeric(<NumberSchema>schema, required, required ? 'decimal' : 'decimal?');
         }
         // fallback to float if the format isn't recognized
-        return new Numeric(schema, required, required ? 'float' : 'float?');
+        return new Numeric(<NumberSchema>schema, required, required ? 'float' : 'float?');
 
+      case SchemaType.Constant:
+        return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
+
+      case SchemaType.Choice: {
+        return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
+      }
+      case SchemaType.SealedChoice:
+        if (schema.language.default.skip === true) {
+          return new String(schema, required);
+        }
+        return new EnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
-          return new EnumImplementation(schema, required);
+          return new EnumImplementation(<StringSchema>schema, required);
         }
 
         // "any" case
@@ -141,7 +132,7 @@ export class SchemaDefinitionResolver {
         break;
 
     }
-    state.error(`Schema '${schema.details.csharp.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
+    state.error(`Schema '${schema.language.csharp?.name}' is declared with invalid type '${schema.type}'`, message.UnknownJsonType);
     throw new Error('Unknown Model. Fatal.');
   }
 }

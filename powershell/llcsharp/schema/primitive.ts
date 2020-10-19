@@ -14,6 +14,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
+import { Schema as NewSchema, PrimitiveSchema } from '@azure-tools/codemodel';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 let tmpVar: number | undefined;
@@ -48,7 +49,7 @@ export function popTempVar() {
   }
 }
 
-export abstract class Primitive implements EnhancedTypeDeclaration {
+export abstract class NewPrimitive implements EnhancedTypeDeclaration {
   abstract isRequired: boolean;
   abstract isXmlAttribute: boolean;
   abstract declaration: string;
@@ -58,7 +59,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return (this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding']) ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get defaultOfType() {
@@ -73,7 +74,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
     return result;
   }
 
-  constructor(public schema: Schema) {
+  constructor(public schema: PrimitiveSchema) {
   }
   /** validatePresence on primitives is generally not required; the nullability determines requiredness... */
   public validatePresence(eventListener: Variable, property: Variable): string {
@@ -186,7 +187,7 @@ export abstract class Primitive implements EnhancedTypeDeclaration {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:

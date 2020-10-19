@@ -11,16 +11,18 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Primitive } from './primitive';
+import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from '@azure-tools/codemodel';
+import { NewPrimitive } from './primitive';
 
-export class DateTime extends Primitive {
+
+export class DateTime extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
   // public DateFormat = new StringExpression('yyyy-MM-dd');
   public DateTimeFormat = new StringExpression('yyyy\'-\'MM\'-\'dd\'T\'HH\':\'mm\':\'ss.fffffffK');
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return (this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding']) ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get declaration(): string {
@@ -90,7 +92,7 @@ export class DateTime extends Primitive {
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
-  constructor(schema: Schema, public isRequired: boolean) {
+  constructor(schema: DateTimeSchema | DateSchema, public isRequired: boolean) {
     super(schema);
   }
   // public static string DateFormat = "yyyy-MM-dd";
@@ -105,21 +107,23 @@ export class DateTime extends Primitive {
   }
 }
 
+
+
 export class DateTime1123 extends DateTime {
   public DateTimeFormat = new StringExpression('R');
-  constructor(schema: Schema, isRequired: boolean) {
+  constructor(schema: DateTimeSchema, isRequired: boolean) {
     super(schema, isRequired);
   }
 }
 
-export class UnixTime extends Primitive {
+export class UnixTime extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 
   private EpochDate = System.DateTime.new('1970', '1', '1', '0', '0', '0', System.DateTimeKind.Utc);
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return (this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding']) ? '' : 'global::System.Uri.EscapeDataString';
   }
 
 
@@ -149,7 +153,7 @@ export class UnixTime extends Primitive {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
@@ -177,7 +181,7 @@ export class UnixTime extends Primitive {
   }
 
 
-  constructor(schema: Schema, public isRequired: boolean) {
+  constructor(schema: UnixTimeSchema, public isRequired: boolean) {
     super(schema);
   }
 

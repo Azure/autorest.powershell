@@ -10,6 +10,7 @@ import { If } from '@azure-tools/codegen-csharp';
 import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
+import { Schema as NewSchema, ByteArraySchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
@@ -103,7 +104,7 @@ export class ByteArray implements EnhancedTypeDeclaration {
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
   }
 
-  constructor(public schema: Schema, public isRequired: boolean) {
+  constructor(public schema: ByteArraySchema, public isRequired: boolean) {
   }
 
   validateValue(eventListener: Variable, property: Variable): string {

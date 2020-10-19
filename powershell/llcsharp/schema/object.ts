@@ -14,8 +14,10 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
+import { Schema as NewSchema, ObjectSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
+
 
 export class ObjectImplementation implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
@@ -29,7 +31,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   }
 
   get convertObjectMethod() {
-    return `${this.schema.details.csharp.fullname}TypeConverter.ConvertFrom`;
+    return `${this.schema.language.csharp?.fullname}TypeConverter.ConvertFrom`;
   }
 
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression {
@@ -44,7 +46,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
         // XElement/XElement or XElement/XAttribute
         const tmp = `__${camelCase(['xml', ...deconstruct(serializedName)])}`;
         // prefer specified XML name if available
-        return toExpression(`If( ${valueOf(container)}?.Element("${this.schema.xml ? this.schema.xml.name || serializedName : serializedName}"), out var ${tmp}) ? ${this.classDeclaration}.FromXml(${tmp}) : ${defaultValue}`);
+        return toExpression(`If( ${valueOf(container)}?.Element("${this.schema.serialization?.xml ? this.schema.serialization.xml.name || serializedName : serializedName}"), out var ${tmp}) ? ${this.classDeclaration}.FromXml(${tmp}) : ${defaultValue}`);
       }
     }
     return toExpression(`${defaultValue} /* deserializeFromContainerMember doesn't support '${mediaType}' ${__filename} */`);
@@ -101,20 +103,21 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
             System.String.Empty),
           System.Text.Encoding.UTF8);
       }
-      case KnownMediaType.Multipart: {
-        let contents = '';
-        for (const p of values(this.schema.properties)) {
-          // to do -- add in a potential support for the filename too.
-          contents = `${contents}${EOL}    bodyContent.Add( ${System.Net.Http.StreamContent.new(`${value}.${p.details.csharp.name}`)},"${p.serializedName}");`;
-        }
-        // bodyContent.Add(new _ystem.Net.Http.StreamContent(body.AudioFile), "audioFile");
-        return toExpression(`new ${System.Func(System.Net.Http.MultipartFormDataContent)}(() =>
-{
-    var bodyContent = ${System.Net.Http.MultipartFormDataContent.new()};
-    ${contents}
-    return bodyContent;
-})()`);
-      }
+      //skip-for-time-being
+      //       case KnownMediaType.Multipart: {
+      //         let contents = '';
+      //         for (const p of values(this.schema.properties)) {
+      //           // to do -- add in a potential support for the filename too.
+      //           contents = `${contents}${EOL}    bodyContent.Add( ${System.Net.Http.StreamContent.new(`${value}.${p.details.csharp.name}`)},"${p.serializedName}");`;
+      //         }
+      //         // bodyContent.Add(new _ystem.Net.Http.StreamContent(body.AudioFile), "audioFile");
+      //         return toExpression(`new ${System.Func(System.Net.Http.MultipartFormDataContent)}(() =>
+      // {
+      //     var bodyContent = ${System.Net.Http.MultipartFormDataContent.new()};
+      //     ${contents}
+      //     return bodyContent;
+      // })()`);
+      //       }
     }
     return toExpression(`null /* serializeToContent doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -136,7 +139,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json: {
-        if (this.schema.details.csharp.hasHeaders) {
+        if (this.schema.language.csharp?.hasHeaders) {
           return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)}.ReadHeaders(_response.Headers))`);
         }
         return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
@@ -157,7 +160,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
 
       case KnownMediaType.Xml:
         // prefer specified XML name if available
-        return `AddIf( null != ${value} ? ${value}.ToXml(new ${System.Xml.Linq.XElement}("${this.schema.xml ? this.schema.xml.name || serializedName : serializedName}")) : null, ${container}.Add );`;
+        return `AddIf( null != ${value} ? ${value}.ToXml(new ${System.Xml.Linq.XElement}("${this.schema.serialization?.xml ? this.schema.serialization.xml.name || serializedName : serializedName}")) : null, ${container}.Add );`;
 
     }
     return `/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`;
@@ -165,7 +168,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
 
   isRequired = false;
 
-  constructor(public schema: Schema) {
+  constructor(public schema: ObjectSchema) {
   }
 
   public validatePresence(eventListener: Variable, property: Variable): OneOrMoreStatements {
@@ -175,7 +178,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
     return `await ${eventListener}.AssertObjectIsValid(${nameof(property.value)}, ${property}); `;
   }
 
-  get declaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.interfaceName}`; }
-  get classDeclaration(): string { return `${this.schema.details.csharp.namespace}.${this.schema.details.csharp.name}`; }
+  get declaration(): string { return `${this.schema.language.csharp?.namespace}.${this.schema.language.csharp?.interfaceName}`; }
+  get classDeclaration(): string { return `${this.schema.language.csharp?.namespace}.${this.schema.language.csharp?.name}`; }
 
 }

@@ -12,9 +12,12 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
+import { ChoiceSchema, Schema as NewSchema, SchemaType, SealedChoiceSchema, StringSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { length } from '@azure-tools/linq';
+
+
 
 /** A ETD for the c# string type. */
 export class String implements EnhancedTypeDeclaration {
@@ -161,7 +164,8 @@ export class String implements EnhancedTypeDeclaration {
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
 
-  constructor(public schema: Schema, public isRequired: boolean) {
+  constructor(public schema: NewSchema, public isRequired: boolean) {
+
   }
 
   get declaration(): string {
@@ -183,27 +187,31 @@ ${this.validateEnum(eventListener, property)}
   }
 
   private validateMinLength(eventListener: Variable, property: Variable): string {
-    if (!this.schema.minLength) {
+    const len = (<any>this.schema).minLength;
+    if (!len) {
       return '';
     }
-    return `await ${eventListener}.AssertMinimumLength(${nameof(property.value)},${property},${this.schema.minLength});`;
+    return `await ${eventListener}.AssertMinimumLength(${nameof(property.value)},${property},${len});`;
   }
   private validateMaxLength(eventListener: Variable, property: Variable): string {
-    if (!this.schema.maxLength) {
+    const len = (<any>this.schema).maxLength;
+    if (!len) {
       return '';
     }
-    return `await ${eventListener}.AssertMaximumLength(${nameof(property.value)},${property},${this.schema.maxLength});`;
+    return `await ${eventListener}.AssertMaximumLength(${nameof(property.value)},${property},${len});`;
   }
   private validateRegex(eventListener: Variable, property: Variable): string {
-    if (!this.schema.pattern) {
+    const pattern = (<any>this.schema).pattern;
+    if (!pattern) {
       return '';
     }
-    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${this.schema.pattern}");`;
+    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${pattern}");`;
   }
   private validateEnum(eventListener: Variable, property: Variable): string {
-    if (!this.schema.enum || length(this.schema.enum) === 0) {
+    if (this.schema.type !== SchemaType.SealedChoice && this.schema.type != SchemaType.Choice) {
       return '';
     }
-    return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${this.schema.enum.joinWith((v) => `@"${v}"`)});`;
+    const choiceValues = (<SealedChoiceSchema>this.schema).choices.map((c) => c.value);
+    return `await ${eventListener}.AssertEnum(${nameof(property.value)},${property},${choiceValues.joinWith((v) => `@"${v}"`)});`;
   }
 }

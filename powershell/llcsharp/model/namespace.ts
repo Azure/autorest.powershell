@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Schema as NewSchema, Schemas as NewSchemas, Language } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
@@ -35,8 +36,8 @@ export class ModelsNamespace extends Namespace {
   private subNamespaces = new Dictionary<Namespace>();
 
   resolver = new SchemaDefinitionResolver();
-
-  constructor(parent: Namespace, private schemas: Dictionary<Schema>, private state: State, objectInitializer?: DeepPartial<ModelsNamespace>) {
+  newResolver = new SchemaDefinitionResolver();
+  constructor(parent: Namespace, private schemas: NewSchemas, private state: State, objectInitializer?: DeepPartial<ModelsNamespace>) {
     super('Models', parent);
     this.subNamespaces[this.fullName] = this;
 
@@ -47,57 +48,77 @@ export class ModelsNamespace extends Namespace {
     // special case... hook this up before we get anywhere.
     state.project.modelsNamespace = this;
 
-    for (const { key: index, value: schema } of items(schemas)) {
-      const state = this.state.path(index);
-
-      // verify that the model isn't in a bad state
-      if (validation.objectWithFormat(schema, state)) {
-        continue;
+    if (schemas.objects) {
+      for (const schema of schemas.objects) {
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
       }
-      this.resolveTypeDeclaration(schema, true, state);
     }
+    if (schemas.dictionaries) {
+      for (const schema of schemas.dictionaries) {
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
+      }
+    }
+
+    if (schemas.any) {
+      for (const schema of schemas.any) {
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
+      }
+    }
+
+    if (schemas.strings) {
+      for (const schema of schemas.strings) {
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
+      }
+    }
+    if (schemas.sealedChoices) {
+      for (const schema of schemas.sealedChoices) {
+        this.NewResolveTypeDeclaration(schema, true, <State>state);
+      }
+    }
+    //todo, need to add support for other types
+
   }
 
   get outputFolder() {
     return 'Models';
   }
 
-  public resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: State): EnhancedTypeDeclaration {
+  public NewResolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: State): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
 
-    const td = this.resolver.resolveTypeDeclaration(schema, required, state);
+    const td = this.newResolver.resolveTypeDeclaration(schema, required, state);
 
-    if (!schema.details.csharp.skip) {
+    if (!schema.language.csharp?.skip) {
       if (td instanceof ObjectImplementation) {
         // it's a class object.
         // create it if necessary
 
-        const fullname = schema.details.csharp.namespace || this.fullName;
+        const fullname = schema.language.csharp?.namespace || this.fullName;
 
         const ns = this.subNamespaces[fullname] || this.add(new ApiVersionNamespace(fullname));
 
-        const mc = schema.details.csharp.classImplementation || new ModelClass(ns, td, this.state, { description: schema.details.csharp.description });
+        const mc = schema.language.csharp?.classImplementation || new ModelClass(ns, td, <State>this.state, { description: schema.language.csharp?.description });
 
         // this gets implicity created during class creation:
-        return <ModelInterface>schema.details.csharp.interfaceImplementation;
+        return <ModelInterface>schema.language.csharp?.interfaceImplementation;
       }
 
-      if (state.project.azure && /^api-?version$/i.exec(schema.details.csharp.name)) {
+      if (state.project.azure && /^api-?version$/i.exec(schema.language.csharp?.name || '')) {
         return td;
       }
 
       if (td instanceof EnumImplementation) {
-        if (schema.details.csharp.enum) {
-          const ec = state.project.supportNamespace.findClassByName(schema.details.csharp.enum.name);
+        if (schema.language.csharp?.enum) {
+          const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
           if (length(ec) === 0) {
             new EnumClass(td, state);
-            // return schema.details.csharp.typeDeclaration = <EnumClass>ec[0];
+            // return schema.language.csharp.typeDeclaration = <EnumClass>ec[0];
           }
         }
-
-        return schema.details.csharp.typeDeclaration = td;
+        schema.language.csharp = schema.language.csharp || new Language();
+        return schema.language.csharp.typeDeclaration = td;
       }
     }
     return td;

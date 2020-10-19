@@ -4,11 +4,21 @@
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
 AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
+> modelerfour configuration
+``` yaml
+modelerfour:
+  emit-yaml-tags: false
+  lenient-model-deduplication: true
+  additional-checks: false
+  always-create-content-type-parameter: false
+  always-seal-x-ms-enums: true
+```
+
 > if the modeler is loaded already, use that one, otherwise grab it.
 
-``` yaml !isLoaded('@autorest/remodeler') 
+``` yaml !isLoaded('@autorest/modelerfour')
 use-extension:
-  "@autorest/remodeler" : "~2.1.0" 
+  "@autorest/modelerfour": "4.15.414"
 
 # will use highest 2.0.x 
 ```
@@ -52,6 +62,7 @@ module-folder: $(current-folder)/generated
 cmdlet-folder: $(module-folder)/cmdlets
 model-cmdlet-folder: $(module-folder)/model-cmdlets
 custom-cmdlet-folder: $(current-folder)/custom
+utils-cmdlet-folder: $(current-folder)/utils
 internal-cmdlet-folder: $(current-folder)/internal
 test-folder: $(current-folder)/test
 runtime-folder: $(module-folder)/runtime
@@ -93,62 +104,51 @@ declare-directive:
 # Pipeline Configuration
 ``` yaml
 pipeline:
-# --- extension remodeler ---
+# --- extension powershell based on modelerfour
 
-  # "Shake the tree", and normalize the model
-  remodeler:
-    input: openapi-document/multi-api/identity     # the plugin where we get inputs from
+  # Fix the code model gap between m3 and m4
+  tweakm4codemodel:
+    input: modelerfour/identity
+
+  tweakcodemodel-v2:
+    input: tweakm4codemodel
+    # input: clicommon/identity
   
-  # allow developer to do transformations on the code model. 
-  remodeler/new-transform: 
-    input: remodeler 
+  tweakcodemodelazure-v2:
+    input: tweakcodemodel-v2
 
-  # Make some interpretations about what some things in the model mean
-  tweakcodemodel:
-    input: remodeler/new-transform
+  create-commands-v2:
+    input: tweakcodemodelazure-v2
+  
+  create-virtual-properties-v2:
+    input: create-commands-v2
 
-  # Specific things for Azure
-  tweakcodemodelazure:
-    input: tweakcodemodel
+  csnamer-v2:
+    input: create-virtual-properties-v2
 
-# --- extension powershell ---
+  psnamer-v2:
+    input: csnamer-v2
 
-  # creates high-level commands
-  create-commands:
-    input: tweakcodemodelazure # brings the code-model-v3 with it.
+  modifiers-v2:
+    input: psnamer-v2
 
-  create-virtual-properties:
-    input: create-commands
-    
-  # Choose names for everything in c#
-  csnamer:
-    input: create-virtual-properties # and the generated c# files
+  add-azure-completers-v2:
+    input: modifiers-v2
 
-  # ensures that names/descriptions are properly set for powershell
-  psnamer:
-    input: csnamer 
-
-  modifiers:
-    input: psnamer
-
-  add-azure-completers:
-    input: modifiers
-
-  # creates powershell cmdlets for high-level commands. (leverages llc# code)
-  powershell:
-    input: add-azure-completers # and the generated c# files
+  llcsharp-v2:
+    input: modifiers-v2
+  
+  powershell-v2:
+    input: add-azure-completers-v2
 
 # --- extension llcsharp  --- 
   # generates c# files for http-operations
-  llcsharp:
-    input: modifiers
-
   llcsharp/text-transform:
-    input: llcsharp
+    input: llcsharp-v2
     scope: scope-here
 
   powershell/text-transform:
-    input:  powershell
+    input: powershell-v2
     scope: scope-here
 
   llcsharp/emitter:
@@ -174,10 +174,10 @@ scope-here:
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
-  input-artifact: code-model-v3
+  input-artifact: code-model-v4
   is-object: true
   output-uri-expr: |
-    "code-model-v3"
+    "code-model-v4"
 
 # testing:  ask for the files we need
 output-artifact:
@@ -409,4 +409,17 @@ verb-mapping:
   Write: Write
 ```
 
-
+``` yaml 
+cli:
+    reason: 'Keep same as modelerfour'
+    naming:
+        default:
+            parameter: 'camel'
+            property: 'camel'
+            operation: 'pascal'
+            operationGroup:  'pascal'
+            choice:  'pascal'
+            choiceValue:  'pascal'
+            constant:  'pascal'
+            type:  'pascal'
+```

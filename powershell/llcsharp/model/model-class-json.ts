@@ -2,7 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { Schema as NewSchema, ObjectSchema, SchemaType } from '@azure-tools/codemodel';
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from '@azure-tools/codemodel-v3';
+import { getAllProperties as newGetAllProperties } from '@azure-tools/codemodel';
 import { EOL, DeepPartial, } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Access, Modifier, StringExpression, Expression, System } from '@azure-tools/codegen-csharp';
@@ -26,8 +28,9 @@ import { ModelClass } from './model-class';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 
-import { ModelProperty } from './property';
 import { ObjectImplementation } from '../schema/object';
+import { ModelInterface } from './interface';
+
 
 export class JsonSerializableClass extends Class {
   private btj!: Method;
@@ -71,7 +74,7 @@ export class JsonSerializableClass extends Class {
       const exclusions = new Parameter('exclusions', System.Collections.Generic.HashSet(dotnet.String), { defaultInitializer: dotnet.Null });
       deserializerConstructor.parameters.push(exclusions);
 
-      this.excludes = [...values(getAllProperties(this.modelClass.schema)).select(each => each.serializedName).select(each => new StringExpression(each))].join();
+      this.excludes = [...values(newGetAllProperties(<ObjectSchema>this.modelClass.schema)).select(each => each.serializedName).select(each => new StringExpression(each))].join();
       this.excludes = this.excludes ? `,${System.Collections.Generic.HashSet(dotnet.String).new()}{ ${this.excludes} }` : '';
 
       const ap = `((${ClientRuntime}.IAssociativeArray<${vType.declaration}>)this).AdditionalProperties`;
@@ -85,8 +88,9 @@ export class JsonSerializableClass extends Class {
           // wildcard style
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, ${ClientRuntime.JsonSerializable}.DeserializeDictionary(()=>${System.Collections.Generic.Dictionary(System.String, System.Object).new()}),${exclusions.value} );`));
 
-        } else if (vType instanceof ObjectImplementation) {
-          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${this.modelClass.fullName}.FromJson(j) ,${exclusions.value} );`));
+        } else if (vType instanceof ModelInterface) {
+          // use the class of the dictionary value to deserialize values
+          deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, (j) => ${vType.classImplementation.fullName}.FromJson(j) ,${exclusions.value} );`));
         } else {
           deserializeStatements.push(new Statements(`${ClientRuntime.JsonSerializable}.FromJson( json, ${ap}, null ,${exclusions.value} );`));
         }
@@ -96,7 +100,11 @@ export class JsonSerializableClass extends Class {
 
     for (const each of values(modelClass.backingFields)) {
       serializeStatements.add(`${each.field.value}?.ToJson(${container}, ${mode.use});`);
-      if ((<EnhancedTypeDeclaration>each.typeDeclaration).schema.additionalProperties) {
+      const sch = (<EnhancedTypeDeclaration>each.typeDeclaration).schema;
+      const dictSchema = sch.type === SchemaType.Dictionary ? sch :
+        sch.type === SchemaType.Object ? (<ObjectSchema>sch).parents?.immediate.find((s) => s.type === SchemaType.Dictionary) :
+          undefined;
+      if (dictSchema) {
         deserializeStatements.add(`${each.field.value} = new ${each.className}(json${this.excludes});`);
       } else {
         deserializeStatements.add(`${each.field.value} = new ${each.className}(json);`);
@@ -105,12 +113,12 @@ export class JsonSerializableClass extends Class {
 
     pushTempVar();
     for (const prop of values(modelClass.ownedProperties)) {
-      if (prop.details.csharp.HeaderProperty === 'Header') {
+      if (prop.language.csharp.HeaderProperty === 'Header') {
         continue;
       }
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop.valuePrivate, container, prop.serializedName, mode);
 
-      if (prop.details.csharp.readOnly) {
+      if (prop.language.csharp.readOnly) {
         serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
       } else {
         serializeStatements.add(serializeStatement);
@@ -174,9 +182,8 @@ export class JsonSerializableClass extends Class {
         yield If(Not(json.check), Return(dotnet.Null));
         yield '// Polymorphic type -- select the appropriate constructor using the discriminator';
         /** go thru the list of polymorphic values for the discriminator, and call the target class's constructor for that */
-
         if ($this.schema.discriminator) {
-          yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.propertyName}")`), function* () {
+          yield Switch(toExpression(`json.StringProperty("${$this.schema.discriminator.property.serializedName}")`), function* () {
             for (const { key, value } of items(d)) {
               yield TerminalCase(`"${key}"`, function* () {
                 yield Return(value.new(json));

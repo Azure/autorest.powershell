@@ -47,7 +47,7 @@ export class Project extends codeDomProject {
 
 
     // add project namespace
-    this.projectNamespace = this.state.model.details.csharp.namespace;
+    this.projectNamespace = this.state.model.language.csharp?.namespace;
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
       'Carbon.Internal.Extensions': `${this.projectNamespace}.Runtime.Json`,

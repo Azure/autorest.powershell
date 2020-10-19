@@ -5,7 +5,7 @@
 
 import { suite, test } from 'mocha-typescript';
 import * as assert from 'assert';
-import { getDeduplicatedNoun } from '../plugins/ps-namer';
+import { getDeduplicatedNoun } from '../plugins/ps-namer-v2';
 
 @suite class TestNounCleaning {
 

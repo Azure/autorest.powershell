@@ -8,19 +8,21 @@ import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '
 import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { Primitive } from './primitive';
+import { Schema as NewSchema, DurationSchema } from '@azure-tools/codemodel';
+import { NewPrimitive } from './primitive';
 import { ClientRuntime } from '../clientruntime';
 
-export class Duration extends Primitive {
+
+export class Duration extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonString;
 
-  constructor(public schema: Schema, public isRequired: boolean) {
+  constructor(public schema: DurationSchema, public isRequired: boolean) {
     super(schema);
   }
 
   get encode(): string {
-    return this.schema.extensions['x-ms-skip-url-encoding'] ? '' : 'global::System.Uri.EscapeDataString';
+    return (this.schema.extensions && this.schema.extensions['x-ms-skip-url-encoding']) ? '' : 'global::System.Uri.EscapeDataString';
   }
 
   get declaration(): string {

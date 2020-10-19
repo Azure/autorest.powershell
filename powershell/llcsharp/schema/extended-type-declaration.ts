@@ -9,8 +9,10 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
+import { Schema as NewSchema } from '@azure-tools/codemodel';
 
 /** A TypeDeclaration that can assist in generating code for a variety of serialization, validation and other common use cases */
+
 export interface EnhancedTypeDeclaration extends TypeDeclaration {
   /** emits an expression to deserialize a property from a member inside a container */
   deserializeFromContainerMember(mediaType: KnownMediaType, container: ExpressionOrLiteral, serializedName: string, defaultValue: Expression): Expression;
@@ -48,7 +50,7 @@ export interface EnhancedTypeDeclaration extends TypeDeclaration {
   isXmlAttribute: boolean;
 
   /** the underlying schema for this type declarartion. */
-  schema: Schema;
+  schema: NewSchema;
 
   isNullable: boolean;
 

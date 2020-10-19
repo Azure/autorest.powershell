@@ -7,13 +7,15 @@ import { nameof } from '@azure-tools/codegen';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Primitive } from './primitive';
+import { NumberSchema } from '@azure-tools/codemodel';
+import { NewPrimitive } from './primitive';
 
-export class Numeric extends Primitive {
+
+export class Numeric extends NewPrimitive {
   public isXmlAttribute = false;
   public jsonType = ClientRuntime.JsonNumber;
 
-  constructor(schema: Schema, public isRequired: boolean, protected numericType: string) {
+  constructor(schema: NumberSchema, public isRequired: boolean, protected numericType: string) {
     super(schema);
   }
   get declaration(): string {
@@ -29,19 +31,19 @@ ${this.validateMultipleOf(eventListener, property)}
 `.trim();
   }
   protected validateMinimum(eventListener: Variable, property: Variable): string {
-    return this.schema.minimum && !this.schema.exclusiveMinimum ? `await ${eventListener}.AssertIsGreaterThanOrEqual(${nameof(property.value)},${property},${this.schema.minimum});` : '';
+    return (<NumberSchema>this.schema).minimum && !(<NumberSchema>this.schema).exclusiveMinimum ? `await ${eventListener}.AssertIsGreaterThanOrEqual(${nameof(property.value)},${property},${(<NumberSchema>this.schema).minimum});` : '';
   }
   protected validateMaximum(eventListener: Variable, property: Variable): string {
-    return this.schema.maximum && !this.schema.exclusiveMaximum ? `await ${eventListener}.AssertIsLessThanOrEqual(${nameof(property.value)},${property},${this.schema.maximum});` : '';
+    return (<NumberSchema>this.schema).maximum && !(<NumberSchema>this.schema).exclusiveMaximum ? `await ${eventListener}.AssertIsLessThanOrEqual(${nameof(property.value)},${property},${(<NumberSchema>this.schema).maximum});` : '';
   }
   protected validateExclusiveMinimum(eventListener: Variable, property: Variable): string {
-    return this.schema.minimum && this.schema.exclusiveMinimum ? `await ${eventListener}.AssertIsGreaterThan(${nameof(property.value)},${property},${this.schema.minimum});` : '';
+    return (<NumberSchema>this.schema).minimum && (<NumberSchema>this.schema).exclusiveMinimum ? `await ${eventListener}.AssertIsGreaterThan(${nameof(property.value)},${property},${(<NumberSchema>this.schema).minimum});` : '';
   }
   protected validateExclusiveMaximum(eventListener: Variable, property: Variable): string {
-    return this.schema.maximum && this.schema.exclusiveMaximum ? `await ${eventListener}.AssertIsLessThan(${nameof(property.value)},${property},${this.schema.maximum});` : '';
+    return (<NumberSchema>this.schema).maximum && (<NumberSchema>this.schema).exclusiveMaximum ? `await ${eventListener}.AssertIsLessThan(${nameof(property.value)},${property},${(<NumberSchema>this.schema).maximum});` : '';
   }
   protected validateMultipleOf(eventListener: Variable, property: Variable): string {
-    return this.schema.multipleOf ? `await ${eventListener}.AssertIsMultipleOf(${nameof(property.value)},${property},${this.schema.multipleOf});` : '';
+    return (<NumberSchema>this.schema).multipleOf ? `await ${eventListener}.AssertIsMultipleOf(${nameof(property.value)},${property},${(<NumberSchema>this.schema).multipleOf});` : '';
   }
 
 }

@@ -3,14 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable, If } from '@azure-tools/codegen-csharp';
+
+import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, If, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@azure-tools/codegen-csharp';
 
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { ClientRuntime } from '../llcsharp/exports';
 import { DeepPartial } from '@azure-tools/codegen';
 
-export class ModuleClass extends Class {
+export class NewModuleClass extends Class {
 
   // get the name of the client API class
   TaskOfHttpResponseMessage = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
@@ -71,7 +72,7 @@ export class ModuleClass extends Class {
   fHandler = this.add(new Field('_handler', System.Net.Http.HttpClientHandler, { initialValue: System.Net.Http.HttpClientHandler.new() }));
   fWebProxy = this.add(new Field('_webProxy', System.Net.WebProxy, { initialValue: System.Net.WebProxy.new() }));
 
-  constructor(namespace: Namespace, private readonly state: State, objectInitializer?: DeepPartial<ModuleClass>) {
+  constructor(namespace: Namespace, private readonly state: State, objectInitializer?: DeepPartial<NewModuleClass>) {
     super(namespace, 'Module');
     this.apply(objectInitializer);
     this.partial = true;
@@ -86,7 +87,7 @@ export class ModuleClass extends Class {
       description: 'the singleton of this module class'
     }));
 
-    const clientAPI = new ClassType(this.state.model.details.csharp.namespace, this.state.model.details.csharp.name);
+    const clientAPI = new ClassType(this.state.model.language.csharp?.namespace, this.state.model.language.csharp?.name || '');
     const clientProperty = this.add(new Property('ClientAPI', clientAPI, { description: 'The instance of the Client API' }));
 
     if (this.state.project.azure) {

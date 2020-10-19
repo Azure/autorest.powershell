@@ -25,9 +25,11 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
+import { Schema as NewSchema } from '@azure-tools/codemodel';
+
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;
-  get schema(): Schema {
+  get schema(): NewSchema {
     return this.implementation.schema;
   }
   get convertObjectMethod() {
@@ -77,23 +79,23 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   }
 
   constructor(schemaWithFeatures: EnumImplementation, state: State, objectInitializer?: DeepPartial<EnumClass>) {
-    if (!schemaWithFeatures.schema.details.csharp.enum) {
-      throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.details.csharp.name}`);
+    if (!schemaWithFeatures.schema.language.csharp?.enum) {
+      throw new Error(`ENUM AINT XMSENUM: ${schemaWithFeatures.schema.language.csharp?.name}`);
     }
 
-    super(state.project.supportNamespace, schemaWithFeatures.schema.details.csharp.enum.name, undefined, {
+    super(state.project.supportNamespace, schemaWithFeatures.schema.language.csharp?.enum.name, undefined, {
       interfaces: [new Interface(new Namespace('System'), 'IEquatable', {
-        genericParameters: [`${schemaWithFeatures.schema.details.csharp.enum.name}`]
+        genericParameters: [`${schemaWithFeatures.schema.language.csharp?.enum.name}`]
       })],
     });
-    this.description = schemaWithFeatures.schema.details.csharp.description;
+    this.description = schemaWithFeatures.schema.language.csharp?.description;
     this.implementation = schemaWithFeatures;
     this.partial = true;
 
     this.apply(objectInitializer);
 
     // add known enum values
-    for (const evalue of schemaWithFeatures.schema.details.csharp.enum.values) {
+    for (const evalue of schemaWithFeatures.schema.language.csharp?.enum.values) {
       this.addField(new Field(evalue.name, this, { initialValue: new StringExpression(evalue.value), static: Modifier.Static, description: evalue.description }));
     }
 

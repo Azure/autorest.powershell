@@ -6,17 +6,19 @@
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Primitive } from './primitive';
+import { Schema as NewSchema, SchemaType, ChoiceSchema, ChoiceValue } from '@azure-tools/codemodel';
+import { NewPrimitive } from './primitive';
 import { length } from '@azure-tools/linq';
 
-export class Char extends Primitive {
+
+export class Char extends NewPrimitive {
   public isXmlAttribute = false;
-  private choices?: Array<string>;
+  private choices?: Array<ChoiceValue>;
   jsonType = ClientRuntime.JsonString;
 
-  constructor(schema: Schema, public isRequired: boolean) {
+  constructor(schema: NewSchema, public isRequired: boolean) {
     super(schema);
-    this.choices = length(schema.enum) > 0 ? schema.enum : undefined;
+    this.choices = schema.type === SchemaType.Choice ? (<ChoiceSchema>schema).choices : undefined;
   }
 
   get declaration(): string {

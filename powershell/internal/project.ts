@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary } from '@azure-tools/linq';
-import { SchemaDefinitionResolver, SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean } from '../llcsharp/exports';
+import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean, SchemaDefinitionResolver } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace } from '../enums/namespace';
@@ -13,8 +13,11 @@ import { ModelExtensionsNamespace } from '../models/model-extensions';
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
-import { codemodel, PropertyDetails, exportedModels as T, ModelState, JsonType, } from '@azure-tools/codemodel-v3';
+import { codemodel, PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
+import { PwshModel } from '../utils/PwshModel';
+import { ModelState } from '../utils/model-state';
+import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 
@@ -30,22 +33,25 @@ export interface Metadata {
   projectUri: string;
 }
 
-export class PSSwitch extends Boolean {
+
+
+export class NewPSSwitch extends Boolean {
   get declaration(): string {
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
   }
 
 }
-
 export class PSSchemaResolver extends SchemaDefinitionResolver {
   inResolve = false;
-  resolveTypeDeclaration(schema: Schema | undefined, required: boolean, state: ModelState<codemodel.Model>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
       if (!this.inResolve) {
         this.inResolve = true;
-        if (schema && schema.type === JsonType.Boolean) {
-          return new PSSwitch(schema, required);
+        if (schema && (schema.type === SchemaType.Boolean
+          || (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.Boolean)
+          || (schema.type === SchemaType.Choice && (<any>schema).choiceType.type === SchemaType.Boolean))) {
+          return new NewPSSwitch(<BooleanSchema>schema, required);
         }
       }
 
@@ -56,12 +62,14 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
   }
 }
 
+
 export class Project extends codeDomProject {
   public azure!: boolean;
   public license!: string;
   public cmdletFolder!: string;
 
   public customFolder!: string;
+  public utilsFolder!: string;
   public internalFolder!: string;
   public testFolder!: string;
   public runtimeFolder!: string;
@@ -106,7 +114,7 @@ export class Project extends codeDomProject {
   public metadata!: Metadata;
   public state!: State;
   public helpLinkPrefix!: string;
-  get model() { return <codemodel.Model>this.state.model; }
+  get model() { return <PwshModel>this.state.model; }
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
@@ -120,7 +128,7 @@ export class Project extends codeDomProject {
 
     this.schemaDefinitionResolver = new PSSchemaResolver();
 
-    this.projectNamespace = this.state.model.details.csharp.namespace;
+    this.projectNamespace = this.state.model.language.csharp?.namespace || '';
 
 
     this.overrides = {
@@ -141,19 +149,21 @@ export class Project extends codeDomProject {
 
     // Values
     this.moduleVersion = await this.state.getValue('module-version');
-    this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
+    // skip-for-time-being
+    //this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
+    this.profiles = [];
     this.accountsVersionMinimum = '1.8.1';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.license = await this.state.getValue('header-text', '');
 
     // Flags
-    this.azure = this.model.details.default.isAzure;
+    this.azure = this.model.language.default.isAzure;
 
     // Names
-    this.prefix = this.model.details.default.prefix;
-    this.serviceName = this.model.details.default.serviceName;
-    this.subjectPrefix = this.model.details.default.subjectPrefix;
+    this.prefix = this.model.language.default.prefix;
+    this.serviceName = this.model.language.default.serviceName;
+    this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
     this.dllName = await this.state.getValue('dll-name');
 
@@ -163,6 +173,7 @@ export class Project extends codeDomProject {
     this.cmdletFolder = await this.state.getValue('cmdlet-folder');
 
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
+    this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
     this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
     this.testFolder = await this.state.getValue('test-folder');
     this.runtimeFolder = await this.state.getValue('runtime-folder');
