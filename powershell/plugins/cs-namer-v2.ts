@@ -99,9 +99,9 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])), // objects have an interfaceName
-          internalInterfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal'])), // objects have an ineternal interfaceName for setting private members. 
-          fullInternalInterfaceName: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName), 'Internal']))}`,
+          interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])), // objects have an interfaceName
+          internalInterfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName), 'Internal'])), // objects have an ineternal interfaceName for setting private members. 
+          fullInternalInterfaceName: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName), 'Internal']))}`,
           name: getPascalIdentifier(schemaName),
           namespace: pascalCase([serviceNamespace, '.', 'Models', ...ns]),  // objects have a namespace
           fullname: `${pascalCase([serviceNamespace, '.', 'Models', ...ns])}.${getPascalIdentifier(schemaName)}`,
@@ -111,7 +111,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         const choiceSchema = <ChoiceSchema<StringSchema> | SealedChoiceSchema<StringSchema>>schema;
         schema.language.csharp = <SchemaDetails>{
           ...details,
-          interfaceName: pascalCase(fixLeadingNumber(['I', ...deconstruct(schemaName)])),
+          interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
           name: getPascalIdentifier(schemaName),
           namespace: pascalCase([serviceNamespace, '.', 'Support']),
           fullname: `${pascalCase([serviceNamespace, '.', 'Support'])}.${getPascalIdentifier(schemaName)}`,
