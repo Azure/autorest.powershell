@@ -7,7 +7,6 @@
 import { ClassType, Namespace, TypeDeclaration } from '@azure-tools/codegen-csharp';
 
 const rest = new Namespace('Microsoft.Rest');
-
 export const PropertyOriginAttribute: TypeDeclaration = new ClassType(rest, 'Origin');
 export const DoNotFormatAttribute: TypeDeclaration = new ClassType(rest, 'DoNotFormat');
 export const FormatTableAttribute: TypeDeclaration = new ClassType(rest, 'FormatTable');
