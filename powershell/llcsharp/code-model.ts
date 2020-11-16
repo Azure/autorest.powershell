@@ -8,6 +8,7 @@ import { ModelInterface } from './model/interface';
 import { ModelClass } from './model/model-class';
 import { EnhancedTypeDeclaration } from './schema/extended-type-declaration';
 
+
 // C# specific details for components
 
 export interface SchemaDetails extends schema.SchemaDetails {
