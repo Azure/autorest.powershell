@@ -149,7 +149,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
       access: Access.Internal,
       description: `Conversion from arbitrary object to ${this.name}`,
       parameters: [new Parameter('value', dotnet.Object, { description: `the value to convert to an instance of <see cref="${this.name}" />.` })]
-    })).add(`return new ${this.name}(System.Convert.ToString(value));`);
+    })).add(`return new ${this.name}(global::System.Convert.ToString(value));`);
 
     // add implicit operator(thistype)
     this.addMethod(new Operator('implicit operator string', {
