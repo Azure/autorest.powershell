@@ -31,11 +31,11 @@ These provide functionality to our HTTP pipeline and other useful features. In s
 
 ### Attributes
 For processing the cmdlets, we've created some additional attributes:
-- `${$project.modelsExtensions.fullName}.DescriptionAttribute`
+- `${$project.serviceNamespace.fullName}.DescriptionAttribute`
   - Used in C# cmdlets to provide a high-level description of the cmdlet. This is propegated to reference documentation via [help comments](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comment_based_help) in the exported scripts.
-- `${$project.modelsExtensions.fullName}.DoNotExportAttribute`
+- `${$project.serviceNamespace.fullName}.DoNotExportAttribute`
   - Used in C# and script cmdlets to suppress creating an exported cmdlet at build-time. These cmdlets will *not be exposed* by `${$project.moduleName}`.
-- `${$project.modelsExtensions.fullName}.InternalExportAttribute`
+- `${$project.serviceNamespace.fullName}.InternalExportAttribute`
   - Used in C# cmdlets to route exported cmdlets to the `${$lib.path.relative($project.customFolder, $project.internalFolder)}`, which are *not exposed* by `${$project.moduleName}`. For more information, see [readme.md](${$lib.path.relative($project.customFolder, $project.internalFolder)}/readme.md) in the `${$lib.path.relative($project.customFolder, $project.internalFolder)}` folder.
-- `${$project.modelsExtensions.fullName}.ProfileAttribute`
+- `${$project.serviceNamespace.fullName}.ProfileAttribute`
   - Used in C# and script cmdlets to define which Azure profiles the cmdlet supports. This is only supported for Azure (`--azure`) modules.
