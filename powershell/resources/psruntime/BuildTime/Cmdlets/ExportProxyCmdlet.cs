@@ -42,7 +42,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string DocsFolder { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
         [ValidateNotNullOrEmpty]
         public string ExamplesFolder { get; set; }
 
