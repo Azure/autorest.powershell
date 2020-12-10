@@ -419,7 +419,7 @@ export class CallMethod extends Method {
           const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
           yield location;
 
-          yield While(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
+          yield While(new LiteralExpression(`${reqParameter.use}.Method == System.Net.Http.HttpMethod.Put && ${response.value}.StatusCode == ${System.Net.HttpStatusCode[200].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield EOL;
             yield '// get the delay before polling. (default to 30 seconds if not present)';
             yield `int delay = (int)(${response.value}.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);`;
@@ -461,8 +461,6 @@ export class CallMethod extends Method {
             yield '// check for cancellation';
             yield `if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }`;
 
-            yield eventListener.signal(ClientRuntime.Events.Polling, `$"Polling {${uriLocal}}."`, response.value);
-
             yield EOL;
             yield '// drop the old response';
             yield `${response.value}?.Dispose();`;
@@ -470,7 +468,7 @@ export class CallMethod extends Method {
             yield EOL;
             yield '// make the polling call';
             yield `${response.value} = await ${opMethod.senderParameter}.SendAsync(${reqParameter.value}, ${opMethod.contextParameter});`;
-
+            yield eventListener.signal(ClientRuntime.Events.Polling, response.value);
 
             yield EOL;
             yield `
@@ -487,7 +485,6 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
               // we're going to just get out, and let the consumer have the result
               break;
             }
-            await ${$this.opMethod.contextParameter}.Signal(${ClientRuntime.Events.Polling}, $"Polled {${uriLocal}} provisioning state  {state}.", ${response.value}); if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }
 
             switch( state?.ToString()?.ToLower() )
             {
