@@ -170,7 +170,7 @@ export class OperationMethod extends Method {
       rx = rx.substr(0, idx);
     }
 
-    let url = `${path.startsWith('/') ? path.substr(1) : path}`;
+    let url = `/${path.startsWith('/') ? path.substr(1) : path}`;
 
 
     const serverParams = this.methodParameters.filter(each => each.param.protocol.http?.in === ParameterLocation.Uri);
@@ -226,28 +226,28 @@ export class OperationMethod extends Method {
       }
 
       yield '// construct URL';
-      const urlWithoutHostV = Local('_urlWithoutHost', `${System.Text.RegularExpressions.Regex.declaration}.Replace(
+      const pathAndQueryV = Local('pathAndQuery', `${System.Text.RegularExpressions.Regex.declaration}.Replace(
         "${url}"
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
         )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''));
-      yield urlWithoutHostV.declarationStatement;
+      yield pathAndQueryV.declarationStatement;
 
       yield EOL;
 
-      yield eventListener.signal(ClientRuntime.Events.URLCreated, urlWithoutHostV.value);
+      yield eventListener.signal(ClientRuntime.Events.URLCreated, pathAndQueryV.value);
       yield EOL;
 
       yield '// generate request object ';
       const urlV = new LocalVariable('_url', dotnet.Var, {
-        initializer: System.Uri.new(`$"${baseUrl}/{${urlWithoutHostV.value}}"`)
+        initializer: System.Uri.new(`$"${baseUrl}{${pathAndQueryV.value}}"`)
       });
       yield urlV.declarationStatement;
       const method = $this.operation.requests ? $this.operation.requests[0].protocol.http?.method : '';
       yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${method.capitalize()}, ${urlV.value}`)};`;
-      yield eventListener.signal(ClientRuntime.Events.RequestCreated, `request.RequestUri.ToString()`);
+      yield eventListener.signal(ClientRuntime.Events.RequestCreated, `request.RequestUri.PathAndQuery`);
       yield EOL;
 
       if (length(headerParams) > 0) {
@@ -353,9 +353,16 @@ export class CallMethod extends Method {
         };
 
         // try statements
+        const sendTask = Local(
+            'sendTask',
+            new LiteralExpression(
+                `${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value})`
+            )
+        );
+        yield sendTask;
+        // delay sending BeforeCall event until URI has been replaced by HTTP pipeline
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
-        yield `${response.value} = await ${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value});`;
-
+        yield `${response.value} = await ${sendTask.value};`;
         yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
         const EOL = 'EOL';
         // LRO processing (if appropriate)
