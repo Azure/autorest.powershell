@@ -484,21 +484,24 @@ export class CallMethod extends Method {
 // if we got back an OK, take a peek inside and see if it's done
 if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
 {
+    var error = false;
     try {
         if( ${ClientRuntime.JsonNode.Parse(toExpression(`await ${response.value}.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
         {
             var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState") ?? json.PropertyT<${ClientRuntime.JsonString}>("status");
             if( state is null ) 
             {
-              // the body doesn't contain any information that has the state of the LRO
-              // we're going to just get out, and let the consumer have the result
-              break;
+                // the body doesn't contain any information that has the state of the LRO
+                // we're going to just get out, and let the consumer have the result
+                break;
             }
 
             switch( state?.ToString()?.ToLower() )
             {
-              case "succeeded":
               case "failed":
+                  error = true;
+                  break;
+              case "succeeded":
               case "canceled":
                 // we're done polling.
                 break;
@@ -512,6 +515,9 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     } catch {
         // if we run into a problem peeking into the result, 
         // we really don't want to do anything special.
+    }
+    if (error) {
+        throw new ${ClientRuntime.fullName}.UndeclaredResponseException(${response.value});
     }
 }`;
 
