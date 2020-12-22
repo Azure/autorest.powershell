@@ -67,6 +67,8 @@ export interface VirtualProperty {
 
   required: boolean;
 
+  readOnly?: boolean;
+
   sharedWith?: Array<VirtualProperty>;
 }
 
