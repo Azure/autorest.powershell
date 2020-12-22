@@ -217,6 +217,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
           originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: [],
+          readOnly: inlinedProperty.readOnly || property.readOnly,
           required: inlinedProperty.required && privateProperty.required,
         });
       }
@@ -245,6 +246,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
           originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: [],
+          readOnly: inlinedProperty.readOnly || property.readOnly,
           required: inlinedProperty.required && privateProperty.required
         });
       }
@@ -268,6 +270,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       description: property.summary || '',
       originalContainingSchema: schema,
       alias: [],
+      readOnly: property.readOnly,
       required: property.required || property.language.default.required
     });
   }
@@ -320,7 +323,7 @@ function createVirtualParameters(operation: CommandOperation) {
       if (vps) {
         for (const virtualProperty of [...vps.inherited, ...vps.owned, ...vps.inlined]) {
           // dolauli add virtual parameter for virtual property
-          if (virtualProperty.private || virtualProperty.property.readOnly || virtualProperty.property.language.default.constantValue !== undefined || virtualProperty.property.language.default.HeaderProperty === 'Header') {
+          if (virtualProperty.private || virtualProperty.readOnly || virtualProperty.property.readOnly || virtualProperty.property.language.default.constantValue !== undefined || virtualProperty.property.language.default.HeaderProperty === 'Header') {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
