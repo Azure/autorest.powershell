@@ -13,7 +13,7 @@ Packages contained in the image.
 
 # Code Generation vs Build vs Run
 ## Code Generation
-`autorest-beta`
+`autorest-beta --use:@autorest/powershell@3.0.410`
 ## Build
 `pwsh build-module.ps1`
 ## Run
