@@ -314,13 +314,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           const containingProperty = this.pMap.get(virtualProperty.accessViaProperty);
           if (containingProperty) {
 
-            const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.csharp?.required, this.state);
+            const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, !!virtualProperty.required, this.state);
+            const requiredPropertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, true, this.state);
 
             // regular inlined property
             const vp = new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.language.csharp?.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value`)
+              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${!!virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
             });
 
             if (!virtualProperty.private) {

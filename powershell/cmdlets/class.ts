@@ -1188,7 +1188,7 @@ export class CmdletClass extends Class {
           const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
 
           // we need to know if the actual underlying property is actually nullable.
-          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, (<NewVirtualProperty>vParam.origin).property.language.csharp?.required, this.state).isNullable;
+          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
 
           const cmdletParameter = new Property(vParam.name, propertyType, {
             get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
