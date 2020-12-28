@@ -243,10 +243,9 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
         const modelProperty = virtualProperty.property;
         const isRequired = !!virtualProperty.required;
-        const isReadOnly = !!virtualProperty.readOnly;
         const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
 
-        const internalSet = !!(!this.isInternal && (isReadOnly || (<any>modelProperty.language.csharp).constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
           description: modelProperty.language.default.description,
