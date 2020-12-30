@@ -50,7 +50,7 @@
     "@typescript-eslint/eslint-plugin": "~2.0.0",
     "@typescript-eslint/parser": "~2.0.0",
     "@microsoft.azure/autorest.testserver": "~2.9.3",
-    "@autorest/autorest": "~3.0.6118",
+    "autorest": "~3.0.6118",
     "eslint": "~6.2.2"
   },
   "dependencies": {

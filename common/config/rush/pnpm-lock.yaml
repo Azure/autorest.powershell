@@ -1,5 +1,4 @@
 dependencies:
-  '@autorest/autorest': 3.0.6187
   '@azure-tools/async-io': 3.0.252
   '@azure-tools/autorest-extension-base': 3.1.266
   '@azure-tools/codegen': 2.5.290
@@ -16,6 +15,7 @@ dependencies:
   '@types/xmlbuilder': 0.0.34
   '@typescript-eslint/eslint-plugin': 2.0.0_b7c2671679a3bd4e1f52a3d3da16606f
   '@typescript-eslint/parser': 2.0.0_eslint@6.2.2
+  autorest: 3.0.6322
   eslint: 6.2.2
   js-yaml: 3.13.1
   mocha: 5.2.0
@@ -375,6 +375,14 @@ packages:
     dev: false
     resolution:
       integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=
+  /autorest/3.0.6322:
+    dev: false
+    engines:
+      node: '>=10.13.0'
+    hasBin: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-q0W5FD8TmxCqpPiD9fXGPbt+DCyf3brGvAAnzoFSngcaBgwy/CfvUVVXbwcHEUYzFive++tpQwM6Q0SFHEfKbQ==
   /aws-sign2/0.7.0:
     dev: false
     resolution:
@@ -3112,6 +3120,7 @@ packages:
       '@types/xmlbuilder': 0.0.34
       '@typescript-eslint/eslint-plugin': 2.0.0_b7c2671679a3bd4e1f52a3d3da16606f
       '@typescript-eslint/parser': 2.0.0_eslint@6.2.2
+      autorest: 3.0.6322
       eslint: 6.2.2
       js-yaml: 3.13.1
       mocha: 5.2.0
@@ -3122,11 +3131,11 @@ packages:
     dev: false
     name: '@rush-temp/powershell'
     resolution:
-      integrity: sha512-p6zFKQmmQo1rntIeAg/ELKH+i12IV+ZcTM9J3luYZeV7zc1mZ3A+DReEuxshx+3oR0WyOCw9jUgTm0hGHJQXWA==
+      integrity: sha512-rj8GA16IxGfHeRiZtOxeTzFiS9TsUaprdm/i0PeRmq8dbpKb54/21VhErmXGxMelaGIe+N5Ju5cZuO/u+jyDcg==
       tarball: 'file:projects/powershell.tgz'
     version: 0.0.0
+registry: ''
 specifiers:
-  '@autorest/autorest': ~3.0.6118
   '@azure-tools/async-io': ~3.0.0
   '@azure-tools/autorest-extension-base': ~3.1.0
   '@azure-tools/codegen': ^2.5.276
@@ -3143,6 +3152,7 @@ specifiers:
   '@types/xmlbuilder': 0.0.34
   '@typescript-eslint/eslint-plugin': ~2.0.0
   '@typescript-eslint/parser': ~2.0.0
+  autorest: ~3.0.6118
   eslint: ~6.2.2
   js-yaml: 3.13.1
   mocha: 5.2.0

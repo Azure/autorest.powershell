@@ -9,11 +9,11 @@ steps:
     versionSpec: 10.16.0
 
 - task: Npm@1
-  displayName: 'Install autorest@beta'
+  displayName: 'Install autorest@latest'
   inputs:
     command: custom
     verbose: false
-    customCommand: 'install -g "@autorest/autorest"'
+    customCommand: 'install -g "autorest"'
 
 - task: Npm@1
   displayName: 'Install @microsoft/rush'

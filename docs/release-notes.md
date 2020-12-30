@@ -45,13 +45,13 @@ After that, you can upgrade pretty easily:
 
 ``` powershell
     # Install the latest autorest beta
-    > npm install -g @autorest/autorest
+    > npm install -g autorest
 
     # remove old autorest extensions
-    > autorest-beta --reset 
+    > autorest --reset 
 
     # nudge autorest into installing the latest version of the generator 
-    > autorest-beta --powershell --help
+    > autorest --powershell --help
 ```
 Which should show output like:
 
@@ -62,7 +62,7 @@ AutoRest code generation utility [version: 3.0.5141; node: v10.15.0]
 https://aka.ms/autorest
    Loading AutoRest core      '...\.autorest\@autorest/core@3.0.5336\node_modules\@autorest\core\dist' (3.0.5336)
 
-C:\> autorest-beta --powershell --help                                                                                                                                                                            AutoRest code generation utility [version: 3.0.5141; node: v10.15.0]
+C:\> autorest --powershell --help                                                                                                                                                                            AutoRest code generation utility [version: 3.0.5141; node: v10.15.0]
 (C) 2018 Microsoft Corporation.
 
 https://aka.ms/autorest
@@ -78,7 +78,7 @@ https://aka.ms/autorest
 
 ``` powershell
     # verify the version you have
-    > autorest-beta --info 
+    > autorest --info 
 ```
 
 Which should show output like:

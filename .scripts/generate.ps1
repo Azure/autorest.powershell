@@ -35,10 +35,10 @@ cd $root
 $swaggerRoot = "http://localhost:3000/__files/"
  
 # AutoRest Choice
-$autorest = (get-command autorest-beta -ea 0 ).Source 
+$autorest = (get-command autorest -ea 0 ).Source 
 
 if( -not $autorest )  {
-  write-error "AutoRest command (autorest-beta) not found in path."
+  write-error "AutoRest command (autorest) not found in path."
   return 1;
 }
 
