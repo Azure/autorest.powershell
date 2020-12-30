@@ -8,7 +8,7 @@ Download the [XKCD swagger](https://raw.githubusercontent.com/Azure/autorest/mas
 
 Then run AutoRest PowerShell:
 
-> `autorest-beta --powershell --input-file:./xkcd.yaml `
+> `autorest --powershell --input-file:./xkcd.yaml `
 
 
 ```  text

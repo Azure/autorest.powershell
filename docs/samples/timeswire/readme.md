@@ -25,7 +25,7 @@ iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samp
 
 Then simply [Install AutoRest Beta](../../readme.md#installing) and in this folder, run:
 
-> `autorest-beta`
+> `autorest`
 
 Then you can compile the module:
 

@@ -5,7 +5,7 @@
 Use of this project requires the following:
 
 - [NodeJS LTS](https://nodejs.org) (currently 10.15.0) <br> I recommend that you use a tool like [nvs](https://github.com/jasongin/nvs) so that you can switch between versions of node without pain <br>&nbsp;
-- [AutoRest](https://aka.ms/autorest) v3 beta <br> `npm install -g autorest@beta ` <br>&nbsp;
+- [AutoRest](https://aka.ms/autorest) v3 <br> `npm install -g autorest@latest ` <br>&nbsp;
 - [RushJS](https://rushjs.io/) manages multiple nodejs projects in a single repository. <br> `npm install -g @microsoft/rush` <br>&nbsp;
 - PowerShell 6.0 - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g pwsh` <br>&nbsp;
 - Dotnet SDK 2 or greater - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g dotnet-sdk-2.1 ` <br>&nbsp;
@@ -71,7 +71,7 @@ To use the locally built version of the plugin, add `--use:<path>` to the comman
 
 ### Debugging 
 
-1. Start generating: `autorest-beta --use:C:\path\to\local\autorest.powershell --powershell.debugger`. It will wait for debugger to attach.
+1. Start generating: `autorest --use:C:\path\to\local\autorest.powershell --powershell.debugger`. It will wait for debugger to attach.
 1. Start debugging: open autorest.powershell repo in vscode; press `F5`. You will see "Debugger attached." in your autorest console, then you can start debugging.
 
 ### Testing

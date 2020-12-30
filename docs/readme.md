@@ -7,7 +7,7 @@ Use of the beta version of `autorest.powershell` requires the following:
 - [NodeJS LTS](https://nodejs.org) (10.15.x LTS preferred. Will not function with Node < 10.x Be Wary of 11.x builds as they may introduce instability or breaking changes. ) 
 > if you want an easy way to install and update Node, I recommend [NVS - Node Version Switcher](../nodejs/installing-via-nvs.md) or [NVM - Node Version Manager](../nodejs/installing-via-nvm.md)
 
-- [AutoRest](https://aka.ms/autorest) v3 beta <br> `npm install -g @autorest/autorest ` <br>&nbsp;
+- [AutoRest](https://aka.ms/autorest) v3 <br> `npm install -g autorest ` <br>&nbsp;
 - PowerShell 6.0 - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g pwsh` <br>&nbsp;
 - Dotnet SDK 2 or greater - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g dotnet-sdk-2.1 ` <br>&nbsp;
 
@@ -21,14 +21,14 @@ Use of the beta version of `autorest.powershell` requires the following:
 
 ## Installing AutoRest Beta and the PowerShell generator
 
-To use the PowerShell generator, you have to first install the AutoRest v3 beta:
+To use the PowerShell generator, you have to first install the AutoRest v3:
 
 ``` powershell
 # Installing AutoRest (beta)
-> npm install -g "@autorest/autorest" 
+> npm install -g "autorest" 
 
 # if you have a previous version installed (or want it to pull the latest version), reset the autorest plugins
-> autorest-beta --reset
+> autorest --reset
 ```
 
 ## Returning to the release version of the generator
@@ -52,7 +52,7 @@ The output will be in the `./generated` folder by default
 
 ``` powershell
 # AutoRest command line
-> autorest-beta --powershell --input-file:<path-to-swagger-file> [...options]
+> autorest --powershell --input-file:<path-to-swagger-file> [...options]
 ```
 
 ## Common AutoRest parameters:

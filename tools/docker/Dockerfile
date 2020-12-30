@@ -7,7 +7,7 @@ RUN apt-get update \
     && . /root/.bashrc \
     && nvm install 10.16.0 \
     && npm config set unsafe-perm true \
-    && npm install -g @autorest/autorest \
+    && npm install -g autorest \
     && npm install -g dotnet-sdk-2.1 \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
