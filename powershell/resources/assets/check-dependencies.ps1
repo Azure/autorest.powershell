@@ -56,7 +56,7 @@ $resourceModule = Join-Path $HOME '.PSSharedModules\Resources\Az.Resources.TestS
 if ($Resources.IsPresent -and (-not (Test-Path -Path $resourceModule))) {
   Write-Host -ForegroundColor Green "Building local Resource module used for test..."
   Set-Location $resourceDir
-  $null = autorest .\readme.md --output-folder=$HOME/.PSSharedModules/Resources
+  $null = autorest .\readme.md --use:@autorest/powershell@3.0.414 --output-folder=$HOME/.PSSharedModules/Resources
   $null = Copy-Item custom/* $HOME/.PSSharedModules/Resources/custom/
   Set-Location $HOME/.PSSharedModules/Resources
   $null = .\build-module.ps1
