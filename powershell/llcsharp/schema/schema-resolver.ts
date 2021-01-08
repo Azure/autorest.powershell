@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, ArraySchema, UnixTimeSchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema, DurationSchema, BinarySchema, DateSchema } from '@azure-tools/codemodel';
+import { codeModelSchema, CredentialSchema, ArraySchema, UnixTimeSchema, CodeModel, Schema as NewSchema, StringSchema, BooleanSchema, NumberSchema, ByteArraySchema, DateTimeSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ConstantSchema, ChoiceSchema, DurationSchema, BinarySchema, DateSchema } from '@azure-tools/codemodel';
 
 import { codemodel, IntegerFormat, NumberFormat, StringFormat, JsonType } from '@azure-tools/codemodel-v3';
 import { Schema } from '../code-model';
@@ -26,6 +26,7 @@ import { PwshModel } from '../../utils/PwshModel';
 import { ModelState } from '../../utils/model-state';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { schemaHasEnum } from '../validations';
+import { Password } from './password';
 
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
@@ -59,10 +60,12 @@ export class SchemaDefinitionResolver {
         return this.add(schema, new ObjectImplementation(<ObjectSchema>schema));
       }
       case SchemaType.Time:
-      case SchemaType.Credential:
       case SchemaType.String: {
         return new String(<StringSchema>schema, required);
 
+      }
+      case SchemaType.Credential: {
+        return new Password(<CredentialSchema>schema, required);
       }
       case SchemaType.Binary:
         return new Binary(<BinarySchema>schema, required);
