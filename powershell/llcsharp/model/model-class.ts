@@ -271,14 +271,15 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         // has to be accessed via the field in this.backingFields
         const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.language.csharp?.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
 
-        const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.csharp?.required, this.state);
+        const propertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, !!virtualProperty.required, this.state);
+        const requiredPropertyType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.property.schema, true, this.state);
         const opsType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.originalContainingSchema, false, this.state);
         const via = <NewVirtualProperty>virtualProperty.accessViaProperty;
         const parentCast = `(${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName})`;
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.language.csharp?.description,
           get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
-          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value`)
+          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${!!virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
         }));
 
         if (virtualProperty.property.language.csharp?.constantValue !== undefined) {
