@@ -31,9 +31,34 @@ export interface Metadata {
   companyName: string;
   licenseUri: string;
   projectUri: string;
+  manifest: Manifest;
 }
 
+export interface Manifest {
+  requiredModules: PsRequiredModule[];
+  requiredModulesAsString: string;
+  requiredAssemblies: string[];
+  requiredAssembliesAsString: string;
+  nestedModules: string[];
+  nestedModulesAsString: string;
+  formatsToProcess: string[];
+  formatsToProcessAsString: string;
+  typesToProcess: string[];
+  typesToProcessAsString: string;
+  scriptsToProcess: string[];
+  scriptsToProcessAsString: string;
+  functionsToExport: string[];
+  functionsToExportAsString: string;
+  cmdletsToExport: string[];
+  cmdletsToExportAsString: string;
+  aliasesToExport: string[];
+  aliasesToExportAsString: string;
+}
 
+export interface PsRequiredModule {
+  name: string;
+  version: string;
+}
 
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
@@ -155,6 +180,7 @@ export class Project extends codeDomProject {
     this.accountsVersionMinimum = '1.8.1';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
+    this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
 
     // Flags
@@ -222,5 +248,24 @@ export class Project extends codeDomProject {
     // abort now if we have any errors.
     this.state.checkpoint();
     return this;
+  }
+
+  private preprocessMetadata() {
+    this.metadata.manifest = {
+      ...this.metadata.manifest,
+      requiredModulesAsString: this.metadata.manifest.requiredModules.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`).join(', '),
+      requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.manifest.requiredAssemblies) || '',
+      nestedModulesAsString: this.convertToPsListAsString(this.metadata.manifest.nestedModules) || '',
+      formatsToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.formatsToProcess) || '',
+      typesToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.typesToProcess) || '',
+      scriptsToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.scriptsToProcess) || '',
+      functionsToExportAsString: this.convertToPsListAsString(this.metadata.manifest.functionsToExport) || '',
+      cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.manifest.cmdletsToExport) || '',
+      aliasesToExportAsString: this.convertToPsListAsString(this.metadata.manifest.aliasesToExport) || ''
+    }
+  }
+
+  private convertToPsListAsString(items: string[]): string {
+    return items.map(i => `'${i}'`).join(', ');
   }
 }
