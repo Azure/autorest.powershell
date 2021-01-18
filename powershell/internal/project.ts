@@ -31,10 +31,6 @@ export interface Metadata {
   companyName: string;
   licenseUri: string;
   projectUri: string;
-  manifest: Manifest;
-}
-
-export interface Manifest {
   requiredModules: PsRequiredModule[];
   requiredModulesAsString: string;
   requiredAssemblies: string[];
@@ -251,21 +247,23 @@ export class Project extends codeDomProject {
   }
 
   private preprocessMetadata() {
-    this.metadata.manifest = {
-      ...this.metadata.manifest,
-      requiredModulesAsString: this.metadata.manifest.requiredModules.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`).join(', '),
-      requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.manifest.requiredAssemblies) || '',
-      nestedModulesAsString: this.convertToPsListAsString(this.metadata.manifest.nestedModules) || '',
-      formatsToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.formatsToProcess) || '',
-      typesToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.typesToProcess) || '',
-      scriptsToProcessAsString: this.convertToPsListAsString(this.metadata.manifest.scriptsToProcess) || '',
-      functionsToExportAsString: this.convertToPsListAsString(this.metadata.manifest.functionsToExport) || '',
-      cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.manifest.cmdletsToExport) || '',
-      aliasesToExportAsString: this.convertToPsListAsString(this.metadata.manifest.aliasesToExport) || ''
+    if (this.metadata) {
+      this.metadata = {
+        ...this.metadata,
+        requiredModulesAsString: this.metadata.requiredModules?.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`)?.join(', ') || '',
+        requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.requiredAssemblies),
+        nestedModulesAsString: this.convertToPsListAsString(this.metadata.nestedModules),
+        formatsToProcessAsString: this.convertToPsListAsString(this.metadata.formatsToProcess),
+        typesToProcessAsString: this.convertToPsListAsString(this.metadata.typesToProcess),
+        scriptsToProcessAsString: this.convertToPsListAsString(this.metadata.scriptsToProcess),
+        functionsToExportAsString: this.convertToPsListAsString(this.metadata.functionsToExport),
+        cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.cmdletsToExport),
+        aliasesToExportAsString: this.convertToPsListAsString(this.metadata.aliasesToExport)
+      }
     }
   }
 
   private convertToPsListAsString(items: string[]): string {
-    return items.map(i => `'${i}'`).join(', ');
+    return items ? items.map(i => `'${i}'`).join(', ') : '';
   }
 }

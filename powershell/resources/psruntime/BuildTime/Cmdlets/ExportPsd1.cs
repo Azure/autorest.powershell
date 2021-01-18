@@ -80,15 +80,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 sb.AppendLine($@"{Indent}DotNetFrameworkVersion = '4.7.2'");
 
                 // RequiredModules
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.requiredModulesAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.requiredModulesAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}RequiredModules = {"${$project.metadata.manifest.requiredModulesAsString}"}");
+                    sb.AppendLine($@"{Indent}RequiredModules = {"${$project.metadata.requiredModulesAsString}"}");
                 }
 
                 // RequiredAssemblies
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.requiredAssembliesAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.requiredAssembliesAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}RequiredAssemblies = {"${$project.metadata.manifest.requiredAssembliesAsString}"}");
+                    sb.AppendLine($@"{Indent}RequiredAssemblies = {"${$project.metadata.requiredAssembliesAsString}"}");
                 }
                 else
                 {
@@ -96,15 +96,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
 
                 // NestedModules
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.nestedModulesAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.nestedModulesAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}NestedModules = {"${$project.metadata.manifest.nestedModulesAsString}"}");
+                    sb.AppendLine($@"{Indent}NestedModules = {"${$project.metadata.nestedModulesAsString}"}");
                 }
 
                 // FormatsToProcess
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.formatsToProcessAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.formatsToProcessAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}FormatsToProcess = {"${$project.metadata.manifest.formatsToProcessAsString}"}");
+                    sb.AppendLine($@"{Indent}FormatsToProcess = {"${$project.metadata.formatsToProcessAsString}"}");
                 }
                 else
                 {
@@ -116,22 +116,22 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
 
                 // TypesToProcess
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.typesToProcessAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.typesToProcessAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}TypesToProcess = {"${$project.metadata.manifest.typesToProcessAsString}"}");
+                    sb.AppendLine($@"{Indent}TypesToProcess = {"${$project.metadata.typesToProcessAsString}"}");
                 }
 
                 // ScriptsToProcess
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.scriptsToProcessAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.scriptsToProcessAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}ScriptsToProcess = {"${$project.metadata.manifest.scriptsToProcessAsString}"}");
+                    sb.AppendLine($@"{Indent}ScriptsToProcess = {"${$project.metadata.scriptsToProcessAsString}"}");
                 }
 
                 var functionInfos = GetScriptCmdlets(ExportsFolder).ToArray();
                 // FunctionsToExport
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.functionsToExportAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.functionsToExportAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}FunctionsToExport = {"${$project.metadata.manifest.functionsToExportAsString}"}");
+                    sb.AppendLine($@"{Indent}FunctionsToExport = {"${$project.metadata.functionsToExportAsString}"}");
                 }
                 else
                 {
@@ -140,9 +140,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
 
                 // AliasesToExport
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.aliasesToExportAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.aliasesToExportAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}AliasesToExport = {"${$project.metadata.manifest.aliasesToExportAsString}"}");
+                    sb.AppendLine($@"{Indent}AliasesToExport = {"${$project.metadata.aliasesToExportAsString}"}");
                 }
                 else
                 {
@@ -151,9 +151,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
 
                 // CmdletsToExport
-                if (!string.IsNullOrEmpty("${$project.metadata.manifest.cmdletsToExportAsString}"))
+                if (!string.IsNullOrEmpty("${$project.metadata.cmdletsToExportAsString}"))
                 {
-                    sb.AppendLine($@"{Indent}CmdletsToExport = {"${$project.metadata.manifest.cmdletsToExportAsString}"}");
+                    sb.AppendLine($@"{Indent}CmdletsToExport = {"${$project.metadata.cmdletsToExportAsString}"}");
                 }
 
                 sb.AppendLine($@"{Indent}PrivateData = @{{");
