@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
@@ -678,6 +678,7 @@ export class CmdletClass extends Class {
 
       // make callback methods
       for (const each of values(responses)) {
+        const isBinary = (<BinaryResponse>each).binary;
 
         const parameters = new Array<Parameter>();
         parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
@@ -687,6 +688,10 @@ export class CmdletClass extends Class {
         }
         if (each.language.csharp?.headerType) {
           parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
+        }
+
+        if (isBinary) {
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: `the body result as a <see cref="global::System.IO.Stream" /> from the remote call` }));
         }
 
         const override = `override${pascalCase(each.language.csharp?.name || '')}`;
@@ -870,7 +875,34 @@ export class CmdletClass extends Class {
             yield `WriteObject(${outValue});`;
             return;
           }
+          // in m4, there will be no schema deinfed for the binary response, instead, we will have a field called binary with value true.
+          if ('binary' in each) {
+            yield `// (await response) // should be global::System.IO.Stream`;
+            if ($this.hasStreamOutput && $this.outFileParameter) {
+              const outfile = $this.outFileParameter;
+              const provider = Local('provider');
+              provider.initializer = undefined;
+              const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
+              yield paths.declarationStatement;
+              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
 
+
+              // this is a stream output. write to outfile
+              const stream = Local('stream', 'await response');
+              yield Using(stream.declarationExpression, function* () {
+                const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
+                yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
+              });
+
+
+              yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+                // no return type. Let's just return ... true?
+                yield 'WriteObject(true);';
+              });
+              return;
+            }
+          }
           yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
             // no return type. Let's just return ... true?
             yield 'WriteObject(true);';
@@ -1455,6 +1487,15 @@ export class CmdletClass extends Class {
     for (const httpOperation of values(operation.callGraph)) {
       const pageableInfo = httpOperation.language.csharp?.pageable;
       const v = httpOperation.responses && httpOperation.responses.length > 0 && httpOperation.responses[0] instanceof SchemaResponse;
+      // Add this for binary response in m4
+      for (const binary of values(httpOperation.responses).selectNonNullable(each => (<BinaryResponse>each).binary)) {
+        if (binary) {
+          // if this is a stream, skip the output type.
+          this.hasStreamOutput = true;
+          shouldAddPassThru = true;
+          outputTypes.add(`typeof(${dotnet.Bool})`);
+        }
+      }
       for (const schema of values(httpOperation.responses).selectNonNullable(each => (<SchemaResponse>each).schema)) {
 
         const props = NewGetAllProperties(schema);
