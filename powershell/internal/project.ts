@@ -246,11 +246,15 @@ export class Project extends codeDomProject {
     return this;
   }
 
+  /**
+   * Preprocess some list properties in metadata to string properties,
+   * so they can be easily used in csharp templates.
+   */
   private preprocessMetadata() {
     if (this.metadata) {
       this.metadata = {
         ...this.metadata,
-        requiredModulesAsString: this.metadata.requiredModules?.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`)?.join(', ') || '',
+        requiredModulesAsString: this.metadata.requiredModules ? this.metadata.requiredModules.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`)?.join(', ') : 'undefined',
         requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.requiredAssemblies),
         nestedModulesAsString: this.convertToPsListAsString(this.metadata.nestedModules),
         formatsToProcessAsString: this.convertToPsListAsString(this.metadata.formatsToProcess),
@@ -264,6 +268,6 @@ export class Project extends codeDomProject {
   }
 
   private convertToPsListAsString(items: string[]): string {
-    return items ? items.map(i => `'${i}'`).join(', ') : '';
+    return items ? items.map(i => `'${i}'`).join(', ') : 'undefined';
   }
 }
