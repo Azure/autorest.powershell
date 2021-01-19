@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { NewResponse, ParameterLocation } from '@azure-tools/codemodel-v3';
-import { Operation, SchemaResponse, Schema as NewSchema, Response } from '@azure-tools/codemodel';
+import { Operation, SchemaResponse, BinaryResponse, Schema as NewSchema, Response, BinarySchema } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { EOL, DeepPartial } from '@azure-tools/codegen';
 import { Access, Modifier } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
+import { Binary } from '../schema/binary';
 
 import { Expression, ExpressionOrLiteral, LiteralExpression, StringExpression, toExpression, valueOf } from '@azure-tools/codegen-csharp';
 import { Method } from '@azure-tools/codegen-csharp';
@@ -145,7 +146,7 @@ export class OperationMethod extends Method {
     }
 
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
-      const responseType = (<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null;
+      const responseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(""), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null);
       const headerType = response.language.default.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>response.language.default.headerSchema, true, state) : null;
       const newCallbackParameter = new CallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
       this.addParameter(newCallbackParameter);
@@ -231,7 +232,7 @@ export class OperationMethod extends Method {
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
-        )}
+      )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''));
       yield pathAndQueryV.declarationStatement;
 
@@ -354,10 +355,10 @@ export class CallMethod extends Method {
 
         // try statements
         const sendTask = Local(
-            'sendTask',
-            new LiteralExpression(
-                `${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value})`
-            )
+          'sendTask',
+          new LiteralExpression(
+            `${opMethod.senderParameter.value}.SendAsync(${reqParameter.use}, ${opMethod.contextParameter.value})`
+          )
         );
         yield sendTask;
         // delay sending BeforeCall event until URI has been replaced by HTTP pipeline
