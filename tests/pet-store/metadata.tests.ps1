@@ -26,5 +26,21 @@ Describe "Metadata support" {
         $psd1 = GeneratePsd1('empty-value.md')
         $psd1.FunctionsToExport | Should -Be @()
     }
+
+    It "Should generate PSD1 according to user's input" {
+        $psd1 = GeneratePsd1('fully-customized.md')
+        $psd1.RequiredModules | Should -HaveCount 2
+        $psd1.RequiredModules[0].ModuleName | Should -Be 'Az.KeyVault'
+        $psd1.RequiredModules[1].ModuleVersion | Should -Be '1.0.0-preview'
+
+        $psd1.RequiredAssemblies | Should -Be @('./custom/lib/third-party.dll')
+        $psd1.NestedModules | Should -Be @('./custom/my-custom.psm1')
+        $psd1.FormatsToProcess | Should -Be @('./generated/Az.Functions.formats.ps1xml', './custom/my.formats.ps1xml')
+        $psd1.TypesToProcess | Should -Be @('./custom/my.types.ps1xml')
+        $psd1.ScriptsToProcess | Should -Be @('./custom/my.scripts.ps1xml')
+        $psd1.FunctionsToExport | Should -Be @('Get-AzFunctionApp', 'New-AzFunctionApp', 'Remove-AzFunctionApp', 'Update-AzFunctionApp')
+        $psd1.AliasesToExport | Should -Be @('GAF', 'NAF')
+        $psd1.CmdletsToExport | Should -Be @('Get-MyItem', 'Remove-MyItem')
+    }
 }
 
