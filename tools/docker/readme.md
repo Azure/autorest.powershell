@@ -18,3 +18,5 @@ Packages contained in the image.
 `pwsh build-module.ps1`
 ## Run
 `pwsh run-module.ps1`
+## Playback Test
+`pwsh test-module.ps1`
