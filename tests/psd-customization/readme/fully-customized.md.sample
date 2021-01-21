@@ -1,0 +1,83 @@
+<!-- region Generated -->
+# Az.PetStore
+This directory contains the PowerShell module for the PetStore service.
+
+---
+## Status
+[![Az.PetStore](https://img.shields.io/powershellgallery/v/Az.PetStore.svg?style=flat-square&label=Az.PetStore "Az.PetStore")](https://www.powershellgallery.com/packages/Az.PetStore/)
+
+## Info
+- Modifiable: yes
+- Generated: all
+- Committed: yes
+- Packaged: yes
+
+---
+## Detail
+This module was primarily generated via [AutoRest](https://github.com/Azure/autorest) using the [PowerShell](https://github.com/Azure/autorest.powershell) extension.
+
+## Development
+For information on how to develop for `Az.PetStore`, see [how-to.md](how-to.md).
+<!-- endregion -->
+
+# Azure PowerShell AutoRest Configuration
+
+### AutoRest Configuration
+> see https://aka.ms/autorest
+
+``` yaml
+input-file:
+  - $(this-folder)/petstore.json
+
+module-version: 0.1.4
+title: PetStore
+
+azure: false
+powershell: true
+license-header: MICROSOFT_MIT_NO_VERSION
+metadata:
+  authors: Microsoft Corporation
+  owners: Microsoft Corporation
+  description: 'Microsoft Azure PowerShell: $(service-name) cmdlets'
+  copyright: Microsoft Corporation. All rights reserved.
+  tags: Azure ResourceManager ARM PSModule $(service-name)
+  companyName: Microsoft Corporation
+  requireLicenseAcceptance: true
+  licenseUri: https://aka.ms/azps-license
+  projectUri: https://github.com/Azure/azure-powershell
+  requiredModules:
+    - name: Az.KeyVault
+      version: 3.0.1
+    - name: Az.Storage
+      version: 1.0.0-preview
+  requiredAssemblies:
+    - ./custom/lib/third-party.dll
+  nestedModules:
+    - ./custom/my-custom.psm1
+  formatsToProcess:
+    - ./generated/Az.Functions.formats.ps1xml
+    - ./custom/my.formats.ps1xml
+  typesToProcess:
+    - ./custom/my.types.ps1xml
+  scriptsToProcess:
+    - ./custom/my.scripts.ps1xml
+  functionsToExport:
+    - Get-AzFunctionApp
+    - New-AzFunctionApp
+    - Remove-AzFunctionApp
+    - Update-AzFunctionApp
+  cmdletsToExport:
+    - Get-MyItem
+    - Remove-MyItem
+  aliasesToExport:
+    - GAF
+    - NAF
+
+prefix: Az
+subject-prefix: $(service-name)
+module-name: $(prefix).$(service-name)
+namespace: Microsoft.Azure.PowerShell.Cmdlets.$(service-name)
+
+clear-output-folder: true
+output-folder: .
+```

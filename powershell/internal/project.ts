@@ -31,9 +31,30 @@ export interface Metadata {
   companyName: string;
   licenseUri: string;
   projectUri: string;
+  requiredModules: PsRequiredModule[];
+  requiredModulesAsString: string;
+  requiredAssemblies: string[];
+  requiredAssembliesAsString: string;
+  nestedModules: string[];
+  nestedModulesAsString: string;
+  formatsToProcess: string[];
+  formatsToProcessAsString: string;
+  typesToProcess: string[];
+  typesToProcessAsString: string;
+  scriptsToProcess: string[];
+  scriptsToProcessAsString: string;
+  functionsToExport: string[];
+  functionsToExportAsString: string;
+  cmdletsToExport: string[];
+  cmdletsToExportAsString: string;
+  aliasesToExport: string[];
+  aliasesToExportAsString: string;
 }
 
-
+export interface PsRequiredModule {
+  name: string;
+  version: string;
+}
 
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
@@ -155,6 +176,7 @@ export class Project extends codeDomProject {
     this.accountsVersionMinimum = '2.2.3';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
+    this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
 
     // Flags
@@ -222,5 +244,30 @@ export class Project extends codeDomProject {
     // abort now if we have any errors.
     this.state.checkpoint();
     return this;
+  }
+
+  /**
+   * Preprocess some list properties in metadata to string properties,
+   * so they can be easily used in csharp templates.
+   */
+  private preprocessMetadata() {
+    if (this.metadata) {
+      this.metadata = {
+        ...this.metadata,
+        requiredModulesAsString: this.metadata.requiredModules ? this.metadata.requiredModules.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`)?.join(', ') : 'undefined',
+        requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.requiredAssemblies),
+        nestedModulesAsString: this.convertToPsListAsString(this.metadata.nestedModules),
+        formatsToProcessAsString: this.convertToPsListAsString(this.metadata.formatsToProcess),
+        typesToProcessAsString: this.convertToPsListAsString(this.metadata.typesToProcess),
+        scriptsToProcessAsString: this.convertToPsListAsString(this.metadata.scriptsToProcess),
+        functionsToExportAsString: this.convertToPsListAsString(this.metadata.functionsToExport),
+        cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.cmdletsToExport),
+        aliasesToExportAsString: this.convertToPsListAsString(this.metadata.aliasesToExport)
+      }
+    }
+  }
+
+  private convertToPsListAsString(items: string[]): string {
+    return items ? items.map(i => `'${i}'`).join(', ') : 'undefined';
   }
 }
