@@ -17,18 +17,18 @@ Describe "Metadata support" {
     }
 
     It "Should generate default value if metadata is empty" {
-        $psd1 = GeneratePsd1('no-metadata.md')
+        $psd1 = GeneratePsd1('no-metadata.md.sample')
         $psd1.FunctionsToExport | Should -Be @('Get-AzPetStoreUser', '*')
         $psd1.FormatsToProcess | Should -Be './Az.PetStore.format.ps1xml'
     }
 
     It "Should generate empty value if user inputs empty array" {
-        $psd1 = GeneratePsd1('empty-value.md')
+        $psd1 = GeneratePsd1('empty-value.md.sample')
         $psd1.FunctionsToExport | Should -Be @()
     }
 
     It "Should generate PSD1 according to user's input" {
-        $psd1 = GeneratePsd1('fully-customized.md')
+        $psd1 = GeneratePsd1('fully-customized.md.sample')
         $psd1.RequiredModules | Should -HaveCount 2
         $psd1.RequiredModules[0].ModuleName | Should -Be 'Az.KeyVault'
         $psd1.RequiredModules[1].ModuleVersion | Should -Be '1.0.0-preview'
