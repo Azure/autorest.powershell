@@ -875,6 +875,7 @@ export class CmdletClass extends Class {
             yield `WriteObject(${outValue});`;
             return;
           }
+
           // in m4, there will be no schema deinfed for the binary response, instead, we will have a field called binary with value true.
           if ('binary' in each) {
             yield `// (await response) // should be global::System.IO.Stream`;
@@ -882,11 +883,18 @@ export class CmdletClass extends Class {
               const outfile = $this.outFileParameter;
               const provider = Local('provider');
               provider.initializer = undefined;
-              const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
+              const paths = Local('paths', `new global::System.Collections.ObjectModel.Collection<global::System.String>()`);
               yield paths.declarationStatement;
-              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-
+              yield Try(function* () {
+                yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+              });
+              const notfound = new Parameter('', { declaration: `global::System.Management.Automation.ItemNotFoundException` });
+              yield Catch(notfound, function* () {
+                yield `// If the file does not exist, we will try to create it`;
+                yield `${paths.value}.Add(${outfile.value});`;
+              });
 
               // this is a stream output. write to outfile
               const stream = Local('stream', 'await response');
