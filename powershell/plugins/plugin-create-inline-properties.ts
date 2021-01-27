@@ -128,7 +128,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
         alias: [],
-        required: virtualProperty.required || !!values(<Array<any>>virtualProperty.originalContainingSchema.properties).first(each => !!each && !!each.required && !!each.serializedName && each.serializedName.toLowerCase() === virtualProperty.property.language.default.name.toLowerCase()),
+        readOnly: virtualProperty.readOnly,
+        required: virtualProperty.required,
         sharedWith: virtualProperty.sharedWith,
       };
       // add it to the list of virtual properties that share this property.
