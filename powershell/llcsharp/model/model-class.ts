@@ -475,14 +475,15 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     });
 
     let used = false;
-
+    let i = 0;
     for (const headerProperty of values(avp).where(each => each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.Header)) {
       used = true;
       headerProperty.property.schema
       const t = `((${headerProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
       const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
       const td = this.state.project.modelsNamespace.NewResolveTypeDeclaration(headerProperty.property.schema, false, this.state);
-      readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values, td.defaultOfType)};`));
+      readHeaders.add(If(`${valueOf(headers)}.TryGetValues("${headerProperty.property.serializedName}", out var ${values}${i})`, `${t}.${headerProperty.name} = ${td.deserializeFromContainerMember(KnownMediaType.Header, headers, values + i, td.defaultOfType)};`));
+      i++;
     }
     if (used) {
       this.interfaces.push(ClientRuntime.IHeaderSerializable);
