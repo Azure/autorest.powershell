@@ -14,7 +14,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal static class MarkdownRenderer
     {
-        public static void WriteMarkdowns(IEnumerable<VariantGroup> variantGroups, PsModuleHelpInfo moduleHelpInfo, string docsFolder, string examplesFolder)
+        public static void WriteMarkdowns(IEnumerable<VariantGroup> variantGroups, PsModuleHelpInfo moduleHelpInfo, string docsFolder, string examplesFolder, bool excludeExamples = false)
         {
             Directory.CreateDirectory(docsFolder);
             var markdownInfos = variantGroups.Where(vg => !vg.IsInternal).Select(vg => new MarkdownHelpInfo(vg, examplesFolder)).OrderBy(mhi => mhi.CmdletName).ToArray();
@@ -34,13 +34,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 }
 
                 sb.Append($"## DESCRIPTION{Environment.NewLine}{markdownInfo.Description.ToDescriptionFormat()}{Environment.NewLine}{Environment.NewLine}");
-
-                sb.Append($"## EXAMPLES{Environment.NewLine}{Environment.NewLine}");
-                foreach (var exampleInfo in markdownInfo.Examples)
+                if (!excludeExamples)
                 {
-                    sb.Append(exampleInfo.ToHelpExampleOutput());
+                    sb.Append($"## EXAMPLES{Environment.NewLine}{Environment.NewLine}");
+                    foreach (var exampleInfo in markdownInfo.Examples)
+                    {
+                        sb.Append(exampleInfo.ToHelpExampleOutput());
+                    }
                 }
-
                 sb.Append($"## PARAMETERS{Environment.NewLine}{Environment.NewLine}");
                 foreach (var parameter in markdownInfo.Parameters)
                 {
