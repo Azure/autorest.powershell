@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch] $NoExamples)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch] $ExcludeExamples)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -122,7 +122,7 @@ $null = New-Item -ItemType Directory -Force -Path $examplesFolder
 
 if($NoDocs) {
   Write-Host -ForegroundColor Green 'Creating exports...'
-  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs -ExamplesFolder $examplesFolder -ExcludeExamples:$NoExamples
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs -ExamplesFolder $examplesFolder -ExcludeExamples:$ExcludeExamples
 } else {
   Write-Host -ForegroundColor Green 'Creating exports and docs...'
   $moduleDescription = '${$project.metadata.description}'
@@ -131,7 +131,7 @@ if($NoDocs) {
     $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
-  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid -ExcludeExamples:$NoExamples
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid -ExcludeExamples:$ExcludeExamples
 }
 
 Write-Host -ForegroundColor Green 'Creating format.ps1xml...'
@@ -147,7 +147,7 @@ $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder,
 $null = New-Item -ItemType Directory -Force -Path $testFolder
 Export-TestStub -ModuleName $moduleName -ExportsFolder $exportsFolder -OutputFolder $testFolder
 
-if($NoExamples){
+if($ExcludeExamples){
   Write-Host -ForegroundColor Green 'Skipping example stubs...'
 }
 else {
