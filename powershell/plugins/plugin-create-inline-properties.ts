@@ -45,6 +45,10 @@ function getNameOptions(typeName: string, components: Array<string>) {
 
 
 function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, threshold: number, conflicts: Array<string>) {
+  // Some properties should be removed are wrongly kept as null and need to clean them
+  if (schema.properties) {
+    schema.properties = schema.properties.filter(each => each);
+  }
   // dolauli
   //    owned: all properties(obj & nonobj) in the schema,
   //  inherited: Properties from parents,
