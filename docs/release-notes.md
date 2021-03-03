@@ -33,12 +33,12 @@
 
 ## Upgrading 
 
-If you've been using an earlier build of the `PowerShell` generator (or the earlier `Incubator` builds...), you want to make sure you're using nodejs LTS (v10.15) 
+If you've been using an earlier build of the `PowerShell` generator (or the earlier `Incubator` builds...), you want to make sure you're using nodejs LTS (v14.15.5) 
 
 ``` powershell
 > node -v 
 
-v10.15.0
+v14.15.5
 ```
 
 After that, you can upgrade pretty easily:

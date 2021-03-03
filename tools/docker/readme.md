@@ -1,7 +1,7 @@
 # All-in-One Docker Image for Azure PowerShell Code Generation
 Packages contained in the image.
 * PowerShell 6.2.4
-* NodeJS 10.16.0
+* NodeJS 14.15.5
 * Latest autorest
 * Dotnet SDK 2.1
 

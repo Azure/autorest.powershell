@@ -4,9 +4,9 @@ pool:
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use Node 10.16.0'
+  displayName: 'Use Node 14.15.5'
   inputs:
-    versionSpec: 10.16.0
+    versionSpec: 14.15.5
 
 - task: Npm@1
   displayName: 'Install autorest@latest'
