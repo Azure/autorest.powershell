@@ -1,6 +1,6 @@
 ﻿param([switch]$Generate,[string]$TestName,[switch]$SourceVersion,[switch]$TargetVersion,[switch]$AllowList,[switch]$BlackList)
 #Need to use the right version of node.js
-#nvs use 10.16.0
+#nvs use 14.15.5
 #Create folder to save Compare Results
 if(!(Test-Path CompareResult))
 {

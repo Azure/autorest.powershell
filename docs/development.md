@@ -4,7 +4,7 @@
 
 Use of this project requires the following:
 
-- [NodeJS LTS](https://nodejs.org) (currently 10.15.0) <br> I recommend that you use a tool like [nvs](https://github.com/jasongin/nvs) so that you can switch between versions of node without pain <br>&nbsp;
+- [NodeJS LTS](https://nodejs.org) (currently 14.15.5) <br> I recommend that you use a tool like [nvs](https://github.com/jasongin/nvs) so that you can switch between versions of node without pain <br>&nbsp;
 - [AutoRest](https://aka.ms/autorest) v3 <br> `npm install -g autorest@latest ` <br>&nbsp;
 - [RushJS](https://rushjs.io/) manages multiple nodejs projects in a single repository. <br> `npm install -g @microsoft/rush` <br>&nbsp;
 - PowerShell 6.0 - If you dont have it installed, you can use the cross-platform npm package <br> `npm install -g pwsh` <br>&nbsp;

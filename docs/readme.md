@@ -4,7 +4,7 @@
 
 Use of the beta version of `autorest.powershell` requires the following:
 
-- [NodeJS LTS](https://nodejs.org) (10.15.x LTS preferred. Will not function with Node < 10.x Be Wary of 11.x builds as they may introduce instability or breaking changes. ) 
+- [NodeJS LTS](https://nodejs.org) (14.x LTS preferred. Will not function with Node < 10.x. ) 
 > if you want an easy way to install and update Node, I recommend [NVS - Node Version Switcher](../nodejs/installing-via-nvs.md) or [NVM - Node Version Manager](../nodejs/installing-via-nvm.md)
 
 - [AutoRest](https://aka.ms/autorest) v3 <br> `npm install -g autorest ` <br>&nbsp;
