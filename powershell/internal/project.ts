@@ -86,6 +86,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
 
 export class Project extends codeDomProject {
   public azure!: boolean;
+  public addToString!: boolean;
   public license!: string;
   public cmdletFolder!: string;
 
@@ -181,7 +182,7 @@ export class Project extends codeDomProject {
 
     // Flags
     this.azure = this.model.language.default.isAzure;
-
+    this.addToString = await this.state.getValue('nested-object-to-string', false);
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;

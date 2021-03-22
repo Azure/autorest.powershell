@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty } from '@azure-tools/codegen-csharp';
+import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Local, PartialMethod, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty, ParameterModifier } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime, ObjectImplementation, SchemaDefinitionResolver, DeserializerPartialClass } from '../llcsharp/exports';
 import { State } from '../internal/state';
 import { PSObject, PSTypeConverter, TypeConverterAttribute } from '../internal/powershell-declarations';
@@ -41,6 +41,7 @@ export class ModelExtensionsNamespace extends Namespace {
     this.apply(objectInitializer);
     this.add(new ImportDirective(`${ClientRuntime.name}.PowerShell`));
     this.subNamespaces[this.fullName] = this;
+
 
     const $this = this;
     const resolver = (s: NewSchema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state);
@@ -117,7 +118,32 @@ export class ModelExtensionsNamespace extends Namespace {
             description: 'Serializes this instance to a json string.',
             returnsDescription: 'a <see cref="System.String" /> containing this model serialized to JSON text.'
           }));
+          if (this.state.project.addToString) {
+            // add partial OverrideToString method
+            const returnNow = new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: `/// set returnNow to true if you provide a customized OverrideToString function` });
+            const stringResult = new Parameter('stringResult', dotnet.String, { modifier: ParameterModifier.Ref, description: `/// instance serialized to a string, normally it is a Json` });
+            const overrideToStringMethod = new PartialMethod('OverrideToString', dotnet.Void, {
+              parameters: [stringResult, returnNow],
+              description: `<c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior`
+            });
+            model.add(overrideToStringMethod);
+            // add ToString method
+            const toStringMethod = new Method(`ToString`, dotnet.String, {
+              override: Modifier.Override,
+              access: Access.Public
+            });
 
+            toStringMethod.add(function* () {
+              const skip = Local('returnNow', `${dotnet.False}`);
+              const result = Local('result', `global::System.String.Empty`);
+              yield skip.declarationStatement;
+              yield result.declarationStatement;
+              yield `${overrideToStringMethod.invoke(`ref ${result.value}`, `ref ${skip.value}`)};`;
+              yield If(`${skip}`, Return(`${result}`));
+              yield `return ToJsonString();`
+            });
+            model.add(toStringMethod);
+          }
           const hashDeseralizer = new DeserializerPartialClass(model, modelInterface, System.Collections.IDictionary, 'Dictionary', schema, resolver).init();
           const psDeseralizer = new DeserializerPartialClass(model, modelInterface, PSObject, 'PSObject', schema, resolver).init();
 
