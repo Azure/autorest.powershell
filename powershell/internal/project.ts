@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Dictionary } from '@azure-tools/linq';
+import { Dictionary, values } from '@azure-tools/linq';
 import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean, SchemaDefinitionResolver } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
@@ -89,6 +89,7 @@ export class Project extends codeDomProject {
   public addToString!: boolean;
   public license!: string;
   public cmdletFolder!: string;
+  public modelCmdletFolder!: string;
 
   public customFolder!: string;
   public utilsFolder!: string;
@@ -121,6 +122,7 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
   public profiles!: Array<string>;
+  public modelCmdlets!: Array<string>;
 
   public prefix!: string;
   public subjectPrefix!: string;
@@ -180,6 +182,14 @@ export class Project extends codeDomProject {
     this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
 
+    // modelcmdlets are models that we will create cmdlets for.
+    this.modelCmdlets = [];
+    let directives: Array<any> = [];
+    const allDirectives = await this.state.getValue('directive');
+    directives = values(<any>allDirectives).toArray();
+    for (const directive of directives.filter(each => each['model-cmdlet'])) {
+      this.modelCmdlets = this.modelCmdlets.concat(<ConcatArray<string>>values(directive['model-cmdlet']).toArray());
+    }
     // Flags
     this.azure = this.model.language.default.isAzure;
     this.addToString = await this.state.getValue('nested-object-to-string', false);
@@ -194,6 +204,7 @@ export class Project extends codeDomProject {
     this.baseFolder = await this.state.getValue('current-folder');
     this.moduleFolder = await this.state.getValue('module-folder');
     this.cmdletFolder = await this.state.getValue('cmdlet-folder');
+    this.modelCmdletFolder = await this.state.getValue('model-cmdlet-folder');
 
     this.customFolder = await this.state.getValue('custom-cmdlet-folder');
     this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
