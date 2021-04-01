@@ -120,6 +120,10 @@ $moduleName = '${$project.moduleName}'
 $examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
 $null = New-Item -ItemType Directory -Force -Path $examplesFolder
 
+Write-Host -ForegroundColor Green 'Creating cmdlets for specified models...'
+$modelCmdlets = @(${$project.modelCmdlets.map(each => `'` + each + `'`).join(', ')})
+. (Join-Path $PSScriptRoot 'create-model-cmdlets.ps1') -Models $modelCmdlets
+
 if($NoDocs) {
   Write-Host -ForegroundColor Green 'Creating exports...'
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs -ExamplesFolder $examplesFolder

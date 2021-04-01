@@ -15,6 +15,7 @@ internal
 exports
 tools
 custom/*.psm1
+custom/autogen-model-cmdlets
 test/*-TestResults.xml
 /*.ps1
 /*.ps1xml
