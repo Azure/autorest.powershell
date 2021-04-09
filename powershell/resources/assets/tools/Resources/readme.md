@@ -83,6 +83,7 @@ module-version: 0.0.1
 title: Resources
 
 directive:
+  - remove-operation: Deployments_CreateOrUpdateAtSubscriptionScope
   - where:
       subject: Operation
     hide: true
