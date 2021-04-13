@@ -24,6 +24,8 @@ if(-not $Isolated) {
 $isAzure = $${$project.azure}
 if($isAzure) {
   . (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts
+  # Load the latest version of Az.Accounts installed
+  Import-Module -Name Az.Accounts -RequiredVersion (Get-Module -Name Az.Accounts -ListAvailable | Sort-Object -Property Version -Descending)[0].Version
 }
 
 $localModulesPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dependencyModuleFolder)}'
