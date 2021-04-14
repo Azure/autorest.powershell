@@ -35,7 +35,9 @@ async function copyRequiredFiles(project: Project) {
   await copyResources(join(resources, 'utils'), async (fname, content) => project.state.writeFile(join(project.utilsFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
 
   // Modules files
-  await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
+  if (project.azure) {
+    await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
+  }
 
   if (project.azure) {
     // Signing key file
