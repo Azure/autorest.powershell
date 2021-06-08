@@ -123,7 +123,8 @@ $null = New-Item -ItemType Directory -Force -Path $examplesFolder
 Write-Host -ForegroundColor Green 'Creating cmdlets for specified models...'
 $modelCmdlets = @(${$project.modelCmdlets.map(each => `'` + each + `'`).join(', ')})
 if ($modelCmdlets.Count -gt 0) {
-  pwsh (Join-Path $PSScriptRoot 'create-model-cmdlets.ps1') -Models $modelCmdlets
+  . (Join-Path $PSScriptRoot 'create-model-cmdlets.ps1')
+  CreateModelCmdlet($modelCmdlets)
 }
 
 if($NoDocs) {
