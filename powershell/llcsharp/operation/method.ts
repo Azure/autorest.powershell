@@ -129,6 +129,11 @@ export class OperationMethod extends Method {
       this.methodParameters.push(p);
     }
 
+    if (baseUrl === '') {
+      // Some services will make the host as an input parameter
+      baseUrl = this.operation.requests ? this.operation.requests[0].protocol.http?.uri : '';
+    }
+    
     this.description = this.operation.language.csharp?.description || '';
 
     // add body paramter if there should be one.
