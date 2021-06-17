@@ -1102,7 +1102,7 @@ export class CmdletClass extends Class {
           else {
             const data = new LocalVariable('data', dotnet.Var, { initializer: new LiteralExpression(`${messageData.use}()`) });
             yield data.declarationStatement;
-            yield 'WriteInformation(data, new[] { data.Message });';
+            yield 'WriteInformation(data.Message, new string[]{});';
           }
           yield Return();
 
