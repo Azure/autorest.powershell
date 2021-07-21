@@ -423,7 +423,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
             } else {
               //handle breaking change for output type
-              if (breakingChange['deprecated-cmdlet-output-type']) {
+              if (breakingChange['new-output-properties']) {
                 operation.details.csharp.breakingChange.output = <any>{}
                 operation.details.csharp.breakingChange.output.deprecatedCmdLetOutputType = breakingChange['deprecated-cmdlet-output-type'];
                 operation.details.csharp.breakingChange.output.replacement = (breakingChange && breakingChange['replacement-cmdlet-output-type']) ? breakingChange['replacement-cmdlet-output-type'] : undefined;

@@ -179,8 +179,16 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
     }
     if (parameter.breakingChange.replacement) parameters.push(`ReplaceMentCmdletParameterName="${parameter.breakingChange.replacement}"`)
     if (parameter.breakingChange.isBecomingMandatory) parameters.push(`IsBecomingMandatory=${parameter.breakingChange.isBecomingMandatory}`)
-    if (parameter.breakingChange.oldParamaterType) parameters.push(`OldParamaterType="${parameter.breakingChange.oldParamaterType}"`)
-    if (parameter.breakingChange.newParameterType) parameters.push(`NewParameterType="${parameter.breakingChange.newParameterType}"`)
+    if (parameter.breakingChange.newParameterType) {
+      // If old type is set in directive, use it, otherwise try to get the type from the schema
+      if (parameter.breakingChange.oldParamaterType) {
+        parameters.push(`OldParamaterType="${parameter.breakingChange.oldParamaterType}"`)
+      } else {
+        // for primitive types, should use name, otherwise use fullname which contains namespace
+        parameters.push(`OldParamaterType="${parameter.schema.language.csharp.fullname.startsWith("<") ? parameter.schema.language.csharp.name : parameter.schema.language.csharp.fullname}"`)
+      }
+      parameters.push(`NewParameterType="${parameter.breakingChange.newParameterType}"`)
+    }
     targetProperty.add(new Attribute(ClientRuntime.ParameterBreakingChangeAttribute, {
       parameters: parameters
     }));
@@ -1511,60 +1519,6 @@ export class CmdletClass extends Class {
       this.state.message({ Channel: Channel.Debug, Text: `[DIRECTIVE] Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
-    //add breaking change attributes for cmdlet, variant, output type
-    if (operation.details.csharp.breakingChange) {
-      var breakingChange = operation.details.csharp.breakingChange
-      if (breakingChange.cmdlet) {
-        var parameters = [];
-        if (breakingChange.cmdlet.deprecateByVersion) {
-          parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`)
-          if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`)
-        }
-        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`)
-        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`)
-
-        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }))
-      }
-      if (breakingChange.variant) {
-        var parameters = [];
-        parameters.push(`new string[] {"${breakingChange.variant.name}"}`)
-        if (breakingChange.variant.deprecateByVersion) {
-          parameters.push(`"${breakingChange.variant.deprecateByVersion}"`)
-          if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`)
-        }
-        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`)
-
-        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }))
-      }
-      if (breakingChange.output) {
-        var parameters = [];
-        parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`)
-        if (breakingChange.output.deprecateByVersion) {
-          parameters.push(`"${breakingChange.output.deprecateByVersion}"`)
-          if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`)
-        }
-        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`)
-        if (breakingChange.output.deprecatedOutputProperties) {
-          var properties: string[] = Object.assign([], breakingChange.output.deprecatedOutputProperties)
-          properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`DeprecatedOutputProperties=new string[] {${properties.join(',')}}`)
-        }
-        if (breakingChange.output.newOutputProperties) {
-          var properties: string[] = Object.assign([], breakingChange.output.newOutputProperties)
-          properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`NewOutputProperties=new string[] {${properties.join(',')}}`)
-        }
-        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription="${breakingChange.output.changeDescription}"`)
-
-        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }))
-      }
-    }
-
-    //add preview message attribute for cmdlet
-    if (operation.details.csharp.previewMessage) {
-      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${operation.details.csharp.previewMessage}"`] }))
-    }
-
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));
 
     // add alias attribute if there is any aliases for this cmdlet
@@ -1644,6 +1598,64 @@ export class CmdletClass extends Class {
       outputTypes.add(`typeof(${dotnet.Bool})`);
     }
 
+    //add breaking change attributes for cmdlet, variant, output type
+    if (operation.details.csharp.breakingChange) {
+      var breakingChange = operation.details.csharp.breakingChange
+      if (breakingChange.cmdlet) {
+        var parameters = [];
+        if (breakingChange.cmdlet.deprecateByVersion) {
+          parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`)
+          if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`)
+        }
+        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`)
+        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`)
+
+        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }))
+      }
+      if (breakingChange.variant) {
+        var parameters = [];
+        parameters.push(`new string[] {"${breakingChange.variant.name}"}`)
+        if (breakingChange.variant.deprecateByVersion) {
+          parameters.push(`"${breakingChange.variant.deprecateByVersion}"`)
+          if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`)
+        }
+        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`)
+
+        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }))
+      }
+      if (breakingChange.output) {
+        var parameters = [];
+        // if deprecated output types are set in directive, use it
+        if (breakingChange.output.deprecatedCmdLetOutputType) {
+          parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`)
+        } else {
+          parameters.push(`"${outputTypes.values().next().value.replace(/typeof\((.*)\)/, "$1")}"`)
+        }
+        if (breakingChange.output.deprecateByVersion) {
+          parameters.push(`"${breakingChange.output.deprecateByVersion}"`)
+          if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`)
+        }
+        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`)
+        if (breakingChange.output.deprecatedOutputProperties) {
+          var properties: string[] = Object.assign([], breakingChange.output.deprecatedOutputProperties)
+          properties.forEach((element, index) => properties[index] = '"' + element + '"');
+          parameters.push(`DeprecatedOutputProperties=new string[] {${properties.join(',')}}`)
+        }
+        if (breakingChange.output.newOutputProperties) {
+          var properties: string[] = Object.assign([], breakingChange.output.newOutputProperties)
+          properties.forEach((element, index) => properties[index] = '"' + element + '"');
+          parameters.push(`NewOutputProperties=new string[] {${properties.join(',')}}`)
+        }
+        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription="${breakingChange.output.changeDescription}"`)
+
+        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }))
+      }
+    }
+
+    //add preview message attribute for cmdlet
+    if (operation.details.csharp.previewMessage) {
+      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${operation.details.csharp.previewMessage}"`] }))
+    }
     this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
     if (shouldAddPassThru) {
       const passThru = this.add(new Property('PassThru', SwitchParameter, { description: 'When specified, forces the cmdlet return a \'bool\' given that there isn\'t a return type by default.' }));
