@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host, Channel } from '@azure-tools/autorest-extension-base';
-import { pascalCase, serialize } from '@azure-tools/codegen';
+import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
 import { CommandOperation } from '../utils/command-operation';
@@ -40,6 +40,25 @@ interface WhereCommandDirective {
       description: string;
       script: string;
     };
+    'breaking-change'?: {
+      // for cmdlet breaking change
+      'replacement-cmdlet'?: string;
+      // for cmdlet output type breaking change
+      'deprecated-cmdlet-output-type'?: string;
+      'replacement-cmdlet-output-type'?: string;
+      'deprecated-output-properties'?: Array<string>;
+      'new-output-properties'?: Array<string>;
+      // for parameter breaking change
+      'replacement-parameter'?: string;
+      'old-parameter-type'?: string;
+      'new-parameter-type'?: string;
+      'become-mandatory'?: boolean;
+      // for all breaking changes
+      'change-description'?: string;
+      'deprecated-by-version'?: string;
+      'change-effective-date'?: string;
+    };
+    'preview-message'?: string;
     'default'?: {
       name: string;
       description: string;
@@ -260,6 +279,8 @@ async function tweakModel(state: State): Promise<PwshModel> {
               : directive.set.alias
             : undefined
           : undefined;
+      const breakingChange = (directive.set !== undefined) ? directive.set['breaking-change'] : undefined;
+      const previewMessage = (directive.set !== undefined) ? directive.set['preview-message'] : undefined;
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
       const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set['subject-prefix'] : undefined;
       const verbReplacer = (directive.set !== undefined) ? directive.set.verb : undefined;
@@ -319,6 +340,20 @@ async function tweakModel(state: State): Promise<PwshModel> {
           parameter.completerInfo = paramCompleterReplacer ? paramCompleterReplacer : parameter.completerInfo;
           parameter.defaultInfo = paramDefaultReplacer ? paramDefaultReplacer : parameter.defaultInfo;
 
+          // handle parameter breaking change for parameter
+          if (breakingChange) {
+            parameter.breakingChange = <any>{}
+            parameter.breakingChange.parameterName = parameter.name
+            parameter.breakingChange.replacement = (breakingChange && breakingChange['replacement-parameter']) ? breakingChange['replacement-parameter'] : undefined
+            parameter.breakingChange.isBecomingMandatory = (breakingChange && breakingChange['become-mandatory']) ? breakingChange['become-mandatory'] : undefined
+            parameter.breakingChange.oldParamaterType = (breakingChange && breakingChange['old-parameter-type']) ? breakingChange['old-parameter-type'] : undefined
+            parameter.breakingChange.newParameterType = (breakingChange && breakingChange['new-parameter-type']) ? breakingChange['new-parameter-type'] : undefined
+            parameter.breakingChange.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
+            parameter.breakingChange.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
+            parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
+          }
+          // handle preview message for parameter
+          parameter.previewMessage = previewMessage ? previewMessage : undefined
           if (clearAlias) {
             parameter.alias = [];
             state.message({
@@ -375,6 +410,45 @@ async function tweakModel(state: State): Promise<PwshModel> {
           const newVerb = operation.details.csharp.verb;
           const newVariantName = operation.details.csharp.name;
           const newCommandName = getCmdletName(newVerb, newSubjectPrefix, newSubject, newVariantName);
+          if (breakingChange) {
+            operation.details.csharp.breakingChange = operation.details.csharp.breakingChange ? operation.details.csharp.breakingChange : <any>{}
+            if (variantRegex) {
+              // handle parameter breaking change for variant
+              operation.details.csharp.breakingChange.variant = <any>{}
+              operation.details.csharp.breakingChange.variant.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+              operation.details.csharp.breakingChange.variant.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
+              operation.details.csharp.breakingChange.variant.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
+
+              operation.details.csharp.breakingChange.variant.name = newVariantName
+
+            } else {
+              //handle breaking change for output type
+              if (breakingChange['new-output-properties']) {
+                operation.details.csharp.breakingChange.output = <any>{}
+                operation.details.csharp.breakingChange.output.deprecatedCmdLetOutputType = breakingChange['deprecated-cmdlet-output-type'];
+                operation.details.csharp.breakingChange.output.replacement = (breakingChange && breakingChange['replacement-cmdlet-output-type']) ? breakingChange['replacement-cmdlet-output-type'] : undefined;
+                operation.details.csharp.breakingChange.output.deprecatedOutputProperties = (breakingChange && breakingChange['deprecated-output-properties']) ? breakingChange['deprecated-output-properties'] : undefined;
+                operation.details.csharp.breakingChange.output.newOutputProperties = (breakingChange && breakingChange['new-output-properties']) ? breakingChange['new-output-properties'] : undefined;
+                operation.details.csharp.breakingChange.output.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+                operation.details.csharp.breakingChange.output.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
+                operation.details.csharp.breakingChange.output.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
+              } else {
+                // handle parameter breaking change for cmdlet
+                operation.details.csharp.breakingChange.cmdlet = <any>{}
+                operation.details.csharp.breakingChange.cmdlet.replacement = (breakingChange && breakingChange['replacement-cmdlet']) ? breakingChange['replacement-cmdlet'] : undefined
+                if (operation.details.csharp.breakingChange.cmdlet.replacement && operation.details.csharp.breakingChange.cmdlet.replacement.startsWith("$.")) {
+                  operation.details.csharp.breakingChange.cmdlet.replacement = safeEval(operation.details.csharp.breakingChange.cmdlet.replacement.replace("$", `"${newCommandName.split('_')[0]}"`))
+                }
+                operation.details.csharp.breakingChange.cmdlet.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
+                operation.details.csharp.breakingChange.cmdlet.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
+                operation.details.csharp.breakingChange.cmdlet.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
+                operation.details.csharp.breakingChange.cmdlet.name = newCommandName.split('_')[0];
+              }
+            }
+
+          }
+          // handle preview message for cmdlet
+          operation.details.csharp.previewMessage = previewMessage ? previewMessage : undefined
 
           // just the subject prefix can be an empty string
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {

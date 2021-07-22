@@ -168,6 +168,8 @@ export class Project extends codeDomProject {
       'Carbon.Json.Parser': `${this.projectNamespace}.Runtime.Json`,
       'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.Message.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.generated.runtime.Properties': `${this.projectNamespace}.generated.runtime.Properties`,
       'Microsoft.Rest': `${this.projectNamespace}`,
     };
 
