@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:6.2.4-ubuntu-18.04
+FROM mcr.microsoft.com/powershell:7.1.3-ubuntu-18.04
 
 # Install dependencies and clean up
 RUN apt-get update \
