@@ -179,6 +179,7 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
     }
     if (parameter.breakingChange.replacement) parameters.push(`ReplaceMentCmdletParameterName="${parameter.breakingChange.replacement}"`)
     if (parameter.breakingChange.isBecomingMandatory) parameters.push(`IsBecomingMandatory=${parameter.breakingChange.isBecomingMandatory}`)
+    if (parameter.breakingChange.changeDescription) parameters.push(`ChangeDescription="${parameter.breakingChange.changeDescription}"`)
     if (parameter.breakingChange.newParameterType) {
       // If old type is set in directive, use it, otherwise try to get the type from the schema
       if (parameter.breakingChange.oldParamaterType) {
