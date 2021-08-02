@@ -83,7 +83,7 @@ namespace Microsoft.Message.ClientRuntime
 
             if (ChangeInEfectByDateSet)
             {
-                writeOutput(string.Format(Resources.BreakingChangesAttributesInEffectByDateMessage, this.ChangeInEfectByDate));
+                writeOutput(string.Format(Resources.BreakingChangesAttributesInEffectByDateMessage, this.ChangeInEfectByDate.ToString("d")));
             }
 
             if (DeprecateByVersionSet)
