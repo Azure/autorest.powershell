@@ -52,6 +52,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
         public SwitchParameter ExcludeDocs { get; set; }
 
+        [Parameter(Mandatory = false, ParameterSetName = "Docs")]
+        public SwitchParameter ExcludeExampleTemplates { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = "Docs")]
+        public SwitchParameter ExcludeNotesSection { get; set; }
+
         protected override void ProcessRecord()
         {
           try {
@@ -97,13 +103,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 ");
-                sb.Append($"{Environment.NewLine}");
-                sb.Append(variantGroup.ToHelpCommentOutput());
-                sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
-                sb.Append(variantGroup.Aliases.ToAliasOutput());
-                sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
-                sb.Append(variantGroup.ToCmdletBindingOutput());
-                sb.Append(variantGroup.ProfileName.ToProfileOutput());
+                    sb.Append($"{Environment.NewLine}");
+                    sb.Append(variantGroup.ToHelpCommentOutput(ExcludeExampleTemplates, ExcludeNotesSection));
+                    sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
+                    sb.Append(variantGroup.Aliases.ToAliasOutput());
+                    sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
+                    sb.Append(variantGroup.ToCmdletBindingOutput());
+                    sb.Append(variantGroup.ProfileName.ToProfileOutput());
 
                 sb.Append("param(");
                 sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");

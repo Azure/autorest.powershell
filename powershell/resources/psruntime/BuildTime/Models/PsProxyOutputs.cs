@@ -242,11 +242,17 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class HelpCommentOutput
     {
+        private readonly bool _excludeExampleTemplates;
+        private readonly bool _excludeNotesSection;
+
         public VariantGroup VariantGroup { get; }
         public CommentInfo CommentInfo { get; }
 
-        public HelpCommentOutput(VariantGroup variantGroup)
+        public HelpCommentOutput(VariantGroup variantGroup, bool excludeExampleTemplates, bool excludeNotesSection)
         {
+            _excludeExampleTemplates = excludeExampleTemplates;
+            _excludeNotesSection = excludeNotesSection;
+
             VariantGroup = variantGroup;
             CommentInfo = variantGroup.CommentInfo;
         }
@@ -257,8 +263,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
             var outputs = String.Join(Environment.NewLine, CommentInfo.Outputs.Select(o => $".Outputs{Environment.NewLine}{o}"));
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
-            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
-            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
+            // Replace Notes Section with online direction
+            var notes = "Please use Get-Help -Online.";
+            if (!_excludeNotesSection)
+            {
+                notes = String.Join($"{ComplexParameterHeader}{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
+            }
+            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{notes}" : String.Empty;
             var relatedLinks = String.Join(Environment.NewLine, CommentInfo.RelatedLinks.Select(l => $".Link{Environment.NewLine}{l}"));
             var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
             var examples = "";
@@ -290,7 +301,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public override string ToString() => !String.IsNullOrEmpty(Description)
             ? Description.ToDescriptionFormat(false).NormalizeNewLines()
-                .Split(new [] { Environment.NewLine }, StringSplitOptions.None)
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
                 .Aggregate(String.Empty, (c, n) => c + $"{Indent}# {n}{Environment.NewLine}")
             : String.Empty;
     }
@@ -432,7 +443,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         // https://stackoverflow.com/a/5284606/294804
         private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
 
-        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new []{"<br>", "\r\n", "\n"});
+        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new[] { "<br>", "\r\n", "\n" });
 
         public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine().Trim() ?? String.Empty;
 
@@ -479,7 +490,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
-        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup) => new HelpCommentOutput(variantGroup);
+        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, bool excludeTemplateExamples, bool excludeNotesSection) => new HelpCommentOutput(variantGroup, excludeTemplateExamples, excludeNotesSection);
 
         public static ParameterDescriptionOutput ToParameterDescriptionOutput(this string description) => new ParameterDescriptionOutput(description);
 
