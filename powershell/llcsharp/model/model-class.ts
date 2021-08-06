@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { HeaderProperty, HeaderPropertyType, KnownMediaType, VirtualProperty, getAllVirtualProperties } from '@azure-tools/codemodel-v3';
-
-import { camelCase, deconstruct, DeepPartial } from '@azure-tools/codegen';
+import { getPascalIdentifier, camelCase, deconstruct, DeepPartial } from '@azure-tools/codegen';
 import { items, values } from '@azure-tools/linq';
 import { Access, Class, Constructor, Expression, ExpressionOrLiteral, Field, If, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Statements, System, TypeDeclaration, valueOf, Variable, BackedProperty, Property, Virtual, toExpression, StringExpression, LiteralExpression, Attribute } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
@@ -149,7 +148,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
     }
 
-    // create the properties for ths schema
+    // create the properties for this schema
     this.createProperties();
 
     // add validation implementation
@@ -194,28 +193,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
     // add properties
     if (this.schema.language.csharp?.virtualProperties) {
-      const addFormatAttributesToProperty = (property: Property, virtualProperty: NewVirtualProperty) => {
-        if (virtualProperty.format) {
-          if (virtualProperty.format.suppressFormat) {
-            property.add(new Attribute(DoNotFormatAttribute));
-          } else {
-            const parameters = [];
-            if (virtualProperty.format.index !== undefined) {
-              parameters.push(`Index = ${virtualProperty.format.index}`);
-            }
-
-            if (virtualProperty.format.label !== undefined) {
-              parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`);
-            }
-
-            if (virtualProperty.format.width !== undefined) {
-              parameters.push(`Width = ${virtualProperty.format.width}`);
-            }
-
-            property.add(new Attribute(FormatTableAttribute, { parameters }));
-          }
-        }
-      };
 
       /* Owned Properties */
       for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.owned))) {
@@ -261,7 +238,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (this.state.getValue('powershell')) {
           myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
-          addFormatAttributesToProperty(myProperty, virtualProperty);
+          this.addFormatAttributesToProperty(myProperty, virtualProperty);
         }
       }
 
@@ -300,7 +277,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
         if (this.state.getValue('powershell')) {
           vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
-          addFormatAttributesToProperty(vp, virtualProperty);
+          this.addFormatAttributesToProperty(vp, virtualProperty);
         }
       }
 
@@ -346,14 +323,40 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
             if (this.state.getValue('powershell')) {
               vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
-              addFormatAttributesToProperty(vp, virtualProperty);
+              this.addFormatAttributesToProperty(vp, virtualProperty);
             }
           }
         }
       }
 
+      /* Appended properties. */
+      if (this.state.project.resourceGroupAppend && this.schema.extensions && this.schema.extensions['is-return-object']) {
+        this.appendResourceGroupName();
+      }
     }
   }
+  private addFormatAttributesToProperty(property: Property, virtualProperty: NewVirtualProperty) {
+    if (virtualProperty.format) {
+      if (virtualProperty.format.suppressFormat) {
+        property.add(new Attribute(DoNotFormatAttribute));
+      } else {
+        const parameters = [];
+        if (virtualProperty.format.index !== undefined) {
+          parameters.push(`Index = ${virtualProperty.format.index}`);
+        }
+
+        if (virtualProperty.format.label !== undefined) {
+          parameters.push(`Label = ${new StringExpression(virtualProperty.format.label)}`);
+        }
+
+        if (virtualProperty.format.width !== undefined) {
+          parameters.push(`Width = ${virtualProperty.format.width}`);
+        }
+
+        property.add(new Attribute(FormatTableAttribute, { parameters }));
+      }
+    }
+  };
 
   private addValidation() {
     if (this.validationStatements.implementation.trim()) {
@@ -478,7 +481,6 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     let i = 0;
     for (const headerProperty of values(avp).where(each => each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.HeaderAndBody || each.property.language.csharp?.[HeaderProperty] === HeaderPropertyType.Header)) {
       used = true;
-      headerProperty.property.schema
       const t = `((${headerProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
       const values = `__${camelCase([...deconstruct(headerProperty.property.serializedName), 'Header'])}`;
       const td = this.state.project.modelsNamespace.NewResolveTypeDeclaration(headerProperty.property.schema, false, this.state);
@@ -488,6 +490,47 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     if (used) {
       this.interfaces.push(ClientRuntime.IHeaderSerializable);
       this.add(readHeaders);
+    }
+  }
+
+  private appendResourceGroupName() {
+    const virtualProperties = newGetAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
+    var idProperties = values(virtualProperties).where(each => each.name === 'Id').toArray();
+    var resourceGroupNameProperties = values(virtualProperties).where(each => each.name === 'ResourceGroupName').toArray();
+
+    if (idProperties.length == 1 && resourceGroupNameProperties.length === 0) {
+      const idProperty = idProperties[0];
+      const resourceGroupNamePropertyName = getPascalIdentifier('ResourceGroupName');
+      const resourceGroupNameDescription = "Gets the resource group name"
+      var actualResourceGroupProperty = idProperty.property;
+      actualResourceGroupProperty.serializedName = resourceGroupNamePropertyName;
+      const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualResourceGroupProperty.schema, false, this.state.path('schema'));
+
+      const resourceGroupNameProperty = new Property(`${resourceGroupNamePropertyName}`, decl, {
+        description: resourceGroupNameDescription,
+        getAccess: Access.Public,
+        setAccess: Access.Public,
+        get: toExpression(`(new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/").Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/").Match(this.Id).Groups["resourceGroupName"].Value : null)`)
+      })
+
+      const virtualResourceGroupNameProperty = {
+        name: resourceGroupNamePropertyName,
+        property: actualResourceGroupProperty,
+        private: false,
+        nameComponents: [resourceGroupNamePropertyName],
+        nameOptions: [resourceGroupNamePropertyName],
+        description: resourceGroupNameDescription,
+        originalContainingSchema: actualResourceGroupProperty.schema,
+        alias: [],
+        required: false,
+      };
+
+      if (this.state.getValue('powershell')) {
+        resourceGroupNameProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+        this.addFormatAttributesToProperty(resourceGroupNameProperty, virtualResourceGroupNameProperty);
+      }
+
+      this.add(resourceGroupNameProperty);
     }
   }
 

@@ -97,6 +97,14 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
   for (const group of values(model.operationGroups)) {
     for (const operation of values(group.operations)) {
+      for (const response of values(operation.responses)) {
+        // Mark returned object in response
+        let respSchema: Schema = (response as any).schema;
+        if (respSchema?.type === SchemaType.Object) {
+          respSchema.extensions = respSchema.extensions || {}
+          respSchema.extensions['is-return-object'] = true
+        }
+      }
       for (const param of values(operation.parameters).where(each => each.protocol?.http?.in === ParameterLocation.Path)) {
         const name = param.language.default.name;
         const hasName = universalId.properties?.find((prop) => prop.language.default.name.toLocaleLowerCase() === name.toLocaleLowerCase());

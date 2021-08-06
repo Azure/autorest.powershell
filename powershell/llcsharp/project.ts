@@ -29,6 +29,7 @@ export class Project extends codeDomProject {
   azure!: boolean;
   license!: string;
   identityCorrection!: boolean;
+  resourceGroupAppend!: boolean;
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
@@ -43,6 +44,7 @@ export class Project extends codeDomProject {
     this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
     this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);
     this.identityCorrection = await this.state.getValue('identity-correction-for-post', false);
+    this.resourceGroupAppend = await this.state.getValue('resourcegroup-append', false);
     this.license = await this.state.getValue('header-text', '');
 
 
