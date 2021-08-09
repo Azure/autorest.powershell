@@ -330,7 +330,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       }
 
       /* Appended properties. */
-      if (this.state.project.resourceGroupAppend && this.schema.extensions && this.schema.extensions['is-return-object']) {
+      if (this.state.project.resourceGroupAppend && this.state.project.azure && this.schema.extensions && this.schema.extensions['is-return-object']) {
         this.appendResourceGroupName();
       }
     }
