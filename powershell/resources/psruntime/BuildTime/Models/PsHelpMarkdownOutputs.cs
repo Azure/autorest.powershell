@@ -195,7 +195,7 @@ Locale: en-US
         public static HelpSyntaxOutput ToHelpSyntaxOutput(this MarkdownSyntaxHelpInfo syntaxInfo, bool hasMultipleParameterSets) => new HelpSyntaxOutput(syntaxInfo, hasMultipleParameterSets);
 
         public static HelpExampleOutput ToHelpExampleOutput(this MarkdownExampleHelpInfo exampleInfo) => new HelpExampleOutput(exampleInfo);
-        
+
         public static HelpParameterOutput ToHelpParameterOutput(this MarkdownParameterHelpInfo parameterInfo) => new HelpParameterOutput(parameterInfo);
 
         public static ModulePageMetadataOutput ToModulePageMetadataOutput(this PsModuleHelpInfo moduleInfo) => new ModulePageMetadataOutput(moduleInfo);
