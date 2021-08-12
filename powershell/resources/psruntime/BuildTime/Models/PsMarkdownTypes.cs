@@ -52,7 +52,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SyntaxInfos = variantGroup.Variants
                 .Select(v => new MarkdownSyntaxHelpInfo(v, variantGroup.ParameterGroups, v.VariantName == variantGroup.DefaultParameterSetName))
                 .OrderByDescending(v => v.IsDefault).ThenBy(v => v.ParameterSetName).ToArray();
-            Examples = GetExamplesFromMarkdown(examplesFolder).NullIfEmpty() 
+            Examples = GetExamplesFromMarkdown(examplesFolder).NullIfEmpty()
                        ?? helpInfo.Examples.Select(e => e.ToExampleHelpInfo()).ToArray().NullIfEmpty()
                        ?? DefaultExampleHelpInfos;
 
