@@ -443,7 +443,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         // https://stackoverflow.com/a/5284606/294804
         private static string RemoveEnd(this string text, string suffix) => text.EndsWith(suffix) ? text.Substring(0, text.Length - suffix.Length) : text;
 
-        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new[]{"<br>", "\r\n", "\n" });
+        public static string ToPsSingleLine(this string value, string replacer = " ") => value.ReplaceNewLines(replacer, new[]{"<br>", "\r\n", "\n"});
 
         public static string ToPsStringLiteral(this string value) => value?.Replace("'", "''").Replace("‘", "''").Replace("’", "''").ToPsSingleLine().Trim() ?? String.Empty;
 
