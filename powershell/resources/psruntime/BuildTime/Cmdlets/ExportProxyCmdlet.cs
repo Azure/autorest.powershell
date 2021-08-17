@@ -42,7 +42,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [ValidateNotNullOrEmpty]
         public string DocsFolder { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "Docs")]
+        [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
         public string ExamplesFolder { get; set; }
 
@@ -153,7 +153,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     var isValidProfile = !String.IsNullOrEmpty(profileName) && profileName != NoProfiles;
                     var docsFolder = isValidProfile ? Path.Combine(DocsFolder, profileName) : DocsFolder;
                     var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, profileName) : ExamplesFolder;
-                    WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder);
+                    WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder, ExcludeExampleTemplates);
                 }
             }
           } catch (Exception ee) { 
