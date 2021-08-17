@@ -50,7 +50,7 @@ schema: {HelpInfo.Schema.ToString(3)}
         }
     }
 
-    internal class HelpExampleOutput
+    internal class HelpExampleOutput : IEquatable<HelpExampleOutput>
     {
         public MarkdownExampleHelpInfo ExampleInfo { get; }
 
@@ -67,6 +67,34 @@ schema: {HelpInfo.Schema.ToString(3)}
 {ExampleInfo.Description.ToDescriptionFormat()}
 
 ";
+        public static bool operator ==(HelpExampleOutput helpExampleOutput, MarkdownExampleHelpInfo markdownExampleHelpInfo)
+        {
+            return helpExampleOutput?.ExampleInfo == markdownExampleHelpInfo;
+        }
+        public static bool operator !=(HelpExampleOutput psHelpExampleInfo, MarkdownExampleHelpInfo markdownExampleHelpInfo)
+        {
+            return !(psHelpExampleInfo == markdownExampleHelpInfo);
+        }
+
+        public bool Equals(HelpExampleOutput other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(ExampleInfo, other.ExampleInfo);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((HelpExampleOutput)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (ExampleInfo != null ? ExampleInfo.GetHashCode() : 0);
+        }
     }
 
 

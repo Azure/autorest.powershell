@@ -52,6 +52,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
         public SwitchParameter ExcludeDocs { get; set; }
 
+        [Parameter(Mandatory = true)]
+        public SwitchParameter ExcludeExampleTemplates { get; set; }
         protected override void ProcessRecord()
         {
           try {
@@ -98,7 +100,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # ----------------------------------------------------------------------------------
 ");
                 sb.Append($"{Environment.NewLine}");
-                sb.Append(variantGroup.ToHelpCommentOutput());
+                sb.Append(variantGroup.ToHelpCommentOutput(ExcludeExampleTemplates));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
@@ -147,7 +149,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     var isValidProfile = !String.IsNullOrEmpty(profileName) && profileName != NoProfiles;
                     var docsFolder = isValidProfile ? Path.Combine(DocsFolder, profileName) : DocsFolder;
                     var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, profileName) : ExamplesFolder;
-                    WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder);
+                    WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder, ExcludeExampleTemplates);
                 }
             }
           } catch (Exception ee) { 
