@@ -99,6 +99,8 @@ export class ModelsNamespace extends Namespace {
 
         const ns = this.subNamespaces[fullname] || this.add(new ApiVersionNamespace(fullname));
 
+        ns.header = this.state.project.license;
+
         const mc = schema.language.csharp?.classImplementation || new ModelClass(ns, td, <State>this.state, { description: schema.language.csharp?.description });
 
         // this gets implicity created during class creation:

@@ -45,6 +45,22 @@ export async function generatePsm1(project: Project) {
   let azureInitialize = '';
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
+    let requestHandler = `
+  # Tweaks the pipeline per call
+  $instance.OnNewRequest = $VTable.OnNewRequest`;
+    if (!!project.endpointKeyName && !!project.endpointSuffixKeyName) {
+      // for data plane, we should append different functions instead.
+      requestHandler = `
+  # Tweaks the pipeline per call
+  $instance.AddRequestUserAgentHandler = $VTable.AddRequestUserAgentHandler
+
+  # Tweaks the pipeline per call
+  $instance.AddPatchRequestUriHandler = $VTable.AddPatchRequestUriHandler
+
+  # Tweaks the pipeline per call
+  $instance.AddAuthorizeRequestHandler = $VTable.AddAuthorizeRequestHandler
+    `;
+    }
     azureInitialize = `
   # ----------------------------------------------------------------------------------
   #
@@ -97,8 +113,7 @@ export async function generatePsm1(project: Project) {
   # Tweaks the pipeline on module load
   $instance.OnModuleLoad = $VTable.OnModuleLoad
   
-  # Tweaks the pipeline per call
-  $instance.OnNewRequest = $VTable.OnNewRequest
+${requestHandler}
   
   # Gets shared parameter values
   $instance.GetParameterValue = $VTable.GetParameterValue

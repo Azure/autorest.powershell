@@ -90,6 +90,8 @@ export class Project extends codeDomProject {
   public license!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
+  public endpointKeyName!: string;
+  public endpointSuffixKeyName!: string;
 
   public customFolder!: string;
   public utilsFolder!: string;
@@ -201,6 +203,11 @@ export class Project extends codeDomProject {
     this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
     this.dllName = await this.state.getValue('dll-name');
+    // Azure PowerShell data plane configuration
+    if (this.azure) {
+      this.endpointKeyName = await this.state.getValue('endpoint-key-name', '');
+      this.endpointSuffixKeyName = await this.state.getValue('endpoint-suffix-key-name', '');
+    }
 
     // Folders
     this.baseFolder = await this.state.getValue('current-folder');
