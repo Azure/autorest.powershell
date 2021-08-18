@@ -69,6 +69,7 @@ export class ModelExtensionsNamespace extends Namespace {
           const fullname = schema.language.csharp?.namespace || this.fullName;
           const ns = this.subNamespaces[fullname] || this.add(new ApiVersionModelExtensionsNamespace(this.outputFolder, fullname));
 
+          ns.header = this.state.project.license;
           // create the model extensions for each object model
           // 2. A partial interface with the type converter attribute
           const modelInterface = new Interface(ns, interfaceName, {
