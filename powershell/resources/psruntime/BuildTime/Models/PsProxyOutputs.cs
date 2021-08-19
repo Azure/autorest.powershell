@@ -243,13 +243,15 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class HelpCommentOutput
     {
         private readonly bool _excludeExampleTemplates;
+        private readonly bool _excludeNotesSection;
 
         public VariantGroup VariantGroup { get; }
         public CommentInfo CommentInfo { get; }
 
-        public HelpCommentOutput(VariantGroup variantGroup, bool excludeExampleTemplates)
+        public HelpCommentOutput(VariantGroup variantGroup, bool excludeExampleTemplates, bool excludeNotesSection)
         {
             _excludeExampleTemplates = excludeExampleTemplates;
+            _excludeNotesSection = excludeNotesSection;
 
             VariantGroup = variantGroup;
             CommentInfo = variantGroup.CommentInfo;
@@ -261,8 +263,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var inputsText = !String.IsNullOrEmpty(inputs) ? $"{Environment.NewLine}{inputs}" : String.Empty;
             var outputs = String.Join(Environment.NewLine, CommentInfo.Outputs.Select(o => $".Outputs{Environment.NewLine}{o}"));
             var outputsText = !String.IsNullOrEmpty(outputs) ? $"{Environment.NewLine}{outputs}" : String.Empty;
-            var notes = String.Join($"{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
-            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
+            // Replace Notes Section with online direction
+            var notes = "Please use Get-Help -Online.";
+            if (!_excludeNotesSection)
+            {
+                notes = String.Join($"{ComplexParameterHeader}{Environment.NewLine}{Environment.NewLine}", VariantGroup.ComplexInterfaceInfos.Select(cii => cii.ToNoteOutput()));
+            }
+            var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{notes}" : String.Empty;
             var relatedLinks = String.Join(Environment.NewLine, CommentInfo.RelatedLinks.Select(l => $".Link{Environment.NewLine}{l}"));
             var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
             var examples = "";
@@ -492,7 +499,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static EndOutput ToEndOutput(this VariantGroup variantGroup) => new EndOutput();
 
-        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, bool excludeTemplateExamples) => new HelpCommentOutput(variantGroup, excludeTemplateExamples);
+        public static HelpCommentOutput ToHelpCommentOutput(this VariantGroup variantGroup, bool excludeTemplateExamples, bool excludeNotesSection) => new HelpCommentOutput(variantGroup, excludeTemplateExamples, excludeNotesSection);
 
         public static ParameterDescriptionOutput ToParameterDescriptionOutput(this string description) => new ParameterDescriptionOutput(description);
 
