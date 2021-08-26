@@ -26,7 +26,7 @@ The built-in directives for PowerShell consist of three parts:
 
   A reason to provide the selector would be to change the scope of selection. For example, this would select a command:
   ```yaml $false
-    # This selects the cmdlets 
+    # This selects the cmdlets
     #  ---> where the verb is Get, and where a parameter called Foo exists
     #  ---> sets the parameter alias to VM
     directive:
@@ -93,6 +93,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Cmdlet Suppression (Removal and Hiding)](#Cmdlet-Suppression)
 - [Parameter Rename](#Parameter-Rename)
 - [Parameter Aliasing](#Parameter-Aliasing)
+- [Parameter Hiding](#Parameter-Hiding)
 - [Parameter Description](#Parameter-Description)
 - [Model Rename](#Model-Rename)
 - [Enum Value Rename](#Property-Rename)
@@ -122,7 +123,7 @@ The following is a Regex example:
 # to have the rest of the subject as Config<rest of the subject>
 directive:
   - where:
-      subject: (^Configuration)(.*) 
+      subject: (^Configuration)(.*)
     set:
       subject: Config$2
 ```
@@ -136,7 +137,7 @@ directive:
       verb: Get
       subject: VirtualMachine
       parameter-name: Id
-    set: 
+    set:
       subject: VM
 ```
 
@@ -147,7 +148,7 @@ directive:
   - where:
       verb: Get
       subject: VirtualMachine
-    set: 
+    set:
       alias: Get-VM
 ```
 
@@ -163,7 +164,7 @@ directive:
         - Get-VM
 ```
 
-### Cmdlet Suppression 
+### Cmdlet Suppression
 For cmdlet suppression you can either:
   - *hide it*: by preventing it from being exported at module-export time
   - *remove it*: by preventing it from being generated
@@ -248,6 +249,30 @@ directive:
       alias:
         - VM
         - VMachine
+```
+
+### Parameter Hiding
+To hide a parameter, select the parameter and provide `hide: true`:
+```yaml $false
+directive:
+  - where:
+      verb: Get
+      subject: Aks
+      parameter-name: VirtualMachine
+    hide: true
+```
+
+Note: if the parameter is mandatory, you must provide a default value for it:
+```yaml $false
+directive:
+  - where:
+      verb: Get
+      subject: Aks
+      parameter-name: VirtualMachineMandatory
+    hide: true
+    set:
+      default:
+        script: '"DefaultVM"'
 ```
 
 ### Parameter Description

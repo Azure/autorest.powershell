@@ -48,6 +48,7 @@ export interface VirtualParameter {
   origin: VirtualProperty | IParameter;
   alias: Array<string>;
   completerInfo?: CompleterInfo;
+  hidden?: boolean;
 }
 
 export class CommandOperation extends Extensions implements CommandOperation {
