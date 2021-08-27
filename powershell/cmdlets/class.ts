@@ -14,7 +14,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -226,7 +226,7 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
             schema: pt.elementType.schema,
           };
         } else {
-          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          // arg! it's not done yet. Hope it's not polymorphic itself.
           pt = {
             declaration: `${pt.elementType.schema.details.csharp.namespace}.${pt.elementType.schema.details.csharp.interfaceName}`,
             schema: pt.elementType.schema,
@@ -280,7 +280,7 @@ export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
             schema: pt.elementType.schema,
           };
         } else {
-          // arg! it's not done yet. Hope it's not polymorphic itself. 
+          // arg! it's not done yet. Hope it's not polymorphic itself.
           pt = {
             declaration: `${pt.elementType.schema.language.csharp.namespace}.${pt.elementType.schema.language.csharp.interfaceName}`,
             schema: pt.elementType.schema,
@@ -767,14 +767,14 @@ export class CmdletClass extends Class {
 
               yield ex.declarationStatement;
 
-              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} }) 
-{ 
+              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+{
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
 });`;
             };
             if ((<SchemaResponse>each).schema !== undefined) {
               // the schema should be the error information.
-              // this supports both { error { message, code} } and { message, code} 
+              // this supports both { error { message, code} } and { message, code}
 
               let props = NewGetAllPublicVirtualProperties((<SchemaResponse>each).schema.language.csharp?.virtualProperties);
               const errorProperty = values(props).first(p => p.property.serializedName === 'error');
@@ -1116,7 +1116,7 @@ export class CmdletClass extends Class {
     signalMethod.add(function* () {
       yield If(`${token.value}.IsCancellationRequested`, Return());
 
-      // if the 
+      // if the
 
       const sw = Switch(id, [
         TerminalCase(Events.Verbose.value, function* () {
@@ -1272,7 +1272,7 @@ export class CmdletClass extends Class {
           });
 
           if (vParam.schema.language.csharp?.byReference) {
-            // this parameter's schema is marked as 'by-reference' which means we should 
+            // this parameter's schema is marked as 'by-reference' which means we should
             // tag it with an ExportAs attribute for the I*Reference type.
             cmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${vParam.schema.language.csharp.referenceInterface})`] }));
           }
@@ -1340,6 +1340,7 @@ export class CmdletClass extends Class {
             addParameterBreakingChange(cmdletParameter, vParam);
             addPreviewMessage(cmdletParameter, vParam);
             addDefaultInfo(cmdletParameter, vParam);
+            this.addDoNotExport(cmdletParameter, vParam);
           }
 
           const isEnum = propertyType instanceof EnumImplementation;;
@@ -1465,6 +1466,7 @@ export class CmdletClass extends Class {
       addParameterBreakingChange(regularCmdletParameter, vParam);
       addPreviewMessage(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
+      this.addDoNotExport(regularCmdletParameter, vParam);
 
       // add aliases if there is any
       if (length(vParam.alias) > 0) {
@@ -1502,6 +1504,21 @@ export class CmdletClass extends Class {
 
   }
 
+  /**
+   * Add `DoNotExportAttribute` to parameters that should be hidden.
+   * @param cmdletParameter parameter in the variant.
+   * @param vParam parameter in the code model.
+   * @see DoNotExportAttribute
+   */
+  private addDoNotExport(cmdletParameter: Property, vParam: NewVirtualParameter) {
+    if (vParam.hidden) {
+      this.state.message({
+          Channel: Channel.Debug,
+          Text: `[DIRECTIVE] Applied 'hide' directive to parameter ${cmdletParameter.name}. Added attribute ${DoNotExportAttribute.declaration} to parameter.`,
+      });
+      cmdletParameter.add(new Attribute(DoNotExportAttribute));
+    }
+  }
 
   private NewAddClassAttributes(operation: CommandOperation, variantName: string) {
     const cmdletAttribParams: Array<ExpressionOrLiteral> = [
@@ -1517,7 +1534,7 @@ export class CmdletClass extends Class {
       this.add(new Attribute(InternalExportAttribute));
       const noun = `${operation.details.csharp.subjectPrefix}${operation.details.csharp.subject}`;
       const cmdletName = `${operation.details.csharp.verb}-${noun}${operation.details.csharp.name ? `_${operation.details.csharp.name}` : ''}`;
-      this.state.message({ Channel: Channel.Debug, Text: `[DIRECTIVE] Applied 'hidden' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
+      this.state.message({ Channel: Channel.Debug, Text: `[DIRECTIVE] Applied 'hide' directive to ${cmdletName}. Added attribute ${InternalExportAttribute.declaration} to cmdlet.` });
     }
 
     this.add(new Attribute(CmdletAttribute, { parameters: cmdletAttribParams }));

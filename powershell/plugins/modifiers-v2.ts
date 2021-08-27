@@ -361,6 +361,21 @@ async function tweakModel(state: State): Promise<PwshModel> {
             });
           }
 
+          // handle hiding parameters
+          if (directive.hide) {
+            if (p.required && !paramDefaultReplacer) {
+              throw new Error(
+                  `Please add a default value when hiding the mandatory parameter ${p.name}.
+See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#default-values`
+              );
+            }
+            p.hidden = true;
+            state.message({
+                Channel: Channel.Debug,
+                Text: `[DIRECTIVE] Hide parameter ${p.name}.`,
+            });
+          }
+
           if (alias) {
             const parsedAlias = new Array<string>();
             for (const each of values(alias)) {
