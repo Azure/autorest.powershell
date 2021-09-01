@@ -124,6 +124,15 @@ function addDictionaryApiVersion(model: CodeModel) {
       }
       prop.schema.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
     }
+
+    if (schema.parents) {
+      for (const parent of schema.parents?.all) {
+        if (parent.type !== SchemaType.Dictionary || parent.apiVersions) {
+          continue;
+        }
+        parent.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
+      }
+    }
   })
 }
 

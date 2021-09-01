@@ -90,7 +90,7 @@ export class Project extends codeDomProject {
   public license!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
-  public endpointKeyName!: string;
+  public endpointResourceIdKeyName!: string;
   public endpointSuffixKeyName!: string;
 
   public customFolder!: string;
@@ -205,7 +205,7 @@ export class Project extends codeDomProject {
     this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
     if (this.azure) {
-      this.endpointKeyName = await this.state.getValue('endpoint-key-name', '');
+      this.endpointResourceIdKeyName = await this.state.getValue('endpoint-resource-id-key-name', '');
       this.endpointSuffixKeyName = await this.state.getValue('endpoint-suffix-key-name', '');
     }
 
