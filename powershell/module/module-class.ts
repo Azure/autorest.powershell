@@ -198,7 +198,7 @@ export class NewModuleClass extends Class {
         this.nextStep,                                  /* Next( ...) */
         /* returns */ this.TaskOfHttpResponseMessage)));
 
-    const isDataPlane = !!this.state.project.endpointSuffixKeyName && !!this.state.project.endpointResourceIdKeyName;
+    const isDataPlane = !!this.state.project.endpointResourceIdKeyName;
 
     const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', System.Action(sendAsyncStep.fullDefinition)));
 
