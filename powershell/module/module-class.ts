@@ -198,7 +198,7 @@ export class NewModuleClass extends Class {
         this.nextStep,                                  /* Next( ...) */
         /* returns */ this.TaskOfHttpResponseMessage)));
 
-    const isDataPlane = !!this.state.project.endpointSuffixKeyName && !!this.state.project.endpointKeyName;
+    const isDataPlane = !!this.state.project.endpointSuffixKeyName && !!this.state.project.endpointResourceIdKeyName;
 
     const pipelineChangeDelegate = namespace.add(new Alias('PipelineChangeDelegate', System.Action(sendAsyncStep.fullDefinition)));
 
@@ -318,11 +318,11 @@ export class NewModuleClass extends Class {
       returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the remote call.`
     }));
     /* Add following three fields for data plane */
-    const fEndpointKeyName = new Field('_endpointKeyName', dotnet.String, { access: Access.Private, initialValue: new StringExpression(this.state.project.endpointKeyName) });
+    const fendpointResourceIdKeyName = new Field('_endpointResourceIdKeyName', dotnet.String, { access: Access.Private, initialValue: new StringExpression(this.state.project.endpointResourceIdKeyName) });
     const fEndpointSuffixKeyName = new Field('_endpointSuffixKeyName', dotnet.String, { access: Access.Private, initialValue: new StringExpression(this.state.project.endpointSuffixKeyName) });
     const fTokenAudienceConverter = new Field('_tokenAudienceConverter', tokenAudienceConverterDelegate, { access: Access.Private, initialValue: 'null' });
     if (isDataPlane) {
-      this.add(fEndpointKeyName);
+      this.add(fendpointResourceIdKeyName);
       this.add(fEndpointSuffixKeyName);
       this.add(fTokenAudienceConverter);
     }
@@ -338,7 +338,7 @@ export class NewModuleClass extends Class {
       if (isDataPlane) {
         yield `${AddRequestUserAgentHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
         yield `${AddPatchRequestUriHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
-        yield `${AddAuthorizeRequestHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${fEndpointKeyName},${fEndpointSuffixKeyName}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); }, ${fTokenAudienceConverter}, ${$this.pExtensibleParameters} );`;
+        yield `${AddAuthorizeRequestHandler.value}?.Invoke( ${$this.pInvocationInfo.use}, ${fendpointResourceIdKeyName},${fEndpointSuffixKeyName}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); }, ${fTokenAudienceConverter}, ${$this.pExtensibleParameters} );`;
       } else {
         yield `${OnNewRequest.value}?.Invoke( ${$this.pInvocationInfo.use}, ${$this.pCorrelationId},${$this.pProcessRecordId}, (step)=> { ${pip}.Prepend(step); } , (step)=> { ${pip}.Append(step); } );`;
       }

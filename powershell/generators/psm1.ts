@@ -48,7 +48,7 @@ export async function generatePsm1(project: Project) {
     let requestHandler = `
   # Tweaks the pipeline per call
   $instance.OnNewRequest = $VTable.OnNewRequest`;
-    if (!!project.endpointKeyName && !!project.endpointSuffixKeyName) {
+    if (!!project.endpointResourceIdKeyName) {
       // for data plane, we should append different functions instead.
       requestHandler = `
   # Tweaks the pipeline per call
