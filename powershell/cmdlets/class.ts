@@ -340,6 +340,7 @@ export class CmdletClass extends Class {
   private isViaIdentity: boolean;
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
+  private clientsidePagination?: boolean;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -360,6 +361,7 @@ export class CmdletClass extends Class {
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
     this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
+    this.clientsidePagination = !!operation.details.csharp.clientsidePagination && !!operation.callGraph[0].language.csharp?.pageable;
 
   }
 
@@ -821,6 +823,9 @@ export class CmdletClass extends Class {
 
             if (apiCall.language.csharp?.pageable) {
               const pageable = apiCall.language.csharp.pageable;
+              if ($this.clientsidePagination) {
+                yield '// clientside pagination enabled';
+              }
               yield '// response should be returning an array of some kind. +Pageable';
               yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
               switch (pageable.responseType) {
@@ -836,12 +841,26 @@ export class CmdletClass extends Class {
                     // write out the current contents
                     const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
-                      yield `WriteObject(${result.value}.${vp.name},true);`;
+                      if ($this.clientsidePagination) {
+                        yield (If(`(ulong)result.Value.Length <= this.PagingParameters.Skip`, function* () {
+                          yield (`this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Length;`);
+                        }));
+                        yield Else(function* () {
+                          yield (`ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);`);
+                          yield (`var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);`);
+                          yield (`WriteObject(requiredResult, true);`);
+                          yield (`this.PagingParameters.Skip = 0;`);
+                          yield (`this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;`);
+                        });
+                      } else {
+                        yield `WriteObject(${result.value}.${vp.name},true);`;
+                      }
                     }
                     const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
                     if (nl) {
                       const nextLinkName = `${result.value}.${nl.name}`;
-                      yield (If(`${nextLinkName} != null`,
+                      var nextLinkCondition = $this.clientsidePagination ? `${nextLinkName} != null && this.PagingParameters.First > 0` : `${nextLinkName} != null`
+                      yield (If(nextLinkCondition,
                         If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
                           yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
                           yield $this.eventListener.signal(Events.FollowingNextLink);
@@ -1513,8 +1532,8 @@ export class CmdletClass extends Class {
   private addDoNotExport(cmdletParameter: Property, vParam: NewVirtualParameter) {
     if (vParam.hidden) {
       this.state.message({
-          Channel: Channel.Debug,
-          Text: `[DIRECTIVE] Applied 'hide' directive to parameter ${cmdletParameter.name}. Added attribute ${DoNotExportAttribute.declaration} to parameter.`,
+        Channel: Channel.Debug,
+        Text: `[DIRECTIVE] Applied 'hide' directive to parameter ${cmdletParameter.name}. Added attribute ${DoNotExportAttribute.declaration} to parameter.`,
       });
       cmdletParameter.add(new Attribute(DoNotExportAttribute));
     }
@@ -1528,6 +1547,10 @@ export class CmdletClass extends Class {
 
     if (this.NewIsWritableCmdlet(operation)) {
       cmdletAttribParams.push('SupportsShouldProcess = true');
+    }
+
+    if (this.clientsidePagination) {
+      cmdletAttribParams.push('SupportsPaging = true');
     }
 
     if (operation.details.csharp.hidden) {

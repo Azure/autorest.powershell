@@ -22,6 +22,7 @@ export class CmdletNamespace extends Namespace {
 
   async init() {
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
+    this.add(new ImportDirective(`System`));
 
     // generate cmdlet classes on top of the SDK
     for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
