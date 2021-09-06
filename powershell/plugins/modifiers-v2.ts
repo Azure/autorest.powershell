@@ -64,6 +64,7 @@ interface WhereCommandDirective {
       description: string;
       script: string;
     };
+    'clientside-pagination'?: boolean;
   };
   'clear-alias': boolean;
   hide?: boolean;
@@ -289,6 +290,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
       const paramDescriptionReplacer = (directive.set !== undefined) ? directive.set['parameter-description'] : undefined;
       const paramCompleterReplacer = (directive.set !== undefined) ? directive.set['completer'] : undefined;
       const paramDefaultReplacer = (directive.set !== undefined) ? directive.set['default'] : undefined;
+      const cliensidePagination = (directive.set !== undefined) ? directive.set['clientside-pagination'] : undefined;
 
       // select all operations
       let operations: Array<CommandOperation> = values(state.model.commands.operations).toArray();
@@ -425,6 +427,10 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
           const newVerb = operation.details.csharp.verb;
           const newVariantName = operation.details.csharp.name;
           const newCommandName = getCmdletName(newVerb, newSubjectPrefix, newSubject, newVariantName);
+
+          if (cliensidePagination) {
+            operation.details.csharp.clientsidePagination = cliensidePagination;
+          }
           if (breakingChange) {
             operation.details.csharp.breakingChange = operation.details.csharp.breakingChange ? operation.details.csharp.breakingChange : <any>{}
             if (variantRegex) {
