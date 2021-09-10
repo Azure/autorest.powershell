@@ -151,6 +151,14 @@ namespace Microsoft.Rest.ClientRuntime
                 return Microsoft.Rest.ClientRuntime.JsonSerializable.ToJson(dictionary, null);
             }
 
+            // hashtables are converted to dictionaries for serialization
+            if (value is System.Collections.Hashtable hashtable)
+            {
+                var dict = new System.Collections.Generic.Dictionary<string, object>();
+                DictionaryExtensions.HashTableToDictionary<object>(hashtable, dict);
+                return Microsoft.Rest.ClientRuntime.JsonSerializable.ToJson(dict, null);
+            }
+
             // enumerable collections are handled like arrays (again, fallback to ToJson()/ToJsonString() or literal JsonString) 
             if (value is System.Collections.IEnumerable enumerableValue)
             {
