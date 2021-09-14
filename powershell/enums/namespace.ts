@@ -62,7 +62,7 @@ export class EnumNamespace extends Namespace {
       enumClass.add(new Method('CompleteArgument', System.Collections.Generic.IEnumerable(CompletionResult), { parameters: completeArgumentParams, description: 'Implementations of this function are called by PowerShell to complete arguments.', returnsDescription: 'A collection of completion results, most like with ResultType set to ParameterValue.' })).add(function* () {
         for (const enumValue of enumValues) {
           yield If(`${System.String.declaration}.IsNullOrEmpty(${wordToComplete.name}) || "${enumValue}".StartsWith(${wordToComplete.name}, ${System.StringComparison.declaration}.InvariantCultureIgnoreCase)`,
-            `yield return new ${CompletionResult.declaration}("${enumValue}", "${enumValue}", ${CompletionResultType.declaration}.ParameterValue, "${enumValue}");`);
+            `yield return new ${CompletionResult.declaration}("'${enumValue}'", "${enumValue}", ${CompletionResultType.declaration}.ParameterValue, "${enumValue}");`);
         }
       });
 
