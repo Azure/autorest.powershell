@@ -16,14 +16,14 @@ To build the SDK for TimesWire Search, you will need the following:
 mkdir -ea 0 ./generated/custom  
 mkdir -ea 0 ./generated/test  
 
-iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/timeswire/readme.md -outfile ./readme.md
-iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/timeswire/timeswire.yaml -outfile ./timeswire.yaml
-iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/timeswire/generated/custom/Module.cs -outfile ./generated/custom/Module.cs
-iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/timeswire/generated/test/get-article.tests.ps1 -outfile ./generated/test/get-article.tests.ps1
+iwr https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/TimesWire/readme.md -outfile ./readme.md
+iwr https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/TimesWire/timeswire.yaml -outfile ./timeswire.yaml
+iwr https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/TimesWire/generated/private/custom/Module.cs -outfile ./generated/custom/Module.cs
+iwr https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/TimesWire/generated/tests/get-article.tests.ps1 -outfile ./generated/test/get-article.tests.ps1
 
 ```
 
-Then simply [Install AutoRest Beta](../../readme.md#installing) and in this folder, run:
+Then simply [Install AutoRest](../../readme.md#installing) and in this folder, run:
 
 > `autorest`
 

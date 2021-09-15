@@ -2,9 +2,9 @@
 
 ### Example: XKCD
 
-Download the [XKCD swagger](https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/xkcd/xkcd.yaml) file.
+Download the [XKCD swagger](https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/Xkcd/xkcd.yaml) file.
 
-> `iwr https://raw.githubusercontent.com/Azure/autorest/master/docs/powershell/samples/xkcd/xkcd.yaml -outfile xkcd.yaml`
+> `iwr https://raw.githubusercontent.com/Azure/autorest.powershell/main/samples/Xkcd/xkcd.yaml -outfile xkcd.yaml`
 
 Then run AutoRest PowerShell:
 
