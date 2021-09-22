@@ -62,6 +62,9 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 
   for (const group of values(schemaGroups)) {
     for (const schema of group) {
+      if (schema.language.default.skip) {
+        continue;
+      }
       let thisNamespace = baseNamespace;
       let thisApiversion = '';
 

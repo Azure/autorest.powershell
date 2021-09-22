@@ -130,7 +130,9 @@ function addDictionaryApiVersion(model: CodeModel) {
         if (parent.type !== SchemaType.Dictionary || parent.apiVersions) {
           continue;
         }
-        parent.apiVersions = JSON.parse(JSON.stringify(schema.apiVersions));
+        // for object which both contains properties and additional properties, 
+        // we need to skip the model generation for redundant dict.
+        parent.language.default.skip = true;
       }
     }
   })
