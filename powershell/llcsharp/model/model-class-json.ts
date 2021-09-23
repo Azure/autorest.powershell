@@ -194,7 +194,7 @@ export class JsonSerializableClass extends Class {
         yield Return($this.new(json, toExpression($excludes.substring(1))));
       } else {
         // just tell it to create the instance (providing that it's a JSonObject)
-        yield Return(Ternery(json.check, $this.new(json), dotnet.Null));
+        yield Return(Ternery(json.check, $this.new(json, toExpression($excludes.substring(1))), dotnet.Null));
       }
     });
 
