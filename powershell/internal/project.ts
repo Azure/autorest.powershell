@@ -9,12 +9,13 @@ import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
+import { pwshHeaderText } from '../utils/powershell-comment';
 
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
-import { DeepPartial } from '@azure-tools/codegen';
+import { DeepPartial, comment } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
@@ -88,6 +89,8 @@ export class Project extends codeDomProject {
   public azure!: boolean;
   public addToString!: boolean;
   public license!: string;
+  public pwshCommentHeader!: string;
+  public pwshCommentHeaderForCsharp!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
@@ -185,6 +188,10 @@ export class Project extends codeDomProject {
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
+    var pwshLicenseHeader = await this.state.getValue('pwsh-license-header', '');
+    // if pwsh license header is not set, use the license set by license-header
+    this.pwshCommentHeader = comment(!!pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
+    this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(/"/g, '""');
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
