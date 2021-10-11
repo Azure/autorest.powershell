@@ -113,6 +113,7 @@ export class Project extends codeDomProject {
   public nuspec!: string;
   public gitIgnore!: string;
   public gitAttributes!: string;
+  public propertiesExcludedForTableview!: string;
   public readme!: string;
   public dllName!: string;
   public dll!: string;
@@ -249,6 +250,10 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/readme.md`;
+
+    // excluded properties in table view
+    const excludedList = <Array<string>>values(<any>(await this.state.getValue('exclude-tableview-properties', []))).toArray();
+    this.propertiesExcludedForTableview = excludedList ? excludedList.join(',') : '';
 
     // add project namespace
     this.serviceNamespace = new ModuleNamespace(this.state);

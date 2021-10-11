@@ -21,6 +21,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     private const string ModelNamespace = @"${$project.modelsExtensions.fullName}";
     private const string SupportNamespace = @"${$project.supportNamespace.fullName}";
+    private const string PropertiesExcludedForTableview = @"${$project.propertiesExcludedForTableview}";
+
     private static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
 
     protected override void ProcessRecord()
@@ -55,7 +57,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
       return types.Select(t => new ViewParameters(t, t.GetProperties()
           .Select(p => new PropertyFormat(p))
           .Where(pf => !pf.Property.GetCustomAttributes<DoNotFormatAttribute>().Any()
-                       && (!IsAzure || pf.Property.Name != "Id")
+                       && (!PropertiesExcludedForTableview.Split(',').Contains(pf.Property.Name))
                        && (pf.FormatTable != null || (pf.Origin != PropertyOrigin.Inlined && pf.Property.PropertyType.IsPsSimple())))
           .OrderByDescending(pf => pf.Index.HasValue)
           .ThenBy(pf => pf.Index)
