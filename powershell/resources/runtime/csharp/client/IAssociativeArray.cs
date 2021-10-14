@@ -7,11 +7,8 @@ namespace Microsoft.Rest.ClientRuntime
     /// <summary>A subset of IDictionary that doesn't implement IEnumerable or IDictionary to work around PowerShell's aggressive formatter</summary>
     public interface IAssociativeArray<T>
     {
-        System.Collections.Generic.IEnumerable<string> Keys { get; }
-        System.Collections.Generic.IEnumerable<T> Values { get; }
         System.Collections.Generic.IDictionary<string, T> AdditionalProperties { get; }
         T this[string index] { get; set; }
-        int Count { get; }
         void Add(string key, T value);
         bool ContainsKey(string key);
         bool Remove(string key);
