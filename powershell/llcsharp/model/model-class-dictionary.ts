@@ -69,9 +69,12 @@ export class DictionaryImplementation extends Class {
     const pValue = new Parameter('value', valueType);
     const pOutValue = new Parameter('value', valueType, { modifier: ParameterModifier.Out });
 
-    targetClass.add(new Property(`${containerInterfaceType.declaration}.Keys`, System.Collections.Generic.IEnumerable(keyType), { get: toExpression(`${accessViaMember}.Keys`), getAccess: Access.Explicit }));
-    targetClass.add(new Property(`${containerInterfaceType.declaration}.Values`, System.Collections.Generic.IEnumerable(valueType), { get: toExpression(`${accessViaMember}.Values`), getAccess: Access.Explicit }));
-    targetClass.add(new Property(`${containerInterfaceType.declaration}.Count`, dotnet.Int, { get: toExpression(`${accessViaMember}.Count`), getAccess: Access.Explicit }));
+    if (this.state.project.exportPropertiesForDict) {
+      targetClass.add(new Property(`${containerInterfaceType.declaration}.Keys`, System.Collections.Generic.IEnumerable(keyType), { get: toExpression(`${accessViaMember}.Keys`), getAccess: Access.Explicit }));
+      targetClass.add(new Property(`${containerInterfaceType.declaration}.Values`, System.Collections.Generic.IEnumerable(valueType), { get: toExpression(`${accessViaMember}.Values`), getAccess: Access.Explicit }));
+      targetClass.add(new Property(`${containerInterfaceType.declaration}.Count`, dotnet.Int, { get: toExpression(`${accessViaMember}.Count`), getAccess: Access.Explicit }));
+    }
+
     if (name) {
       targetClass.add(new ImplicitCastOperator(dictionaryType, targetClass, `source.${accessViaMember}`));
       targetClass.add(new Property(`${containerInterfaceType.declaration}.AdditionalProperties`, dictionaryInterfaceType, { get: toExpression(`${accessViaMember}`), getAccess: Access.Explicit }));

@@ -20,6 +20,7 @@ export class Project extends codeDomProject {
   public xmlSerialization = false;
   public defaultPipeline = true;
   public emitSignals = true;
+  public exportPropertiesForDict!: boolean;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
   protected state!: State;
@@ -46,6 +47,7 @@ export class Project extends codeDomProject {
     this.identityCorrection = await this.state.getValue('identity-correction-for-post', false);
     this.resourceGroupAppend = await this.state.getValue('resourcegroup-append', false);
     this.license = await this.state.getValue('header-text', '');
+    this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
 
 
     // add project namespace
@@ -63,7 +65,8 @@ export class Project extends codeDomProject {
 
       'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
-      'Microsoft.Rest': this.projectNamespace
+      'Microsoft.Rest': this.projectNamespace,
+      '#define DICT_PROPERTIES': this.exportPropertiesForDict ? '#define DICT_PROPERTIES' : '#define NO_DICT_PROPERTIES'
     };
 
     this.serviceNamespace = new ServiceNamespace(this.state);
