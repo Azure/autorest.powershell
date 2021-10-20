@@ -249,7 +249,7 @@ export class Project extends codeDomProject {
     this.nuspec = await this.state.getValue('nuspec');
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
-    this.readme = `${this.baseFolder}/readme.md`;
+    this.readme = `${this.baseFolder}/README.md`;
 
     // excluded properties in table view
     const excludedList = <Array<string>>values(<any>(await this.state.getValue('exclude-tableview-properties', []))).toArray();

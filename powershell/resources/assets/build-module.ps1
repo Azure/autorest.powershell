@@ -94,13 +94,13 @@ if(Test-Path $customPsm1) {
 
 $exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
 if(Test-Path $exportsFolder) {
-  $null = Get-ChildItem -Path $exportsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+  $null = Get-ChildItem -Path $exportsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 }
 $null = New-Item -ItemType Directory -Force -Path $exportsFolder
 
 $internalFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.internalFolder)}'
 if(Test-Path $internalFolder) {
-  $null = Get-ChildItem -Path $internalFolder -Recurse -Exclude '*.psm1', 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+  $null = Get-ChildItem -Path $internalFolder -Recurse -Exclude '*.psm1', 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 }
 $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
@@ -125,7 +125,7 @@ if($NoDocs) {
   $moduleDescription = '${$project.metadata.description}'
   $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
   if(Test-Path $docsFolder) {
-    $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'readme.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+    $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid

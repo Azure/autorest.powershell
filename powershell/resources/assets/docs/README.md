@@ -1,5 +1,5 @@
 # Docs
-This directory contains the documentation of the cmdlets for the `${$project.moduleName}` module. To run documentation generation, use the `generate-help.ps1` script at the root module folder. Files in this folder will *always be overriden on regeneration*. To update documentation examples, please use the `${$lib.path.relative($project.docsFolder, $project.examplesFolder)}` folder.
+This directory contains the documentation of the cmdlets for the `${$project.moduleName}` module. To run documentation generation, use the `generate-help.ps1` script at the root module folder. Files in this folder will *always be overridden on regeneration*. To update documentation examples, please use the `${$lib.path.relative($project.docsFolder, $project.examplesFolder)}` folder.
 
 ## Info
 - Modifiable: no

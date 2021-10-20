@@ -384,7 +384,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
 
   }
   if (length(conflicts) > 0) {
-    // dolauli need to figure out how inline-properties is used in readme.md
+    // dolauli need to figure out how inline-properties is used in README.md
     state.error('You have one or more circular references in your model, you must add configuration entries to specify which models won\'t be inlined.', ['inline-properties']);
     for (const each of conflicts) {
       state.error(each, ['circular reference']);
