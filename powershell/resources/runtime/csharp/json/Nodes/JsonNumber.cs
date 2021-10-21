@@ -33,12 +33,12 @@ namespace Carbon.Json
 
         public JsonNumber(float value)
         {
-            this.value = value.ToString();
+            this.value = value.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public JsonNumber(double value)
         {
-            this.value = value.ToString();
+            this.value = value.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public override JsonType Type => JsonType.Number;
@@ -79,13 +79,13 @@ namespace Carbon.Json
             => ulong.Parse(number.Value);
 
         public static implicit operator decimal(JsonNumber number)
-            => decimal.Parse(number.Value);
+            => decimal.Parse(number.Value, System.Globalization.CultureInfo.InvariantCulture);
 
         public static implicit operator Double(JsonNumber number)
-            => double.Parse(number.value);
+            => double.Parse(number.value, System.Globalization.CultureInfo.InvariantCulture);
 
         public static implicit operator float(JsonNumber number)
-            => float.Parse(number.value);
+            => float.Parse(number.value, System.Globalization.CultureInfo.InvariantCulture);
 
         public static implicit operator JsonNumber(short data)
             => new JsonNumber(data.ToString());
