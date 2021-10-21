@@ -37,9 +37,9 @@ export async function generateNuspec(project: Project) {
     <!-- https://github.com/NuGet/Home/issues/3584 -->
     <file src="${removeCd(project.dll)}" target="${removeCd(project.binFolder)}" />
     <file src="${removeCd(project.binFolder)}\\${project.dllName}.deps.json" target="${removeCd(project.binFolder)}" />
-    <file src="${removeCd(project.internalFolder)}\\**\\*.*" exclude="${removeCd(project.internalFolder)}\\readme.md" target="${removeCd(project.internalFolder)}" />
-    <file src="${removeCd(project.customFolder)}\\**\\*.*" exclude="${removeCd(project.customFolder)}\\readme.md;${removeCd(project.customFolder)}\\**\\*.cs" target="${removeCd(project.customFolder)}" />
-    <file src="${removeCd(project.docsFolder)}\\**\\*.md" exclude="${removeCd(project.docsFolder)}\\readme.md" target="${removeCd(project.docsFolder)}" />
+    <file src="${removeCd(project.internalFolder)}\\**\\*.*" exclude="${removeCd(project.internalFolder)}\\README.md" target="${removeCd(project.internalFolder)}" />
+    <file src="${removeCd(project.customFolder)}\\**\\*.*" exclude="${removeCd(project.customFolder)}\\README.md;${removeCd(project.customFolder)}\\**\\*.cs" target="${removeCd(project.customFolder)}" />
+    <file src="${removeCd(project.docsFolder)}\\**\\*.md" exclude="${removeCd(project.docsFolder)}\\README.md" target="${removeCd(project.docsFolder)}" />
     <file src="${removeCd(project.exportsFolder)}\\**\\ProxyCmdletDefinitions.ps1" target="${removeCd(project.exportsFolder)}" />
     <file src="${removeCd(project.utilsFolder)}\\**\\*.*" target="${removeCd(project.utilsFolder)}" />
   </files>
