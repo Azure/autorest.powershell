@@ -120,9 +120,9 @@ ${$project.pwshCommentHeaderForCsharp}
 
 <#
 .Synopsis
-Create a in-memory object for ${ObjectType}
+Create an in-memory object for ${ObjectType}.
 .Description
-Create a in-memory object for ${ObjectType}
+Create an in-memory object for ${ObjectType}.
 
 .Outputs
 ${ObjectTypeWithNamespace}
