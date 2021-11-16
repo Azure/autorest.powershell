@@ -143,7 +143,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
         const tt = type ? `(${type.declaration})` : '';
-        yield `${t}.${getVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${getVirtualPropertyName(virtualProperty)}",${t}.${getVirtualPropertyName(virtualProperty)}, ${cvt});`;
+        yield If(`content.Contains("${getVirtualPropertyName(virtualProperty)}")`, `${t}.${getVirtualPropertyName(virtualProperty)} = ${tt} ${$this.contentParameter}.GetValueForProperty("${getVirtualPropertyName(virtualProperty)}",${t}.${getVirtualPropertyName(virtualProperty)}, ${cvt});`);
       }
     };
   }

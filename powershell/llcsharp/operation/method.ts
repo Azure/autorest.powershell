@@ -133,7 +133,7 @@ export class OperationMethod extends Method {
       // Some services will make the host as an input parameter
       baseUrl = this.operation.requests ? this.operation.requests[0].protocol.http?.uri : '';
     }
-    
+
     this.description = this.operation.language.csharp?.description || '';
 
     // add body paramter if there should be one.
@@ -221,7 +221,7 @@ export class OperationMethod extends Method {
         yield '// verify that Identity format is an exact match for uri';
         yield EOL;
 
-        const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx).value}.Match(${identity.value})`);
+        const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx, "global::System.Text.RegularExpressions.RegexOptions.IgnoreCase").value}.Match(${identity.value})`);
         yield match.declarationStatement;
         yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${path}'");`);
         yield EOL;
