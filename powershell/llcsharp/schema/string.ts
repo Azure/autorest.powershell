@@ -129,7 +129,7 @@ export class String implements EnhancedTypeDeclaration {
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
     switch (mediaType) {
       case KnownMediaType.Json:
-        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => ${this.deserializeFromString(mediaType, 'body.Result', defaultValue)})`);
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => body.Result)`);
 
     }
     return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
