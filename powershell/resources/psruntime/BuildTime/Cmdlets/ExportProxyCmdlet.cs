@@ -60,8 +60,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         protected override void ProcessRecord()
         {
-            try
-            {
+            try {
                 var variants = GetModuleCmdletsAndHelpInfo(this, ModulePath).SelectMany(ci => ci.ToVariants()).Where(v => !v.IsDoNotExport).ToArray();
                 var allProfiles = variants.SelectMany(v => v.Profiles).Distinct().ToArray();
                 var profileGroups = allProfiles.Any()
