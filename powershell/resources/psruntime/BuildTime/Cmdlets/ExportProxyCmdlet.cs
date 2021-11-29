@@ -52,8 +52,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
         public SwitchParameter ExcludeDocs { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter(Mandatory = false, ParameterSetName = "Docs")]
         public SwitchParameter ExcludeExampleTemplates { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = "Docs")]
+        public SwitchParameter ExcludeNotesSection { get; set; }
+
         protected override void ProcessRecord()
         {
           try {
@@ -100,7 +104,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # ----------------------------------------------------------------------------------
 ");
                 sb.Append($"{Environment.NewLine}");
-                sb.Append(variantGroup.ToHelpCommentOutput(ExcludeExampleTemplates));
+                sb.Append(variantGroup.ToHelpCommentOutput(ExcludeExampleTemplates, ExcludeNotesSection));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
                 sb.Append(variantGroup.Aliases.ToAliasOutput());
                 sb.Append(variantGroup.OutputTypes.ToOutputTypeOutput());
