@@ -314,7 +314,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool Required { get; }
         public bool ReadOnly { get; }
         public string Description { get; }
-
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
@@ -331,7 +330,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var unwrappedType = Type.Unwrap();
             var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
             (seenTypes ?? (seenTypes = new List<Type>())).Add(unwrappedType);
-            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[] { } :
+            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[]{} :
                 unwrappedType.GetInterfaces()
                 .Concat(InfoAttribute.PossibleTypes)
                 .SelectMany(pt => pt.GetProperties()
