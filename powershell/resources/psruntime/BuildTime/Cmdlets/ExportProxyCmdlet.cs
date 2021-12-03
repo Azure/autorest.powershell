@@ -74,21 +74,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 .Select(vg => new VariantGroup(ModuleName, vg.Key.CmdletName, vg.Select(v => v).ToArray(),
                     Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal)))
                 .ToArray();
-
-            foreach (var variantGroup in variantGroups)
-            {
-                var parameterGroups = variantGroup.ParameterGroups.ToList();
-                var isValidProfile = !String.IsNullOrEmpty(variantGroup.ProfileName) && variantGroup.ProfileName != NoProfiles;
-                var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, variantGroup.ProfileName) : ExamplesFolder;
-                var markdownInfo = new MarkdownHelpInfo(variantGroup, examplesFolder);
-                List<PsHelpExampleInfo> examples = new List<PsHelpExampleInfo>();
-                foreach (var it in markdownInfo.Examples)
-                {
-                    examples.Add(it);
-                }
-                variantGroup.HelpInfo.Examples = examples.ToArray();
-                var sb = new StringBuilder();
-                sb.Append(@"
+			var license = new StringBuilder();
+            license.Append(@"
 # ----------------------------------------------------------------------------------
 #
 # Copyright Microsoft Corporation
@@ -103,6 +90,19 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 ");
+            foreach (var variantGroup in variantGroups)
+            {
+                var parameterGroups = variantGroup.ParameterGroups.ToList();
+                var isValidProfile = !String.IsNullOrEmpty(variantGroup.ProfileName) && variantGroup.ProfileName != NoProfiles;
+                var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, variantGroup.ProfileName) : ExamplesFolder;
+                var markdownInfo = new MarkdownHelpInfo(variantGroup, examplesFolder);
+                List<PsHelpExampleInfo> examples = new List<PsHelpExampleInfo>();
+                foreach (var it in markdownInfo.Examples)
+                {
+                    examples.Add(it);
+                }
+                variantGroup.HelpInfo.Examples = examples.ToArray();
+                var sb = new StringBuilder();
                 sb.Append($"{Environment.NewLine}");
                 sb.Append(variantGroup.ToHelpCommentOutput(ExcludeExampleTemplates, ExcludeNotesSection));
                 sb.Append($"function {variantGroup.CmdletName} {{{Environment.NewLine}");
@@ -139,8 +139,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 sb.Append($"}}{Environment.NewLine}");
 
                 Directory.CreateDirectory(variantGroup.OutputFolder);
+				File.WriteAllText(variantGroup.FilePath, license.ToString());
                 File.WriteAllText(variantGroup.FilePath, sb.ToString());
-
+                if (!LicenseSet.Contains(Path.Combine(variantGroup.OutputFolder, "ProxyCmdletDefinitions.ps1")))
+                {
+                    // only add license in the header
+                    File.AppendAllText(Path.Combine(variantGroup.OutputFolder, "ProxyCmdletDefinitions.ps1"), license.ToString());
+                    LicenseSet.Add(Path.Combine(variantGroup.OutputFolder, "ProxyCmdletDefinitions.ps1"));
+                }
                 File.AppendAllText(Path.Combine(variantGroup.OutputFolder, "ProxyCmdletDefinitions.ps1"), sb.ToString());
             }
 
