@@ -109,6 +109,7 @@ export class Project extends codeDomProject {
   public resourcesFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
+  public rootModuleName!: string;
   public csproj!: string;
   public nuspec!: string;
   public gitIgnore!: string;
@@ -210,6 +211,7 @@ export class Project extends codeDomProject {
     this.serviceName = this.model.language.default.serviceName;
     this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
+    this.rootModuleName = await this.state.getValue('root-module-name', '');
     this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
     if (this.azure) {
