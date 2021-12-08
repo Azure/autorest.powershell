@@ -338,13 +338,15 @@ export class CallMethod extends Method {
 
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
-            for (const responses of [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)]) {
-              if (responses.protocol.http?.statusCodes[0] !== 'default') {
-                const responseCode = responses.protocol.http?.statusCodes[0];
+            var responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0]))});
+            for (const resp of responses) {
+              if (resp.protocol.http?.statusCodes[0] !== 'default') {
+                const responseCode = resp.protocol.http?.statusCodes[0];
+                var leadNum = parseInt(responseCode[0]);
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `(${System.Net.HttpStatusCode.declaration})${responseCode}`, $this.responsesEmitter($this, opMethod, [responses], eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], eventListener));
               } else {
-                yield DefaultCase($this.responsesEmitter($this, opMethod, [responses], eventListener));
+                yield DefaultCase($this.responsesEmitter($this, opMethod, [resp], eventListener));
               }
             }
 
