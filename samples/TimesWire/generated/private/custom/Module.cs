@@ -36,7 +36,7 @@ namespace Times.Wire.Search
             request.RequestUri = new System.Uri(
                 request.RequestUri.AbsoluteUri +
                 sepChar +
-                "apikey=" +
+                "api-key=" +
                 // we'll cheat and pull it from the environment :D
                 System.Environment.GetEnvironmentVariable("TimesApiKey")
                 );
