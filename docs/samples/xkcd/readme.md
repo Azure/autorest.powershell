@@ -53,13 +53,12 @@ List the commands from the module:
 ``` powershell
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Get-XkcdComic                                      1.0        XKCD
-Function        Get-XkcdComicForToday                              1.0        XKCD
+Function        Get-XkcdComic                                      0.1.0        XKCD
 ```
 
 Try out a command
 
-> `Get-XkcdComicForToday | fl`
+> `Get-XkcdComic | fl`
 
 ``` powershell
 Alt        : Theres one person in Missouri who says "carbo bev" who the entire rest of the country HATES.
@@ -79,7 +78,7 @@ Nifty!
 
 A bit of fun:
 
-> `invoke-webrequest (Get-XkcdComicForToday).img -outfile image.png ; & ./image.png`
+> `invoke-webrequest (Get-XkcdComic).img -outfile image.png ; & ./image.png`
 
 
 ![Today's Comic](./pic.png)
