@@ -90,6 +90,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 ");
+            HashSet<string> LicenseSet = new HashSet<string>();
             foreach (var variantGroup in variantGroups)
             {
                 var parameterGroups = variantGroup.ParameterGroups.ToList();
@@ -162,7 +163,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder, ExcludeExampleTemplates);
                 }
             }
-          } catch (Exception ee) { 
+            }
+            catch (Exception ee)
+            {
             Console.WriteLine($"${ee.GetType().Name}/{ee.StackTrace}");
             throw ee;
           }
