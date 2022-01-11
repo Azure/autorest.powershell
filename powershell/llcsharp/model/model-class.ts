@@ -513,6 +513,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         get: toExpression(`(new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/").Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/").Match(this.Id).Groups["resourceGroupName"].Value : null)`)
       })
 
+      const format = this.state.project.formats[`${this.schema.language.csharp?.name}`];
+
       const virtualResourceGroupNameProperty = {
         name: resourceGroupNamePropertyName,
         property: actualResourceGroupProperty,
@@ -523,6 +525,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         originalContainingSchema: actualResourceGroupProperty.schema,
         alias: [],
         required: false,
+        format: format
       };
 
       if (this.state.getValue('powershell')) {

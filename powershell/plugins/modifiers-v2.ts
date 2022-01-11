@@ -12,7 +12,7 @@ import { CommandOperation } from '../utils/command-operation';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
 import { allVirtualParameters, allVirtualProperties } from '../utils/resolve-conflicts';
-import { EnumValue } from '../utils/schema';
+import { EnumValue, PropertyFormat } from '../utils/schema';
 
 type State = ModelState<PwshModel>;
 
@@ -367,14 +367,14 @@ async function tweakModel(state: State): Promise<PwshModel> {
           if (directive.hide) {
             if (p.required && !paramDefaultReplacer) {
               throw new Error(
-                  `Please add a default value when hiding the mandatory parameter ${p.name}.
+                `Please add a default value when hiding the mandatory parameter ${p.name}.
 See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#default-values`
               );
             }
             p.hidden = true;
             state.message({
-                Channel: Channel.Debug,
-                Text: `[DIRECTIVE] Hide parameter ${p.name}.`,
+              Channel: Channel.Debug,
+              Text: `[DIRECTIVE] Hide parameter ${p.name}.`,
             });
           }
 
@@ -582,11 +582,21 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
           }
 
           if (formatTable !== undefined && !suppressFormat) {
+            var resourceGroupFormat: PropertyFormat = {};
+            var ResourceGroupNameInclude = false;
+            const resourceGroupName = 'resourcegroupname';
             const properties = allVirtualProperties(model.language.csharp?.virtualProperties);
             const propertiesToExclude = formatTable['exclude-properties'];
             const propertiesToInclude = formatTable.properties;
             const labels = formatTable.labels;
             const widths = formatTable.width;
+
+            for (const property of values(properties)) {
+              if (property.name.toLowerCase() == resourceGroupName) {
+                ResourceGroupNameInclude = true;
+              }
+            }
+
             if (labels) {
               const parsedLabels = new Dictionary<string>();
               for (const label of items(labels)) {
@@ -601,6 +611,10 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
                   property.format.label = parsedLabels[property.name.toLowerCase()];
                 }
+              }
+
+              if (!ResourceGroupNameInclude) {
+                resourceGroupFormat.label = parsedLabels[resourceGroupName];
               }
             }
 
@@ -619,6 +633,10 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                   property.format.width = parsedWidths[property.name.toLowerCase()];
                 }
               }
+
+              if (!ResourceGroupNameInclude) {
+                resourceGroupFormat.width = parsedWidths[resourceGroupName];
+              }
             }
 
             if (propertiesToInclude) {
@@ -626,8 +644,11 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
               for (const item of items(propertiesToInclude)) {
                 indexes[item.value.toLowerCase()] = item.key;
               }
-
+              var ResourceGroupNameInclude = false;
               for (const property of values(properties)) {
+                if (property.name.toLowerCase() == 'resourcegroupname') {
+                  ResourceGroupNameInclude = true;
+                }
                 if (propertiesToInclude.map(x => x.toLowerCase()).includes(property.name.toLowerCase())) {
                   if (property.format === undefined) {
                     property.format = {};
@@ -638,6 +659,14 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                   property.format = { suppressFormat: true };
                 }
               }
+
+              if (!ResourceGroupNameInclude) {
+                resourceGroupFormat.index = indexes[resourceGroupName];
+                if (indexes[resourceGroupName] == undefined) {
+                  resourceGroupFormat.suppressFormat = true;
+                }
+              }
+
             }
 
             if (propertiesToExclude) {
@@ -646,6 +675,17 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                   property.format = { suppressFormat: true };
                 }
               }
+
+              if (!ResourceGroupNameInclude && propertiesToExclude.map(x => x.toLowerCase()).includes(resourceGroupName)) {
+                resourceGroupFormat.suppressFormat = true;
+              }
+            }
+
+            if (!ResourceGroupNameInclude && await state.getValue("azure", false)) {
+              // Keep the format info for ResourceGroupName and we will need it later if resourcegroup-append is set
+              var formats = await state.getValue<Dictionary<PropertyFormat>>("formats", {});
+              formats[`${model.language.csharp?.name}`] = resourceGroupFormat;
+              await state.setValue("formats", formats);
             }
           }
 
