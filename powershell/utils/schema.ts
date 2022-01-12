@@ -73,7 +73,7 @@ export interface VirtualProperty {
 }
 
 
-interface PropertyFormat {
+export interface PropertyFormat {
   suppressFormat?: boolean;
   index?: number;
   width?: number;

@@ -13,6 +13,7 @@ import { ApiClass } from './operation/api-class';
 import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './enums/namespace';
 import { DeepPartial } from '@azure-tools/codegen';
+import { PropertyFormat } from '../utils/schema';
 
 export class Project extends codeDomProject {
 
@@ -31,6 +32,7 @@ export class Project extends codeDomProject {
   license!: string;
   identityCorrection!: boolean;
   resourceGroupAppend!: boolean;
+  formats!: Dictionary<PropertyFormat>;
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
@@ -48,6 +50,7 @@ export class Project extends codeDomProject {
     this.resourceGroupAppend = await this.state.getValue('resourcegroup-append', false);
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
+    this.formats = await this.state.getValue('formats', {});
 
 
     // add project namespace
