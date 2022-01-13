@@ -160,6 +160,11 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
 
   /** emits an expression to deserialize content from a content/response */
   deserializeFromResponse(mediaType: KnownMediaType, content: ExpressionOrLiteral, defaultValue: Expression): Expression | undefined {
+    switch (mediaType) {
+      case KnownMediaType.Json:
+        return toExpression(`${content}.Content.ReadAsStringAsync().ContinueWith( body => (${this.baseType}) global::System.Convert.ChangeType(body.Result, typeof(${this.baseType})))`);
+
+    }
     return toExpression(`null /* deserializeFromResponse doesn't support '${mediaType}' ${__filename}*/`);
   }
 
