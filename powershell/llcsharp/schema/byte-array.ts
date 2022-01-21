@@ -90,11 +90,19 @@ export class ByteArray implements EnhancedTypeDeclaration {
         }
 
         case KnownMediaType.Json: {
-          return `AddIf( null != ${value} ? ${System.Convert.ToBase64String(value)} : null ,(v)=> ${container}.Add( "${serializedName}",v) );`;
+          if (this.schema.format == 'base64url') {
+            return `AddIf( null != ${value} ? ${System.Convert.ToBase64String(value)}.TrimEnd(new char[] {'='}).Replace('+', '-').Replace('/', '_') : null ,(v)=> ${container}.Add( "${serializedName}",v) );`;
+          } else {
+            return `AddIf( null != ${value} ? ${System.Convert.ToBase64String(value)} : null ,(v)=> ${container}.Add( "${serializedName}",v) );`;
+          }
         }
 
         case KnownMediaType.Header: {
-          return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", ${System.Convert.ToBase64String(value)});`);
+          if (this.schema.format == 'base64url') {
+            return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", ${System.Convert.ToBase64String(value)}.TrimEnd(new char[] {'='}).Replace('+', '-').Replace('/', '_'));`);
+          } else {
+            return If(`null != ${value}`, `${valueOf(container)}.Add("${serializedName}", ${System.Convert.ToBase64String(value)});`);
+          }
         }
       }
 
