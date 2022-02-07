@@ -125,7 +125,12 @@ export class NewModuleClass extends Class {
         yield `${$this.fWebProxy}.BypassProxyOnLocal = false;`;
         yield `${$this.fWebProxy}.Credentials = proxyCredential ?.GetNetworkCredential();`;
         yield `${$this.fWebProxy}.UseDefaultCredentials = proxyUseDefaultCredentials;`;
-        yield `${$this.fHandler}.UseProxy = proxy != null;`;
+        yield 'var useProxy = proxy != null;';
+        yield If(`${$this.fHandler}.UseProxy != useProxy`, function* () {
+          yield `${$this.fHandler} = new global::System.Net.Http.HttpClientHandler();`;
+          yield `${$this.fHandler}.Proxy = _webProxy;`;
+          yield `${$this.fHandler}.UseProxy = useProxy;`;
+        });
       }
     }));
   }
