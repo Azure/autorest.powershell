@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, ImportDirective, If, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable } from '@azure-tools/codegen-csharp';
+import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, ImportDirective, If, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable, Else } from '@azure-tools/codegen-csharp';
 
 import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
@@ -73,6 +73,7 @@ export class NewModuleClass extends Class {
   fPipelineWithProxy = this.add(new Field('_pipelineWithProxy', ClientRuntime.HttpPipeline, { access: Access.Private, description: 'the ISendAsync pipeline instance (when proxy is enabled)' }));
   fHandler = this.add(new Field('_handler', System.Net.Http.HttpClientHandler, { initialValue: System.Net.Http.HttpClientHandler.new() }));
   fWebProxy = this.add(new Field('_webProxy', System.Net.WebProxy, { initialValue: System.Net.WebProxy.new() }));
+  fUseProxy = this.add(new Field('_useProxy', dotnet.Bool, { initialValue: dotnet.False }));
 
   constructor(namespace: Namespace, private readonly state: State, objectInitializer?: DeepPartial<NewModuleClass>) {
     super(namespace, 'Module');
@@ -120,17 +121,24 @@ export class NewModuleClass extends Class {
     this.add(new Method('SetProxyConfiguration', dotnet.Void, {
       parameters: [this.pProxy, this.pProxyCredential, this.pUseDefaultCredentials],
       *body() {
+        yield `${$this.fUseProxy} = proxy != null;`;
+        yield If(`${$this.pProxy} == null`, function* () {
+          yield 'return;';
+        });
         yield '// set the proxy configuration';
         yield `${$this.fWebProxy}.Address = proxy;`;
         yield `${$this.fWebProxy}.BypassProxyOnLocal = false;`;
-        yield `${$this.fWebProxy}.Credentials = proxyCredential ?.GetNetworkCredential();`;
-        yield `${$this.fWebProxy}.UseDefaultCredentials = proxyUseDefaultCredentials;`;
-        yield 'var useProxy = proxy != null;';
-        yield If(`${$this.fHandler}.UseProxy != useProxy`, function* () {
-          yield `${$this.fHandler} = new global::System.Net.Http.HttpClientHandler();`;
-          yield `${$this.fHandler}.Proxy = _webProxy;`;
-          yield `${$this.fHandler}.UseProxy = useProxy;`;
+
+        yield If(`${$this.pUseDefaultCredentials}`, function* () {
+          yield `${$this.fWebProxy}.Credentials = null;`;
+          yield `${$this.fWebProxy}.UseDefaultCredentials = true;`;
         });
+        yield Else(function* () {
+          yield `${$this.fWebProxy}.UseDefaultCredentials = false;`;
+          yield `${$this.fWebProxy}.Credentials = proxyCredential ?.GetNetworkCredential();`;
+        });
+
+
       }
     }));
   }
@@ -169,7 +177,7 @@ export class NewModuleClass extends Class {
       const pip = new LocalVariable('pipeline', ClientRuntime.HttpPipeline, { initializer: 'null' });
       yield pip.declarationStatement;
       yield `BeforeCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
-      yield pip.assign(`(${pip} ?? (${$this.fHandler}.UseProxy ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
+      yield pip.assign(`(${pip} ?? (${$this.fUseProxy} ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
       yield `AfterCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
       yield Return(pip);
     });
@@ -337,7 +345,7 @@ export class NewModuleClass extends Class {
       const pip = new LocalVariable('pipeline', ClientRuntime.HttpPipeline, { initializer: 'null' });
       yield pip.declarationStatement;
       yield `BeforeCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
-      yield pip.assign(`(${pip} ?? (${$this.fHandler}.UseProxy ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
+      yield pip.assign(`(${pip} ?? (${$this.fUseProxy} ? ${$this.fPipelineWithProxy} : ${$this.fPipeline})).Clone()`);
       yield `AfterCreatePipeline(${$this.pInvocationInfo.use}, ref ${pip});`;
       yield `pipeline.Append(new Runtime.CmdInfoHandler(${$this.pProcessRecordId}, ${$this.pInvocationInfo.use}, ${$this.pParameterSetName}).SendAsync);`;
       if (isDataPlane) {
