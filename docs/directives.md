@@ -417,3 +417,7 @@ directive:
         script: '(Get-AzContext).Subscription.Id'
 ```
 The name and description are optional. They are currently unused properties that may be used in documentation generation in the future.
+
+## Azure PowerShell Specific
+
+For directives that are specific to Azure PowerShell, see https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/autogen-directives-for-azure-powershell.md
