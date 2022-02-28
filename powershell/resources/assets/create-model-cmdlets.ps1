@@ -12,7 +12,7 @@ function CreateModelCmdlet {
     }
 
     $ModelCsPath = Join-Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.apiFolder)}') 'Models'
-    $ModuleName = '${$project.moduleName}'.Split(".")[1]
+    $ModuleName = '${$project.subjectPrefix}'
     $OutputDir = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.modelCmdletFolder)}'
     $null = New-Item -ItemType Directory -Force -Path $OutputDir
 
