@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@autorest/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Catch, Try, Else, ElseIf, If, Interface, Attribute, Parameter, Modifier, dotnet, Class, LambdaMethod, LiteralExpression, Method, Namespace, System, Return, LocalVariable, Local, PartialMethod, Constructor, IsAssignableFrom, ImportDirective, Property, Access, InterfaceProperty, ParameterModifier } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime, ObjectImplementation, SchemaDefinitionResolver, DeserializerPartialClass } from '../llcsharp/exports';

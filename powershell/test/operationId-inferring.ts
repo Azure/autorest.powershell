@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { suite, test } from 'mocha-typescript';
 
 import * as pp from '../plugins/create-commands-v2';
-import { Channel, JsonPath, Mapping, RawSourceMap, Message } from '@azure-tools/autorest-extension-base';
+import { Channel, JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 require('source-map-support').install();
 

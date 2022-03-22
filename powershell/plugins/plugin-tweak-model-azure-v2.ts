@@ -6,10 +6,10 @@
 
 import { keys, length, values } from '@azure-tools/linq';
 
-import { Channel, Host } from '@azure-tools/autorest-extension-base';
+import { Channel, Host } from '@autorest/extension-base';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
-import { getAllProperties, ObjectSchema, Response, SchemaType, Schema } from '@azure-tools/codemodel';
+import { getAllProperties, ObjectSchema, Response, SchemaType, Schema } from '@autorest/codemodel';
 import { serialize } from '@azure-tools/codegen';
 type State = ModelState<PwshModel>;
 

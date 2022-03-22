@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 

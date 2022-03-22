@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { pascalCase, EnglishPluralizationService } from '@azure-tools/codegen';
-import { Channel, Message } from '@azure-tools/autorest-extension-base';
+import { Channel, Message } from '@autorest/extension-base';
 import { length } from '@azure-tools/linq';
 
 function getPluralizationService(): EnglishPluralizationService {

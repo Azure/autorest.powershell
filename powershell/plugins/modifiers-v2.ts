@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@azure-tools/autorest-extension-base';
+import { Host, Channel } from '@autorest/extension-base';
 import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';

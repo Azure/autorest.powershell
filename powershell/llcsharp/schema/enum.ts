@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Schema } from '../code-model';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema } from '@autorest/codemodel';
 import { String } from './string';
 import { dotnet, toExpression } from '@azure-tools/codegen-csharp';
 

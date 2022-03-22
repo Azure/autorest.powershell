@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Host, startSession } from '@azure-tools/autorest-extension-base';
-import { codeModelSchema } from '@azure-tools/codemodel';
+import { Host, startSession } from '@autorest/extension-base';
+import { codeModelSchema } from '@autorest/codemodel';
 import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
 import { Model } from '../llcsharp/code-model';

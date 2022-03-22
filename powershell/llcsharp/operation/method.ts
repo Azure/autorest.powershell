@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { NewResponse, ParameterLocation } from '@azure-tools/codemodel-v3';
-import { Operation, SchemaResponse, BinaryResponse, Schema as NewSchema, Response, BinarySchema } from '@azure-tools/codemodel';
+import { Operation, SchemaResponse, BinaryResponse, Schema as NewSchema, Response, BinarySchema } from '@autorest/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { EOL, DeepPartial } from '@azure-tools/codegen';
 import { Access, Modifier } from '@azure-tools/codegen-csharp';

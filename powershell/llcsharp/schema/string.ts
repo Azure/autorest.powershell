@@ -12,7 +12,7 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { ChoiceSchema, Schema as NewSchema, SchemaType, SealedChoiceSchema, StringSchema } from '@azure-tools/codemodel';
+import { ChoiceSchema, Schema as NewSchema, SchemaType, SealedChoiceSchema, StringSchema } from '@autorest/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { length } from '@azure-tools/linq';
