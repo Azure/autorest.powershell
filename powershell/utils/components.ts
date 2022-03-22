@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
-import { Schema } from '@azure-tools/codemodel';
+import { Schema } from '@autorest/codemodel';
 import { Extensions } from './extensions';
 //import { Schema } from './schema';
 import { uid } from './uid';

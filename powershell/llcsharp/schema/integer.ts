@@ -7,7 +7,7 @@ import { nameof } from '@azure-tools/codegen';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { NumberSchema } from '@azure-tools/codemodel';
+import { NumberSchema } from '@autorest/codemodel';
 import { NewPrimitive } from './primitive';
 
 

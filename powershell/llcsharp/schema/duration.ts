@@ -8,7 +8,7 @@ import { Expression, ExpressionOrLiteral, toExpression, System, valueOf } from '
 import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, DurationSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, DurationSchema } from '@autorest/codemodel';
 import { NewPrimitive } from './primitive';
 import { ClientRuntime } from '../clientruntime';
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { values } from '@azure-tools/linq';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { serialize } from '@azure-tools/codegen';

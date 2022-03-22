@@ -13,12 +13,12 @@ import { pwshHeaderText } from '../utils/powershell-comment';
 
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { codemodel, PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
 import { DeepPartial, comment } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
-import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@autorest/codemodel';
 
 export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
 

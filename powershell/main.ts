@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutoRestExtension, } from '@azure-tools/autorest-extension-base';
+import { AutoRestExtension, } from '@autorest/extension-base';
 import { createInlinedPropertiesPlugin } from './plugins/plugin-create-inline-properties';
 import { tweakModelPlugin } from './plugins/plugin-tweak-model';
 import { tweakModelAzurePluginV2 } from './plugins/plugin-tweak-model-azure-v2';

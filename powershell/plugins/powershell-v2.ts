@@ -5,7 +5,7 @@
 
 //import { codemodel } from '@azure-tools/codemodel-v3';
 import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { join } from 'path';
 import { Project } from '../internal/project';
 import { generatePsm1 } from '../generators/psm1';

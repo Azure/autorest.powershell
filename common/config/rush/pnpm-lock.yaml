@@ -1,11 +1,11 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@autorest/codemodel': ~4.15.0
+  '@autorest/extension-base': ~3.1.0
   '@azure-tools/async-io': ~3.0.0
-  '@azure-tools/autorest-extension-base': ~3.1.0
   '@azure-tools/codegen': ~2.5.276
   '@azure-tools/codegen-csharp': ~3.0.0
-  '@azure-tools/codemodel': ~4.13.342
   '@azure-tools/codemodel-v3': ~3.1.0
   '@azure-tools/linq': ~3.1.0
   '@azure-tools/tasks': ~3.0.0
@@ -27,11 +27,11 @@ specifiers:
   xmlbuilder: 10.1.1
 
 dependencies:
+  '@autorest/codemodel': 4.15.0
+  '@autorest/extension-base': 3.1.0
   '@azure-tools/async-io': 3.0.254
-  '@azure-tools/autorest-extension-base': 3.1.267
   '@azure-tools/codegen': 2.5.294
   '@azure-tools/codegen-csharp': 3.0.264
-  '@azure-tools/codemodel': 4.13.349
   '@azure-tools/codemodel-v3': 3.1.266
   '@azure-tools/linq': 3.1.263
   '@azure-tools/tasks': 3.0.255
@@ -53,6 +53,23 @@ dependencies:
   xmlbuilder: 10.1.1
 
 packages:
+
+  /@autorest/codemodel/4.15.0:
+    resolution: {integrity: sha512-KfFS4sUT9ac5foVg3HhWYmXJqD6+jeWTlgfAEo9YIJ7dPo+6IK1CmOzzenTTzHRokWEAS2+Fswq8y0vK6BReRA==}
+    engines: {node: '>=10.13.0'}
+    dependencies:
+      '@azure-tools/codegen': 2.5.294
+      '@azure-tools/linq': 3.1.263
+      js-yaml: 4.0.0
+    dev: false
+
+  /@autorest/extension-base/3.1.0:
+    resolution: {integrity: sha512-LHSLvPDG0uoMsOmzh0wOtxHu0dvoTaqDRJkgJVAZFVz4VfLocXhFActkwQ31yoB0IO7phZnuvcG8NcvKObURAQ==}
+    dependencies:
+      '@azure-tools/codegen': 2.5.294
+      js-yaml: 3.13.1
+      vscode-jsonrpc: 3.6.2
+    dev: false
 
   /@azure-tools/async-io/3.0.254:
     resolution: {integrity: sha512-X1C7XdyCuo50ch9FzKtTvmK18FgDxxf1Bbt3cSoknQqeDaRegHSSCO+zByq2YA4NvUzKXeZ1engh29IDxZXgpQ==}
@@ -2921,10 +2938,12 @@ packages:
     dev: false
 
   file:projects/powershell.tgz:
-    resolution: {integrity: sha512-F/4/FcHerLAcdncEgmwWaeAtTYM4hzJPaGve1/6qaC0aELDgi5xkMytbn9Od9WQtMDg+NMG1yxd6xN06Blw7tw==, tarball: file:projects/powershell.tgz}
+    resolution: {integrity: sha512-hwLOLUYCBTF7JDfiW9hRsFwUflWZCrO/teOveBisoBmy6cCWA5xnXT0eHNDy+yJa8gGWF/scueGhSYKfyn6JlQ==, tarball: file:projects/powershell.tgz}
     name: '@rush-temp/powershell'
     version: 0.0.0
     dependencies:
+      '@autorest/codemodel': 4.15.0
+      '@autorest/extension-base': 3.1.0
       '@azure-tools/async-io': 3.0.254
       '@azure-tools/autorest-extension-base': 3.1.267
       '@azure-tools/codegen': 2.5.294

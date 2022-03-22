@@ -8,7 +8,7 @@ import { KnownMediaType, JsonType, getPolymorphicBases } from '@azure-tools/code
 import { Expression, ExpressionOrLiteral, Interface, Namespace, OneOrMoreStatements, Variable, Access, InterfaceProperty, Attribute, StringExpression, LiteralExpression, Property, TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, Language, ObjectSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, Language, ObjectSchema } from '@autorest/codemodel';
 import { State } from '../generator';
 import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ModelClass } from './model-class';
