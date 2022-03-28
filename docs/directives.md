@@ -101,6 +101,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Table Formatting](#Table-Formatting)
 - [Argument Completers](#Argument-Completers)
 - [Default Values](#Default-Values)
+- [Polymorphism](#Polymorphism)
 
 *Note*: If you have feedback about these directives, or you would like additional configurations, feel free to open an issue at https://github.com/Azure/autorest.powershell/issues.
 
@@ -417,6 +418,40 @@ directive:
         script: '(Get-AzContext).Subscription.Id'
 ```
 The name and description are optional. They are currently unused properties that may be used in documentation generation in the future.
+
+### Polymorphism
+
+In swagger, polymorphism is recognized as the `discriminator` keyword. The model with this keyword will be the **base class**, and the models that use `allOf` to referece the base class are the **child class**.
+
+We will use two directives to support polymorphism:
+
+```yaml
+# Disable Inline on the Baseclass(Model)
+- no-inline:
+  - BaseClass
+
+# Create Model Cmdlets for ChildClasses
+- model-cmdlet:
+  - ChildClassA
+  - ChildClassB
+```
+
+As a result, there will be three cmdlets generated:
+
+```powershell
+New-XXXResource -BaseClass <BaseClass> …
+
+New-XXXChildClassAObject …
+
+New-XXXChildClassBObject …
+```
+
+And users normally need two steps to create a resource.
+
+```powershell
+$obj = New-XXXChildClassAObject ... or $obj = New-XXXChildClassBObject …
+New-XXXResource -BaseClass $obj …
+```
 
 ## Azure PowerShell Specific
 
