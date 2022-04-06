@@ -378,6 +378,10 @@ export class CmdletClass extends Class {
       access: Access.Protected,
       description: `(overrides the default BeginProcessing method in ${PSCmdlet})`,
       *body() {
+        if ($this.state.project.azure) {
+          yield `var telemetryId = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryId.Invoke();`;
+          yield If('telemetryId != "" && telemetryId != "internal"', "__correlationId = telemetryId;");
+        }
         yield 'Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);';
         yield If($this.$<Property>('Break'), `${ClientRuntime.AttachDebugger}.Break();`);
 
@@ -480,7 +484,6 @@ export class CmdletClass extends Class {
     this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(function* () {
       // gs01: remember what you were doing here to make it so these can be parallelized...
       yield '';
-      yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
     });
 
     // debugging
@@ -644,8 +647,6 @@ export class CmdletClass extends Class {
       }
 
       // construct the call to the operation
-      yield $this.eventListener.signal(Events.CmdletProcessRecordAsyncStart);
-
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
 
       const pipeline = $this.$<Property>('Pipeline');

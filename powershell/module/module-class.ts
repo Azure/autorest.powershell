@@ -6,7 +6,7 @@
 
 import { Access, Alias, Class, ClassType, Constructor, dotnet, Field, ImportDirective, If, LambdaMethod, LambdaProperty, LazyProperty, LiteralExpression, LocalVariable, MemberVariable, Method, Modifier, Namespace, Parameter, ParameterModifier, PartialMethod, Property, Return, Statements, StringExpression, System, TypeDeclaration, Using, valueOf, Variable, Else } from '@azure-tools/codegen-csharp';
 
-import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, } from '../internal/powershell-declarations';
+import { InvocationInfo, PSCredential, IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType, PSCmdlet, } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { ClientRuntime } from '../llcsharp/exports';
 import { DeepPartial } from '@azure-tools/codegen';
@@ -244,6 +244,15 @@ export class NewModuleClass extends Class {
       dotnet.StringArray, /* parentResourceParameterNames */
       /* returns */ dotnet.StringArray,
     )));
+    const getTelemetryIdDelegate = namespace.add(new Alias('GetTelemetryIdDelegate', System.Func(
+      /* returns */ dotnet.String,
+    )));
+    const telemetryDelegate = namespace.add(new Alias('TelemetryDelegate', System.Action(
+      dotnet.String, /* operation name */
+      InvocationInfo, /* invocationInfo */
+      dotnet.String, /* parameter set name */
+      PSCmdlet, /* pscmdlet */
+    )));
 
     const tokenAudienceConverterDelegate = new Alias('TokenAudienceConverterDelegate',
       System.Func(
@@ -282,6 +291,8 @@ export class NewModuleClass extends Class {
     const AddRequestUserAgentHandler = new Property('AddRequestUserAgentHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to add request user agent.' });
     const AddPatchRequestUriHandler = new Property('AddPatchRequestUriHandler', newRequestPipelineDelegate, { description: 'The delegate to call before each new request to patch request uri.' });
     const AddAuthorizeRequestHandler = new Property('AddAuthorizeRequestHandler', authorizeRequestDelegate, { description: 'The delegate to call before each new request to add authorization.' });
+    this.add(new Property('GetTelemetryId', getTelemetryIdDelegate, { description: 'The delegate to get the telemetry Id.' }));
+    this.add(new Property('Telemetry', telemetryDelegate, { description: 'The delegate for creating a telemetry.' }));
     if (isDataPlane) {
       this.add(AddRequestUserAgentHandler);
       this.add(AddPatchRequestUriHandler);

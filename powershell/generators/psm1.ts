@@ -102,6 +102,10 @@ export async function generatePsm1(project: Project) {
   
   # Tweaks the pipeline on module load
   $instance.OnModuleLoad = $VTable.OnModuleLoad
+
+  # Following two delegates are added for telemetry
+  $instance.GetTelemetryId = $VTable.GetTelemetryId
+  $instance.Telemetry = $VTable.Telemetry
   
 ${requestHandler}
   
