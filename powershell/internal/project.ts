@@ -185,7 +185,7 @@ export class Project extends codeDomProject {
     // skip-for-time-being
     //this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.profiles = [];
-    this.accountsVersionMinimum = '2.2.3';
+    this.accountsVersionMinimum = '2.7.5';
     this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.preprocessMetadata();
