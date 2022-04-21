@@ -8,7 +8,7 @@ import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@a
 import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case
+  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute } from '../internal/powershell-declarations';
@@ -719,14 +719,27 @@ export class CmdletClass extends Class {
                     }
                     const nl = getVirtualPropertyFromPropertyName(each.schema.details.csharp.virtualProperties, nextLinkProperty.serializedName);
                     if (nl) {
+                      $this.add(new Field('_isFirst', dotnet.Bool, {
+                        access: Access.Private,
+                        initialValue: new LiteralExpression(`true`),
+                        description: `A flag to tell whether it is the first onOK call.`
+                      }));
+                      $this.add(new Field('_nextLink', dotnet.String, {
+                        access: Access.Private,
+                        description: `Link to retrieve next page.`
+                      }));
                       const nextLinkName = `${result.value}.${nl.name}`;
-                      yield (If(`${nextLinkName} != null`,
-                        If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
-                          yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
-                          yield $this.eventListener.signal(Events.FollowingNextLink);
-                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-                        })
-                      ));
+                      yield `_nextLink = ${nextLinkName};`
+                      yield (If(`_isFirst`, function* () {
+                        yield `_isFirst = false;`
+                        yield (While(`_nextLink != null`,
+                          If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
+                            yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
+                            yield $this.eventListener.signal(Events.FollowingNextLink);
+                            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                          })
+                        ))
+                      }));
                     }
                     return;
                   } else if (valueProperty) {
