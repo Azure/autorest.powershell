@@ -734,7 +734,7 @@ export class CmdletClass extends Class {
                         yield `_isFirst = false;`
                         yield (While(`_nextLink != null`,
                           If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
-                            yield `requestMessage = requestMessage.Clone(new global::System.Uri( ${nextLinkName} ),${ClientRuntime.Method.Get} );`;
+                            yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
                             yield $this.eventListener.signal(Events.FollowingNextLink);
                             yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.details.csharp.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
                           })
