@@ -18,6 +18,8 @@ function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
   result.addWord('Database', 'Databases');
   result.addWord('database', 'databases');
+  result.addWord('Premise', 'Premises');
+  result.addWord('premise', 'premises');
   return result;
 }
 
