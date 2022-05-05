@@ -36,6 +36,9 @@ export function titleToAzureServiceName(title: string): string {
 const pluralizationService = new EnglishPluralizationService();
 pluralizationService.addWord('Database', 'Databases');
 pluralizationService.addWord('database', 'databases');
+pluralizationService.addWord('Premise', 'Premises');
+pluralizationService.addWord('premise', 'premises');
+
 
 
 interface CommandVariant {
