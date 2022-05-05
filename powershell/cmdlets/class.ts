@@ -7,7 +7,7 @@ import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParam
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
-import { escapeString, docComment, serialize, pascalCase, DeepPartial } from '@azure-tools/codegen';
+import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
@@ -1280,12 +1280,10 @@ export class CmdletClass extends Class {
 
       if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
         // we're supposed to use parameters for the body parameter instead of a big object
-        const expandedBodyParameter = this.add(new BackedProperty(parameter.details.csharp.name, td, {
+        const expandedBodyParameter = this.add(new Field("_" + camelCase(parameter.details.csharp.name), td, {
           description: parameter.details.csharp.description,
-
-          initializer: (parameter.schema.type === SchemaType.Array) ? 'null' : `new ${parameter.schema.language.csharp?.fullname}()`,
-          setAccess: Access.Private,
-          getAccess: Access.Private,
+          initialValue: (parameter.schema.type === SchemaType.Array) ? dotnet.Null : `new ${parameter.schema.language.csharp?.fullname}()`,
+          access: Access.Private
         }));
         this.thingsToSerialize.push(expandedBodyParameter);
 
