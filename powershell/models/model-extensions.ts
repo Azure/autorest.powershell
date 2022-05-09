@@ -112,7 +112,7 @@ export class ModelExtensionsNamespace extends Namespace {
             static: Modifier.Static,
             parameters: [new Parameter('jsonText', dotnet.String, { description: 'a string containing a JSON serialized instance of this model.' })],
             description: `Creates a new instance of <see cref="${td.schema.language.csharp?.name}" />, deserializing the content from a json string.`,
-            returnsDescription: 'an instance of the <see cref="className" /> model class.'
+            returnsDescription: `an instance of the <see cref="${className}" /> model class.`
           }));
 
           model.add(new LambdaMethod('ToJsonString', dotnet.String, new LiteralExpression(`ToJson(${dotnet.Null}, ${ClientRuntime.SerializationMode.IncludeAll})?.ToString()`), {
@@ -201,7 +201,7 @@ export class ModelExtensionsNamespace extends Namespace {
             parameters: [
               new Parameter('sourceValue', dotnet.Dynamic, { description: `the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="${className}" /> type.` }),
             ],
-            description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
+            description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="${className}" type/>.`,
             returnsDescription: `<c>true</c> if the instance could be converted to a <see cref="${className}" /> type, otherwise <c>false</c> `
           })).add(function* () {
             yield If('null == sourceValue', Return(dotnet.True));
