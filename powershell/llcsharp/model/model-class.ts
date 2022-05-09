@@ -368,7 +368,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         async: Modifier.Async,
         parameters: [this.validationEventListener],
         description: 'Validates that this object meets the validation criteria.',
-        returnsDescription: `A < see cref = "${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
+        returnsDescription: `A <see cref = "${System.Threading.Tasks.Task()}" /> that will be complete when validation is completed.`
       }));
       this.validateMethod.add(this.validationStatements);
     }

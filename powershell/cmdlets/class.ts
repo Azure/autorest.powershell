@@ -1130,9 +1130,9 @@ export class CmdletClass extends Class {
       initialValue: new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`),
       description: `The <see cref="${System.Threading.CancellationTokenSource}" /> for this operation.`
     }));
-    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Token`, System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`), { getAccess: Access.Default, setAccess: Access.Default, description: '<see cref="IEventListener" /> cancellation token.' }));
+    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Token`, System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="${ClientRuntime}.IEventListener" /> cancellation token.` }));
     this.cancellationToken = toExpression(`((${ClientRuntime.IEventListener})this).Token`);
-    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Cancel`, System.Action(), new LiteralExpression(`${cts.value}.Cancel`), { getAccess: Access.Default, setAccess: Access.Default, description: '<see cref="IEventListener" /> cancellation delegate. Stops the cmdlet when called.' }));
+    this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Cancel`, System.Action(), new LiteralExpression(`${cts.value}.Cancel`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="${ClientRuntime}.IEventListener" /> cancellation delegate. Stops the cmdlet when called.` }));
 
     const id = new Parameter('id', dotnet.String, { description: 'The message id' });
     const token = new Parameter('token', System.Threading.CancellationToken, { description: 'The message cancellation token. When this call is cancelled, this should be <c>true</c>' });
