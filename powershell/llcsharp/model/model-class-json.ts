@@ -214,7 +214,7 @@ export class JsonSerializableClass extends Class {
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the serialization should be processed, or if the method should return instantly.' }),
       ],
       description: `<c>BeforeToJson</c> will be called before the json serialization has commenced, allowing complete customization of the object before it is serialized.
-      If you wish to disable the default serialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+      If you wish to disable the default serialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output parameter.
       Implement this method in a partial class to enable this behavior.`
     }));
 
@@ -223,7 +223,7 @@ export class JsonSerializableClass extends Class {
       parameters: [
         new Parameter('container', ClientRuntime.JsonObject, { modifier: ParameterModifier.Ref, description: 'The JSON container that the serialization result will be placed in.' }),
       ],
-      description: `<c>AfterToJson</c> will be called after the json erialization has finished, allowing customization of the <see cref="${ClientRuntime.JsonObject}" /> before it is returned. Implement this method in a partial class to enable this behavior `
+      description: `<c>AfterToJson</c> will be called after the json serialization has finished, allowing customization of the <see cref="${ClientRuntime.JsonObject}" /> before it is returned. Implement this method in a partial class to enable this behavior `
     }));
 
     this.bfj = this.addMethod(new PartialMethod('BeforeFromJson', dotnet.Void, {
@@ -233,7 +233,7 @@ export class JsonSerializableClass extends Class {
         new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: 'Determines if the rest of the deserialization should be processed, or if the method should return instantly.' }),
       ],
       description: `<c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of the object before it is deserialized.
-      If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+      If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name= "returnNow" /> output parameter.
       Implement this method in a partial class to enable this behavior.`
     }));
 

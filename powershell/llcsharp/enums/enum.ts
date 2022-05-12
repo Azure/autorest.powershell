@@ -111,7 +111,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     const ctor = this.addMethod(new Constructor(this, {
       access: Access.Private,
       parameters: [p],
-      description: `Creates an instance of the <see cref="${this.name}" Enum class./>`
+      description: `Creates an instance of the <see cref="${this.name}"/> Enum class.`
     })).add(`this.${backingField.value} = ${p.value};`);
 
     // add toString Method
@@ -162,7 +162,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     this.addMethod(new Method('operator ==', dotnet.Bool, {
       static: Modifier.Static,
       description: `Overriding == operator for enum ${this.name}`,
-      parameters: [new Parameter('e1', this, { description: 'the value to compare against <see cref="e2" />' }), new Parameter('e2', this, { description: 'the value to compare against <see cref="e1" />' })],
+      parameters: [new Parameter('e1', this, { description: 'the value to compare against <paramref name="e2" />' }), new Parameter('e2', this, { description: 'the value to compare against <paramref name="e1" />' })],
       returnsDescription: '<c>true</c> if the two instances are equal to the same value'
     })).add('return e2.Equals(e1);');
 
@@ -170,7 +170,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     this.addMethod(new Method('operator !=', dotnet.Bool, {
       static: Modifier.Static,
       description: `Overriding != operator for enum ${this.name}`,
-      parameters: [new Parameter('e1', this, { description: 'the value to compare against <see cref="e2" />' }), new Parameter('e2', this, { description: 'the value to compare against <see cref="e1" />' })],
+      parameters: [new Parameter('e1', this, { description: 'the value to compare against <paramref name="e2" />' }), new Parameter('e2', this, { description: 'the value to compare against <paramref name="e1" />' })],
       returnsDescription: '<c>true</c> if the two instances are not equal to the same value'
     })).add('return !e2.Equals(e1);');
 
