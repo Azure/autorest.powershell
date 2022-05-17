@@ -31,7 +31,8 @@ export async function generateCsproj(project: Project) {
     <NuspecFile>${project.moduleName}.nuspec</NuspecFile>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <!-- Some methods are marked async and don't have an await in them -->
-    <NoWarn>1998</NoWarn>
+    <!-- warning CS1591: Missing XML comment for publicly visible type or member -->
+    <NoWarn>1998, 1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>

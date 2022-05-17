@@ -170,7 +170,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
       access: Access.Default,
       parameters: [this.contentParameter, this.returnNowParameter],
       description: `<c>${before}</c> will be called before the deserialization has commenced, allowing complete customization of the object before it is deserialized.
-      If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+      If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output parameter.
       Implement this method in a partial class to enable this behavior.`
     }));
 

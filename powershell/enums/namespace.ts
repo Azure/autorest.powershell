@@ -82,8 +82,8 @@ export class EnumNamespace extends Namespace {
           new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
           new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
         ],
-        description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
-        returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
+        description: 'Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter.',
+        returnsDescription: '<c>true</c> if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter, otherwise <c>false</c>.',
       }));
 
       converterClass.add(new LambdaMethod('CanConvertTo', dotnet.Bool, dotnet.False, {
@@ -92,8 +92,8 @@ export class EnumNamespace extends Namespace {
           new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
           new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
         ],
-        description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
-        returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
+        description: 'Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter.',
+        returnsDescription: '<c>true</c> if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter, otherwise <c>false</c>.',
       }));
 
       converterClass.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression(`${enumInfo.details.name}.CreateFrom(sourceValue)`), {
@@ -104,7 +104,7 @@ export class EnumNamespace extends Namespace {
           new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
           new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
         ],
-        description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> ',
+        description: 'Converts the <paramref name="sourceValue" /> parameter to the <paramref name="destinationType" /> parameter using <paramref name="formatProvider" /> and <paramref name="ignoreCase" /> ',
         returnsDescription: `an instance of <see cref="${enumInfo.details.name}" />, or <c>null</c> if there is no suitable conversion.`
       }));
 
