@@ -721,7 +721,7 @@ export class CmdletClass extends Class {
 
         if (each.language.csharp?.responseType) {
           parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
-            description: `the body result as a ${GetParameterReferenceString(each.language.csharp.responseType)} from the remote call`
+            description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
           }));
         }
         if (each.language.csharp?.headerType) {
@@ -1731,13 +1731,5 @@ export class CmdletClass extends Class {
       this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
     }
   }
-}
-function GetParameterReferenceString(typeName: string): string {
-  if (typeName.endsWith("[]")) {
-    return `<see cref="${typeName.substring(0, typeName.lastIndexOf("[]"))}">${typeName}</see>`;
-  } else if (typeName.endsWith("?")) {
-    return `<see cref="${typeName.substring(0, typeName.lastIndexOf("?"))}">${typeName}</see>`;
-  }
-  return `<see cref="${typeName}"/>`;
 }
 
