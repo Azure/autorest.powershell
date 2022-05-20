@@ -162,8 +162,8 @@ export class ModelExtensionsNamespace extends Namespace {
               new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
               new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
             ],
-            description: 'Determines if the <see cref="sourceValue" /> parameter can be converted to the <see cref="destinationType" /> parameter',
-            returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>',
+            description: 'Determines if the <paramref name="sourceValue" /> parameter can be converted to the <paramref name="destinationType" /> parameter',
+            returnsDescription: '<c>true</c> if the converter can convert the <paramref name="sourceValue" /> parameter to the <paramref name="destinationType" /> parameter, otherwise <c>false</c>',
           }));
           typeConverter.add(new LambdaMethod('ConvertTo', dotnet.Object, dotnet.Null, {
             override: Modifier.Override,
@@ -181,8 +181,8 @@ export class ModelExtensionsNamespace extends Namespace {
               new Parameter('sourceValue', dotnet.Object, { description: 'the <see cref="System.Object"/> to convert from' }),
               new Parameter('destinationType', System.Type, { description: 'the <see cref="System.Type" /> to convert to' })
             ],
-            description: 'Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter.',
-            returnsDescription: '<c>true</c> if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="destinationType" /> parameter, otherwise <c>false</c>.',
+            description: 'Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter.',
+            returnsDescription: '<c>true</c> if the converter can convert the <paramref name="sourceValue"/> parameter to the <paramref name="destinationType" /> parameter, otherwise <c>false</c>.',
           }));
           typeConverter.add(new LambdaMethod('ConvertFrom', dotnet.Object, new LiteralExpression('ConvertFrom(sourceValue)'), {
             override: Modifier.Override,
@@ -192,7 +192,7 @@ export class ModelExtensionsNamespace extends Namespace {
               new Parameter('formatProvider', System.IFormatProvider, { description: 'not used by this TypeConverter.' }),
               new Parameter('ignoreCase', dotnet.Bool, { description: 'when set to <c>true</c>, will ignore the case when converting.' }),
             ],
-            description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" /> ',
+            description: 'Converts the <paramref name="sourceValue" /> parameter to the <paramref name="destinationType" /> parameter using <paramref name="formatProvider" /> and <paramref name="ignoreCase" /> ',
             returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
           }));
 
@@ -201,7 +201,7 @@ export class ModelExtensionsNamespace extends Namespace {
             parameters: [
               new Parameter('sourceValue', dotnet.Dynamic, { description: `the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="${className}" /> type.` }),
             ],
-            description: `Determines if the converter can convert the <see cref="sourceValue"/> parameter to the <see cref="${className}" type/>.`,
+            description: `Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <see cref="${className}"/> type.`,
             returnsDescription: `<c>true</c> if the instance could be converted to a <see cref="${className}" /> type, otherwise <c>false</c> `
           })).add(function* () {
             yield If('null == sourceValue', Return(dotnet.True));
@@ -243,7 +243,7 @@ export class ModelExtensionsNamespace extends Namespace {
                 description: `the value to convert into an instance of <see cref="${className}" />.`
               }),
             ],
-            description: 'Converts the <see cref="sourceValue" /> parameter to the <see cref="destinationType" /> parameter using <see cref="formatProvider" /> and <see cref="ignoreCase" />',
+            description: `Converts the <paramref name="sourceValue" /> parameter into an instance of <see cref="${className}" />`,
             returnsDescription: `an instance of <see cref="${className}" />, or <c>null</c> if there is no suitable conversion.`
           })).add(function* () {
             // null begets null

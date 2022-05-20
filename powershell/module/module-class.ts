@@ -103,7 +103,7 @@ export class NewModuleClass extends Class {
       access: Access.Private,
       description: 'Creates the module instance.',
       body: function* () {
-        yield '/// constructor';
+        yield '// constructor';
         yield clientProperty.assignPrivate(clientAPI.new());
         yield `${$this.fHandler}.Proxy = ${$this.fWebProxy};`;
 

@@ -624,7 +624,6 @@ export class CmdletClass extends Class {
 
   }
 
-
   private NewImplementProcessRecordAsync(operation: CommandOperation) {
     const $this = this;
     const PAR = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
@@ -721,7 +720,9 @@ export class CmdletClass extends Class {
         parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
 
         if (each.language.csharp?.responseType) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), { description: `the body result as a <see cref="${each.language.csharp.responseType}" /> from the remote call` }));
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
+            description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
+          }));
         }
         if (each.language.csharp?.headerType) {
           parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
@@ -1731,3 +1732,4 @@ export class CmdletClass extends Class {
     }
   }
 }
+
