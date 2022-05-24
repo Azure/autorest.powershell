@@ -24,7 +24,7 @@ steps:
     npx @microsoft/rush update 
 
     # set the actual package versions and update again
-    if [ "$(skipSetVersion)" == "false"]
+    if [ "$(skipSetVersion)" == "false" ]
     then
       npx @microsoft/rush set-versions
     else
