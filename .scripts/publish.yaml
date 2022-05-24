@@ -24,7 +24,12 @@ steps:
     npx @microsoft/rush update 
 
     # set the actual package versions and update again
-    npx @microsoft/rush set-versions
+    if [ "$(skipSetVersion)" == "false" ]
+    then
+      npx @microsoft/rush set-versions
+    else
+      echo "Use the version set in package.json"
+    fi
     npx @microsoft/rush sync-versions
     npx @microsoft/rush update 
 
