@@ -13,7 +13,7 @@ import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
-import { SchemaDetails as NewSchemaDetails } from '../utils/schema';
+import { SchemaDetails as NewSchemaDetails, getMutability } from '../utils/schema';
 
 type State = ModelState<PwshModel>;
 
@@ -26,8 +26,12 @@ function setPropertyNames(schema: Schema) {
   }
   for (const propertySchema of values(schema.properties)) {
     const propertyDetails = propertySchema.language.default;
+    const mutability = getMutability(propertySchema);
     propertyDetails.required = propertySchema.required ?? false;
     propertyDetails.readOnly = propertySchema.readOnly ?? false;
+    propertyDetails.read = mutability.read;
+    propertyDetails.update = mutability.update && !propertyDetails.readOnly;
+    propertyDetails.create = mutability.create && !propertyDetails.readOnly;
 
     const className = schema.language.csharp?.name;
 

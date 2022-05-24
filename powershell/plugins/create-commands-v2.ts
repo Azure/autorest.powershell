@@ -16,6 +16,7 @@ import { IParameter } from '../utils/components';
 import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation } from '../utils/command-operation';
+import { OperationType } from '../utils/command-operation';
 
 type State = ModelState<PwshModel>;
 
@@ -361,8 +362,18 @@ export /* @internal */ class Inferrer {
     // skip-for-time-being x-ms-metadata looks not supported any more.
     //const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
 
+    // Add operation type to support x-ms-mutability
+    let operationType = OperationType.Other;
+    if (operation.requests) {
+      if (operation.requests[0].protocol.http?.method === 'put' && variant.action === 'New') {
+        operationType = OperationType.Create;
+      } else if(operation.requests[0].protocol.http?.method === 'patch' && variant.action === 'Update') {
+        operationType = OperationType.Update;
+      } 
+    }
     return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new CommandOperation(operation.language.default.name, {
       asjob: operation.language.default.asjob ? true : false,
+      operationType: operationType,
       extensions: {
 
       },

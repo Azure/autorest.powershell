@@ -79,8 +79,10 @@ export class EventListener {
 export class OperationMethod extends Method {
   public methodParameters: Array<OperationParameter>;
   public bodyParameter?: OperationBodyParameter;
+  public serializationMode?: LiteralExpression;
   public contextParameter!: Parameter;
   public senderParameter!: Parameter;
+  public serializationModeParameter!: Parameter;
   public resourceUri!: Parameter;
   public callbacks = new Array<CallbackParameter>();
 
@@ -210,6 +212,15 @@ export class OperationMethod extends Method {
     url = url.replace(/\s*\+ ""/gm, '');
 
     const bp = this.bodyParameter;
+
+    if (bp) {
+      this.serializationMode = ClientRuntime.SerializationMode.IncludeCreateOrUpdate;
+      if (operation.language.default.name === 'Patch') {
+        this.serializationMode = ClientRuntime.SerializationMode.IncludeUpdate;
+      }
+      // add optional parameter for json serialization mode
+      this.serializationModeParameter = this.addParameter(new Parameter('serializationMode', ClientRuntime.SerializationMode, { description: `Allows the caller to choose the depth of the serialization. See <see cref="${ClientRuntime.SerializationMode}"/>.`, defaultInitializer: this.serializationMode }));
+    }
     // add method implementation...
 
     this.add(function* () {
@@ -271,7 +282,7 @@ export class OperationMethod extends Method {
 
       if (bp) {
         yield '// set body content';
-        yield `request.Content = ${bp.serializeToContent(bp.mediaType, ClientRuntime.SerializationMode.None)};`;
+        yield `request.Content = ${bp.serializeToContent(bp.mediaType, new LiteralExpression("serializationMode"))};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
       }
@@ -293,7 +304,7 @@ export class OperationMethod extends Method {
     this.insert('// Constant Parameters');
     for (let i = length(this.parameters); i--; i < 0) {
       const p = this.parameters[i];
-      if (p && p.defaultInitializer) {
+      if (p && p.defaultInitializer && p.name !== 'serializationMode') {
         this.parameters.splice(i, 1);
         this.insert(new LocalVariable(p.name, dotnet.Var, { initializer: p.defaultInitializer }));
       }

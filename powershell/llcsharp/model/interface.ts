@@ -15,7 +15,7 @@ import { ModelClass } from './model-class';
 import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
 import { values } from '@azure-tools/linq';
-import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties } from '../../utils/schema'
+import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties, Mutability } from '../../utils/schema'
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -71,7 +71,7 @@ export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaratio
   }));
 }
 
-export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
+export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, mutability: Mutability, description: string, serializedName: string) {
 
   let pt = <any>pType;
   while (pt.elementType) {
@@ -116,6 +116,9 @@ export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
     parameters: [
       new LiteralExpression(`\nRequired = ${isRequired}`),
       new LiteralExpression(`\nReadOnly = ${isReadOnly}`),
+      new LiteralExpression(`\nRead = ${mutability.read}`),
+      new LiteralExpression(`\nCreate = ${mutability.create}`),
+      new LiteralExpression(`\nUpdate = ${mutability.update}`),
       new LiteralExpression(`\nDescription = ${new StringExpression(description ?? '').value}`),
       new LiteralExpression(`\nSerializedName = ${new StringExpression(serializedName).value}`),
       new LiteralExpression(`\nPossibleTypes = new [] { ${ptypes.join(',').replace(/\?/g, '').replace(/undefined\./g, '')} }`),
@@ -218,16 +221,17 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
         const modelProperty = virtualProperty.property;
 
-        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || !!virtualProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
         const isRequired = !!modelProperty.required;
+        const mutability = {read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create};
         const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
           description: modelProperty.language.default.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
 
-        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.language.default.description, modelProperty.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, mutability, modelProperty.language.default.description, modelProperty.serializedName);
 
         if (!this.isInternal && (<any>modelProperty.language.csharp).constantValue !== undefined) {
           p.setAccess = Access.Internal;
@@ -243,15 +247,17 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
         const modelProperty = virtualProperty.property;
         const isRequired = !!virtualProperty.required;
+        const mutability = {read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create};
+
         const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
 
-        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
+        const internalSet = !!(!this.isInternal && (modelProperty.readOnly || !!virtualProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
           description: modelProperty.language.default.description,
           setAccess: internalSet ? Access.Internal : Access.Public
         }));
-        this.addInfoAttribute(p, pType, isRequired, internalSet, modelProperty.language.default.description, modelProperty.serializedName);
+        this.addInfoAttribute(p, pType, isRequired, internalSet, mutability, modelProperty.language.default.description, modelProperty.serializedName);
 
       }
     }
@@ -270,9 +276,9 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
     return this;
   }
 
-  addInfoAttribute(p: Property, pType: TypeDeclaration, isRequired: boolean, internalSet: boolean, description: string, serializedName: string) {
+  addInfoAttribute(p: Property, pType: TypeDeclaration, isRequired: boolean, internalSet: boolean, mutability: Mutability, description: string, serializedName: string) {
     if (!this.isInternal) {
-      return newAddInfoAttribute(p, pType, isRequired, internalSet, description, serializedName);
+      return newAddInfoAttribute(p, pType, isRequired, internalSet, mutability, description, serializedName);
     }
   }
 }

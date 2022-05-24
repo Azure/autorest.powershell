@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { Host, Session, startSession } from '@azure-tools/autorest-extension-base';
@@ -11,8 +11,9 @@ import { CommandOperation } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { VirtualParameter } from '../utils/command-operation';
-import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties } from '../utils/schema';
+import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMutability } from '../utils/schema';
 import { resolveParameterNames } from '../utils/resolve-conflicts';
+import { OperationType } from '../utils/command-operation';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -42,7 +43,6 @@ function getNameOptions(typeName: string, components: Array<string>) {
   result.add(pascalCase([...removeSequentialDuplicates([...fixLeadingNumber(deconstruct(typeName)), ...deconstruct(components.last)])]));
   return [...result.values()];
 }
-
 
 function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, threshold: number, conflicts: Array<string>) {
   // Some properties should be removed are wrongly kept as null and need to clean them
@@ -132,6 +132,9 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         originalContainingSchema: virtualProperty.originalContainingSchema,
         description: virtualProperty.description,
         alias: [],
+        create: virtualProperty.create,
+        update: virtualProperty.update,
+        read: virtualProperty.read,
         readOnly: virtualProperty.readOnly,
         required: virtualProperty.required,
         sharedWith: virtualProperty.sharedWith,
@@ -155,6 +158,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
   // run thru the properties in this class.
   // dolauli handle properties in this class
   for (const property of objectProperties) {
+    const mutability = getMutability(property);
     const propertyName = property.language.default.name;
 
     // for each object member, make sure that it's inlined it's children that it can.
@@ -210,6 +214,11 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         const proposedName = getPascalIdentifier(`${propertyName === 'properties' || /*objectProperties.length === 1*/ propertyName === 'error' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
+        let readonly = inlinedProperty.readOnly || property.readOnly;
+        const create = mutability.create && inlinedProperty.create && !readonly;
+        const update = mutability.update && inlinedProperty.update && !readonly;
+        const read = mutability.read && inlinedProperty.read;
+        readonly = readonly || (read && !update && !create);
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
@@ -222,7 +231,10 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
           originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: [],
-          readOnly: inlinedProperty.readOnly || property.readOnly,
+          create: create,
+          update: update,
+          read: read,
+          readOnly: readonly,
           required: inlinedProperty.required && privateProperty.required,
         });
       }
@@ -238,6 +250,11 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
 
         const proposedName = getPascalIdentifier(inlinedProperty.name);
+        let readonly = inlinedProperty.readOnly || property.readOnly;
+        const create = mutability.create && inlinedProperty.create && !readonly;
+        const update = mutability.update && inlinedProperty.update && !readonly;
+        const read = mutability.read && inlinedProperty.read;
+        readonly = readonly || (read && !update && !create);
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         virtualProperties.inlined.push({
           name: proposedName,
@@ -251,7 +268,10 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
           originalContainingSchema: schema,
           description: inlinedProperty.description,
           alias: [],
-          readOnly: inlinedProperty.readOnly || property.readOnly,
+          create: create,
+          update: update,
+          read: read,
+          readOnly: readonly,
           required: inlinedProperty.required && privateProperty.required
         });
       }
@@ -267,6 +287,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     // so we don't need to do any inlining
     // however, we can add it to our list of virtual properties
     // so that our consumers can get it.
+    const mutability = getMutability(property);
+
     virtualProperties.owned.push({
       name,
       property,
@@ -275,7 +297,10 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       description: property.summary || '',
       originalContainingSchema: schema,
       alias: [],
-      readOnly: property.readOnly,
+      create: mutability.create && !property.readOnly,
+      update: mutability.update && !property.readOnly,
+      read: mutability.read,
+      readOnly: property.readOnly || (mutability.read && !mutability.create && !mutability.update),
       required: property.required || property.language.default.required
     });
   }
@@ -332,6 +357,13 @@ function createVirtualParameters(operation: CommandOperation) {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
+          // Add support for x-ms-mutability
+          if (operation.operationType === OperationType.Create && !(<VirtualProperty>virtualProperty).create) {
+            continue;
+          } else if (operation.operationType === OperationType.Update && !(<VirtualProperty>virtualProperty).update) {
+            continue;
+          }
+
           virtualParameters.body.push({
             name: virtualProperty.name,
             description: virtualProperty.property.language.default.description,

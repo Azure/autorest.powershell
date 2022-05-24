@@ -11,9 +11,15 @@ import { Schema } from '@azure-tools/codemodel';
 import { DeepPartial } from '@azure-tools/codegen';
 import { Operation } from '@azure-tools/codemodel';
 
+
 import { uid } from './uid';
 import { Dictionary } from '@azure-tools/linq';
 
+export enum OperationType {
+  Create = 'create',
+  Update = 'update',
+  Other = 'other',
+}
 export interface VirtualParameters {
   body: Array<VirtualParameter>;
   operation: Array<VirtualParameter>;
@@ -37,6 +43,7 @@ export interface CommandOperation extends ProgrammaticOperation {
   category: string;
   asjob: boolean;
   callGraph: Array<Operation>;
+  operationType: OperationType;
 }
 
 export interface VirtualParameter {
