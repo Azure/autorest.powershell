@@ -541,12 +541,12 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
               case 'azure-async-operation':
               case 'location':
                 // perform a final GET on the specified final URI.
-                yield $this.finalGet(finalUri, reqParameter, response);
+                yield $this.finalGet(eventListener, finalUri, reqParameter, response);
                 break;
 
               default:
                 yield If(`!string.IsNullOrWhiteSpace(${finalUri})`, function* () {
-                  yield $this.finalGet(finalUri, reqParameter, response);
+                  yield $this.finalGet(eventListener, finalUri, reqParameter, response);
                 });
                 break;
             }
@@ -572,7 +572,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     this.opMethod.emitCall($this.returnNull);
   }
 
-  private * finalGet(finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
+  private * finalGet(eventListener: EventListener, finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
     yield '// create a new request with the final uri';
     yield reqParameter.assign(`${valueOf(reqParameter)}.CloneAndDispose(${System.Uri.new(finalLocation)}, ${ClientRuntime.Method.Get})`);
 
@@ -583,6 +583,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield EOL;
     yield '// make the final call';
     yield response.assign(`await ${this.opMethod.senderParameter}.SendAsync(${valueOf(reqParameter)},  ${this.opMethod.contextParameter})`);
+    yield eventListener.signal(ClientRuntime.Events.Polling, response.value);
 
     // make sure we're not polling anymore.
     yield 'break;';
