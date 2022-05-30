@@ -118,12 +118,24 @@ export class JsonSerializableClass extends Class {
       }
       const serializeStatement = (<EnhancedTypeDeclaration>prop.type).serializeToContainerMember(KnownMediaType.Json, prop.valuePrivate, container, prop.serializedName, mode);
 
-      if (prop.language.csharp.readOnly) {
-        serializeStatements.add(If(`${mode.use}.HasFlag(${ClientRuntime.SerializationMode.IncludeReadOnly})`, serializeStatement));
+      if (!prop.language.csharp.read && !prop.language.csharp.create && !prop.language.csharp.update) {
+        continue;
+      } else if (!(prop.language.csharp.read && prop.language.csharp.create && prop.language.csharp.update)) {
+        const accessControlArray = new Array<string>();
+        if (prop.language.csharp.read) {
+          accessControlArray.push(ClientRuntime.SerializationMode.IncludeRead.toString());
+        }
+        if (accessControlArray.length > 0) {
+          const accessControl = accessControlArray.join('|');
+          serializeStatements.add(If(`${mode.use}.HasFlag(${accessControl})`, serializeStatement));
+        }
       } else {
         serializeStatements.add(serializeStatement);
       }
-      deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, prop)));
+
+      if (prop.language.csharp.read) {
+        deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, prop)));
+      }
     }
     popTempVar();
 

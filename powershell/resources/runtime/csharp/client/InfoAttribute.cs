@@ -11,6 +11,9 @@ namespace Microsoft.Rest.ClientRuntime
     {
         public bool Required { get; set; } = false;
         public bool ReadOnly { get; set; } = false;
+        public bool Read { get; set; } = true;
+        public bool Create { get; set; } = true;
+        public bool Update { get; set; } = true;
         public Type[] PossibleTypes { get; set; } = new Type[0];
         public string Description { get; set; } = "";
         public string SerializedName { get; set; } = "";

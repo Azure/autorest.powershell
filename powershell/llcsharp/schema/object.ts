@@ -91,7 +91,7 @@ export class ObjectImplementation implements EnhancedTypeDeclaration {
         return System.Net.Http.StringContent.new(
           Ternery(
             IsNotNull(value),
-            `${value}.ToJson(null).ToString()`,
+            `${value}.ToJson(null, ${mode}).ToString()`,
             new StringExpression('{}')),
           System.Text.Encoding.UTF8);
       }

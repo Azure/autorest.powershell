@@ -34,6 +34,11 @@ export enum Purpose {
   Header = 'Header',
 }
 
+export interface Mutability {
+  create: boolean,
+  update: boolean,
+  read: boolean
+}
 export interface VirtualProperty {
   /** The property that this represents */
   property: Property;
@@ -70,6 +75,12 @@ export interface VirtualProperty {
   readOnly?: boolean;
 
   sharedWith?: Array<VirtualProperty>;
+
+  read?: boolean;
+
+  update?: boolean;
+
+  create?: boolean;
 }
 
 
@@ -313,3 +324,16 @@ export interface XML extends Extensions {
 //   properties: Dictionary<Property>;
 //   additionalProperties?: boolean | Schema;
 // }
+
+export function getMutability(property: Property) : Mutability {
+  
+  const mutability = {create: true, update: true, read: true};
+
+  if (property.extensions && property.extensions['x-ms-mutability']) {
+    const mt = <Array<string>>property.extensions['x-ms-mutability'];
+    mutability.create = mt.includes('create') ? true : false;
+    mutability.update = mt.includes('update') ? true : false;
+    mutability.read = mt.includes('read') ? true : false;
+  }
+  return mutability;
+}
