@@ -365,9 +365,9 @@ export /* @internal */ class Inferrer {
     // Add operation type to support x-ms-mutability
     let operationType = OperationType.Other;
     if (operation.requests) {
-      if (operation.requests[0].protocol.http?.method === 'put' && variant.action === 'New') {
+      if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
         operationType = OperationType.Create;
-      } else if(operation.requests[0].protocol.http?.method === 'patch' && variant.action === 'Update') {
+      } else if(operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
         operationType = OperationType.Update;
       } 
     }
