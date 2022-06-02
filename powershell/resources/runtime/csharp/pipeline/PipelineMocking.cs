@@ -229,7 +229,7 @@ namespace Microsoft.Rest.ClientRuntime
         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, IEventListener callback, ISendAsync next)
         {
             counter++;
-            var rqkey = $"{Description}+{Context}+{Scenario}+${request.Method.Method}+{request.RequestUri}+{counter}";
+            var rqkey = $"{Description}+{Context}+{Scenario}+${request.Method.Method}+{request.RequestUri.AbsoluteUri}+{counter}";
 
             switch (Mode)
             {
