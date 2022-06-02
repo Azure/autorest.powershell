@@ -125,9 +125,18 @@ export class JsonSerializableClass extends Class {
         if (prop.language.csharp.read) {
           accessControlArray.push(ClientRuntime.SerializationMode.IncludeRead.toString());
         }
+        if (prop.language.csharp.update) {
+          accessControlArray.push(ClientRuntime.SerializationMode.IncludeUpdate.toString());
+        }
+        if (prop.language.csharp.create) {
+          accessControlArray.push(ClientRuntime.SerializationMode.IncludeCreate.toString());
+        }
         if (accessControlArray.length > 0) {
-          const accessControl = accessControlArray.join('|');
-          serializeStatements.add(If(`${mode.use}.HasFlag(${accessControl})`, serializeStatement));
+          for(let i=0; i<accessControlArray.length; i++) {
+            accessControlArray[i] = `${mode.use}.HasFlag(${accessControlArray[i]})`;
+          }
+          const accessControl = accessControlArray.join('||');
+          serializeStatements.add(If(accessControl, serializeStatement));
         }
       } else {
         serializeStatements.add(serializeStatement);

@@ -5,7 +5,7 @@
 
 import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { CommandOperation, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
+import { CommandOperation, OperationType, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
@@ -995,7 +995,14 @@ export class CmdletClass extends Class {
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
           const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
-
+          var serializationMode = null;
+          if ($this.bodyParameter) {
+            if ($this.operation.operationType === OperationType.Create) {
+              serializationMode = ClientRuntime.SerializationMode.IncludeCreate;
+            } else if ($this.operation.operationType === OperationType.Update) {
+              serializationMode = ClientRuntime.SerializationMode.IncludeUpdate;
+            }
+          }
           if ($this.isViaIdentity) {
             const identityFromPathParams = function* () {
               yield '// try to call with PATH parameters from Input Object';
@@ -1050,13 +1057,21 @@ export class CmdletClass extends Class {
             };
 
             if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
-              yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...[toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`);
+              var parameters = [toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+              if (!!serializationMode) {
+                parameters.push(serializationMode);
+              }
+              yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`);
               yield Else(identityFromPathParams);
             } else {
               yield identityFromPathParams;
             }
           } else {
-            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+            var parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+            if (!!serializationMode) {
+              parameters.push(serializationMode);
+            }
+            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...parameters).implementation}`;
           }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };
