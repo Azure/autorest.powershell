@@ -5,8 +5,10 @@
 
 import { Host, Channel } from '@azure-tools/autorest-extension-base';
 import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
+import { VirtualParameter } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
+import common = require('mocha/lib/interfaces/common');
 import { CommandOperation } from '../utils/command-operation';
 // import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
 import { ModelState } from '../utils/model-state';
@@ -18,6 +20,22 @@ type State = ModelState<PwshModel>;
 
 let directives: Array<any> = [];
 
+interface ParameterDirective {
+  name: string;
+  type: string;
+  required?: boolean;
+  completer?: {
+    name: string;
+    description: string;
+    script: string;
+  };
+  default?: {
+    name: string;
+    description: string;
+    script: string;
+  };
+  description: string
+}
 interface WhereCommandDirective {
   select?: string;
   where: {
@@ -66,6 +84,9 @@ interface WhereCommandDirective {
     };
     'clientside-pagination'?: boolean;
   };
+  add?: {
+    parameters?: Array<ParameterDirective>
+  };
   'clear-alias': boolean;
   hide?: boolean;
 }
@@ -86,6 +107,33 @@ function hasSpecialChars(str: string): boolean {
   return !/^[a-zA-Z0-9]+$/.test(str);
 }
 
+function addParameters(operations: CommandOperation[], parameters: Array<ParameterDirective>): void {
+  for (const parameter of values(parameters)) {
+    const vp = <any>{};
+    vp.name = parameter.name;
+    vp.description = parameter.description;
+    if (parameter.default) {
+      vp.defaultInfo = <any>{};
+      vp.defaultInfo = parameter.default;
+      // vp.defaultInfo.script = parameter.default.script;
+      // vp.defaultInfo.name = parameter.default.name ?? "";
+      // vp.defaultInfo.description = parameter.default.description ?? "";
+    }
+    if (parameter.completer) {
+      vp.completerInfo = <any>{};
+      vp.completerInfo = parameter.completer;
+      // vp.completerInfo.script = parameter.completer.script;
+      // vp.completerInfo.name = parameter.completer.name ?? "";
+      // vp.completerInfo.description = parameter.completer.description ?? "";
+    }
+    vp.required = !!parameter.required;
+    vp.type = parameter.type;
+    for (const operation of values(operations)) {
+      operation.details.csharp.virtualParameters?.operation.push(vp);
+      //operation.details.csharp.virtualParameters?.operation
+    }
+  }
+}
 
 function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
   let error = '';
@@ -109,7 +157,6 @@ function getSetError(setObject: any, prohibitedSetters: Array<string>, selection
   return error;
 }
 
-
 function isWhereCommandDirective(it: any): it is WhereCommandDirective {
   const directive = it;
   const select = directive.select;
@@ -123,7 +170,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
       const prohibitedSetters = ['property-name', 'property-description', ' model-name', 'enum-name', 'enum-value-name'];
       error += getSetError(set, prohibitedSetters, 'command');
     }
-
+    
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
     }
@@ -328,7 +375,10 @@ async function tweakModel(state: State): Promise<PwshModel> {
             .any(parameter => !!`${parameter.name}`.match(parameterRegex)))
           .toArray();
       }
-
+      if (directive.add !== undefined && directive.add.parameters !== undefined) {
+        // we need to handle adding parameters before other parameter related directives, e.g. adding breaking changes
+        addParameters(operations, directive.add.parameters);
+      }
       if (parameterRegex && (selectType === undefined || selectType === 'parameter')) {
         const parameters = values(operations)
           .selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))

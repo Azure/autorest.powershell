@@ -1455,62 +1455,72 @@ export class CmdletClass extends Class {
         // skip 'Host'
         continue;
       }
-      const vSchema = vParam.schema;
-      const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
-
-
-      const origin = <NewIParameter>vParam.origin;
-
-      const regularCmdletParameter = (this.state.project.azure && vParam.name === 'SubscriptionId' && operation.details.csharp.verb.toLowerCase() === 'get') ?
-
-        // special case for subscription id
-        this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
-          metadata: {
-            parameterDefinition: origin.details.csharp.httpParameter
-          },
-          description: vParam.description
-        })) :
-
-        // everything else
-        this.add(new BackedProperty(vParam.name, propertyType, {
-          metadata: {
-            parameterDefinition: origin.details.csharp.httpParameter
-          },
+      let regularCmdletParameter:BackedProperty;
+      var origin = null;
+      var propertyType = null;
+      if (!!vParam.type) {
+        // Handle parameters added through directives
+        regularCmdletParameter = this.add(new BackedProperty(vParam.name, new ClassType("", vParam.type), {
           description: vParam.description
         }));
+      } else {
+        const vSchema = vParam.schema;
+        propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
 
-      const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
-        vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
-          undefined;
-      if (dictSchema) {
-        // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
-        // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
-        // if it's a standalone dictionary, we can just use hashtable instead
-        if (length((<ObjectSchema>vSchema).properties) === 0) {
-          // it's a pure dictionary
-          // change the property type to hashtable.
-          // add an attribute to change the exported type.
-          regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
-        } else {
-          // it's a hybrid. We need to add an additional property that puts its items into the target container
+
+        origin = <NewIParameter>vParam.origin;
+
+        regularCmdletParameter = (this.state.project.azure && vParam.name === 'SubscriptionId' && operation.details.csharp.verb.toLowerCase() === 'get') ?
+
+          // special case for subscription id
+          this.add(new BackedProperty(vParam.name, dotnet.StringArray, {
+            metadata: {
+              parameterDefinition: origin.details.csharp.httpParameter
+            },
+            description: vParam.description
+          })) :
+
+          // everything else
+          this.add(new BackedProperty(vParam.name, propertyType, {
+            metadata: {
+              parameterDefinition: origin.details.csharp.httpParameter
+            },
+            description: vParam.description
+          }));
+
+        const dictSchema = vSchema.type === SchemaType.Dictionary ? vSchema :
+          vSchema.type === SchemaType.Object ? (<ObjectSchema>vSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
+            undefined;
+        if (dictSchema) {
+          // we have to figure out if this is a standalone dictionary or a hybrid object/dictionary.
+          // if it's a hybrid, we have to create another parameter like -<XXX>AdditionalProperties and have that dump the contents into the dictionary
+          // if it's a standalone dictionary, we can just use hashtable instead
+          if (length((<ObjectSchema>vSchema).properties) === 0) {
+            // it's a pure dictionary
+            // change the property type to hashtable.
+            // add an attribute to change the exported type.
+            regularCmdletParameter.add(new Attribute(ExportAsAttribute, { parameters: [`typeof(${System.Collections.Hashtable})`] }));
+          } else {
+            // it's a hybrid. We need to add an additional property that puts its items into the target container
+
+          }
 
         }
-
       }
-
       this.thingsToSerialize.push(regularCmdletParameter);
 
       const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || '.'}"`)];
-      if (origin.details.csharp.isBodyParameter) {
+      if (!!origin && origin.details.csharp.isBodyParameter) {
         parameters.push(new LiteralExpression('ValueFromPipeline = true'));
         this.bodyParameter = regularCmdletParameter;
       }
       regularCmdletParameter.add(new Attribute(ParameterAttribute, { parameters }));
-      if (vParam.schema.type === SchemaType.Array) {
+      if (!vParam.type && vParam.schema.type === SchemaType.Array) {
         regularCmdletParameter.add(new Attribute(AllowEmptyCollectionAttribute));
       }
-
-      NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
+      if (!!origin && !!propertyType) {
+        NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
+      }
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addParameterBreakingChange(regularCmdletParameter, vParam);
       addPreviewMessage(regularCmdletParameter, vParam);
@@ -1522,7 +1532,7 @@ export class CmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
       }
 
-      const httpParam = origin.details.csharp.httpParameter;
+      const httpParam = !!origin ? origin.details.csharp.httpParameter : null;
       //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
       if (httpParam) {
@@ -1535,14 +1545,9 @@ export class CmdletClass extends Class {
       }
 
 
-      if (origin.details.csharp.completer) {
-        // add the completer to this class and tag this parameter with the completer.
-        // regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${this.declaration})`] }));
-      }
-
       const isEnum = propertyType instanceof EnumImplementation;
       const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-      if (isEnum || hasEnum) {
+      if (propertyType && (isEnum || hasEnum)) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
     }
@@ -1550,6 +1555,9 @@ export class CmdletClass extends Class {
     if (ifmatch) {
       //no sure why there is an empty block
     }
+     this.add(new BackedProperty("test", new ClassType("", "System.Net.WebProxy"), {
+          description: "test description"
+        }));
 
   }
 

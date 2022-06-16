@@ -56,6 +56,8 @@ export interface VirtualParameter {
   alias: Array<string>;
   completerInfo?: CompleterInfo;
   hidden?: boolean;
+  // for cmdlet parameter added through a directive, we should add the type. 
+  type?: string;
 }
 
 export class CommandOperation extends Extensions implements CommandOperation {
