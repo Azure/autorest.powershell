@@ -93,6 +93,6 @@ export class Password extends String {
   }
   // Override the validateValue function for the parent and do not validate password 
   validateValue(eventListener: Variable, property: Variable): string {
-    return ``
+    return '';
   }
 }

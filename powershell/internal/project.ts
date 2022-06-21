@@ -32,23 +32,23 @@ export interface Metadata {
   companyName: string;
   licenseUri: string;
   projectUri: string;
-  requiredModules: PsRequiredModule[];
+  requiredModules: Array<PsRequiredModule>;
   requiredModulesAsString: string;
-  requiredAssemblies: string[];
+  requiredAssemblies: Array<string>;
   requiredAssembliesAsString: string;
-  nestedModules: string[];
+  nestedModules: Array<string>;
   nestedModulesAsString: string;
-  formatsToProcess: string[];
+  formatsToProcess: Array<string>;
   formatsToProcessAsString: string;
-  typesToProcess: string[];
+  typesToProcess: Array<string>;
   typesToProcessAsString: string;
-  scriptsToProcess: string[];
+  scriptsToProcess: Array<string>;
   scriptsToProcessAsString: string;
-  functionsToExport: string[];
+  functionsToExport: Array<string>;
   functionsToExportAsString: string;
-  cmdletsToExport: string[];
+  cmdletsToExport: Array<string>;
   cmdletsToExportAsString: string;
-  aliasesToExport: string[];
+  aliasesToExport: Array<string>;
   aliasesToExportAsString: string;
 }
 
@@ -190,9 +190,9 @@ export class Project extends codeDomProject {
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
-    var pwshLicenseHeader = await this.state.getValue('pwsh-license-header', '');
+    const pwshLicenseHeader = await this.state.getValue('pwsh-license-header', '');
     // if pwsh license header is not set, use the license set by license-header
-    this.pwshCommentHeader = comment(!!pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
+    this.pwshCommentHeader = comment(pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
     this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(/"/g, '""');
 
     // modelcmdlets are models that we will create cmdlets for.
@@ -298,11 +298,11 @@ export class Project extends codeDomProject {
         functionsToExportAsString: this.convertToPsListAsString(this.metadata.functionsToExport),
         cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.cmdletsToExport),
         aliasesToExportAsString: this.convertToPsListAsString(this.metadata.aliasesToExport)
-      }
+      };
     }
   }
 
-  private convertToPsListAsString(items: string[]): string {
+  private convertToPsListAsString(items: Array<string>): string {
     return items ? items.map(i => `'${i}'`).join(', ') : 'undefined';
   }
 }

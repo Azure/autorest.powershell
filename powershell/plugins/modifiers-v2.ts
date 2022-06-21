@@ -107,7 +107,7 @@ function hasSpecialChars(str: string): boolean {
   return !/^[a-zA-Z0-9]+$/.test(str);
 }
 
-function addParameters(operations: CommandOperation[], parameters: Array<ParameterDirective>): void {
+function addParameters(operations: Array<CommandOperation>, parameters: Array<ParameterDirective>): void {
   for (const parameter of values(parameters)) {
     const vp = <any>{};
     vp.name = parameter.name;
@@ -394,18 +394,18 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
           // handle parameter breaking change for parameter
           if (breakingChange) {
-            parameter.breakingChange = <any>{}
-            parameter.breakingChange.parameterName = parameter.name
-            parameter.breakingChange.replacement = (breakingChange && breakingChange['replacement-parameter']) ? breakingChange['replacement-parameter'] : undefined
-            parameter.breakingChange.isBecomingMandatory = (breakingChange && breakingChange['become-mandatory']) ? breakingChange['become-mandatory'] : undefined
-            parameter.breakingChange.oldParamaterType = (breakingChange && breakingChange['old-parameter-type']) ? breakingChange['old-parameter-type'] : undefined
-            parameter.breakingChange.newParameterType = (breakingChange && breakingChange['new-parameter-type']) ? breakingChange['new-parameter-type'] : undefined
-            parameter.breakingChange.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
-            parameter.breakingChange.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
-            parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
+            parameter.breakingChange = <any>{};
+            parameter.breakingChange.parameterName = parameter.name;
+            parameter.breakingChange.replacement = (breakingChange && breakingChange['replacement-parameter']) ? breakingChange['replacement-parameter'] : undefined;
+            parameter.breakingChange.isBecomingMandatory = (breakingChange && breakingChange['become-mandatory']) ? breakingChange['become-mandatory'] : undefined;
+            parameter.breakingChange.oldParamaterType = (breakingChange && breakingChange['old-parameter-type']) ? breakingChange['old-parameter-type'] : undefined;
+            parameter.breakingChange.newParameterType = (breakingChange && breakingChange['new-parameter-type']) ? breakingChange['new-parameter-type'] : undefined;
+            parameter.breakingChange.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+            parameter.breakingChange.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
+            parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
           }
           // handle preview message for parameter
-          parameter.previewMessage = previewMessage ? previewMessage : undefined
+          parameter.previewMessage = previewMessage ? previewMessage : undefined;
           if (clearAlias) {
             parameter.alias = [];
             state.message({
@@ -482,20 +482,20 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
             operation.details.csharp.clientsidePagination = cliensidePagination;
           }
           if (breakingChange) {
-            operation.details.csharp.breakingChange = operation.details.csharp.breakingChange ? operation.details.csharp.breakingChange : <any>{}
+            operation.details.csharp.breakingChange = operation.details.csharp.breakingChange ? operation.details.csharp.breakingChange : <any>{};
             if (variantRegex) {
               // handle parameter breaking change for variant
-              operation.details.csharp.breakingChange.variant = <any>{}
+              operation.details.csharp.breakingChange.variant = <any>{};
               operation.details.csharp.breakingChange.variant.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
               operation.details.csharp.breakingChange.variant.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
               operation.details.csharp.breakingChange.variant.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
 
-              operation.details.csharp.breakingChange.variant.name = newVariantName
+              operation.details.csharp.breakingChange.variant.name = newVariantName;
 
             } else {
               //handle breaking change for output type
               if (breakingChange['new-output-properties']) {
-                operation.details.csharp.breakingChange.output = <any>{}
+                operation.details.csharp.breakingChange.output = <any>{};
                 operation.details.csharp.breakingChange.output.deprecatedCmdLetOutputType = breakingChange['deprecated-cmdlet-output-type'];
                 operation.details.csharp.breakingChange.output.replacement = (breakingChange && breakingChange['replacement-cmdlet-output-type']) ? breakingChange['replacement-cmdlet-output-type'] : undefined;
                 operation.details.csharp.breakingChange.output.deprecatedOutputProperties = (breakingChange && breakingChange['deprecated-output-properties']) ? breakingChange['deprecated-output-properties'] : undefined;
@@ -505,21 +505,21 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                 operation.details.csharp.breakingChange.output.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
               } else {
                 // handle parameter breaking change for cmdlet
-                operation.details.csharp.breakingChange.cmdlet = <any>{}
-                operation.details.csharp.breakingChange.cmdlet.replacement = (breakingChange && breakingChange['replacement-cmdlet']) ? breakingChange['replacement-cmdlet'] : undefined
-                if (operation.details.csharp.breakingChange.cmdlet.replacement && operation.details.csharp.breakingChange.cmdlet.replacement.startsWith("$.")) {
-                  operation.details.csharp.breakingChange.cmdlet.replacement = safeEval(operation.details.csharp.breakingChange.cmdlet.replacement.replace("$", `"${newCommandName.split('_')[0]}"`))
+                operation.details.csharp.breakingChange.cmdlet = <any>{};
+                operation.details.csharp.breakingChange.cmdlet.replacement = (breakingChange && breakingChange['replacement-cmdlet']) ? breakingChange['replacement-cmdlet'] : undefined;
+                if (operation.details.csharp.breakingChange.cmdlet.replacement && operation.details.csharp.breakingChange.cmdlet.replacement.startsWith('$.')) {
+                  operation.details.csharp.breakingChange.cmdlet.replacement = safeEval(operation.details.csharp.breakingChange.cmdlet.replacement.replace('$', `"${newCommandName.split('_')[0]}"`));
                 }
-                operation.details.csharp.breakingChange.cmdlet.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
-                operation.details.csharp.breakingChange.cmdlet.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
-                operation.details.csharp.breakingChange.cmdlet.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
+                operation.details.csharp.breakingChange.cmdlet.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+                operation.details.csharp.breakingChange.cmdlet.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
+                operation.details.csharp.breakingChange.cmdlet.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
                 operation.details.csharp.breakingChange.cmdlet.name = newCommandName.split('_')[0];
               }
             }
 
           }
           // handle preview message for cmdlet
-          operation.details.csharp.previewMessage = previewMessage ? previewMessage : undefined
+          operation.details.csharp.previewMessage = previewMessage ? previewMessage : undefined;
 
           // just the subject prefix can be an empty string
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
@@ -632,8 +632,8 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
           }
 
           if (formatTable !== undefined && !suppressFormat) {
-            var resourceGroupFormat: PropertyFormat = {};
-            var ResourceGroupNameInclude = false;
+            const resourceGroupFormat: PropertyFormat = {};
+            let ResourceGroupNameInclude = false;
             const resourceGroupName = 'resourcegroupname';
             const properties = allVirtualProperties(model.language.csharp?.virtualProperties);
             const propertiesToExclude = formatTable['exclude-properties'];
@@ -694,7 +694,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
               for (const item of items(propertiesToInclude)) {
                 indexes[item.value.toLowerCase()] = item.key;
               }
-              var ResourceGroupNameInclude = false;
+              let ResourceGroupNameInclude = false;
               for (const property of values(properties)) {
                 if (property.name.toLowerCase() == 'resourcegroupname') {
                   ResourceGroupNameInclude = true;
@@ -731,11 +731,11 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
               }
             }
 
-            if (!ResourceGroupNameInclude && await state.getValue("azure", false)) {
+            if (!ResourceGroupNameInclude && await state.getValue('azure', false)) {
               // Keep the format info for ResourceGroupName and we will need it later if resourcegroup-append is set
-              var formats = await state.getValue<Dictionary<PropertyFormat>>("formats", {});
+              const formats = await state.getValue<Dictionary<PropertyFormat>>('formats', {});
               formats[`${model.language.csharp?.name}`] = resourceGroupFormat;
-              await state.setValue("formats", formats);
+              await state.setValue('formats', formats);
             }
           }
 

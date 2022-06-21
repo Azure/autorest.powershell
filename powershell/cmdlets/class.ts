@@ -171,24 +171,24 @@ export function NewAddCompleterInfo(targetProperty: Property, parameter: NewVirt
 
 export function addParameterBreakingChange(targetProperty: Property, parameter: any) {
   if (parameter.breakingChange) {
-    var parameters = []
-    parameters.push(`"${parameter.breakingChange.parameterName}"`)
+    const parameters = [];
+    parameters.push(`"${parameter.breakingChange.parameterName}"`);
     if (parameter.breakingChange.deprecateByVersion) {
-      parameters.push(`"${parameter.breakingChange.deprecateByVersion}"`)
-      if (parameter.breakingChange.changeInEfectByDate) parameters.push(`"${parameter.breakingChange.changeInEfectByDate}"`)
+      parameters.push(`"${parameter.breakingChange.deprecateByVersion}"`);
+      if (parameter.breakingChange.changeInEfectByDate) parameters.push(`"${parameter.breakingChange.changeInEfectByDate}"`);
     }
-    if (parameter.breakingChange.replacement) parameters.push(`ReplaceMentCmdletParameterName="${parameter.breakingChange.replacement}"`)
-    if (parameter.breakingChange.isBecomingMandatory) parameters.push(`IsBecomingMandatory=${parameter.breakingChange.isBecomingMandatory}`)
-    if (parameter.breakingChange.changeDescription) parameters.push(`ChangeDescription="${parameter.breakingChange.changeDescription}"`)
+    if (parameter.breakingChange.replacement) parameters.push(`ReplaceMentCmdletParameterName="${parameter.breakingChange.replacement}"`);
+    if (parameter.breakingChange.isBecomingMandatory) parameters.push(`IsBecomingMandatory=${parameter.breakingChange.isBecomingMandatory}`);
+    if (parameter.breakingChange.changeDescription) parameters.push(`ChangeDescription="${parameter.breakingChange.changeDescription}"`);
     if (parameter.breakingChange.newParameterType) {
       // If old type is set in directive, use it, otherwise try to get the type from the schema
       if (parameter.breakingChange.oldParamaterType) {
-        parameters.push(`OldParamaterType="${parameter.breakingChange.oldParamaterType}"`)
+        parameters.push(`OldParamaterType="${parameter.breakingChange.oldParamaterType}"`);
       } else {
         // for primitive types, should use name, otherwise use fullname which contains namespace
-        parameters.push(`OldParamaterType="${parameter.schema.language.csharp.fullname.startsWith("<") ? parameter.schema.language.csharp.name : parameter.schema.language.csharp.fullname}"`)
+        parameters.push(`OldParamaterType="${parameter.schema.language.csharp.fullname.startsWith('<') ? parameter.schema.language.csharp.name : parameter.schema.language.csharp.fullname}"`);
       }
-      parameters.push(`NewParameterType="${parameter.breakingChange.newParameterType}"`)
+      parameters.push(`NewParameterType="${parameter.breakingChange.newParameterType}"`);
     }
     targetProperty.add(new Attribute(ClientRuntime.ParameterBreakingChangeAttribute, {
       parameters: parameters
@@ -380,7 +380,7 @@ export class CmdletClass extends Class {
       *body() {
         if ($this.state.project.azure) {
           yield `var telemetryId = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryId.Invoke();`;
-          yield If('telemetryId != "" && telemetryId != "internal"', "__correlationId = telemetryId;");
+          yield If('telemetryId != "" && telemetryId != "internal"', '__correlationId = telemetryId;');
         }
         yield 'Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);';
         yield If($this.$<Property>('Break'), `${ClientRuntime.AttachDebugger}.Break();`);
@@ -729,7 +729,7 @@ export class CmdletClass extends Class {
         }
 
         if (isBinary) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: `the body result as a <see cref="global::System.IO.Stream" /> from the remote call` }));
+          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: 'the body result as a <see cref="global::System.IO.Stream" /> from the remote call' }));
         }
 
         const override = `override${pascalCase(each.language.csharp?.name || '')}`;
@@ -844,15 +844,15 @@ export class CmdletClass extends Class {
                     const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
                       if ($this.clientsidePagination) {
-                        yield (If(`(ulong)result.Value.Length <= this.PagingParameters.Skip`, function* () {
-                          yield (`this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Length;`);
+                        yield (If('(ulong)result.Value.Length <= this.PagingParameters.Skip', function* () {
+                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Length;');
                         }));
                         yield Else(function* () {
-                          yield (`ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);`);
-                          yield (`var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);`);
-                          yield (`WriteObject(requiredResult, true);`);
-                          yield (`this.PagingParameters.Skip = 0;`);
-                          yield (`this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;`);
+                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);');
+                          yield ('var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);');
+                          yield ('WriteObject(requiredResult, true);');
+                          yield ('this.PagingParameters.Skip = 0;');
+                          yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
                         });
                       } else {
                         yield `WriteObject(${result.value}.${vp.name},true);`;
@@ -862,25 +862,25 @@ export class CmdletClass extends Class {
                     if (nl) {
                       $this.add(new Field('_isFirst', dotnet.Bool, {
                         access: Access.Private,
-                        initialValue: new LiteralExpression(`true`),
-                        description: `A flag to tell whether it is the first onOK call.`
+                        initialValue: new LiteralExpression('true'),
+                        description: 'A flag to tell whether it is the first onOK call.'
                       }));
                       $this.add(new Field('_nextLink', dotnet.String, {
                         access: Access.Private,
-                        description: `Link to retrieve next page.`
+                        description: 'Link to retrieve next page.'
                       }));
                       const nextLinkName = `${result.value}.${nl.name}`;
-                      yield `_nextLink = ${nextLinkName};`
-                      var nextLinkCondition = $this.clientsidePagination ? `_nextLink != null && this.PagingParameters.First > 0` : `_nextLink != null`
-                      yield (If(`_isFirst`, function* () {
-                        yield `_isFirst = false;`
+                      yield `_nextLink = ${nextLinkName};`;
+                      const nextLinkCondition = $this.clientsidePagination ? '_nextLink != null && this.PagingParameters.First > 0' : '_nextLink != null';
+                      yield (If('_isFirst', function* () {
+                        yield '_isFirst = false;';
                         yield (While(nextLinkCondition,
                           If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
                             yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
                             yield $this.eventListener.signal(Events.FollowingNextLink);
                             yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
                           })
-                        ))
+                        ));
                       }));
                     }
                     return;
@@ -946,21 +946,21 @@ export class CmdletClass extends Class {
 
           // in m4, there will be no schema deinfed for the binary response, instead, we will have a field called binary with value true.
           if ('binary' in each) {
-            yield `// (await response) // should be global::System.IO.Stream`;
+            yield '// (await response) // should be global::System.IO.Stream';
             if ($this.hasStreamOutput && $this.outFileParameter) {
               const outfile = $this.outFileParameter;
               const provider = Local('provider');
               provider.initializer = undefined;
-              const paths = Local('paths', `new global::System.Collections.ObjectModel.Collection<global::System.String>()`);
+              const paths = Local('paths', 'new global::System.Collections.ObjectModel.Collection<global::System.String>()');
               yield paths.declarationStatement;
               yield Try(function* () {
-                yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`
+                yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`;
                 yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
                 yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
               });
-              const notfound = new Parameter('', { declaration: `global::System.Management.Automation.ItemNotFoundException` });
+              const notfound = new Parameter('', { declaration: 'global::System.Management.Automation.ItemNotFoundException' });
               yield Catch(notfound, function* () {
-                yield `// If the file does not exist, we will try to create it`;
+                yield '// If the file does not exist, we will try to create it';
                 yield `${paths.value}.Add(${outfile.value});`;
               });
 
@@ -995,7 +995,7 @@ export class CmdletClass extends Class {
           const idOpParams = operationParameters.filter(each => !each.isPathParam);
           const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
-          var serializationMode = null;
+          let serializationMode = null;
           if ($this.bodyParameter) {
             if ($this.operation.operationType === OperationType.Create) {
               serializationMode = ClientRuntime.SerializationMode.IncludeCreate;
@@ -1057,8 +1057,8 @@ export class CmdletClass extends Class {
             };
 
             if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
-              var parameters = [toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
-              if (!!serializationMode) {
+              const parameters = [toExpression('InputObject.Id'), ...idOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+              if (serializationMode) {
                 parameters.push(serializationMode);
               }
               yield If('InputObject?.Id != null', `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`);
@@ -1067,8 +1067,8 @@ export class CmdletClass extends Class {
               yield identityFromPathParams;
             }
           } else {
-            var parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
-            if (!!serializationMode) {
+            const parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+            if (serializationMode) {
               parameters.push(serializationMode);
             }
             yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...parameters).implementation}`;
@@ -1296,7 +1296,7 @@ export class CmdletClass extends Class {
 
       if (this.dropBodyParameter && parameter.details.csharp.isBodyParameter) {
         // we're supposed to use parameters for the body parameter instead of a big object
-        const expandedBodyParameter = this.add(new Field("_" + camelCase(parameter.details.csharp.name), td, {
+        const expandedBodyParameter = this.add(new Field('_' + camelCase(parameter.details.csharp.name), td, {
           description: parameter.details.csharp.description,
           initialValue: (parameter.schema.type === SchemaType.Array) ? dotnet.Null : `new ${parameter.schema.language.csharp?.fullname}()`,
           access: Access.Private
@@ -1392,7 +1392,7 @@ export class CmdletClass extends Class {
             this.addDoNotExport(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType instanceof EnumImplementation;;
+          const isEnum = propertyType instanceof EnumImplementation;
           const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
           if (isEnum || hasEnum) {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
@@ -1456,11 +1456,11 @@ export class CmdletClass extends Class {
         continue;
       }
       let regularCmdletParameter:BackedProperty;
-      var origin = null;
-      var propertyType = null;
-      if (!!vParam.type) {
+      let origin = null;
+      let propertyType = null;
+      if (vParam.type) {
         // Handle parameters added through directives
-        regularCmdletParameter = this.add(new BackedProperty(vParam.name, new ClassType("", vParam.type), {
+        regularCmdletParameter = this.add(new BackedProperty(vParam.name, new ClassType('', vParam.type), {
           description: vParam.description
         }));
       } else {
@@ -1532,7 +1532,7 @@ export class CmdletClass extends Class {
         regularCmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
       }
 
-      const httpParam = !!origin ? origin.details.csharp.httpParameter : null;
+      const httpParam = origin ? origin.details.csharp.httpParameter : null;
       //const uid = httpParam ? httpParam.details.csharp.uid : 'no-parameter';
 
       if (httpParam) {
@@ -1555,9 +1555,9 @@ export class CmdletClass extends Class {
     if (ifmatch) {
       //no sure why there is an empty block
     }
-     this.add(new BackedProperty("test", new ClassType("", "System.Net.WebProxy"), {
-          description: "test description"
-        }));
+    this.add(new BackedProperty('test', new ClassType('', 'System.Net.WebProxy'), {
+      description: 'test description'
+    }));
 
   }
 
@@ -1679,61 +1679,61 @@ export class CmdletClass extends Class {
 
     //add breaking change attributes for cmdlet, variant, output type
     if (operation.details.csharp.breakingChange) {
-      var breakingChange = operation.details.csharp.breakingChange
+      const breakingChange = operation.details.csharp.breakingChange;
       if (breakingChange.cmdlet) {
-        var parameters = [];
+        const parameters = [];
         if (breakingChange.cmdlet.deprecateByVersion) {
-          parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`)
-          if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`)
+          parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
+          if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
         }
-        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`)
-        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`)
+        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`);
+        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }))
+        this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }));
       }
       if (breakingChange.variant) {
-        var parameters = [];
-        parameters.push(`new string[] {"${breakingChange.variant.name}"}`)
+        const parameters = [];
+        parameters.push(`new string[] {"${breakingChange.variant.name}"}`);
         if (breakingChange.variant.deprecateByVersion) {
-          parameters.push(`"${breakingChange.variant.deprecateByVersion}"`)
-          if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`)
+          parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
+          if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
         }
-        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`)
+        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }))
+        this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
       }
       if (breakingChange.output) {
-        var parameters = [];
+        const parameters = [];
         // if deprecated output types are set in directive, use it
         if (breakingChange.output.deprecatedCmdLetOutputType) {
-          parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`)
+          parameters.push(`"${breakingChange.output.deprecatedCmdLetOutputType}"`);
         } else {
-          parameters.push(`"${outputTypes.values().next().value.replace(/typeof\((.*)\)/, "$1")}"`)
+          parameters.push(`"${outputTypes.values().next().value.replace(/typeof\((.*)\)/, '$1')}"`);
         }
         if (breakingChange.output.deprecateByVersion) {
-          parameters.push(`"${breakingChange.output.deprecateByVersion}"`)
-          if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`)
+          parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
+          if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
         }
-        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`)
+        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`);
         if (breakingChange.output.deprecatedOutputProperties) {
-          var properties: string[] = Object.assign([], breakingChange.output.deprecatedOutputProperties)
+          const properties: Array<string> = Object.assign([], breakingChange.output.deprecatedOutputProperties);
           properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`DeprecatedOutputProperties=new string[] {${properties.join(',')}}`)
+          parameters.push(`DeprecatedOutputProperties=new string[] {${properties.join(',')}}`);
         }
         if (breakingChange.output.newOutputProperties) {
-          var properties: string[] = Object.assign([], breakingChange.output.newOutputProperties)
+          const properties: Array<string> = Object.assign([], breakingChange.output.newOutputProperties);
           properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`NewOutputProperties=new string[] {${properties.join(',')}}`)
+          parameters.push(`NewOutputProperties=new string[] {${properties.join(',')}}`);
         }
-        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription="${breakingChange.output.changeDescription}"`)
+        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription="${breakingChange.output.changeDescription}"`);
 
-        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }))
+        this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }));
       }
     }
 
     //add preview message attribute for cmdlet
     if (operation.details.csharp.previewMessage) {
-      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${operation.details.csharp.previewMessage}"`] }))
+      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${operation.details.csharp.previewMessage}"`] }));
     }
     this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
     if (shouldAddPassThru) {

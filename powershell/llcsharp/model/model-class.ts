@@ -256,7 +256,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.language.csharp?.description,
           get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
-          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${!!virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
+          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
         }));
 
         if (virtualProperty.property.language.csharp?.constantValue !== undefined) {
@@ -299,7 +299,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             const vp = new Property(virtualProperty.name, propertyType, {
               description: virtualProperty.property.language.csharp?.description,
               get: toExpression(`${this.accessor(virtualProperty)}`),
-              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${!!virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
+              set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
             });
 
             if (!virtualProperty.private) {
@@ -356,7 +356,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         property.add(new Attribute(FormatTableAttribute, { parameters }));
       }
     }
-  };
+  }
 
   private addValidation() {
     if (this.validationStatements.implementation.trim()) {
@@ -379,7 +379,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
       aSchema.type === SchemaType.Object ? (<ObjectSchema>aSchema).parents?.immediate?.find((s) => s.type === SchemaType.Dictionary) :
         undefined;
     if (schema) {
-      const dictSchema = schema as DictionarySchema;
+      const dictSchema = <DictionarySchema>schema;
       if (dictSchema.elementType.type === SchemaType.Any) {
         return System.Object;
 
@@ -495,14 +495,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
   private appendResourceGroupName() {
     const virtualProperties = newGetAllVirtualProperties(this.schema.language.csharp?.virtualProperties);
-    var idProperties = values(virtualProperties).where(each => each.name === 'Id').toArray();
-    var resourceGroupNameProperties = values(virtualProperties).where(each => each.name === 'ResourceGroupName').toArray();
+    const idProperties = values(virtualProperties).where(each => each.name === 'Id').toArray();
+    const resourceGroupNameProperties = values(virtualProperties).where(each => each.name === 'ResourceGroupName').toArray();
 
     if (idProperties.length == 1 && resourceGroupNameProperties.length === 0) {
       const idProperty = idProperties[0];
       const resourceGroupNamePropertyName = getPascalIdentifier('ResourceGroupName');
-      const resourceGroupNameDescription = "Gets the resource group name"
-      var actualResourceGroupProperty = idProperty.property;
+      const resourceGroupNameDescription = 'Gets the resource group name';
+      const actualResourceGroupProperty = idProperty.property;
       actualResourceGroupProperty.serializedName = resourceGroupNamePropertyName;
       const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualResourceGroupProperty.schema, false, this.state.path('schema'));
 
@@ -510,8 +510,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         description: resourceGroupNameDescription,
         getAccess: Access.Public,
         setAccess: Access.Public,
-        get: toExpression(`(new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null)`)
-      })
+        get: toExpression('(new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null)')
+      });
 
       const format = this.state.project.formats[`${this.schema.language.csharp?.name}`];
 

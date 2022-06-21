@@ -15,7 +15,7 @@ import { ModelClass } from './model-class';
 import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
 import { values } from '@azure-tools/linq';
-import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties, Mutability } from '../../utils/schema'
+import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties, Mutability } from '../../utils/schema';
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -125,7 +125,6 @@ export function newAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
     ]
   }));
 }
-
 
 
 export class ModelInterface extends Interface implements EnhancedTypeDeclaration {
