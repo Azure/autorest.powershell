@@ -108,7 +108,6 @@ export class DateTime extends NewPrimitive {
 }
 
 
-
 export class DateTime1123 extends DateTime {
   public DateTimeFormat = new StringExpression('R');
   constructor(schema: DateTimeSchema, isRequired: boolean) {
@@ -153,7 +152,7 @@ export class UnixTime extends NewPrimitive {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:

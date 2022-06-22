@@ -27,7 +27,7 @@ export class EnumNamespace extends Namespace {
         return {
           details: <NewEnumDetails>choice.language.csharp?.enum,
           description: choice.language.csharp?.description
-        }
+        };
       });
 
     const done = new Set<string>();

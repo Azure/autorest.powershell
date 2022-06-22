@@ -57,7 +57,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
           // if it returns an object, let's see what's inside...
           if (schema.type === SchemaType.Object) {
-            const objSchema = schema as ObjectSchema;
+            const objSchema = <ObjectSchema>schema;
 
             // does it have  a single member that is an array (ie, value :  [...])
             if (length(objSchema.properties) === 1 && !objSchema.parents) {

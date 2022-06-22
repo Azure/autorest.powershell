@@ -30,7 +30,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
 }
 
 function handleNoinlineDirective(state: State) {
-  var inlineModels: string[] = new Array;
+  let inlineModels: Array<string> = [];
   for (const directive of directives.filter(each => each['no-inline'])) {
     inlineModels = inlineModels.concat(<ConcatArray<string>>values(directive['no-inline']).toArray());
   }
@@ -55,7 +55,7 @@ function addResponseHeaderSchema(model: CodeModel) {
           return;
         }
 
-        const headers = resp.protocol.http?.headers as Array<HttpHeader>;
+        const headers = <Array<HttpHeader>>resp.protocol.http?.headers;
         if (headers === undefined) {
           return;
         }
@@ -109,7 +109,7 @@ function addDictionaryApiVersion(model: CodeModel) {
     if (schema.elementType && schema.elementType.apiVersions) {
       schema.apiVersions = JSON.parse(JSON.stringify(schema.elementType.apiVersions));
     }
-  })
+  });
 
   // If we cannot find api version from element type, try to get it from object schema who refers the dict or any.
 
@@ -126,7 +126,7 @@ function addDictionaryApiVersion(model: CodeModel) {
     }
 
     if (schema.parents) {
-      for (const parent of schema.parents?.all) {
+      for (const parent of (schema.parents?.all || [])) {
         if (parent.type !== SchemaType.Dictionary || parent.apiVersions) {
           continue;
         }
@@ -135,7 +135,7 @@ function addDictionaryApiVersion(model: CodeModel) {
         parent.language.default.skip = true;
       }
     }
-  })
+  });
 }
 
 function removeM4DefaultDescription(model: CodeModel) {
@@ -145,7 +145,7 @@ function removeM4DefaultDescription(model: CodeModel) {
   const visited = new Set<Schema>();
   [...model.schemas.objects ?? [], ...model.schemas.dictionaries ?? [], ...model.schemas.arrays ?? []].forEach((schema) => {
     recursiveRemoveM4DefaultDescription(schema, visited);
-  })
+  });
 }
 
 function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema>) {
@@ -157,19 +157,19 @@ function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema
   const defaultArrayDescPattern = /Array of .?$/;
   visited.add(schema);
   if (schema.type === SchemaType.Dictionary) {
-    const dictSchema = schema as DictionarySchema;
+    const dictSchema = <DictionarySchema>schema;
     recursiveRemoveM4DefaultDescription(dictSchema.elementType, visited);
     if (defaultDictDescPattern.test(dictSchema.language.default.description)) {
       dictSchema.language.default.description = '';
     }
   } else if (schema.type === SchemaType.Array) {
-    const arrSchema = schema as ArraySchema;
+    const arrSchema = <ArraySchema>schema;
     recursiveRemoveM4DefaultDescription(arrSchema.elementType, visited);
     if (defaultArrayDescPattern.test(schema.language.default.description)) {
       schema.language.default.description = '';
     }
   } else if (schema.type === SchemaType.Object) {
-    const objSchema = schema as ObjectSchema;
+    const objSchema = <ObjectSchema>schema;
     for (const prop of getAllProperties(objSchema)) {
       recursiveRemoveM4DefaultDescription(prop.schema, visited);
       if (prop.schema.type === SchemaType.Dictionary && (defaultDictDescPattern.test(prop.language.default.description) || defaultArrayDescPattern.test(prop.language.default.description))) {

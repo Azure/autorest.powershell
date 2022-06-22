@@ -121,27 +121,27 @@ export class ModelExtensionsNamespace extends Namespace {
           }));
           if (this.state.project.addToString) {
             // add partial OverrideToString method
-            const returnNow = new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: `/// set returnNow to true if you provide a customized OverrideToString function` });
-            const stringResult = new Parameter('stringResult', dotnet.String, { modifier: ParameterModifier.Ref, description: `/// instance serialized to a string, normally it is a Json` });
+            const returnNow = new Parameter('returnNow', dotnet.Bool, { modifier: ParameterModifier.Ref, description: '/// set returnNow to true if you provide a customized OverrideToString function' });
+            const stringResult = new Parameter('stringResult', dotnet.String, { modifier: ParameterModifier.Ref, description: '/// instance serialized to a string, normally it is a Json' });
             const overrideToStringMethod = new PartialMethod('OverrideToString', dotnet.Void, {
               parameters: [stringResult, returnNow],
-              description: `<c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior`
+              description: '<c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior'
             });
             model.add(overrideToStringMethod);
             // add ToString method
-            const toStringMethod = new Method(`ToString`, dotnet.String, {
+            const toStringMethod = new Method('ToString', dotnet.String, {
               override: Modifier.Override,
               access: Access.Public
             });
 
             toStringMethod.add(function* () {
               const skip = Local('returnNow', `${dotnet.False}`);
-              const result = Local('result', `global::System.String.Empty`);
+              const result = Local('result', 'global::System.String.Empty');
               yield skip.declarationStatement;
               yield result.declarationStatement;
               yield `${overrideToStringMethod.invoke(`ref ${result.value}`, `ref ${skip.value}`)};`;
               yield If(`${skip}`, Return(`${result}`));
-              yield `return ToJsonString();`
+              yield 'return ToJsonString();';
             });
             model.add(toStringMethod);
           }

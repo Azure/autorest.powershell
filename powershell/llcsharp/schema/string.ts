@@ -18,7 +18,6 @@ import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { length } from '@azure-tools/linq';
 
 
-
 /** A ETD for the c# string type. */
 export class String implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;

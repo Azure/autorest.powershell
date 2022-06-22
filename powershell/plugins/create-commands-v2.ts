@@ -41,7 +41,6 @@ pluralizationService.addWord('Premise', 'Premises');
 pluralizationService.addWord('premise', 'premises');
 
 
-
 interface CommandVariant {
   alias: Array<string>;
   verb: string;

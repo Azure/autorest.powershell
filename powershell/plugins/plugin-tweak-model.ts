@@ -78,7 +78,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   const model = state.model;
   const schemas = model.schemas;
   // xichen: do we need other schema types?
-  const allSchemas: Schema[] = [...schemas.objects ?? [], ...schemas.choices ?? [], ...schemas.sealedChoices ?? []];
+  const allSchemas: Array<Schema> = [...schemas.objects ?? [], ...schemas.choices ?? [], ...schemas.sealedChoices ?? []];
 
   model.commands = <any>{
     operations: new Dictionary<any>(),
@@ -99,10 +99,10 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
     for (const operation of values(group.operations)) {
       for (const response of values(operation.responses)) {
         // Mark returned object in response
-        let respSchema: Schema = (response as any).schema;
+        const respSchema: Schema = (<any>response).schema;
         if (respSchema?.type === SchemaType.Object) {
-          respSchema.extensions = respSchema.extensions || {}
-          respSchema.extensions['is-return-object'] = true
+          respSchema.extensions = respSchema.extensions || {};
+          respSchema.extensions['is-return-object'] = true;
         }
       }
       for (const param of values(operation.parameters).where(each => each.protocol?.http?.in === ParameterLocation.Path)) {
@@ -176,7 +176,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           // for a given response, find the possible models that can be returned from the service
           for (const header of values(response.protocol.http?.headers)) {
 
-            if (!(response as any).schema) {
+            if (!(<any>response).schema) {
               // no response schema? can we fake one?
               // service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
               continue;
@@ -192,10 +192,10 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
             // work with schemas that have objects only.
 
-            if ((response as any).schema.type === SchemaType.Object) {
-              const respSchema = (response as any).schema as ObjectSchema;
-              const curHeader = header as any;
-              const headerKey = curHeader.header as string;
+            if ((<any>response).schema.type === SchemaType.Object) {
+              const respSchema = <ObjectSchema>((<any>response).schema);
+              const curHeader = <any>header;
+              const headerKey = <string>curHeader.header;
 
               respSchema.language.default.hasHeaders = true;
 
@@ -244,7 +244,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
       const request = operation.requests?.[0];
       request?.parameters?.filter((param) => param.schema.type !== SchemaType.Object && param.protocol.http?.in === 'body' && param.protocol.http?.style === KnownMediaType.Multipart)
         .forEach((param) => {
-          for (const prop of values(getAllProperties(param.schema as ObjectSchema))) {
+          for (const prop of values(getAllProperties(<ObjectSchema>param.schema))) {
             if (prop.schema.type === SchemaType.Binary) {
               prop.language.default.isNamedStream = true;
             }
@@ -263,7 +263,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
   // identify models that are polymorphic in nature
   for (const schema of allSchemas) {
     if (schema instanceof ObjectSchema) {
-      const objSchema = schema as ObjectSchema;
+      const objSchema = <ObjectSchema>schema;
       // if this actual type is polymorphic, make sure we know that.
       // parent class
       if (objSchema.discriminator) {
@@ -286,15 +286,15 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
       for (const parameter of values(operation.parameters)) {
         if (parameter.required) {
           if (parameter.schema.type === SchemaType.Choice) {
-            const choiceSchema = parameter.schema as ChoiceSchema;
+            const choiceSchema = <ChoiceSchema>parameter.schema;
             if (choiceSchema.choices.length === 1) {
               parameter.language.default.constantValue = choiceSchema.choices[0].value;
             }
           } else if (parameter.schema.type === SchemaType.Constant) {
-            const constantSchema = parameter.schema as ConstantSchema;
+            const constantSchema = <ConstantSchema>parameter.schema;
             parameter.language.default.constantValue = constantSchema.value.value;
           } else if (parameter.schema.type === SchemaType.SealedChoice) {
-            const sealedChoiceSchema = parameter.schema as SealedChoiceSchema;
+            const sealedChoiceSchema = <SealedChoiceSchema>parameter.schema;
             if (sealedChoiceSchema.choices.length === 1) {
               parameter.language.default.constantValue = sealedChoiceSchema.choices[0].value;
               if (sealedChoiceSchema.language.default.skip !== false) {
@@ -304,7 +304,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
           }
         } else {
           if (parameter.schema.type === SchemaType.SealedChoice) {
-            const sealedChoiceSchema = parameter.schema as SealedChoiceSchema;
+            const sealedChoiceSchema = <SealedChoiceSchema>parameter.schema;
             if (sealedChoiceSchema.choices.length === 1) {
               sealedChoiceSchema.language.default.skip = false;
             }
@@ -322,17 +322,17 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
       }
       if (property.required) {
         if (property.schema.type === SchemaType.Choice) {
-          const choiceSchema = property.schema as ChoiceSchema;
+          const choiceSchema = <ChoiceSchema>property.schema;
           if (choiceSchema.choices.length === 1) {
             // properties with an enum single value are constants
             // add the constant value
             property.language.default.constantValue = choiceSchema.choices[0].value;
           }
         } else if (property.schema.type === SchemaType.Constant) {
-          const constantSchema = property.schema as ConstantSchema;
+          const constantSchema = <ConstantSchema>property.schema;
           property.language.default.constantValue = constantSchema.value.value;
         } else if (property.schema.type === SchemaType.SealedChoice) {
-          const sealedChoiceSchema = property.schema as SealedChoiceSchema;
+          const sealedChoiceSchema = <SealedChoiceSchema>property.schema;
           if (sealedChoiceSchema.choices.length === 1) {
             property.language.default.constantValue = sealedChoiceSchema.choices[0].value;
             if (sealedChoiceSchema.language.default.skip !== false) {
@@ -342,7 +342,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
         }
       } else {
         if (property.schema.type === SchemaType.SealedChoice) {
-          const sealedChoiceSchema = property.schema as SealedChoiceSchema;
+          const sealedChoiceSchema = <SealedChoiceSchema>property.schema;
           if (sealedChoiceSchema.choices.length === 1) {
             sealedChoiceSchema.language.default.skip = false;
           }

@@ -192,7 +192,7 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
         }
 
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:

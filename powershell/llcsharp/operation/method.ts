@@ -33,7 +33,6 @@ import { ClassType, dotnet, System } from '@azure-tools/codegen-csharp';
 import { Ternery } from '@azure-tools/codegen-csharp';
 
 
-
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
   const up = pp.typeDeclaration.serializeToNode(kmt, pp, paramName, ClientRuntime.SerializationMode.None).value;
   return pp.param.extensions && pp.param.extensions['x-ms-skip-url-encoding'] ? up.replace(/global::System.Uri.EscapeDataString|System.Uri.EscapeDataString/g, '') : up;
@@ -153,7 +152,7 @@ export class OperationMethod extends Method {
     }
 
     for (const response of [...values(this.operation.responses), ...values(this.operation.exceptions)]) {
-      const responseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(""), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null);
+      const responseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(''), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null);
       const headerType = response.language.default.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>response.language.default.headerSchema, true, state) : null;
       const newCallbackParameter = new CallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
       this.addParameter(newCallbackParameter);
@@ -232,7 +231,7 @@ export class OperationMethod extends Method {
         yield '// verify that Identity format is an exact match for uri';
         yield EOL;
 
-        const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx, "global::System.Text.RegularExpressions.RegexOptions.IgnoreCase").value}.Match(${identity.value})`);
+        const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx, 'global::System.Text.RegularExpressions.RegexOptions.IgnoreCase').value}.Match(${identity.value})`);
         yield match.declarationStatement;
         yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${path}'");`);
         yield EOL;
@@ -248,7 +247,7 @@ export class OperationMethod extends Method {
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
-      )}
+)}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''));
       yield pathAndQueryV.declarationStatement;
 
@@ -264,7 +263,7 @@ export class OperationMethod extends Method {
       yield urlV.declarationStatement;
       const method = $this.operation.requests ? $this.operation.requests[0].protocol.http?.method : '';
       yield `var request =  ${System.Net.Http.HttpRequestMessage.new(`${ClientRuntime.fullName}.Method.${method.capitalize()}, ${urlV.value}`)};`;
-      yield eventListener.signal(ClientRuntime.Events.RequestCreated, `request.RequestUri.PathAndQuery`);
+      yield eventListener.signal(ClientRuntime.Events.RequestCreated, 'request.RequestUri.PathAndQuery');
       yield EOL;
 
       if (length(headerParams) > 0) {
@@ -282,7 +281,7 @@ export class OperationMethod extends Method {
 
       if (bp) {
         yield '// set body content';
-        yield `request.Content = ${bp.serializeToContent(bp.mediaType, new LiteralExpression("serializationMode"))};`;
+        yield `request.Content = ${bp.serializeToContent(bp.mediaType, new LiteralExpression('serializationMode'))};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
       }
@@ -349,11 +348,11 @@ export class CallMethod extends Method {
 
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
-            var responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0]))});
+            const responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0]));});
             for (const resp of responses) {
               if (resp.protocol.http?.statusCodes[0] !== 'default') {
                 const responseCode = resp.protocol.http?.statusCodes[0];
-                var leadNum = parseInt(responseCode[0]);
+                const leadNum = parseInt(responseCode[0]);
                 // will use enum when it can, fall back to casting int when it can't
                 yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], eventListener));
               } else {

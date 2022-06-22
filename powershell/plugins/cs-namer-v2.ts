@@ -212,7 +212,7 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
         const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state) : undefined;
         const headerSchema = response.language.default.headerSchema;
         const headerTypeDefinition = headerSchema ? resolver.resolveTypeDeclaration(<any>headerSchema, true, state.path('schemas', headerSchema.language.default.name)) : undefined;
-        let code = (System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]] ? System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]].value : response.protocol.http?.statusCodes[0]).replace('global::System.Net.HttpStatusCode', '');
+        let code = (System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]] ? System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]].value : (response.protocol.http?.statusCodes[0] || '')).replace('global::System.Net.HttpStatusCode', '');
         let rawValue = code.replace(/\./, '');
         if (response.protocol.http?.statusCodes[0] === 'default' || rawValue === 'default' || '') {
           rawValue = 'any response code not handled elsewhere';

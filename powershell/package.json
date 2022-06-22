@@ -47,8 +47,8 @@
     "mocha-typescript": "1.1.17",
     "typescript": "~3.7.0-beta",
     "@types/xmlbuilder": "0.0.34",
-    "@typescript-eslint/eslint-plugin": "~5.16.0",
-    "@typescript-eslint/parser": "~2.0.0",
+    "@typescript-eslint/eslint-plugin": "~5.29.0",
+    "@typescript-eslint/parser": "~5.29.0",
     "@microsoft.azure/autorest.testserver": "~2.9.3",
     "autorest": "~3.0.6118",
     "eslint": "~8.12.0"

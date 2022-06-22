@@ -154,7 +154,7 @@ export class NewModuleClass extends Class {
       InvocationInfo,
       dotnet.String,
       System.Exception,
-    /* returns */ System.Threading.Tasks.Task());
+      /* returns */ System.Threading.Tasks.Task());
 
     const incomingSignalDelegate = namespace.add(new Alias('SignalDelegate', this.incomingSignalFunc));
     const eventListenerDelegate = namespace.add(new Alias('EventListenerDelegate', customEventListenerFunc));
@@ -197,7 +197,7 @@ export class NewModuleClass extends Class {
     signalImpl.add(function* () {
       // Emit call to EventListener after explicit null check.
       // Not using Null-Conditional operator causes Null Reference exception when Func<Task> is null, due to awaiting null Task.
-      yield If(`${EventListener.value} != null`, `await ${EventListener.value}.Invoke(${$this.pId.value},${$this.pToken.value},${$this.pGetEventData.value}, ${pSignal.value}, ${$this.pInvocationInfo}, ${$this.pParameterSetName},${$this.pException});`)
+      yield If(`${EventListener.value} != null`, `await ${EventListener.value}.Invoke(${$this.pId.value},${$this.pToken.value},${$this.pGetEventData.value}, ${pSignal.value}, ${$this.pInvocationInfo}, ${$this.pParameterSetName},${$this.pException});`);
     });
   }
 

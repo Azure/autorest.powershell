@@ -95,7 +95,7 @@ export class EnumClass extends Struct implements EnhancedTypeDeclaration {
     this.apply(objectInitializer);
 
     // add known enum values
-    for (const evalue of schemaWithFeatures.schema.language.csharp?.enum.values) {
+    for (const evalue of schemaWithFeatures.schema.language.csharp?.enum.values || []) {
       this.addField(new Field(evalue.name, this, { initialValue: new StringExpression(evalue.value), static: Modifier.Static, description: evalue.description }));
     }
 

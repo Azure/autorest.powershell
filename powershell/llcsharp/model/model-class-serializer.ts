@@ -182,4 +182,3 @@ export class DeserializerPartialClass extends SerializationPartialClass {
   }
 }
 
-
