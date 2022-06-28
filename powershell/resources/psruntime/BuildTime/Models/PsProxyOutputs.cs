@@ -491,7 +491,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var leftOptional = !IsMandatory ? "[" : String.Empty;
             var leftPositional = Position != null ? "[" : String.Empty;
             var rightPositional = Position != null ? "]" : String.Empty;
-            var type = ParameterType != typeof(SwitchParameter) ? $" \\<{ParameterType.ToSyntaxTypeName()}\\>" : String.Empty;
+            var type = ParameterType != typeof(SwitchParameter) ? $" <{ParameterType.ToSyntaxTypeName()}>" : String.Empty;
             var rightOptional = !IsMandatory ? "]" : String.Empty;
             var space = IncludeSpace ? " " : String.Empty;
             var dash = IncludeDash ? "-" : String.Empty;
@@ -604,7 +604,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 return ni.IsComplexInterface
                     ? ni.ToNoteOutput(nestedIndent, includeDashes, includeBackticks, false)
                     : RenderProperty(ni, nestedIndent, includeDashes, includeBackticks);
-            }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent, !isFirst && includeDashes, !isFirst && includeBackticks));
+            }).Prepend(RenderProperty(complexInterfaceInfo, currentIndent, !isFirst && includeDashes, includeBackticks));
             return String.Join(Environment.NewLine, nested);
         }
     }
