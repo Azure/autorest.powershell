@@ -650,6 +650,9 @@ export class CmdletClass extends Class {
         if ($this.state.project.autoSwitchView) {
           yield $this.FlushResponse();
         }
+        if (!$this.state.project.azure) {
+          yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+        }
       });
 
     // debugging
@@ -798,6 +801,10 @@ export class CmdletClass extends Class {
       }
 
       // construct the call to the operation
+      if (!$this.state.project.azure) {
+        yield $this.eventListener.signal(Events.CmdletProcessRecordAsyncStart);
+      }
+
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
 
       if ($this.state.project.azure) {
