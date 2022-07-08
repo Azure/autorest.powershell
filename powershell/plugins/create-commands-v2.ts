@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize } from '@azure-tools/codegen';
+import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize, includeXDash } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
 import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
@@ -23,6 +23,7 @@ import { hasValidBodyParameters } from "../utils/http-operation";
 
 type State = ModelState<PwshModel>;
 
+const specialWords : { [key: string]: Array<string> } = {in: <Array<string>>['sign']};
 
 // UNUSED: Moved to plugin-tweak-model.ts in remodeler
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
@@ -67,8 +68,25 @@ function combinations<T>(elements: Array<T>) {
   return fn([], elements, []);
 }
 
+function filterSpecialWords(preposition: string, parts: Array<string>) {
+  let start = 0;
+  let idx = -1;
+  if (specialWords[preposition] !== undefined) {
+    do {
+      idx = parts.indexOf(preposition, start);
+      if (idx <= 0 || !specialWords[preposition].includes(parts[idx -1])) {
+        return idx;
+      } else {
+        start = idx + 1;
+      }
+    // eslint-disable-next-line no-constant-condition
+    } while (true);
+  }
+  return parts.indexOf(preposition);
+}
+
 function splitOnPreposition(preposition: string, parts: Array<string>) {
-  const i = parts.indexOf(preposition);
+  const i = filterSpecialWords(preposition, parts);
   if (i > 0) {
     return [
       parts.slice(0, i),
