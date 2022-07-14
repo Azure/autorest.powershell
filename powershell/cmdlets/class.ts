@@ -685,7 +685,7 @@ export class CmdletClass extends Class {
       for (const vParam of [...vps.body, ...vps.operation]) {
         if (vParam.hidden) {
           const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>vParam.schema, true, $this.state);
-          yield `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`;
+          yield If(`true == this.MyInvocation?.BoundParameters?.ContainsKey("${vParam.name}")`, `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`);
         }
       }
       const apiCall = operation.callGraph[0];
