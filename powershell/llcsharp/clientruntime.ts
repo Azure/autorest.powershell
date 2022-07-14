@@ -44,10 +44,12 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
+  Cmdlets: new ClassType(clientRuntimeNamespace, 'Cmdlets'),
   IJsonSerializable: new Interface(clientRuntimeNamespace, 'IJsonSerializable'),
   JsonSerializable: new Interface(clientRuntimeNamespace, 'JsonSerializable'),
   IXmlSerializable: new Interface(clientRuntimeNamespace, 'IXmlSerializable'),
   IEventListener: new Interface(clientRuntimeNamespace, 'IEventListener'),
+  IContext: new Interface(clientRuntimeNamespace, 'IContext'),
   IValidates: new Interface(clientRuntimeNamespace, 'IValidates'),
   IHeaderSerializable: new Interface(clientRuntimeNamespace, 'IHeaderSerializable'),
   SerializationMode: intersect(serializationMode, {

@@ -20,6 +20,10 @@ type State = ModelState<PwshModel>;
 
 let directives: Array<any> = [];
 
+export interface HandlerDirective {
+  name: string;
+  priority?: number;
+}
 interface ParameterDirective {
   name: string;
   type: string;
@@ -35,6 +39,10 @@ interface ParameterDirective {
     script: string;
   };
   description: string
+}
+
+interface PipelineDirective {
+  'input-pipeline'?: Array<HandlerDirective>;
 }
 interface WhereCommandDirective {
   select?: string;
@@ -85,7 +93,8 @@ interface WhereCommandDirective {
     'clientside-pagination'?: boolean;
   };
   add?: {
-    parameters?: Array<ParameterDirective>
+    parameters?: Array<ParameterDirective>;
+    pipelines?: PipelineDirective
   };
   'clear-alias': boolean;
   hide?: boolean;
@@ -135,6 +144,25 @@ function addParameters(operations: Array<CommandOperation>, parameters: Array<Pa
   }
 }
 
+async function addInputPipelines(state: State, operations: Array<CommandOperation>, pipeline: Array<HandlerDirective>): Promise<void> {
+  const inputHandlers = await state.getValue<Array<string>>('input-handlers', []);
+  for (const handler of values(pipeline)) {
+    if (!inputHandlers.includes(handler.name)) {
+      inputHandlers.push(handler.name);
+    }
+    for (const operation of values(operations)) {
+      operation.extensions.inputPipe = (<Array<HandlerDirective>>(operation.extensions.inputPipe || []));
+      operation.extensions.inputPipe.push(handler);
+    }
+  }
+  await state.setValue('input-handlers', inputHandlers);
+}
+async function addPipelines(state: State, operations: Array<CommandOperation>, pipelines: PipelineDirective): Promise<void> {
+  if (pipelines['input-pipeline']) {
+    await addInputPipelines(state, operations, pipelines['input-pipeline']);
+  }
+}
+
 function getFilterError(whereObject: any, prohibitedFilters: Array<string>, selectionType: string): string {
   let error = '';
   for (const each of values(prohibitedFilters)) {
@@ -170,7 +198,7 @@ function isWhereCommandDirective(it: any): it is WhereCommandDirective {
       const prohibitedSetters = ['property-name', 'property-description', ' model-name', 'enum-name', 'enum-value-name'];
       error += getSetError(set, prohibitedSetters, 'command');
     }
-    
+
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
     }
@@ -379,6 +407,10 @@ async function tweakModel(state: State): Promise<PwshModel> {
         // we need to handle adding parameters before other parameter related directives, e.g. adding breaking changes
         addParameters(operations, directive.add.parameters);
       }
+      if (directive.add !== undefined && directive.add.pipelines !== undefined) {
+        // we need to handle adding parameters before other parameter related directives, e.g. adding breaking changes
+        await addPipelines(state, operations, directive.add.pipelines);
+      }
       if (parameterRegex && (selectType === undefined || selectType === 'parameter')) {
         const parameters = values(operations)
           .selectMany(operation => allVirtualParameters(operation.details.csharp.virtualParameters))
@@ -416,11 +448,10 @@ async function tweakModel(state: State): Promise<PwshModel> {
           // handle hiding parameters
           if (directive.hide) {
             if (p.required && !paramDefaultReplacer) {
-              throw new Error(
-                `Please add a default value when hiding the mandatory parameter ${p.name}.
-See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#default-values`
-              );
+              state.warning(`Unless you will customize the parameter through input-pipeline directive, you probably need to add a default value when hiding the mandatory parameter ${p.name}.
+See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#default-values`, [], {});
             }
+            p.required = false;
             p.hidden = true;
             state.message({
               Channel: Channel.Debug,

@@ -91,6 +91,7 @@ export class Project extends codeDomProject {
   public license!: string;
   public pwshCommentHeader!: string;
   public pwshCommentHeaderForCsharp!: string;
+  public csharpCommentHeader!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
@@ -130,6 +131,7 @@ export class Project extends codeDomProject {
   public moduleVersion!: string;
   public profiles!: Array<string>;
   public modelCmdlets!: Array<string>;
+  public inputHandlers!: Array<string>;
 
   public prefix!: string;
   public subjectPrefix!: string;
@@ -194,6 +196,7 @@ export class Project extends codeDomProject {
     // if pwsh license header is not set, use the license set by license-header
     this.pwshCommentHeader = comment(pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
     this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(/"/g, '""');
+    this.csharpCommentHeader = comment(pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '//');
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
@@ -203,6 +206,8 @@ export class Project extends codeDomProject {
     for (const directive of directives.filter(each => each['model-cmdlet'])) {
       this.modelCmdlets = this.modelCmdlets.concat(<ConcatArray<string>>values(directive['model-cmdlet']).toArray());
     }
+    // input handlers
+    this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
     this.azure = this.model.language.default.isAzure;
     this.addToString = await this.state.getValue('nested-object-to-string', false);
