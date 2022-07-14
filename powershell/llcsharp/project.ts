@@ -68,6 +68,7 @@ export class Project extends codeDomProject {
 
       'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
       'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.RestClient': `${this.projectNamespace}.${this.state.model.language.csharp?.name}`,
       'Microsoft.Rest': this.projectNamespace,
       '#define DICT_PROPERTIES': this.exportPropertiesForDict ? '#define DICT_PROPERTIES' : '#define NO_DICT_PROPERTIES'
     };

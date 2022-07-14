@@ -21,6 +21,7 @@ import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components
 import { IParameter as NewIParameter } from '../utils/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
 import { getVirtualPropertyName } from '../llcsharp/model/model-class';
+import { HandlerDirective } from '../plugins/modifiers-v2';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
@@ -358,6 +359,7 @@ export class CmdletClass extends Class {
     this.hasStreamOutput = false;
 
     this.interfaces.push(ClientRuntime.IEventListener);
+    this.interfaces.push(ClientRuntime.IContext);
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
     this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
@@ -402,6 +404,9 @@ export class CmdletClass extends Class {
 
     // implement IEventListener
     this.implementIEventListener();
+
+    // implement part of the IContext
+    this.implementIContext();
 
     // add constructors
     this.implementConstructors();
@@ -469,7 +474,7 @@ export class CmdletClass extends Class {
     }
 
     // pipeline property
-    this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Private, setAccess: Access.Private, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
+    this.add(new Property('Pipeline', ClientRuntime.HttpPipeline, { getAccess: Access.Public, setAccess: Access.Public, description: `The instance of the <see cref="${ClientRuntime.HttpPipeline}" /> that the remote call will use.` }));
 
     // client API property (gs01: fill this in correctly)
     const clientAPI = new ClassType(this.state.model.language.csharp?.namespace, this.state.model.language.csharp?.name || '');
@@ -651,15 +656,38 @@ export class CmdletClass extends Class {
       const pipeline = $this.$<Property>('Pipeline');
 
       if ($this.state.project.azure) {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName)`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName, this.ExtensibleParameters)`));
       } else {
-        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, this.ParameterSetName)`));
+        yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, this.ParameterSetName, this.ExtensibleParameters)`));
       }
 
       yield If(IsNotNull($this.$<Property>('HttpPipelinePrepend')), pipeline.invokeMethod('Prepend', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelinePrepend')}) ?? ${$this.$<Property>('HttpPipelinePrepend')}`)));
       yield If(IsNotNull($this.$<Property>('HttpPipelineAppend')), pipeline.invokeMethod('Append', toExpression(`(this.CommandRuntime as Microsoft.Rest.ClientRuntime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(${$this.$<Property>('HttpPipelineAppend')}) ?? ${$this.$<Property>('HttpPipelineAppend')}`)));
 
       yield '// get the client instance';
+      // Add input pipeline if it is configured by developers.
+      if ($this.operation.extensions.inputPipe) {
+        const handlers = <Array<HandlerDirective>>$this.operation.extensions.inputPipe;
+        // default priority is 100
+        handlers.sort((a, b) => { return (a.priority || 100) - (b.priority || 100); });
+        for (const { index, handler } of handlers.map((handler, index) => ({ index, handler }))) {
+          yield `var handler_${index} = new ${handler.name}();`;
+          if (index > 0) {
+            yield `handler_${index - 1}.SetNextHandler(handler_${index});`;
+          }
+        }
+        yield 'handler_0.Process(this);';
+      }
+      const vps = $this.operation.details.csharp.virtualParameters || {
+        body: [],
+        operation: [],
+      };
+      for (const vParam of [...vps.body, ...vps.operation]) {
+        if (vParam.hidden) {
+          const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>vParam.schema, true, $this.state);
+          yield `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`;
+        }
+      }
       const apiCall = operation.callGraph[0];
 
       // find each parameter to the method, and find out where the value is going to come from.
@@ -1139,6 +1167,16 @@ export class CmdletClass extends Class {
     this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
   }
 
+  private implementIContext() {
+    const extensibleParameters = this.add(new Field('_extensibleParameters', System.Collections.Generic.Dictionary(System.String, System.Object), {
+      access: Access.Private,
+      initialValue: new LiteralExpression('new System.Collections.Generic.Dictionary<string, object>()'),
+      description: 'A dictionary to carry over additional data for pipeline.'
+    }));
+    const extensibleParametersProp = new Property('ExtensibleParameters', System.Collections.Generic.IDictionary(System.String, System.Object), { description: 'Accessor for extensibleParameters.' });
+    extensibleParametersProp.get = toExpression(`${extensibleParameters.value} `);
+    this.add(extensibleParametersProp);
+  }
   private implementIEventListener() {
     const $this = this;
     const cts = this.add(new Field('_cancellationTokenSource', System.Threading.CancellationTokenSource, {
@@ -1146,6 +1184,10 @@ export class CmdletClass extends Class {
       initialValue: new LiteralExpression(`new ${System.Threading.CancellationTokenSource.declaration}()`),
       description: `The <see cref="${System.Threading.CancellationTokenSource}" /> for this operation.`
     }));
+    const cancellationTokenSource = new Property('CancellationTokenSource', System.Threading.CancellationTokenSource, { description: 'Accessor for cancellationTokenSource.' });
+    cancellationTokenSource.get = toExpression(`${cts.value} `);
+    cancellationTokenSource.set = new Statements(cts.assign('value'));
+    this.add(cancellationTokenSource);
     this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Token`, System.Threading.CancellationToken, new LiteralExpression(`${cts.value}.Token`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="${ClientRuntime}.IEventListener" /> cancellation token.` }));
     this.cancellationToken = toExpression(`((${ClientRuntime.IEventListener})this).Token`);
     this.add(new LambdaProperty(`${ClientRuntime.IEventListener}.Cancel`, System.Action(), new LiteralExpression(`${cts.value}.Cancel`), { getAccess: Access.Default, setAccess: Access.Default, description: `<see cref="${ClientRuntime}.IEventListener" /> cancellation delegate. Stops the cmdlet when called.` }));
@@ -1455,7 +1497,7 @@ export class CmdletClass extends Class {
         // skip 'Host'
         continue;
       }
-      let regularCmdletParameter:BackedProperty;
+      let regularCmdletParameter: BackedProperty;
       let origin = null;
       let propertyType = null;
       if (vParam.type) {
@@ -1555,9 +1597,6 @@ export class CmdletClass extends Class {
     if (ifmatch) {
       //no sure why there is an empty block
     }
-    this.add(new BackedProperty('test', new ClassType('', 'System.Net.WebProxy'), {
-      description: 'test description'
-    }));
 
   }
 
