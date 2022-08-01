@@ -459,7 +459,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         this.state.project.modelsNamespace.NewResolveTypeDeclaration(parentSchema, true, aState);
 
         const parentClass = <ModelClass>parentSchema.language.csharp?.classImplementation;
-        if (parentClass.isPolymorphic) {
+        if (!!parentClass && parentClass.isPolymorphic) {
           // remember this class for later.
           this.parentModelClasses.push(parentClass);
 
