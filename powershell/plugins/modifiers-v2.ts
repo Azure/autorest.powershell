@@ -89,6 +89,7 @@ interface WhereCommandDirective {
       name: string;
       description: string;
       script: string;
+      'set-condition': string
     };
     'clientside-pagination'?: boolean;
   };

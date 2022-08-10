@@ -425,6 +425,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string Name { get; }
         public string Description { get; }
         public string Script { get; }
+        public string SetCondition { get; }
         public ParameterGroup ParameterGroup { get; }
 
         public DefaultInfo(DefaultInfoAttribute infoAttribute, ParameterGroup parameterGroup)
@@ -432,6 +433,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Name = infoAttribute.Name;
             Description = infoAttribute.Description;
             Script = infoAttribute.Script;
+            SetCondition = infoAttribute.SetCondition;
             ParameterGroup = parameterGroup;
         }
 
