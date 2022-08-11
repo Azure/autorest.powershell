@@ -209,7 +209,8 @@ export function addDefaultInfo(targetProperty: Property, parameter: any) {
       parameters: [
         new LiteralExpression(`\nName = ${new StringExpression(parameter.defaultInfo.name || '').value}`),
         new LiteralExpression(`\nDescription =${new StringExpression(parameter.defaultInfo.description || '').value}`),
-        new LiteralExpression(`\nScript = ${new StringExpression(parameter.defaultInfo.script).value}`)
+        new LiteralExpression(`\nScript = ${new StringExpression(parameter.defaultInfo.script).value}`),
+        new LiteralExpression(`\nSetCondition = ${new StringExpression(parameter.defaultInfo['set-condition'] || '').value}`)
       ]
     }));
   }

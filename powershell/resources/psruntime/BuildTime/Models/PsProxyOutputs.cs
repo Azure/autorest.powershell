@@ -262,7 +262,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var variantListString = defaultInfo.ParameterGroup.VariantNames.ToPsList();
                 var parameterName = defaultInfo.ParameterGroup.ParameterName;
                 sb.AppendLine();
-                sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}')) {{");
+                var setCondition = " ";
+                if (!String.IsNullOrEmpty(defaultInfo.SetCondition)) {
+                    setCondition = $" -and {defaultInfo.SetCondition}";
+                }
+                sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
                 sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
                 sb.Append($"{Indent}{Indent}}}");
             }
