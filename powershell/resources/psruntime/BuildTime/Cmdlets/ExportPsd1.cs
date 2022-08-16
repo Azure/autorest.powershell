@@ -165,7 +165,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
                 if (previewVersion != null)
                 {
-                    sb.AppendLine($@"{Indent}{Indent}{Indent}Prerelease = {previewVersion}");
+                    sb.AppendLine($@"{Indent}{Indent}{Indent}Prerelease = '{previewVersion}'");
                 }
                 sb.AppendLine($@"{Indent}{Indent}{Indent}Tags = {"${$project.metadata.tags}".Split(' ').ToPsList().NullIfEmpty() ?? "''"}");
                 sb.AppendLine($@"{Indent}{Indent}{Indent}LicenseUri = '{"${$project.metadata.licenseUri}"}'");
