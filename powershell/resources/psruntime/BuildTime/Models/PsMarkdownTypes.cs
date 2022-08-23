@@ -224,8 +224,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static MarkdownExampleHelpInfo[] DefaultExampleHelpInfos =
         {
-            new MarkdownExampleHelpInfo("Example 1: {{ Add title here }}", $@"{{{{ Add code here }}}}", $@"{{{{ Add output here }}}}", @"{{ Add description here }}"),
-            new MarkdownExampleHelpInfo("Example 2: {{ Add title here }}", $@"{{{{ Add code here }}}}", $@"{{{{ Add output here }}}}", @"{{ Add description here }}"),
+            new MarkdownExampleHelpInfo("Example 1: {{ Add title here }}", $@"{{{{ Add code here }}}}", $@"{{{{ Add output here (remove the output block if the example doesn't have an output) }}}}", @"{{ Add description here }}"),
+            new MarkdownExampleHelpInfo("Example 2: {{ Add title here }}", $@"{{{{ Add code here }}}}", $@"{{{{ Add output here (remove the output block if the example doesn't have an output) }}}}", @"{{ Add description here }}"),
         };
 
         public static MarkdownParameterHelpInfo[] SupportsShouldProcessParameters =
