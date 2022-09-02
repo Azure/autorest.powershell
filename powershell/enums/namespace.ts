@@ -10,6 +10,7 @@ import { IArgumentCompleter, CompletionResult, CommandAst, CompletionResultType,
 import { join } from 'path';
 import { DeepPartial } from '@azure-tools/codegen';
 
+
 import { EnumDetails as NewEnumDetails } from '../utils/schema';
 
 export class EnumNamespace extends Namespace {
