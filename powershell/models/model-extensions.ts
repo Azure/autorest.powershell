@@ -16,6 +16,7 @@ class ApiVersionModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return `${this.baseFolder}/${this.apiVersion.replace(/.*\./g, '')}`;
   }
+
   constructor(private baseFolder: string, private readonly apiVersion: string, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super(apiVersion);
     this.apply(objectInitializer);
