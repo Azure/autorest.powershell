@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+
 import { codeModelSchema, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
