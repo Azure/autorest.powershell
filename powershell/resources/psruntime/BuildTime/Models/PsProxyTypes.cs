@@ -366,6 +366,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public string OnlineVersion { get; }
         public string[] RelatedLinks { get; }
+        public string[] ExternalUrls { get; }
 
         private const string HelpLinkPrefix = @"${$project.helpLinkPrefix}";
 
@@ -391,6 +392,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var moduleName = variantGroup.RootModuleName == "" ? variantGroup.ModuleName.ToLowerInvariant() : variantGroup.RootModuleName.ToLowerInvariant();
             OnlineVersion = helpInfo.OnlineVersion?.Uri.NullIfEmpty() ?? $@"{HelpLinkPrefix}{moduleName}/{variantGroup.CmdletName.ToLowerInvariant()}";
             RelatedLinks = helpInfo.RelatedLinks.Select(rl => rl.Text).ToArray();
+
+            // Get external urls from attribute
+            ExternalUrls = variantGroup.Variants.SelectMany(v => v.Attributes).OfType<ExternalDocsAttribute>()?.Select(e => e.Url)?.Distinct()?.ToArray();
         }
     }
 
