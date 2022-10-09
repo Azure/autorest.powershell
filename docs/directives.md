@@ -102,6 +102,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Argument Completers](#Argument-Completers)
 - [Default Values](#Default-Values)
 - [Polymorphism](#Polymorphism)
+- [Custom Input Parameter](#custom-input-parameter)
 
 *Note*: If you have feedback about these directives, or you would like additional configurations, feel free to open an issue at https://github.com/Azure/autorest.powershell/issues.
 
@@ -451,6 +452,89 @@ And users normally need two steps to create a resource.
 ```powershell
 $obj = New-XXXChildClassAObject ... or $obj = New-XXXChildClassBObject …
 New-XXXResource -BaseClass $obj …
+```
+
+### Custom Input Parameter
+
+To custom input parameters, there are normally three steps:
+
+First of all, we need to add new parameters.
+
+```yaml
+- where:
+    subject: subject-name
+    variant: variant-name
+  add:
+    parameters:
+      # name and type are required, the others are optional.
+      - name: Location
+        type: string
+        required: true
+        completer:
+          name: Location Completer
+          description: Gets the list of locations available for this resource.
+          script: "'westus2', 'centralus', 'global'"
+        default:
+          name: Location default
+          description: This is a default value
+        script: "westus2"
+        description: "This is a parameter"
+```
+
+Secondly, we should hide original parameters
+
+```yaml
+- where:
+    subject: subject-name
+    variant: variant-name
+    parameter-name: parameter-name
+  hide: true
+```
+
+Last, we should provide a way to infer hidden parameters from the new added parameters or other parameters.
+
+For simple cases like 1-1 mapping, we could do it by **default** directive as below.
+
+```yaml
+- where:
+    subject: subject-name
+    variant: variant-name
+    parameter-name: parameter-name
+  set:
+    default:
+      script: '$name + "test"'
+      # set-condition is optional
+      set-condition: "$PSBoundParameters.ContainsKey('SubscriptionId')"
+```
+
+For more complicated cases, we may implement it by C# customization.
+
+```yaml
+- where:
+    subject: subject-name
+    variant: variant-name
+  add:
+    pipelines:
+      input-pipeline:
+        - name: customLocation
+          # priority is optional, by default it is 100, smaller priority handler will be put in the front of the pipeline.
+          priority: 100
+```
+
+After running `autorest`, autorest will generate a stub C# class as below in custom/input-handlers, and developers should implement the ToDO part according to their requirements.
+
+```csharp
+namespace Microsoft.Azure.PowerShell.Cmdlets.Databricks.Runtime.Cmdlets
+{
+    public class customLocation : InputHandler
+    {
+        public override void Process( Microsoft.Azure.PowerShell.Cmdlets.Databricks.Runtime.IContext context)
+        {
+            // ToDO: Add the custom code here
+            NextHandler?.Process(context);
+        }
+    }
+}
 ```
 
 ## Azure PowerShell Specific
