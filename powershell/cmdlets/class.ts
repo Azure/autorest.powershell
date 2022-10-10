@@ -14,7 +14,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -1727,6 +1727,15 @@ export class CmdletClass extends Class {
     }
 
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
+
+    // If defines externalDocs for operation
+    if (operation.details.default.externalDocsUrl) {
+      this.add(new Attribute(ExternalDocsAttribute, {
+        parameters: [`${new StringExpression(this.operation.details.default.externalDocsUrl ?? "")}`,
+        `${new StringExpression(this.operation.details.default.externalDocsDescription ?? "")}`]
+      }));
+    }
+
     this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
       const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
