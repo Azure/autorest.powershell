@@ -1729,10 +1729,10 @@ export class CmdletClass extends Class {
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
 
     // If defines externalDocs for operation
-    if (operation.details.default.externalDocsUrl) {
+    if (operation.details.default.externalDocs) {
       this.add(new Attribute(ExternalDocsAttribute, {
-        parameters: [`${new StringExpression(this.operation.details.default.externalDocsUrl ?? "")}`,
-        `${new StringExpression(this.operation.details.default.externalDocsDescription ?? "")}`]
+        parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? "")}`,
+        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? "")}`]
       }));
     }
 

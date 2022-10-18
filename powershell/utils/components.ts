@@ -100,10 +100,7 @@ export interface ImplementationDetails extends Dictionary<any> {
   deprecationMessage?: string;
 
   /** external docs description */
-  externalDocsDescription?: string;
-
-  /** external docs description */
-  externalDocsUrl?: string;
+  externalDocs?: ExternalDocumentation;
 
 }
 

@@ -394,8 +394,7 @@ export /* @internal */ class Inferrer {
           verb: variant.verb,
           name: vname,
           alias: variant.alias,
-          externalDocsDescription: operation.externalDocs?.description,
-          externalDocsUrl: operation.externalDocs?.url
+          externalDocs: operation.externalDocs
         }
       },
       // operationId is not needed any more
