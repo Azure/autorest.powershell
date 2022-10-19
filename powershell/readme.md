@@ -25,8 +25,12 @@ AutoRest needs the below config to pick this up as a plug-in - see https://githu
 
 > AutoRest configuration is stored in the 'autorest-configuation.md' file.
 
-``` yaml 
+``` yaml !$(isSdkGenerator)
 pipeline-model: v3
 require: $(this-folder)/autorest-configuration.md
 ```
 
+``` yaml $(isSdkGenerator)
+pipeline-model: v3
+require: $(this-folder)/autorest-configuration-for-sdk.md
+```

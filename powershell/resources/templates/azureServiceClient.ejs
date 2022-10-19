@@ -1,0 +1,71 @@
+<%- project.commentHeader %>
+
+namespace <%- project.namespace %>
+{
+    using System.Linq;
+    using Microsoft.Rest;
+<% project.model.usings.forEach(function(using){ -%>
+    using <%- using %>;
+<% }); -%>
+
+<% if (project.model.info.description) { -%>
+    /// <summary>
+    /// <%- project.model.info.description %>
+    /// </summary>
+<% } -%>
+<% var client = project.model.info.title -%>
+    public partial class <%- client %> : Microsoft.Rest.ServiceClient<<%- client %>>, I<%- client %>, IAzureClient
+    {
+<%# ToDo: add ServiceClientBodyTemplate -%>
+<%- include('serviceClientBody', {project: project}) -%>
+        /// <summary>
+        /// An optional partial-method to perform custom initialization.
+        /// </summary>
+        partial void CustomInitialize();
+
+        /// <summary>
+        /// Initializes client properties.
+        /// </summary>
+        private void Initialize()
+        {
+<% project.model.operationGroups.forEach(function(methodGroup){ -%>
+            this.<%- methodGroup.$key %> = new <%- methodGroup.$key %>Operations(this);
+<% }); -%>
+            this.BaseUri = new System.Uri("https://management.azure.com");
+<% project.model.globalParameters.filter(p => p.language.default.name != '$host' && !!p.clientDefaultValue).forEach(function(parameter){ -%>
+            this.<%- parameter.language.default.name %> = <%- parameter.schema.type == 'string' || (parameter.schema.type == 'constant' && parameter.schema.valueType.type == 'string') ? `"${parameter.clientDefaultValue}"`: parameter.clientDefaultValue %>;
+<%}); -%>
+            SerializationSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+                ContractResolver = new Microsoft.Rest.Serialization.ReadOnlyJsonContractResolver(),
+                Converters = new System.Collections.Generic.List<Newtonsoft.Json.JsonConverter>
+                    {
+                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter()
+                    }
+            };
+<%# ToDo: need support for NeedsTransformationConverter#1 -%>
+            DeserializationSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc,
+                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize,
+                ContractResolver = new Microsoft.Rest.Serialization.ReadOnlyJsonContractResolver(),
+                Converters = new System.Collections.Generic.List<Newtonsoft.Json.JsonConverter>
+                    {
+                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter()
+                    }
+            };
+<%# ToDo: need support for polymorphicType -%>
+            CustomInitialize();
+<%# ToDo: need support for NeedsTransformationConverter#2 -%>
+            DeserializationSettings.Converters.Add(new Microsoft.Rest.Azure.CloudErrorJsonConverter());
+<%# ToDo: Add method whose group is empty, and need to check in which case the group is empty.-%>
+        }
+    }
+}

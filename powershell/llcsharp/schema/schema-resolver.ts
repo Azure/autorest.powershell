@@ -35,7 +35,7 @@ export class SchemaDefinitionResolver {
     return value;
   }
 
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<CodeModel>): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }

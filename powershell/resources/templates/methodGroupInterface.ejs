@@ -1,0 +1,53 @@
+<%- project.commentHeader %>
+
+namespace <%- project.namespace %>
+{
+<% project.model.usings.forEach(function(using){ -%>
+    using <%- using %>;
+<% }); -%>
+
+<% var typeName = methodGroup.$key + 'Operations' -%>
+    /// <summary>
+    /// <%- typeName %> operations.
+    /// </summary>
+    public partial interface I<%- typeName%>
+    {
+<% methodGroup.operations.forEach(function(method){ -%>
+<%# ToDo: support for ExcludeFromInterface -%>
+<% if(method.language.default.description) {-%>
+        /// <summary>
+        /// <%= method.language.default.description%>
+<%# ToDo: support for  ExternalDocsUrl -%>
+        /// </summary>
+        /// <remarks>
+        /// <%= method.language.default.description%>
+        /// </remarks>
+<% };-%>
+<% method.parameters.filter(p=>p.implementation != 'Client').forEach(function(parameter){-%>
+        /// <param name='<%-parameter.language.default.name%>'>
+        /// <%= parameter.language.default.description%>
+        /// </param>
+<% }); -%>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// </param>
+<%# ToDo: Need to figure out whether we could hand code the exception here -%>
+        /// <exception cref="Microsoft.Rest.Azure.CloudException">
+        /// </exception>
+<% if (method.responses.filter(r => r.schema).length > 0) {-%>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+<% }; -%>
+<% if (method.parameters.filter(p => p.required && p.nullable).length > 0) {-%>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+<% }; -%>
+<%# ToDo: support GetObsoleteAttribute, deprecated message?-%>
+        System.Threading.Tasks.Task<<%-method.language.default.responseType %>> <%- method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>);
+<% }); -%>
+    }
+}

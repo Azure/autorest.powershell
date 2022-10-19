@@ -64,6 +64,7 @@
     "@azure-tools/tasks": "~3.0.0",
     "@azure-tools/async-io": "~3.0.0",
     "source-map-support": "0.5.13",
-    "xmlbuilder": "10.1.1"
+    "xmlbuilder": "10.1.1",
+    "ejs": "~3.1.8"
   }
 }

@@ -12,13 +12,14 @@ modelerfour:
   additional-checks: false
   always-create-content-type-parameter: false
   always-seal-x-ms-enums: true
+  treat-type-object-as-anything: true
 ```
 
 > if the modeler is loaded already, use that one, otherwise grab it.
 
 ``` yaml !isLoaded('@autorest/modelerfour')
 use-extension:
-  "@autorest/modelerfour": "4.15.414"
+  "@autorest/modelerfour": "4.23.1"
 
 # will use highest 2.0.x 
 ```
