@@ -1241,13 +1241,21 @@ export class CmdletClass extends Class {
           yield 'WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );';
           yield Return();
         }),
+        TerminalCase(Events.Progress.value, function* () {
+          // hardcode id = 1 because there is no need for nested progress bar
+          yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")`;
+          yield '{';
+          yield '    PercentComplete = (int)(messageData().Value * 100)';
+          yield '});';
+          yield Return();
+        }),
       ]);
 
       if ($this.operation.asjob) {
         // if we support -AsJob, we support -NoWait
         sw.add(Case(Events.DelayBeforePolling.value, function* () {
+          yield 'var data = messageData();';
           yield If('true == MyInvocation?.BoundParameters?.ContainsKey("NoWait")', function* () {
-            yield 'var data = messageData();';
             yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
             yield '{';
             yield '    var asyncOperation = response.GetFirstHeader(@"Azure-AsyncOperation");';
@@ -1258,6 +1266,22 @@ export class CmdletClass extends Class {
             yield '    // do nothing more. ';
             yield '    data.Cancel();';
             yield '    return;';
+            yield '}';
+          });
+          yield Else(function * () {
+            yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
+            yield '{';
+            yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
+            yield '    WriteDebug($"Delaying {delay} seconds before polling.");';
+            yield '    for (var now = 0; now < delay; ++now)';
+            yield '    {';
+            // hardcode id = 1 because there is no need for nested progress bar
+            yield `        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")`;
+            yield '        {';
+            yield '            PercentComplete = now * 100 / delay';
+            yield '        });';
+            yield `        await global::System.Threading.Tasks.Task.Delay(1000, ${token.use});`;
+            yield '    }';
             yield '}';
           });
         }));
