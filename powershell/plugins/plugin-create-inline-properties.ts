@@ -47,9 +47,9 @@ function getNameOptions(typeName: string, components: Array<string>) {
 function getCombinedDescription(rawDescription: string, externalDocsUrl?: string, externalDocsDescription?: string): string {
   let description = rawDescription ?? "";
   if (undefined !== externalDocsUrl && "" !== externalDocsUrl) {
-    description = description.concat("Please visit external url ", externalDocsUrl, " to get more information. ")
+    description = description.concat(" Please visit external url ", externalDocsUrl, " to get more information.")
     if (undefined !== externalDocsDescription && "" !== externalDocsDescription) {
-      description = description.concat("The content of external url is about '", externalDocsDescription, " '. ")
+      description = description.concat(" The content of external url is about '", externalDocsDescription, " '.")
     }
   }
   return description;
@@ -224,9 +224,6 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
 
-        const combinedDescription = getCombinedDescription(inlinedProperty.property.language.default.description, inlinedProperty.property.schema.externalDocs?.url, inlinedProperty.property.schema.externalDocs?.description);
-        inlinedProperty.property.language.default.description = combinedDescription;
-
         virtualProperties.inlined.push({
           name: proposedName,
           property: inlinedProperty.property,
@@ -357,9 +354,6 @@ function createVirtualParameters(operation: CommandOperation) {
             // private or readonly properties aren't needed as parameters. 
             continue;
           }
-
-          const combinedDescription = getCombinedDescription(virtualProperty.property.language.default.description, virtualProperty.property.schema.externalDocs?.url, virtualProperty.property.schema.externalDocs?.description);
-          virtualProperty.property.language.default.description = combinedDescription;
 
           virtualParameters.body.push({
             name: virtualProperty.name,
