@@ -1,0 +1,45 @@
+<%- project.commentHeader %>
+
+namespace <%- project.namespace %>
+{
+    using System.Linq;
+    using Microsoft.Rest;
+<% project.model.usings.forEach(function(using){ -%>
+    using <%- using %>;
+<% }); -%>
+
+<% var typeName = methodGroup.$key + 'Operations' -%>
+    /// <summary>
+    /// <%- typeName %> operations.
+    /// </summary>
+<% var client = project.model.info.title -%>
+    internal partial class <%- typeName %> : Microsoft.Rest.IServiceOperations<<%-client%>>, I<%- typeName%>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <%- typeName%> class.
+        /// </summary>
+        /// <param name='client'>
+        /// Reference to the service client.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        internal <%- typeName%> (<%-client%> client)
+        {
+            if (client == null) 
+            {
+                throw new System.ArgumentNullException("client");
+            }
+            this.Client = client;
+        }
+
+        /// <summary>
+        /// Gets a reference to the <%-client%>
+        /// </summary>
+        public <%-client%> Client { get; private set; }
+
+<% methodGroup.operations.forEach(function(method){ -%>
+<%- include('azureMethod', {method: method}) -%>
+<% }); -%>
+    }
+}

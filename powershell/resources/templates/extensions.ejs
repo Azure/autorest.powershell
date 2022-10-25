@@ -1,0 +1,19 @@
+<%- project.commentHeader %>
+
+namespace <%- project.namespace %>
+{
+<% project.model.usings.forEach(function(using){ -%>
+    using <%- using %>;
+<% }); -%>
+
+    /// <summary>
+    /// Extension methods for <%- methodGroup.$key %>Operations
+    /// </summary>
+    public static partial class <%- methodGroup.$key %>OperationsExtensions
+    {
+<% methodGroup.operations.forEach(function(method){ -%>
+<%# ToDo: add support for ExcludeFromInterface-%>
+<%- include('extensionMethod', {method: method, group: methodGroup}) %>
+<% }); -%>
+    }
+}

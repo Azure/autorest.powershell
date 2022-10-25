@@ -464,7 +464,7 @@ export /* @internal */ class Inferrer {
         subject = [action, ...subject];
       }
     }
-
+    
     return {
       alias: [],
       subject: pascalCase([...removeSequentialDuplicates(subject.map(each => pluralizationService.singularize(each)))]),

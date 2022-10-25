@@ -1,0 +1,183 @@
+<%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
+<%# ToDo: add check IsNullable with required -%>
+<% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+<% if (parameter.required) {-%>
+            if (<%-prefix%><%-parameter.language.default.name%> == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
+            }
+<% } -%>
+<%# ToDo: add support for parameter.CanBeValidated  && (Model.HttpMethod != HttpMethod.Patch || parameter.Location != ParameterLocation.Body)-%>
+<%});}-%>
+<%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
+<%# ToDo: add support for BuildInputMappings -%>
+            // Tracing
+            bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
+            string _invocationId = null;
+            if (_shouldTrace)
+            {
+                _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
+                System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
+<%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "<%-method.language.default.name%>", tracingParameters);
+            }
+            // Construct URL
+<%# ToDo: may need to support AbsoluteUrl -%>
+            var _baseUrl = this.Client.BaseUri.AbsoluteUri;
+<%# ToDo: buildurl, currently only added simple cases, besides we need to handle skip url encoding -%>
+            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "<%-method.requests[0].protocol.http.path.substring(1)%>").ToString();
+<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'path').forEach(function (pathParameter) { -%>
+            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", System.Uri.EscapeDataString(this.Client.<%-pathParameter.language.default.name%>));
+<% });}-%>
+            System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
+<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
+<% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+            if (<%-prefix%><%-queryParameter.language.default.name%> != null)
+            {
+                _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", System.Uri.EscapeDataString(<%-prefix%><%-queryParameter.language.default.name%>)));
+            }
+<% });}-%>
+            if (_queryParameters.Count > 0)
+            {
+                _url += (_url.Contains("?") ? "&" : "?") + string.Join("&", _queryParameters);
+            }
+            // Create HTTP transport objects
+            var _httpRequest = new System.Net.Http.HttpRequestMessage();
+            System.Net.Http.HttpResponseMessage _httpResponse = null;
+            _httpRequest.Method = new System.Net.Http.HttpMethod("<%-method.requests[0].protocol.http.method.toUpperCase()%>");
+            _httpRequest.RequestUri = new System.Uri(_url);
+            // Set Headers
+<%# ToDo: Add headers except for following default ones -%>
+            if (this.Client.GenerateClientRequestId != null && this.Client.GenerateClientRequestId.Value)
+            {
+                _httpRequest.Headers.TryAddWithoutValidation("x-ms-client-request-id", System.Guid.NewGuid().ToString());
+            }
+            if (this.Client.AcceptLanguage != null)
+            {
+                if (_httpRequest.Headers.Contains("accept-language"))
+                {
+                    _httpRequest.Headers.Remove("accept-language");
+                }
+                _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
+            }
+
+
+            if (customHeaders != null)
+            {
+                foreach(var _header in customHeaders)
+                {
+                    if (_httpRequest.Headers.Contains(_header.Key))
+                    {
+                        _httpRequest.Headers.Remove(_header.Key);
+                    }
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                }
+            }
+            // Serialize Request
+            string _requestContent = null;
+<%# ToDo: add RequestBody, formdata support-%>
+<%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
+            // Set Credentials
+            if (this.Client.Credentials != null)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            }
+            // Send Request
+            if (_shouldTrace)
+            {
+                Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+<%# ToDo: Add support for primary type return and head method-%>
+            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            if (_shouldTrace)
+            {
+                Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+            }
+
+            System.Net.HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            cancellationToken.ThrowIfCancellationRequested();
+            string _responseContent = null;
+
+            if (<%-method.language.default.failureStatusCodePredicate%>)
+            {
+                var ex = new Microsoft.Rest.Azure.CloudException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+<%# ToDo: not sure whether there is the case that there is no default response(error). If so, we will need to add support for it -%>
+                try
+                {
+<%# ToDo: Need to add support for primary type -%>
+                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    if (_errorBody != null)
+                    {
+                        ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
+                        ex.Body = _errorBody;
+                    }
+                }
+                catch (Newtonsoft.Json.JsonException)
+                {
+                    // Ignore the exception
+                }
+                ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
+                ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
+                if (_httpResponse.Headers.Contains("x-ms-request-id"))
+                {
+                    ex.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                }
+                if (_shouldTrace)
+                {
+                    Microsoft.Rest.ServiceClientTracing.Error(_invocationId, ex);
+                }
+                _httpRequest.Dispose();
+                if (_httpResponse != null)
+                {
+                    _httpResponse.Dispose();
+                }
+                throw ex;
+            }
+            // Create Result
+            var _result = new <%-method.language.default.responseType%>();
+            _result.Request = _httpRequest;
+            _result.Response = _httpResponse;
+<%# Todo: need to add support for head method, see InitializeResponseBody for details-%>
+            if (_httpResponse.Headers.Contains("x-ms-request-id"))
+            {
+                _result.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+            }
+<%method.responses.filter(r => r.schema).forEach(function(resp) {-%>
+            // Deserialize Response
+            if ((int)_statusCode == <%-resp.protocol.http.statusCodes[0]%>)
+            {
+<%# ToDo: Need to add support for primary type -%>
+                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+<%# ToDo: support for XmlSerialization, guess we do not need it actually -%>
+                try
+                {
+<%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-resp.schema.language.csharp.name%>>(_responseContent, this.Client.DeserializationSettings);
+                }
+                catch (Newtonsoft.Json.JsonException ex)
+                {
+                    _httpRequest.Dispose();
+                    if (_httpResponse != null)
+                    {
+                        _httpResponse.Dispose();
+                    }
+                    throw new Microsoft.Rest.SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                }
+            }
+<% });-%>
+<%# ToDo: add support for case Model.ReturnType.Body != null && Model.DefaultResponse.Body != null && !Model.Responses.Any()-%>
+<%# ToDo: add support for case there are return in headers-%>
+            if (_shouldTrace)
+            {
+                Microsoft.Rest.ServiceClientTracing.Exit(_invocationId, _result);
+            }
+            return _result;
+
+
+
+
+

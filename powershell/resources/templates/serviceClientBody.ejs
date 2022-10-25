@@ -1,0 +1,305 @@
+        /// <summary>
+        /// The base URI of the service.
+        /// </summary>
+<%# ToDo: Add support for customBaseUri, priority is low-%>
+        public System.Uri BaseUri { get; set; }
+        /// <summary>
+        /// Gets or sets json serialization settings.
+        /// </summary>
+        public Newtonsoft.Json.JsonSerializerSettings SerializationSettings { get; private set; }
+        /// <summary>
+        /// Gets or sets json deserialization settings.
+        /// </summary>
+        public Newtonsoft.Json.JsonSerializerSettings DeserializationSettings { get; private set; }
+<% project.model.globalParameters.filter(p=>p.language.default.name != '$host').forEach(function(parameter) {-%>
+        /// <summary>
+        /// <%=parameter.language.default.description%>
+        /// </summary>
+<% var type = parameter.schema.type == 'constant' ? parameter.schema.valueType.language.csharp.fullname : parameter.schema.language.csharp.fullname-%>
+<%type = type.includes('.') || type == 'string' ? type : type + '?'-%>
+<% if (parameter.readOnly || parameter.schema.type == 'constant') {-%>
+        public <%- type %> <%- parameter.language.default.name%> { get; private set; }
+<% } else {-%>
+        public <%- type %> <%- parameter.language.default.name%> { get; set;}
+<% }%>
+<%});-%>
+<% project.model.operationGroups.forEach(function(methodGroup){ -%>
+        /// <summary>
+        /// Gets the I<%- methodGroup.$key %>Operations
+        /// </summary>
+        public virtual I<%- methodGroup.$key %>Operations <%- methodGroup.$key %> { get; private set; }
+<% }); -%>
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='httpClient'>
+        /// HttpClient to be used
+        /// </param>
+        /// <param name='disposeHttpClient'>
+        /// True: will dispose the provided httpClient on calling <%-project.model.info.title%>.Dispose(). False: will not dispose provided httpClient</param>
+<%# ToDo: Add support for case that ContainsCredentials is false, low priority-%>
+        protected <%-project.model.info.title%>(System.Net.Http.HttpClient httpClient, bool disposeHttpClient) : base(httpClient, disposeHttpClient)
+        {
+            this.Initialize();
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        protected <%-project.model.info.title%>(params System.Net.Http.DelegatingHandler[] handlers) : base(handlers)
+        {
+            this.Initialize();
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%>  class.
+        /// </summary>
+        /// <param name='rootHandler'>
+        /// Optional. The http client handler used to handle http transport.
+        /// </param>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        protected <%-project.model.info.title%>(System.Net.Http.HttpClientHandler rootHandler, params System.Net.Http.DelegatingHandler[] handlers) : base(rootHandler, handlers)
+        {
+            this.Initialize();
+        }
+<%# ToDo: following true means !IsCustomBaseUri, may need to implement IsCustomBaseUri, low priority -%>
+<% if(true) {-%>
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='baseUri'>
+        /// Optional. The base URI of the service.
+        /// </param>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        protected <%-project.model.info.title%>(System.Uri baseUri, params System.Net.Http.DelegatingHandler[] handlers) : this(handlers)
+        {
+            if (baseUri == null)
+            {
+                throw new System.ArgumentNullException("baseUri");
+            }
+            this.BaseUri = baseUri;
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='baseUri'>
+        /// Optional. The base URI of the service.
+        /// </param>
+        /// <param name='rootHandler'>
+        /// Optional. The http client handler used to handle http transport.
+        /// </param>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        protected <%-project.model.info.title%>(System.Uri baseUri, System.Net.Http.HttpClientHandler rootHandler, params System.Net.Http.DelegatingHandler[] handlers) : this(rootHandler, handlers)
+        {
+            if (baseUri == null)
+            {
+                throw new System.ArgumentNullException("baseUri");
+            }
+        
+            this.BaseUri = baseUri;
+        }
+<% } -%>
+<% var parameters = project.model.globalParameters.filter(p => p.required && p.readOnly)
+if (parameters.length > 0) {-%>
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+<%parameters.forEach(function(parameter){-%>
+        /// <param name='<%-project.helper.CamelCase(parameter.language.default.name)%>'
+        /// Required. <%-parameter.language.default.description%>
+        /// </param>
+<%});-%>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+<%# ToDo: assume the access is public, need to figure the logic of ConstructorVisibility-%>
+        public <%-project.model.info.title%>(<%-project.model.language.default.requiredConstructorParametersDeclaration%>, params System.Net.Http.DelegatingHandler[] handlers) : this(handlers)
+        {
+<%parameters.forEach(function(parameter) {-%>
+            if (<%-project.helper.CamelCase(parameter.language.default.name)%> == null)
+            {
+                throw new System.ArgumentNullException("<%-project.helper.CamelCase(parameter.language.default.name)%>");
+            }
+<%});-%>
+<%parameters.forEach(function(parameter) {-%>
+            this.<%-parameter.language.default.name%> = <%-project.helper.CamelCase(parameter.language.default.name)%>;
+<%if(parameter.schema.language.csharp.fullname == 'Microsoft.Rest.ServiceClientCredentials') {-%>
+            if (this.Credentials != null)
+            {
+                this.Credentials.InitializeServiceClient(this);
+            }
+<% }-%>            
+<%});-%>
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+<%parameters.forEach(function(parameter) {-%>
+        /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
+        /// Required. <%-parameter.language.default.description%>
+        /// </param>
+<%});-%>
+        /// <param name='httpClient'>
+        /// HttpClient to be used
+        /// </param>
+        /// <param name='disposeHttpClient'>
+        /// True: will dispose the provided httpClient on calling <%-project.model.info.title%>.Dispose(). False: will not dispose provided httpClient</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        public <%-project.model.info.title%>(<%-project.model.language.default.requiredConstructorParametersDeclaration%>, System.Net.Http.HttpClient httpClient, bool disposeHttpClient) : this(httpClient, disposeHttpClient)
+        {
+<%parameters.forEach(function(parameter) {-%>
+            if (<%-project.helper.CamelCase(parameter.language.default.name)%> == null)
+            {
+                throw new System.ArgumentNullException("<%-project.helper.CamelCase(parameter.language.default.name)%>");
+            }
+<%});-%>
+<%parameters.forEach(function(parameter) {-%>
+            this.<%-parameter.language.default.name%> = <%-project.helper.CamelCase(parameter.language.default.name)%>;
+<%if(parameter.schema.language.csharp.fullname == 'Microsoft.Rest.ServiceClientCredentials') {-%>
+            if (this.Credentials != null)
+            {
+                this.Credentials.InitializeServiceClient(this);
+            }
+<% }-%>            
+<%});-%>
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+<%parameters.forEach(function(parameter) {-%>
+        /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
+        /// Required. <%-parameter.language.default.description%>
+        /// </param>
+<%});-%>
+        /// <param name='rootHandler'>
+        /// Optional. The http client handler used to handle http transport.
+        /// </param>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        public <%-project.model.info.title%>(<%-project.model.language.default.requiredConstructorParametersDeclaration%>, System.Net.Http.HttpClientHandler rootHandler, params System.Net.Http.DelegatingHandler[] handlers) : this(rootHandler, handlers)
+        {
+<%parameters.forEach(function(parameter) {-%>
+            if (<%-project.helper.CamelCase(parameter.language.default.name)%> == null)
+            {
+                throw new System.ArgumentNullException("<%-project.helper.CamelCase(parameter.language.default.name)%>");
+            }
+<%});-%>
+<%parameters.forEach(function(parameter) {-%>
+            this.<%-parameter.language.default.name%> = <%-project.helper.CamelCase(parameter.language.default.name)%>;
+<%if(parameter.schema.language.csharp.fullname == 'Microsoft.Rest.ServiceClientCredentials') {-%>
+            if (this.Credentials != null)
+            {
+                this.Credentials.InitializeServiceClient(this);
+            }
+<% }-%>            
+<%});-%>
+        }
+<%# ToDo: following true means !IsCustomBaseUri, may need to implement IsCustomBaseUri, low priority -%>
+<%if (true) {-%>
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='baseUri'>
+        /// Optional. The base URI of the service.
+        /// </param>
+<%parameters.forEach(function(parameter) {-%>
+        /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
+        /// Required. <%-parameter.language.default.description%>
+        /// </param>
+<%});-%>
+        /// <param name='rootHandler'>
+        /// Optional. The http client handler used to handle http transport.
+        /// </param>
+        /// <param name='handlers'>
+        /// Optional. The delegating handlers to add to the http client pipeline.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        public <%-project.model.info.title%>(System.Uri baseUri, <%-project.model.language.default.requiredConstructorParametersDeclaration%>, params System.Net.Http.DelegatingHandler[] handlers) : this(handlers) 
+        {
+            if (baseUri == null)
+            {
+                throw new System.ArgumentNullException("baseUri");
+            }
+<%parameters.forEach(function(parameter) {-%>
+            if (<%-project.helper.CamelCase(parameter.language.default.name)%> == null)
+            {
+                throw new System.ArgumentNullException("<%-project.helper.CamelCase(parameter.language.default.name)%>");
+            }
+<%});-%>
+            this.BaseUri = baseUri;
+<%parameters.forEach(function(parameter) {-%>
+            this.<%-parameter.language.default.name%> = <%-project.helper.CamelCase(parameter.language.default.name)%>;
+<%if(parameter.schema.language.csharp.fullname == 'Microsoft.Rest.ServiceClientCredentials') {-%>
+            if (this.Credentials != null)
+            {
+                this.Credentials.InitializeServiceClient(this);
+            }
+<% }-%>            
+<%});-%>
+        }
+        /// <summary>
+        /// Initializes a new instance of the <%-project.model.info.title%> class.
+        /// </summary>
+        /// <param name='baseUri'>
+        /// Optional. The base URI of the service.
+        /// </param>
+        <%parameters.forEach(function(parameter) {-%>
+        /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
+        /// Required. <%-parameter.language.default.description%>
+        /// </param>
+<%});-%>
+        /// <param name='rootHandler'>
+        /// Optional. The http client handler used to handle http transport.
+        /// </param>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        public <%-project.model.info.title%>(System.Uri baseUri, <%-project.model.language.default.requiredConstructorParametersDeclaration%>, System.Net.Http.HttpClientHandler rootHandler, params System.Net.Http.DelegatingHandler[] handlers) : this(rootHandler, handlers)
+        {
+            if (baseUri == null)
+            {
+                throw new System.ArgumentNullException("baseUri");
+            }
+<%parameters.forEach(function(parameter) {-%>
+            if (<%-project.helper.CamelCase(parameter.language.default.name)%> == null)
+            {
+                throw new System.ArgumentNullException("<%-project.helper.CamelCase(parameter.language.default.name)%>");
+            }
+<%});-%>
+            this.BaseUri = baseUri;
+<%parameters.forEach(function(parameter) {-%>
+            this.<%-parameter.language.default.name%> = <%-project.helper.CamelCase(parameter.language.default.name)%>;
+<%if(parameter.schema.language.csharp.fullname == 'Microsoft.Rest.ServiceClientCredentials') {-%>
+            if (this.Credentials != null)
+            {
+                this.Credentials.InitializeServiceClient(this);
+            }
+<% }-%>            
+<%});-%>
+        }
+<%}-%>
+<% }-%>

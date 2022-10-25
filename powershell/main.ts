@@ -15,6 +15,9 @@ import { powershellV2 } from './plugins/powershell-v2';
 import { addCompleterV2 } from './plugins/add-azure-completers-v2';
 import { applyModifiersV2 } from './plugins/modifiers-v2';
 import { tweakM4ModelPlugin } from './plugins/plugin-tweak-m4-model';
+import { generate } from './plugins/sdk-generate';
+import { tweakSdkModelPlugin } from './plugins/sdk-tweak-model';
+import { csnamerSdk } from './plugins/sdk-cs-namer';
 
 require('source-map-support').install();
 
@@ -32,6 +35,9 @@ export async function main() {
   pluginHost.Add('add-azure-completers-v2', addCompleterV2);
   pluginHost.Add('llcsharp-v2', llcsharpV2);
   pluginHost.Add('powershell-v2', powershellV2);
+  pluginHost.Add('generate', generate);
+  pluginHost.Add('tweakSdkModelPlugin', tweakSdkModelPlugin);
+  pluginHost.Add('csnamerSdk', csnamerSdk);
 
   await pluginHost.Run();
 }

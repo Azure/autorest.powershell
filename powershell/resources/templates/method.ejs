@@ -1,0 +1,46 @@
+<% if (method.language.default.description) {-%>
+        /// <summary>
+        /// <%= method.language.default.description%>
+<%# ToDo: add externaldocsurl -%>
+        /// </summary>
+<% };-%>
+<%# ToDo: add remark if both description and summary is provided, question here is in m4, there is no summary provided-%>
+<%  if(method.parameters) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
+<%# ToDo: should use camel name instead of pascal name here -%>
+        /// <param name='<%-parameter.language.default.name%>'>
+        /// <%=parameter.language.default.description%>
+        /// </param>
+<% });}-%>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="Microsoft.Rest.Azure.CloudException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+<% if (method.responses && method.responses.filter(p => p.schema).length > 0) {-%>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+<% };-%>
+<%# ToDo: add isnullable check -%>
+<% if (method.parameters.filter(p => p.schema.type != 'constant' && p.required)) {-%>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null
+        /// </exception>
+<% };-%>
+        /// <return>
+        /// A response object containing the response body and response headers.
+        /// </return>
+<%# ToDo: add GetObsoleteAttribute -%>
+<%# ToDo: need to check in which case the method is not public(AccessModifier), currently set it to public -%>
+        public async System.Threading.Tasks.Task<<%-method.language.default.responseType%>> <%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>)
+        {
+<%# ToDo: add support for method.Flavor, currently assume it is RestCall -%>
+<%- include('methodBodyRestCall', {method: method}) -%>
+        }
