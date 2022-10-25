@@ -34,22 +34,6 @@ pipeline-model: v3
 ``` yaml
 use-namespace-folders: false
 current-folder: .
-module-folder: $(current-folder)/generated
-cmdlet-folder: $(module-folder)/cmdlets
-model-cmdlet-folder: $(custom-cmdlet-folder)/autogen-model-cmdlets
-custom-cmdlet-folder: $(current-folder)/custom
-utils-cmdlet-folder: $(current-folder)/utils
-internal-cmdlet-folder: $(current-folder)/internal
-test-folder: $(current-folder)/test
-runtime-folder: $(module-folder)/runtime
-api-folder: $(module-folder)/api
-bin-folder: $(current-folder)/bin
-obj-folder: $(current-folder)/obj
-exports-folder: $(current-folder)/exports
-docs-folder: $(current-folder)/docs
-dependency-module-folder: $(module-folder)/modules
-examples-folder: $(current-folder)/examples
-resources-folder: $(current-folder)/resources
 ```
 
 
@@ -69,27 +53,23 @@ declare-directive:
 # Pipeline Configuration
 ``` yaml
 pipeline:
-# --- extension powershell based on modelerfour
-
   csnamerSdk:
     input: modelerfour/identity 
-  # Fix the code model gap between m3 and m4
+
   tweakSdkModelPlugin:
     input: csnamerSdk
  
   generate:
     input: tweakSdkModelPlugin
 
-# --- extension llcsharp  --- 
-  # generates c# files for http-operations
   text-transform:
     input: generate
     scope: scope-here
 
+  # output-artifact: source-file-csharp
   emitter:
     input: text-transform
     scope: scope-here
-    # output-artifact: source-file-csharp
 
 
 scope-here:

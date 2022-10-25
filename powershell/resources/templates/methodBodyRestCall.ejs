@@ -45,7 +45,7 @@
             // Create HTTP transport objects
             var _httpRequest = new System.Net.Http.HttpRequestMessage();
             System.Net.Http.HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new System.Net.Http.HttpMethod("<%-method.language.default.name.toUpperCase()%>");
+            _httpRequest.Method = new System.Net.Http.HttpMethod("<%-method.requests[0].protocol.http.method.toUpperCase()%>");
             _httpRequest.RequestUri = new System.Uri(_url);
             // Set Headers
 <%# ToDo: Add headers except for following default ones -%>
@@ -168,6 +168,7 @@
                     throw new Microsoft.Rest.SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+<% });-%>
 <%# ToDo: add support for case Model.ReturnType.Body != null && Model.DefaultResponse.Body != null && !Model.Responses.Any()-%>
 <%# ToDo: add support for case there are return in headers-%>
             if (_shouldTrace)
@@ -175,7 +176,6 @@
                 Microsoft.Rest.ServiceClientTracing.Exit(_invocationId, _result);
             }
             return _result;
-<% });-%>
 
 
 

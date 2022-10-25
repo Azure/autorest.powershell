@@ -79,11 +79,6 @@ function addUsings(model: SdkModel) {
   model.usings = [
     'Microsoft.Rest.Azure',
     'Models'];
-  // for (const obj of values(model.schemas.objects)) {
-  //   for (const prop of values(obj.properties)) {
-  //     prop.language.default
-  //   }
-  // }
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
@@ -134,7 +129,7 @@ async function tweakOperation(state: State) {
         const respCountWithBody = operation.responses.filter(r => (<any>r).schema).length;
         const responses = operation.responses.filter(r => (<any>r).schema);
         if (respCountWithBody === 0) {
-          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<void>';
+          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
           operation.language.default.returnType = 'void';
         } else if (respCountWithBody === 1) {
           operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.default.name}>`;
@@ -144,7 +139,7 @@ async function tweakOperation(state: State) {
           operation.language.default.returnType = 'Object';
         }
       } else {
-        operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<void>';
+        operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
         operation.language.default.returnType = 'void';
       }
       addMethodParameterDeclaration(operation, state);
@@ -182,13 +177,6 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
     globalParameters.unshift(apiVersion);
   }
 
-  // const credentialSchema = new ConstantSchema('credentials', 'credentials', {
-  //   valueType: new Schema('', '', SchemaType.Object)
-  // });
-  // credentialSchema.valueType.language.csharp = <SchemaDetails>{
-  //   ...credentialSchema.language.default,
-  //   fullname: 'Microsoft.Rest.ServiceClientCredentials'
-  // };
   const credential = new Parameter('Credentials', 'Credentials needed for the client to connect to Azure.', new Schema('credentials', 'credentials', SchemaType.Object));
   credential.language.default.serializedName = 'credentials';
   credential.required = true;
@@ -230,8 +218,6 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
 
 export async function tweakSdkModelPlugin(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-  // if (state.model.schemas.objects) {
-  //   state.model.schemas.objects[0].properties?.filter(p => p.schema.type === SchemaType.Object && p.required && );
-  // }
+
   service.WriteFile('code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
 }

@@ -18,8 +18,10 @@
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>
-            return ((I<%-methodGroup.$key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
-<% }-%>
+                return ((I<%-methodGroup.$key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+<% } else { -%>
+                ((I<%-methodGroup.$key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+<% } -%>
         }
 
         /// <summary>
@@ -40,14 +42,16 @@
         /// </param>
 <%# ToDo: add support for GetObsoleteAttribute-%>
 <%# ToDo: add support for AccessModifier, assume public for the time being-%>
-        public static async System.Threading.Tasks.Task<<%-methodGroup.$key%>> <%-method.language.default.name%>Async(this I<%-methodGroup.$key%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
+        public static async System.Threading.Tasks.Task<%- method.language.default.returnType != 'void' ? '<' + methodGroup.$key + '>' : ''%> <%-method.language.default.name%>Async(this I<%-methodGroup.$key%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
-<% if(method.returnType != 'void') {-%>
+<% if(method.language.default.returnType != 'void') {-%>
 <%# ToDo: add support for primitive return-%>
             using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(null, <%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
             {
                 return _result.Body;
             }
+<% } else { -%>
+            (await operations.<%-method.language.default.name%>WithHttpMessagesAsync(null, <%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false)).Dispose();
 <% }-%>
         }
