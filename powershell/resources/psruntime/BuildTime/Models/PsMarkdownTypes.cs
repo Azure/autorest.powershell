@@ -31,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Inputs { get; }
         public string[] Outputs { get; }
         public ComplexInterfaceInfo[] ComplexInterfaceInfos { get; }
-        public MarkdownRelatedLinkInfo[] RelatedLinks { get; }
+        public string[] RelatedLinks { get; }
 
         public bool SupportsShouldProcess { get; }
         public bool SupportsPaging { get; }
@@ -67,11 +67,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             ComplexInterfaceInfos = variantGroup.ComplexInterfaceInfos;
             OnlineVersion = commentInfo.OnlineVersion;
-            
-            var relatedLinkLists = new List<MarkdownRelatedLinkInfo>();
-            relatedLinkLists.AddRange(commentInfo.RelatedLinks?.Select(link => new MarkdownRelatedLinkInfo(link)));
-            relatedLinkLists.AddRange(variantGroup.Variants.SelectMany(v => v.Attributes).OfType<ExternalDocsAttribute>()?.Distinct()?.Select(link => new MarkdownRelatedLinkInfo(link.Url, link.Description)));
-            RelatedLinks = relatedLinkLists?.ToArray(); 
+            RelatedLinks = commentInfo.RelatedLinks;
 
             SupportsShouldProcess = variantGroup.SupportsShouldProcess;
             SupportsPaging = variantGroup.SupportsPaging;
@@ -219,37 +215,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             AcceptsPipelineByValue = parameterHelpInfos.Select(phi => phi.SupportsPipelineInput?.Contains("ByValue")).FirstOrDefault(bv => bv == true) ?? parameterGroup.ValueFromPipeline;
             AcceptsPipelineByPropertyName = parameterHelpInfos.Select(phi => phi.SupportsPipelineInput?.Contains("ByPropertyName")).FirstOrDefault(bv => bv == true) ?? parameterGroup.ValueFromPipelineByPropertyName;
             AcceptsWildcardCharacters = parameterGroup.SupportsWildcards;
-        }
-    }
-
-    internal class MarkdownRelatedLinkInfo
-    {
-        public string Url { get; }
-        public string Description { get; }
-
-        public MarkdownRelatedLinkInfo(string url)
-        {
-            Url = url;
-        }
-
-        public MarkdownRelatedLinkInfo(string url, string description)
-        {
-            Url = url;
-            Description = description;
-        }
-
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(Description))
-            {
-                return Url;
-            }
-            else
-            {
-                return $@"[{Description}]({Url})";
-
-            }
-            
         }
     }
 

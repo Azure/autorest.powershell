@@ -40,7 +40,6 @@ export const AsyncCommandRuntime = new ClassType(ClientRuntime, 'PowerShell.Asyn
 export const AsyncJob = new ClassType(ClientRuntime, 'PowerShell.AsyncJob');
 
 export const DescriptionAttribute: TypeDeclaration = new ClassType(rest, 'Description');
-export const ExternalDocsAttribute: TypeDeclaration = new ClassType(rest, 'ExternalDocs');
 export const DoNotExportAttribute: TypeDeclaration = new ClassType(rest, 'DoNotExport');
 export const InternalExportAttribute: TypeDeclaration = new ClassType(rest, 'InternalExport');
 export const GeneratedAttribute: TypeDeclaration = new ClassType(rest, 'Generated');
