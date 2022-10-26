@@ -11,7 +11,7 @@ import { Project } from '../internal/project';
 import { generatePsm1 } from '../generators/psm1';
 import { generateCsproj } from '../generators/csproj';
 import { generatePsm1Custom } from '../generators/psm1.custom';
-import { generateInputHandlersCustom } from '../generators/inputhandler.custom'
+import { generateInputHandlersCustom } from '../generators/inputhandler.custom';
 import { generatePsm1Internal } from '../generators/psm1.internal';
 import { generateNuspec } from '../generators/nuspec';
 import { generateGitIgnore } from '../generators/gitignore';
