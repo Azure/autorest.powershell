@@ -46,10 +46,11 @@ function getNameOptions(typeName: string, components: Array<string>) {
 
 function getCombinedDescription(rawDescription: string, externalDocsUrl?: string, externalDocsDescription?: string): string {
   let description = rawDescription ?? "";
-  if (undefined !== externalDocsUrl && "" !== externalDocsUrl) {
-    description = description.concat(" Please visit external url ", externalDocsUrl, " to get more information.")
-    if (undefined !== externalDocsDescription && "" !== externalDocsDescription) {
-      description = description.concat(" The content of external url is about '", externalDocsDescription, " '.")
+  if (!!externalDocsUrl && !!externalDocsUrl.trim()) {
+    if (!!externalDocsDescription && !!externalDocsDescription.trim()) {
+      description = description.concat(` Please visit external docs [${externalDocsDescription}](${externalDocsUrl}) to get more information.`)
+    } else {
+      description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`)
     }
   }
   return description;
