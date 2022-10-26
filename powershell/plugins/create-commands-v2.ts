@@ -19,7 +19,7 @@ import { CommandOperation } from '../utils/command-operation';
 
 type State = ModelState<PwshModel>;
 
-const specialWords : { [key: string]: Array<string> } = {in: <Array<string>>['sign']};
+const specialWords: { [key: string]: Array<string> } = { in: <Array<string>>['sign'] };
 
 // UNUSED: Moved to plugin-tweak-model.ts in remodeler
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
@@ -73,12 +73,12 @@ function filterSpecialWords(preposition: string, parts: Array<string>) {
   if (specialWords[preposition] !== undefined) {
     do {
       idx = parts.indexOf(preposition, start);
-      if (idx <= 0 || !specialWords[preposition].includes(parts[idx -1])) {
+      if (idx <= 0 || !specialWords[preposition].includes(parts[idx - 1])) {
         return idx;
       } else {
         start = idx + 1;
       }
-    // eslint-disable-next-line no-constant-condition
+      // eslint-disable-next-line no-constant-condition
     } while (true);
   }
   return parts.indexOf(preposition);
@@ -393,7 +393,8 @@ export /* @internal */ class Inferrer {
           subjectPrefix: variant.subjectPrefix,
           verb: variant.verb,
           name: vname,
-          alias: variant.alias
+          alias: variant.alias,
+          externalDocs: operation.externalDocs
         }
       },
       // operationId is not needed any more

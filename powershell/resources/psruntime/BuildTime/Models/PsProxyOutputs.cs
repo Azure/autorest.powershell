@@ -357,6 +357,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var notesText = !String.IsNullOrEmpty(notes) ? $"{Environment.NewLine}.Notes{Environment.NewLine}{ComplexParameterHeader}{notes}" : String.Empty;
             var relatedLinks = String.Join(Environment.NewLine, CommentInfo.RelatedLinks.Select(l => $".Link{Environment.NewLine}{l}"));
             var relatedLinksText = !String.IsNullOrEmpty(relatedLinks) ? $"{Environment.NewLine}{relatedLinks}" : String.Empty;
+            var externalUrls = String.Join(Environment.NewLine, CommentInfo.ExternalUrls.Select(l => $".Link{Environment.NewLine}{l}"));
+            var externalUrlsText = !String.IsNullOrEmpty(externalUrls) ? $"{Environment.NewLine}{externalUrls}" : String.Empty;
             var examples = "";
             foreach (var example in VariantGroup.HelpInfo.Examples)
             {
@@ -369,7 +371,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {CommentInfo.Description.ToDescriptionFormat(false)}
 {examples}{inputsText}{outputsText}{notesText}
 .Link
-{CommentInfo.OnlineVersion}{relatedLinksText}
+{CommentInfo.OnlineVersion}{relatedLinksText}{externalUrlsText}
 #>
 ";
         }
