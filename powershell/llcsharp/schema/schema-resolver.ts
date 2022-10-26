@@ -20,7 +20,6 @@ import { EnumImplementation } from './enum';
 import { Numeric } from './integer';
 import { ObjectImplementation } from './object';
 import { String } from './string';
-import { Uri } from './uri';
 import { Uuid } from './Uuid';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { PwshModel } from '../../utils/PwshModel';
@@ -72,8 +71,6 @@ export class SchemaDefinitionResolver {
         return new Binary(<BinarySchema>schema, required);
       case SchemaType.Duration:
         return new Duration(<DurationSchema>schema, required);
-      case SchemaType.Uri:
-        return new Uri(<StringSchema>schema, required);
       case SchemaType.Uuid:
         return new Uuid(<StringSchema>schema, required);
       case SchemaType.DateTime:
