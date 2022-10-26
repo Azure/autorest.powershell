@@ -44,14 +44,10 @@ function getNameOptions(typeName: string, components: Array<string>) {
   return [...result.values()];
 }
 
-function getCombinedDescription(rawDescription: string, externalDocsUrl?: string, externalDocsDescription?: string): string {
+function getCombinedDescription(rawDescription: string, externalDocsUrl?: string): string {
   let description = rawDescription ?? "";
   if (!!externalDocsUrl && !!externalDocsUrl.trim()) {
-    if (!!externalDocsDescription && !!externalDocsDescription.trim()) {
-      description = description.concat(` Please visit external docs [${externalDocsDescription}](${externalDocsUrl}) to get more information.`)
-    } else {
-      description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`)
-    }
+    description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`)
   }
   return description;
 }
@@ -254,9 +250,6 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
         const proposedName = getPascalIdentifier(inlinedProperty.name);
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
-
-        const combinedDescription = getCombinedDescription(inlinedProperty.property.language.default.description, inlinedProperty.property.schema.externalDocs?.url, inlinedProperty.property.schema.externalDocs?.description);
-        inlinedProperty.property.language.default.description = combinedDescription;
 
         virtualProperties.inlined.push({
           name: proposedName,
