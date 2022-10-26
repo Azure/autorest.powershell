@@ -193,7 +193,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
       // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
       // create a private property for the inlined ones to use.
-      const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url, property.schema?.externalDocs?.description);
+      const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url);
       property.language.default.description = combinedDescription;
       const privateProperty = {
         name: getPascalIdentifier(propertyName),
@@ -280,7 +280,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     // however, we can add it to our list of virtual properties
     // so that our consumers can get it.
 
-    const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url, property.schema?.externalDocs?.description);
+    const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url);
     property.language.default.description = combinedDescription;
 
     virtualProperties.owned.push({
@@ -362,7 +362,7 @@ function createVirtualParameters(operation: CommandOperation) {
       }
     } else {
       // dolauli if not drop body or not body parameter add it to operation 
-      const combinedDescription = getCombinedDescription(parameter.schema.language.default.description, parameter.schema.externalDocs?.url, parameter.schema.externalDocs?.description);
+      const combinedDescription = getCombinedDescription(parameter.schema.language.default.description, parameter.schema.externalDocs?.url);
       parameter.schema.language.default.description = combinedDescription;
 
       virtualParameters.operation.push({
