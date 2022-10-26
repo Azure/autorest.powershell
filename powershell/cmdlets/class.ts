@@ -1245,7 +1245,7 @@ export class CmdletClass extends Class {
           // hardcode id = 1 because there is no need for nested progress bar
           yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")`;
           yield '{';
-          yield '    PercentComplete = (int)(messageData().Value * 100)';
+          yield '    PercentComplete = 0'; // hardcode 0 because polling has not started
           yield '});';
           yield Return();
         }),
