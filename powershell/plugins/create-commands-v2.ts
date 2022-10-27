@@ -366,9 +366,9 @@ export /* @internal */ class Inferrer {
     if (operation.requests) {
       if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
         operationType = OperationType.Create;
-      } else if(operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
+      } else if (operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
         operationType = OperationType.Update;
-      } 
+      }
     }
     return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new CommandOperation(operation.language.default.name, {
       asjob: operation.language.default.asjob ? true : false,
@@ -385,7 +385,8 @@ export /* @internal */ class Inferrer {
           subjectPrefix: variant.subjectPrefix,
           verb: variant.verb,
           name: vname,
-          alias: variant.alias
+          alias: variant.alias,
+          externalDocs: operation.externalDocs
         }
       },
       // operationId is not needed any more

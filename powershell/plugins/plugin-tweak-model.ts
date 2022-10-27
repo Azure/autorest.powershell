@@ -236,8 +236,8 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
   // remove well-known header parameters from operations and add mark the operation has supporting that feature
 
-  for (const operationGruops of values(model.operationGroups)) {
-    for (const operation of values(operationGruops.operations)) {
+  for (const operationGroups of values(model.operationGroups)) {
+    for (const operation of values(operationGroups.operations)) {
       // if we have an operation with a body, and content-type is a multipart/formdata
       // then we should go thru the parameters of the body and look for a string/binary parameters
       // and remember to add another parameter for the filename of the string/binary

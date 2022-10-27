@@ -98,6 +98,10 @@ export interface ImplementationDetails extends Dictionary<any> {
 
   /** message used to go along with deprecation */
   deprecationMessage?: string;
+
+  /** external docs description */
+  externalDocs?: ExternalDocumentation;
+
 }
 
 export enum ImplementationLocation {

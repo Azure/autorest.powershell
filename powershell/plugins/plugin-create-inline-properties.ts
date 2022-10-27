@@ -10,6 +10,7 @@ import { Host, Session, startSession } from '@azure-tools/autorest-extension-bas
 import { CommandOperation } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
+import { ExternalDocumentation } from '../utils/components';
 import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMutability } from '../utils/schema';
 import { resolveParameterNames } from '../utils/resolve-conflicts';
@@ -28,6 +29,14 @@ type State = ModelState<PwshModel>;
 
 export function singularize(word: string): string {
   return getPluralizationService().singularize(word);
+}
+
+function getCombinedDescription(rawDescription: string, externalDocsUrl?: string): string {
+  let description = rawDescription ?? "";
+  if (!!externalDocsUrl && !!externalDocsUrl.trim()) {
+    description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`)
+  }
+  return description;
 }
 
 function getNameOptions(typeName: string, components: Array<string>) {
@@ -189,6 +198,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
       // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
       // create a private property for the inlined ones to use.
+      const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url);
+      property.language.default.description = combinedDescription;
       const privateProperty = {
         name: getPascalIdentifier(propertyName),
         propertySchema: schema,
@@ -288,6 +299,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     // however, we can add it to our list of virtual properties
     // so that our consumers can get it.
     const mutability = getMutability(property);
+    const combinedDescription = getCombinedDescription(property.language.default.description, property.schema?.externalDocs?.url);
+    property.language.default.description = combinedDescription;
 
     virtualProperties.owned.push({
       name,
@@ -377,6 +390,9 @@ function createVirtualParameters(operation: CommandOperation) {
       }
     } else {
       // dolauli if not drop body or not body parameter add it to operation 
+      const combinedDescription = getCombinedDescription(parameter.schema.language.default.description, parameter.schema.externalDocs?.url);
+      parameter.schema.language.default.description = combinedDescription;
+
       virtualParameters.operation.push({
         name: parameter.details.default.name,
         nameOptions: [parameter.details.default.name],
