@@ -8,7 +8,7 @@ namespace Microsoft.Rest
     using System.Collections.Generic;
     using System.Text;
 
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public class ExternalDocsAttribute : Attribute
     {
 
