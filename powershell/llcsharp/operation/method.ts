@@ -380,6 +380,11 @@ export class CallMethod extends Method {
         yield sendTask;
         // delay sending BeforeCall event until URI has been replaced by HTTP pipeline
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
+
+        if ($this.opMethod.operation.language.csharp?.lro) {
+          yield eventListener.signal(ClientRuntime.Events.Progress, new LiteralExpression('"initializing LRO"'));
+        }
+
         yield `${response.value} = await ${sendTask.value};`;
         yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
         const EOL = 'EOL';
@@ -447,17 +452,8 @@ export class CallMethod extends Method {
           yield location;
 
           yield While(new LiteralExpression(`${reqParameter.use}.Method == System.Net.Http.HttpMethod.Put && ${response.value}.StatusCode == ${System.Net.HttpStatusCode[200].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
-            yield EOL;
-            yield '// get the delay before polling. (default to 30 seconds if not present)';
-            yield `int delay = (int)(${response.value}.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);`;
-            // yield If(`!int.TryParse( ${response.invokeMethod('GetFirstHeader', new StringExpression(`Retry-After`)).value}, out int delay)`, `delay = 30;`);
-
-            yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, '$"Delaying {delay} seconds before polling."', response.value);
-
-            yield EOL;
-            yield '// start the delay timer (we\'ll await later...)';
-            const waiting = Local('waiting', new LiteralExpression(`${System.Threading.Tasks.Task()}.Delay(delay * 1000, ${$this.opMethod.contextParameter}.Token )`));
-            yield waiting;
+            yield '// delay before making the next polling request';
+            yield eventListener.signal(ClientRuntime.Events.DelayBeforePolling, response.value);
 
             yield EOL;
             yield '// while we wait, let\'s grab the headers and get ready to poll. ';
@@ -482,12 +478,6 @@ export class CallMethod extends Method {
             const content = Local('content', new LiteralExpression(`await ${response.value}.Content.ReadAsStringAsync()`));
             yield content;
 
-            yield 'await waiting;';
-
-            yield EOL;
-            yield '// check for cancellation';
-            yield `if( ${$this.opMethod.contextParameter}.Token.IsCancellationRequested ) { return; }`;
-
             yield EOL;
             yield '// drop the old response';
             yield `${response.value}?.Dispose();`;
@@ -507,7 +497,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
         if( ${ClientRuntime.JsonNode.Parse(toExpression(`await ${response.value}.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
         {
             var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState") ?? json.PropertyT<${ClientRuntime.JsonString}>("status");
-            if( state is null ) 
+            if( state is null )
             {
                 // the body doesn't contain any information that has the state of the LRO
                 // we're going to just get out, and let the consumer have the result
@@ -524,14 +514,14 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
                 // we're done polling.
                 break;
 
-              default: 
+              default:
                 // need to keep polling!
                 ${response.value}.StatusCode = ${System.Net.HttpStatusCode.Created};
                 continue;
             }
         }
     } catch {
-        // if we run into a problem peeking into the result, 
+        // if we run into a problem peeking into the result,
         // we really don't want to do anything special.
     }
     if (error) {

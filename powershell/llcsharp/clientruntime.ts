@@ -82,6 +82,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
     Finally: new LiteralExpression(`${events.declaration}.Finally`),
     Polling: new LiteralExpression(`${events.declaration}.Polling`),
     DelayBeforePolling: new LiteralExpression(`${events.declaration}.DelayBeforePolling`),
+    Progress: new LiteralExpression(`${events.declaration}.Progress`),
   }),
   KeyValuePairs: System.Collections.Generic.IEnumerable(System.Collections.Generic.KeyValuePair(dotnet.String, System.Collections.Generic.IEnumerable(dotnet.String))),
   JsonNode: intersect(jsonNode, {
