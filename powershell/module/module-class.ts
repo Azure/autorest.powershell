@@ -167,7 +167,7 @@ export class NewModuleClass extends Class {
     });
 
     this.createPipelineMethod = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
-      parameters: [this.pInvocationInfo, this.pParameterSetNameWithDefault],
+      parameters: [this.pInvocationInfo, this.pParameterSetNameWithDefault, this.pExtensibleParameters],
       description: 'Creates an instance of the HttpPipeline for each call.',
       returnsDescription: `An instance of ${ClientRuntime.HttpPipeline} for the remote call.`
     }));
