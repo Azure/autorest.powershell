@@ -53,8 +53,11 @@ declare-directive:
 # Pipeline Configuration
 ``` yaml
 pipeline:
+  createSdkInlinedPropertiesPlugin:
+    input: modelerfour/identity
+
   csnamerSdk:
-    input: modelerfour/identity 
+    input: createSdkInlinedPropertiesPlugin
 
   tweakSdkModelPlugin:
     input: csnamerSdk

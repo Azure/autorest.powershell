@@ -18,6 +18,7 @@ import { tweakM4ModelPlugin } from './plugins/plugin-tweak-m4-model';
 import { generate } from './plugins/sdk-generate';
 import { tweakSdkModelPlugin } from './plugins/sdk-tweak-model';
 import { csnamerSdk } from './plugins/sdk-cs-namer';
+import { createSdkInlinedPropertiesPlugin } from './plugins/sdk-create-inline-properties';
 
 require('source-map-support').install();
 
@@ -38,6 +39,7 @@ export async function main() {
   pluginHost.Add('generate', generate);
   pluginHost.Add('tweakSdkModelPlugin', tweakSdkModelPlugin);
   pluginHost.Add('csnamerSdk', csnamerSdk);
+  pluginHost.Add('createSdkInlinedPropertiesPlugin', createSdkInlinedPropertiesPlugin);
 
   await pluginHost.Run();
 }

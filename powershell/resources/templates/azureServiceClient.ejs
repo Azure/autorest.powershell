@@ -29,7 +29,8 @@ namespace <%- project.namespace %>
         private void Initialize()
         {
 <% project.model.operationGroups.forEach(function(methodGroup){ -%>
-            this.<%- methodGroup.$key %> = new <%- methodGroup.$key %>Operations(this);
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
+            this.<%- methodGroup.$key %> = new <%- key %>Operations(this);
 <% }); -%>
             this.BaseUri = new System.Uri("https://management.azure.com");
 <% project.model.globalParameters.filter(p => p.language.default.name != '$host' && !!p.clientDefaultValue).forEach(function(parameter){ -%>
@@ -48,7 +49,9 @@ namespace <%- project.namespace %>
                         new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter()
                     }
             };
-<%# ToDo: need support for NeedsTransformationConverter#1 -%>
+<% if(project.needsTransformationConverter()) {-%>
+            SerializationSettings.Converters.Add(new Microsoft.Rest.Serialization.TransformationJsonConverter());
+<% } -%>
             DeserializationSettings = new Newtonsoft.Json.JsonSerializerSettings
             {
                 DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
@@ -63,7 +66,9 @@ namespace <%- project.namespace %>
             };
 <%# ToDo: need support for polymorphicType -%>
             CustomInitialize();
-<%# ToDo: need support for NeedsTransformationConverter#2 -%>
+<% if(project.needsTransformationConverter()) {-%>
+            DeserializationSettings.Converters.Add(new Microsoft.Rest.Serialization.TransformationJsonConverter());
+<% } -%>
             DeserializationSettings.Converters.Add(new Microsoft.Rest.Azure.CloudErrorJsonConverter());
 <%# ToDo: Add method whose group is empty, and need to check in which case the group is empty.-%>
         }

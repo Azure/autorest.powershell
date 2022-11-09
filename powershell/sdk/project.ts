@@ -50,6 +50,17 @@ export class Project extends codeDomProject {
   public helper!: Helper;
   get model() { return <SdkModel>this.state.model; }
 
+  needsTransformationConverter(): boolean {
+    for (const object of values(this.model.schemas.objects)) {
+      for (const property of values(object.properties)) {
+        if (property.extensions && property.extensions['x-ms-client-flatten']) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);

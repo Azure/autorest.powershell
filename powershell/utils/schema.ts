@@ -81,6 +81,8 @@ export interface VirtualProperty {
   update?: boolean;
 
   create?: boolean;
+
+  serializedName?: string;
 }
 
 
@@ -164,6 +166,26 @@ export function getAllPublicVirtualProperties(virtualProperties?: VirtualPropert
   };
 
   return values(props.owned, props.inherited, props.inlined).where(each => !each.private).toArray();
+}
+
+export function getAllPublicVirtualPropertiesForSdk(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
+  const props = virtualProperties || {
+    owned: [],
+    inherited: [],
+    inlined: []
+  };
+
+  return values(props.inherited, props.owned, props.inlined).where(each => !each.private).toArray();
+}
+
+export function getAllPublicVirtualPropertiesForSdkWithoutInherited(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
+  const props = virtualProperties || {
+    owned: [],
+    inherited: [],
+    inlined: []
+  };
+
+  return values(props.owned, props.inlined).where(each => !each.private).toArray();
 }
 
 export function getAllVirtualProperties(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
@@ -325,9 +347,9 @@ export interface XML extends Extensions {
 //   additionalProperties?: boolean | Schema;
 // }
 
-export function getMutability(property: Property) : Mutability {
-  
-  const mutability = {create: true, update: true, read: true};
+export function getMutability(property: Property): Mutability {
+
+  const mutability = { create: true, update: true, read: true };
 
   if (property.extensions && property.extensions['x-ms-mutability']) {
     const mt = <Array<string>>property.extensions['x-ms-mutability'];
