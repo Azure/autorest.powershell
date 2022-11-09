@@ -1,0 +1,96 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/subscriptions/resourceGroup": {
+        "get": {
+          "tags": [
+            "Workspaces"
+          ],
+          "operationId": "Workspaces_Get",
+          "description": "Gets the workspace.",
+          "responses": {
+            "200": {
+                "description": "OK-Return workspace."
+            },
+            "default": {
+              "description": "Error response describing why the operation failed.",
+              "schema": {
+                  "$ref": "#/definitions/ExtendedErrorModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+        "BasicErrorModel": {
+            "type": "object",
+            "required":[
+                "message",
+                "code"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 600
+                }
+            }
+        },
+        "ExtendedErrorModel": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/BasicErrorModel"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "rootCause"
+                    ],
+                    "properties": {
+                        "rootCause": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
