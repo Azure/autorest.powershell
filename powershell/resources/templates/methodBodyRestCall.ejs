@@ -165,7 +165,7 @@
             {
                 _result.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
             }
-<%method.responses.filter(r => r.schema).forEach(function(resp) {-%>
+<%(method.responses || []).filter(r => r.schema).forEach(function(resp) {-%>
             // Deserialize Response
             if ((int)_statusCode == <%-resp.protocol.http.statusCodes[0]%>)
             {

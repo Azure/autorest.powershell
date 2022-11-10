@@ -91,8 +91,10 @@ function tweakSchema(model: SdkModel) {
 
 function addUsings(model: SdkModel) {
   model.usings = [
-    'Microsoft.Rest.Azure',
-    'Models'];
+    'Microsoft.Rest.Azure'];
+  if (model.schemas.objects || model.schemas.sealedChoices) {
+    model.usings.push('Models');
+  }
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
@@ -189,13 +191,14 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
   ]);
 
   // To align with track 1 SDK, move API version to the beginning
-  const apiVersion = globalParameters.pop();
-  if (apiVersion) {
-    apiVersion.clientDefaultValue = (<ConstantSchema>apiVersion.schema).value.value;
-    apiVersion.language.default.description = 'The API version to use for this operation.';
-    globalParameters.unshift(apiVersion);
+  if (globalParameters.length > 0 && globalParameters[globalParameters.length - 1].language.default.name === 'apiVersion') {
+    const apiVersion = globalParameters.pop();
+    if (apiVersion) {
+      apiVersion.clientDefaultValue = (<ConstantSchema>apiVersion.schema).value.value;
+      apiVersion.language.default.description = 'The API version to use for this operation.';
+      globalParameters.unshift(apiVersion);
+    }
   }
-
   const credential = new Parameter('Credentials', 'Credentials needed for the client to connect to Azure.', new Schema('credentials', 'credentials', SchemaType.Object));
   credential.language.default.serializedName = 'credentials';
   credential.required = true;
@@ -237,6 +240,13 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
 
 export async function tweakSdkModelPlugin(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-
-  service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  const debug = await service.GetValue('debug') || false;
+  try {
+    service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  } catch (E) {
+    if (debug) {
+      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+    }
+    throw E;
+  }
 }

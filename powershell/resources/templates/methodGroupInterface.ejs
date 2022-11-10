@@ -43,7 +43,7 @@ namespace <%- project.namespace %>
         /// <exception cref="Microsoft.Rest.Azure.CloudException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
-<% if (method.responses.filter(r => r.schema).length > 0) {-%>
+<% if ((method.responses || []).filter(r => r.schema).length > 0) {-%>
         /// <exception cref="Microsoft.Rest.SerializationException">
         /// Thrown when unable to deserialize the response
         /// </exception>
