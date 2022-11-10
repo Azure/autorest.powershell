@@ -43,10 +43,11 @@ namespace <%- project.namespace %>
 
 <% }); -%>
 <% project.model.operationGroups.forEach(function(methodGroup){ -%>
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
         /// <summary>
-        /// Gets the I<%- methodGroup.$key %>Operations
+        /// Gets the I<%- key %>Operations
         /// </summary>
-        I<%- methodGroup.$key %>Operations <%- methodGroup.$key %> { get; }
+        I<%- key %>Operations <%- methodGroup.$key %> { get; }
 
 <% }); -%>
 <%# ToDo: Add method whose group is empty, and need to check in which case the group is empty.-%>

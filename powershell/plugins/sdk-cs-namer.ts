@@ -134,6 +134,25 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         //     })
         //   }
         // };
+        const choiceSchema = <ChoiceSchema<StringSchema> | SealedChoiceSchema<StringSchema>>schema;
+        schema.language.csharp = <SchemaDetails>{
+          ...details,
+          interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
+          name: getPascalIdentifier(schemaName),
+          namespace: pascalCase([serviceNamespace, '.', 'Support']),
+          fullname: `${pascalCase([serviceNamespace, '.', 'Support'])}.${getPascalIdentifier(schemaName)}`,
+          enum: {
+            ...schema.language.default.enum,
+            name: getPascalIdentifier(schema.language.default.name),
+            values: choiceSchema.choices.map(each => {
+              return {
+                ...each,
+                name: getPascalIdentifier(each.language.default.name),
+                description: each.language.default.description
+              };
+            })
+          }
+        };
       } else {
         // here are primitive types
         schema.language.csharp = <SchemaDetails>{
