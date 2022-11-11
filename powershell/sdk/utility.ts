@@ -12,6 +12,10 @@ export class Helper {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
     }).replace(/\s+/g, '');
   }
+  public PascalCase(str: string): string {
+    return str = str.replace(/(\w)(\w*)/g,
+      function (g0, g1, g2) { return g1.toUpperCase() + g2.toLowerCase(); });
+  }
   public GetAllPublicVirtualProperties(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
     return getAllPublicVirtualPropertiesForSdk(virtualProperties);
   }

@@ -29,9 +29,17 @@ namespace <%- project.namespace %>
         /// </param>
 <% }); -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
+<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
+<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).forEach(function(vp) {-%>
+        /// <param name='<%-vp.property.language.default.name%>'>
+        /// <%= vp.property.language.default.description%>
+        /// </param>
+<%});-%>
+<%} else {-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%= parameter.language.default.description%>
         /// </param>
+<%}-%>
 <% });-%>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
