@@ -24,13 +24,13 @@ async function tweakModel(state: State): Promise<SdkModel> {
 
   addUsings(model);
 
+  tweakSchema(model);
+
   addAzureProperties(model.globalParameters || []);
 
   tweakGlobalParameter(model.globalParameters || []);
 
   await tweakOperation(state);
-
-  tweakSchema(model);
 
   addClientRequiredConstructorParametersDeclaration(model);
 
@@ -105,11 +105,25 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   if (operation.requests && operation.requests.length > 0) {
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
-  [...(operation.parameters || []), ...bodyParameters].filter(p => p.implementation != 'Client').forEach(function (parameter) {
+  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
     const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
     const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
     parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
     args.push(parameter.language.default.name);
+  });
+  bodyParameters.forEach(function (parameter) {
+    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+      constructorParametersDeclaration.split(', ').forEach(function (p) {
+        declarations.push(p);
+        args.push(p.split(' ')[1]);
+      });
+    } else {
+      const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
+      const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
+      parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+      args.push(parameter.language.default.name);
+    }
   });
 
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
