@@ -20,8 +20,8 @@
 <%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
-            <%-method.language.default.returnType%> <%-parameter.language.default.name%> = new <%-method.language.default.returnType%>();
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
+            <%-method.language.default.returnType%> <%-parameter.language.default.name%> = new <%-method.language.default.returnType%>();
 <% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties)-%>
             if(<%-vps.map(vp=>`${vp.property.language.default.name} != null`).join('||')%>)
             {
