@@ -62,6 +62,9 @@ pipeline:
   generate:
     input: tweakSdkModelPlugin
 
+  simplifierPlugin:
+    inputL generate
+
   text-transform:
     input: generate
     scope: scope-here

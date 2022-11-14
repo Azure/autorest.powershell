@@ -17,6 +17,7 @@ import { applyModifiersV2 } from './plugins/modifiers-v2';
 import { tweakM4ModelPlugin } from './plugins/plugin-tweak-m4-model';
 import { generate } from './plugins/sdk-generate';
 import { tweakSdkModelPlugin } from './plugins/sdk-tweak-model';
+import { simplifierPlugin } from './plugins/sdk-cs-simplifier';
 import { csnamerSdk } from './plugins/sdk-cs-namer';
 
 require('source-map-support').install();
@@ -37,6 +38,7 @@ export async function main() {
   pluginHost.Add('powershell-v2', powershellV2);
   pluginHost.Add('generate', generate);
   pluginHost.Add('tweakSdkModelPlugin', tweakSdkModelPlugin);
+  pluginHost.Add('simplifierPlugin', simplifierPlugin);
   pluginHost.Add('csnamerSdk', csnamerSdk);
 
   await pluginHost.Run();
