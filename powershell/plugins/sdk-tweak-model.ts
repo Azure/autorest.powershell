@@ -53,11 +53,11 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
 }
 
 // add ? for value type
-function nullValueType(type: string): string {
-  if (['int', 'bool', 'float', 'double', 'long'].includes(type)) {
-    return type + '?';
+function nullValueType(type: string): boolean {
+  if (['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'].includes(type)) {
+    return true;
   }
-  return type;
+  return false;
 }
 
 function tweakSchema(model: SdkModel) {
@@ -70,7 +70,8 @@ function tweakSchema(model: SdkModel) {
       };
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
-      const type = nullValueType(virtualProperty.property.schema.language.csharp?.fullname || '');
+      let type = virtualProperty.property.schema.language.csharp?.fullname || '';
+      type = nullValueType(virtualProperty.property.schema.type) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
       constructorParametersDeclaration.push(`${type} ${CamelName} = default(${type})`);
     }
@@ -199,7 +200,7 @@ function setFailureStatusCodePredicate(operation: Operation) {
 function addAzureProperties(globalParameters: Array<Parameter>) {
   const primitiveTypeMap = new Map<string, string>([
     ['integer', 'int'],
-    ['number', 'int'],
+    ['number', 'double'],
     ['boolean', 'bool'],
     ['string', 'string']
   ]);
