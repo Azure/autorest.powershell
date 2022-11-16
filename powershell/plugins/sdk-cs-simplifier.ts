@@ -10,20 +10,13 @@ import { TrieNode } from '../models/TrieNode';
 
 export async function simplifierPlugin(service: Host) {
   const files = await service.ListInputs();
-  /*const trimTasks = files.map(async file => {
-    let namespacesToAdd: Set<string> = new Set<string>();
-    const trimmed = await trimNamespace(await service.ReadFile(file), namespacesToAdd);
-    const endOfLastUsing = findLastUsing(trimmed);
-    service.WriteFile(file, addUsings(trimmed, endOfLastUsing, namespacesToAdd), undefined);
-  });
-  await Promise.all(trimTasks);*/
-
-  for (const file of files) {
+  const trimTasks = files.map(async file => {
     let namespacesToAdd: Set<string> = new Set<string>();
     const trimmed = await trimNamespace(await service.ReadFile(file), namespacesToAdd);
     const endOfLastUsing = findLastUsing(trimmed);
     service.WriteFile(file, addUsings(trimmed, endOfLastUsing, namespacesToAdd), undefined, 'source-file-csharp');
-  }
+  });
+  await Promise.all(trimTasks);
 }
 
 function addUsings(content: string, start: number, namespaceToAdd: Set<string>): string {
