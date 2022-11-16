@@ -1,0 +1,22 @@
+<%- project.commentHeader %>
+
+namespace <%- project.namespace %>.Models
+{
+
+    /// <summary>
+    /// Defines values for <%-model.language.default.name%>.
+    /// </summary>
+<%#ToDo need to figure out when !Model.OldModelAsString is applied%>
+<%#ToDo GetObsoleteAttribute%>
+    public static class <%-model.language.default.name%>
+    {
+<%model.choices.forEach(function(choice){-%>
+<%if(choice.language.default.description){-%>
+        /// <summary>
+        /// <%-choice.language.default.description%>
+        /// </summary>
+<%}-%>
+        public const string <%-choice.language.default.name%> = "<%-choice.value%>";
+<%});-%>
+    }
+}

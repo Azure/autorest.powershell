@@ -10,6 +10,7 @@ import { CodeModel, ObjectSchema } from '@azure-tools/codemodel';
 import { ModelState } from '../utils/model-state';
 import { Project } from '../sdk/project';
 import { OperationGroup } from '@azure-tools/codemodel';
+import { getAllPublicVirtualProperties } from '@azure-tools/codemodel-v3';
 
 const ejs = require('ejs');
 
@@ -22,6 +23,14 @@ async function generateModels(project: Project) {
       // skip flattened model
       continue;
     }
+    const content = await ejs.renderFile(path, { model: model, project: project });
+    project.state.writeFile(`${project.baseFolder}\\Models\\${model.language.default.name}.cs`, content, undefined, 'source-file-csharp');
+  }
+}
+
+async function generateEnums(project: Project) {
+  const path = join(join(resources, 'templates'), 'enum.ejs');
+  for (const model of values(project.model.schemas.sealedChoices)) {
     const content = await ejs.renderFile(path, { model: model, project: project });
     project.state.writeFile(`${project.baseFolder}\\Models\\${model.language.default.name}.cs`, content, undefined, 'source-file-csharp');
   }
@@ -64,6 +73,7 @@ export async function generate(service: Host) {
     await generateClientInterface(project);
     await generateMethodGroups(project);
     await generateModels(project);
+    await generateEnums(project);
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)}`);
     throw E;

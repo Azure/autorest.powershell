@@ -30,4 +30,11 @@ export class Helper {
     }
     return false;
   }
+  public IsPrimitiveType(type: string): boolean {
+    const primitives = ['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'];
+    if (primitives.includes(type)) {
+      return true;
+    }
+    return false;
+  }
 }

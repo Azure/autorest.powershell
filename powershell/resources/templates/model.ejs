@@ -36,7 +36,16 @@ namespace <%- project.namespace %>.Models
         /// Initializes a new instance of the <%=model.language.default.name%> class.
         /// </summary>
 <%project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties).forEach(function(p) {-%>
-        /// <param name="<%-p.property.language.default.name%>"><%-p.property.language.default.description%></param>
+<%
+var additionInfo = '';
+if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
+{
+        additionInfo = ' Possible values include: ';
+        choices = p.property.schema.choices.map(c => `'${c.value}'`);
+        additionInfo = additionInfo +  choices.join(', ');
+}
+%>
+        /// <param name="<%-p.property.language.default.name%>"><%-p.property.language.default.description%><%-additionInfo%></param>
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
@@ -60,12 +69,24 @@ namespace <%- project.namespace %>.Models
 
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0, line 407-%>
 <% if (model.properties) { project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties).filter(p => p.property.schema.type != 'constant').forEach(function(p){-%>
+<%
+        var additionInfo = '';
+        if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
+        {
+                additionInfo = ' Possible values include: ';
+                choices = p.property.schema.choices.map(c => `'${c.value}'`);
+                additionInfo = additionInfo +  choices.join(', ');
+        }
+%>
         /// <summary>
-        /// <%-p.property.language.csharp.formattedPropertySummary%>
+        /// <%-p.property.language.csharp.formattedPropertySummary%><%-additionInfo%>
         /// </summary>
+<% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
+        [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
+<% });-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% var type = p.property.schema.language.csharp.fullname-%>
-<%type = p.property.schema.type == 'object' || type == 'string' ? type : type + '?'-%>
+<%type = !project.helper.IsPrimitiveType(p.property.schema.type) && !p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% });} -%>
 <%#ToDo support for ClassProperties in the model, const properties -%>
