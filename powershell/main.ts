@@ -19,6 +19,7 @@ import { generate } from './plugins/sdk-generate';
 import { tweakSdkModelPlugin } from './plugins/sdk-tweak-model';
 import { simplifierPlugin } from './plugins/sdk-cs-simplifier';
 import { csnamerSdk } from './plugins/sdk-cs-namer';
+import { createSdkInlinedPropertiesPlugin } from './plugins/sdk-create-inline-properties';
 
 require('source-map-support').install();
 
@@ -40,6 +41,7 @@ export async function main() {
   pluginHost.Add('tweakSdkModelPlugin', tweakSdkModelPlugin);
   pluginHost.Add('simplifierPlugin', simplifierPlugin);
   pluginHost.Add('csnamerSdk', csnamerSdk);
+  pluginHost.Add('createSdkInlinedPropertiesPlugin', createSdkInlinedPropertiesPlugin);
 
   await pluginHost.Run();
 }

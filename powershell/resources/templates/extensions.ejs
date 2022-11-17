@@ -1,5 +1,5 @@
 <%- project.commentHeader %>
-
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
 namespace <%- project.namespace %>
 {
 <% project.model.usings.forEach(function(using){ -%>
@@ -7,9 +7,9 @@ namespace <%- project.namespace %>
 <% }); -%>
 
     /// <summary>
-    /// Extension methods for <%- methodGroup.$key %>Operations
+    /// Extension methods for <%- key %>Operations
     /// </summary>
-    public static partial class <%- methodGroup.$key %>OperationsExtensions
+    public static partial class <%- key %>OperationsExtensions
     {
 <% methodGroup.operations.forEach(function(method){ -%>
 <%# ToDo: add support for ExcludeFromInterface-%>

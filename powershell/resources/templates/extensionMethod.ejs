@@ -1,3 +1,4 @@
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
 <%# ToDo: currently assume the SyncMethodsGenerationMode is Essential type, and need to add support for other types -%>
         /// <summary>
         /// <%=method.language.default.description%>
@@ -14,13 +15,13 @@
 <% });}-%>
 <%# ToDo: add support for GetObsoleteAttribute-%>
 <%# ToDo: add support for AccessModifier, assume public for the time being-%>
-        public static <%-method.language.default.returnType%> <%-method.language.default.name%>(this I<%-methodGroup.$key%>Operations operations<%- method.language.default.syncMethodParameterDeclaration ? ', ' + method.language.default.syncMethodParameterDeclaration: '' %>)
+        public static <%-method.language.default.returnType%> <%-method.language.default.name%>(this I<%-key%>Operations operations<%- method.language.default.syncMethodParameterDeclaration ? ', ' + method.language.default.syncMethodParameterDeclaration: '' %>)
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>
-                return ((I<%-methodGroup.$key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+                return ((I<%-key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
 <% } else { -%>
-                ((I<%-methodGroup.$key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+                ((I<%-key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
 <% } -%>
         }
 
@@ -42,16 +43,16 @@
         /// </param>
 <%# ToDo: add support for GetObsoleteAttribute-%>
 <%# ToDo: add support for AccessModifier, assume public for the time being-%>
-        public static async System.Threading.Tasks.Task<%- method.language.default.returnType != 'void' ? '<' + methodGroup.$key + '>' : ''%> <%-method.language.default.name%>Async(this I<%-methodGroup.$key%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
+        public static async System.Threading.Tasks.Task<%- method.language.default.returnType != 'void' ? '<' + key + '>' : ''%> <%-method.language.default.name%>Async(this I<%-key%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>
 <%# ToDo: add support for primitive return-%>
-            using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(null, <%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
+            using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
             {
                 return _result.Body;
             }
 <% } else { -%>
-            (await operations.<%-method.language.default.name%>WithHttpMessagesAsync(null, <%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false)).Dispose();
+            (await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false)).Dispose();
 <% }-%>
         }

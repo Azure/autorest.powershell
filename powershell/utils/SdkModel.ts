@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
 import { DeepPartial } from '@azure-tools/codegen';
+import { values } from '@azure-tools/linq';
 
 export class SdkModel extends CodeModel {
   public usings = new Array<string>();

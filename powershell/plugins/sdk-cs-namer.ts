@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
+import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema, DictionarySchema, ArraySchema } from '@azure-tools/codemodel';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
@@ -60,11 +60,18 @@ type State = ModelState<SdkModel>;
 function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
-  const primitiveTypeMap = new Map<string, string>([
+  const typeMap = new Map<string, string>([
     ['integer', 'int'],
-    ['number', 'int'],
+    ['number', 'double'],
     ['boolean', 'bool'],
-    ['string', 'string']
+    ['string', 'string'],
+    ['unixtime', 'System.DateTime'],
+    ['credential', 'string'],
+    ['byte-array', 'byte[]'],
+    ['duration', 'System.TimeSpan'],
+    ['uuid', 'System.Guid'],
+    ['date-time', 'System.DateTime'],
+    ['date', 'System.DateTime']
   ]);
 
   for (const group of values(schemaGroups)) {
@@ -103,14 +110,30 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       thisNamespace.add(schemaName);
 
       // object types.
-      if (schema.type === SchemaType.Object || schema.type === SchemaType.Dictionary || schema.type === SchemaType.Any) {
+      if (schema.type === SchemaType.Object) {
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
           name: getPascalIdentifier(schemaName),
           namespace: pascalCase([serviceNamespace, '.', 'Models']),  // objects have a namespace
-          fullname: `${pascalCase([serviceNamespace, '.', 'Models'])}.${getPascalIdentifier(schemaName)}`,
+          fullname: getPascalIdentifier(schemaName),
+        };
+      } else if (schema.type === SchemaType.Any) {
+        schema.language.csharp = {
+          ...details,
+          apiversion: thisApiversion,
+          apiname: apiName,
+          name: getPascalIdentifier(schemaName),
+          fullname: 'object',
+        };
+      } else if (schema.type === SchemaType.Array) {
+        schema.language.csharp = {
+          ...details,
+          apiversion: thisApiversion,
+          apiname: apiName,
+          name: getPascalIdentifier(schemaName),
+          fullname: `System.Collections.Generic.IList<${typeMap.get((<ArraySchema>schema).elementType.type)}>`,
         };
       } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type
@@ -134,15 +157,52 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         //     })
         //   }
         // };
-      } else {
-        // here are primitive types
+        const choiceSchema = <ChoiceSchema<StringSchema> | SealedChoiceSchema<StringSchema>>schema;
         schema.language.csharp = <SchemaDetails>{
           ...details,
-          name: schemaName,
-          fullname: primitiveTypeMap.get(schema.type)
+          interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
+          name: getPascalIdentifier(schemaName),
+          namespace: pascalCase([serviceNamespace, '.', 'Support']),
+          fullname: choiceSchema.choiceType.type,
+          enum: {
+            ...schema.language.default.enum,
+            name: getPascalIdentifier(schema.language.default.name),
+            values: choiceSchema.choices.map(each => {
+              return {
+                ...each,
+                name: getPascalIdentifier(each.language.default.name),
+                description: each.language.default.description
+              };
+            })
+          }
         };
+      } else if (schema.type !== SchemaType.Dictionary) {
+        // here are primitive types
+        const schemaDetails = <SchemaDetails>{
+          ...details,
+          name: schemaName,
+          fullname: typeMap.get(schema.type)
+        };
+        // add jonconverters for some types
+        if (schema.type === SchemaType.Date) {
+          schemaDetails.jsonConverters = schemaDetails.jsonConverters || [];
+          schemaDetails.jsonConverters.push('Microsoft.Rest.Serialization.DateJsonConverter');
+        } else if (schema.type === SchemaType.UnixTime) {
+          schemaDetails.jsonConverters = schemaDetails.jsonConverters || [];
+          schemaDetails.jsonConverters.push('Microsoft.Rest.Serialization.UnixTimeJsonConverter');
+        }
+        schema.language.csharp = schemaDetails;
         // xichen: for invalid namespace case, we won't create model class. So we do not need consider dup case
         thisNamespace.delete(schemaName);
+      } else {
+        // handle dictionary
+        schema.language.csharp = {
+          ...details,
+          apiversion: thisApiversion,
+          apiname: apiName,
+          name: getPascalIdentifier(schemaName),
+          fullname: `System.Collections.Generic.IDictionary<string, ${(<DictionarySchema>schema).elementType.language.csharp?.fullname}>`,
+        };
       }
     }
   }

@@ -24,10 +24,11 @@
 <% }%>
 <%});-%>
 <% project.model.operationGroups.forEach(function(methodGroup){ -%>
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
         /// <summary>
-        /// Gets the I<%- methodGroup.$key %>Operations
+        /// Gets the I<%- key %>Operations
         /// </summary>
-        public virtual I<%- methodGroup.$key %>Operations <%- methodGroup.$key %> { get; private set; }
+        public virtual I<%- key %>Operations <%- methodGroup.$key %> { get; private set; }
 <% }); -%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
@@ -267,7 +268,7 @@ if (parameters.length > 0) {-%>
         /// <param name='baseUri'>
         /// Optional. The base URI of the service.
         /// </param>
-        <%parameters.forEach(function(parameter) {-%>
+<%parameters.forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
         /// Required. <%-parameter.language.default.description%>
         /// </param>

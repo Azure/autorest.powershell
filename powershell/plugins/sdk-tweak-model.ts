@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, ObjectSchema, Operation, Parameter, Property, Schema, SchemaType } from '@azure-tools/codemodel';
-import { serialize } from '@azure-tools/codegen';
+import { ArraySchema, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, ObjectSchema, Operation, Parameter, ParameterLocation, Property, Schema, SchemaType } from '@azure-tools/codemodel';
+import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
 import { ModelState } from '../utils/model-state';
@@ -12,6 +12,7 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
+import { VirtualProperty, getAllPublicVirtualPropertiesForSdk } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
 
@@ -23,13 +24,13 @@ async function tweakModel(state: State): Promise<SdkModel> {
 
   addUsings(model);
 
+  tweakSchema(model);
+
   addAzureProperties(model.globalParameters || []);
 
   tweakGlobalParameter(model.globalParameters || []);
 
   await tweakOperation(state);
-
-  tweakSchema(model);
 
   addClientRequiredConstructorParametersDeclaration(model);
 
@@ -52,11 +53,11 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
 }
 
 // add ? for value type
-function nullValueType(type: string): string {
-  if (['int', 'bool', 'float', 'double', 'long'].includes(type)) {
-    return type + '?';
+function nullValueType(type: string): boolean {
+  if (['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'].includes(type)) {
+    return true;
   }
-  return type;
+  return false;
 }
 
 function tweakSchema(model: SdkModel) {
@@ -67,9 +68,23 @@ function tweakSchema(model: SdkModel) {
         name: property.language.default.name.substring(0, 1).toUpperCase() + property.language.default.name.substring(1),
         formattedPropertySummary: (property.readOnly ? 'Gets ' : 'Gets or sets ') + property.language.default.description.substring(0, 1).toLowerCase() + property.language.default.description.substring(1)
       };
-      const type = nullValueType(property.schema.language.csharp?.fullname || '');
-      const CamelName = property.language.default.name;
+    }
+    for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
+      let type = virtualProperty.property.schema.language.csharp?.fullname || '';
+      type = nullValueType(virtualProperty.property.schema.type) && !virtualProperty.required ? `${type}?` : type;
+      const CamelName = virtualProperty.property.language.default.name;
       constructorParametersDeclaration.push(`${type} ${CamelName} = default(${type})`);
+    }
+    if (obj.parents && obj.parents.immediate.length === 1) {
+      // If there is only one direct parameter, will implement it as base class
+      const baseConstructorParametersCall = Array<string>();
+      const combinedProperties = getAllPublicVirtualPropertiesForSdk(obj.parents.immediate[0].language.default.virtualProperties);
+      for (const virtualProperty of values(combinedProperties)) {
+        baseConstructorParametersCall.push(camelCase(virtualProperty.name) || '');
+      }
+      if (baseConstructorParametersCall.length > 0) {
+        obj.language.default.baseConstructorCall = `base(${baseConstructorParametersCall.join(', ')})`;
+      }
     }
     obj.language.default.constructorParametersDeclaration = constructorParametersDeclaration.join(', ');
   }
@@ -77,19 +92,39 @@ function tweakSchema(model: SdkModel) {
 
 function addUsings(model: SdkModel) {
   model.usings = [
-    'Microsoft.Rest.Azure',
-    'Models'];
+    'Microsoft.Rest.Azure'];
+  if (model.schemas.objects || model.schemas.sealedChoices) {
+    model.usings.push('Models');
+  }
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
   const declarations: Array<string> = [];
   const schemaDefinitionResolver = new SchemaDefinitionResolver();
   const args: Array<string> = [];
+  let bodyParameters: Array<Parameter> = [];
+  if (operation.requests && operation.requests.length > 0) {
+    bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
+  }
   (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
     const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
     const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
     parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
     args.push(parameter.language.default.name);
+  });
+  bodyParameters.forEach(function (parameter) {
+    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+      constructorParametersDeclaration.split(', ').forEach(function (p) {
+        declarations.push(p);
+        args.push(p.split(' ')[1]);
+      });
+    } else {
+      const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
+      const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
+      parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+      args.push(parameter.language.default.name);
+    }
   });
 
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
@@ -102,6 +137,7 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
+  args.push('null');
   args.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
 }
@@ -164,19 +200,20 @@ function setFailureStatusCodePredicate(operation: Operation) {
 function addAzureProperties(globalParameters: Array<Parameter>) {
   const primitiveTypeMap = new Map<string, string>([
     ['integer', 'int'],
-    ['number', 'int'],
+    ['number', 'double'],
     ['boolean', 'bool'],
     ['string', 'string']
   ]);
 
   // To align with track 1 SDK, move API version to the beginning
-  const apiVersion = globalParameters.pop();
-  if (apiVersion) {
-    apiVersion.clientDefaultValue = (<ConstantSchema>apiVersion.schema).value.value;
-    apiVersion.language.default.description = 'The API version to use for this operation.';
-    globalParameters.unshift(apiVersion);
+  if (globalParameters.length > 0 && globalParameters[globalParameters.length - 1].language.default.name === 'apiVersion') {
+    const apiVersion = globalParameters.pop();
+    if (apiVersion) {
+      apiVersion.clientDefaultValue = (<ConstantSchema>apiVersion.schema).value.value;
+      apiVersion.language.default.description = 'The API version to use for this operation.';
+      globalParameters.unshift(apiVersion);
+    }
   }
-
   const credential = new Parameter('Credentials', 'Credentials needed for the client to connect to Azure.', new Schema('credentials', 'credentials', SchemaType.Object));
   credential.language.default.serializedName = 'credentials';
   credential.required = true;
@@ -218,6 +255,13 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
 
 export async function tweakSdkModelPlugin(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-
-  service.WriteFile('code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  const debug = await service.GetValue('debug') || false;
+  try {
+    service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  } catch (E) {
+    if (debug) {
+      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+    }
+    throw E;
+  }
 }

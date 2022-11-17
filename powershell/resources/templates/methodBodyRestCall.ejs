@@ -1,3 +1,11 @@
+<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
+<%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
+            if (<%-parameter.language.default.name%> == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
+            }
+<%}-%>
+<% });-%>
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
 <%# ToDo: add check IsNullable with required -%>
 <% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
@@ -11,6 +19,18 @@
 <%});}-%>
 <%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
 <%# ToDo: add support for BuildInputMappings -%>
+<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
+<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
+            <%-method.language.default.returnType%> <%-parameter.language.default.name%> = new <%-method.language.default.returnType%>();
+<% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties)-%>
+            if(<%-vps.map(vp=>`${vp.property.language.default.name} != null`).join('||')%>)
+            {
+<%vps.forEach(function(vp) {-%>
+                <%-parameter.language.default.name%>.<%-vp.property.language.csharp.name%> = <%-vp.property.language.default.name%>;
+<%});-%>
+            }
+<%}-%>
+<% });-%>
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -19,6 +39,10 @@
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
+<%# ToDo: currently we just add the unexpanded body parameter, and need to be fixed in the future %>
+<% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
+                tracingParameters.Add("<%-parameter.language.default.name%>", <%-parameter.language.default.name%>);
+<% });-%>
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "<%-method.language.default.name%>", tracingParameters);
             }
@@ -77,6 +101,15 @@
             // Serialize Request
             string _requestContent = null;
 <%# ToDo: add RequestBody, formdata support-%>
+<% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
+<%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
+            if(<%-parameter.language.default.name%> != null)
+            {
+                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, this.Client.SerializationSettings);
+                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
+                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+            }
+<% });-%>
 <%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
             // Set Credentials
             if (this.Client.Credentials != null)
@@ -146,7 +179,7 @@
             {
                 _result.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
             }
-<%method.responses.filter(r => r.schema).forEach(function(resp) {-%>
+<%(method.responses || []).filter(r => r.schema).forEach(function(resp) {-%>
             // Deserialize Response
             if ((int)_statusCode == <%-resp.protocol.http.statusCodes[0]%>)
             {

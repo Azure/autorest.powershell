@@ -19,17 +19,9 @@ import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
 
-let ejs = require('ejs');
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
-
-async function generateSample(project: Project) {
-  const path = join(join(resources, 'templates'), 'sample.ejs');
-  const people = ['geddy', 'neil', 'alex'];
-  const content = await ejs.renderFile(path, {people: people});
-  project.state.writeFile(`${project.customFolder}\\generated\\sample.cs`, content, undefined, 'source-file-csharp');
-}
 
 async function copyRequiredFiles(project: Project) {
   const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); };
@@ -84,7 +76,6 @@ export async function powershellV2(service: Host) {
     await generateReadme(project);
 
     await generateScriptCmdlets(project);
-    //await generateSample(project);
 
   } catch (E) {
     if (debug) {
