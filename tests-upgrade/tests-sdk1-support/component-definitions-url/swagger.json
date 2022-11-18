@@ -49,7 +49,7 @@
                 "default": {
                     "description": "Error response describing why the operation failed.",
                     "schema": {
-                      "$ref": "https://github.com/LucasYao93/autorest.powershell/tree/lucas/modelerfour-dev/tests-upgrade/examples/RemoteDefinitions.json#definitions/ErrorResponse"
+                      "$ref": "https://github.com/Azure/autorest.powershell/blob/main/tests-upgrade/examples/RemoteDefinitions.json#definitions/ErrorResponse"
                     }
                 }
               }
