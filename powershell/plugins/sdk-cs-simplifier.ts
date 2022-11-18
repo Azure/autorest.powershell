@@ -13,7 +13,7 @@ export async function simplifierPlugin(service: Host) {
   const trimTasks = files.map(async file => {
     let namespacesToAdd: Set<string> = new Set<string>();
     const trimmed = await trimNamespace(await service.ReadFile(file), namespacesToAdd);
-    const usings = findLastUsing(trimmed);
+    const usings = findUsing(trimmed);
     service.WriteFile(file, addUsings(trimmed, usings[0], usings[1], sortNamespaces([...[...namespacesToAdd].map(namespace => `\n    using ${namespace};`), ...usings[2]])), undefined, 'source-file-csharp');
   });
   await Promise.all(trimTasks);
@@ -24,7 +24,7 @@ function addUsings(content: string, start: number, end: number, namespacesToAdd:
   return content.substring(0, start).concat(namespaces).concat(content.substring(end));
 }
 
-function findLastUsing(content: string): [number, number, Array<string>] {
+function findUsing(content: string): [number, number, Array<string>] {
   let index = 0;
   let start = 0;
   let end = 0;
