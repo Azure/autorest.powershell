@@ -1243,10 +1243,29 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Progress.value, function* () {
-          // hardcode id = 1 because there is no need for nested progress bar
-          yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")`;
+          yield 'var data = messageData();'
+          yield 'int progress = (int)data.Value;'
+          yield 'string activityMessage, statusDescription;';
+          yield 'global::System.Management.Automation.ProgressRecordType recordType;';
+
+          yield 'if (progress < 100)';
           yield '{';
-          yield '    PercentComplete = 0'; // hardcode 0 because polling has not started
+          yield '    activityMessage = "In progress";';
+          yield '    statusDescription = "Checking operation status";';
+          yield '    recordType = System.Management.Automation.ProgressRecordType.Processing;';
+          yield '}';
+          yield 'else';
+          yield '{';
+          yield '    activityMessage = "Completed";';
+          yield '    statusDescription = "Completed";';
+          yield '    recordType = System.Management.Automation.ProgressRecordType.Completed;';
+          yield '}';
+
+          // hardcode id = 1 because there is no need for nested progress bar
+          yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)`;
+          yield '{';
+          yield '    PercentComplete = progress,';
+          yield 'RecordType = recordType'
           yield '});';
           yield Return();
         }),

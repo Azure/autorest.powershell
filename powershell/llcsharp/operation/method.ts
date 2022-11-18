@@ -382,7 +382,7 @@ export class CallMethod extends Method {
         yield eventListener.signal(ClientRuntime.Events.BeforeCall, reqParameter.use);
 
         if ($this.opMethod.operation.language.csharp?.lro) {
-          yield eventListener.signal(ClientRuntime.Events.Progress, new LiteralExpression('"initializing LRO"'));
+          yield eventListener.signal(ClientRuntime.Events.Progress, new LiteralExpression('"intentional placeholder"'), new LiteralExpression('0'));
         }
 
         yield `${response.value} = await ${sendTask.value};`;
@@ -551,8 +551,8 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
                 break;
             }
           });
-
         }
+        yield eventListener.signal(ClientRuntime.Events.Progress, new LiteralExpression('"intentional placeholder"'), new LiteralExpression('100'));
         yield responder();
       });
 
