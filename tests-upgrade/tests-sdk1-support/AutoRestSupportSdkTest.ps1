@@ -78,7 +78,6 @@ function  GenerateSdkCode {
     if ((GenerateAutorestCshapSdkCode -TestSdk $TestSdk)) {
         $TestSdk.CsharpGeneratedStatus = [GeneratedStatus]::Success
     } else {
-        $TestSdk.SdkComparedStatus = [ComparedStatus]::NotEqual
         $TestSdk.CsharpGeneratedStatus = [GeneratedStatus]::Failed
         $TestSdk.Result += $TestSdk.CsharpGeneratedStatus ? $null : "Csharp sdk code failed generated"
     }
@@ -86,7 +85,6 @@ function  GenerateSdkCode {
     if ((GenerateAutorestPowerShellSdkCode -TestSdk $TestSdk)) {
         $TestSdk.PowerShellGeneratedStatus = [GeneratedStatus]::Success
     } else {
-        $TestSdk.SdkComparedStatus = [ComparedStatus]::NotEqual
         $TestSdk.PowerShellGeneratedStatus = [GeneratedStatus]::Failed
         $TestSdk.Result += $TestSdk.PowerShellGeneratedStatus ? $null : "PowerShell sdk code failed generated"
     }
@@ -150,6 +148,7 @@ function CompareTestSdkCode {
         $ignoreFiles
     )
     if (($TestSdk.PowerShellGeneratedStatus -eq [GeneratedStatus]::Failed) -or ($TestSdk.CsharpGeneratedStatus -eq [GeneratedStatus]::Failed)) {
+        $TestSdk.SdkComparedStatus = [ComparedStatus]::NotEqual
         return
     } else {
         $csharpFiles = Get-ChildItem -Path $TestSdk.CsharpSdkFolder -Recurse -File -Exclude $ignoreFiles
