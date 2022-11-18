@@ -1245,12 +1245,27 @@ export class CmdletClass extends Class {
         TerminalCase(Events.Progress.value, function* () {
           yield 'var data = messageData();'
           yield 'int progress = (int)data.Value;'
-          yield 'string activityMessage = (progress < 100) ? "In progress" : "Finished";'
-          yield 'string statusDescription = (progress < 100) ? "Checking operation status" : "Finished";'
+          yield 'string activityMessage, statusDescription;';
+          yield 'global::System.Management.Automation.ProgressRecordType recordType;';
+
+          yield 'if (progress < 100)';
+          yield '{';
+          yield '    activityMessage = "In progress";';
+          yield '    statusDescription = "Checking operation status";';
+          yield '    recordType = System.Management.Automation.ProgressRecordType.Processing;';
+          yield '}';
+          yield 'else';
+          yield '{';
+          yield '    activityMessage = "Completed";';
+          yield '    statusDescription = "Completed";';
+          yield '    recordType = System.Management.Automation.ProgressRecordType.Completed;';
+          yield '}';
+
           // hardcode id = 1 because there is no need for nested progress bar
           yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)`;
           yield '{';
-          yield '    PercentComplete = progress';
+          yield '    PercentComplete = progress,';
+          yield 'RecordType = recordType'
           yield '});';
           yield Return();
         }),
