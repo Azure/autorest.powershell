@@ -133,7 +133,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           apiversion: thisApiversion,
           apiname: apiName,
           name: getPascalIdentifier(schemaName),
-          fullname: `System.Collections.Generic.IList<${typeMap.get((<ArraySchema>schema).elementType.type)}>`,
+          fullname: `System.Collections.Generic.IList<${typeMap.get((<ArraySchema>schema).elementType.type) || (<ArraySchema>schema).elementType.language.default.name}>`,
         };
       } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type
