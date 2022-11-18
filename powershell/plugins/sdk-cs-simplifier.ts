@@ -8,37 +8,49 @@
 import { Host } from '@azure-tools/autorest-extension-base';
 import { TrieNode } from '../models/TrieNode';
 
+const predifinedNamespaces: Set<string> = new Set<string>(['Newtonsoft.Json', 'Newtonsoft.Json.Converters', 'System.Collections', 'System.Collections.Generic', 'System.Net', 'System.Net.Http', 'System.Threading', 'System.Threading.Tasks', 'Microsoft.Rest.Serialization', 'System.IO', 'System.Runtime', 'System.Runtime.Serialization', 'Microsoft.Rest', 'Microsoft.Rest.Azure', 'System.Linq', 'Models']);
+const roots: Map<string, TrieNode> = initTrie(predifinedNamespaces);
+const usingRegex = /\n {4}using .*;/i;
+const thisRegex = /this\./g;
+
 export async function simplifierPlugin(service: Host) {
   const files = await service.ListInputs();
   const trimTasks = files.map(async file => {
     let namespacesToAdd: Set<string> = new Set<string>();
-    const trimmed = await trimNamespace(await service.ReadFile(file), namespacesToAdd);
-    const usings = findUsing(trimmed);
-    service.WriteFile(file, addUsings(trimmed, usings[0], usings[1], sortNamespaces([...[...namespacesToAdd].map(namespace => `\n    using ${namespace};`), ...usings[2]])), undefined, 'source-file-csharp');
+    let content: string = await service.ReadFile(file);
+    const usings = findUsing(content, namespacesToAdd);
+    const beforeUsings: string = content.substring(0, usings[0]);
+    let afterUsings: string = content.substring(usings[1]);
+    afterUsings = trimNamespace(afterUsings, namespacesToAdd);
+    content = removeThis(addUsings(beforeUsings, afterUsings, sortNamespaces([...namespacesToAdd]).join('')));
+    service.WriteFile(file, content, undefined, 'source-file-csharp');
   });
   await Promise.all(trimTasks);
 }
 
-function addUsings(content: string, start: number, end: number, namespacesToAdd: Array<string>): string {
-  let namespaces: string = namespacesToAdd.join('');
-  return content.substring(0, start).concat(namespaces).concat(content.substring(end));
+function removeThis(content: string): string {
+  return content.replace(thisRegex, '');
 }
 
-function findUsing(content: string): [number, number, Array<string>] {
+function addUsings(beforeUsings: string, afterUsings: string, namespaces: string): string {
+  return beforeUsings.concat(namespaces).concat(afterUsings);
+}
+
+function findUsing(content: string, namespacesToAdd: Set<string>): [number, number] {
   let index = 0;
   let start = 0;
   let end = 0;
-  let existingUsings: Array<string> = new Array<string>();
   while (start != -1) {
     let segment: string = content.substring(index);
     start = segment.search(usingRegex);
     if (start != -1) {
       end = segment.indexOf(';', start) + 1;
-      existingUsings.push(segment.substring(start, end));
+      const namespace = segment.substring(start, end);
+      namespacesToAdd.add(namespace);
       index += end;
     }
   }
-  return [content.search(usingRegex), index, existingUsings];
+  return [content.search(usingRegex), index];
 }
 
 function sortNamespaces(namespaces: Array<string>): Array<string> {
@@ -57,7 +69,7 @@ function sortNamespaces(namespaces: Array<string>): Array<string> {
   });
 }
 
-async function trimNamespace(content: string, namespacesToAdd: Set<string>): Promise<string> {
+function trimNamespace(content: string, namespacesToAdd: Set<string>): string {
   roots.forEach((root: TrieNode, key: string) => {
     let start = 0;
     let end = 0;
@@ -86,7 +98,7 @@ function findChildNamespace(segments: Array<string>, root: TrieNode, namespacesT
     root = root.getChild(segment)!;
     namespaceToTrim += ('.' + segment);
     if (predifinedNamespaces.has(namespaceToTrim)) {
-      namespacesToAdd.add(namespaceToTrim);
+      namespacesToAdd.add(`\n    using ${namespaceToTrim};`);
     }
   }
   return namespaceToTrim;
@@ -95,10 +107,6 @@ function findChildNamespace(segments: Array<string>, root: TrieNode, namespacesT
 function trim(content: string, start: number, end: number): string {
   return content.substring(0, start).concat(content.substring(end));
 }
-
-const predifinedNamespaces: Set<string> = new Set<string>(['Newtonsoft.Json', 'Newtonsoft.Json.Converters', 'System.Collections', 'System.Collections.Generic', 'System.Net', 'System.Net.Http', 'System.Threading', 'System.Threading.Tasks', 'Microsoft.Rest.Serialization', 'System.IO', 'System.Runtime', 'System.Runtime.Serialization']);
-const roots: Map<string, TrieNode> = initTrie(predifinedNamespaces);
-const usingRegex = '\n    using .*;';
 
 function initTrie(predifinedNamespaces: Set<string>): Map<string, TrieNode> {
   let namespaceRoots: Map<string, TrieNode> = new Map<string, TrieNode>();
