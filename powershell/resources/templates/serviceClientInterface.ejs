@@ -28,7 +28,7 @@ namespace <%- project.namespace %>
         /// </summary>
         Newtonsoft.Json.JsonSerializerSettings DeserializationSettings { get; }
 
-<% project.model.globalParameters.filter(p => p.language.default.name != '$host').forEach(function(parameter){ -%>
+<% (project.model.globalParameters || []).filter(p => p.language.default.name != '$host').forEach(function(parameter){ -%>
         /// <summary>
         /// <%- parameter.language.default.description %>
         /// </summary>

@@ -33,7 +33,7 @@ namespace <%- project.namespace %>
             this.<%- methodGroup.$key %> = new <%- key %>Operations(this);
 <% }); -%>
             this.BaseUri = new System.Uri("https://management.azure.com");
-<% project.model.globalParameters.filter(p => p.language.default.name != '$host' && !!p.clientDefaultValue).forEach(function(parameter){ -%>
+<% (project.model.globalParameters || []).filter(p => p.language.default.name != '$host' && !!p.clientDefaultValue).forEach(function(parameter){ -%>
             this.<%- parameter.language.default.name %> = <%- parameter.schema.type == 'string' || (parameter.schema.type == 'constant' && parameter.schema.valueType.type == 'string') ? `"${parameter.clientDefaultValue}"`: parameter.clientDefaultValue %>;
 <%}); -%>
             SerializationSettings = new Newtonsoft.Json.JsonSerializerSettings

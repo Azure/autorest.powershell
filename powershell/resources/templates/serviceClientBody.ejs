@@ -11,7 +11,7 @@
         /// Gets or sets json deserialization settings.
         /// </summary>
         public Newtonsoft.Json.JsonSerializerSettings DeserializationSettings { get; private set; }
-<% project.model.globalParameters.filter(p=>p.language.default.name != '$host').forEach(function(parameter) {-%>
+<% (project.model.globalParameters || []).filter(p=>p.language.default.name != '$host').forEach(function(parameter) {-%>
         /// <summary>
         /// <%=parameter.language.default.description%>
         /// </summary>
@@ -113,7 +113,7 @@
             this.BaseUri = baseUri;
         }
 <% } -%>
-<% var parameters = project.model.globalParameters.filter(p => p.required && p.readOnly)
+<% var parameters = (project.model.globalParameters || []).filter(p => p.required && p.readOnly)
 if (parameters.length > 0) {-%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
