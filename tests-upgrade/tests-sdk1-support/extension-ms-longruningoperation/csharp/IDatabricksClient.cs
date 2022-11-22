@@ -39,6 +39,11 @@ namespace Microsoft.Azure.Sample
         Microsoft.Rest.ServiceClientCredentials Credentials { get; }
 
         /// <summary>
+        /// The ID of the target subscription.
+        /// </summary>
+        string SubscriptionId { get; set; }
+
+        /// <summary>
         /// The preferred language for the response.
         /// </summary>
         string AcceptLanguage { get; set; }

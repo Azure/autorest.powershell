@@ -11,7 +11,7 @@ param(
     [switch]$AllowList,
     
     [Parameter(Mandatory,
-        ParameterSetName="TestCase",
+        ParameterSetName="BlackTestCase",
         HelpMessage="Load all test cases in the current folder and remove test cases that exist in the blacklist")]
     [switch]$BlackList,
 
@@ -52,6 +52,8 @@ function GenerateAutorestCshapSdkCode {
         $TestSdk
     )
     $result = (autorest --use:$script:AutoRestCsharp --tag=$($TestSdk.TestName).csharp) | Out-String
+    Write-Debug "$($TestSdk.TestName) generated csharp debug information"
+    Write-Debug $result
     if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.CsharpSdkFolder)) {
@@ -67,6 +69,9 @@ function GenerateAutorestPowerShellSdkCode {
         $TestSdk
     )
     $result = (autorest --use:$script:AutoRestPowerShell --tag=$($TestSdk.TestName).powershell) | Out-String
+    Write-Debug "$($TestSdk.TestName) generated powershell debug information"
+    Write-Debug $result
+
     if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.PowerShellSdkFolder)) {
@@ -249,9 +254,9 @@ try
         GenerateSdkCode -TestSdk $testSdk
         CompareTestSdkCode -TestSdk $testSdk -ignoreFiles $ignoreCompareFiles
         $testSdk.Comment = ($testSdk.Result | Out-String)
-        $testSdkSummary | Select-Object -Property TestName, CsharpGeneratedStatus, PowerShellGeneratedStatus, SdkComparedStatus, Comment | Format-Table
+        $testSdk | Select-Object -Property TestName, CsharpGeneratedStatus, PowerShellGeneratedStatus, SdkComparedStatus, Comment | Format-Table
     }
-
+    Write-Host "Summary results as following"
     # Show summary test result
     $testSdkSummary | Select-Object -Property TestName, CsharpGeneratedStatus, PowerShellGeneratedStatus, SdkComparedStatus, Comment | Format-Table
 
@@ -268,6 +273,7 @@ try
     # Save test result to csv file
     if ($SaveResult) {
         $resultFilePath = Join-Path $compareResultFolder "autorest.powershell-sdk-compare-$((Get-Date).ToString('yyyyMMddHHmmss')).csv"
+        Write-Host "The output result to the $resultFilePath"
         $testSdkSummary | Select-Object -Property TestName, CsharpGeneratedStatus, PowerShellGeneratedStatus, SdkComparedStatus, Comment | Export-Csv -Path  $resultFilePath -NoClobber
     }
 }

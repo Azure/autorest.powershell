@@ -48,6 +48,9 @@
               "required": true,
               "type": "string",
               "description": "The ID of the target subscription."
+            },
+            {
+              "$ref": "#/parameters/ResourceGroupName"
             }
           ],
           "responses": {
@@ -72,6 +75,9 @@
               "required": true,
               "type": "string",
               "description": "The ID of the target subscription."
+            },
+            {
+              "$ref": "#/parameters/ResourceGroupName"
             }
           ],
           "responses": {
@@ -96,6 +102,9 @@
               "required": true,
               "type": "string",
               "description": "The ID of the target subscription."
+            },
+            {
+              "$ref": "#/parameters/ResourceGroupName"
             }
           ],
           "responses": {

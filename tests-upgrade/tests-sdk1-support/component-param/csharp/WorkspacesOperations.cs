@@ -72,6 +72,25 @@ namespace Microsoft.Azure.Sample
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "subscriptionId");
             }
+            if (this.Client.ResourceGroup == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ResourceGroup");
+            }
+            if (this.Client.ResourceGroup != null)
+            {
+                if (this.Client.ResourceGroup.Length > 90)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "Client.ResourceGroup", 90);
+                }
+                if (this.Client.ResourceGroup.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ResourceGroup", 1);
+                }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(this.Client.ResourceGroup, "^[-\\w\\._\\(\\)]+$"))
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "Client.ResourceGroup", "^[-\\w\\._\\(\\)]+$");
+                }
+            }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -87,6 +106,7 @@ namespace Microsoft.Azure.Sample
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "subscriptions/{subscriptionId}/resourceGroup/{resourceGroup}").ToString();
             _url = _url.Replace("{subscriptionId}", System.Uri.EscapeDataString(subscriptionId));
+            _url = _url.Replace("{resourceGroup}", System.Uri.EscapeDataString(this.Client.ResourceGroup));
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
             if (_queryParameters.Count > 0)
             {
@@ -225,6 +245,25 @@ namespace Microsoft.Azure.Sample
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "subscriptionId");
             }
+            if (this.Client.ResourceGroup == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ResourceGroup");
+            }
+            if (this.Client.ResourceGroup != null)
+            {
+                if (this.Client.ResourceGroup.Length > 90)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "Client.ResourceGroup", 90);
+                }
+                if (this.Client.ResourceGroup.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ResourceGroup", 1);
+                }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(this.Client.ResourceGroup, "^[-\\w\\._\\(\\)]+$"))
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "Client.ResourceGroup", "^[-\\w\\._\\(\\)]+$");
+                }
+            }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -240,6 +279,7 @@ namespace Microsoft.Azure.Sample
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "subscriptions/{subscriptionId}/resourceGroup/{resourceGroup}").ToString();
             _url = _url.Replace("{subscriptionId}", System.Uri.EscapeDataString(subscriptionId));
+            _url = _url.Replace("{resourceGroup}", System.Uri.EscapeDataString(this.Client.ResourceGroup));
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
             if (_queryParameters.Count > 0)
             {
@@ -378,6 +418,25 @@ namespace Microsoft.Azure.Sample
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "subscriptionId");
             }
+            if (this.Client.ResourceGroup == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ResourceGroup");
+            }
+            if (this.Client.ResourceGroup != null)
+            {
+                if (this.Client.ResourceGroup.Length > 90)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "Client.ResourceGroup", 90);
+                }
+                if (this.Client.ResourceGroup.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ResourceGroup", 1);
+                }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(this.Client.ResourceGroup, "^[-\\w\\._\\(\\)]+$"))
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "Client.ResourceGroup", "^[-\\w\\._\\(\\)]+$");
+                }
+            }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -393,6 +452,7 @@ namespace Microsoft.Azure.Sample
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "subscriptions/{subscriptionId}/resourceGroup/{resourceGroup}").ToString();
             _url = _url.Replace("{subscriptionId}", System.Uri.EscapeDataString(subscriptionId));
+            _url = _url.Replace("{resourceGroup}", System.Uri.EscapeDataString(this.Client.ResourceGroup));
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
             if (_queryParameters.Count > 0)
             {
