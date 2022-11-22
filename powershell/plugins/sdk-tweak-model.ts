@@ -52,8 +52,8 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
   model.language.default.requiredConstructorParametersDeclaration = declarations.join(', ');
 }
 
-// add ? for value type
-function nullValueType(type: string): boolean {
+// check whether it is value type
+function valueType(type: string): boolean {
   if (['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'].includes(type)) {
     return true;
   }
@@ -62,7 +62,8 @@ function nullValueType(type: string): boolean {
 
 function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
-    const constructorParametersDeclaration = Array<string>();
+    const optionalParameters = Array<string>();
+    const requiredParameters = Array<string>();
     for (const property of values(obj.properties)) {
       property.language.csharp = <any>{
         name: property.language.default.name.substring(0, 1).toUpperCase() + property.language.default.name.substring(1),
@@ -71,9 +72,9 @@ function tweakSchema(model: SdkModel) {
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = nullValueType(virtualProperty.property.schema.type) && !virtualProperty.required ? `${type}?` : type;
+      type = valueType(virtualProperty.property.schema.type) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
-      constructorParametersDeclaration.push(`${type} ${CamelName} = default(${type})`);
+      virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
     if (obj.parents && obj.parents.immediate.length === 1) {
       // If there is only one direct parameter, will implement it as base class
@@ -86,7 +87,7 @@ function tweakSchema(model: SdkModel) {
         obj.language.default.baseConstructorCall = `base(${baseConstructorParametersCall.join(', ')})`;
       }
     }
-    obj.language.default.constructorParametersDeclaration = constructorParametersDeclaration.join(', ');
+    obj.language.default.constructorParametersDeclaration = [...requiredParameters, ...optionalParameters].join(', ');
   }
 }
 
@@ -99,34 +100,39 @@ function addUsings(model: SdkModel) {
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
-  const declarations: Array<string> = [];
+  let declarations: Array<string> = [];
+  const optionalDeclarations: Array<string> = [];
+  const requiredDeclarations: Array<string> = [];
   const schemaDefinitionResolver = new SchemaDefinitionResolver();
   const args: Array<string> = [];
   let bodyParameters: Array<Parameter> = [];
   if (operation.requests && operation.requests.length > 0) {
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
-  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
-    const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
-    const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
-    parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
-    args.push(parameter.language.default.name);
-  });
+
   bodyParameters.forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
       const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
       constructorParametersDeclaration.split(', ').forEach(function (p) {
-        declarations.push(p);
+        requiredDeclarations.push(p);
         args.push(p.split(' ')[1]);
       });
     } else {
       const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
       const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
-      parameter.required ? declarations.push(`${type} ${parameter.language.default.name}`) : declarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
       args.push(parameter.language.default.name);
     }
   });
 
+  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
+    const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+    const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
+    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+    args.push(parameter.language.default.name);
+  });
+
+  declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
   declarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
   operation.language.default.asyncMethodParameterDeclaration = declarations.join(', ');
@@ -162,7 +168,13 @@ async function tweakOperation(state: State) {
   for (const operationGroup of state.model.operationGroups) {
     for (const operation of operationGroup.operations) {
       if (operation.responses) {
-        const respCountWithBody = operation.responses.filter(r => (<any>r).schema).length;
+        const schemas = new Set();
+        operation.responses.forEach(function (resp) {
+          if ((<any>resp).schema) {
+            schemas.add((<any>resp).schema);
+          }
+        });
+        const respCountWithBody = schemas.size;
         const responses = operation.responses.filter(r => (<any>r).schema);
         if (respCountWithBody === 0) {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
