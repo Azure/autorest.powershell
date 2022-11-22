@@ -15,6 +15,12 @@ param(
         HelpMessage="Load all test cases in the current folder and remove test cases that exist in the blacklist")]
     [switch]$BlackList,
 
+    [string]
+    $AutoRestCsharp,
+
+    [string]
+    $AutoRestPowerShell,
+
     [switch]
     $SaveResult
 )
@@ -45,7 +51,7 @@ function GenerateAutorestCshapSdkCode {
         [TestSdkModel]
         $TestSdk
     )
-    $result = (autorest --use:$script:autorestCsharp --tag=$($TestSdk.TestName).csharp) | Out-String
+    $result = (autorest --use:$script:AutoRestCsharp --tag=$($TestSdk.TestName).csharp) | Out-String
     if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.CsharpSdkFolder)) {
@@ -60,7 +66,7 @@ function GenerateAutorestPowerShellSdkCode {
         [TestSdkModel]
         $TestSdk
     )
-    $result = (autorest --use:$script:autorestPowerShell --tag=$($TestSdk.TestName).powershell) | Out-String
+    $result = (autorest --use:$script:AutoRestPowerShell --tag=$($TestSdk.TestName).powershell) | Out-String
     if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.PowerShellSdkFolder)) {
@@ -182,8 +188,13 @@ function CompareTestSdkCode {
 
 try 
 {
-    $script:autorestCsharp = Join-Path $PSScriptRoot "..\..\..\..\autorest.csharp"
-    $script:autorestPowerShell = Join-Path $PSScriptRoot "..\..\..\..\autorest.powershell"
+    if ([System.String]::IsNullOrEmpty($AutoRestCsharp)) {
+        $AutoRestCsharp = Join-Path $PSScriptRoot "..\..\..\..\autorest.csharp"
+    }
+    if ([System.String]::IsNullOrEmpty($AutoRestPowerShell)) {
+        $AutoRestPowerShell = Join-Path $PSScriptRoot "..\..\..\..\autorest.powershell"
+    }
+
     $configuration = (Get-Content -Path (Join-Path $PSScriptRoot "configuration.json") | ConvertFrom-Json)
     # Some folders are not test folders.
     $ignoreFolder =  $configuration.ignoreFolder
