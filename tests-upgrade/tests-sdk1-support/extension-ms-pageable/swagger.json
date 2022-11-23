@@ -42,6 +42,14 @@
           ],
           "operationId": "Workspaces_ListByResourceGroup",
           "description": "Gets all the workspaces within a resource group.",
+          "parameters":[
+            {
+              "$ref": "#/parameters/ResourceGroupName"
+            },
+            {
+              "$ref": "#/parameters/SubscriptionIdParameter"
+            }
+          ],
           "responses": {
             "200": {
               "description": "OK - Returns an array of workspaces.",
@@ -66,6 +74,26 @@
             }
           }
         }
+      }
+    },
+    "parameters": {
+      "SubscriptionIdParameter": {
+        "name": "subscriptionId",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The ID of the target subscription."
+      },
+      "ResourceGroupName": {
+        "name": "resourceGroupName",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The name of the resource group. The name is case insensitive.",
+        "pattern": "^[-\\w\\._\\(\\)]+$",
+        "minLength": 1,
+        "maxLength": 90,
+        "x-ms-parameter-location": "method"
       }
     }
 }

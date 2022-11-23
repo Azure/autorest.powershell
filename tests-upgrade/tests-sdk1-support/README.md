@@ -135,6 +135,18 @@ input-file:
   - https://github.com/Azure/azure-rest-api-specs/blob/5035a36bcd5b0543a9a65ee21f03bd12e301ea72/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2019-05-01/containerregistry.json
   - https://github.com/Azure/azure-rest-api-specs/blob/5035a36bcd5b0543a9a65ee21f03bd12e301ea72/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2019-04-01/containerregistry_build.json
 
+directive:
+# Discriminator must be a required property
+  - from: swagger-document
+    where: $.definitions.TaskStepProperties
+    transform: $["required"] = ["type"]
+  - from: swagger-document
+    where: $.definitions.TaskStepUpdateParameters
+    transform: $["required"] = ["type"]
+  - from: swagger-document
+    where: $.definitions.RunRequest
+    transform: $["required"] = ["type"]
+    
 namespace: Microsoft.Azure.Management.ContainerRegistry
 output-folder: provider-containerRegistry\csharp
 ```
@@ -147,6 +159,18 @@ powershell: true
 input-file:
   - https://github.com/Azure/azure-rest-api-specs/blob/5035a36bcd5b0543a9a65ee21f03bd12e301ea72/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2019-05-01/containerregistry.json
   - https://github.com/Azure/azure-rest-api-specs/blob/5035a36bcd5b0543a9a65ee21f03bd12e301ea72/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2019-04-01/containerregistry_build.json
+
+directive:
+# Discriminator must be a required property
+  - from: swagger-document
+    where: $.definitions.TaskStepProperties
+    transform: $["required"] = ["type"]
+  - from: swagger-document
+    where: $.definitions.TaskStepUpdateParameters
+    transform: $["required"] = ["type"]
+  - from: swagger-document
+    where: $.definitions.RunRequest
+    transform: $["required"] = ["type"]
 
 namespace: Microsoft.Azure.Management.ContainerRegistry
 output-folder: provider-containerRegistry\powershell

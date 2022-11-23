@@ -39,9 +39,9 @@ namespace Microsoft.Azure.Sample
         Microsoft.Rest.ServiceClientCredentials Credentials { get; }
 
         /// <summary>
-        /// The name of the resource group. The name is case insensitive.
+        /// The ID of the target subscription.
         /// </summary>
-        string ResourceGroup { get; set; }
+        string SubscriptionId { get; set; }
 
         /// <summary>
         /// The preferred language for the response.

@@ -40,9 +40,9 @@ namespace Microsoft.Azure.Sample
         public Microsoft.Rest.ServiceClientCredentials Credentials { get; private set; }
 
         /// <summary>
-        /// The name of the resource group. The name is case insensitive.
+        /// The ID of the target subscription.
         /// </summary>
-        public string ResourceGroup { get; set; }
+        public string SubscriptionId { get; set; }
 
         /// <summary>
         /// The preferred language for the response.
