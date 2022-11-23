@@ -1,3 +1,10 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 export class TrieNode {
   value: string;
   private children: Map<string, TrieNode>;
@@ -8,9 +15,7 @@ export class TrieNode {
     this.isEnd = false;
   }
 
-  addChild(child: TrieNode): void
-  addChild(child: string): void
-  addChild(child: unknown): void {
+  addChild(child: TrieNode | string): void {
     if (typeof child === 'string' && !this.children.has(child)) {
       this.children.set(child, new TrieNode(child));
     } else if (child instanceof TrieNode && !this.children.has(child.value)) {
@@ -20,9 +25,7 @@ export class TrieNode {
     }
   }
 
-  hasChild(child: TrieNode): boolean
-  hasChild(child: string): boolean
-  hasChild(child: unknown): boolean {
+  hasChild(child: TrieNode | string): boolean {
     let value: string;
     if (typeof child === 'string') {
       value = child;

@@ -6,7 +6,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from '@azure-tools/autorest-extension-base';
-import { TrieNode } from '../models/TrieNode';
+import { TrieNode } from '../utils/TrieNode';
 
 const predifinedNamespaces: Set<string> = new Set<string>(['Newtonsoft.Json', 'Newtonsoft.Json.Converters', 'System.Collections', 'System.Collections.Generic', 'System.Net', 'System.Net.Http', 'System.Threading', 'System.Threading.Tasks', 'Microsoft.Rest.Serialization', 'System.IO', 'System.Runtime', 'System.Runtime.Serialization', 'Microsoft.Rest', 'Microsoft.Rest.Azure', 'System.Linq', 'Models']);
 const roots: Map<string, TrieNode> = initTrie(predifinedNamespaces);
