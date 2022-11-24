@@ -19,6 +19,7 @@ export interface SchemaDetails extends schema.SchemaDetails {
   internalInterfaceName?: string;
   fullInternalInterfaceName?: string;
   fullname?: string;
+  jsonConverters?: Array<string>
 }
 
 export interface PropertyDetails extends schema.PropertyDetails {

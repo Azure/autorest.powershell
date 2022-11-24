@@ -9,7 +9,7 @@ namespace <%- project.namespace %>
     using <%- using %>;
 <% }); -%>
 
-<% var typeName = key + 'Operations' -%>
+<% var typeName = project.helper.PascalCase(key) + 'Operations' -%>
     /// <summary>
     /// <%- typeName %> operations.
     /// </summary>

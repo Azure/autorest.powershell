@@ -6,7 +6,7 @@ namespace <%- project.namespace %>
     using <%- using %>;
 <% }); -%>
 
-<% var typeName = methodGroup.$key + 'Operations' -%>
+<% var typeName = project.helper.PascalCase(methodGroup.$key) + 'Operations' -%>
     /// <summary>
     /// <%- typeName %> operations.
     /// </summary>

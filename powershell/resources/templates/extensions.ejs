@@ -7,13 +7,13 @@ namespace <%- project.namespace %>
 <% }); -%>
 
     /// <summary>
-    /// Extension methods for <%- key %>Operations
+    /// Extension methods for <%- project.helper.PascalCase(key) %>Operations
     /// </summary>
-    public static partial class <%- key %>OperationsExtensions
+    public static partial class <%- project.helper.PascalCase(key) %>OperationsExtensions
     {
 <% methodGroup.operations.forEach(function(method){ -%>
 <%# ToDo: add support for ExcludeFromInterface-%>
-<%- include('extensionMethod', {method: method, group: methodGroup}) %>
+<%- include('extensionMethod', {method: method, group: methodGroup, project: project}) %>
 <% }); -%>
     }
 }

@@ -26,9 +26,9 @@
 <% project.model.operationGroups.forEach(function(methodGroup){ -%>
 <% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
         /// <summary>
-        /// Gets the I<%- key %>Operations
+        /// Gets the I<%- project.helper.PascalCase(key) %>Operations
         /// </summary>
-        public virtual I<%- key %>Operations <%- methodGroup.$key %> { get; private set; }
+        public virtual I<%- project.helper.PascalCase(key) %>Operations <%- project.helper.PascalCase(methodGroup.$key) %> { get; private set; }
 <% }); -%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
@@ -163,7 +163,7 @@ if (parameters.length > 0) {-%>
         /// True: will dispose the provided httpClient on calling <%-project.model.info.title%>.Dispose(). False: will not dispose provided httpClient</param>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
-        /// </exception>
+        /// </exception>this.Credentials
         public <%-project.model.info.title%>(<%-project.model.language.default.requiredConstructorParametersDeclaration%>, System.Net.Http.HttpClient httpClient, bool disposeHttpClient) : this(httpClient, disposeHttpClient)
         {
 <%parameters.forEach(function(parameter) {-%>

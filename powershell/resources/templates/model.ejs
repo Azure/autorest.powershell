@@ -49,12 +49,15 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
-<%if (model.language.default.baseConstructorCall) {-%>
+<% var publicVirtualProperties = project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties);
+if (model.language.default.baseConstructorCall) {
+        publicVirtualProperties = project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties);
+-%>
         : <%-model.language.default.baseConstructorCall%>
 <%}-%>
         {
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0-%>
-<%project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties).forEach(function(p) {-%>
+<%publicVirtualProperties.forEach(function(p) {-%>
             this.<%-p.property.language.csharp.name%> = <%-p.property.language.default.name%>;
 <%});-%>
             CustomInit();
@@ -68,7 +71,7 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
         partial void CustomInit();
 
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0, line 407-%>
-<% if (model.properties) { project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties).filter(p => p.property.schema.type != 'constant').forEach(function(p){-%>
+<% if (model.properties) { publicVirtualProperties.filter(p => p.property.schema.type != 'constant').forEach(function(p){-%>
 <%
         var additionInfo = '';
         if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -86,11 +89,44 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
 <% });-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% var type = p.property.schema.language.csharp.fullname-%>
-<%type = !project.helper.IsPrimitiveType(p.property.schema.type) || p.required ? type : type + '?'-%>
+<%type = !project.helper.IsValueType(p.property.schema.type) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% });} -%>
 <%#ToDo support for ClassProperties in the model, const properties -%>
 <%#ToDo support for ShouldValidateChain-%>
+<% if (project.helper.ShouldValidateChain(model)) {-%>
+<% var anythingToValidate = false;-%>
+        /// <summary>
+        /// Validate the object.
+        /// </summary>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown if validation fails
+        /// </exception>
+        public virtual void Validate()
+        {
+<% if (model.parents && model.parents.immediate.length == 1 && project.helper.ShouldValidateChain(model.parents.immediate[0])) {
+            anythingToValidate = true;
+-%>
+            base.Validate();
+<% } -%>
+<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
+            anythingToValidate = true;
+-%>
+            if (this.<%-p.property.language.csharp.name%> == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-p.property.language.csharp.name%>");
+            }
+<%});-%>
+<%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
+            anythingToValidate = true;
+-%>
+<%#-ValidateType(p.property.schema)%>
+<% }); -%>
+<% if(!anythingToValidate) { -%>
+            //Nothing to validate
+<% } -%>
+        }
+<% } -%>
 <%#ToDo support for ShouldGenerateXmlSerialization, guess we do not need to support it-%>
     }
 }
