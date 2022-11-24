@@ -15,13 +15,13 @@
 <% });}-%>
 <%# ToDo: add support for GetObsoleteAttribute-%>
 <%# ToDo: add support for AccessModifier, assume public for the time being-%>
-        public static <%-method.language.default.returnType%> <%-method.language.default.name%>(this I<%-key%>Operations operations<%- method.language.default.syncMethodParameterDeclaration ? ', ' + method.language.default.syncMethodParameterDeclaration: '' %>)
+        public static <%-method.language.default.returnType%> <%-method.language.default.name%>(this I<%-project.helper.PascalCase(key)%>Operations operations<%- method.language.default.syncMethodParameterDeclaration ? ', ' + method.language.default.syncMethodParameterDeclaration: '' %>)
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>
-                return ((I<%-key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+                return ((I<%-project.helper.PascalCase(key)%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
 <% } else { -%>
-                ((I<%-key%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
+                ((I<%-project.helper.PascalCase(key)%>Operations)operations).<%-method.language.default.name%>Async(<%-method.language.default.syncMethodInvocationArgs%>).GetAwaiter().GetResult();
 <% } -%>
         }
 
@@ -43,7 +43,7 @@
         /// </param>
 <%# ToDo: add support for GetObsoleteAttribute-%>
 <%# ToDo: add support for AccessModifier, assume public for the time being-%>
-        public static async System.Threading.Tasks.Task<%- method.language.default.returnType != 'void' ? '<' + method.language.default.returnType + '>' : ''%> <%-method.language.default.name%>Async(this I<%-key%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
+        public static async System.Threading.Tasks.Task<%- method.language.default.returnType != 'void' ? '<' + method.language.default.returnType + '>' : ''%> <%-method.language.default.name%>Async(this I<%-project.helper.PascalCase(key)%>Operations operations<%- method.language.default.asyncMethodParameterDeclaration ? ', ' + method.language.default.asyncMethodParameterDeclaration: '' %>)
         {
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>

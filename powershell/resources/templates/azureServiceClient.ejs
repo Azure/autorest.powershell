@@ -30,7 +30,7 @@ namespace <%- project.namespace %>
         {
 <% project.model.operationGroups.forEach(function(methodGroup){ -%>
 <% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
-            this.<%- methodGroup.$key %> = new <%- key %>Operations(this);
+            this.<%- project.helper.PascalCase(methodGroup.$key) %> = new <%- project.helper.PascalCase(key) %>Operations(this);
 <% }); -%>
             this.BaseUri = new System.Uri("https://management.azure.com");
 <% (project.model.globalParameters || []).filter(p => p.language.default.name != '$host' && !!p.clientDefaultValue).forEach(function(parameter){ -%>

@@ -180,8 +180,8 @@ async function tweakOperation(state: State) {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
           operation.language.default.returnType = 'void';
         } else if (respCountWithBody === 1) {
-          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.default.name}>`;
-          operation.language.default.returnType = `${(<any>responses[0]).schema.language.default.name}`;
+          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.csharp.fullname}>`;
+          operation.language.default.returnType = `${(<any>responses[0]).schema.language.csharp.fullname}`;
         } else {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<Object>';
           operation.language.default.returnType = 'Object';

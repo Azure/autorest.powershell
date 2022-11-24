@@ -189,7 +189,7 @@
                 try
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-resp.schema.language.csharp.name%>>(_responseContent, this.Client.DeserializationSettings);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-resp.schema.language.csharp.fullname%>>(_responseContent, this.Client.DeserializationSettings);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
