@@ -61,13 +61,11 @@
             "name": "resourceGroup",
             "description": "Resource group name",
             "required": true,
-            "schema": {
-                "type": "string",
-                "enum": [
-                    "azure cloud",
-                    "azure prod"
-                ]
-            }
+            "type": "string",
+            "enum": [
+                "azure cloud",
+                "azure prod"
+            ]
         }
     }
 }

@@ -49,7 +49,7 @@
                 "default": {
                     "description": "Error response describing why the operation failed.",
                     "schema": {
-                      "$ref": "https://github.com/Azure/autorest.powershell/blob/main/tests-upgrade/examples/RemoteDefinitions.json#definitions/ErrorResponse"
+                      "$ref": "../examples/RemoteDefinitions.json#/definitions/ErrorResponse"
                     }
                 }
               }

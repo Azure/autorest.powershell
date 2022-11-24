@@ -71,7 +71,7 @@
                 "host": {
                     "type": "string",
                     "pattern":"^\\d{3}-\\d{2}-\\d{4}$",
-                    "nullable": true
+                    "x-nullable": true
                 },
                 "message": {
                     "type": "string",
