@@ -42,9 +42,15 @@
           ],
           "operationId": "Workspaces_Get",
           "description": "Gets the workspace.",
-          "parameters": [
+          "parameters":[
+            {
+              "$ref": "#/parameters/ResourceGroupName"
+            },
             {
               "$ref": "#/parameters/WorkspaceName"
+            },
+            {
+              "$ref": "#/parameters/SubscriptionIdParameter"
             }
           ],
           "responses": {
@@ -59,6 +65,24 @@
       }
     },
     "parameters": {
+      "SubscriptionIdParameter": {
+        "name": "subscriptionId",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The ID of the target subscription."
+      },
+      "ResourceGroupName": {
+        "name": "resourceGroupName",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The name of the resource group. The name is case insensitive.",
+        "pattern": "^[-\\w\\._\\(\\)]+$",
+        "minLength": 1,
+        "maxLength": 90,
+        "x-ms-parameter-location": "method"
+      },
       "WorkspaceName": {
         "name": "workspaceName",
         "in": "path",

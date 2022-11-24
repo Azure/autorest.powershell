@@ -23,12 +23,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
-            public static void Get(this IWorkspacesOperations operations, string subscriptionId)
+            public static void Get(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                ((IWorkspacesOperations)operations).GetAsync(subscriptionId).GetAwaiter().GetResult();
+                ((IWorkspacesOperations)operations).GetAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -37,15 +37,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task GetAsync(this IWorkspacesOperations operations, string subscriptionId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task GetAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.GetWithHttpMessagesAsync(subscriptionId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.GetWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <summary>
@@ -54,12 +54,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
-            public static void Delete(this IWorkspacesOperations operations, string subscriptionId)
+            public static void Delete(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                ((IWorkspacesOperations)operations).DeleteAsync(subscriptionId).GetAwaiter().GetResult();
+                ((IWorkspacesOperations)operations).DeleteAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -68,15 +68,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task DeleteAsync(this IWorkspacesOperations operations, string subscriptionId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task DeleteAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.DeleteWithHttpMessagesAsync(subscriptionId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.DeleteWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <summary>
@@ -85,12 +85,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
-            public static void CreateOrUpdate(this IWorkspacesOperations operations, string subscriptionId)
+            public static void CreateOrUpdate(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                ((IWorkspacesOperations)operations).CreateOrUpdateAsync(subscriptionId).GetAwaiter().GetResult();
+                ((IWorkspacesOperations)operations).CreateOrUpdateAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -99,15 +99,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task CreateOrUpdateAsync(this IWorkspacesOperations operations, string subscriptionId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task CreateOrUpdateAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.CreateOrUpdateWithHttpMessagesAsync(subscriptionId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.CreateOrUpdateWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <summary>
@@ -116,12 +116,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
-            public static void Update(this IWorkspacesOperations operations, string subscriptionId)
+            public static void Update(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                ((IWorkspacesOperations)operations).UpdateAsync(subscriptionId).GetAwaiter().GetResult();
+                ((IWorkspacesOperations)operations).UpdateAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -130,15 +130,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='subscriptionId'>
-            /// The ID of the target subscription.
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task UpdateAsync(this IWorkspacesOperations operations, string subscriptionId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task UpdateAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.UpdateWithHttpMessagesAsync(subscriptionId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.UpdateWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
     }

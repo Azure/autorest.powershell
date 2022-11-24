@@ -24,9 +24,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static void Get(this IWorkspacesOperations operations)
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
+            /// </param>
+            public static void Get(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                ((IWorkspacesOperations)operations).GetAsync().GetAwaiter().GetResult();
+                ((IWorkspacesOperations)operations).GetAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -35,12 +38,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
+            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task GetAsync(this IWorkspacesOperations operations, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task GetAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.GetWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.GetWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
     }

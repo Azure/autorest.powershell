@@ -24,9 +24,12 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static Microsoft.Rest.Azure.IPage<string> ListByResourceGroup(this IWorkspacesOperations operations)
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
+            /// </param>
+            public static Microsoft.Rest.Azure.IPage<string> ListByResourceGroup(this IWorkspacesOperations operations, string resourceGroupName)
             {
-                return ((IWorkspacesOperations)operations).ListByResourceGroupAsync().GetAwaiter().GetResult();
+                return ((IWorkspacesOperations)operations).ListByResourceGroupAsync(resourceGroupName).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -35,12 +38,15 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
+            /// <param name='resourceGroupName'>
+            /// The name of the resource group. The name is case insensitive.
+            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task<Microsoft.Rest.Azure.IPage<string>> ListByResourceGroupAsync(this IWorkspacesOperations operations, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task<Microsoft.Rest.Azure.IPage<string>> ListByResourceGroupAsync(this IWorkspacesOperations operations, string resourceGroupName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                using (var _result = await operations.ListByResourceGroupWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ListByResourceGroupWithHttpMessagesAsync(resourceGroupName, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
