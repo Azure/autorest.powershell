@@ -9,13 +9,26 @@ import { Host } from '@azure-tools/autorest-extension-base';
 import { TrieNode } from '../utils/TrieNode';
 
 const predifinedNamespaces: Set<string> = new Set<string>(['Newtonsoft.Json', 'Newtonsoft.Json.Converters', 'System.Collections', 'System.Collections.Generic', 'System.Net', 'System.Net.Http', 'System.Threading', 'System.Threading.Tasks', 'Microsoft.Rest.Serialization', 'System.IO', 'System.Runtime', 'System.Runtime.Serialization', 'Microsoft.Rest', 'Microsoft.Rest.Azure', 'System.Linq', 'Models']);
+const exceptionClassNames: Map<string, string> = new Map<string, string>([
+  ['JsonTransformation', 'Microsoft'],
+  ['SafeJsonConvert', 'Microsoft'],
+  ['Formatting', ''],
+  ['DateFormatHandling', ''],
+  ['DateTimeZoneHandling', ''],
+  ['NullValueHandling', ''],
+  ['ReferenceLoopHandling', '']
+]);
 const roots: Map<string, TrieNode> = initTrie(predifinedNamespaces);
 const usingRegex = /\n {4}using .*;/i;
 const thisRegex = /this\./g;
+const characterCheckRegex = /(?![a-zA-Z])/i;
 
 export async function simplifierPlugin(service: Host) {
   const files = await service.ListInputs();
   const trimTasks = files.map(async file => {
+    if (file.indexOf('MaintenanceConfiguration.cs') != -1) {
+      const a = 'a';
+    }
     let namespacesToAdd: Set<string> = new Set<string>();
     let content: string = await service.ReadFile(file);
     const usings = findUsing(content, namespacesToAdd);
@@ -78,7 +91,7 @@ function trimNamespace(content: string, namespacesToAdd: Set<string>): string {
       if (start != -1 && start + key.length < content.length) {
         end = content.indexOf(' ', start + key.length);
         const namespaceToTrim = findChildNamespace(content.substring(start + key.length + 1, end).split('.'), root, namespacesToAdd);
-        if (namespaceToTrim !== key && predifinedNamespaces.has(namespaceToTrim)) {
+        if (namespaceToTrim != '') {
           content = trim(content, start, start + namespaceToTrim.length + 1);
         } else {
           start = start + key.length;
@@ -90,17 +103,35 @@ function trimNamespace(content: string, namespacesToAdd: Set<string>): string {
 }
 
 function findChildNamespace(segments: Array<string>, root: TrieNode, namespacesToAdd: Set<string>): string {
+  let className: string = segments.pop()!;
+  if (className.search(characterCheckRegex) != -1) {
+    segments.push(className.substring(0, className.search(characterCheckRegex)));
+  }
   let namespaceToTrim = root.value;
-  for (const segment of segments) {
+  let currentNamespaces: Array<string> = new Array<string>();
+  let i = 0;
+  for (; i < segments.length; i++) {
+    let segment = segments[i];
     if (!root.hasChild(segment)) {
       break;
     }
     root = root.getChild(segment)!;
     namespaceToTrim += ('.' + segment);
     if (predifinedNamespaces.has(namespaceToTrim)) {
-      namespacesToAdd.add(`\n    using ${namespaceToTrim};`);
+      currentNamespaces.push(`\n    using ${namespaceToTrim};`);
     }
   }
+  if (!predifinedNamespaces.has(namespaceToTrim)) {
+    return '';
+  }
+  if (exceptionClassNames.has(segments[i])) {
+    //can't handle this case, have to hard code 'SafeJsonConvert'
+    if (segments[i] == 'SafeJsonConvert') {
+      return exceptionClassNames.get(segments[i])!;
+    }
+    namespaceToTrim = exceptionClassNames.get(segments[i])!;
+  }
+  currentNamespaces.forEach(namespace => namespacesToAdd.add(namespace));
   return namespaceToTrim;
 }
 
