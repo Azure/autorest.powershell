@@ -1,11 +1,13 @@
 # Load Remodeler
 
 ### Autorest plugin configuration
+
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
-AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
+  AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 > modelerfour configuration
-``` yaml
+
+```yaml
 modelerfour:
   emit-yaml-tags: false
   lenient-model-deduplication: true
@@ -17,27 +19,26 @@ modelerfour:
 
 > if the modeler is loaded already, use that one, otherwise grab it.
 
-``` yaml !isLoaded('@autorest/modelerfour')
+```yaml !isLoaded('@autorest/modelerfour')
 use-extension:
   "@autorest/modelerfour": "4.23.1"
-
-# will use highest 2.0.x 
+# will use highest 2.0.x
 ```
 
-
 > Multi-Api Mode
-``` yaml
+
+```yaml
 pipeline-model: v3
 ```
 
 > Folders
-``` yaml
+
+```yaml
 use-namespace-folders: false
 current-folder: .
 ```
 
-
-``` yaml
+```yaml
 declare-directive:
   no-inline: >-
     (() => {
@@ -47,11 +48,11 @@ declare-directive:
         transform: "$.details.default['skip-inline'] = true;"
       };
     })()
-
 ```
 
 # Pipeline Configuration
-``` yaml
+
+```yaml
 pipeline:
   createSdkInlinedPropertiesPlugin:
     input: modelerfour/identity
@@ -61,22 +62,21 @@ pipeline:
 
   tweakSdkModelPlugin:
     input: csnamerSdk
- 
+
   generate:
     input: tweakSdkModelPlugin
 
-  simplifierPlugin:
-    input: generate
+  # simplifierPlugin:
+  #   input: generate
 
   text-transform:
-    input: simplifierPlugin
+    input: generate
     scope: scope-here
 
   # output-artifact: source-file-csharp
   emitter:
     input: text-transform
     scope: scope-here
-
 
 scope-here:
   is-object: false
@@ -87,7 +87,6 @@ scope-here:
     - source-file-other
     - binary-file
     - preserved-files
-
 
 # Specific Settings for cm emitting - selects the file types and format that cmv2-emitter will spit out.
 code-model-emitter-settings:
@@ -103,14 +102,11 @@ output-artifact:
   - source-file-powershell
   - source-file-other
   - binary-file
-  - preserved-files  
-  
-directive: 
+  - preserved-files
+
+directive:
   - reason: FixFromXML
     from: source-file-csharp
     where: $
     transform: return $.replace( /FromXml/g , 'FromJson');
-
-
 ```
-
