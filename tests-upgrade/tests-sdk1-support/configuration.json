@@ -34,7 +34,6 @@
         "datamodels-datatypes-datetime",
         "datamodels-datatypes-file",
         "datamodels-datatypes-integer",
-        "datamodels-datatypes-mixedtypes",
         "datamodels-datatypes-nullable",
         "datamodels-datatypes-object",
         "datamodels-datatypes-string",
