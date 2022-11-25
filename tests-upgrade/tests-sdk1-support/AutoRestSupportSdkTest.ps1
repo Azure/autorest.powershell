@@ -54,7 +54,7 @@ function GenerateAutorestCshapSdkCode {
     $result = (autorest --use:$script:AutoRestCsharp --tag=$($TestSdk.TestName).csharp) | Out-String
     Write-Debug "$($TestSdk.TestName) generated csharp debug information"
     Write-Debug $result
-    if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
+    if ($LASTEXITCODE -ne 0) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.CsharpSdkFolder)) {
         return $false
@@ -72,7 +72,7 @@ function GenerateAutorestPowerShellSdkCode {
     Write-Debug "$($TestSdk.TestName) generated powershell debug information"
     Write-Debug $result
 
-    if (($result -match 'error') -or ($result -match 'exception') -or ($result -match 'fatal') -or ($result -match 'fail')) {
+    if ($LASTEXITCODE -ne 0) {
         return $false
     } elseif(!(Test-Path -Path $TestSdk.PowerShellSdkFolder)) {
         return $false

@@ -917,27 +917,7 @@ input-file:
 namespace: Microsoft.Azure.Sample
 output-folder: datamodels-datatypes-integer\powershell
 ```
-### Tag: datamodels-datatypes-mixedtypes.csharp
-```yaml $(tag) == 'datamodels-datatypes-mixedtypes.csharp'
-csharp: true
-input-file:
-    - .\datamodels-datatypes-mixedtypes\swagger.json
 
-namespace: Microsoft.Azure.Sample
-output-folder: datamodels-datatypes-mixedtypes\csharp
-```
-
-### Tag: datamodels-datatypes-mixedtypes.powershell
-
-```yaml $(tag) == 'datamodels-datatypes-mixedtypes.powershell'
-isSdkGenerator: true
-powershell: true
-input-file:
-    - .\datamodels-datatypes-mixedtypes\swagger.json
-
-namespace: Microsoft.Azure.Sample
-output-folder: datamodels-datatypes-mixedtypes\powershell
-```
 ### Tag: datamodels-datatypes-nullable.csharp
 ```yaml $(tag) == 'datamodels-datatypes-nullable.csharp'
 csharp: true
