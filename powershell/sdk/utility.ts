@@ -12,7 +12,7 @@ export class Helper {
   constructor() { }
 
   public HasConstrains(schema: Schema): boolean {
-    if (!!(<any>schema).minium || !!(<any>schema).maximum || !!(<any>schema).maxLength || !!(<any>schema).minLength || !!(<any>schema).maxItems || !!(<any>schema).minItems || !!(<any>schema).multipleOf || !!(<any>schema).pattern || !!(<any>schema).uniqueItems) {
+    if (!!(<any>schema).minimum || !!(<any>schema).maximum || !!(<any>schema).maxLength || !!(<any>schema).minLength || !!(<any>schema).maxItems || !!(<any>schema).minItems || !!(<any>schema).multipleOf || !!(<any>schema).pattern || !!(<any>schema).uniqueItems) {
       return true;
     }
     return false;
@@ -57,47 +57,49 @@ export class Helper {
   private appendConstraintValidations(valueReference: string, sb: Array<string>, model: Schema) {
     const schema = <any>model;
     if (schema.maximum) {
-      const rule = schema.exclusiveMaximum ? 'ExclusiveMaximum' : 'Maximum';
-      sb.push(`if (${valueReference} > ${schema.maximum})`);
+      const rule = schema.exclusiveMaximum ? 'ExclusiveMaximum' : 'InclusiveMaximum';
+      const cmp = schema.exclusiveMaximum ? '>=' : '>';
+      sb.push(`if (${valueReference} ${cmp} ${schema.maximum})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.maximum});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.maximum});`);
       sb.push('}');
     }
-    if (schema.minium) {
-      const rule = schema.exclusiveMinimum ? 'ExclusiveMinimum' : 'Minimum';
-      sb.push(`if (${valueReference} < ${schema.minium})`);
+    if (schema.minimum) {
+      const rule = schema.exclusiveMinimum ? 'ExclusiveMinimum' : 'InclusiveMinimum';
+      const cmp = schema.exclusiveMinimum ? '<=' : '<';
+      sb.push(`if (${valueReference} ${cmp} ${schema.minimum})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.minium});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.minimum});`);
       sb.push('}');
     }
     if (schema.maxItems) {
       sb.push(`if (${valueReference}.Count > ${schema.maxItems})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxItems, "${valueReference.replace('this.', '')}", ${schema.maxItems});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxItems, "${valueReference.replace('this.', '')}", ${schema.maxItems});`);
       sb.push('}');
     }
     if (schema.maxLength) {
       sb.push(`if (${valueReference}.Length > ${schema.maxLength})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "${valueReference.replace('this.', '')}", ${schema.maxLength});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "${valueReference.replace('this.', '')}", ${schema.maxLength});`);
       sb.push('}');
     }
     if (schema.minLength) {
       sb.push(`if (${valueReference}.Length < ${schema.minLength})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "${valueReference.replace('this.', '')}", ${schema.minLength});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "${valueReference.replace('this.', '')}", ${schema.minLength});`);
       sb.push('}');
     }
     if (schema.minItems) {
       sb.push(`if (${valueReference}.Count < ${schema.minItems})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinItems, "${valueReference.replace('this.', '')}", ${schema.minItems});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinItems, "${valueReference.replace('this.', '')}", ${schema.minItems});`);
       sb.push('}');
     }
     if (schema.multipleOf) {
       sb.push(`if (${valueReference} % ${schema.multipleOf} != 0)`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MultipleOf, "${valueReference.replace('this.', '')}", ${schema.multipleOf});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MultipleOf, "${valueReference.replace('this.', '')}", ${schema.multipleOf});`);
       sb.push('}');
     }
     if (schema.pattern) {
@@ -108,22 +110,22 @@ export class Helper {
       }
       sb.push(`if (${condition})`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${schema.pattern});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${schema.pattern});`);
       sb.push('}');
     }
     if (schema.uniqueItems && 'true' === schema.uniqueItems.toString()) {
       sb.push(`if (${valueReference}.Count != System.Linq.Enumerable.Count(System.Linq.Enumerable.Distinct(${valueReference})))`);
       sb.push('{');
-      sb.push(`  throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.UniqueItems, "${valueReference.replace('this.', '')}");`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.UniqueItems, "${valueReference.replace('this.', '')}");`);
       sb.push('}');
     }
   }
-  public ValidateType(schema: Schema, scope: Schema, valueReference: string, isNullable: boolean): string {
+  public ValidateType(schema: Schema, scope: any, valueReference: string, isNullable: boolean): string {
     const sb = new Array<string>();
     if (!scope) {
       throw new Error('scope is null');
     }
-    if (!!schema && this.ShouldValidateChain(schema)) {
+    if (!!schema && isObjectSchema(schema) && this.ShouldValidateChain(schema)) {
       sb.push(`${valueReference}.Validate();`);
     }
     if (this.HasConstrains(schema)) {
@@ -134,9 +136,10 @@ export class Helper {
       const elementVar = 'element';
       const innerValidation = this.ValidateType((<ArraySchema>schema).elementType, scope, elementVar, true);
       if (innerValidation) {
+        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
         sb.push(`foreach (var ${elementVar} in ${valueReference})`);
         sb.push('{');
-        sb.push(`  ${innerValidation}`);
+        sb.push(`${innerValidation}`);
         sb.push('}');
       }
     } else if (schema && this.isDictionarySchema(schema) && this.ShouldValidateChain(schema)) {
@@ -144,17 +147,18 @@ export class Helper {
       const valueVar = 'valueElement';
       const innerValidation = this.ValidateType((<DictionarySchema>schema).elementType, scope, valueVar, true);
       if (innerValidation) {
+        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
         sb.push(`foreach (var ${valueVar} in ${valueReference}.Values)`);
         sb.push('{');
-        sb.push(`  ${innerValidation}`);
+        sb.push(`${innerValidation}`);
         sb.push('}');
       }
     }
     if (sb.length > 0) {
       if (this.IsValueType(schema.type) && !isNullable) {
-        return sb.join('\r\n');
+        return sb.map(str => '            ' + str).join('\r\n');
       } else {
-        return `if (${valueReference} != null)\r\n{\r\n${sb.join('\r\n')}\r\n}`;
+        return `            if (${valueReference} != null)\r\n            {\r\n${sb.map(str => '                ' + str).join('\r\n')}\r\n            }`;
       }
     }
     return '';
