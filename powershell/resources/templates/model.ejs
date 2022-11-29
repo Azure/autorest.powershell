@@ -117,10 +117,10 @@ if (model.language.default.baseConstructorCall) {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-p.property.language.csharp.name%>");
             }
 <%});-%>
-<%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
+<%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p.property.schema) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
             anythingToValidate = true;
 -%>
-<%#-ValidateType(p.property.schema)%>
+<%-project.helper.ValidateType(p.property.schema, model, `this.${p.name}`, !project.helper.IsValueType(p.property.schema.type))%>
 <% }); -%>
 <% if(!anythingToValidate) { -%>
             //Nothing to validate

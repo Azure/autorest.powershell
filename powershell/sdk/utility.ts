@@ -7,12 +7,12 @@ import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, Sc
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
+import { pascalCase, camelCase } from '@azure-tools/codegen';
 export class Helper {
   constructor() { }
 
-  public HasConstrains(virtualProperty: VirtualProperty): boolean {
-    const schema = <any>virtualProperty.property.schema;
-    if (!!schema.minium || !!schema.maximum || !!schema.maxLength || !!schema.minLength || !!schema.maxItems || !!schema.minItems || !!schema.multipleOf || !!schema.pattern || !!schema.uniqueItems) {
+  public HasConstrains(schema: Schema): boolean {
+    if (!!(<any>schema).minimum || !!(<any>schema).maximum || !!(<any>schema).maxLength || !!(<any>schema).minLength || !!(<any>schema).maxItems || !!(<any>schema).minItems || !!(<any>schema).multipleOf || !!(<any>schema).pattern || !!(<any>schema).uniqueItems) {
       return true;
     }
     return false;
@@ -45,7 +45,7 @@ export class Helper {
         } else if (isObjectSchema(modelToValidate)) {
           const virtualProperties = getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
           values(virtualProperties).where(p => isObjectSchema(p.property.schema)).forEach(cp => typesToValidate.push(cp.property.schema));
-          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant) || this.HasConstrains(p))) {
+          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant) || this.HasConstrains(p.property.schema))) {
             return true;
           }
         }
@@ -54,6 +54,115 @@ export class Helper {
     return false;
   }
 
+  private appendConstraintValidations(valueReference: string, sb: Array<string>, model: Schema) {
+    const schema = <any>model;
+    if (schema.maximum) {
+      const rule = schema.exclusiveMaximum ? 'ExclusiveMaximum' : 'InclusiveMaximum';
+      const cmp = schema.exclusiveMaximum ? '>=' : '>';
+      sb.push(`if (${valueReference} ${cmp} ${schema.maximum})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.maximum});`);
+      sb.push('}');
+    }
+    if (schema.minimum) {
+      const rule = schema.exclusiveMinimum ? 'ExclusiveMinimum' : 'InclusiveMinimum';
+      const cmp = schema.exclusiveMinimum ? '<=' : '<';
+      sb.push(`if (${valueReference} ${cmp} ${schema.minimum})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.minimum});`);
+      sb.push('}');
+    }
+    if (schema.maxItems) {
+      sb.push(`if (${valueReference}.Count > ${schema.maxItems})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxItems, "${valueReference.replace('this.', '')}", ${schema.maxItems});`);
+      sb.push('}');
+    }
+    if (schema.maxLength) {
+      sb.push(`if (${valueReference}.Length > ${schema.maxLength})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "${valueReference.replace('this.', '')}", ${schema.maxLength});`);
+      sb.push('}');
+    }
+    if (schema.minLength) {
+      sb.push(`if (${valueReference}.Length < ${schema.minLength})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "${valueReference.replace('this.', '')}", ${schema.minLength});`);
+      sb.push('}');
+    }
+    if (schema.minItems) {
+      sb.push(`if (${valueReference}.Count < ${schema.minItems})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinItems, "${valueReference.replace('this.', '')}", ${schema.minItems});`);
+      sb.push('}');
+    }
+    if (schema.multipleOf) {
+      sb.push(`if (${valueReference} % ${schema.multipleOf} != 0)`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MultipleOf, "${valueReference.replace('this.', '')}", ${schema.multipleOf});`);
+      sb.push('}');
+    }
+    if (schema.pattern) {
+      const constraintValue = '"' + schema.pattern.replace('\\', '\\\\').replace('"', '\\"') + '"';
+      let condition = `!System.Text.RegularExpressions.Regex.IsMatch(${valueReference}, ${constraintValue})`;
+      if (schema.type === SchemaType.Dictionary) {
+        condition = `!System.Linq.Enumerable.All(${valueReference}.Values, value => System.Text.RegularExpressions.Regex.IsMatch(value, ${constraintValue}))`;
+      }
+      sb.push(`if (${condition})`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${schema.pattern});`);
+      sb.push('}');
+    }
+    if (schema.uniqueItems && 'true' === schema.uniqueItems.toString()) {
+      sb.push(`if (${valueReference}.Count != System.Linq.Enumerable.Count(System.Linq.Enumerable.Distinct(${valueReference})))`);
+      sb.push('{');
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.UniqueItems, "${valueReference.replace('this.', '')}");`);
+      sb.push('}');
+    }
+  }
+  public ValidateType(schema: Schema, scope: any, valueReference: string, isNullable: boolean): string {
+    const sb = new Array<string>();
+    if (!scope) {
+      throw new Error('scope is null');
+    }
+    if (!!schema && isObjectSchema(schema) && this.ShouldValidateChain(schema)) {
+      sb.push(`${valueReference}.Validate();`);
+    }
+    if (this.HasConstrains(schema)) {
+      this.appendConstraintValidations(valueReference, sb, schema);
+    }
+    if (schema && this.isArraySchema(schema) && this.ShouldValidateChain(schema)) {
+      // ToDo: Should try to get a unique name instead of element
+      const elementVar = 'element';
+      const innerValidation = this.ValidateType((<ArraySchema>schema).elementType, scope, elementVar, true);
+      if (innerValidation) {
+        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
+        sb.push(`foreach (var ${elementVar} in ${valueReference})`);
+        sb.push('{');
+        sb.push(`${innerValidation}`);
+        sb.push('}');
+      }
+    } else if (schema && this.isDictionarySchema(schema) && this.ShouldValidateChain(schema)) {
+      // ToDo: Should try to get a unique name instead of valueElement
+      const valueVar = 'valueElement';
+      const innerValidation = this.ValidateType((<DictionarySchema>schema).elementType, scope, valueVar, true);
+      if (innerValidation) {
+        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
+        sb.push(`foreach (var ${valueVar} in ${valueReference}.Values)`);
+        sb.push('{');
+        sb.push(`${innerValidation}`);
+        sb.push('}');
+      }
+    }
+    if (sb.length > 0) {
+      if (this.IsValueType(schema.type) && !isNullable) {
+        return sb.map(str => '            ' + str).join('\r\n');
+      } else {
+        return `            if (${valueReference} != null)\r\n            {\r\n${sb.map(str => '                ' + str).join('\r\n')}\r\n            }`;
+      }
+    }
+    return '';
+  }
   public ShouldValidateChain(schema: Schema): boolean {
     if (!schema) {
       return false;
@@ -83,15 +192,13 @@ export class Helper {
   }
 
   public CamelCase(str: string): string {
-    str = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    }).replace(/\s+/g, '');
-    return str;
+    // str = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+    //   return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    // }).replace(/\s+/g, '');
+    return camelCase(str);
   }
   public PascalCase(str: string): string {
-    str.replace(/(\w)(\w*)/g,
-      function (g0, g1, g2) { return g1.toUpperCase() + g2.toLowerCase(); });
-    return str;
+    return pascalCase(str);
   }
   public GetAllPublicVirtualProperties(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
     return getAllPublicVirtualPropertiesForSdk(virtualProperties);

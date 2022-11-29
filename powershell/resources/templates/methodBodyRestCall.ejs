@@ -4,6 +4,9 @@
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
             }
+<%if(method.requests[0].protocol.http.method != 'patch') {-%>
+<%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
+<%}-%>
 <%}-%>
 <% });-%>
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
@@ -15,7 +18,7 @@
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
             }
 <% } -%>
-<%# ToDo: add support for parameter.CanBeValidated  && (Model.HttpMethod != HttpMethod.Patch || parameter.Location != ParameterLocation.Body)-%>
+<%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
 <%});}-%>
 <%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
 <%# ToDo: add support for BuildInputMappings -%>
@@ -39,6 +42,9 @@
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
+<%method.parameters.filter(p => p.implementation != 'Client').forEach(function(p) {-%>
+                tracingParameters.Add("<%-p.language.default.name%>", <%-p.language.default.name%>);
+<%});-%>
 <%# ToDo: currently we just add the unexpanded body parameter, and need to be fixed in the future %>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
                 tracingParameters.Add("<%-parameter.language.default.name%>", <%-parameter.language.default.name%>);
