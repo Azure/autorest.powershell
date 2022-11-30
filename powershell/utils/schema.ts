@@ -174,8 +174,8 @@ export function getAllPublicVirtualPropertiesForSdk(virtualProperties?: VirtualP
     inherited: [],
     inlined: []
   };
-
-  return values(props.inherited, props.owned, props.inlined).where(each => !each.private).toArray();
+  // meanwhile we need to skip discriminator
+  return values(props.inherited, props.owned, props.inlined).where(each => !each.private && !each.property.isDiscriminator).toArray();
 }
 
 export function getAllPublicVirtualPropertiesForSdkWithoutInherited(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
@@ -185,7 +185,7 @@ export function getAllPublicVirtualPropertiesForSdkWithoutInherited(virtualPrope
     inlined: []
   };
 
-  return values(props.owned, props.inlined).where(each => !each.private).toArray();
+  return values(props.owned, props.inlined).where(each => !each.private && !each.property.isDiscriminator).toArray();
 }
 
 export function getAllVirtualProperties(virtualProperties?: VirtualProperties): Array<VirtualProperty> {
