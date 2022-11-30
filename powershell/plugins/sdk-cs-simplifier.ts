@@ -16,20 +16,19 @@ const exceptionClassNames: Map<string, string> = new Map<string, string>([
   ['DateFormatHandling', ''],
   ['DateTimeZoneHandling', ''],
   ['NullValueHandling', ''],
-  ['ReferenceLoopHandling', '']
+  ['ReferenceLoopHandling', ''],
+  ['Headers', '']
 ]);
 const root: TrieNode = initTrie(predifinedNamespaces);
 const usingRegex = /\n {4}using .*;/i;
 const namespaceRegex = /(?<=using )(.*)(?=[;])/i;
+//const thisRegex = /this\.(?![Client])/g;
 const thisRegex = /this\./g;
 const characterCheckRegex = /(?![a-zA-Z])/i;
 
 export async function simplifierPlugin(service: Host) {
   const files = await service.ListInputs();
   const trimTasks = files.map(async file => {
-    if (file.indexOf('MaintenanceConfiguration.cs') != -1) {
-      const a = 'a';
-    }
     let namespacesToAdd: Set<string> = new Set<string>();
     let content: string = await service.ReadFile(file);
     const usings = findUsing(content, namespacesToAdd);
