@@ -1,0 +1,203 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "DatabricksClient",
+    "version": "2018-04-01",
+    "description": "ARM Databricks"
+  },
+  "host": "management.azure.com",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "security": [
+    {
+      "azure_auth": ["user_impersonation"]
+    }
+  ],
+  "securityDefinitions": {
+    "azure_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+      "flow": "implicit",
+      "description": "Azure Active Directory OAuth2 Flow",
+      "scopes": {
+        "user_impersonation": "impersonate your user account"
+      }
+    }
+  },
+  "paths": {
+    "/providers/Microsoft.Databricks/operations/{name}": {
+      "get": {
+        "tags": ["Operation"],
+        "description": "Get the available RP operation.",
+        "operationId": "Operation_get",
+        "parameters": [
+          {
+            "name": "parameters",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/operation"
+            },
+            "description": "Parameters supplied to the create or update a workspace."
+          },
+          {
+            "$ref": "#/parameters/name"
+          },
+          {
+            "$ref": "#/parameters/ApiVersionParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. The request has succeeded.",
+            "schema": {
+              "$ref": "#/definitions/operation"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "operation": {
+      "properties": {
+        "typeAny": {
+          "type": "object",
+          "description": "This is any."
+        },
+        "typeDictionary": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "This is dictionary."
+        },
+        "typeObject": {
+          "type": "object",
+          "description": "This is object",
+          "properties": {
+            "objectMember": {
+              "type": "string"
+            }
+          }
+        },
+        "typeTime": {
+          "type": "integer",
+          "format": "unixtime",
+          "description": "This is string"
+        },
+        "typeString": {
+          "type": "string",
+          "format": "unixtime",
+          "description": "This is string"
+        },
+        "typeCredential": {
+          "type": "string",
+          "format": "password",
+          "description": "This is password"
+        },
+        "typeBinary": {
+          "type": "string",
+          "format": "byte",
+          "description": "This is binary"
+        },
+        "typeDuration": {
+          "type": "string",
+          "format": "duration",
+          "description": "This is duration"
+        },
+        "typeUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "This is uri"
+        },
+        "typeUuid": {
+          "type": "string",
+          "format": "uuid",
+          "description": "This is uuid"
+        },
+        "typeDateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "This is date-time"
+        },
+        "typeDate": {
+          "type": "string",
+          "format": "date",
+          "description": "This is date"
+        },
+        "typeByteArray": {
+          "type": "string",
+          "format": "byte",
+          "description": "This is byte array"
+        },
+        "typeBoolean": {
+          "type": "boolean",
+          "description": "This is boolean"
+        },
+        "typeInteger": {
+          "type": "integer",
+          "description": "This is integer",
+          "minimum": 10,
+          "exclusiveMinimum": false,
+          "maximum": 100,
+          "exclusiveMaximum": true
+        },
+        "typeNumber": {
+          "type": "number",
+          "description": "This is number"
+        },
+        "typeConstant": {
+          "type": "string",
+          "description": "This is constant",
+          "enum": ["const"],
+          "x-ms-enum": {
+            "name": "typeConstant",
+            "modelAsString": true
+          }
+        },
+        "typeChoice": {
+          "type": "string",
+          "description": "This is choice",
+          "enum": ["choice1", "choice2"]
+        },
+        "typeSealedChoice": {
+          "type": "string",
+          "description": "This is sealed choice",
+          "enum": ["sealedchoice1", "sealedchoice2"],
+          "x-ms-enum": {
+            "name": "typeSealedChoice",
+            "modelAsString": true
+          }
+        },
+        "typeArray": {
+          "type": "array",
+          "description": "This is array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10
+        }
+      },
+      "required": ["typeString", "typeInteger", "typeArray"],
+      "description": "Information about workspace."
+    }
+  },
+  "parameters": {
+    "ApiVersionParameter": {
+      "name": "api-version",
+      "in": "query",
+      "required": true,
+      "type": "string",
+      "description": "The API version to use for this operation."
+    },
+    "name": {
+      "name": "name",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "The name of the operation."
+    }
+  }
+}

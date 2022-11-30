@@ -49,6 +49,7 @@
         "extension-ms-mutability",
         "extension-ms-pageable",
         "extension-ms-paramlocation",
+        "model-validate",
         "provider-aks",
         "provider-containerRegistry",
         "provider-storage"
