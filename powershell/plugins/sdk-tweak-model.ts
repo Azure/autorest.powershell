@@ -26,9 +26,11 @@ async function tweakModel(state: State): Promise<SdkModel> {
 
   tweakSchema(model);
 
-  addAzureProperties(model.globalParameters || []);
+  model.globalParameters = model.globalParameters ?? []
 
-  tweakGlobalParameter(model.globalParameters || []);
+  addAzureProperties(model.globalParameters);
+
+  tweakGlobalParameter(model.globalParameters);
 
   await tweakOperation(state);
 

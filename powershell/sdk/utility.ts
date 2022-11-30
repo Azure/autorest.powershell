@@ -103,14 +103,14 @@ export class Helper {
       sb.push('}');
     }
     if (schema.pattern) {
-      const constraintValue = '"' + schema.pattern.replace('\\', '\\\\').replace('"', '\\"') + '"';
+      const constraintValue = "\"" + schema.pattern.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\"";
       let condition = `!System.Text.RegularExpressions.Regex.IsMatch(${valueReference}, ${constraintValue})`;
       if (schema.type === SchemaType.Dictionary) {
         condition = `!System.Linq.Enumerable.All(${valueReference}.Values, value => System.Text.RegularExpressions.Regex.IsMatch(value, ${constraintValue}))`;
       }
       sb.push(`if (${condition})`);
       sb.push('{');
-      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${schema.pattern});`);
+      sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${constraintValue});`);
       sb.push('}');
     }
     if (schema.uniqueItems && 'true' === schema.uniqueItems.toString()) {

@@ -57,8 +57,10 @@
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
 <%# ToDo: buildurl, currently only added simple cases, besides we need to handle skip url encoding -%>
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "<%-method.requests[0].protocol.http.path.substring(1)%>").ToString();
-<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'path').forEach(function (pathParameter) { -%>
-            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", System.Uri.EscapeDataString(this.Client.<%-pathParameter.language.default.name%>));
+<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'path').forEach(function (pathParameter) {
+var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
+-%>
+            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", System.Uri.EscapeDataString(<%-prefix%><%-pathParameter.language.default.name%>));
 <% });}-%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
