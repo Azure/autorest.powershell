@@ -16,6 +16,9 @@ namespace <%- project.namespace %>.Models
     /// </remarks>
 <% } -%>
 <%# ToDo: support NeedsPolymorphicConverter-%>
+<% if (model.discriminatorValue || model.discriminator) {-%>
+    [Newtonsoft.Json.JsonObject("<%-model.discriminatorValue || project.helper.CamelCase(model.language.default.name)%>")]
+<% } -%>
 <% if(project.helper.NeedsTransformationConverter(model)) {-%>
     [Microsoft.Rest.Serialization.JsonTransformation]
 <% }-%>

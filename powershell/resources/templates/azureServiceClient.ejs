@@ -65,6 +65,10 @@ namespace <%- project.namespace %>
                     }
             };
 <%# ToDo: need support for polymorphicType -%>
+<%(project.model.schemas.objects||[]).filter(m => m.discriminator).forEach(function(m){-%>
+            SerializationSettings.Converters.Add(new Microsoft.Rest.Serialization.PolymorphicSerializeJsonConverter<<%-m.language.default.name%>>("<%-m.discriminator.property.serializedName%>"));
+            DeserializationSettings.Converters.Add(new Microsoft.Rest.Serialization.PolymorphicDeserializeJsonConverter<<%-m.language.default.name%>>("<%-m.discriminator.property.serializedName%>"));
+<%});-%>
             CustomInitialize();
 <% if(project.needsTransformationConverter()) {-%>
             DeserializationSettings.Converters.Add(new Microsoft.Rest.Serialization.TransformationJsonConverter());
