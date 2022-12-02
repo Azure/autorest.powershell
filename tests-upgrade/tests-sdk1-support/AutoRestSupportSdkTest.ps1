@@ -210,7 +210,7 @@ try {
         $AutoRestCsharp = Join-Path $PSScriptRoot "..\..\..\autorest.csharp"
     }
     if ([System.String]::IsNullOrEmpty($AutoRestPowerShell)) {
-        $AutoRestPowerShell = Join-Path $PSScriptRoot "..\..\..\autorest.powershell"
+        $AutoRestPowerShell = Join-Path $PSScriptRoot "..\.."
     }
 
     $configuration = (Get-Content -Path (Join-Path $PSScriptRoot "configuration.json") | ConvertFrom-Json)

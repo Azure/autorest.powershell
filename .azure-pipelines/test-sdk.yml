@@ -1,0 +1,50 @@
+pool:
+  name: Hosted VS2017
+  demands: npm
+
+steps:
+- task: NodeTool@0
+  displayName: 'Use Node 14.15.5'
+  inputs:
+    versionSpec: 14.15.5
+
+- task: Npm@1
+  displayName: 'Install autorest@latest'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g "autorest"'
+
+- task: Npm@1
+  displayName: 'Install @microsoft/rush'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/rush@5.63.1'
+
+- task: CmdLine@2
+  displayName: 'Rush sync-versions'
+  inputs:
+    script: 'rush sync-versions' 
+
+- task: CmdLine@2
+  displayName: 'Rush Update'
+  inputs:
+    script: 'rush update' 
+
+- task: CmdLine@2
+  displayName: 'Rush Rebuild'
+  inputs:
+    script: 'rush rebuild' 
+
+- pwsh: |
+   ./AutoRestUpgradeTest.ps1 -AllowList -SkipCsharp
+  workingDirectory: 'tests-upgrade/tests-sdk1-support'
+  displayName: 'Verify SDK generator'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Save artifacts'
+  inputs:
+    artifactName: CompareResult
+    targetPath: tests-upgrade\CompareResult
+  condition: succeededOrFailed()
