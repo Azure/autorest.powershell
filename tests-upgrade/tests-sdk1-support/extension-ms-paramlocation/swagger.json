@@ -1,0 +1,97 @@
+{
+
+    "swagger": "2.0",
+    "info": {
+      "title": "DatabricksClient",
+      "version": "2018-04-01",
+      "description": "ARM Databricks"
+    },
+    "host": "management.azure.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "security": [
+      {
+        "azure_auth": [
+          "user_impersonation"
+        ]
+      }
+    ],
+    "securityDefinitions": {
+      "azure_auth": {
+        "type": "oauth2",
+        "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize",
+        "flow": "implicit",
+        "description": "Azure Active Directory OAuth2 Flow",
+        "scopes": {
+          "user_impersonation": "impersonate your user account"
+        }
+      }
+    },
+    "paths": {
+      "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Databricks/workspaces/{workspaceName}": {
+        "get": {
+          "tags": [
+            "Workspaces"
+          ],
+          "operationId": "Workspaces_Get",
+          "description": "Gets the workspace.",
+          "parameters":[
+            {
+              "$ref": "#/parameters/ResourceGroupName"
+            },
+            {
+              "$ref": "#/parameters/WorkspaceName"
+            },
+            {
+              "$ref": "#/parameters/SubscriptionIdParameter"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK - Returns the workspace."
+            },
+            "default": {
+              "description": "Error response describing why the operation failed."
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "SubscriptionIdParameter": {
+        "name": "subscriptionId",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The ID of the target subscription."
+      },
+      "ResourceGroupName": {
+        "name": "resourceGroupName",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The name of the resource group. The name is case insensitive.",
+        "pattern": "^[-\\w\\._\\(\\)]+$",
+        "minLength": 1,
+        "maxLength": 90,
+        "x-ms-parameter-location": "method"
+      },
+      "WorkspaceName": {
+        "name": "workspaceName",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "description": "The name of the workspace.",
+        "minLength": 3,
+        "maxLength": 64,
+        "x-ms-parameter-location": "method"
+      }
+    }
+}
