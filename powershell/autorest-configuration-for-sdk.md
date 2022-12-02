@@ -65,11 +65,11 @@ pipeline:
   generate:
     input: tweakSdkModelPlugin
 
-  simplifierPlugin:
-    input: generate
+  # simplifierPlugin:
+  #   input: generate
 
   text-transform:
-    input: simplifierPlugin
+    input: generate
     scope: scope-here
 
   # output-artifact: source-file-csharp
