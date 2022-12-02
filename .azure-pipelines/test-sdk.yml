@@ -44,5 +44,5 @@ steps:
   displayName: 'Save artifacts'
   inputs:
     artifactName: CompareResult
-    targetPath: tests-upgrade\CompareResult
+    targetPath: tests-upgrade/tests-sdk1-support/CompareResult
   condition: succeededOrFailed()
