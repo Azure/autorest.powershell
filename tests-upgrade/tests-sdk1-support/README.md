@@ -1233,3 +1233,25 @@ input-file:
 namespace: Microsoft.Azure.Sample
 output-folder: extension-ms-paramlocation\powershell
 ```
+
+### Tag: model-validate.csharp
+```yaml $(tag) == 'model-validate.csharp'
+csharp: true
+input-file:
+    - .\model-validate\swagger.json
+
+namespace: Microsoft.Azure.Sample
+output-folder: model-validate\csharp
+```
+
+### Tag: model-validate.powershell
+
+```yaml $(tag) == 'model-validate.powershell'
+isSdkGenerator: true
+powershell: true
+input-file:
+    - .\model-validate\swagger.json
+
+namespace: Microsoft.Azure.Sample
+output-folder: model-validate\powershell
+```
