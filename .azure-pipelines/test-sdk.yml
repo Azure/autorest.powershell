@@ -36,7 +36,7 @@ steps:
     script: 'rush rebuild' 
 
 - pwsh: |
-   ./AutoRestUpgradeTest.ps1 -AllowList -SkipCsharp
+   ./AutoRestSupportSdkTest.ps1 -AllowList -SkipCsharp
   workingDirectory: 'tests-upgrade/tests-sdk1-support'
   displayName: 'Verify SDK generator'
 
@@ -44,5 +44,5 @@ steps:
   displayName: 'Save artifacts'
   inputs:
     artifactName: CompareResult
-    targetPath: tests-upgrade\CompareResult
+    targetPath: tests-upgrade/tests-sdk1-support/CompareResult
   condition: succeededOrFailed()
