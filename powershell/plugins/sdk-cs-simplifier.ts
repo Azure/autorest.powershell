@@ -16,19 +16,19 @@ const exceptionClassNames: Map<string, string> = new Map<string, string>([
   ['DateFormatHandling', ''],
   ['DateTimeZoneHandling', ''],
   ['NullValueHandling', ''],
-  ['ReferenceLoopHandling', '']
+  ['ReferenceLoopHandling', ''],
+  ['Headers', '']
 ]);
-const roots: Map<string, TrieNode> = initTrie(predifinedNamespaces);
+const root: TrieNode = initTrie(predifinedNamespaces);
 const usingRegex = /\n {4}using .*;/i;
+const namespaceRegex = /(?<=using )(.*)(?=[;])/i;
+//const thisRegex = /this\.(?![Client])/g;
 const thisRegex = /this\./g;
 const characterCheckRegex = /(?![a-zA-Z])/i;
 
 export async function simplifierPlugin(service: Host) {
   const files = await service.ListInputs();
   const trimTasks = files.map(async file => {
-    if (file.indexOf('MaintenanceConfiguration.cs') != -1) {
-      const a = 'a';
-    }
     let namespacesToAdd: Set<string> = new Set<string>();
     let content: string = await service.ReadFile(file);
     const usings = findUsing(content, namespacesToAdd);
@@ -55,15 +55,15 @@ function findUsing(content: string, namespacesToAdd: Set<string>): [number, numb
   let end = 0;
   while (start != -1) {
     let segment: string = content.substring(index);
-    start = segment.search(usingRegex);
+    start = segment.search(namespaceRegex);
     if (start != -1) {
-      end = segment.indexOf(';', start) + 1;
+      end = segment.indexOf(';', start);
       const namespace = segment.substring(start, end);
-      namespacesToAdd.add(namespace);
+      findChildNamespace(namespace.split('.'), root, namespacesToAdd);
       index += end;
     }
   }
-  return [content.search(usingRegex), index];
+  return [content.search(usingRegex), index + 1];
 }
 
 function sortNamespaces(namespaces: Array<string>): Array<string> {
@@ -83,14 +83,14 @@ function sortNamespaces(namespaces: Array<string>): Array<string> {
 }
 
 function trimNamespace(content: string, namespacesToAdd: Set<string>): string {
-  roots.forEach((root: TrieNode, key: string) => {
+  root.children.forEach((current: TrieNode, key: string) => {
     let start = 0;
     let end = 0;
     while (start != -1) {
       start = content.indexOf(key, start);
       if (start != -1 && start + key.length < content.length) {
         end = content.indexOf(' ', start + key.length);
-        const namespaceToTrim = findChildNamespace(content.substring(start + key.length + 1, end).split('.'), root, namespacesToAdd);
+        const namespaceToTrim = findChildNamespace(content.substring(start, end).split('.'), root, namespacesToAdd);
         if (namespaceToTrim != '') {
           content = trim(content, start, start + namespaceToTrim.length + 1);
         } else {
@@ -107,7 +107,7 @@ function findChildNamespace(segments: Array<string>, root: TrieNode, namespacesT
   if (className.search(characterCheckRegex) != -1) {
     segments.push(className.substring(0, className.search(characterCheckRegex)));
   }
-  let namespaceToTrim = root.value;
+  let namespaceToTrim = '';
   let currentNamespaces: Array<string> = new Array<string>();
   let i = 0;
   for (; i < segments.length; i++) {
@@ -116,7 +116,7 @@ function findChildNamespace(segments: Array<string>, root: TrieNode, namespacesT
       break;
     }
     root = root.getChild(segment)!;
-    namespaceToTrim += ('.' + segment);
+    namespaceToTrim += namespaceToTrim == '' ? segment : ('.' + segment);
     if (predifinedNamespaces.has(namespaceToTrim)) {
       currentNamespaces.push(`\n    using ${namespaceToTrim};`);
     }
@@ -139,21 +139,22 @@ function trim(content: string, start: number, end: number): string {
   return content.substring(0, start).concat(content.substring(end));
 }
 
-function initTrie(predifinedNamespaces: Set<string>): Map<string, TrieNode> {
-  let namespaceRoots: Map<string, TrieNode> = new Map<string, TrieNode>();
+function initTrie(predifinedNamespaces: Set<string>): TrieNode {
+  const dummy: TrieNode = new TrieNode('');
   predifinedNamespaces.forEach(namespace => {
     const names: Array<string> = namespace.split('.');
-    if (!namespaceRoots.has(names[0])) {
-      namespaceRoots.set(names[0], new TrieNode(names[0]));
+    if (!dummy.hasChild(names[0])) {
+      dummy.addChild(names[0]);
     }
-    let root: TrieNode = namespaceRoots.get(names[0])!;
+    let current: TrieNode = dummy.getChild(names[0])!;
     for (let i = 1; i < names.length; i++) {
-      if (!root.hasChild(names[i])) {
-        root?.addChild(names[i]);
+      if (!current.hasChild(names[i])) {
+        current?.addChild(names[i]);
       }
-      root = root.getChild(names[i])!;
-      root.isEnd = true;
+      current = current.getChild(names[i])!;
+      current.isEnd = true;
     }
   });
-  return namespaceRoots;
+
+  return dummy;
 }

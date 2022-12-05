@@ -7,7 +7,7 @@
 
 export class TrieNode {
   value: string;
-  private children: Map<string, TrieNode>;
+  children: Map<string, TrieNode>;
   isEnd: boolean;
   constructor(value: string) {
     this.value = value;

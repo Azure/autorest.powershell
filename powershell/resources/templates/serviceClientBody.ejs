@@ -163,7 +163,7 @@ if (parameters.length > 0) {-%>
         /// True: will dispose the provided httpClient on calling <%-project.model.info.title%>.Dispose(). False: will not dispose provided httpClient</param>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
-        /// </exception>this.Credentials
+        /// </exception>
         public <%-project.model.info.title%>(<%-project.model.language.default.requiredConstructorParametersDeclaration%>, System.Net.Http.HttpClient httpClient, bool disposeHttpClient) : this(httpClient, disposeHttpClient)
         {
 <%parameters.forEach(function(parameter) {-%>
