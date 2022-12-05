@@ -48,19 +48,7 @@
                 "required": true,
                 "description": "The workspace to create or update.",
                 "schema": {
-                  "required": [
-                      "properties"
-                   ],
-                  "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Workspace name"
-                    },
-                    "location": {
-                        "type": "string",
-                        "description": "Workspace region"
-                    }
-                  }
+                  "$ref": "#/definitions/Workspace"
                 }
             }
           ],
@@ -71,6 +59,22 @@
             "default": {
               "description": "Error response describing why the operation failed."
             }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Workspace": {
+        "type": "object",
+        "required": ["properties"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Workspace name"
+          },
+          "location": {
+            "type": "string",
+            "description": "Workspace region"
           }
         }
       }
