@@ -23,7 +23,7 @@ namespace <%- project.namespace %>.Models
     [Microsoft.Rest.Serialization.JsonTransformation]
 <% }-%>
 <%# ToDo: support ObsoleteAttribute-%>
-    public partial class <%-model.language.default.name%><%- model.parents && model.parents.immediate.length == 1 ? " : " + model.parents.immediate[0].language.default.name: ""%>
+    public partial class <%-model.language.default.name%><%- (model.extensions && model.extensions["x-ms-azure-resource"]) ? " : Microsoft.Rest.Azure.IResource": (model.parents && model.parents.immediate.length == 1) ? " : " + model.parents.immediate[0].language.default.name: ""%>
     {
         /// <summary>
         /// Initializes a new instance of the <%= model.language.default.name%> class.
