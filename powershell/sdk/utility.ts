@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema } from '@azure-tools/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
@@ -118,6 +118,52 @@ export class Helper {
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.UniqueItems, "${valueReference.replace('this.', '')}");`);
       sb.push('}');
+    }
+  }
+
+  private isKindOfString(schema: Schema): boolean {
+    if (schema.type === SchemaType.String) {
+      return true;
+    }
+    // ToDo: we need to figure how to handle the case when schema type is enum
+    // Skip it since there is a bug in IsKindOfString in the csharp generator
+    // if (schema.type === SchemaType.Choice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String) {
+    //   return true;
+    // }
+    // if (schema.type === SchemaType.SealedChoice
+    //   && (<ChoiceSchema>schema).choiceType.type === SchemaType.String) {
+    //   // currently assume modelAsString true
+    //   return true;
+    // }
+    return false;
+  }
+  public PathParameterString(parameter: Parameter): string {
+    if (parameter.protocol.http?.in !== 'path') {
+      return '';
+    }
+    const prefix = parameter.implementation === 'Client' ? 'this.Client.' : '';
+    let res = '';
+    if (this.isKindOfString(parameter.schema)) {
+      res = `${prefix}${parameter.language.default.name}`;
+    } else {
+      let serializationSettings = 'this.Client.SerializationSettings';
+      if (this.IsValueType(parameter.schema.type)) {
+        if (parameter.schema.type === SchemaType.Date) {
+          serializationSettings = 'new Microsoft.Rest.Serialization.DateJsonConverter()';
+        } else if (parameter.schema.type === SchemaType.DateTime) {
+          serializationSettings = 'new Microsoft.Rest.Serialization.DateTimeRfc1123JsonConverter()';
+        } else if (parameter.schema.type === SchemaType.Uri) {
+          serializationSettings = 'new Microsoft.Rest.Serialization.Base64UrlJsonConverter()';
+        } else if (parameter.schema.type === SchemaType.UnixTime) {
+          serializationSettings = 'new Microsoft.Rest.Serialization.UnixTimeJsonConverter()';
+        }
+      }
+      res = `Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(${prefix}${parameter.language.default.name}, ${serializationSettings}).Trim('"')`;
+    }
+    if (parameter.extensions && parameter.extensions['x-ms-skip-url-encoding']) {
+      return res;
+    } else {
+      return `System.Uri.EscapeDataString(${res})`;
     }
   }
   public ValidateType(schema: Schema, scope: any, valueReference: string, isNullable: boolean): string {
