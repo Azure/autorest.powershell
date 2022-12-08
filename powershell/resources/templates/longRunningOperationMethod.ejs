@@ -1,0 +1,38 @@
+<% if (method.language.default.description) {-%>
+        /// <summary>
+        /// <%= method.language.default.description%>
+<%# ToDo: add externaldocsurl -%>
+        /// </summary>
+<% };-%>
+<%# ToDo: add remark if both description and summary is provided, question here is in m4, there is no summary provided-%>
+<%  if(method.parameters) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
+<%# ToDo: should use camel name instead of pascal name here -%>
+        /// <param name='<%-parameter.language.default.name%>'>
+        /// <%=parameter.language.default.description%>
+        /// </param>
+<% });}-%>
+<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
+<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
+<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).forEach(function(vp) {-%>
+        /// <param name='<%-vp.property.language.default.name%>'>
+        /// <%= vp.property.language.default.description%>
+        /// </param>
+<%});-%>
+<%} else {-%>
+        /// <param name='<%-parameter.language.default.name%>'>
+        /// <%= parameter.language.default.description%>
+        /// </param>
+<%}-%>
+<% });-%>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        public async System.Threading.Tasks.Task<<%-method.language.default.responseType%>> <%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>)
+        {
+                // Send Request
+                <%-method.language.default.responseType%> _response = await Begin<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>).ConfigureAwait(false);
+                return await this.Client.<%-(method.requests[0].protocol.http.method == 'put' || method.requests[0].protocol.http.method == 'patch')?'GetPutOrPatch':(method.requests[0].protocol.http.method == 'post' || method.requests[0].protocol.http.method == 'delete')?'GetPostOrDelete':''%>OperationResultAsync(_response, customHeaders, cancellationToken).ConfigureAwait(false);
+        }
