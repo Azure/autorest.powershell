@@ -60,7 +60,7 @@
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'path').forEach(function (pathParameter) {
 var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 -%>
-            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", System.Uri.EscapeDataString(<%-prefix%><%-pathParameter.language.default.name%>));
+            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", <%-project.helper.PathParameterString(pathParameter)%>);
 <% });}-%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>

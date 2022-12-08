@@ -71,7 +71,8 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
     ['duration', 'System.TimeSpan'],
     ['uuid', 'System.Guid'],
     ['date-time', 'System.DateTime'],
-    ['date', 'System.DateTime']
+    ['date', 'System.DateTime'],
+    ['binary', 'string']
   ]);
 
   for (const group of values(schemaGroups)) {
@@ -196,12 +197,13 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         thisNamespace.delete(schemaName);
       } else {
         // handle dictionary
+        const elementType = (<DictionarySchema>schema).elementType;
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
           name: getPascalIdentifier(schemaName),
-          fullname: `System.Collections.Generic.IDictionary<string, ${(<DictionarySchema>schema).elementType.language.csharp?.fullname}>`,
+          fullname: `System.Collections.Generic.IDictionary<string, ${typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name}>`,
         };
       }
     }
