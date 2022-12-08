@@ -33,6 +33,6 @@
         public async System.Threading.Tasks.Task<<%-method.language.default.responseType%>> <%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>)
         {
                 // Send Request
-                <%-method.language.default.responseType%> _response = await Begin<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>).ConfigureAwait(false);
+                <%-method.language.default.responseType%> _response = await Begin<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false);
                 return await this.Client.<%-(method.requests[0].protocol.http.method == 'put' || method.requests[0].protocol.http.method == 'patch')?'GetPutOrPatch':(method.requests[0].protocol.http.method == 'post' || method.requests[0].protocol.http.method == 'delete')?'GetPostOrDelete':''%>OperationResultAsync(_response, customHeaders, cancellationToken).ConfigureAwait(false);
         }

@@ -26,7 +26,7 @@ async function tweakModel(state: State): Promise<SdkModel> {
 
   tweakSchema(model);
 
-  model.globalParameters = model.globalParameters ?? []
+  model.globalParameters = model.globalParameters ?? [];
 
   addAzureProperties(model.globalParameters);
 
@@ -112,6 +112,13 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
 
+  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
+    const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+    const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
+    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+    args.push(parameter.language.default.name);
+  });
+
   bodyParameters.forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
       const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
@@ -127,13 +134,6 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
     }
   });
 
-  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
-    const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-    const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
-    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
-    args.push(parameter.language.default.name);
-  });
-
   declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
   declarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
@@ -145,7 +145,11 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
-  args.push('null');
+  if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
+    args.push('customHeaders');
+  } else {
+    args.push('null');
+  }
   args.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
 }
