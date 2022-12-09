@@ -13,6 +13,7 @@ import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { SdkModel } from '../utils/SdkModel';
 import { ModelState } from '../utils/model-state';
+import { DeepPartial } from '@azure-tools/codegen';
 import { SchemaDetails as NewSchemaDetails, getMutability } from '../utils/schema';
 
 type State = ModelState<SdkModel>;
@@ -281,6 +282,25 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 //   }
 // }
 
+function duplicateLRO(model: SdkModel) {
+  for (const operationGroup of model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
+        const duplicate = new Operation('Begin' + operation.language.default.name, '', operation);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const extensions = Object.assign({}, duplicate.extensions);
+        delete extensions['x-ms-long-running-operation'];
+        if (extensions && 'x-ms-examples' in extensions) {
+          delete extensions['x-ms-examples'];
+        }
+        duplicate.extensions = extensions;
+        duplicate.language.default.name = 'Begin' + duplicate.language.default.name;
+        operationGroup.operations.push(duplicate);
+      }
+    }
+  }
+}
+
 async function nameStuffRight(state: State): Promise<SdkModel> {
   const resolver = new SchemaDefinitionResolver();
   const model = state.model;
@@ -300,10 +320,10 @@ async function nameStuffRight(state: State): Promise<SdkModel> {
   };
 
   setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace);
+  duplicateLRO(model);
 
   return model;
 }
-
 
 export async function csnamerSdk(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();

@@ -1,4 +1,5 @@
 <%if(!method.extensions || !method.extensions['x-ms-long-running-operation']) {-%>
 <%- include('method', {method: method}) %>
+<%} else {-%>
+<%- include('longRunningOperationMethod', {method: method}) %>
 <%};-%>
-<%# ToDo: add support for long running operation-%>
