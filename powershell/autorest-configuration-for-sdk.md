@@ -50,6 +50,13 @@ declare-directive:
 
 ```
 
+``` yaml
+directive:
+  - from: swagger-document
+    where: $..[?(@['x-ms-enum'])]
+    transform: $['x-ms-model-as-string'] = !!$['x-ms-enum'].modelAsString
+```
+
 # Pipeline Configuration
 ``` yaml
 pipeline:

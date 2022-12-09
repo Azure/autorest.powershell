@@ -66,6 +66,25 @@ async function generateClientInterface(project: Project) {
   project.state.writeFile(`${project.baseFolder}\\I${project.state.model.info.title}.cs`, content, undefined, 'source-file-csharp');
 }
 
+async function generateExceptions(project: Project) {
+  const processedException = new Set();
+  const path = join(join(resources, 'templates'), 'exception.ejs');
+  for (const operationGroup of values(project.state.model.operationGroups)) {
+    for (const operation of values(operationGroup.operations)) {
+      if (operation.exceptions && (<any>operation.exceptions[0]).schema) {
+        const exception = operation.exceptions[0];
+        if (processedException.has((<any>exception).schema)) {
+          continue;
+        } else {
+          processedException.add((<any>exception).schema);
+        }
+        const content = await ejs.renderFile(path, { project: project, exception: exception });
+        project.state.writeFile(`${project.baseFolder}\\Models\\${(<any>exception).schema.language.default.name}Exception.cs`, content, undefined, 'source-file-csharp');
+      }
+    }
+  }
+}
+
 export async function generate(service: Host) {
   try {
     const project = await new Project(service).init();
@@ -74,6 +93,7 @@ export async function generate(service: Host) {
     await generateMethodGroups(project);
     await generateModels(project);
     await generateEnums(project);
+    await generateExceptions(project);
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)}`);
     throw E;
