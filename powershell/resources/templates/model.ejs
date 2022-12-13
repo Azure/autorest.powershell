@@ -92,7 +92,7 @@ if (model.language.default.baseConstructorCall) {
 <% });-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% var type = p.property.schema.language.csharp.fullname-%>
-<%type = !project.helper.IsValueType(p.property.schema.type) || p.required ? type : type + '?'-%>
+<%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% });} -%>
 <%#ToDo support for ClassProperties in the model, const properties -%>

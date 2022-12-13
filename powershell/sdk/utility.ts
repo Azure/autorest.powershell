@@ -266,4 +266,10 @@ export class Helper {
     }
     return false;
   }
+  public IsEnum(schema: Schema): boolean {
+    if (schema.type === SchemaType.SealedChoice && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
+      return true;
+    }
+    return false;
+  }
 }

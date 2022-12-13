@@ -8,6 +8,56 @@ namespace <%- project.namespace %>.Models
     /// </summary>
 <%#ToDo need to figure out when !Model.OldModelAsString is applied%>
 <%#ToDo GetObsoleteAttribute%>
+<% if (!model.extensions['x-ms-model-as-string']) { -%>
+    [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+    public enum <%-model.language.default.name%>
+    {
+<% var last = model.choices[model.choices.length - 1]-%>
+<% model.choices.forEach(function(item) {
+if (item.language.default.description) {
+-%>
+        /// <summary>
+        /// <%-item.language.default.description%>
+        /// </summary>
+<% } -%>
+        [System.Runtime.Serialization.EnumMember(Value = "<%-item.value%>")]
+<% if (item == last) {-%>
+        <%-item.language.default.name.replace(/\//g, '-')%>
+<% } else {-%>
+        <%-item.language.default.name.replace(/\//g, '-')%>,
+<% }-%>
+<% });-%>
+    }
+    internal static class <%-model.language.default.name%>EnumExtension
+    {
+        internal static string ToSerializedValue(this <%-model.language.default.name%>? value)
+        {
+            return value == null ? null : ((<%-model.language.default.name%>)value).ToSerializedValue();
+        }
+        internal static string ToSerializedValue(this <%-model.language.default.name%> value)
+        {
+            switch( value )
+            {
+<% for (var i = 0; i < model.choices.length; i++) {-%>
+                case <%-model.language.default.name%>.<%-model.choices[i].language.default.name.replace(/\//g, '-')%>:
+                    return "<%-model.choices[i].value%>";
+<% }-%>
+            }
+            return null;
+        }
+        internal static <%-model.language.default.name%>? Parse<%-model.language.default.name%>(this string value)
+        {
+            switch( value )
+            {
+<% for (var i = 0; i < model.choices.length; i++) {-%>
+                case "<%-model.choices[i].value%>":
+                    return <%-model.language.default.name%>.<%-model.choices[i].language.default.name.replace(/\//g, '-')%>;
+<% }-%>
+            }
+            return null;
+        }
+    }
+<%} else {-%>
     public static class <%-model.language.default.name%>
     {
 <%model.choices.forEach(function(choice){-%>
@@ -19,4 +69,5 @@ namespace <%- project.namespace %>.Models
         public const string <%-choice.language.default.name%> = "<%-choice.value%>";
 <%});-%>
     }
+<% } -%>
 }

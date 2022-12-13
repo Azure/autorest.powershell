@@ -74,7 +74,7 @@ function tweakSchema(model: SdkModel) {
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = valueType(virtualProperty.property.schema.type) && !virtualProperty.required ? `${type}?` : type;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
