@@ -80,11 +80,18 @@ function tweakSchema(model: SdkModel) {
     }
     if (obj.parents && obj.parents.immediate.length === 1) {
       // If there is only one direct parameter, will implement it as base class
-      const baseConstructorParametersCall = Array<string>();
+      let baseConstructorParametersCall = Array<string>();
+      const baseRequiredParameters = Array<string>();
+      const baseOptionalParameters = Array<string>();
       const combinedProperties = getAllPublicVirtualPropertiesForSdk(obj.parents.immediate[0].language.default.virtualProperties);
       for (const virtualProperty of values(combinedProperties)) {
-        baseConstructorParametersCall.push(camelCase(virtualProperty.name) || '');
+        if (virtualProperty.required) {
+          baseRequiredParameters.push(virtualProperty.name);
+        } else {
+          baseOptionalParameters.push(virtualProperty.name);
+        }
       }
+      baseConstructorParametersCall = [...baseRequiredParameters, ...baseOptionalParameters].map((p) => camelCase(p) || '');
       if (baseConstructorParametersCall.length > 0) {
         obj.language.default.baseConstructorCall = `base(${baseConstructorParametersCall.join(', ')})`;
       }

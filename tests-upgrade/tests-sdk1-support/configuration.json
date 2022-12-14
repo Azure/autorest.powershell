@@ -12,6 +12,7 @@
     "basic-response-multioperation",
     "basic-spec-required",
     "basic-spec-root",
+    "component-definitions-combined",
     "component-definitions-local",
     "component-definitions-remote",
     "component-definitions-url",
@@ -99,6 +100,11 @@
     "provider-containerRegistry",
     "provider-storage"
   ],
-  "ignoreFolder": ["examples", "CompareResult"],
-  "ignoreCompareFile": ["SdkInfo_*.cs"]
+  "ignoreFolder": [
+    "examples",
+    "CompareResult"
+  ],
+  "ignoreCompareFile": [
+    "SdkInfo_*.cs"
+  ]
 }
