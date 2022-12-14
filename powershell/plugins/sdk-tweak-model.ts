@@ -112,6 +112,14 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
 
+  (operation.parameters || []).forEach(function (parameter) {
+    // This is a workaround for parameter with the schema x-ms-enum
+    // since modelAsString will be dropped in m4
+    if (parameter.extensions && parameter.extensions['x-ms-model-as-string'] !== undefined) {
+      parameter.schema.extensions = (parameter.schema.extensions || {});
+      parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
+    }
+  });
   (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
     const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
     const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
