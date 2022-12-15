@@ -18,7 +18,7 @@
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
             }
 <% } -%>
-<%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
+<%-project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable)%>
 <%});}-%>
 <%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
 <%# ToDo: add support for BuildInputMappings -%>
