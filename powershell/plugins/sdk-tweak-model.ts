@@ -129,8 +129,7 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   });
   (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
     const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-    const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
-    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
     args.push(parameter.language.default.name);
   });
 
@@ -143,8 +142,7 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
       });
     } else {
       const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
-      const defaultOfType = schemaDefinitionResolver.resolveTypeDeclaration(parameter.schema, true, state).defaultOfType;
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = ${defaultOfType}`);
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
       args.push(parameter.language.default.name);
     }
   });
