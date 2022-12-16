@@ -1,9 +1,11 @@
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
+<% if (!project.helper.IsValueType(parameter.schema.type)) { -%>
             if (<%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
             }
+<% } -%>
 <%if(method.requests[0].protocol.http.method != 'patch') {-%>
 <%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
 <%}-%>
@@ -12,7 +14,7 @@
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
 <%# ToDo: add check IsNullable with required -%>
 <% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
-<% if (parameter.required) {-%>
+<% if (parameter.required && !project.helper.IsValueType(parameter.schema.type)) {-%>
             if (<%-prefix%><%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
@@ -111,12 +113,18 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <%# ToDo: add RequestBody, formdata support-%>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
 <%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
+<% if (!project.helper.IsValueType(parameter.schema.type)) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, this.Client.SerializationSettings);
+                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
                 _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
                 _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+<% } else { -%>
+            _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
+            _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
+            _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+<% } -%>
 <% });-%>
 <%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
             // Set Credentials
@@ -202,7 +210,13 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
                 try
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-resp.schema.language.csharp.fullname%>>(_responseContent, this.Client.DeserializationSettings);
+<% var respSchema = resp.schema;
+if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])){
+    respSchema = resp.schema.choiceType;
+}
+const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.IsEnum(resp.schema)) ? '?' : '';
+-%>
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-respSchema.language.csharp.fullname + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {

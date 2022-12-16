@@ -124,7 +124,7 @@ var anythingToValidate = false;-%>
 <%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p.property.schema) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
             anythingToValidate = true;
 -%>
-<%-project.helper.ValidateType(p.property.schema, model, `this.${p.name}`, !project.helper.IsValueType(p.property.schema.type))%>
+<%-project.helper.ValidateType(p.property.schema, model, `this.${p.name}`, !project.helper.IsValueType(p.property.schema.type) || !p.required)%>
 <% }); -%>
 <% if(!anythingToValidate) { -%>
             //Nothing to validate
