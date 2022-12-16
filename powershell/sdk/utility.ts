@@ -237,6 +237,28 @@ export class Helper {
     return false;
   }
 
+  public GetDeserializationSettings(schema: Schema, ref: string): string {
+    if (schema.type === SchemaType.Date) {
+      return 'new Microsoft.Rest.Serialization.DateJsonConverter()';
+    } else if (schema.type === SchemaType.Uri) {
+      return 'new Microsoft.Rest.Serialization.Base64UrlJsonConverter()';
+    } else if (schema.type === SchemaType.UnixTime) {
+      return 'new Microsoft.Rest.Serialization.UnixTimeJsonConverter()';
+    }
+    return ref + '.DeserializationSettings';
+  }
+
+  public GetSerializationSettings(schema: Schema, ref: string): string {
+    if (schema.type === SchemaType.Date) {
+      return 'new Microsoft.Rest.Serialization.DateJsonConverter()';
+    } else if (schema.type === SchemaType.Uri) {
+      return 'new Microsoft.Rest.Serialization.Base64UrlJsonConverter()';
+    } else if (schema.type === SchemaType.UnixTime) {
+      return 'new Microsoft.Rest.Serialization.UnixTimeJsonConverter()';
+    }
+    return ref + '.SerializationSettings';
+  }
+
   public CamelCase(str: string): string {
     // str = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
     //   return index === 0 ? word.toLowerCase() : word.toUpperCase();

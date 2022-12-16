@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, ObjectSchema, Operation, Parameter, ParameterLocation, Property, Schema, SchemaType } from '@azure-tools/codemodel';
+import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
@@ -12,7 +12,7 @@ import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
-import { VirtualProperty, getAllPublicVirtualPropertiesForSdk } from '../utils/schema';
+import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
 
@@ -54,13 +54,7 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
   model.language.default.requiredConstructorParametersDeclaration = declarations.join(', ');
 }
 
-// check whether it is value type
-function valueType(type: string): boolean {
-  if (['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'].includes(type)) {
-    return true;
-  }
-  return false;
-}
+
 
 function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
@@ -141,7 +135,7 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
         args.push(p.split(' ')[1]);
       });
     } else {
-      const type = parameter.schema.language.default.fullName && parameter.schema.language.default.fullName != '<INVALID_FULLNAME>' ? parameter.schema.language.default.fullName : parameter.schema.language.default.name;
+      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
       args.push(parameter.language.default.name);
     }
@@ -199,8 +193,15 @@ async function tweakOperation(state: State) {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
           operation.language.default.returnType = 'void';
         } else if (respCountWithBody === 1) {
-          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.csharp.fullname}>`;
-          operation.language.default.returnType = `${(<any>responses[0]).schema.language.csharp.fullname}`;
+          const respSchema = (<any>responses[0]).schema;
+          const postfix = (valueType(respSchema.type)
+            || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
+            || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))
+            || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'] && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
+          ) ? '?' : '';
+          const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
+          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}>`;
+          operation.language.default.returnType = `${fullname}${postfix}`;
         } else {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<Object>';
           operation.language.default.returnType = 'Object';
