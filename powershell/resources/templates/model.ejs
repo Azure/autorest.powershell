@@ -90,7 +90,18 @@ if (model.language.default.baseConstructorCall) {
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
 <% });-%>
+<% if (p.property.language.default.flavor) {-%>
+<%
+switch(p.property.language.default.flavor) {
+        case 'additionalProperties':-%>
+        [Newtonsoft.Json.JsonExtensionData]
+<%              break;
+        default:
+                break;        
+}-%>
+<%} else{-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
+<%}-%>
 <% var type = p.property.schema.language.csharp.fullname-%>
 <%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
