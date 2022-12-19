@@ -1,5 +1,20 @@
 {
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
+  "whiteTestFailed": [
+    "basic-polymorphism",
+    "component-param-additional",
+    "component-param-grouping",
+    "component-param-resourceasarraay",
+    "component-param-specialproperties",
+    "datamodels-datatypes-boolean",
+    "datamodels-datatypes-boolean-quirks",
+    "datamodels-datatypes-byte",
+    "extension-ms-longruningoperation",
+    "extension-ms-pageable",
+    "provider-aks",
+    "provider-containerRegistry",
+    "provider-storage"
+  ],
   "whiteTestList": [
     "basic-disableazure-get",
     "basic-disableazure-response",
@@ -23,6 +38,8 @@
     "component-param-remote",
     "datamodels-combineschema",
     "datamodels-datatypes-array",
+    "datamodels-datatypes-date",
+    "datamodels-datatypes-datetime",
     "datamodels-datatypes-file",
     "datamodels-datatypes-integer",
     "datamodels-datatypes-nullable",
