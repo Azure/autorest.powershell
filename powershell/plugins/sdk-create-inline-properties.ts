@@ -203,7 +203,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
         originalContainingSchema: schema,
         alias: [],
         required: property.required || property.language.default.required,
-        serializedName: property.serializedName,
+        serializedName: property.serializedName
       };
       virtualProperties.owned.push(privateProperty);
 
