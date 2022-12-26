@@ -15,6 +15,7 @@ import { codemodel, schema } from '@azure-tools/codemodel-v3';
 import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
+import { isReserved } from '../utils/code-namer';
 
 type State = ModelState<SdkModel>;
 
@@ -179,6 +180,10 @@ function tweakGlobalParameter(globalParameters: Array<Parameter>) {
 
 async function tweakOperation(state: State) {
   for (const operationGroup of state.model.operationGroups) {
+    if (isReserved(operationGroup.$key)) {
+      operationGroup.$key = pascalCase(`${operationGroup.$key}Model`);
+      operationGroup.language.default.name = operationGroup.$key;
+    }
     for (const operation of operationGroup.operations) {
       if (operation.responses) {
         const schemas = new Set();
