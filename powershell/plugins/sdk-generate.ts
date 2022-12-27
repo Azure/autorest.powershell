@@ -19,8 +19,8 @@ const resources = `${__dirname}/../../resources`;
 async function generateModels(project: Project) {
   const path = join(join(resources, 'templates'), 'model.ejs');
   for (const model of values(project.model.schemas.objects)) {
-    if (model.extensions && model.extensions['x-ms-client-flatten']) {
-      // skip flattened model
+    if ((model.extensions && model.extensions['x-ms-client-flatten']) || model.language.default.pagable) {
+      // skip flattened model and pageble model
       continue;
     }
     const content = await ejs.renderFile(path, { model: model, project: project });
@@ -37,9 +37,9 @@ async function generateEnums(project: Project) {
 }
 
 async function generateMethodGroups(project: Project) {
-  const path = join(join(resources, 'templates'), 'azureMethodGroup.ejs');
-  const interfacePath = join(join(resources, 'templates'), 'methodGroupInterface.ejs');
-  const extensionPath = join(join(resources, 'templates'), 'extensions.ejs');
+  const path = join(join(join(resources, 'templates'), 'methods'), 'azureMethodGroup.ejs');
+  const interfacePath = join(join(join(resources, 'templates'), 'interfaces'), 'methodGroupInterface.ejs');
+  const extensionPath = join(join(join(resources, 'templates'), 'extensions'), 'extensions.ejs');
   for (const operationGroup of values(project.state.model.operationGroups)) {
     // generate method group class
     const key = operationGroup.$key === 'Operations' ? '' : operationGroup.$key;
@@ -64,6 +64,19 @@ async function generateClientInterface(project: Project) {
   const path = join(join(resources, 'templates'), 'serviceClientInterface.ejs');
   const content = await ejs.renderFile(path, { project: project });
   project.state.writeFile(`${project.baseFolder}\\I${project.state.model.info.title}.cs`, content, undefined, 'source-file-csharp');
+}
+
+async function generatePageClasses(project: Project) {
+  for (let [key, value] of Object.entries(project.state.model.language.default.pageClasses)) {
+    const path = join(join(resources, 'templates'), 'page.ejs');
+    let className = value;
+    let nextLinkName = key.split(' ')[0];
+    let itemName = key.split(' ')[1];
+    const page = { className: className, nextLinkName: nextLinkName, itemName: itemName };
+    const content = await ejs.renderFile(path, { project: project, page: page });
+    project.state.writeFile(`${project.baseFolder}\\Models\\${page.className}.cs`, content, undefined, 'source-file-csharp');
+
+  }
 }
 
 async function generateExceptions(project: Project) {
@@ -93,6 +106,7 @@ export async function generate(service: Host) {
     await generateMethodGroups(project);
     await generateModels(project);
     await generateEnums(project);
+    await generatePageClasses(project);
     await generateExceptions(project);
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)}`);

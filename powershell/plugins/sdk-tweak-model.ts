@@ -102,6 +102,14 @@ function addUsings(model: SdkModel) {
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
+  if (operation.language.default.pageable.nextPageOperation) {
+    addPageableMethodParameterDeclaration(operation);
+  } else {
+    addNormalMethodParameterDeclaration(operation, state);
+  }
+}
+
+function addNormalMethodParameterDeclaration(operation: Operation, state: State) {
   let declarations: Array<string> = [];
   const optionalDeclarations: Array<string> = [];
   const requiredDeclarations: Array<string> = [];
@@ -154,6 +162,27 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
 }
 
+function addPageableMethodParameterDeclaration(operation: Operation) {
+  let pageableMethodDeclarations: Array<string> = ['string nextPageLink'];
+  operation.language.default.syncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
+  operation.language.default.asyncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.pop();
+  pageableMethodDeclarations.push('System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null');
+  operation.language.default.syncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
+  operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
+
+  let pageableMethodArgs: Array<string> = ['nextPageLink'];
+  operation.language.default.syncMethodInvocationArgs = pageableMethodArgs.join(', ');
+
+  pageableMethodArgs.push('null');
+  pageableMethodArgs.push('cancellationToken');
+  operation.language.default.asyncMethodInvocationArgs = pageableMethodArgs.join(', ');
+}
 
 function tweakGlobalParameter(globalParameters: Array<Parameter>) {
   if (!globalParameters) {
@@ -182,12 +211,22 @@ async function tweakOperation(state: State) {
         });
         const respCountWithBody = schemas.size;
         const responses = operation.responses.filter(r => (<any>r).schema);
+        operation.language.default.deserializeType = (<any>responses[0]).schema.language.csharp.fullname;
         if (respCountWithBody === 0) {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
           operation.language.default.returnType = 'void';
         } else if (respCountWithBody === 1) {
-          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.csharp.fullname}>`;
-          operation.language.default.returnType = `${(<any>responses[0]).schema.language.csharp.fullname}`;
+          if (operation.language.default.pageable) {
+            let responseType = (<any>responses[0]).schema.language.default.virtualProperties.owned[0].property.schema.elementType.type;
+            // Mark response as pageable
+            (<any>responses[0]).schema.language.default.pagable = true;
+            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
+            operation.language.default.returnType = `${operation.language.default.pageable.ipageType}<${responseType}>`;
+            operation.language.default.deserializeType = `${operation.language.default.pageable.pageType}<${responseType}>`;
+          } else {
+            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${(<any>responses[0]).schema.language.csharp.fullname}>`;
+            operation.language.default.returnType = `${(<any>responses[0]).schema.language.csharp.fullname}`;
+          }
         } else {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<Object>';
           operation.language.default.returnType = 'Object';
@@ -206,7 +245,7 @@ function setFailureStatusCodePredicate(operation: Operation) {
   const failureStatusCodePredicate = Array<string>();
   for (const resp of values(operation.responses)) {
     const status = resp.protocol.http?.statusCodes[0];
-    failureStatusCodePredicate.push(`(int)_statusCode != ${status}`);
+    failureStatusCodePredicate.push(`(int)_statusCode != ${status} `);
   }
   if (failureStatusCodePredicate.length > 0) {
     operation.language.default.failureStatusCodePredicate = failureStatusCodePredicate.join(' && ');
@@ -278,7 +317,7 @@ export async function tweakSdkModelPlugin(service: Host) {
     service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
   } catch (E) {
     if (debug) {
-      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack} `);
     }
     throw E;
   }
