@@ -226,11 +226,11 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
                 try
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
-<%var deserializeType =  method.language.default.deserializeType ? resp.schema.language.csharp.fullname : method.language.default.deserializeType;-%>
 <% var respSchema = resp.schema;
 if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])){
     respSchema = resp.schema.choiceType;
 }
+var deserializeType =  method.language.default.deserializeType ? method.language.default.deserializeType : respSchema.language.csharp.fullname;
 const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.IsEnum(resp.schema)) ? '?' : '';
 -%>
                     _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
