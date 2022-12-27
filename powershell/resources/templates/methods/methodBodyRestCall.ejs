@@ -1,4 +1,4 @@
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
             if (nextPageLink == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "nextPageLink");
@@ -48,7 +48,7 @@
             {
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
                 tracingParameters.Add("nextPageLink", nextPageLink);
 <% }else{-%>
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
@@ -64,7 +64,7 @@
                 Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "<%-method.language.default.name%>", tracingParameters);
             }
             // Construct URL
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
             string _url = "{nextLink}";
             _url = _url.Replace("{nextLink}", nextPageLink);
 <% }else{%>
@@ -218,7 +218,8 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
                 try
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-method.language.default.deserializeType%>>(_responseContent, this.Client.DeserializationSettings);
+<%var deserializeType =  method.language.default.deserializeType ? resp.schema.language.csharp.fullname : method.language.default.deserializeType-%>
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType%>>(_responseContent, this.Client.DeserializationSettings);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {

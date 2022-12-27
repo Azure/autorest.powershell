@@ -23,7 +23,7 @@ namespace <%- project.namespace %>
         /// <%= method.language.default.description%>
         /// </remarks>
 <% };-%>
-<% if(!method.language.default.pageable.nextPageOperation) {-%>
+<% if(!method.language.default.pageable?.nextPageOperation) {-%>
 <% method.parameters.filter(p=>p.implementation != 'Client').forEach(function(parameter){-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%= parameter.language.default.description%>
@@ -43,7 +43,7 @@ namespace <%- project.namespace %>
 <%}-%>
 <% });-%>
 <% };-%>
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
         /// <param name='nextPageLink'>
         /// The NextLink from the previous successful call to List operation.
         /// </param>

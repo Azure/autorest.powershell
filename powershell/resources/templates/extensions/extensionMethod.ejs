@@ -8,12 +8,12 @@
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
-<% if(method.parameters && !method.language.default.pageable.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
+<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.serializedName%>'>
         /// <%=parameter.language.default.description%>
         /// </param>
 <% });}-%>
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
         /// <param name='nextPageLink'>
         /// The NextLink from the previous successful call to List operation.
         /// </param>
@@ -38,12 +38,12 @@
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
-<% if(method.parameters && !method.language.default.pageable.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
+<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.serializedName%>'>
         /// <%=parameter.language.default.description%>
         /// </param>
 <% });}-%>
-<% if(method.language.default.pageable.nextPageOperation) {-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
         /// <param name='nextPageLink'>
         /// The NextLink from the previous successful call to List operation.
         /// </param>

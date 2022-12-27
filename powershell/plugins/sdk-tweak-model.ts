@@ -102,7 +102,7 @@ function addUsings(model: SdkModel) {
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
-  if (operation.language.default.pageable.nextPageOperation) {
+  if (operation.language.default.pageable?.nextPageOperation) {
     addPageableMethodParameterDeclaration(operation);
   } else {
     addNormalMethodParameterDeclaration(operation, state);
@@ -211,7 +211,6 @@ async function tweakOperation(state: State) {
         });
         const respCountWithBody = schemas.size;
         const responses = operation.responses.filter(r => (<any>r).schema);
-        operation.language.default.deserializeType = (<any>responses[0]).schema.language.csharp.fullname;
         if (respCountWithBody === 0) {
           operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
           operation.language.default.returnType = 'void';
