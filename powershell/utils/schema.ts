@@ -359,3 +359,11 @@ export function getMutability(property: Property): Mutability {
   }
   return mutability;
 }
+
+// check whether it is value type
+export function valueType(type: string): boolean {
+  if (['boolean', 'integer', 'number', 'unixtime', 'duration', 'uuid', 'date-time', 'date'].includes(type)) {
+    return true;
+  }
+  return false;
+}

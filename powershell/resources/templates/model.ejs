@@ -17,7 +17,7 @@ namespace <%- project.namespace %>.Models
 <% } -%>
 <%# ToDo: support NeedsPolymorphicConverter-%>
 <% if (model.discriminatorValue || model.discriminator) {-%>
-    [Newtonsoft.Json.JsonObject("<%-model.discriminatorValue || project.helper.CamelCase(model.language.default.name)%>")]
+    [Newtonsoft.Json.JsonObject("<%-model.discriminatorValue || project.helper.PascalCase(model.language.default.name)%>")]
 <% } -%>
 <% if(project.helper.NeedsTransformationConverter(model)) {-%>
     [Microsoft.Rest.Serialization.JsonTransformation]
@@ -97,15 +97,16 @@ if (model.language.default.baseConstructorCall) {
 <% });} -%>
 <%#ToDo support for ClassProperties in the model, const properties -%>
 <%#ToDo support for ShouldValidateChain-%>
-<% if (project.helper.ShouldValidateChain(model)) {-%>
-<% var anythingToValidate = false;-%>
+<% if (project.helper.ShouldValidateChain(model)) {
+var methodQualifier = model.parents && model.parents.immediate.length == 1 && project.helper.ShouldValidateChain(model.parents.immediate[0]) ? "override" : "virtual";
+var anythingToValidate = false;-%>
         /// <summary>
         /// Validate the object.
         /// </summary>
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown if validation fails
         /// </exception>
-        public virtual void Validate()
+        public <%-methodQualifier%> void Validate()
         {
 <% if (model.parents && model.parents.immediate.length == 1 && project.helper.ShouldValidateChain(model.parents.immediate[0])) {
             anythingToValidate = true;
@@ -123,7 +124,7 @@ if (model.language.default.baseConstructorCall) {
 <%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p.property.schema) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
             anythingToValidate = true;
 -%>
-<%-project.helper.ValidateType(p.property.schema, model, `this.${p.name}`, !project.helper.IsValueType(p.property.schema.type))%>
+<%-project.helper.ValidateType(p.property.schema, model, `this.${p.name}`, !project.helper.IsValueType(p.property.schema.type) || !p.required)%>
 <% }); -%>
 <% if(!anythingToValidate) { -%>
             //Nothing to validate
