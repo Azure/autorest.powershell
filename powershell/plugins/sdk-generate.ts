@@ -37,9 +37,9 @@ async function generateEnums(project: Project) {
 }
 
 async function generateMethodGroups(project: Project) {
-  const path = join(join(join(resources, 'templates'), 'methods'), 'azureMethodGroup.ejs');
-  const interfacePath = join(join(join(resources, 'templates'), 'interfaces'), 'methodGroupInterface.ejs');
-  const extensionPath = join(join(join(resources, 'templates'), 'extensions'), 'extensions.ejs');
+  const path = join(join(resources, 'templates'), 'azureMethodGroup.ejs');
+  const interfacePath = join(join(resources, 'templates'), 'methodGroupInterface.ejs');
+  const extensionPath = join(join(resources, 'templates'), 'extensions.ejs');
   for (const operationGroup of values(project.state.model.operationGroups)) {
     // generate method group class
     const key = operationGroup.$key === 'Operations' ? '' : operationGroup.$key;
