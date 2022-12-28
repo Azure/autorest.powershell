@@ -229,7 +229,7 @@ async function tweakOperation(state: State) {
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
-            let responseType = respSchema.language.default.virtualProperties.owned[0].property.schema.elementType.type;
+            let responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.type;
             // Mark response as pageable
             respSchema.language.default.pagable = true;
             operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;

@@ -315,9 +315,9 @@ function getPageClass(operation: Operation, model: SdkModel): string | null {
   }
   let nextLinkName = operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName;
   let itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
-  let pair: string = `${nextLinkName} ${itemName} `;
-  if (!model.language.default.pageClasses?.keys?.includes(pair)) {
-    let className = model.language.default.pageClasses.Count > 0 ? `Page${model.language.default.pageClasses.Count} ` : "Page";
+  let pair: string = `${nextLinkName} ${itemName}`;
+  if (!(pair in model.language.default.pageClasses)) {
+    let className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length} ` : "Page";
     model.language.default.pageClasses[pair] = className;
   }
   return model.language.default.pageClasses[pair];
