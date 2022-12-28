@@ -55,5 +55,6 @@
         public async System.Threading.Tasks.Task<<%-method.language.default.responseType%>> <%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>)
         {
 <%# ToDo: add support for method.Flavor, currently assume it is RestCall -%>
+
 <%- include('methodBodyRestCall', {method: method}) -%>
         }

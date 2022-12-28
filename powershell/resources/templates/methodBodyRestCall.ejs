@@ -1,3 +1,9 @@
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+            if (nextPageLink == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "nextPageLink");
+            }
+<% }else{-%> 
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
 <% if (!project.helper.IsValueType(parameter.schema.type)) { -%>
@@ -36,6 +42,7 @@
             }
 <%}-%>
 <% });-%>
+<%}-%>
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -43,6 +50,9 @@
             {
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+                tracingParameters.Add("nextPageLink", nextPageLink);
+<% }else{-%>
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
 <%method.parameters.filter(p => p.implementation != 'Client').forEach(function(p) {-%>
                 tracingParameters.Add("<%-p.language.default.name%>", <%-p.language.default.name%>);
@@ -51,10 +61,15 @@
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
                 tracingParameters.Add("<%-parameter.language.default.name%>", <%-parameter.language.default.name%>);
 <% });-%>
+<% }%>
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "<%-method.language.default.name%>", tracingParameters);
             }
             // Construct URL
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+            string _url = "{nextLink}";
+            _url = _url.Replace("{nextLink}", nextPageLink);
+<% }else{%>
 <%# ToDo: may need to support AbsoluteUrl -%>
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
 <%# ToDo: buildurl, currently only added simple cases, besides we need to handle skip url encoding -%>
@@ -64,6 +79,7 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 -%>
             _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", <%-project.helper.PathParameterString(pathParameter)%>);
 <% });}-%>
+<% }%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
 <% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
@@ -214,9 +230,10 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])){
     respSchema = resp.schema.choiceType;
 }
+var deserializeType =  method.language.default.deserializeType ? method.language.default.deserializeType : respSchema.language.csharp.fullname;
 const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.IsEnum(resp.schema)) ? '?' : '';
 -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-respSchema.language.csharp.fullname + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
