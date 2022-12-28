@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
+import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, OperationGroup, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
@@ -130,13 +130,13 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
       parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
     }
   });
-  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
+  (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {
     const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
     parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
     args.push(parameter.language.default.name);
   });
 
-  bodyParameters.forEach(function (parameter) {
+  bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
       const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
       constructorParametersDeclaration.split(', ').forEach(function (p) {

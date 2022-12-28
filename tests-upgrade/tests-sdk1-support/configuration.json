@@ -3,7 +3,6 @@
   "whiteTestFailed": [
     "basic-polymorphism",
     "component-param-additional",
-    "component-param-grouping",
     "component-param-resourceasarraay",
     "component-param-specialproperties",
     "datamodels-datatypes-boolean",
@@ -30,6 +29,7 @@
     "component-definitions-url",
     "component-multiparam",
     "component-param",
+    "component-param-grouping",
     "component-param-inbody",
     "component-param-localremote",
     "component-param-remote",
