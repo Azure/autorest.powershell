@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema } from '@azure-tools/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
@@ -124,6 +124,8 @@ export class Helper {
   private isKindOfString(schema: Schema): boolean {
     if (schema.type === SchemaType.String) {
       return true;
+    } else if (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.String) {
+      return true;
     }
     // ToDo: we need to figure how to handle the case when schema type is enum
     // Skip it since there is a bug in IsKindOfString in the csharp generator
@@ -138,7 +140,7 @@ export class Helper {
     return false;
   }
   public PathParameterString(parameter: Parameter): string {
-    if (parameter.protocol.http?.in !== 'path') {
+    if (!['path', 'query'].includes(parameter.protocol.http?.in)) {
       return '';
     }
     const prefix = parameter.implementation === 'Client' ? 'this.Client.' : '';
@@ -293,5 +295,23 @@ export class Helper {
       return true;
     }
     return false;
+  }
+  public PopulateGroupParameters(parameter: Parameter): string {
+    const groupParameter = parameter.language.default.name;
+    const result = Array<string>();
+    for (const virtualProperty of values(<Array<VirtualProperty>>(parameter.schema.language.default.virtualProperties.owned))) {
+      let type = virtualProperty.property.schema.language.csharp?.fullname || '';
+      type = (this.IsValueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
+      const CamelName = camelCase(virtualProperty.name);
+      result.push(`            ${type} ${CamelName} = default(${type});`);
+      result.push(`            if (${groupParameter} != null)`);
+      result.push('            {');
+      result.push(`                ${CamelName} = ${groupParameter}.${pascalCase(CamelName)};`);
+      result.push('            }');
+    }
+    if (result.length > 0) {
+      return result.join('\r\n');
+    }
+    return '';
   }
 }

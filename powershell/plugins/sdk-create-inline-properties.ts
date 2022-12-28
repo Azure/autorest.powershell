@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
+import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext, Protocol } from '@azure-tools/codemodel';
+import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize, camelCase } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { CommandOperation } from '../utils/command-operation';
@@ -333,9 +333,69 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
   return true;
 }
 
+function parameterGroupName(operationGroup: OperationGroup, operation: Operation, groupExtension: any): string {
+  if (groupExtension && groupExtension['name']) {
+    return pascalCase(groupExtension['name']);
+  } else if (groupExtension && groupExtension['postfix']) {
+    return `${pascalCase(operationGroup.$key)}${pascalCase((<any>operation).operationId.split('_')[1] || '')}${pascalCase(groupExtension['postfix'])}`;
+  } else {
+    return `${pascalCase(operationGroup.$key)}${pascalCase((<any>operation).operationId.split('_')[1] || '')}Parameters`;
+  }
+}
 
+async function implementGroupParameters(state: State) {
+  const parameterGroup = new Map<string, ObjectSchema>();
+  const parameterAdded = new Map<string, Array<string>>();
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      const operationGroupParameters = new Array<Parameter>();
+      // value means if the parameter is required
+      const addedOperationGroupParameters = new Map<string, boolean>();
+      for (const parameter of [...(operation.requests && operation.requests.length > 0 ? operation.requests[0].parameters || [] : []), ...(operation.parameters || [])]) {
+        if (parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) {
+          const key = parameterGroupName(operationGroup, operation, parameter.extensions['x-ms-parameter-grouping']);
+          const groupObj = parameterGroup.get(key) || new ObjectSchema(key, '');
+          if (!parameterGroup.has(key)) {
+            groupObj.extensions = {};
+            groupObj.extensions['x-ms-parameter-grouping'] = parameter.extensions['x-ms-parameter-grouping'];
+            parameterGroup.set(key, groupObj);
+            parameterAdded.set(key, []);
+            state.model.schemas.objects = state.model.schemas.objects || [];
+            state.model.schemas.objects.push(groupObj);
+          }
+          const prop = new Property(parameter.language.default.name, parameter.language.default.description, parameter.schema, {
+            required: parameter.required,
+          });
+          if (parameterAdded.has(key) && (parameterAdded.get(key) || []).indexOf(parameter.language.default.name) === -1) {
+            groupObj.addProperty(prop);
+            parameterAdded.set(key, [...(parameterAdded.get(key) || []), parameter.language.default.name]);
+          }
+          if (!addedOperationGroupParameters.has(key)) {
+            addedOperationGroupParameters.set(key, !!(parameter.required));
+            const groupParameter = new Parameter(camelCase(key), '', groupObj);
+            groupParameter.protocol.http = groupParameter.protocol.http || new Protocol();
+            groupParameter.protocol.http.in = 'complex';
+            operationGroupParameters.push(groupParameter);
+          } else {
+            if (!addedOperationGroupParameters.get(key)) {
+              addedOperationGroupParameters.set(key, !!(parameter.required));
+            }
+          }
+        } else {
+          continue;
+        }
+      }
+      for (const groupParameter of operationGroupParameters) {
+        groupParameter.required = addedOperationGroupParameters.get(pascalCase(groupParameter.language.default.name)) || false;
+      }
+      operation.parameters = [...operationGroupParameters, ...(operation.parameters || [])];
+    }
+  }
+}
 
 async function createVirtuals(state: State): Promise<PwshModel> {
+  // add support for x-ms-parameter-grouping
+  implementGroupParameters(state);
   /* 
     A model class should provide inlined properties for anything in a property called properties
     
