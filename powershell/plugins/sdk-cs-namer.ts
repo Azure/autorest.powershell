@@ -305,6 +305,7 @@ function duplicateLRO(model: SdkModel) {
 }
 
 const xmsPageable = 'x-ms-pageable';
+// nextLineName is required parameter in 'x-ms-pageable'
 const defaultNextLinkName = undefined;
 const defaultItemName = 'value';
 
@@ -316,15 +317,7 @@ function getPageClass(operation: Operation, model: SdkModel): string | null {
   let itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
   let pair: string = `${nextLinkName} ${itemName} `;
   if (!model.language.default.pageClasses?.keys?.includes(pair)) {
-    let className = operation.extensions[xmsPageable].className;
-    if (!className) {
-      if (model.language.default.pageClasses.Count > 0) {
-        className = `Page${model.language.default.pageClasses.Count} `;
-      }
-      else {
-        className = "Page";
-      }
-    }
+    let className = model.language.default.pageClasses.Count > 0 ? `Page${model.language.default.pageClasses.Count} ` : "Page";
     model.language.default.pageClasses[pair] = className;
   }
   return model.language.default.pageClasses[pair];
