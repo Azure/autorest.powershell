@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation } from '@azure-tools/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
@@ -290,8 +290,31 @@ export class Helper {
     }
     return false;
   }
+  public HandleConstParameters(operation: Operation): string {
+    const result = new Array<string>();
+    const bodyParameters = operation.requests && operation.requests.length > 0 ? (operation.requests[0].parameters || []).filter(each => each.protocol.http && each.protocol.http.in === 'body' && !(each.extensions && each.extensions['x-ms-client-flatten']) && each.implementation !== 'Client') : [];
+    const nonBodyParameters = operation.parameters ? operation.parameters.filter(each => each.implementation !== 'Client') : [];
+    const parameters = [...nonBodyParameters, ...bodyParameters].filter(each => this.IsConstantParameter(each));
+    parameters.forEach(function (parameter) {
+      const quote = (<ChoiceSchema>parameter.schema).choiceType.type === SchemaType.String ? '"' : '';
+      result.push(`            ${(<any>(parameter.schema)).language.csharp.fullname} ${parameter.language.default.name} = ${quote}${(<ChoiceSchema>parameter.schema).choices[0].value}${quote};`);
+    });
+    return result.join('\r\n');
+  }
+  public IsConstantParameter(parameter: Parameter): boolean {
+    if (!parameter.required) {
+      // const parameters are always required
+      return false;
+    }
+    // skip parameter.schema.type === SchemaType.Constant, since there is a bug
+    if ((parameter.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>(parameter.schema)).choices.length === 1)
+      || (parameter.schema.type === SchemaType.Choice && (<ChoiceSchema>(parameter.schema)).choices.length === 1)) {
+      return true;
+    }
+    return false;
+  }
   public IsEnum(schema: Schema): boolean {
-    if (schema.type === SchemaType.SealedChoice && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
+    if (schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>schema).choiceType.type === SchemaType.String && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
       return true;
     }
     return false;
@@ -301,7 +324,7 @@ export class Helper {
     const result = Array<string>();
     for (const virtualProperty of values(<Array<VirtualProperty>>(parameter.schema.language.default.virtualProperties.owned))) {
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (this.IsValueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
+      type = (this.IsValueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<ChoiceSchema>virtualProperty.property.schema).choiceType.type === SchemaType.String && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = camelCase(virtualProperty.name);
       result.push(`            ${type} ${CamelName} = default(${type});`);
       result.push(`            if (${groupParameter} != null)`);

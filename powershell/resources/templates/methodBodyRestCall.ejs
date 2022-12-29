@@ -1,3 +1,4 @@
+<%- project.helper.HandleConstParameters(method)%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
             if (nextPageLink == null)
             {
@@ -6,7 +7,7 @@
 <% }else{-%> 
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
-<% if (!project.helper.IsValueType(parameter.schema.type) && parameter.required) { -%>
+<% if (!project.helper.IsValueType(parameter.schema.type) && parameter.required && !project.helper.IsConstantParameter(parameter)) { -%>
             if (<%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
@@ -20,7 +21,7 @@
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
 <%# ToDo: add check IsNullable with required -%>
 <% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
-<% if ( !(parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) && parameter.required && !project.helper.IsValueType(parameter.schema.type)) {-%>
+<% if ( !(parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) && parameter.required && !project.helper.IsValueType(parameter.schema.type) && !project.helper.IsConstantParameter(parameter)) {-%>
             if (<%-prefix%><%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
@@ -142,7 +143,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <%# ToDo: add RequestBody, formdata support-%>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
 <%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
-<% if (!project.helper.IsValueType(parameter.schema.type)) {-%>
+<% if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsConstantParameter(parameter)) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
                 _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
@@ -240,7 +241,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
 <% var respSchema = resp.schema;
-if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])){
+if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && (respSchema.schema.choiceType.type != 'string' || (resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])))){
     respSchema = resp.schema.choiceType;
 }
 var deserializeType =  method.language.default.deserializeType ? method.language.default.deserializeType : respSchema.language.csharp.fullname;
