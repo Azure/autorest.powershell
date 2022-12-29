@@ -3,7 +3,6 @@
   "whiteTestFailed": [
     "basic-polymorphism",
     "component-param-additional",
-    "component-param-resourceasarraay",
     "component-param-specialproperties",
     "datamodels-datatypes-boolean",
     "extension-ms-longruningoperation",
@@ -26,6 +25,7 @@
     "component-definitions-combined",
     "component-definitions-local",
     "component-definitions-remote",
+    "component-param-resourceasarraay",
     "component-definitions-url",
     "component-multiparam",
     "component-param",

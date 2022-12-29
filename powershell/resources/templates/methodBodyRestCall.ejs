@@ -6,7 +6,7 @@
 <% }else{-%> 
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
-<% if (!project.helper.IsValueType(parameter.schema.type)) { -%>
+<% if (!project.helper.IsValueType(parameter.schema.type) && parameter.required) { -%>
             if (<%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
