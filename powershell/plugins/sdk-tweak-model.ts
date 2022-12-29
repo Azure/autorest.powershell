@@ -68,8 +68,13 @@ function tweakSchema(model: SdkModel) {
       };
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
+      if (virtualProperty.required && (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choices.length === 1)
+        || (virtualProperty.property.schema.type === SchemaType.Choice && (<ChoiceSchema>virtualProperty.property.schema).choices.length === 1)) {
+        // For choice or seal choice with only one value and required, will not be handled as constant
+        continue;
+      }
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string']))) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
@@ -130,13 +135,17 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
       parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
     }
   });
-  (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {
+  (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+    && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
     const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
     parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
     args.push(parameter.language.default.name);
   });
 
-  bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {
+  bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+    && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
       const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
       constructorParametersDeclaration.split(', ').forEach(function (p) {
@@ -229,7 +238,7 @@ async function tweakOperation(state: State) {
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
-            let responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.type;
+            const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.type;
             // Mark response as pageable
             respSchema.language.default.pagable = true;
             operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
@@ -239,9 +248,9 @@ async function tweakOperation(state: State) {
             const postfix = (valueType(respSchema.type)
               || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
               || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))
-              || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'] && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
+              || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
             ) ? '?' : '';
-            const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
+            const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && (valueType((<SealedChoiceSchema>respSchema).choiceType.type) || (respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])))) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
             operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}>`;
             operation.language.default.returnType = `${fullname}${postfix}`;
           }
