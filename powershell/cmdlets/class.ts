@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-let ejs = require('ejs')
+const ejs = require('ejs');
 import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, OperationType, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -1243,8 +1243,8 @@ export class CmdletClass extends Class {
           yield Return();
         }),
         TerminalCase(Events.Progress.value, function* () {
-          yield 'var data = messageData();'
-          yield 'int progress = (int)data.Value;'
+          yield 'var data = messageData();';
+          yield 'int progress = (int)data.Value;';
           yield 'string activityMessage, statusDescription;';
           yield 'global::System.Management.Automation.ProgressRecordType recordType;';
 
@@ -1262,10 +1262,10 @@ export class CmdletClass extends Class {
           yield '}';
 
           // hardcode id = 1 because there is no need for nested progress bar
-          yield `WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)`;
+          yield 'WriteProgress(new global::System.Management.Automation.ProgressRecord(1, activityMessage, statusDescription)';
           yield '{';
           yield '    PercentComplete = progress,';
-          yield 'RecordType = recordType'
+          yield 'RecordType = recordType';
           yield '});';
           yield Return();
         }),
@@ -1288,7 +1288,7 @@ export class CmdletClass extends Class {
             yield '    return;';
             yield '}';
           });
-          yield Else(function * () {
+          yield Else(function* () {
             yield 'if (data.ResponseMessage is System.Net.Http.HttpResponseMessage response)';
             yield '{';
             yield '    int delay = (int)(response.Headers.RetryAfter?.Delta?.TotalSeconds ?? 30);';
@@ -1296,7 +1296,7 @@ export class CmdletClass extends Class {
             yield '    for (var now = 0; now < delay; ++now)';
             yield '    {';
             // hardcode id = 1 because there is no need for nested progress bar
-            yield `        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")`;
+            yield '        WriteProgress(new global::System.Management.Automation.ProgressRecord(1, "In progress", "Checking operation status")';
             yield '        {';
             yield '            PercentComplete = now * 100 / delay';
             yield '        });';
@@ -1831,8 +1831,8 @@ export class CmdletClass extends Class {
     // If defines externalDocs for operation
     if (operation.details.default.externalDocs) {
       this.add(new Attribute(ExternalDocsAttribute, {
-        parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? "")}`,
-        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? "")}`]
+        parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
+        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
       }));
     }
 
@@ -1846,6 +1846,16 @@ export class CmdletClass extends Class {
 
       this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
     }
+
+    this.operation.callGraph.forEach((operationInfo) => {
+      let apiVersion = 'null';
+      if (operationInfo.apiVersions) {
+        apiVersion = operationInfo.apiVersions[0].version;
+      }
+      operationInfo.requests?.forEach((request) => {
+        this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${request.protocol?.http?.path}"`, `ApiVersion = "${apiVersion}"`] }));
+      });
+    });
   }
 }
 

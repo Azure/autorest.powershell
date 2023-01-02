@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -30,6 +30,14 @@ if(-not $Isolated -and -not $Debugger) {
     . (Join-Path $PSScriptRoot 'generate-help.ps1')
     if($LastExitCode -ne 0) {
       # Docs generation failed. Don't attempt to run the module.
+      return
+    }
+  }
+
+  if($UX) {
+    . (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
+    if($LastExitCode -ne 0) {
+      # UX generation failed. Don't attempt to run the module.
       return
     }
   }
