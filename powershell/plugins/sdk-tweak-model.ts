@@ -56,7 +56,6 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
 }
 
 
-
 function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
     const optionalParameters = Array<string>();
@@ -170,13 +169,13 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
-  if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
-    args.push('customHeaders');
-  } else {
-    args.push('null');
-  }
+  const argsWithCustomerHeaders: Array<string> = [...args];
+  args.push('null');
   args.push('cancellationToken');
+  argsWithCustomerHeaders.push('customHeaders');
+  argsWithCustomerHeaders.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
+  operation.language.default.asyncMethodInvocationArgsWithCustomerHeaders = argsWithCustomerHeaders.join(', ');
 }
 
 function addPageableMethodParameterDeclaration(operation: Operation) {
