@@ -151,9 +151,13 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
+  const argsWithCustomerHeaders: Array<string> = [...args];
   args.push('null');
   args.push('cancellationToken');
+  argsWithCustomerHeaders.push('customHeaders');
+  argsWithCustomerHeaders.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
+  operation.language.default.asyncMethodInvocationArgsWithCustomerHeaders = argsWithCustomerHeaders.join(', ');
 }
 
 
