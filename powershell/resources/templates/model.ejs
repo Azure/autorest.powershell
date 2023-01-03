@@ -104,18 +104,6 @@ const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
 <% });-%>
-<% if (p.property.language.default.flavor) {-%>
-<%
-switch(p.property.language.default.flavor) {
-        case 'additionalProperties':-%>
-        [Newtonsoft.Json.JsonExtensionData]
-<%              break;
-        default:
-                break;        
-}-%>
-<%} else{-%>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
-<%}-%>
 <% if (model.extensions && model.extensions['x-ms-parameter-grouping']) {-%>
         [Newtonsoft.Json.JsonIgnore]
 <%} else if (p.property.language.default.flavor) {-%>
