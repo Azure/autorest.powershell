@@ -45,7 +45,7 @@ export class Helper {
         } else if (isObjectSchema(modelToValidate)) {
           const virtualProperties = getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
           values(virtualProperties).where(p => isObjectSchema(p.property.schema)).forEach(cp => typesToValidate.push(cp.property.schema));
-          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant) || this.HasConstrains(p.property.schema))) {
+          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant && !this.IsConstantProperty(p)) || this.HasConstrains(p.property.schema))) {
             return true;
           }
         }
@@ -313,6 +313,20 @@ export class Helper {
     }
     return false;
   }
+
+  public IsConstantProperty(property: VirtualProperty): boolean {
+    if (!property.required) {
+      // const parameters are always required
+      return false;
+    }
+    // skip parameter.schema.type === SchemaType.Constant, since there is a bug
+    if ((property.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>(property.property.schema)).choices.length === 1)
+      || (property.property.schema.type === SchemaType.Choice && (<ChoiceSchema>(property.property.schema)).choices.length === 1)) {
+      return true;
+    }
+    return false;
+  }
+
   public IsEnum(schema: Schema): boolean {
     if (schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>schema).choiceType.type === SchemaType.String && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
       return true;
