@@ -1,5 +1,14 @@
 {
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
+  "whiteTestFailed": [
+    "basic-polymorphism",
+    "component-param-additional",
+    "component-param-specialproperties",
+    "extension-ms-longruningoperation",
+    "provider-aks",
+    "provider-containerRegistry",
+    "provider-storage"
+  ],
   "whiteTestList": [
     "basic-disableazure-get",
     "basic-disableazure-response",
@@ -12,16 +21,24 @@
     "basic-response-multioperation",
     "basic-spec-required",
     "basic-spec-root",
+    "component-definitions-combined",
     "component-definitions-local",
     "component-definitions-remote",
+    "component-param-resourceasarraay",
     "component-definitions-url",
     "component-multiparam",
     "component-param",
+    "component-param-grouping",
     "component-param-inbody",
     "component-param-localremote",
     "component-param-remote",
+    "datamodels-datatypes-boolean",
+    "datamodels-datatypes-boolean-quirks",
+    "datamodels-datatypes-byte",
     "datamodels-combineschema",
     "datamodels-datatypes-array",
+    "datamodels-datatypes-date",
+    "datamodels-datatypes-datetime",
     "datamodels-datatypes-file",
     "datamodels-datatypes-integer",
     "datamodels-datatypes-nullable",
@@ -36,6 +53,7 @@
     "extension-ms-enum",
     "extension-ms-examples",
     "extension-ms-mutability",
+    "extension-ms-pageable",
     "extension-ms-paramlocation",
     "model-validate"
   ],
@@ -99,6 +117,11 @@
     "provider-containerRegistry",
     "provider-storage"
   ],
-  "ignoreFolder": ["examples", "CompareResult"],
-  "ignoreCompareFile": ["SdkInfo_*.cs"]
+  "ignoreFolder": [
+    "examples",
+    "CompareResult"
+  ],
+  "ignoreCompareFile": [
+    "SdkInfo_*.cs"
+  ]
 }

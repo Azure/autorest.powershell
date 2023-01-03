@@ -1,9 +1,18 @@
+<%- project.helper.HandleConstParameters(method)%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+            if (nextPageLink == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "nextPageLink");
+            }
+<% }else{-%> 
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
+<% if (!project.helper.IsValueType(parameter.schema.type) && parameter.required && !project.helper.IsConstantParameter(parameter)) { -%>
             if (<%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-parameter.language.default.name%>");
             }
+<% } -%>
 <%if(method.requests[0].protocol.http.method != 'patch') {-%>
 <%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
 <%}-%>
@@ -12,14 +21,17 @@
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
 <%# ToDo: add check IsNullable with required -%>
 <% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
-<% if (parameter.required) {-%>
+<% if ( !(parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) && parameter.required && !project.helper.IsValueType(parameter.schema.type) && !project.helper.IsConstantParameter(parameter)) {-%>
             if (<%-prefix%><%-parameter.language.default.name%> == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
             }
 <% } -%>
-<%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
+<%-project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable)%>
 <%});}-%>
+<%(method.parameters || []).filter(p => p.protocol.http.in == 'complex').forEach(function(parameter) {-%>
+<%-project.helper.PopulateGroupParameters(parameter)%>
+<%});-%>
 <%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
@@ -34,6 +46,7 @@
             }
 <%}-%>
 <% });-%>
+<%}-%>
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -41,18 +54,26 @@
             {
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+                tracingParameters.Add("nextPageLink", nextPageLink);
+<% }else{-%>
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
-<%method.parameters.filter(p => p.implementation != 'Client').forEach(function(p) {-%>
+<%method.parameters.filter(p => p.implementation != 'Client' && p.protocol.http.in != 'complex').forEach(function(p) {-%>
                 tracingParameters.Add("<%-p.language.default.name%>", <%-p.language.default.name%>);
 <%});-%>
 <%# ToDo: currently we just add the unexpanded body parameter, and need to be fixed in the future %>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
                 tracingParameters.Add("<%-parameter.language.default.name%>", <%-parameter.language.default.name%>);
 <% });-%>
+<% }%>
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "<%-method.language.default.name%>", tracingParameters);
             }
             // Construct URL
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+            string _url = "{nextLink}";
+            _url = _url.Replace("{nextLink}", nextPageLink);
+<% }else{%>
 <%# ToDo: may need to support AbsoluteUrl -%>
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
 <%# ToDo: buildurl, currently only added simple cases, besides we need to handle skip url encoding -%>
@@ -62,12 +83,13 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 -%>
             _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", <%-project.helper.PathParameterString(pathParameter)%>);
 <% });}-%>
+<% }%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
 <% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
             if (<%-prefix%><%-queryParameter.language.default.name%> != null)
             {
-                _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", System.Uri.EscapeDataString(<%-prefix%><%-queryParameter.language.default.name%>)));
+                _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", <%-project.helper.PathParameterString(queryParameter)%>));
             }
 <% });}-%>
             if (_queryParameters.Count > 0)
@@ -93,7 +115,17 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
                 }
                 _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
             }
-
+<% (method.parameters || []).filter(p => p.protocol.http.in == 'header').forEach(function(parameter) {
+var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+            if (<%-prefix%><%-parameter.language.default.name%> != null)
+            {
+                if (_httpRequest.Headers.Contains("<%-parameter.language.default.serializedName%>"))
+                {
+                    _httpRequest.Headers.Remove("<%-parameter.language.default.serializedName%>");
+                }
+                _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", <%-prefix%><%-parameter.language.default.name%>);
+            }
+<% });-%>
 
             if (customHeaders != null)
             {
@@ -111,12 +143,18 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <%# ToDo: add RequestBody, formdata support-%>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
 <%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
+<% if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsConstantParameter(parameter)) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, this.Client.SerializationSettings);
+                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
                 _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
                 _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+<% } else { -%>
+            _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
+            _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
+            _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+<% } -%>
 <% });-%>
 <%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
             // Set Credentials
@@ -202,7 +240,14 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
                 try
                 {
 <%# ToDo: we assume the return is object, need to add support for other types including support nullable -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-resp.schema.language.csharp.fullname%>>(_responseContent, this.Client.DeserializationSettings);
+<% var respSchema = resp.schema;
+if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && (respSchema.schema.choiceType.type != 'string' || (resp.schema.extensions && resp.schema.extensions['x-ms-model-as-string'])))){
+    respSchema = resp.schema.choiceType;
+}
+var deserializeType =  method.language.default.deserializeType ? method.language.default.deserializeType : respSchema.language.csharp.fullname;
+const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.IsEnum(resp.schema)) ? '?' : '';
+-%>
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {

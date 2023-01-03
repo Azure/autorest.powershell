@@ -19,8 +19,8 @@ const resources = `${__dirname}/../../resources`;
 async function generateModels(project: Project) {
   const path = join(join(resources, 'templates'), 'model.ejs');
   for (const model of values(project.model.schemas.objects)) {
-    if (model.extensions && model.extensions['x-ms-client-flatten']) {
-      // skip flattened model
+    if ((model.extensions && model.extensions['x-ms-client-flatten']) || model.language.default.pagable) {
+      // skip flattened model and pageble model
       continue;
     }
     const content = await ejs.renderFile(path, { model: model, project: project });
@@ -66,6 +66,19 @@ async function generateClientInterface(project: Project) {
   project.state.writeFile(`${project.baseFolder}\\I${project.state.model.info.title}.cs`, content, undefined, 'source-file-csharp');
 }
 
+async function generatePageClasses(project: Project) {
+  for (let [key, value] of Object.entries(project.state.model.language.default.pageClasses)) {
+    const path = join(join(resources, 'templates'), 'page.ejs');
+    let className = value;
+    let nextLinkName = key.split(' ')[0];
+    let itemName = key.split(' ')[1];
+    const page = { className: className, nextLinkName: nextLinkName, itemName: itemName };
+    const content = await ejs.renderFile(path, { project: project, page: page });
+    project.state.writeFile(`${project.baseFolder}\\Models\\${page.className}.cs`, content, undefined, 'source-file-csharp');
+
+  }
+}
+
 async function generateExceptions(project: Project) {
   const processedException = new Set();
   const path = join(join(resources, 'templates'), 'exception.ejs');
@@ -93,6 +106,7 @@ export async function generate(service: Host) {
     await generateMethodGroups(project);
     await generateModels(project);
     await generateEnums(project);
+    await generatePageClasses(project);
     await generateExceptions(project);
   } catch (E) {
     console.error(`${__filename} - FAILURE  ${JSON.stringify(E)}`);
