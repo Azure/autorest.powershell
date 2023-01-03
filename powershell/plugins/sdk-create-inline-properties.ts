@@ -407,7 +407,7 @@ function moveAdditionalPropertiesFromParentToProperties(obj: ObjectSchema, schem
       });
     }
     if (Array.isArray(obj.parents.all)) {
-      obj.parents.all = obj.parents.immediate.filter(parent => {
+      obj.parents.all = obj.parents.all.filter(parent => {
         if (parent.type === 'dictionary' && parent.language.default.name === obj.language.default.name && schemas.dictionaries?.find(dictionary => dictionary.language.default.name === parent.language.default.name)) {
           schema = parent;
           return false;
