@@ -16,12 +16,12 @@ namespace Microsoft.Azure.Sample
     using Models;
 
     /// <summary>
-    /// XMsClientRequestIdOperations operations.
+    /// XMSClientRequestIdOperations operations.
     /// </summary>
-    internal partial class XMsClientRequestIdOperations : Microsoft.Rest.IServiceOperations<DatabricksClient>, IXMsClientRequestIdOperations
+    internal partial class XMSClientRequestIdOperations : Microsoft.Rest.IServiceOperations<DatabricksClient>, IXMSClientRequestIdOperations
     {
         /// <summary>
-        /// Initializes a new instance of the XMsClientRequestIdOperations class.
+        /// Initializes a new instance of the XMSClientRequestIdOperations class.
         /// </summary>
         /// <param name='client'>
         /// Reference to the service client.
@@ -29,7 +29,7 @@ namespace Microsoft.Azure.Sample
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
-        internal XMsClientRequestIdOperations(DatabricksClient client)
+        internal XMSClientRequestIdOperations(DatabricksClient client)
         {
             if (client == null)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -139,7 +139,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    CloudError _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
@@ -243,14 +243,6 @@ namespace Microsoft.Azure.Sample
             {
                 _httpRequest.Headers.TryAddWithoutValidation("x-ms-client-request-id", System.Guid.NewGuid().ToString());
             }
-            if (xMsClientRequestId != null)
-            {
-                if (_httpRequest.Headers.Contains("x-ms-client-request-id"))
-                {
-                    _httpRequest.Headers.Remove("x-ms-client-request-id");
-                }
-                _httpRequest.Headers.TryAddWithoutValidation("x-ms-client-request-id", xMsClientRequestId);
-            }
             if (this.Client.AcceptLanguage != null)
             {
                 if (_httpRequest.Headers.Contains("accept-language"))
@@ -259,11 +251,19 @@ namespace Microsoft.Azure.Sample
                 }
                 _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
             }
+            if (xMsClientRequestId != null)
+            {
+                if (_httpRequest.Headers.Contains("x-ms-client-request-id"))
+                {
+                    _httpRequest.Headers.Remove("x-ms-client-request-id");
+                }
+                _httpRequest.Headers.TryAddWithoutValidation("x-ms-client-request-id", xMsClientRequestId);
+            }
 
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -301,7 +301,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;

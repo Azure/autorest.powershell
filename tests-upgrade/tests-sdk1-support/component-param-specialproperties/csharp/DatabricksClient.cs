@@ -41,16 +41,16 @@ namespace Microsoft.Azure.Sample
         public Microsoft.Rest.ServiceClientCredentials Credentials { get; private set; }
 
         /// <summary>
-        /// The subscription id, which appears in the path, always modeled in
-        /// credentials. The value is always '1234-5678-9012-3456'
-        /// </summary>
-        public string SubscriptionId { get; set; }
-
-        /// <summary>
         /// The api version, which appears in the query, the value is always
         /// '2015-07-01-preview'
         /// </summary>
         public string ApiVersion { get; private set; }
+
+        /// <summary>
+        /// The subscription id, which appears in the path, always modeled in
+        /// credentials. The value is always '1234-5678-9012-3456'
+        /// </summary>
+        public string SubscriptionId { get; set; }
 
         /// <summary>
         /// The preferred language for the response.
@@ -71,9 +71,9 @@ namespace Microsoft.Azure.Sample
         public bool? GenerateClientRequestId { get; set; }
 
         /// <summary>
-        /// Gets the IXMsClientRequestIdOperations.
+        /// Gets the IXMSClientRequestIdOperations.
         /// </summary>
-        public virtual IXMsClientRequestIdOperations XMsClientRequestId { get; private set; }
+        public virtual IXMSClientRequestIdOperations XMSClientRequestId { get; private set; }
 
         /// <summary>
         /// Gets the ISubscriptionInCredentialsOperations.
@@ -351,7 +351,7 @@ namespace Microsoft.Azure.Sample
         /// </summary>
         private void Initialize()
         {
-            this.XMsClientRequestId = new XMsClientRequestIdOperations(this);
+            this.XMSClientRequestId = new XMSClientRequestIdOperations(this);
             this.SubscriptionInCredentials = new SubscriptionInCredentialsOperations(this);
             this.SubscriptionInMethod = new SubscriptionInMethodOperations(this);
             this.ApiVersionDefault = new ApiVersionDefaultOperations(this);

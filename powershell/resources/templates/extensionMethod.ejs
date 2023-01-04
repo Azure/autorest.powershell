@@ -60,7 +60,7 @@
 <%# ToDo: add support for primitive return-%>
             using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
             {
-                return _result.Body;
+                return <%- method.language.default.responseType.startsWith('Microsoft.Rest.Azure.AzureOperationResponse') ? '_result.Body' : '_result.Headers'%>;
             }
 <% } else { -%>
             (await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false)).Dispose();
