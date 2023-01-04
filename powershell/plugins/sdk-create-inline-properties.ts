@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext, Protocol } from '@azure-tools/codemodel';
+import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext, Protocol, Schemas, Schema } from '@azure-tools/codemodel';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize, camelCase } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { Host, Session, startSession } from '@azure-tools/autorest-extension-base';
@@ -396,16 +396,18 @@ async function implementGroupParameters(state: State) {
 async function createVirtuals(state: State): Promise<PwshModel> {
   // add support for x-ms-parameter-grouping
   implementGroupParameters(state);
-  /* 
+  /*
     A model class should provide inlined properties for anything in a property called properties
-    
+
     Classes that have $THRESHOLD number of properties should be inlined.
- 
+
     Individual models can change the $THRESHOLD for generate
   */
   const conflicts = new Array<string>();
 
   for (const schema of values(state.model.schemas.objects)) {
+
+    moveAdditionalPropertiesFromParentToProperties(schema, state.model.schemas);
     // did we already inline this objecct
     if (schema.language.default.inlined) {
       continue;
@@ -427,6 +429,69 @@ async function createVirtuals(state: State): Promise<PwshModel> {
   return state.model;
 }
 
+function addPropertyWithDuplicateNameReverse(properties: Array<Property>, duplicate: Property) {
+  let count = 0;
+  properties.filter(property => {
+    if (property.language.default.name.startsWith(duplicate.language.default.name)) {
+      const name = property.language.default.name.substring(duplicate.language.default.name.length);
+      if (name === '' || typeof Number(name) === 'number') {
+        return true;
+      }
+    }
+    return false;
+  }).sort((a, b) => {
+    const keyA = a.language.default.name.substring(duplicate.language.default.name.length);
+    const keyB = b.language.default.name.substring(duplicate.language.default.name.length);
+    const numA = keyA === '' ? 0 : Number(keyA);
+    const numB = keyB === '' ? 0 : Number(keyB);
+    return numA - numB;
+  }).forEach(property => {
+    const key = property.language.default.name.substring(duplicate.language.default.name.length);
+    const num = key === '' ? 0 : Number(key);
+    if (num === count) {
+      property.language.default.name = duplicate.language.default.name + (++count);
+    }
+  });
+  properties.unshift(duplicate);
+}
+
+function moveAdditionalPropertiesFromParentToProperties(obj: ObjectSchema, schemas: Schemas) {
+  if (obj.parents) {
+    let schema: Schema | undefined;
+    if (Array.isArray(obj.parents.immediate)) {
+      obj.parents.immediate = obj.parents.immediate.filter(parent => {
+        if (parent.type === 'dictionary' && parent.language.default.name === obj.language.default.name && schemas.dictionaries?.find(dictionary => dictionary.language.default.name === parent.language.default.name)) {
+          schema = parent;
+          return false;
+        }
+        return true;
+      });
+    }
+    if (Array.isArray(obj.parents.all)) {
+      obj.parents.all = obj.parents.all.filter(parent => {
+        if (parent.type === 'dictionary' && parent.language.default.name === obj.language.default.name && schemas.dictionaries?.find(dictionary => dictionary.language.default.name === parent.language.default.name)) {
+          schema = parent;
+          return false;
+        }
+        return true;
+      });
+    }
+    if (schema) {
+      schema.language.default.name = 'additionalProperties';
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (schema.language.csharp) {
+        schema.language.csharp.name = 'additionalProperties';
+      }
+      const additionalProperties = new Property('additionalProperties', schema.language.default.description, schema);
+      additionalProperties.language.default = schema.language.default;
+      if (!obj.properties) {
+        obj.properties = [];
+      }
+      additionalProperties.language.default.flavor = 'additionalProperties';
+      addPropertyWithDuplicateNameReverse(obj.properties, additionalProperties);
+    }
+  }
+}
 
 export async function createSdkInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
