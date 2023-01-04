@@ -1,4 +1,17 @@
 <%- project.helper.HandleConstParameters(method)%>
+<%# handle x-ms-client-request-id -%>
+<% var clientRequestId = 'x-ms-client-request-id';
+var requestId = 'x-ms-request-id';
+(method.parameters||[]).filter(p => p.protocol.http.in == 'header').forEach(function (parameter) {
+    if (parameter.extensions && parameter.extensions['x-ms-client-request-id']) {
+        clientRequestId = parameter.language.default.serializedName;
+    }
+});
+if (method.extensions && method.extensions['x-ms-request-id']) {
+    requestId = method.extensions['x-ms-request-id'];
+}
+-%>
+<%# end of handling x-ms-client-request-id -%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
             if (nextPageLink == null)
             {
@@ -105,7 +118,7 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <%# ToDo: Add headers except for following default ones -%>
             if (this.Client.GenerateClientRequestId != null && this.Client.GenerateClientRequestId.Value)
             {
-                _httpRequest.Headers.TryAddWithoutValidation("x-ms-client-request-id", System.Guid.NewGuid().ToString());
+                _httpRequest.Headers.TryAddWithoutValidation("<%-clientRequestId%>", System.Guid.NewGuid().ToString());
             }
             if (this.Client.AcceptLanguage != null)
             {
@@ -169,8 +182,9 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
             cancellationToken.ThrowIfCancellationRequested();
-<%# ToDo: Add support for primary type return and head method-%>
-            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+<%# ToDo: Add support for primary type return -%>
+<% var responseHeadersRead = method.requests[0].protocol.http.method === 'head' ? 'System.Net.Http.HttpCompletionOption.ResponseHeadersRead, ': '' -%>
+            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, <%-responseHeadersRead%>cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
@@ -205,9 +219,9 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
 <% if (!method.exceptions || !method.exceptions[0].schema) {-%>
-                if (_httpResponse.Headers.Contains("x-ms-request-id"))
+                if (_httpResponse.Headers.Contains("<%-requestId%>"))
                 {
-                    ex.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                    ex.RequestId = _httpResponse.Headers.GetValues("<%-requestId%>").FirstOrDefault();
                 }
 <% } -%>
                 if (_shouldTrace)
@@ -225,10 +239,10 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
             var _result = new <%-method.language.default.responseType%>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
-<%# Todo: need to add support for head method, see InitializeResponseBody for details-%>
-            if (_httpResponse.Headers.Contains("x-ms-request-id"))
+            <%- method.language.default.initializeResponseBody %>
+            if (_httpResponse.Headers.Contains("<%-requestId%>"))
             {
-                _result.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                _result.RequestId = _httpResponse.Headers.GetValues("<%-requestId%>").FirstOrDefault();
             }
 <%(method.responses || []).filter(r => r.schema).forEach(function(resp) {-%>
             // Deserialize Response
@@ -262,6 +276,21 @@ const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.I
 <% });-%>
 <%# ToDo: add support for case Model.ReturnType.Body != null && Model.DefaultResponse.Body != null && !Model.Responses.Any()-%>
 <%# ToDo: add support for case there are return in headers-%>
+<% if (method.language.default.returnTypeHeader.name !== '') { -%>
+            try
+            {
+                _result.Headers = _httpResponse.GetHeadersAsJson().ToObject<<%-method.language.default.returnTypeHeader.name%>>(Newtonsoft.Json.JsonSerializer.Create(this.Client.DeserializationSettings));
+            }
+            catch (Newtonsoft.Json.JsonException ex)
+            {
+                _httpRequest.Dispose();
+                if (_httpResponse != null)
+                {
+                    _httpResponse.Dispose();
+                }
+                throw new Microsoft.Rest.SerializationException("Unable to deserialize the headers.", _httpResponse.GetHeadersAsJson().ToString(), ex);
+            }
+<% } -%>
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.Exit(_invocationId, _result);

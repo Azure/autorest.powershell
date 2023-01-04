@@ -126,6 +126,11 @@ export class Helper {
       return true;
     } else if (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.String) {
       return true;
+    } else if (schema.type === SchemaType.Choice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String && (<ChoiceSchema>schema).choices.length === 1) {
+      return true;
+    } else if (schema.type === SchemaType.SealedChoice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String &&
+      (<ChoiceSchema>schema).choices.length === 1) {
+      return true;
     }
     // ToDo: we need to figure how to handle the case when schema type is enum
     // Skip it since there is a bug in IsKindOfString in the csharp generator

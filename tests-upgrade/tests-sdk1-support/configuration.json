@@ -4,7 +4,6 @@
     "basic-polymorphism",
     "component-param-additional",
     "component-param-specialproperties",
-    "extension-ms-longruningoperation",
     "provider-aks",
     "provider-containerRegistry",
     "provider-storage"
@@ -52,6 +51,7 @@
     "extension-ms-discriminatorvalue",
     "extension-ms-enum",
     "extension-ms-examples",
+    "extension-ms-longruningoperation",
     "extension-ms-mutability",
     "extension-ms-pageable",
     "extension-ms-paramlocation",

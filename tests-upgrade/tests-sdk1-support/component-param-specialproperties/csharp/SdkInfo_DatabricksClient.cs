@@ -26,7 +26,7 @@ namespace Microsoft.Azure.Sample
                 new Tuple<string, string, string>("DatabricksClient", "skipUrlEncoding", "2018-04-01"),
                 new Tuple<string, string, string>("DatabricksClient", "subscriptionInCredentials", "2018-04-01"),
                 new Tuple<string, string, string>("DatabricksClient", "subscriptionInMethod", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "x-ms-client-request-id", "2018-04-01"),
+                new Tuple<string, string, string>("DatabricksClient", "xMSClientRequestId", "2018-04-01"),
               }.AsEnumerable();
           }
       }

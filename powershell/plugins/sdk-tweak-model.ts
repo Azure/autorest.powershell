@@ -137,26 +137,26 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-    const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
-    args.push(parameter.language.default.name);
-  });
+      const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
+      args.push(parameter.language.default.name);
+    });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
-      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-      constructorParametersDeclaration.split(', ').forEach(function (p) {
-        requiredDeclarations.push(p);
-        args.push(p.split(' ')[1]);
-      });
-    } else {
-      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
-      args.push(parameter.language.default.name);
-    }
-  });
+      if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+        const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+        constructorParametersDeclaration.split(', ').forEach(function (p) {
+          requiredDeclarations.push(p);
+          args.push(p.split(' ')[1]);
+        });
+      } else {
+        const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
+        args.push(parameter.language.default.name);
+      }
+    });
 
   declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
@@ -222,6 +222,9 @@ async function tweakOperation(state: State) {
       operationGroup.language.default.name = operationGroup.$key;
     }
     for (const operation of operationGroup.operations) {
+      let initializeResponseBody = '';
+      operation.language.default.returnTypeHeader = {};
+      operation.language.default.returnTypeHeader.name = '';
       if (operation.responses) {
         const schemas = new Set();
         operation.responses.forEach(function (resp) {
@@ -230,10 +233,18 @@ async function tweakOperation(state: State) {
           }
         });
         const respCountWithBody = schemas.size;
+        if (operation.requests && operation.requests[0].protocol.http?.method === 'head' && respCountWithBody > 0) {
+          initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
+        }
         const responses = operation.responses.filter(r => (<any>r).schema);
+        const hasHeaderResponse = operation.responses.some(r => (<any>r).protocol.http.headers);
+        const headerSchema = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+        operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
+        let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {
-          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
-          operation.language.default.returnType = 'void';
+          headerPostfix = hasHeaderResponse ? `AzureOperationHeaderResponse<${headerSchema}>` : 'AzureOperationResponse';
+          operation.language.default.responseType = `Microsoft.Rest.Azure.${headerPostfix}`;
+          operation.language.default.returnType = hasHeaderResponse ? headerSchema : 'void';
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
@@ -250,17 +261,18 @@ async function tweakOperation(state: State) {
               || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
             ) ? '?' : '';
             const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && (valueType((<SealedChoiceSchema>respSchema).choiceType.type) || (respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])))) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
-            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}>`;
+            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}${headerPostfix}>`;
             operation.language.default.returnType = `${fullname}${postfix}`;
           }
         } else {
-          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<Object>';
-          operation.language.default.returnType = 'Object';
+          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<object${headerPostfix}>`;
+          operation.language.default.returnType = 'object';
         }
       } else {
         operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
         operation.language.default.returnType = 'void';
       }
+      operation.language.default.initializeResponseBody = initializeResponseBody;
       addMethodParameterDeclaration(operation, state);
       setFailureStatusCodePredicate(operation);
     }

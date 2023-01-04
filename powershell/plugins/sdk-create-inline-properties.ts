@@ -14,6 +14,7 @@ import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMutability } from '../utils/schema';
 import { resolveParameterNames } from '../utils/resolve-conflicts';
 import { OperationType } from '../utils/command-operation';
+import { Header, HeaderPropertyType } from '@azure-tools/codemodel-v3';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -215,7 +216,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
 
-        const proposedName = getPascalIdentifier(`${propertyName === 'properties' || /*objectProperties.length === 1*/ propertyName === 'error' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
+        // const proposedName = getPascalIdentifier(`${propertyName === 'properties' || /*objectProperties.length === 1*/ propertyName === 'error' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
+        const proposedName = getPascalIdentifier(inlinedProperty.name);
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         let readonly = inlinedProperty.readOnly || property.readOnly;
@@ -393,10 +395,47 @@ async function implementGroupParameters(state: State) {
   }
 }
 
+async function implementHeaderResponse(state: State) {
+  const headerSchemaMap = new Map<string, ObjectSchema>();
+  const headerSchemaPropertiesMap = new Map<string, Array<string>>();
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      for (const response of values(operation.responses)) {
+        if (response.protocol.http && response.protocol.http.headers) {
+          const schemaName = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+          const headerSchema = headerSchemaMap.get(schemaName) || new ObjectSchema(schemaName, '');
+          headerSchemaMap.set(schemaName, headerSchema);
+          for (const header of values(response.protocol.http.headers)) {
+            if (headerSchemaPropertiesMap.has(schemaName) && (headerSchemaPropertiesMap.get(schemaName) || []).indexOf((<Property>header).language.default.name) !== -1) {
+              continue;
+            } else {
+              headerSchemaPropertiesMap.set(schemaName, [...(headerSchemaPropertiesMap.get(schemaName) || []), (<Property>header).language.default.name]);
+              const property = new Property(camelCase((<Property>header).language.default.name), '', (<Property>header).schema,
+                {
+                  serializedName: (<any>header).header,
+                  required: (<Property>header).required,
+                  readOnly: (<Property>header).readOnly
+                });
+              headerSchema.addProperty(property);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  headerSchemaMap.forEach((value, key) => {
+    state.model.schemas.objects = state.model.schemas.objects || [];
+    state.model.schemas.objects.push(value);
+  });
+}
+
 async function createVirtuals(state: State): Promise<PwshModel> {
   // add support for x-ms-parameter-grouping
-  implementGroupParameters(state);
-  /*
+  await implementGroupParameters(state);
+  // add support for header response
+  await implementHeaderResponse(state);
+  /* 
     A model class should provide inlined properties for anything in a property called properties
 
     Classes that have $THRESHOLD number of properties should be inlined.
