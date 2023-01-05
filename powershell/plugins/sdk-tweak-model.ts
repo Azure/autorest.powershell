@@ -137,7 +137,10 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-      const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+      let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+      if (parameter.extensions && parameter.extensions['x-ms-odata']) {
+        type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
+      }
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
       args.push(parameter.language.default.name);
     });
@@ -233,7 +236,8 @@ async function tweakOperation(state: State) {
           }
         });
         const respCountWithBody = schemas.size;
-        if (operation.requests && operation.requests[0].protocol.http?.method === 'head' && respCountWithBody > 0) {
+        const isHead = operation.requests && operation.requests[0].protocol.http?.method === 'head';
+        if (isHead) {
           initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
         }
         const responses = operation.responses.filter(r => (<any>r).schema);
@@ -242,9 +246,9 @@ async function tweakOperation(state: State) {
         operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
         let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {
-          headerPostfix = hasHeaderResponse ? `AzureOperationHeaderResponse<${headerSchema}>` : 'AzureOperationResponse';
+          headerPostfix = hasHeaderResponse ? (isHead ? `AzureOperationResponse<bool,${headerSchema}>` : `AzureOperationHeaderResponse<${headerSchema}>`) : 'AzureOperationResponse';
           operation.language.default.responseType = `Microsoft.Rest.Azure.${headerPostfix}`;
-          operation.language.default.returnType = hasHeaderResponse ? headerSchema : 'void';
+          operation.language.default.returnType = hasHeaderResponse ? (isHead ? 'bool' : headerSchema) : 'void';
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {

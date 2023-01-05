@@ -921,9 +921,6 @@
                 "type": "string"
               }
             },
-            "schema": {
-              "type": "number"
-            },
             "description": "Gets the foo-request-id"
           },
           "404": {
@@ -936,9 +933,6 @@
                 "description": "Gets the foo-request-id.",
                 "type": "string"
               }
-            },
-            "schema": {
-              "type": "string"
             },
             "description": "Gets the foo-request-id"
           },
