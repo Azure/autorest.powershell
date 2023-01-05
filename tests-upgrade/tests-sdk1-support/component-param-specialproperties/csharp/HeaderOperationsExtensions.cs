@@ -100,7 +100,7 @@ namespace Microsoft.Azure.Sample
             /// <param name='fooClientRequestId'>
             /// The fooRequestId
             /// </param>
-            public static object CustomNamedRequestIdHead(this IHeaderOperations operations, string fooClientRequestId)
+            public static bool CustomNamedRequestIdHead(this IHeaderOperations operations, string fooClientRequestId)
             {
                 return ((IHeaderOperations)operations).CustomNamedRequestIdHeadAsync(fooClientRequestId).GetAwaiter().GetResult();
             }
@@ -118,7 +118,7 @@ namespace Microsoft.Azure.Sample
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task<object> CustomNamedRequestIdHeadAsync(this IHeaderOperations operations, string fooClientRequestId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task<bool> CustomNamedRequestIdHeadAsync(this IHeaderOperations operations, string fooClientRequestId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
                 using (var _result = await operations.CustomNamedRequestIdHeadWithHttpMessagesAsync(fooClientRequestId, null, cancellationToken).ConfigureAwait(false))
                 {

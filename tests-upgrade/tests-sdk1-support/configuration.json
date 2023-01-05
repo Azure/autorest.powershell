@@ -3,7 +3,6 @@
   "whiteTestFailed": [
     "basic-polymorphism",
     "component-param-additional",
-    "component-param-specialproperties",
     "provider-aks",
     "provider-containerRegistry",
     "provider-storage"
@@ -31,6 +30,7 @@
     "component-param-inbody",
     "component-param-localremote",
     "component-param-remote",
+    "component-param-specialproperties",
     "datamodels-datatypes-boolean",
     "datamodels-datatypes-boolean-quirks",
     "datamodels-datatypes-byte",

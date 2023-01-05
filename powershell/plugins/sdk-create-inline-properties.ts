@@ -395,6 +395,26 @@ async function implementGroupParameters(state: State) {
   }
 }
 
+async function implementOdata(state: State) {
+  const knownOdataParameters = ['$filter', '$top', '$orderby', '$skip', '$expand'];
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      if (operation.extensions && operation.extensions['x-ms-odata']) {
+        const odata = operation.extensions['x-ms-odata'];
+        operation.parameters = (operation.parameters || []).filter(p => !(p.protocol.http?.in === 'query' && knownOdataParameters.indexOf((p.language.default.serializedName).toLowerCase()) > -1));
+        const schemaName = odata.split('/').pop();
+        const odataSchema = (state.model.schemas.objects || []).find(s => s.language.default.name === pascalCase(schemaName)) || new ObjectSchema(pascalCase(schemaName), '');
+        // add the odata parameter
+        const odataParameter = new Parameter('odataQuery', '', odataSchema, {
+          extensions: { 'x-ms-odata': true },
+          protocol: { http: { in: 'query' } }
+        });
+        operation.parameters.unshift(odataParameter);
+      }
+    }
+  }
+}
+
 async function implementHeaderResponse(state: State) {
   const headerSchemaMap = new Map<string, ObjectSchema>();
   const headerSchemaPropertiesMap = new Map<string, Array<string>>();
@@ -431,6 +451,8 @@ async function implementHeaderResponse(state: State) {
 }
 
 async function createVirtuals(state: State): Promise<PwshModel> {
+  // add support for x-ms-odata
+  implementOdata(state);
   // add support for x-ms-parameter-grouping
   await implementGroupParameters(state);
   // add support for header response
