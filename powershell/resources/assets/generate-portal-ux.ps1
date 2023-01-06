@@ -36,27 +36,27 @@ $modulePath = $modulePsd1.FullName
 # Load DLL to use build-time cmdlets
 Import-Module -Name $modulePath
 Import-Module -Name (Join-Path $PSScriptRoot "./bin/$moduleName.private.dll")
-$instance = [Microsoft.Azure.PowerShell.Cmdlets.Databricks.Module]::Instance
+$instance = [${$project.serviceNamespace.moduleClass.declaration}]::Instance
 # Module info is shared per profile
 $moduleInfo = Get-Module -Name $moduleName
 $parameterSetsInfo = Get-Module -Name "$moduleName.private"
 
 $buildinFunctions = @("Export-CmdletSurface", "Export-ExampleStub", "Export-FormatPs1xml", "Export-HelpMarkdown", "Export-ModelSurface", "Export-ProxyCmdlet", "Export-Psd1", "Export-TestStub", "Get-CommonParameter", "Get-ModuleGuid", "Get-ScriptCmdlet")
 
-Function Test-FunctionSupported()
+function Test-FunctionSupported()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [string]
-        $functionName
+        $FunctionName
     )
 
-    If ($buildinFunctions.Contains($functionName)) {
+    If ($buildinfunctions.Contains($FunctionName)) {
         return $false
     }
 
-    $cmdletName, $parameterSetName = $functionName.Split("_")
+    $cmdletName, $parameterSetName = $FunctionName.Split("_")
     If ($parameterSetName.Contains("List") -or $parameterSetName.Contains("ViaIdentity")) {
         return $false
     }
@@ -64,117 +64,132 @@ Function Test-FunctionSupported()
         return $false
     }
 
+    $parameterSetInfo = $parameterSetsInfo[$FunctionName]
+    foreach ($parameterInfo in $parameterSetInfo.Parameters)
+    {
+        $category = (Get-ParameterAttribute -ParameterInfo $parameterInfo -AttributeName "CategoryAttribute").Categories
+        $invalideCategory = @('Query', 'Body')
+        if ($invalideCategory -contains $category)
+        {
+            return $false
+        }
+    }
+
     return $true
 }
 
-Function Find-MappedCmdlet()
+function Get-MappedCmdletFromFunctionName()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [string]
-        $functionName
+        $FunctionName
     )
     
-    $cmdletName, $parameterSetName = $functionName.Split("_")
+    $cmdletName, $parameterSetName = $FunctionName.Split("_")
 
     return $cmdletName
 }
 
-Function Get-ParameterSetDescription()
+function Get-ParameterAttribute()
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter()]
+        [System.Management.Automation.ParameterMetadata]
+        $ParameterInfo,
+        [Parameter()]
+        [String]
+        $AttributeName
+    )
+    return $ParameterInfo.Attributes | Where-Object { $_.TypeId.Name -eq $AttributeName }
+}
+
+function Get-CmdletAttribute()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [System.Management.Automation.CommandInfo]
-        $cmdletInfo
+        $CmdletInfo,
+        [Parameter()]
+        [String]
+        $AttributeName
     )
-    $descriptionAttribute = $cmdletInfo.ImplementingType.GetTypeInfo().GetCustomAttributes([System.object], $true) | Where { $_.TypeId.Name -eq 'DescriptionAttribute' }
-    
-    return $descriptionAttribute.Description
+
+    return $CmdletInfo.ImplementingType.GetTypeInfo().GetCustomAttributes([System.object], $true) | Where-Object { $_.TypeId.Name -eq $AttributeName }
 }
 
-Function Test-ParameterFromPath()
+function Get-CmdletDescription()
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter()]
+        [String]
+        $CmdletName
+    )
+    $helpInfo = Get-Help $CmdletName -Full
+    
+    return $helpInfo.Description.Text
+}
+
+# Test whether the parameter is from swagger http path
+function Test-ParameterFromSwagger()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [System.Management.Automation.ParameterMetadata]
-        $parameterInfo
+        $ParameterInfo
     )
-    $categoryAttributes = $parameterInfo.Attributes | Where { $_.TypeId.Name -eq 'CategoryAttribute' }
+    $category = (Get-ParameterAttribute -ParameterInfo $ParameterInfo -AttributeName "CategoryAttribute").Categories
     
-    return $categoryAttributes.Categories -eq 'Path'
-}
-
-Function Test-Parameter()
-{
-    [CmdletBinding()]
-    Param (
-        [Parameter()]
-        [System.Management.Automation.ParameterMetadata]
-        $parameterInfo
-    )
-    $categoryAttributes = $parameterInfo.Attributes | Where { $_.TypeId.Name -eq 'CategoryAttribute' }
-    
-    $valideCategory = @('Path', 'Query', 'Body')
-    if ($valideCategory -contains $categoryAttributes.Categories)
+    $valideCategory = @('Path')
+    if ($valideCategory -contains $category)
     {
         return $true
     }
     return $false
 }
 
-Function Get-ParameterSourceName()
-{
-    [CmdletBinding()]
-    Param (
-        [Parameter()]
-        [System.Management.Automation.ParameterMetadata]
-        $parameterInfo
-    )
-    $infoAttribute = $parameterInfo.Attributes | Where { $_.TypeId.Name -eq 'InfoAttribute' }
-    
-    return $infoAttribute.SerializedName
-}
-
-Function Get-Example()
+function New-ExampleForParameterSet()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [System.Management.Automation.CommandInfo]
-        $cmdletInfo
+        $ParameterSetInfo
     )
-    $parameters = $cmdletInfo.Parameters.Values | Where { Test-ParameterFromPath $_ }
+    $parameters = $ParameterSetInfo.Parameters.Values | Where-Object { Test-ParameterFromSwagger $_ }
     $result = @()
     foreach ($parameter in $parameters)
     {
-        $source = Get-ParameterSourceName $parameter
-        $Name = $parameter.Name
+        $category = (Get-ParameterAttribute -parameterInfo $parameter -AttributeName "CategoryAttribute").Categories
+        $sourceName = (Get-ParameterAttribute -parameterInfo $parameter -AttributeName "InfoAttribute").SerializedName
+        $name = $parameter.Name
         $result += @{
-            Name = "-$Name"
-            Value = "[path.$source]"
+            name = "-$Name"
+            value = "[$category.$sourceName]"
         }
     }
 
     return $result
 }
 
-Function Get-ParameterArray()
+function New-ParameterArrayInParameterSet()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [System.Management.Automation.CommandInfo]
-        $cmdletInfo
+        $ParameterSetInfo
     )
-    $parameters = $cmdletInfo.Parameters.Values | Where { Test-ParameterFromPath $_ }
+    $parameters = $ParameterSetInfo.Parameters.Values | Where-Object { Test-ParameterFromSwagger $_ }
     $result = @()
     foreach ($parameter in $parameters)
     {
-        $parameterAttribute = $parameter.Attributes | Where { $_.TypeId.Name -eq 'ParameterAttribute' }
-        $isMandatory = $parameterAttribute.Mandatory
+        $isMandatory = (Get-ParameterAttribute -parameterInfo $parameter -AttributeName "ParameterAttribute").Mandatory
         $parameterName = $parameter.Name
         $parameterType = $parameter.ParameterType.ToString().Split('.')[1]
         if ($parameter.SwitchParameter)
@@ -199,24 +214,24 @@ Function Get-ParameterArray()
     return $result
 }
 
-Function Get-SwaggerInfo()
+function New-MetadataForParameterSet()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [System.Management.Automation.CommandInfo]
-        $cmdletInfo
+        $ParameterSetInfo
     )
-    $customAttributes = $cmdletInfo.ImplementingType.GetTypeInfo().GetCustomAttributes([System.object], $true) | Where { $_.TypeId.Name -eq 'HttpPathAttribute' }
-    $httpPath = $customAttributes[0].Path
-    $apiVersion = $customAttributes[0].ApiVersion
-    $provider = $httpPath.Split("/providers/")[1].Split("/")[0]
-    $resources = $httpPath.Split("$provider/")[1].Split("/") | Where { -not ($_.StartsWith("{") -and $_.EndsWith("}")) }
-    $resourceType = $resources -join "/"
-    $cmdletName = Find-MappedCmdlet $cmdletInfo.Name
-    $description = Get-ParameterSetDescription -CmdletInfo $cmdletInfo
-    $example = Get-Example $cmdletInfo
-    $signature = Get-ParameterArray $cmdletInfo
+    $httpAttribute = Get-CmdletAttribute -CmdletInfo $ParameterSetInfo -AttributeName "HttpPathAttribute"
+    $httpPath = $httpAttribute.Path
+    $apiVersion = $httpAttribute.ApiVersion
+    $provider = [System.Text.RegularExpressions.Regex]::New("/providers/([\w+\.]+)/").Match($httpPath).Groups[1].Value
+    $resourcePath = "/" + $httpPath.Split("$provider/")[1]
+    $resourceType = [System.Text.RegularExpressions.Regex]::New("/([\w]+)/\{\w+\}").Matches($resourcePath) | ForEach-Object {$_.groups[1].Value} | Join-String -Separator "/"
+    $cmdletName = Get-MappedCmdletFromFunctionName $ParameterSetInfo.Name
+    $description = (Get-CmdletAttribute -CmdletInfo $ParameterSetInfo -AttributeName "DescriptionAttribute").Description
+    $example = New-ExampleForParameterSet $ParameterSetInfo
+    $signature = New-ParameterArrayInParameterSet $ParameterSetInfo
 
     return @{
         Path = $httpPath
@@ -232,86 +247,87 @@ Function Get-SwaggerInfo()
     }
 }
 
-Function Merge-CmdletInfo()
+function Merge-WithExistCmdletMetadata()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
-        [Hashtable]
-        $existedCmdletInfo,
+        [System.Collections.Specialized.OrderedDictionary]
+        $ExistedCmdletInfo,
         [Parameter()]
         [Hashtable]
-        $newCmdletInfo
+        $ParameterSetMetadata
     )
-    $existedCmdletInfo.help.parameterSets += $newCmdletInfo.Signature
-    $existedCmdletInfo.examples += @{
-        description = $newCmdletInfo.Description
-        parameters = $newCmdletInfo.Example
+    $ExistedCmdletInfo.help.parameterSets += $ParameterSetMetadata.Signature
+    $ExistedCmdletInfo.examples += [ordered]@{
+        description = $ParameterSetMetadata.Description
+        parameters = $ParameterSetMetadata.Example
     }
 
-    return $existedCmdletInfo
+    return $ExistedCmdletInfo
 }
 
-Function New-CmdletInfo()
+function New-MetadataForCmdlet()
 {
     [CmdletBinding()]
     Param (
         [Parameter()]
         [Hashtable]
-        $newCmdletInfo
+        $ParameterSetMetadata
     )
-    $cmdletName = $newCmdletInfo.CmdletName
-    $publicCmdletInfo = $moduleInfo.ExportedCommands[$cmdletName]
+    $cmdletName = $ParameterSetMetadata.CmdletName
+    $description = Get-CmdletDescription $cmdletName
     $result = [ordered]@{
         name = $cmdletName
-        description = $newCmdletInfo.Description
-        path = $newCmdletInfo.Path
-        help = @{
-            learnMore = @{
-                url = "https://learn.microsoft.com/powershell/module/$moduleName/$CmdletName".ToLower()
+        description = $description
+        path = $ParameterSetMetadata.Path
+        help = [ordered]@{
+            learnMore = [ordered]@{
+                url = "https://learn.microsoft.com/powershell/module/$moduleName/$cmdletName".ToLower()
             }
             parameterSets = @()
         }
         examples = @()
     }
-    $result = Merge-CmdletInfo -ExistedCmdletInfo $result -NewCmdletInfo $newCmdletInfo
+    $result = Merge-WithExistCmdletMetadata -ExistedCmdletInfo $result -ParameterSetMetadata $ParameterSetMetadata
     return $result
 }
 
-$parameterSets = $parameterSetsInfo.ExportedCommands.Keys | Where { Test-FunctionSupported($_) }
+$parameterSets = $parameterSetsInfo.ExportedCmdlets.Keys | Where-Object { Test-functionSupported($_) }
 $resourceTypes = @{}
 foreach ($parameterSetName in $parameterSets)
 {
     $cmdletInfo = $parameterSetsInfo.ExportedCommands[$parameterSetName]
-    $swaggerInfo = Get-SwaggerInfo -CmdletInfo $cmdletInfo
-    $cmdletName = $swaggerInfo.CmdletName
+    $parameterSetMetadata = New-MetadataForParameterSet -ParameterSetInfo $cmdletInfo
+    $cmdletName = $parameterSetMetadata.CmdletName
     if (-not ($moduleInfo.ExportedCommands.ContainsKey($cmdletName)))
     {
         continue
     }
-    if ($resourceTypes.ContainsKey($swaggerInfo.ResourceType))
+    if ($resourceTypes.ContainsKey($parameterSetMetadata.ResourceType))
     {
-        $existedCmdletInfo = $resourceTypes[$swaggerInfo.ResourceType].commands | Where { $_.name -eq $cmdletName }
-        if ($existedCmdletInfo)
+        $ExistedCmdletInfo = $resourceTypes[$parameterSetMetadata.ResourceType].commands | Where-Object { $_.name -eq $cmdletName }
+        if ($ExistedCmdletInfo)
         {
-            $existedCmdletInfo = Merge-CmdletInfo -ExistedCmdletInfo $existedCmdletInfo -NewCmdletInfo $swaggerInfo
+            $ExistedCmdletInfo = Merge-WithExistCmdletMetadata -ExistedCmdletInfo $ExistedCmdletInfo -ParameterSetMetadata $parameterSetMetadata
         }
         else
         {
-            $cmdletInfo = New-CmdletInfo -NewCmdletInfo $swaggerInfo
-            $resourceTypes[$swaggerInfo.ResourceType].commands += $cmdletInfo
+            $cmdletInfo = New-MetadataForCmdlet -ParameterSetMetadata $parameterSetMetadata
+            $resourceTypes[$parameterSetMetadata.ResourceType].commands += $cmdletInfo
         }
     }
     else
     {
-        $cmdletInfo = New-CmdletInfo -NewCmdletInfo $swaggerInfo
-        $resourceTypes[$swaggerInfo.ResourceType] = [ordered]@{
-            resourceType = $swaggerInfo.ResourceType
-            apiVersion = $swaggerInfo.ApiVersion
+        $cmdletInfo = New-MetadataForCmdlet -ParameterSetMetadata $parameterSetMetadata
+        $resourceTypes[$parameterSetMetadata.ResourceType] = [ordered]@{
+            resourceType = $parameterSetMetadata.ResourceType
+            apiVersion = $parameterSetMetadata.ApiVersion
             learnMore = @{
                 url = "https://learn.microsoft.com/powershell/module/$moduleName".ToLower()
             }
             commands = @($cmdletInfo)
+            provider = $parameterSetMetadata.Provider
         }
     }
 }
@@ -320,13 +336,18 @@ if (Test-Path "UX")
 {
     Remove-Item -Path "UX" -Recurse
 }
-$_ = New-Item -ItemType Directory -Path "UX"
-# Add-Type -AssemblyName System.Web.Extensions
+New-Item -ItemType Directory -Path "UX"
+
 foreach ($resourceType in $resourceTypes.Keys)
 {
     $resourceTypeFileName = $resourceType -replace "/", "-"
     $resourceTypeInfo = $resourceTypes[$resourceType]
-    # $serializer = New-Object System.Web.Script.Serialization.JavaScriptSerializer
-    # $serializer.Serialize($resourceTypeInfo) | Out-File "UX/$resourceTypeFileName.json"
-    $resourceTypeInfo | ConvertTo-Json -Depth 10 | Out-File "UX/$resourceTypeFileName.json"
+    $provider = $resourceTypeInfo.provider
+    $providerFolder = "UX/$provider"
+    if (-not (Test-Path $providerFolder))
+    {
+        New-Item -ItemType Directory -Path $providerFolder
+    }
+    $resourceTypeInfo.Remove("provider")
+    $resourceTypeInfo | ConvertTo-Json -Depth 10 | Out-File "$providerFolder/$resourceTypeFileName.json"
 }
