@@ -8,7 +8,7 @@ import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
 import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
-import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { items, values, keys, Dictionary, length, isValue } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
@@ -115,6 +115,10 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   }
 }
 
+function typePostfix(schema: Schema): string {
+  return valueType(schema.type) || (schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>schema).choiceType.type !== SchemaType.String || (schema.extensions && !schema.extensions['x-ms-model-as-string']))) ? '?' : '';
+}
+
 function addNormalMethodParameterDeclaration(operation: Operation, state: State) {
   let declarations: Array<string> = [];
   const optionalDeclarations: Array<string> = [];
@@ -126,28 +130,21 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
 
-  (operation.parameters || []).forEach(function (parameter) {
-    // This is a workaround for parameter with the schema x-ms-enum
-    // since modelAsString will be dropped in m4
-    if (parameter.extensions && parameter.extensions['x-ms-model-as-string'] !== undefined) {
-      parameter.schema.extensions = (parameter.schema.extensions || {});
-      parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
-    }
-  });
   (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
-    && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
-    && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
+    && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
       let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
       if (parameter.extensions && parameter.extensions['x-ms-odata']) {
         type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
       }
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
+      const postfix = typePostfix(parameter.schema);
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
       args.push(parameter.language.default.name);
     });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
-    && !(p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
-    && !(p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
+    && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
       if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
         const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
         constructorParametersDeclaration.split(', ').forEach(function (p) {
@@ -156,7 +153,8 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         });
       } else {
         const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
+        const postfix = typePostfix(parameter.schema);
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
         args.push(parameter.language.default.name);
       }
     });
@@ -182,7 +180,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
 }
 
 function addPageableMethodParameterDeclaration(operation: Operation) {
-  let pageableMethodDeclarations: Array<string> = ['string nextPageLink'];
+  const pageableMethodDeclarations: Array<string> = ['string nextPageLink'];
   operation.language.default.syncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
 
   pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
@@ -195,7 +193,7 @@ function addPageableMethodParameterDeclaration(operation: Operation) {
   pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
 
-  let pageableMethodArgs: Array<string> = ['nextPageLink'];
+  const pageableMethodArgs: Array<string> = ['nextPageLink'];
   operation.language.default.syncMethodInvocationArgs = pageableMethodArgs.join(', ');
 
   pageableMethodArgs.push('null');
@@ -252,7 +250,7 @@ async function tweakOperation(state: State) {
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
-            const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.type;
+            const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.language.csharp.fullname;
             // Mark response as pageable
             respSchema.language.default.pagable = true;
             operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
