@@ -155,7 +155,7 @@ var anythingToValidate = false;-%>
 -%>
             base.Validate();
 <% } -%>
-<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantProperty(p)).forEach(function(p) {
+<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantProperty(p) && !project.helper.IsEnum(p.property.schema)).forEach(function(p) {
             anythingToValidate = true;
 -%>
             if (this.<%-p.property.language.csharp.name%> == null)

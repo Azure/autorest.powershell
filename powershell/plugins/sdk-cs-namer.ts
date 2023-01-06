@@ -317,7 +317,7 @@ function getPageClass(operation: Operation, model: SdkModel): string | null {
   let itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
   let pair: string = `${nextLinkName} ${itemName}`;
   if (!(pair in model.language.default.pageClasses)) {
-    let className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length} ` : "Page";
+    let className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length}` : "Page";
     model.language.default.pageClasses[pair] = className;
   }
   return model.language.default.pageClasses[pair];

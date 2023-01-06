@@ -415,6 +415,20 @@ async function implementOdata(state: State) {
   }
 }
 
+async function fixModelAsString(state: State) {
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      (operation.parameters || []).forEach(function (parameter) {
+        // This is a workaround for parameter with the schema x-ms-enum
+        // since modelAsString will be dropped in m4
+        if (parameter.extensions && parameter.extensions['x-ms-model-as-string'] !== undefined) {
+          parameter.schema.extensions = (parameter.schema.extensions || {});
+          parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
+        }
+      });
+    }
+  }
+}
 async function implementHeaderResponse(state: State) {
   const headerSchemaMap = new Map<string, ObjectSchema>();
   const headerSchemaPropertiesMap = new Map<string, Array<string>>();
@@ -451,6 +465,7 @@ async function implementHeaderResponse(state: State) {
 }
 
 async function createVirtuals(state: State): Promise<PwshModel> {
+  fixModelAsString(state);
   // add support for x-ms-odata
   implementOdata(state);
   // add support for x-ms-parameter-grouping
