@@ -98,7 +98,7 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <% });}-%>
 <% }%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
-<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
+<%if (method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
 <% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <% if (queryParameter.extensions && queryParameter.extensions['x-ms-odata']) {-%>
             if (<%-queryParameter.language.default.name%> != null)
