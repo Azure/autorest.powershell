@@ -381,3 +381,5 @@ package-deps.json
 /tests/**/license.txt
 
 !/tests/**/test/*
+
+.vscode/
