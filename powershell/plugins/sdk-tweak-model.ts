@@ -285,7 +285,7 @@ function setFailureStatusCodePredicate(operation: Operation) {
   const failureStatusCodePredicate = Array<string>();
   for (const resp of values(operation.responses)) {
     const status = resp.protocol.http?.statusCodes[0];
-    failureStatusCodePredicate.push(`(int)_statusCode != ${status} `);
+    failureStatusCodePredicate.push(`(int)_statusCode != ${status}`);
   }
   if (failureStatusCodePredicate.length > 0) {
     operation.language.default.failureStatusCodePredicate = failureStatusCodePredicate.join(' && ');
