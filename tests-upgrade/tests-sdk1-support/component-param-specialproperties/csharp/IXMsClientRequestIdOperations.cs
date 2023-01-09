@@ -14,9 +14,9 @@ namespace Microsoft.Azure.Sample
     using Models;
 
     /// <summary>
-    /// XMsClientRequestIdOperations operations.
+    /// XMSClientRequestIdOperations operations.
     /// </summary>
-    public partial interface IXMsClientRequestIdOperations
+    public partial interface IXMSClientRequestIdOperations
     {
         /// <summary>
         /// Get method that overwrites x-ms-client-request header with value

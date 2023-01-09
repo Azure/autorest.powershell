@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation } from '@azure-tools/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
@@ -45,7 +45,7 @@ export class Helper {
         } else if (isObjectSchema(modelToValidate)) {
           const virtualProperties = getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
           values(virtualProperties).where(p => isObjectSchema(p.property.schema)).forEach(cp => typesToValidate.push(cp.property.schema));
-          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant) || this.HasConstrains(p.property.schema))) {
+          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant && !this.IsConstantProperty(p)) || this.HasConstrains(p.property.schema))) {
             return true;
           }
         }
@@ -124,6 +124,13 @@ export class Helper {
   private isKindOfString(schema: Schema): boolean {
     if (schema.type === SchemaType.String) {
       return true;
+    } else if (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.String) {
+      return true;
+    } else if (schema.type === SchemaType.Choice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String && (<ChoiceSchema>schema).choices.length === 1) {
+      return true;
+    } else if (schema.type === SchemaType.SealedChoice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String &&
+      (<ChoiceSchema>schema).choices.length === 1) {
+      return true;
     }
     // ToDo: we need to figure how to handle the case when schema type is enum
     // Skip it since there is a bug in IsKindOfString in the csharp generator
@@ -138,7 +145,7 @@ export class Helper {
     return false;
   }
   public PathParameterString(parameter: Parameter): string {
-    if (parameter.protocol.http?.in !== 'path') {
+    if (!['path', 'query'].includes(parameter.protocol.http?.in)) {
       return '';
     }
     const prefix = parameter.implementation === 'Client' ? 'this.Client.' : '';
@@ -288,10 +295,65 @@ export class Helper {
     }
     return false;
   }
-  public IsEnum(schema: Schema): boolean {
-    if (schema.type === SchemaType.SealedChoice && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
+  public HandleConstParameters(operation: Operation): string {
+    const result = new Array<string>();
+    const bodyParameters = operation.requests && operation.requests.length > 0 ? (operation.requests[0].parameters || []).filter(each => each.protocol.http && each.protocol.http.in === 'body' && !(each.extensions && each.extensions['x-ms-client-flatten']) && each.implementation !== 'Client') : [];
+    const nonBodyParameters = operation.parameters ? operation.parameters.filter(each => each.implementation !== 'Client') : [];
+    const parameters = [...nonBodyParameters, ...bodyParameters].filter(each => this.IsConstantParameter(each));
+    parameters.forEach(function (parameter) {
+      const quote = (<ChoiceSchema>parameter.schema).choiceType.type === SchemaType.String ? '"' : '';
+      result.push(`            ${(<any>(parameter.schema)).language.csharp.fullname} ${parameter.language.default.name} = ${quote}${(<ChoiceSchema>parameter.schema).choices[0].value}${quote};`);
+    });
+    return result.join('\r\n');
+  }
+  public IsConstantParameter(parameter: Parameter): boolean {
+    if (!parameter.required) {
+      // const parameters are always required
+      return false;
+    }
+    // skip parameter.schema.type === SchemaType.Constant, since there is a bug
+    if ((parameter.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>(parameter.schema)).choices.length === 1)
+      || (parameter.schema.type === SchemaType.Choice && (<ChoiceSchema>(parameter.schema)).choices.length === 1)) {
       return true;
     }
     return false;
+  }
+
+  public IsConstantProperty(property: VirtualProperty): boolean {
+    if (!property.required) {
+      // const parameters are always required
+      return false;
+    }
+    // skip parameter.schema.type === SchemaType.Constant, since there is a bug
+    if ((property.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>(property.property.schema)).choices.length === 1)
+      || (property.property.schema.type === SchemaType.Choice && (<ChoiceSchema>(property.property.schema)).choices.length === 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  public IsEnum(schema: Schema): boolean {
+    if (schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>schema).choiceType.type === SchemaType.String && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
+      return true;
+    }
+    return false;
+  }
+  public PopulateGroupParameters(parameter: Parameter): string {
+    const groupParameter = parameter.language.default.name;
+    const result = Array<string>();
+    for (const virtualProperty of values(<Array<VirtualProperty>>(parameter.schema.language.default.virtualProperties.owned))) {
+      let type = virtualProperty.property.schema.language.csharp?.fullname || '';
+      type = (this.IsValueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<ChoiceSchema>virtualProperty.property.schema).choiceType.type === SchemaType.String && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
+      const CamelName = camelCase(virtualProperty.name);
+      result.push(`            ${type} ${CamelName} = default(${type});`);
+      result.push(`            if (${groupParameter} != null)`);
+      result.push('            {');
+      result.push(`                ${CamelName} = ${groupParameter}.${pascalCase(CamelName)};`);
+      result.push('            }');
+    }
+    if (result.length > 0) {
+      return result.join('\r\n');
+    }
+    return '';
   }
 }

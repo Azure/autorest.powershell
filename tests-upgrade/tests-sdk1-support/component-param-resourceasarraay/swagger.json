@@ -36,7 +36,7 @@
   "paths": {
     "/azure/resource-flatten/array": {
       "put": {
-        "operationId": "putArray",
+        "operationId": "Array_put",
         "description": "Put External Resource as an Array",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -67,7 +67,7 @@
         }
       },
       "get": {
-        "operationId": "getArray",
+        "operationId": "Array_get",
         "description": "Get External Resource as an Array",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -93,7 +93,7 @@
     },
     "/azure/resource-flatten/dictionary": {
       "put": {
-        "operationId": "putDictionary",
+        "operationId": "Dictionary_put",
         "description": "Put External Resource as a Dictionary",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -124,7 +124,7 @@
         }
       },
       "get": {
-        "operationId": "getDictionary",
+        "operationId": "Dictionary_get",
         "description": "Get External Resource as a Dictionary",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -150,7 +150,7 @@
     },
     "/azure/resource-flatten/resourcecollection": {
       "put": {
-        "operationId": "putResourceCollection",
+        "operationId": "ResourceCollection_put",
         "description": "Put External Resource as a ResourceCollection",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -178,7 +178,7 @@
         }
       },
       "get": {
-        "operationId": "getResourceCollection",
+        "operationId": "ResourceCollection_get",
         "description": "Get External Resource as a ResourceCollection",
         "externalDocs": {
           "url": "http://tempuri.org"
@@ -195,14 +195,14 @@
             "schema": {
               "$ref": "#/definitions/Error"
             }
-          } 
+          }
         }
       }
     }
   },
   "definitions": {
     "Error": {
-      "type":  "object",
+      "type": "object",
       "properties": {
         "status": {
           "type": "integer",
@@ -214,7 +214,7 @@
       }
     },
     "Resource": {
-      "type":  "object",
+      "type": "object",
       "x-ms-azure-resource": true,
       "description": "Some resource",
       "externalDocs": {
@@ -254,7 +254,7 @@
           "$ref": "#/definitions/Resource"
         }
       ],
-      "type":  "object",
+      "type": "object",
       "properties": {
         "properties": {
           "x-ms-client-flatten": true,
@@ -263,7 +263,7 @@
       }
     },
     "FlattenedResourceProperties": {
-      "type":  "object",
+      "type": "object",
       "properties": {
         "pname": {
           "type": "string"
@@ -278,7 +278,7 @@
       }
     },
     "ResourceCollection": {
-      "type":  "object",
+      "type": "object",
       "properties": {
         "productresource": {
           "type": "object",

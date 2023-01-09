@@ -19,12 +19,9 @@ namespace Microsoft.Azure.Sample
           {
               return new Tuple<string, string, string>[]
               {
-                new Tuple<string, string, string>("DatabricksClient", "getArray", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "getDictionary", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "getResourceCollection", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "putArray", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "putDictionary", "2018-04-01"),
-                new Tuple<string, string, string>("DatabricksClient", "putResourceCollection", "2018-04-01"),
+                new Tuple<string, string, string>("DatabricksClient", "Array", "2018-04-01"),
+                new Tuple<string, string, string>("DatabricksClient", "Dictionary", "2018-04-01"),
+                new Tuple<string, string, string>("DatabricksClient", "ResourceCollection", "2018-04-01"),
               }.AsEnumerable();
           }
       }

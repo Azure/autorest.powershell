@@ -31,9 +31,11 @@ namespace Microsoft.Azure.Sample.Models
         /// class.
         /// </summary>
         /// <param name="fooRequestId">Gets the foo-request-id.</param>
-        public HeaderCustomNamedRequestIdHeaders(string fooRequestId = default(string))
+        /// <param name="ack">This is ack</param>
+        public HeaderCustomNamedRequestIdHeaders(string fooRequestId = default(string), string ack = default(string))
         {
             this.FooRequestId = fooRequestId;
+            this.Ack = ack;
             CustomInit();
         }
 
@@ -47,6 +49,12 @@ namespace Microsoft.Azure.Sample.Models
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "foo-request-id")]
         public string FooRequestId { get; set; }
+
+        /// <summary>
+        /// Gets or sets this is ack
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "ack")]
+        public string Ack { get; set; }
 
     }
 }
