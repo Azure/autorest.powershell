@@ -4,7 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dictionary, values } from '@azure-tools/linq';
-import { SchemaDetails, LanguageDetails, EnhancedTypeDeclaration, Boolean, SchemaDefinitionResolver } from '../llcsharp/exports';
+import {
+  SchemaDetails,
+  LanguageDetails,
+  EnhancedTypeDeclaration,
+  Boolean,
+  SchemaDefinitionResolver,
+} from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 import { EnumNamespace } from '../enums/namespace';
@@ -14,13 +20,26 @@ import { pwshHeaderText } from '../utils/powershell-comment';
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
 import { Host } from '@azure-tools/autorest-extension-base';
-import { codemodel, PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
+import {
+  codemodel,
+  PropertyDetails,
+  exportedModels as T,
+} from '@azure-tools/codemodel-v3';
 import { DeepPartial, comment } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
-import { BooleanSchema, ChoiceSchema, ConstantSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import {
+  BooleanSchema,
+  ChoiceSchema,
+  ConstantSchema,
+  Schema as NewSchema,
+  SchemaType,
+} from '@azure-tools/codemodel';
 
-export type Schema = T.SchemaT<LanguageDetails<SchemaDetails>, LanguageDetails<PropertyDetails>>;
+export type Schema = T.SchemaT<
+  LanguageDetails<SchemaDetails>,
+  LanguageDetails<PropertyDetails>
+>;
 
 export interface Metadata {
   authors: string;
@@ -59,20 +78,30 @@ export interface PsRequiredModule {
 
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
-    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
+    return `global::System.Management.Automation.SwitchParameter${
+      this.isRequired ? '' : '?'
+    }`;
   }
-
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {
   inResolve = false;
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<PwshModel>): EnhancedTypeDeclaration {
+  resolveTypeDeclaration(
+    schema: NewSchema | undefined,
+    required: boolean,
+    state: ModelState<PwshModel>
+  ): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
       if (!this.inResolve) {
         this.inResolve = true;
-        if (schema && (schema.type === SchemaType.Boolean
-          || (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.Boolean)
-          || (schema.type === SchemaType.Choice && (<any>schema).choiceType.type === SchemaType.Boolean))) {
+        if (
+          schema &&
+          (schema.type === SchemaType.Boolean ||
+            (schema.type === SchemaType.Constant &&
+              (<ConstantSchema>schema).valueType.type === SchemaType.Boolean) ||
+            (schema.type === SchemaType.Choice &&
+              (<any>schema).choiceType.type === SchemaType.Boolean))
+        ) {
           return new NewPSSwitch(<BooleanSchema>schema, required);
         }
       }
@@ -83,7 +112,6 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
     }
   }
 }
-
 
 export class Project extends codeDomProject {
   public azure!: boolean;
@@ -108,6 +136,7 @@ export class Project extends codeDomProject {
   public docsFolder!: string;
   public examplesFolder!: string;
   public resourcesFolder!: string;
+  public uxFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
   public rootModuleName!: string;
@@ -147,13 +176,17 @@ export class Project extends codeDomProject {
   public metadata!: Metadata;
   public state!: State;
   public helpLinkPrefix!: string;
-  get model() { return <PwshModel>this.state.model; }
+  get model() {
+    return <PwshModel>this.state.model;
+  }
 
-  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
+  constructor(
+    protected service: Host,
+    objectInitializer?: DeepPartial<Project>
+  ) {
     super();
     this.apply(objectInitializer);
   }
-
 
   public async init(): Promise<this> {
     await super.init();
@@ -162,7 +195,6 @@ export class Project extends codeDomProject {
     this.schemaDefinitionResolver = new PSSchemaResolver();
 
     this.projectNamespace = this.state.model.language.csharp?.namespace || '';
-
 
     this.overrides = {
       'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
@@ -192,25 +224,52 @@ export class Project extends codeDomProject {
     this.metadata = await this.state.getValue<Metadata>('metadata');
     this.preprocessMetadata();
     this.license = await this.state.getValue('header-text', '');
-    const pwshLicenseHeader = await this.state.getValue('pwsh-license-header', '');
+    const pwshLicenseHeader = await this.state.getValue(
+      'pwsh-license-header',
+      ''
+    );
     // if pwsh license header is not set, use the license set by license-header
-    this.pwshCommentHeader = comment(pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
-    this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(/"/g, '""');
-    this.csharpCommentHeader = comment(pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '//');
+    this.pwshCommentHeader = comment(
+      pwshLicenseHeader
+        ? pwshHeaderText(
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
+        : this.license,
+      '#'
+    );
+    this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(
+      /"/g,
+      '""'
+    );
+    this.csharpCommentHeader = comment(
+      pwshLicenseHeader
+        ? pwshHeaderText(
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
+        : this.license,
+      '//'
+    );
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
     let directives: Array<any> = [];
     const allDirectives = await this.state.getValue('directive');
     directives = values(<any>allDirectives).toArray();
-    for (const directive of directives.filter(each => each['model-cmdlet'])) {
-      this.modelCmdlets = this.modelCmdlets.concat(<ConcatArray<string>>values(directive['model-cmdlet']).toArray());
+    for (const directive of directives.filter((each) => each['model-cmdlet'])) {
+      this.modelCmdlets = this.modelCmdlets.concat(
+        <ConcatArray<string>>values(directive['model-cmdlet']).toArray()
+      );
     }
     // input handlers
     this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
     this.azure = this.model.language.default.isAzure;
-    this.addToString = await this.state.getValue('nested-object-to-string', false);
+    this.addToString = await this.state.getValue(
+      'nested-object-to-string',
+      false
+    );
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;
@@ -220,8 +279,14 @@ export class Project extends codeDomProject {
     this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
     if (this.azure) {
-      this.endpointResourceIdKeyName = await this.state.getValue('endpoint-resource-id-key-name', '');
-      this.endpointSuffixKeyName = await this.state.getValue('endpoint-suffix-key-name', '');
+      this.endpointResourceIdKeyName = await this.state.getValue(
+        'endpoint-resource-id-key-name',
+        ''
+      );
+      this.endpointSuffixKeyName = await this.state.getValue(
+        'endpoint-suffix-key-name',
+        ''
+      );
     }
 
     // Folders
@@ -241,9 +306,12 @@ export class Project extends codeDomProject {
     this.objFolder = await this.state.getValue('obj-folder');
     this.exportsFolder = await this.state.getValue('exports-folder');
     this.docsFolder = await this.state.getValue('docs-folder');
-    this.dependencyModuleFolder = await this.state.getValue('dependency-module-folder');
+    this.dependencyModuleFolder = await this.state.getValue(
+      'dependency-module-folder'
+    );
     this.examplesFolder = await this.state.getValue('examples-folder');
     this.resourcesFolder = await this.state.getValue('resources-folder');
+    this.uxFolder = await this.state.getValue('ux-folder');
 
     // File paths
     this.csproj = await this.state.getValue('csproj');
@@ -259,27 +327,42 @@ export class Project extends codeDomProject {
     this.readme = `${this.baseFolder}/README.md`;
 
     // excluded properties in table view
-    const excludedList = <Array<string>>values(<any>(await this.state.getValue('exclude-tableview-properties', []))).toArray();
-    this.propertiesExcludedForTableview = excludedList ? excludedList.join(',') : '';
+    const excludedList = <Array<string>>(
+      values(
+        <any>await this.state.getValue('exclude-tableview-properties', [])
+      ).toArray()
+    );
+    this.propertiesExcludedForTableview = excludedList
+      ? excludedList.join(',')
+      : '';
 
     // add project namespace
     this.serviceNamespace = new ModuleNamespace(this.state);
     this.serviceNamespace.header = this.license;
     this.addNamespace(this.serviceNamespace);
 
-    this.supportNamespace = new EnumNamespace(this.serviceNamespace, this.state);
+    this.supportNamespace = new EnumNamespace(
+      this.serviceNamespace,
+      this.state
+    );
     this.supportNamespace.header = this.license;
     this.addNamespace(this.supportNamespace);
 
-    this.modelsExtensions = new ModelExtensionsNamespace(this.serviceNamespace, <any>this.state.model.schemas, this.state.path('components', 'schemas'));
+    this.modelsExtensions = new ModelExtensionsNamespace(
+      this.serviceNamespace,
+      <any>this.state.model.schemas,
+      this.state.path('components', 'schemas')
+    );
     this.modelsExtensions.header = this.license;
     this.addNamespace(this.modelsExtensions);
 
     // add cmdlet namespace
-    this.cmdlets = await new CmdletNamespace(this.serviceNamespace, this.state).init();
+    this.cmdlets = await new CmdletNamespace(
+      this.serviceNamespace,
+      this.state
+    ).init();
     this.cmdlets.header = this.license;
     this.addNamespace(this.cmdlets);
-
 
     // abort now if we have any errors.
     this.state.checkpoint();
@@ -294,20 +377,43 @@ export class Project extends codeDomProject {
     if (this.metadata) {
       this.metadata = {
         ...this.metadata,
-        requiredModulesAsString: this.metadata.requiredModules ? this.metadata.requiredModules.map(m => `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`)?.join(', ') : 'undefined',
-        requiredAssembliesAsString: this.convertToPsListAsString(this.metadata.requiredAssemblies),
-        nestedModulesAsString: this.convertToPsListAsString(this.metadata.nestedModules),
-        formatsToProcessAsString: this.convertToPsListAsString(this.metadata.formatsToProcess),
-        typesToProcessAsString: this.convertToPsListAsString(this.metadata.typesToProcess),
-        scriptsToProcessAsString: this.convertToPsListAsString(this.metadata.scriptsToProcess),
-        functionsToExportAsString: this.convertToPsListAsString(this.metadata.functionsToExport),
-        cmdletsToExportAsString: this.convertToPsListAsString(this.metadata.cmdletsToExport),
-        aliasesToExportAsString: this.convertToPsListAsString(this.metadata.aliasesToExport)
+        requiredModulesAsString: this.metadata.requiredModules
+          ? this.metadata.requiredModules
+            .map(
+              (m) =>
+                `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`
+            )
+            ?.join(', ')
+          : 'undefined',
+        requiredAssembliesAsString: this.convertToPsListAsString(
+          this.metadata.requiredAssemblies
+        ),
+        nestedModulesAsString: this.convertToPsListAsString(
+          this.metadata.nestedModules
+        ),
+        formatsToProcessAsString: this.convertToPsListAsString(
+          this.metadata.formatsToProcess
+        ),
+        typesToProcessAsString: this.convertToPsListAsString(
+          this.metadata.typesToProcess
+        ),
+        scriptsToProcessAsString: this.convertToPsListAsString(
+          this.metadata.scriptsToProcess
+        ),
+        functionsToExportAsString: this.convertToPsListAsString(
+          this.metadata.functionsToExport
+        ),
+        cmdletsToExportAsString: this.convertToPsListAsString(
+          this.metadata.cmdletsToExport
+        ),
+        aliasesToExportAsString: this.convertToPsListAsString(
+          this.metadata.aliasesToExport
+        ),
       };
     }
   }
 
   private convertToPsListAsString(items: Array<string>): string {
-    return items ? items.map(i => `'${i}'`).join(', ') : 'undefined';
+    return items ? items.map((i) => `'${i}'`).join(', ') : 'undefined';
   }
 }

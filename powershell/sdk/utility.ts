@@ -103,7 +103,7 @@ export class Helper {
       sb.push('}');
     }
     if (schema.pattern) {
-      const constraintValue = "\"" + schema.pattern.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\"";
+      const constraintValue = '"' + schema.pattern.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
       let condition = `!System.Text.RegularExpressions.Regex.IsMatch(${valueReference}, ${constraintValue})`;
       if (schema.type === SchemaType.Dictionary) {
         condition = `!System.Linq.Enumerable.All(${valueReference}.Values, value => System.Text.RegularExpressions.Regex.IsMatch(value, ${constraintValue}))`;

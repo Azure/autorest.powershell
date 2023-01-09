@@ -55,7 +55,6 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
 }
 
 
-
 function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
     const optionalParameters = Array<string>();

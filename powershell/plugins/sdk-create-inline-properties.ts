@@ -334,7 +334,6 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
 }
 
 
-
 async function createVirtuals(state: State): Promise<PwshModel> {
   /* 
     A model class should provide inlined properties for anything in a property called properties

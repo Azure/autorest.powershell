@@ -1,34 +1,33 @@
 # PowerShell Default Directory Layout
 By default, AutoRest's PowerShell Generator will place all the generated files under the following directory layout:
-- [/bin](#bin)
-- [/custom](#custom)
-- [/docs](#docs)
-- [/examples](#examples) 
-- [/exports](#exports)
-- [/generated](#generated)
-  - /api
-  - /cmdlets
-  - /runtime
-- [/internal](#internal)
-- [/obj](#obj)
-- [/resources](#resources)
-- [/test](#test)
-- [/node-modules](#node-modules) (coming soon)
-- [.gitignore](#gitignore) 
-- [\<format-file>.format.ps1xml](#format-fileformatps1xml)
-- [\<cs-project-file>.csproj](#cs-project-filecsproj)
-- [\<manifest-file>.psd1](#manifest-filepsd1)
-- [\<module-file>.psm1](#module-filepsm1)
-- [build-module.ps1](#build-moduleps1)
-- [generate-help.ps1](#generate-helpps1)
-- [how-to.md](#how-tomd) (coming soon)
-- [license.txt](#licensetxt)
-- [pack-module.ps1](#pack-moduleps1) 
-- [readme.md](#readmemd)
-- [test-module.ps1](#test-moduleps1)
-- [regen-module.ps1](#regen-moduleps1) (coming soon)
-- [types.ps1xml](#typesps1xml) (coming soon)
-- [dll-help.ps1xml](#dll-helpps1xml) (coming soon)
+- [PowerShell Default Directory Layout](#powershell-default-directory-layout)
+  - [Directories and Files](#directories-and-files)
+    - [/bin](#bin)
+    - [/custom](#custom)
+    - [/docs](#docs)
+    - [/exports](#exports)
+    - [/generated](#generated)
+    - [/internal](#internal)
+    - [/obj](#obj)
+    - [/resources](#resources)
+    - [/test](#test)
+    - [/UX](#ux)
+    - [/node\_modules](#node_modules)
+    - [.gitignore](#gitignore)
+    - [\<format-file\>.format.ps1xml](#format-fileformatps1xml)
+    - [\<cs-project-file\>.csproj](#cs-project-filecsproj)
+    - [\<manifest-file\>.psd1](#manifest-filepsd1)
+    - [\<module-file\>.psm1](#module-filepsm1)
+    - [build-module.ps1](#build-moduleps1)
+    - [generate-help.ps1](#generate-helpps1)
+    - [`how-to.md`](#how-tomd)
+    - [license.txt](#licensetxt)
+    - [pack-module.ps1](#pack-moduleps1)
+    - [`readme.md`](#readmemd)
+    - [test-module.ps1](#test-moduleps1)
+    - [regen-module.ps1](#regen-moduleps1)
+    - [types.ps1xml](#typesps1xml)
+    - [dll-help.ps1xml](#dll-helpps1xml)
 
 During subsequent runs of AutoRest, the only directory that will be overwritten is the **/generated** directory; other directories will only have incremental changes (i.e. files deleted being generated again).
 
@@ -61,6 +60,9 @@ Contains files not consumed by *any* process. Only for the repo as reference ass
 
 ### /test
 Contains tests for the cmdlets. By default, it contains an example pester test and a httpipelinemock.ps1 script.
+
+### /UX
+Contains metadata files for portal UX. Portal use these to display the usage of cmdlet for the resource in portal page.
 
 ### /node_modules
 Contains the packages from which the projects depend on.

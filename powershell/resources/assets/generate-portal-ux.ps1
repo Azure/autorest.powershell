@@ -27,7 +27,6 @@ if(Test-Path $docsFolder) {
   $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
 }
 $null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
-$examplesFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.examplesFolder)}'
 
 $moduleName = '${$project.moduleName}'
 $modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot "./$moduleName.psd1")
@@ -73,6 +72,12 @@ function Test-FunctionSupported()
         {
             return $false
         }
+    }
+
+    $customFiles = Get-ChildItem -Path custom -Filter "$cmdletName.*"
+    if ($customFiles.Length -ne 0)
+    {
+        return $false
     }
 
     return $true
@@ -332,21 +337,26 @@ foreach ($parameterSetName in $parameterSets)
     }
 }
 
-if (Test-Path "UX")
+$UXFolder = '${$lib.path.relative($project.baseFolder, $project.uxFolder)}'
+if (Test-Path $UXFolder)
 {
-    Remove-Item -Path "UX" -Recurse
+    Remove-Item -Path $UXFolder -Recurse
 }
-New-Item -ItemType Directory -Path "UX"
+$null = New-Item -ItemType Directory -Path $UXFolder
 
 foreach ($resourceType in $resourceTypes.Keys)
 {
     $resourceTypeFileName = $resourceType -replace "/", "-"
+    if ($resourceTypeFileName -eq "")
+    {
+        continue
+    }
     $resourceTypeInfo = $resourceTypes[$resourceType]
     $provider = $resourceTypeInfo.provider
-    $providerFolder = "UX/$provider"
+    $providerFolder = "$UXFolder/$provider"
     if (-not (Test-Path $providerFolder))
     {
-        New-Item -ItemType Directory -Path $providerFolder
+        $null = New-Item -ItemType Directory -Path $providerFolder
     }
     $resourceTypeInfo.Remove("provider")
     $resourceTypeInfo | ConvertTo-Json -Depth 10 | Out-File "$providerFolder/$resourceTypeFileName.json"
