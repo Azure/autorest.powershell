@@ -18,6 +18,26 @@ export class Helper {
     return false;
   }
 
+  public GetCsharpType(type: string): string {
+    const typeMap = new Map<string, string>([
+      ['integer', 'int'],
+      ['number', 'double'],
+      ['boolean', 'bool'],
+      ['string', 'string'],
+      ['unixtime', 'System.DateTime'],
+      ['credential', 'string'],
+      ['byte-array', 'byte[]'],
+      ['duration', 'System.TimeSpan'],
+      ['uuid', 'System.Guid'],
+      ['date-time', 'System.DateTime'],
+      ['date', 'System.DateTime'],
+      ['binary', 'string']
+    ]);
+    if (typeMap.has(type)) {
+      return <string>typeMap.get(type);
+    }
+    return '';
+  }
   private isArraySchema(schema: Schema): schema is ArraySchema {
     return schema.type === SchemaType.Array;
   }

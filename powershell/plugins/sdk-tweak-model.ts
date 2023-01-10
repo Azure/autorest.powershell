@@ -138,8 +138,11 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
       }
       const postfix = typePostfix(parameter.schema);
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-      args.push(parameter.language.default.name);
+      if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
+        // skip required const parameter
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+        args.push(parameter.language.default.name);
+      }
     });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])

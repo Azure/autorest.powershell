@@ -1,4 +1,5 @@
 <%- project.commentHeader %>
+<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
 
 namespace <%- project.namespace %>
 {
@@ -6,7 +7,7 @@ namespace <%- project.namespace %>
     using <%- using %>;
 <% }); -%>
 
-<% var typeName = project.helper.PascalCase(methodGroup.$key) + 'Operations' -%>
+<% var typeName = project.helper.PascalCase(key) + 'Operations' -%>
     /// <summary>
     /// <%- typeName %> operations.
     /// </summary>
