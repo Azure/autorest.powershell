@@ -215,7 +215,7 @@ namespace Microsoft.Azure.Sample
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse> GetPathPathValidWithHttpMessagesAsync(string unencodedPathParam, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse> GetPathValidWithHttpMessagesAsync(string unencodedPathParam, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (unencodedPathParam == null)
             {
@@ -230,7 +230,7 @@ namespace Microsoft.Azure.Sample
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
                 tracingParameters.Add("unencodedPathParam", unencodedPathParam);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "GetPathPathValid", tracingParameters);
+                Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "GetPathValid", tracingParameters);
             }
             // Construct URL
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;

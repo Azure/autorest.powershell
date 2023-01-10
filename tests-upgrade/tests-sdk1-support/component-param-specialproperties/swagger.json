@@ -36,7 +36,7 @@
   "paths": {
     "/azurespecials/overwrite/x-ms-client-request-id/method/": {
       "get": {
-        "operationId": "x-ms-client-request-id_Get",
+        "operationId": "xMSClientRequestId_Get",
         "description": "Get method that overwrites x-ms-client-request header with value 9C4D50EE-2D56-4CD3-8152-34347DC9F2B0.",
         "tags": [
           "SubscriptionInCredentials Operations"
@@ -53,7 +53,7 @@
     },
     "/azurespecials/overwrite/x-ms-client-request-id/via-param/method/": {
       "get": {
-        "operationId": "x-ms-client-request-id_ParamGet",
+        "operationId": "xMSClientRequestId_ParamGet",
         "description": "Get method that overwrites x-ms-client-request header with value 9C4D50EE-2D56-4CD3-8152-34347DC9F2B0.",
         "tags": [
           "SubscriptionInCredentials Operations"
@@ -388,7 +388,9 @@
             "description": "This should appear as a method parameter, use value '2.0'",
             "type": "string",
             "required": true,
-            "enum": [ "2.0" ],
+            "enum": [
+              "2.0"
+            ],
             "x-ms-api-version": false
           }
         ],
@@ -467,7 +469,9 @@
           "description": "This should appear as a method parameter, use value '2.0'",
           "type": "string",
           "required": true,
-          "enum": [ "2.0" ],
+          "enum": [
+            "2.0"
+          ],
           "x-ms-api-version": false
         }
       ],
@@ -529,7 +533,9 @@
             "description": "The api version, which appears in the query, the value is always '2.0'",
             "type": "string",
             "required": true,
-            "enum": [ "2.0" ],
+            "enum": [
+              "2.0"
+            ],
             "x-ms-api-version": false
           }
         ],
@@ -588,7 +594,7 @@
         }
       ],
       "get": {
-        "operationId": "skipUrlEncoding_getPathPathValid",
+        "operationId": "skipUrlEncoding_getPathValid",
         "description": "Get method with unencoded path parameter with value 'path1/path2/path3'",
         "tags": [
           "SkipUrlEncoding Operations"
@@ -620,7 +626,9 @@
             "description": "An unencoded path parameter with value 'path1/path2/path3'",
             "type": "string",
             "required": true,
-            "enum": [ "path1/path2/path3" ],
+            "enum": [
+              "path1/path2/path3"
+            ],
             "x-ms-skip-url-encoding": true
           }
         ],
@@ -739,7 +747,9 @@
             "in": "query",
             "description": "An unencoded query parameter with value 'value1&q2=value2&q3=value3'",
             "type": "string",
-            "enum": [ "value1&q2=value2&q3=value3" ],
+            "enum": [
+              "value1&q2=value2&q3=value3"
+            ],
             "required": true,
             "x-ms-skip-url-encoding": true
           }
@@ -826,6 +836,10 @@
               "foo-request-id": {
                 "description": "Gets the foo-request-id.",
                 "type": "string"
+              },
+              "ack": {
+                "description": "This is ack",
+                "type": "string"
               }
             },
             "description": "Gets the foo-request-id"
@@ -851,8 +865,7 @@
             "type": "string",
             "description": "The fooRequestId",
             "x-ms-client-request-id": true,
-            "x-ms-parameter-grouping": {
-            }
+            "x-ms-parameter-grouping": {}
           }
         ],
         "tags": [
@@ -902,11 +915,25 @@
               "foo-request-id": {
                 "description": "Gets the foo-request-id.",
                 "type": "string"
+              },
+              "coo-request-id": {
+                "description": "Gets the coo-request-id.",
+                "type": "string"
               }
             },
             "description": "Gets the foo-request-id"
           },
           "404": {
+            "headers": {
+              "foo-request-id": {
+                "description": "Gets the foo-request-id.",
+                "type": "string"
+              },
+              "doo-request-id": {
+                "description": "Gets the foo-request-id.",
+                "type": "string"
+              }
+            },
             "description": "Gets the foo-request-id"
           },
           "default": {
@@ -937,8 +964,10 @@
   },
   "definitions": {
     "Error": {
-      "type":  "object",
-      "required": ["constantId"],
+      "type": "object",
+      "required": [
+        "constantId"
+      ],
       "properties": {
         "status": {
           "type": "integer",
@@ -946,7 +975,9 @@
         },
         "constantId": {
           "type": "integer",
-          "enum": [ 1 ]
+          "enum": [
+            1
+          ]
         },
         "message": {
           "type": "string"
@@ -954,7 +985,7 @@
       }
     },
     "OdataFilter": {
-      "type":  "object",
+      "type": "object",
       "properties": {
         "id": {
           "type": "integer",

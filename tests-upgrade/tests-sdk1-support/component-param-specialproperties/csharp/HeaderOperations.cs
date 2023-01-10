@@ -103,14 +103,6 @@ namespace Microsoft.Azure.Sample
             {
                 _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", System.Guid.NewGuid().ToString());
             }
-            if (fooClientRequestId != null)
-            {
-                if (_httpRequest.Headers.Contains("foo-client-request-id"))
-                {
-                    _httpRequest.Headers.Remove("foo-client-request-id");
-                }
-                _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", fooClientRequestId);
-            }
             if (this.Client.AcceptLanguage != null)
             {
                 if (_httpRequest.Headers.Contains("accept-language"))
@@ -119,11 +111,19 @@ namespace Microsoft.Azure.Sample
                 }
                 _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
             }
+            if (fooClientRequestId != null)
+            {
+                if (_httpRequest.Headers.Contains("foo-client-request-id"))
+                {
+                    _httpRequest.Headers.Remove("foo-client-request-id");
+                }
+                _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", fooClientRequestId);
+            }
 
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -161,7 +161,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -301,7 +301,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -339,7 +339,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -415,7 +415,7 @@ namespace Microsoft.Azure.Sample
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<bool,HeaderCustomNamedRequestIdHeadHeaders>> CustomNamedRequestIdHeadWithHttpMessagesAsync(string fooClientRequestId, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<bool, HeaderCustomNamedRequestIdHeadHeaders>> CustomNamedRequestIdHeadWithHttpMessagesAsync(string fooClientRequestId, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (fooClientRequestId == null)
             {
@@ -450,14 +450,6 @@ namespace Microsoft.Azure.Sample
             {
                 _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", System.Guid.NewGuid().ToString());
             }
-            if (fooClientRequestId != null)
-            {
-                if (_httpRequest.Headers.Contains("foo-client-request-id"))
-                {
-                    _httpRequest.Headers.Remove("foo-client-request-id");
-                }
-                _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", fooClientRequestId);
-            }
             if (this.Client.AcceptLanguage != null)
             {
                 if (_httpRequest.Headers.Contains("accept-language"))
@@ -466,11 +458,19 @@ namespace Microsoft.Azure.Sample
                 }
                 _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
             }
+            if (fooClientRequestId != null)
+            {
+                if (_httpRequest.Headers.Contains("foo-client-request-id"))
+                {
+                    _httpRequest.Headers.Remove("foo-client-request-id");
+                }
+                _httpRequest.Headers.TryAddWithoutValidation("foo-client-request-id", fooClientRequestId);
+            }
 
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -508,7 +508,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -532,7 +532,7 @@ namespace Microsoft.Azure.Sample
                 throw ex;
             }
             // Create Result
-            var _result = new Microsoft.Rest.Azure.AzureOperationResponse<bool,HeaderCustomNamedRequestIdHeadHeaders>();
+            var _result = new Microsoft.Rest.Azure.AzureOperationResponse<bool, HeaderCustomNamedRequestIdHeadHeaders>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             _result.Body = (_statusCode == System.Net.HttpStatusCode.OK);

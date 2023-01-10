@@ -2,19 +2,20 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
+import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, OperationGroup, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
 import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
-import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { items, values, keys, Dictionary, length, isValue } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
 import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
+import { isReserved } from '../utils/code-namer';
 
 type State = ModelState<SdkModel>;
 
@@ -66,8 +67,13 @@ function tweakSchema(model: SdkModel) {
       };
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
+      if (virtualProperty.required && (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choices.length === 1)
+        || (virtualProperty.property.schema.type === SchemaType.Choice && (<ChoiceSchema>virtualProperty.property.schema).choices.length === 1)) {
+        // For choice or seal choice with only one value and required, will not be handled as constant
+        continue;
+      }
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])) && !virtualProperty.required ? `${type}?` : type;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string']))) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
@@ -102,6 +108,18 @@ function addUsings(model: SdkModel) {
 }
 
 function addMethodParameterDeclaration(operation: Operation, state: State) {
+  if (operation.language.default.pageable?.nextPageOperation) {
+    addPageableMethodParameterDeclaration(operation);
+  } else {
+    addNormalMethodParameterDeclaration(operation, state);
+  }
+}
+
+function typePostfix(schema: Schema): string {
+  return valueType(schema.type) || (schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>schema).choiceType.type !== SchemaType.String || (schema.extensions && !schema.extensions['x-ms-model-as-string']))) ? '?' : '';
+}
+
+function addNormalMethodParameterDeclaration(operation: Operation, state: State) {
   let declarations: Array<string> = [];
   const optionalDeclarations: Array<string> = [];
   const requiredDeclarations: Array<string> = [];
@@ -112,33 +130,34 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
 
-  (operation.parameters || []).forEach(function (parameter) {
-    // This is a workaround for parameter with the schema x-ms-enum
-    // since modelAsString will be dropped in m4
-    if (parameter.extensions && parameter.extensions['x-ms-model-as-string'] !== undefined) {
-      parameter.schema.extensions = (parameter.schema.extensions || {});
-      parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
-    }
-  });
-  (operation.parameters || []).filter(p => p.implementation != 'Client').forEach(function (parameter) {
-    const type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-    parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
-    args.push(parameter.language.default.name);
-  });
-
-  bodyParameters.forEach(function (parameter) {
-    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
-      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-      constructorParametersDeclaration.split(', ').forEach(function (p) {
-        requiredDeclarations.push(p);
-        args.push(p.split(' ')[1]);
-      });
-    } else {
-      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type} ${parameter.language.default.name} = default(${type})`);
+  (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+    && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
+      let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+      if (parameter.extensions && parameter.extensions['x-ms-odata']) {
+        type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
+      }
+      const postfix = typePostfix(parameter.schema);
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
       args.push(parameter.language.default.name);
-    }
-  });
+    });
+
+  bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+    && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
+      if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+        const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+        constructorParametersDeclaration.split(', ').forEach(function (p) {
+          requiredDeclarations.push(p);
+          args.push(p.split(' ')[1]);
+        });
+      } else {
+        const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+        const postfix = typePostfix(parameter.schema);
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+        args.push(parameter.language.default.name);
+      }
+    });
 
   declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
@@ -151,15 +170,36 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
-  if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
-    args.push('customHeaders');
-  } else {
-    args.push('null');
-  }
+  const argsWithCustomerHeaders: Array<string> = [...args];
+  args.push('null');
   args.push('cancellationToken');
+  argsWithCustomerHeaders.push('customHeaders');
+  argsWithCustomerHeaders.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = args.join(', ');
+  operation.language.default.asyncMethodInvocationArgsWithCustomerHeaders = argsWithCustomerHeaders.join(', ');
 }
 
+function addPageableMethodParameterDeclaration(operation: Operation) {
+  const pageableMethodDeclarations: Array<string> = ['string nextPageLink'];
+  operation.language.default.syncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
+  operation.language.default.asyncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.pop();
+  pageableMethodDeclarations.push('System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null');
+  operation.language.default.syncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
+
+  pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
+  operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
+
+  const pageableMethodArgs: Array<string> = ['nextPageLink'];
+  operation.language.default.syncMethodInvocationArgs = pageableMethodArgs.join(', ');
+
+  pageableMethodArgs.push('null');
+  pageableMethodArgs.push('cancellationToken');
+  operation.language.default.asyncMethodInvocationArgs = pageableMethodArgs.join(', ');
+}
 
 function tweakGlobalParameter(globalParameters: Array<Parameter>) {
   if (!globalParameters) {
@@ -178,7 +218,14 @@ function tweakGlobalParameter(globalParameters: Array<Parameter>) {
 
 async function tweakOperation(state: State) {
   for (const operationGroup of state.model.operationGroups) {
+    if (isReserved(operationGroup.$key)) {
+      operationGroup.$key = pascalCase(`${operationGroup.$key}Model`);
+      operationGroup.language.default.name = operationGroup.$key;
+    }
     for (const operation of operationGroup.operations) {
+      let initializeResponseBody = '';
+      operation.language.default.returnTypeHeader = {};
+      operation.language.default.returnTypeHeader.name = '';
       if (operation.responses) {
         const schemas = new Set();
         operation.responses.forEach(function (resp) {
@@ -187,28 +234,47 @@ async function tweakOperation(state: State) {
           }
         });
         const respCountWithBody = schemas.size;
+        const isHead = operation.requests && operation.requests[0].protocol.http?.method === 'head';
+        if (isHead) {
+          initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
+        }
         const responses = operation.responses.filter(r => (<any>r).schema);
+        const hasHeaderResponse = operation.responses.some(r => (<any>r).protocol.http.headers);
+        const headerSchema = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+        operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
+        let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {
-          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
-          operation.language.default.returnType = 'void';
+          headerPostfix = hasHeaderResponse ? (isHead ? `AzureOperationResponse<bool,${headerSchema}>` : `AzureOperationHeaderResponse<${headerSchema}>`) : 'AzureOperationResponse';
+          operation.language.default.responseType = `Microsoft.Rest.Azure.${headerPostfix}`;
+          operation.language.default.returnType = hasHeaderResponse ? (isHead ? 'bool' : headerSchema) : 'void';
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
-          const postfix = (valueType(respSchema.type)
-            || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
-            || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))
-            || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'] && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
-          ) ? '?' : '';
-          const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
-          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}>`;
-          operation.language.default.returnType = `${fullname}${postfix}`;
+          if (operation.language.default.pageable) {
+            const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.language.csharp.fullname;
+            // Mark response as pageable
+            respSchema.language.default.pagable = true;
+            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
+            operation.language.default.returnType = `${operation.language.default.pageable.ipageType}<${responseType}>`;
+            operation.language.default.deserializeType = `${operation.language.default.pageable.pageType}<${responseType}>`;
+          } else {
+            const postfix = (valueType(respSchema.type)
+              || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
+              || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))
+              || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
+            ) ? '?' : '';
+            const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && (valueType((<SealedChoiceSchema>respSchema).choiceType.type) || (respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])))) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
+            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}${headerPostfix}>`;
+            operation.language.default.returnType = `${fullname}${postfix}`;
+          }
         } else {
-          operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<Object>';
-          operation.language.default.returnType = 'Object';
+          operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<object${headerPostfix}>`;
+          operation.language.default.returnType = 'object';
         }
       } else {
         operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
         operation.language.default.returnType = 'void';
       }
+      operation.language.default.initializeResponseBody = initializeResponseBody;
       addMethodParameterDeclaration(operation, state);
       setFailureStatusCodePredicate(operation);
     }
@@ -219,7 +285,7 @@ function setFailureStatusCodePredicate(operation: Operation) {
   const failureStatusCodePredicate = Array<string>();
   for (const resp of values(operation.responses)) {
     const status = resp.protocol.http?.statusCodes[0];
-    failureStatusCodePredicate.push(`(int)_statusCode != ${status}`);
+    failureStatusCodePredicate.push(`(int)_statusCode != ${status} `);
   }
   if (failureStatusCodePredicate.length > 0) {
     operation.language.default.failureStatusCodePredicate = failureStatusCodePredicate.join(' && ');
@@ -291,7 +357,7 @@ export async function tweakSdkModelPlugin(service: Host) {
     service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
   } catch (E) {
     if (debug) {
-      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
+      console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack} `);
     }
     throw E;
   }

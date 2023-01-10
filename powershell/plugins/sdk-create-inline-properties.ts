@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
-import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
+import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext, Protocol, Schemas, Schema } from '@azure-tools/codemodel';
+import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize, camelCase } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { Host, Session, startSession } from '@azure-tools/autorest-extension-base';
 import { CommandOperation } from '../utils/command-operation';
@@ -14,6 +14,7 @@ import { VirtualParameter } from '../utils/command-operation';
 import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMutability } from '../utils/schema';
 import { resolveParameterNames } from '../utils/resolve-conflicts';
 import { OperationType } from '../utils/command-operation';
+import { Header, HeaderPropertyType } from '@azure-tools/codemodel-v3';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -215,7 +216,8 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
 
-        const proposedName = getPascalIdentifier(`${propertyName === 'properties' || /*objectProperties.length === 1*/ propertyName === 'error' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
+        // const proposedName = getPascalIdentifier(`${propertyName === 'properties' || /*objectProperties.length === 1*/ propertyName === 'error' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
+        const proposedName = getPascalIdentifier(inlinedProperty.name);
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         let readonly = inlinedProperty.readOnly || property.readOnly;
@@ -333,18 +335,155 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
   return true;
 }
 
+function parameterGroupName(operationGroup: OperationGroup, operation: Operation, groupExtension: any): string {
+  if (groupExtension && groupExtension['name']) {
+    return pascalCase(groupExtension['name']);
+  } else if (groupExtension && groupExtension['postfix']) {
+    return `${pascalCase(operationGroup.$key)}${pascalCase((<any>operation).operationId.split('_')[1] || '')}${pascalCase(groupExtension['postfix'])}`;
+  } else {
+    return `${pascalCase(operationGroup.$key)}${pascalCase((<any>operation).operationId.split('_')[1] || '')}Parameters`;
+  }
+}
+
+async function implementGroupParameters(state: State) {
+  const parameterGroup = new Map<string, ObjectSchema>();
+  const parameterAdded = new Map<string, Array<string>>();
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      const operationGroupParameters = new Array<Parameter>();
+      // value means if the parameter is required
+      const addedOperationGroupParameters = new Map<string, boolean>();
+      for (const parameter of [...(operation.requests && operation.requests.length > 0 ? operation.requests[0].parameters || [] : []), ...(operation.parameters || [])]) {
+        if (parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) {
+          const key = parameterGroupName(operationGroup, operation, parameter.extensions['x-ms-parameter-grouping']);
+          const groupObj = parameterGroup.get(key) || new ObjectSchema(key, '');
+          if (!parameterGroup.has(key)) {
+            groupObj.extensions = {};
+            groupObj.extensions['x-ms-parameter-grouping'] = parameter.extensions['x-ms-parameter-grouping'];
+            parameterGroup.set(key, groupObj);
+            parameterAdded.set(key, []);
+            state.model.schemas.objects = state.model.schemas.objects || [];
+            state.model.schemas.objects.push(groupObj);
+          }
+          const prop = new Property(parameter.language.default.name, parameter.language.default.description, parameter.schema, {
+            required: parameter.required,
+          });
+          if (parameterAdded.has(key) && (parameterAdded.get(key) || []).indexOf(parameter.language.default.name) === -1) {
+            groupObj.addProperty(prop);
+            parameterAdded.set(key, [...(parameterAdded.get(key) || []), parameter.language.default.name]);
+          }
+          if (!addedOperationGroupParameters.has(key)) {
+            addedOperationGroupParameters.set(key, !!(parameter.required));
+            const groupParameter = new Parameter(camelCase(key), '', groupObj);
+            groupParameter.protocol.http = groupParameter.protocol.http || new Protocol();
+            groupParameter.protocol.http.in = 'complex';
+            operationGroupParameters.push(groupParameter);
+          } else {
+            if (!addedOperationGroupParameters.get(key)) {
+              addedOperationGroupParameters.set(key, !!(parameter.required));
+            }
+          }
+        } else {
+          continue;
+        }
+      }
+      for (const groupParameter of operationGroupParameters) {
+        groupParameter.required = addedOperationGroupParameters.get(pascalCase(groupParameter.language.default.name)) || false;
+      }
+      operation.parameters = [...operationGroupParameters, ...(operation.parameters || [])];
+    }
+  }
+}
+
+async function implementOdata(state: State) {
+  const knownOdataParameters = ['$filter', '$top', '$orderby', '$skip', '$expand'];
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      if (operation.extensions && operation.extensions['x-ms-odata']) {
+        const odata = operation.extensions['x-ms-odata'];
+        operation.parameters = (operation.parameters || []).filter(p => !(p.protocol.http?.in === 'query' && knownOdataParameters.indexOf((p.language.default.serializedName).toLowerCase()) > -1));
+        const schemaName = odata.split('/').pop();
+        const odataSchema = (state.model.schemas.objects || []).find(s => s.language.default.name === pascalCase(schemaName)) || new ObjectSchema(pascalCase(schemaName), '');
+        // add the odata parameter
+        const odataParameter = new Parameter('odataQuery', '', odataSchema, {
+          extensions: { 'x-ms-odata': true },
+          protocol: { http: { in: 'query' } }
+        });
+        operation.parameters.unshift(odataParameter);
+      }
+    }
+  }
+}
+
+async function fixModelAsString(state: State) {
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      (operation.parameters || []).forEach(function (parameter) {
+        // This is a workaround for parameter with the schema x-ms-enum
+        // since modelAsString will be dropped in m4
+        if (parameter.extensions && parameter.extensions['x-ms-model-as-string'] !== undefined) {
+          parameter.schema.extensions = (parameter.schema.extensions || {});
+          parameter.schema.extensions['x-ms-model-as-string'] = parameter.extensions['x-ms-model-as-string'];
+        }
+      });
+    }
+  }
+}
+async function implementHeaderResponse(state: State) {
+  const headerSchemaMap = new Map<string, ObjectSchema>();
+  const headerSchemaPropertiesMap = new Map<string, Array<string>>();
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      for (const response of values(operation.responses)) {
+        if (response.protocol.http && response.protocol.http.headers) {
+          const schemaName = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+          const headerSchema = headerSchemaMap.get(schemaName) || new ObjectSchema(schemaName, '');
+          headerSchemaMap.set(schemaName, headerSchema);
+          for (const header of values(response.protocol.http.headers)) {
+            if (headerSchemaPropertiesMap.has(schemaName) && (headerSchemaPropertiesMap.get(schemaName) || []).indexOf((<Property>header).language.default.name) !== -1) {
+              continue;
+            } else {
+              headerSchemaPropertiesMap.set(schemaName, [...(headerSchemaPropertiesMap.get(schemaName) || []), (<Property>header).language.default.name]);
+              const property = new Property(camelCase((<Property>header).language.default.name), '', (<Property>header).schema,
+                {
+                  serializedName: (<any>header).header,
+                  required: (<Property>header).required,
+                  readOnly: (<Property>header).readOnly
+                });
+              headerSchema.addProperty(property);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  headerSchemaMap.forEach((value, key) => {
+    state.model.schemas.objects = state.model.schemas.objects || [];
+    state.model.schemas.objects.push(value);
+  });
+}
 
 async function createVirtuals(state: State): Promise<PwshModel> {
+  fixModelAsString(state);
+  // add support for x-ms-odata
+  implementOdata(state);
+  // add support for x-ms-parameter-grouping
+  await implementGroupParameters(state);
+  // add support for header response
+  await implementHeaderResponse(state);
   /* 
     A model class should provide inlined properties for anything in a property called properties
-    
+
     Classes that have $THRESHOLD number of properties should be inlined.
- 
+
     Individual models can change the $THRESHOLD for generate
   */
   const conflicts = new Array<string>();
 
   for (const schema of values(state.model.schemas.objects)) {
+
+    moveAdditionalPropertiesFromParentToProperties(schema, state.model.schemas);
     // did we already inline this objecct
     if (schema.language.default.inlined) {
       continue;
@@ -366,6 +505,69 @@ async function createVirtuals(state: State): Promise<PwshModel> {
   return state.model;
 }
 
+function addPropertyWithDuplicateNameReverse(properties: Array<Property>, duplicate: Property) {
+  let count = 0;
+  properties.filter(property => {
+    if (property.language.default.name.startsWith(duplicate.language.default.name)) {
+      const name = property.language.default.name.substring(duplicate.language.default.name.length);
+      if (name === '' || typeof Number(name) === 'number') {
+        return true;
+      }
+    }
+    return false;
+  }).sort((a, b) => {
+    const keyA = a.language.default.name.substring(duplicate.language.default.name.length);
+    const keyB = b.language.default.name.substring(duplicate.language.default.name.length);
+    const numA = keyA === '' ? 0 : Number(keyA);
+    const numB = keyB === '' ? 0 : Number(keyB);
+    return numA - numB;
+  }).forEach(property => {
+    const key = property.language.default.name.substring(duplicate.language.default.name.length);
+    const num = key === '' ? 0 : Number(key);
+    if (num === count) {
+      property.language.default.name = duplicate.language.default.name + (++count);
+    }
+  });
+  properties.unshift(duplicate);
+}
+
+function moveAdditionalPropertiesFromParentToProperties(obj: ObjectSchema, schemas: Schemas) {
+  if (obj.parents) {
+    let schema: Schema | undefined;
+    if (Array.isArray(obj.parents.immediate)) {
+      obj.parents.immediate = obj.parents.immediate.filter(parent => {
+        if (parent.type === 'dictionary' && parent.language.default.name === obj.language.default.name && schemas.dictionaries?.find(dictionary => dictionary.language.default.name === parent.language.default.name)) {
+          schema = parent;
+          return false;
+        }
+        return true;
+      });
+    }
+    if (Array.isArray(obj.parents.all)) {
+      obj.parents.all = obj.parents.all.filter(parent => {
+        if (parent.type === 'dictionary' && parent.language.default.name === obj.language.default.name && schemas.dictionaries?.find(dictionary => dictionary.language.default.name === parent.language.default.name)) {
+          schema = parent;
+          return false;
+        }
+        return true;
+      });
+    }
+    if (schema) {
+      schema.language.default.name = 'additionalProperties';
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (schema.language.csharp) {
+        schema.language.csharp.name = 'additionalProperties';
+      }
+      const additionalProperties = new Property('additionalProperties', schema.language.default.description, schema);
+      additionalProperties.language.default = schema.language.default;
+      if (!obj.properties) {
+        obj.properties = [];
+      }
+      additionalProperties.language.default.flavor = 'additionalProperties';
+      addPropertyWithDuplicateNameReverse(obj.properties, additionalProperties);
+    }
+  }
+}
 
 export async function createSdkInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);

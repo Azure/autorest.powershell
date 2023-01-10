@@ -104,10 +104,10 @@ namespace Microsoft.Azure.Sample
             {
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
-                tracingParameters.Add("body", body);
                 tracingParameters.Add("customHeader", customHeader);
                 tracingParameters.Add("query", query);
                 tracingParameters.Add("path", path);
+                tracingParameters.Add("body", body);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 Microsoft.Rest.ServiceClientTracing.Enter(_invocationId, this, "PostRequired", tracingParameters);
             }
@@ -154,7 +154,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -168,7 +168,7 @@ namespace Microsoft.Azure.Sample
             string _requestContent = null;
             _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(body, this.Client.SerializationSettings);
             _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-            _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+            _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             // Set Credentials
             if (this.Client.Credentials != null)
             {
@@ -195,7 +195,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -317,7 +317,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -355,7 +355,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -504,7 +504,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -542,7 +542,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -664,7 +664,7 @@ namespace Microsoft.Azure.Sample
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -702,7 +702,7 @@ namespace Microsoft.Azure.Sample
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    Error _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
+                    Error _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Error>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;

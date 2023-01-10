@@ -58,9 +58,9 @@ namespace Microsoft.Azure.Sample
             /// <param name='unencodedPathParam'>
             /// Unencoded path parameter with value 'path1/path2/path3'
             /// </param>
-            public static void GetPathPathValid(this ISkipUrlEncodingOperations operations, string unencodedPathParam)
+            public static void GetPathValid(this ISkipUrlEncodingOperations operations, string unencodedPathParam)
             {
-                ((ISkipUrlEncodingOperations)operations).GetPathPathValidAsync(unencodedPathParam).GetAwaiter().GetResult();
+                ((ISkipUrlEncodingOperations)operations).GetPathValidAsync(unencodedPathParam).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -75,9 +75,9 @@ namespace Microsoft.Azure.Sample
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task GetPathPathValidAsync(this ISkipUrlEncodingOperations operations, string unencodedPathParam, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task GetPathValidAsync(this ISkipUrlEncodingOperations operations, string unencodedPathParam, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                (await operations.GetPathPathValidWithHttpMessagesAsync(unencodedPathParam, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.GetPathValidWithHttpMessagesAsync(unencodedPathParam, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <summary>

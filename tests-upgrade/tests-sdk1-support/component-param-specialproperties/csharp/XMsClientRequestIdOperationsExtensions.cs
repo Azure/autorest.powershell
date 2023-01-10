@@ -14,9 +14,9 @@ namespace Microsoft.Azure.Sample
     using Models;
 
     /// <summary>
-    /// Extension methods for XMsClientRequestIdOperations.
+    /// Extension methods for XMSClientRequestIdOperations.
     /// </summary>
-    public static partial class XMsClientRequestIdOperationsExtensions
+    public static partial class XMSClientRequestIdOperationsExtensions
     {
             /// <summary>
             /// Get method that overwrites x-ms-client-request header with value
@@ -25,9 +25,9 @@ namespace Microsoft.Azure.Sample
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static void Get(this IXMsClientRequestIdOperations operations)
+            public static void Get(this IXMSClientRequestIdOperations operations)
             {
-                ((IXMsClientRequestIdOperations)operations).GetAsync().GetAwaiter().GetResult();
+                ((IXMSClientRequestIdOperations)operations).GetAsync().GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -40,7 +40,7 @@ namespace Microsoft.Azure.Sample
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task GetAsync(this IXMsClientRequestIdOperations operations, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task GetAsync(this IXMSClientRequestIdOperations operations, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
                 (await operations.GetWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
@@ -56,9 +56,9 @@ namespace Microsoft.Azure.Sample
             /// This should appear as a method parameter, use value
             /// '9C4D50EE-2D56-4CD3-8152-34347DC9F2B0'
             /// </param>
-            public static void ParamGet(this IXMsClientRequestIdOperations operations, string xMsClientRequestId)
+            public static void ParamGet(this IXMSClientRequestIdOperations operations, string xMsClientRequestId)
             {
-                ((IXMsClientRequestIdOperations)operations).ParamGetAsync(xMsClientRequestId).GetAwaiter().GetResult();
+                ((IXMSClientRequestIdOperations)operations).ParamGetAsync(xMsClientRequestId).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -75,7 +75,7 @@ namespace Microsoft.Azure.Sample
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task ParamGetAsync(this IXMsClientRequestIdOperations operations, string xMsClientRequestId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task ParamGetAsync(this IXMSClientRequestIdOperations operations, string xMsClientRequestId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
                 (await operations.ParamGetWithHttpMessagesAsync(xMsClientRequestId, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }

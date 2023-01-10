@@ -60,13 +60,27 @@ if (model.language.default.baseConstructorCall) {
 <%}-%>
         {
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0-%>
-<%publicVirtualProperties.forEach(function(p) {-%>
+<%publicVirtualProperties.filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
             this.<%-p.property.language.csharp.name%> = <%-p.property.language.default.name%>;
 <%});-%>
             CustomInit();
         }
 <% };-%>
-<%#ToDo support for ClassProperties in the model, const properties-%>
+<%#Below is support for ClassProperties in the model, const properties-%>
+<% const constantProperties = (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p));
+if (constantProperties.length > 0) {-%>
+        /// <summary>
+        /// Static constructor for <%-model.language.default.name%> class.
+        /// </summary>
+        static <%-model.language.default.name%>()
+        {
+<% constantProperties.forEach(function(p) {
+const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
+-%>
+            <%-p.property.language.csharp.name%> = <%-quote + p.property.schema.choices[0].value + quote%>;
+<%});-%>
+        }
+<% } -%>
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults
@@ -74,7 +88,7 @@ if (model.language.default.baseConstructorCall) {
         partial void CustomInit();
 
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0, line 407-%>
-<% if (model.properties) { publicVirtualProperties.filter(p => p.property.schema.type != 'constant').forEach(function(p){-%>
+<% if (model.properties) { publicVirtualProperties.filter(p => p.property.schema.type != 'constant' && !project.helper.IsConstantProperty(p)).forEach(function(p){-%>
 <%
         var additionInfo = '';
         if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -90,12 +104,40 @@ if (model.language.default.baseConstructorCall) {
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
 <% });-%>
+<% if (model.extensions && model.extensions['x-ms-parameter-grouping']) {-%>
+        [Newtonsoft.Json.JsonIgnore]
+<%} else if (p.property.language.default.flavor) {-%>
+<%
+switch(p.property.language.default.flavor) {
+        case 'additionalProperties':-%>
+        [Newtonsoft.Json.JsonExtensionData]
+<%              break;
+        default:
+                break;        
+}-%>
+<% } else {-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
+<% } -%>
 <% var type = p.property.schema.language.csharp.fullname-%>
 <%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% });} -%>
-<%#ToDo support for ClassProperties in the model, const properties -%>
+<%#Below is support for ClassProperties in the model, const properties -%>
+<% (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p)).forEach(function(p){-%>
+        /// <summary>
+        /// <%-p.property.language.csharp.formattedPropertySummary%>
+        /// </summary>
+<% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
+        [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
+<% });-%>
+<% if (model.extensions && model.extensions['x-ms-parameter-grouping']) {-%>
+        [Newtonsoft.Json.JsonIgnore]
+<% } else {-%>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
+<% } -%>
+<% var type = p.property.schema.language.csharp.fullname-%>
+        public static <%-type %> <%-p.property.language.csharp.name%> {get; private set; }
+<%});-%>
 <%#ToDo support for ShouldValidateChain-%>
 <% if (project.helper.ShouldValidateChain(model)) {
 var methodQualifier = model.parents && model.parents.immediate.length == 1 && project.helper.ShouldValidateChain(model.parents.immediate[0]) ? "override" : "virtual";
@@ -113,7 +155,7 @@ var anythingToValidate = false;-%>
 -%>
             base.Validate();
 <% } -%>
-<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
+<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantProperty(p) && !project.helper.IsEnum(p.property.schema)).forEach(function(p) {
             anythingToValidate = true;
 -%>
             if (this.<%-p.property.language.csharp.name%> == null)
