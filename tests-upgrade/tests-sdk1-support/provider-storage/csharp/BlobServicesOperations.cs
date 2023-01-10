@@ -117,13 +117,7 @@ namespace Microsoft.Azure.Management.Storage
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-            if (this.Client.ApiVersion != null)
-            {
-                if (this.Client.ApiVersion.Length < 1)
-                {
-                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
-                }
-            }
+
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -184,7 +178,7 @@ namespace Microsoft.Azure.Management.Storage
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -222,7 +216,7 @@ namespace Microsoft.Azure.Management.Storage
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    CloudError _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
@@ -362,13 +356,7 @@ namespace Microsoft.Azure.Management.Storage
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-            if (this.Client.ApiVersion != null)
-            {
-                if (this.Client.ApiVersion.Length < 1)
-                {
-                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
-                }
-            }
+
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -441,7 +429,7 @@ namespace Microsoft.Azure.Management.Storage
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -453,11 +441,11 @@ namespace Microsoft.Azure.Management.Storage
 
             // Serialize Request
             string _requestContent = null;
-            if(parameters != null)
+            if (parameters != null)
             {
                 _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
                 _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
             // Set Credentials
             if (this.Client.Credentials != null)
@@ -485,7 +473,7 @@ namespace Microsoft.Azure.Management.Storage
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    CloudError _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
@@ -621,13 +609,7 @@ namespace Microsoft.Azure.Management.Storage
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-            if (this.Client.ApiVersion != null)
-            {
-                if (this.Client.ApiVersion.Length < 1)
-                {
-                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
-                }
-            }
+
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -691,7 +673,7 @@ namespace Microsoft.Azure.Management.Storage
 
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var _header in customHeaders)
                 {
                     if (_httpRequest.Headers.Contains(_header.Key))
                     {
@@ -729,7 +711,7 @@ namespace Microsoft.Azure.Management.Storage
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    CloudError _errorBody = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);

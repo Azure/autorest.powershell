@@ -45,7 +45,10 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <%(method.parameters || []).filter(p => p.protocol.http.in == 'complex').forEach(function(parameter) {-%>
 <%-project.helper.PopulateGroupParameters(parameter)%>
 <%});-%>
-<%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
+<%# support for p => p.IsConstant && !p.IsClientProperty -%>
+<%(method.parameters || []).filter(p => p.implementation !== 'Client' && p.schema.type === 'constant' && p.required).forEach(function(parameter) {-%>
+            <%-project.helper.GetCsharpType(parameter.schema.valueType.type)%> <%-parameter.language.default.name%> = <%-parameter.schema.valueType.type === 'string' ? '"' + parameter.schema.value.value + '"' : parameter.schema.value.value%>;
+<%});-%>
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
