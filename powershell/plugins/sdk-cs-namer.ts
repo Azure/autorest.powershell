@@ -73,22 +73,8 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
     ['uuid', 'System.Guid'],
     ['date-time', 'System.DateTime'],
     ['date', 'System.DateTime'],
-    ['binary', 'string']
-  ]);
-  const valueTypes = new Set<string>([
-    'sbyte',
-    'byte',
-    'short',
-    'ushort',
-    'int',
-    'uint',
-    'long',
-    'ulong',
-    'char',
-    'float',
-    'double',
-    'bool',
-    'decimal'
+    ['binary', 'string'],
+    ['any', 'object']
   ]);
 
   for (const group of values(schemaGroups)) {
@@ -218,10 +204,8 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         // handle dictionary
         const elementType = (<DictionarySchema>schema).elementType;
         let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name;
-        if (valueType && valueTypes.has(valueType)) {
-          valueType = valueType + '?';
-        } else if ('any' === valueType) {
-          valueType = 'object';
+        if (valueType !== 'string' && valueType !== 'object' && elementType.type !== SchemaType.SealedChoice) {
+          valueType += '?';
         }
         schema.language.csharp = {
           ...details,
