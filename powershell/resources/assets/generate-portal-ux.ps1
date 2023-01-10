@@ -235,8 +235,8 @@ function New-MetadataForParameterSet()
     $resourceType = [System.Text.RegularExpressions.Regex]::New("/([\w]+)/\{\w+\}").Matches($resourcePath) | ForEach-Object {$_.groups[1].Value} | Join-String -Separator "/"
     $cmdletName = Get-MappedCmdletFromFunctionName $ParameterSetInfo.Name
     $description = (Get-CmdletAttribute -CmdletInfo $ParameterSetInfo -AttributeName "DescriptionAttribute").Description
-    $example = New-ExampleForParameterSet $ParameterSetInfo
-    $signature = New-ParameterArrayInParameterSet $ParameterSetInfo
+    [object[]]$example = New-ExampleForParameterSet $ParameterSetInfo
+    [string[]]$signature = New-ParameterArrayInParameterSet $ParameterSetInfo
 
     return @{
         Path = $httpPath
