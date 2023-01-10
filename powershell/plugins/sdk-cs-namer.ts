@@ -310,8 +310,8 @@ function duplicateLRO(model: SdkModel) {
 }
 
 const xmsPageable = 'x-ms-pageable';
-// nextLineName is required parameter in 'x-ms-pageable'
-const defaultNextLinkName = undefined;
+// nextLineName is required parameter in 'x-ms-pageable' but its value could be null
+const defaultNextLinkName = '';
 const defaultItemName = 'value';
 
 function getPageClass(operation: Operation, model: SdkModel): string | null {
@@ -342,24 +342,26 @@ function addNextPageOperation(model: SdkModel) {
           nextPageOperation: false,
         };
 
-        const nextPageOperation = new Operation(operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`, '', operation);
-        nextPageOperation.language.default.pageable = {
-          pageType: getPageClass(operation, model),
-          ipageType: operation.extensions[xmsPageable].nextLinkName ? 'Microsoft.Rest.Azure.IPage' : 'System.Collections.Generic.IEnumerable',
-          nextLinkName: operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName,
-          itemName: operation.extensions[xmsPageable].itemName || defaultItemName,
-          operationName: operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`,
-          nextPageOperation: true,
-        };
-
-        const extensions = Object.assign({}, nextPageOperation.extensions);
+        const extensions = Object.assign({}, operation.extensions);
         delete extensions[xmsPageable];
-        operation.extensions = extensions;
-        nextPageOperation.extensions = extensions;
 
-        // Set operation name, the name initialization in new Operation() doesn't work
-        nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`;
-        operationGroup.operations.push(nextPageOperation);
+        if (operation.extensions[xmsPageable].nextLinkName) {
+          const nextPageOperation = new Operation(operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`, '', operation);
+          nextPageOperation.language.default.pageable = {
+            pageType: getPageClass(operation, model),
+            ipageType: operation.extensions[xmsPageable].nextLinkName ? 'Microsoft.Rest.Azure.IPage' : 'System.Collections.Generic.IEnumerable',
+            nextLinkName: operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName,
+            itemName: operation.extensions[xmsPageable].itemName || defaultItemName,
+            operationName: operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`,
+            nextPageOperation: true,
+          };
+          nextPageOperation.extensions = extensions;
+
+          // Set operation name, the name initialization in new Operation() doesn't work
+          nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`;
+          operationGroup.operations.push(nextPageOperation);
+        }
+        operation.extensions = extensions;
       }
     }
   }
