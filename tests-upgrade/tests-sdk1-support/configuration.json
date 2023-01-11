@@ -2,7 +2,6 @@
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
   "whiteTestFailed": [
     "basic-polymorphism",
-    "component-param-additional",
     "provider-aks",
     "provider-containerRegistry",
     "provider-storage"
@@ -26,6 +25,7 @@
     "component-definitions-url",
     "component-multiparam",
     "component-param",
+    "component-param-additional",
     "component-param-grouping",
     "component-param-inbody",
     "component-param-localremote",
@@ -117,11 +117,6 @@
     "provider-containerRegistry",
     "provider-storage"
   ],
-  "ignoreFolder": [
-    "examples",
-    "CompareResult"
-  ],
-  "ignoreCompareFile": [
-    "SdkInfo_*.cs"
-  ]
+  "ignoreFolder": ["examples", "CompareResult"],
+  "ignoreCompareFile": ["SdkInfo_*.cs"]
 }
