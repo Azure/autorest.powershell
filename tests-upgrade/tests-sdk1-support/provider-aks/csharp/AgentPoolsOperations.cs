@@ -79,7 +79,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -180,7 +186,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
-                    _ht tpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
@@ -312,7 +318,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -425,7 +437,7 @@ namespace Microsoft.Azure.Management.ContainerService
 
             // Serialize Request
             string _requestContent = null;
-            // Set Cred entials
+            // Set Credentials
             if (this.Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -463,7 +475,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     // Ignore the exception
                 }
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new Microsoft.est.HttpResponseMessageWrapper(_httpResponse, _responseContent);
+                ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_httpResponse.Headers.Contains("x-ms-request-id"))
                 {
                     ex.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
@@ -604,7 +616,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -723,7 +741,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 cancellationToken.ThrowIfCancellationRequested();
                 await this.Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
-            // Send Req uest
+            // Send Request
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
@@ -845,7 +863,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -964,7 +988,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
             cancellationToken.ThrowIfCancellationRequested();
-            _httpRespon se = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
@@ -1087,10 +1111,10 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
-        /// </param> 
+        /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
-        /// </param> 
+        /// </param>
         /// <exception cref="Microsoft.Rest.Azure.CloudException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
@@ -1112,7 +1136,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -1252,7 +1282,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
             cancellationToken.ThrowIfCancellationRequested();
-            _httpRespon se = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
@@ -1264,11 +1294,11 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 var ex = new Microsoft.Rest.Azure.CloudException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
                 try
-               (parameters != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = 
+                {
+                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
+                    if (_errorBody != null)
+                    {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
                         ex.Body = _errorBody;
                     }
@@ -1381,7 +1411,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -1518,7 +1554,7 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 var ex = new Microsoft.Rest.Azure.CloudException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
                 try
-                { 
+                {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
@@ -1608,7 +1644,13 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
-
+            if (this.Client.ApiVersion != null)
+            {
+                if (this.Client.ApiVersion.Length < 1)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Client.ApiVersion", 1);
+                }
+            }
             if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
@@ -1638,7 +1680,7 @@ namespace Microsoft.Azure.Management.ContainerService
             if (resourceName == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "resourceName");
-            } 
+            }
             if (resourceName != null)
             {
                 if (resourceName.Length > 63)
@@ -1751,7 +1793,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
-                         ex.Body = _errorBody;
+                        ex.Body = _errorBody;
                     }
                 }
                 catch (Newtonsoft.Json.JsonException)
@@ -1789,7 +1831,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = MicrosoftRest.Serialization.SafeJsonConvert.DeserializeObject<AgentPool>(_responseContent, this.Client.DeserializationSettings);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<AgentPool>(_responseContent, this.Client.DeserializationSettings);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
@@ -1818,7 +1860,7 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 Microsoft.Rest.ServiceClientTracing.Exit(_invocationId, _result);
             }
-            return _result; 
+            return _result;
         }
 
         /// <summary>
@@ -1937,7 +1979,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
-                         ex.Body = _errorBody;
+                        ex.Body = _errorBody;
                     }
                 }
                 catch (Newtonsoft.Json.JsonException)
@@ -1975,7 +2017,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = MicrosoftRest.Serialization.SafeJsonConvert.DeserializeObject<Page1<AgentPool>>(_responseContent, this.Client.DeserializationSettings);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<Page1<AgentPool>>(_responseContent, this.Client.DeserializationSettings);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
