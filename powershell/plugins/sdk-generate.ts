@@ -86,7 +86,7 @@ async function generateExceptions(project: Project) {
     for (const operation of values(operationGroup.operations)) {
       if (operation.exceptions && (<any>operation.exceptions[0]).schema) {
         const exception = operation.exceptions[0];
-        if (processedException.has((<any>exception).schema) || (<any>exception).schema.extensions['x-ms-external']) {
+        if (processedException.has((<any>exception).schema) || ((<any>exception).schema.extensions && (<any>exception).schema.extensions['x-ms-external'])) {
           continue;
         } else {
           processedException.add((<any>exception).schema);
