@@ -184,7 +184,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
-                    _ht tpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 

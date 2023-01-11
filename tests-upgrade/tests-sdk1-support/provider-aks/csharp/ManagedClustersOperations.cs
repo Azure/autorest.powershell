@@ -160,7 +160,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
-                    _ht tpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
@@ -352,7 +352,7 @@ namespace Microsoft.Azure.Management.ContainerService
 
             // Serialize Request
             string _requestContent = null;
-            // Set Cred entials
+            // Set Credentials
             if (this.Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -390,7 +390,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     // Ignore the exception
                 }
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new Microsoft.est.HttpResponseMessageWrapper(_httpResponse, _responseContent);
+                ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_httpResponse.Headers.Contains("x-ms-request-id"))
                 {
                     ex.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
@@ -564,7 +564,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 cancellationToken.ThrowIfCancellationRequested();
                 await this.Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
-            // Send Req uest
+            // Send Request
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
@@ -800,7 +800,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
             cancellationToken.ThrowIfCancellationRequested();
-            _httpRespon se = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
@@ -1053,7 +1053,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
             System.Net.HttpStatusCode _statusCode = _httpResponse.StatusCode;
-            cancellatio nToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
             if ((int)_statusCode != 200)
             {
@@ -1297,7 +1297,7 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 var ex = new Microsoft.Rest.Azure.CloudException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
                 try
-                { 
+                {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     CloudError _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CloudError>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
@@ -1552,7 +1552,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     if (_errorBody != null)
                     {
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
-                         ex.Body = _errorBody;
+                        ex.Body = _errorBody;
                     }
                 }
                 catch (Newtonsoft.Json.JsonException)
@@ -1590,7 +1590,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = MicrosoftRest.Serialization.SafeJsonConvert.DeserializeObject<CredentialResults>(_responseContent, this.Client.DeserializationSettings);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<CredentialResults>(_responseContent, this.Client.DeserializationSettings);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
@@ -1796,7 +1796,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 catch (Newtonsoft.Json.JsonException)
                 {
                     // Ignore the exception
-                } 
+                }
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_httpResponse.Headers.Contains("x-ms-request-id"))
@@ -2032,7 +2032,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 if (_httpResponse.Headers.Contains("x-ms-request-id"))
                 {
                     ex.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
-                } 
+                }
                 if (_shouldTrace)
                 {
                     Microsoft.Rest.ServiceClientTracing.Error(_invocationId, ex);
@@ -2539,7 +2539,7 @@ namespace Microsoft.Azure.Management.ContainerService
                     Microsoft.Rest.ServiceClientTracing.Error(_invocationId, ex);
                 }
                 _httpRequest.Dispose();
-                if (_ht tpResponse != null)
+                if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
@@ -2781,7 +2781,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 }
                 throw ex;
             }
-            // Create R esult
+            // Create Result
             var _result = new Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<OutboundEnvironmentEndpoint>>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
@@ -3029,7 +3029,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 }
                 throw ex;
             }
-            // Create R esult
+            // Create Result
             var _result = new Microsoft.Rest.Azure.AzureOperationResponse<ManagedCluster>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
@@ -3041,11 +3041,11 @@ namespace Microsoft.Azure.Management.ContainerService
             if ((int)_statusCode == 200)
             {
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-               (parameters != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = 
+                try
+                {
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<ManagedCluster>(_responseContent, this.Client.DeserializationSettings);
+                }
+                catch (Newtonsoft.Json.JsonException ex)
                 {
                     _httpRequest.Dispose();
                     if (_httpResponse != null)
@@ -3297,7 +3297,7 @@ namespace Microsoft.Azure.Management.ContainerService
             _result.Response = _httpResponse;
             if (_httpResponse.Headers.Contains("x-ms-request-id"))
             {
-                _result .RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                _result.RequestId = _httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
             }
             // Deserialize Response
             if ((int)_statusCode == 200)
@@ -3309,11 +3309,11 @@ namespace Microsoft.Azure.Management.ContainerService
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
-               (parameters != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = 
+                    _httpRequest.Dispose();
+                    if (_httpResponse != null)
+                    {
+                        _httpResponse.Dispose();
+                    }
                     throw new Microsoft.Rest.SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
@@ -3536,7 +3536,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <summary>
         /// Reset the Service Principal Profile of a managed cluster.
         /// </summary>
-        /// <remarks> 
+        /// <remarks>
         /// This action cannot be performed on a cluster that is not using a service
         /// principal
         /// </remarks>
@@ -3574,7 +3574,7 @@ namespace Microsoft.Azure.Management.ContainerService
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
             }
 
-            if (this.Client.SubscriptionId = null)
+            if (this.Client.SubscriptionId == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.SubscriptionId");
             }
@@ -3767,7 +3767,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <summary>
         /// Reset the AAD Profile of a managed cluster.
         /// </summary>
-        /// <param name ='resourceGroupName'>
+        /// <param name='resourceGroupName'>
         /// The name of the resource group. The name is case insensitive.
         /// </param>
         /// <param name='resourceName'>
@@ -3779,11 +3779,11 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
-        /// <p (parameters != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = status code
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="Microsoft.Rest.Azure.CloudException">
+        /// Thrown when the operation returned an invalid status code
         /// </exception>
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
@@ -3996,7 +3996,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// more details about rotating managed cluster certificates.
         /// </remarks>
         /// <param name='resourceGroupName'>
-        /// The name of  the resource group. The name is case insensitive.
+        /// The name of the resource group. The name is case insensitive.
         /// </param>
         /// <param name='resourceName'>
         /// The name of the managed cluster resource.
@@ -4008,11 +4008,11 @@ namespace Microsoft.Azure.Management.ContainerService
         /// The cancellation token.
         /// </param>
         /// <exception cref="Microsoft.Rest.Azure.CloudException">
-        /// Th (parameters != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = 
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.ValidationException">
+        /// Thrown when a required parameter is null
+        /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
@@ -4222,7 +4222,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        /// <exception  cref="System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
         /// <return>
@@ -4437,7 +4437,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <param name='resourceGroupName'>
         /// The name of the resource group. The name is case insensitive.
         /// </param>
-        /// <param name ='resourceName'>
+        /// <param name='resourceName'>
         /// The name of the managed cluster resource.
         /// </param>
         /// <param name='customHeaders'>
@@ -4673,7 +4673,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// A response object containing the response body and response headers.
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse> BeginStartWithHttpMessagesAsync(string resourceGroupName, string resourceName, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        { 
+        {
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -4711,7 +4711,7 @@ namespace Microsoft.Azure.Management.ContainerService
             }
             if (resourceName != null)
             {
-                if (resourceName.Length > 63
+                if (resourceName.Length > 63)
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "resourceName", 63);
                 }
@@ -4893,7 +4893,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// A response object containing the response body and response headers.
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<RunCommandResult>> BeginRunCommandWithHttpMessagesAsync(string resourceGroupName, string resourceName, RunCommandRequest requestPayload, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        { 
+        {
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -4931,7 +4931,7 @@ namespace Microsoft.Azure.Management.ContainerService
             }
             if (resourceName != null)
             {
-                if (resourceName.Length > 63
+                if (resourceName.Length > 63)
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "resourceName", 63);
                 }
@@ -5128,7 +5128,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        /// <exception  cref="System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
         /// <return>
@@ -5140,11 +5140,11 @@ namespace Microsoft.Azure.Management.ContainerService
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "nextPageLink");
             }
-            // (requestPayload != null)
+            // Tracing
+            bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
+            string _invocationId = null;
+            if (_shouldTrace)
             {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(requestPayload, this.Client.SerializationSettings);
-                _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = 
                 _invocationId = Microsoft.Rest.ServiceClientTracing.NextInvocationId.ToString();
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
                 tracingParameters.Add("nextPageLink", nextPageLink);
@@ -5307,7 +5307,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Sy stem.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<ManagedCluster>>> ListByResourceGroupNextWithHttpMessagesAsync(string nextPageLink, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<Microsoft.Rest.Azure.IPage<ManagedCluster>>> ListByResourceGroupNextWithHttpMessagesAsync(string nextPageLink, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (nextPageLink == null)
             {
@@ -5480,7 +5480,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        /// <exception  cref="System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
         /// <return>
