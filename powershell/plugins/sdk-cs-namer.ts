@@ -101,13 +101,13 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       // to the suggested name, unless we have collisions
       // at which point, we're going to add a number (for now?)
       const details = schema.language.default;
-      let schemaName = getPascalIdentifier(details.name);
+      let schemaName = details.name;
       const apiName = (!thisApiversion) ? '' : getPascalIdentifier(`Api ${thisApiversion}`);
 
 
       let n = 1;
       while (thisNamespace.has(schemaName)) {
-        schemaName = getPascalIdentifier(`${details.name}_${n++}`);
+        schemaName = `${details.name}_${n++}`;
       }
       thisNamespace.add(schemaName);
 
@@ -117,16 +117,16 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Models']),  // objects have a namespace
-          fullname: getPascalIdentifier(schemaName),
+          fullname: schemaName,
         };
       } else if (schema.type === SchemaType.Any) {
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           fullname: 'object',
         };
       } else if (schema.type === SchemaType.Array) {
@@ -136,7 +136,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           fullname: `System.Collections.Generic.IList<${type ? type + postfix :
             ((<ArraySchema>schema).elementType.type === SchemaType.SealedChoice ? (<ArraySchema>schema).elementType.language.default.name + '?' : (<ArraySchema>schema).elementType.language.default.name)}>`,
         };
@@ -166,7 +166,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         schema.language.csharp = <SchemaDetails>{
           ...details,
           interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Support']),
           fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? getPascalIdentifier(schema.language.default.name) : typeMap.get(choiceSchema.choiceType.type),
           enum: {
@@ -203,14 +203,17 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         // handle dictionary
         const elementType = (<DictionarySchema>schema).elementType;
         let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name;
-        if (valueType !== 'string' && valueType !== 'any' && elementType.type === SchemaType.SealedChoice) {
+        if (elementType.type === 'any') {
+          valueType = 'object';
+        }
+        if ((typeMap.get(elementType.type) && valueType !== 'string') || elementType.type === SchemaType.SealedChoice) {
           valueType += '?';
         }
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           fullname: `System.Collections.Generic.IDictionary<string, ${valueType}>`,
         };
       }
@@ -292,7 +295,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 function duplicateLRO(model: SdkModel) {
   for (const operationGroup of model.operationGroups) {
     for (const operation of operationGroup.operations) {
-      if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
+      if (operation.extensions && operation.extensions['x-ms-long-running-operation']) {
         const duplicate = new Operation('Begin' + operation.language.default.name, '', operation);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const extensions = Object.assign({}, duplicate.extensions);
