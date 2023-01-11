@@ -173,7 +173,7 @@ function New-ExampleForParameterSet()
         $category = (Get-ParameterAttribute -parameterInfo $parameter -AttributeName "CategoryAttribute").Categories
         $sourceName = (Get-ParameterAttribute -parameterInfo $parameter -AttributeName "InfoAttribute").SerializedName
         $name = $parameter.Name
-        $result += @{
+        $result += [ordered]@{
             name = "-$Name"
             value = "[$category.$sourceName]"
         }
