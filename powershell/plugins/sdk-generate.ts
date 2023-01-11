@@ -19,7 +19,7 @@ const resources = `${__dirname}/../../resources`;
 async function generateModels(project: Project) {
   const path = join(join(resources, 'templates'), 'model.ejs');
   for (const model of values(project.model.schemas.objects)) {
-    if ((model.extensions && model.extensions['x-ms-client-flatten']) || model.language.default.pagable) {
+    if (model.extensions && (model.extensions['x-ms-client-flatten'] || model.extensions['x-ms-external']) || model.language.default.pagable) {
       // skip flattened model and pageble model
       continue;
     }
@@ -67,11 +67,11 @@ async function generateClientInterface(project: Project) {
 }
 
 async function generatePageClasses(project: Project) {
-  for (let [key, value] of Object.entries(project.state.model.language.default.pageClasses)) {
+  for (const [key, value] of Object.entries(project.state.model.language.default.pageClasses)) {
     const path = join(join(resources, 'templates'), 'page.ejs');
-    let className = value;
-    let nextLinkName = key.split(' ')[0];
-    let itemName = key.split(' ')[1];
+    const className = value;
+    const nextLinkName = key.split(' ')[0];
+    const itemName = key.split(' ')[1];
     const page = { className: className, nextLinkName: nextLinkName, itemName: itemName };
     const content = await ejs.renderFile(path, { project: project, page: page });
     project.state.writeFile(`${project.baseFolder}\\Models\\${page.className}.cs`, content, undefined, 'source-file-csharp');
@@ -86,7 +86,7 @@ async function generateExceptions(project: Project) {
     for (const operation of values(operationGroup.operations)) {
       if (operation.exceptions && (<any>operation.exceptions[0]).schema) {
         const exception = operation.exceptions[0];
-        if (processedException.has((<any>exception).schema)) {
+        if (processedException.has((<any>exception).schema) || ((<any>exception).schema.extensions && (<any>exception).schema.extensions['x-ms-external'])) {
           continue;
         } else {
           processedException.add((<any>exception).schema);
