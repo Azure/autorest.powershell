@@ -202,12 +202,16 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       } else {
         // handle dictionary
         const elementType = (<DictionarySchema>schema).elementType;
+        let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name;
+        if (valueType !== 'string' && valueType !== 'any' && elementType.type === SchemaType.SealedChoice) {
+          valueType += '?';
+        }
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
           name: getPascalIdentifier(schemaName),
-          fullname: `System.Collections.Generic.IDictionary<string, ${typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name}>`,
+          fullname: `System.Collections.Generic.IDictionary<string, ${valueType}>`,
         };
       }
     }
@@ -313,11 +317,11 @@ function getPageClass(operation: Operation, model: SdkModel): string | null {
   if (!operation.extensions || !(xmsPageable in operation.extensions)) {
     return null;
   }
-  let nextLinkName = operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName;
-  let itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
-  let pair: string = `${nextLinkName} ${itemName}`;
+  const nextLinkName = operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName;
+  const itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
+  const pair = `${nextLinkName} ${itemName}`;
   if (!(pair in model.language.default.pageClasses)) {
-    let className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length}` : "Page";
+    const className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length}` : 'Page';
     model.language.default.pageClasses[pair] = className;
   }
   return model.language.default.pageClasses[pair];
@@ -349,11 +353,11 @@ function addNextPageOperation(model: SdkModel) {
             itemName: operation.extensions[xmsPageable].itemName || defaultItemName,
             operationName: operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`,
             nextPageOperation: true,
-          }
+          };
           nextPageOperation.extensions = extensions;
 
           // Set operation name, the name initialization in new Operation() doesn't work
-          nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`
+          nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`;
           operationGroup.operations.push(nextPageOperation);
         }
         operation.extensions = extensions;
@@ -390,4 +394,3 @@ export async function csnamerSdk(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
   await service.WriteFile('sdk-code-model-v4-csnamer.yaml', serialize(await nameStuffRight(state)), undefined, 'code-model-v4');
 }
-
