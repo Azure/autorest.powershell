@@ -243,7 +243,7 @@ async function tweakOperation(state: State) {
         }
         const responses = operation.responses.filter(r => (<any>r).schema);
         const hasHeaderResponse = operation.responses.some(r => (<any>r).protocol.http.headers);
-        const headerSchema = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+        const headerSchema = pascalCase(operationGroup.$key + (operation.language.default.original ?? operation.language.default.name) + 'Headers');
         operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
         let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {

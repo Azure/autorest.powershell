@@ -304,6 +304,7 @@ function duplicateLRO(model: SdkModel) {
           delete extensions['x-ms-examples'];
         }
         duplicate.extensions = extensions;
+        duplicate.language.default.original = duplicate.language.default.name;
         duplicate.language.default.name = 'Begin' + duplicate.language.default.name;
         operationGroup.operations.push(duplicate);
       }
