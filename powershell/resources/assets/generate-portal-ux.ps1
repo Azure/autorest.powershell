@@ -29,6 +29,11 @@ if(Test-Path $docsFolder) {
 $null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
 
 $moduleName = '${$project.moduleName}'
+$rootModuleName = '${$project.rootModuleName}'
+if ($rootModuleName -eq "")
+{
+    $rootModuleName = $moduleName
+}
 $modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot "./$moduleName.psd1")
 $modulePath = $modulePsd1.FullName
 
@@ -63,8 +68,8 @@ function Test-FunctionSupported()
         return $false
     }
 
-    $parameterSetInfo = $parameterSetsInfo[$FunctionName]
-    foreach ($parameterInfo in $parameterSetInfo.Parameters)
+    $parameterSetInfo = $parameterSetsInfo.ExportedCmdlets[$FunctionName]
+    foreach ($parameterInfo in $parameterSetInfo.Parameters.Values)
     {
         $category = (Get-ParameterAttribute -ParameterInfo $parameterInfo -AttributeName "CategoryAttribute").Categories
         $invalideCategory = @('Query', 'Body')
@@ -136,7 +141,12 @@ function Get-CmdletDescription()
     )
     $helpInfo = Get-Help $CmdletName -Full
     
-    return $helpInfo.Description.Text
+    $description = $helpInfo.Description.Text
+    if ($null -eq $description)
+    {
+        return ""
+    }
+    return $description
 }
 
 # Test whether the parameter is from swagger http path
@@ -149,6 +159,11 @@ function Test-ParameterFromSwagger()
         $ParameterInfo
     )
     $category = (Get-ParameterAttribute -ParameterInfo $ParameterInfo -AttributeName "CategoryAttribute").Categories
+    $doNotExport = Get-ParameterAttribute -ParameterInfo $ParameterInfo -AttributeName "DoNotExportAttribute"
+    if ($null -ne $doNotExport)
+    {
+        return $false
+    }
     
     $valideCategory = @('Path')
     if ($valideCategory -contains $category)
@@ -288,7 +303,7 @@ function New-MetadataForCmdlet()
         path = $ParameterSetMetadata.Path
         help = [ordered]@{
             learnMore = [ordered]@{
-                url = "https://learn.microsoft.com/powershell/module/$moduleName/$cmdletName".ToLower()
+                url = "https://learn.microsoft.com/powershell/module/$rootModuleName/$cmdletName".ToLower()
             }
             parameterSets = @()
         }
@@ -329,7 +344,7 @@ foreach ($parameterSetName in $parameterSets)
             resourceType = $parameterSetMetadata.ResourceType
             apiVersion = $parameterSetMetadata.ApiVersion
             learnMore = @{
-                url = "https://learn.microsoft.com/powershell/module/$moduleName".ToLower()
+                url = "https://learn.microsoft.com/powershell/module/$rootModuleName".ToLower()
             }
             commands = @($cmdletInfo)
             provider = $parameterSetMetadata.Provider
