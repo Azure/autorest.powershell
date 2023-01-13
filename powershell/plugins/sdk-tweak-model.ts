@@ -73,7 +73,7 @@ function tweakSchema(model: SdkModel) {
         continue;
       }
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string']))) && !virtualProperty.required ? `${type}?` : type;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = virtualProperty.property.language.default.name;
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
