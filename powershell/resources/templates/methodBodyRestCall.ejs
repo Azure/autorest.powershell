@@ -210,7 +210,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 
             if (<%-method.language.default.failureStatusCodePredicate%>)
             {
-                var ex = new <%-method.exceptions && method.exceptions[0].schema ? `${method.exceptions[0].schema.language.default.name}Exception`: 'Microsoft.Rest.Azure.CloudException'%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new <%-((!method.exceptions || !method.exceptions[0].schema || (method.exceptions[0].schema.language.default.name === 'CloudError')) ? 'Microsoft.Rest.Azure.CloudException' : `${method.exceptions[0].schema.language.default.name}Exception`)%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
 <%# ToDo: not sure whether there is the case that there is no default response(error). If so, we will need to add support for it -%>
                 try
                 {
