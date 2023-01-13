@@ -87,7 +87,7 @@ namespace Microsoft.Azure.Sample.Models
         /// 'Deleting'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public ProvisioningState? ProvisioningState { get; set; }
+        public ProvisioningState? ProvisioningState {get; private set; }
 
         /// <summary>
         /// Gets the time the resource was created.

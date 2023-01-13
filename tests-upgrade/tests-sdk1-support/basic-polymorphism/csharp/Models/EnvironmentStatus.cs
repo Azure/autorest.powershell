@@ -50,14 +50,14 @@ namespace Microsoft.Azure.Sample.Models
         /// environment.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "ingress")]
-        public IngressEnvironmentStatus Ingress { get; set; }
+        public IngressEnvironmentStatus Ingress {get; private set; }
 
         /// <summary>
         /// Gets or sets an object that represents the status of warm storage
         /// on an environment.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "warmStorage")]
-        public WarmStorageEnvironmentStatus WarmStorage { get; set; }
+        public WarmStorageEnvironmentStatus WarmStorage {get; private set; }
 
         /// <summary>
         /// Validate the object.

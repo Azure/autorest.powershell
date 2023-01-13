@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Sample.Models
         /// 'Succeeded', 'Failed', 'Deleting'</param>
         /// <param name="creationTime">The time the resource was
         /// created.</param>
-        public ReferenceDataSetResource(string location, System.Collections.Generic.IList<ReferenceDataSetKeyProperty> keyProperties, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), DataStringComparisonBehavior? dataStringComparisonBehavior = default(DataStringComparisonBehavior?), ProvisioningState? provisioningState = default(ProvisioningState?), System.DateTime? creationTime = default(System.DateTime?))
+        public ReferenceDataSetResource(string location, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), System.Collections.Generic.IList<ReferenceDataSetKeyProperty> keyProperties = default(System.Collections.Generic.IList<ReferenceDataSetKeyProperty>), DataStringComparisonBehavior? dataStringComparisonBehavior = default(DataStringComparisonBehavior?), System.DateTime? creationTime = default(System.DateTime?))
             : base(location, id, name, type, tags)
         {
             this.KeyProperties = keyProperties;
@@ -68,6 +68,8 @@ namespace Microsoft.Azure.Sample.Models
         partial void CustomInit();
 
         /// <summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
+		public ProvisioningState? ProvisioningState {get; private set; }
         /// Gets or sets the list of key properties for the reference data set.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.keyProperties")]
@@ -89,8 +91,7 @@ namespace Microsoft.Azure.Sample.Models
         /// include: 'Accepted', 'Creating', 'Updating', 'Succeeded', 'Failed',
         /// 'Deleting'
         /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public ProvisioningState? ProvisioningState { get; set; }
+        
 
         /// <summary>
         /// Gets the time the resource was created.
@@ -107,10 +108,6 @@ namespace Microsoft.Azure.Sample.Models
         public override void Validate()
         {
             base.Validate();
-            if (this.KeyProperties == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "KeyProperties");
-            }
         }
     }
 }

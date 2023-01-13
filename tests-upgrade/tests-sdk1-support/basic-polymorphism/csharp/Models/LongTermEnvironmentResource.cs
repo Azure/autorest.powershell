@@ -67,7 +67,7 @@ namespace Microsoft.Azure.Sample.Models
         /// <param name="status">An object that represents the status of the
         /// environment, and its internal state in the Time Series Insights
         /// service.</param>
-        public LongTermEnvironmentResource(string location, Sku sku, System.Collections.Generic.IList<TimeSeriesIdProperty> timeSeriesIdProperties, LongTermStorageConfigurationOutput storageConfiguration, string dataRetention, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), System.DateTime? creationTime = default(System.DateTime?), string dataAccessId = default(string), string dataAccessFqdn = default(string), EnvironmentStatus status = default(EnvironmentStatus))
+        public LongTermEnvironmentResource(string location, Sku sku, System.Collections.Generic.IList<TimeSeriesIdProperty> timeSeriesIdProperties, LongTermStorageConfigurationOutput storageConfiguration, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), System.DateTime? creationTime = default(System.DateTime?), string dataAccessId = default(string), string dataAccessFqdn = default(string), EnvironmentStatus status = default(EnvironmentStatus), string dataRetention = default(string))
             : base(location, sku, id, name, type, tags)
         {
             this.ProvisioningState = provisioningState;
@@ -92,7 +92,7 @@ namespace Microsoft.Azure.Sample.Models
         /// 'Deleting'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public ProvisioningState? ProvisioningState { get; set; }
+        public ProvisioningState? ProvisioningState {get; private set; }
 
         /// <summary>
         /// Gets the time the resource was created.
@@ -121,7 +121,7 @@ namespace Microsoft.Azure.Sample.Models
         /// service.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.status")]
-        public EnvironmentStatus Status { get; set; }
+        public EnvironmentStatus Status {get; private set; }
 
         /// <summary>
         /// Gets or sets the list of event properties which will be used to
@@ -163,10 +163,6 @@ namespace Microsoft.Azure.Sample.Models
             if (this.StorageConfiguration == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "StorageConfiguration");
-            }
-            if (this.DataRetention == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "DataRetention");
             }
             if (this.Status != null)
             {

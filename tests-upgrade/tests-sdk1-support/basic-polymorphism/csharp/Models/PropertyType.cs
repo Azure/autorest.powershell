@@ -20,7 +20,7 @@ namespace Microsoft.Azure.Sample.Models
         [System.Runtime.Serialization.EnumMember(Value = "String")]
         String,
         [System.Runtime.Serialization.EnumMember(Value = "123")]
-        OneTwoThree
+        OneHundredTwentyThree
     }
     internal static class PropertyTypeEnumExtension
     {
@@ -35,7 +35,7 @@ namespace Microsoft.Azure.Sample.Models
             {
                 case PropertyType.String:
                     return "String";
-                case PropertyType.OneTwoThree:
+                case PropertyType.OneHundredTwentyThree:
                     return "123";
             }
             return null;
@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Sample.Models
                 case "String":
                     return PropertyType.String;
                 case "123":
-                    return PropertyType.OneTwoThree;
+                    return PropertyType.OneHundredTwentyThree;
             }
             return null;
         }
