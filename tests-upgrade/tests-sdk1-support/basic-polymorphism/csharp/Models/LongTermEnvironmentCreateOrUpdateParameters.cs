@@ -50,7 +50,7 @@ namespace Microsoft.Azure.Sample.Models
         /// the warm store.</param>
         /// <param name="tags">Key-value pairs of additional properties for the
         /// resource.</param>
-        public LongTermEnvironmentCreateOrUpdateParameters(string location, Sku sku, System.Collections.Generic.IList<TimeSeriesIdProperty> timeSeriesIdProperties, LongTermStorageConfigurationInput storageConfiguration, string dataRetention, string tags = default(string))
+        public LongTermEnvironmentCreateOrUpdateParameters(string location, Sku sku, System.Collections.Generic.IList<TimeSeriesIdProperty> timeSeriesIdProperties, LongTermStorageConfigurationInput storageConfiguration, string tags = default(string), string dataRetention = default(string))
             : base(location, sku, tags)
         {
             this.TimeSeriesIdProperties = timeSeriesIdProperties;
@@ -105,10 +105,7 @@ namespace Microsoft.Azure.Sample.Models
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "StorageConfiguration");
             }
-            if (this.DataRetention == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "DataRetention");
-            }
+
             if (this.StorageConfiguration != null)
             {
                 this.StorageConfiguration.Validate();

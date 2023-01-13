@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Sample.Models
         /// <param name="sharedAccessKey">The value of the shared access key
         /// that grants the Time Series Insights service read access to the iot
         /// hub. This property is not shown in event source responses.</param>
-        public IoTHubEventSourceUpdateParameters(string tags = default(string), string timestampPropertyName = default(string), LocalTimestamp localTimestamp = default(LocalTimestamp), string sharedAccessKey = default(string))
+        public IoTHubEventSourceUpdateParameters(string tags = default(string), LocalTimestamp localTimestamp = default(LocalTimestamp), string timestampPropertyName = default(string), string sharedAccessKey = default(string))
             : base(tags)
         {
             this.TimestampPropertyName = timestampPropertyName;

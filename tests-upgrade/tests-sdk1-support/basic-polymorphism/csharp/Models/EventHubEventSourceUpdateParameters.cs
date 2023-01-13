@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Sample.Models
         /// that grants the Time Series Insights service read access to the
         /// event hub. This property is not shown in event source
         /// responses.</param>
-        public EventHubEventSourceUpdateParameters(string tags = default(string), string timestampPropertyName = default(string), LocalTimestamp localTimestamp = default(LocalTimestamp), string sharedAccessKey = default(string))
+        public EventHubEventSourceUpdateParameters(string tags = default(string), LocalTimestamp localTimestamp = default(LocalTimestamp), string timestampPropertyName = default(string), string sharedAccessKey = default(string))
             : base(tags)
         {
             this.TimestampPropertyName = timestampPropertyName;

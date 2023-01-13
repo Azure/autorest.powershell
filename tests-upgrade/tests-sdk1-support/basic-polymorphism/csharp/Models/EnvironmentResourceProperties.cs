@@ -79,7 +79,7 @@ namespace Microsoft.Azure.Sample.Models
         /// service.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "status")]
-        public EnvironmentStatus Status { get; set; }
+        public EnvironmentStatus Status {get; private set; }
 
         /// <summary>
         /// Validate the object.
