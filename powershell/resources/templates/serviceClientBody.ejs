@@ -119,7 +119,7 @@ if (parameters.length > 0) {-%>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
         /// </summary>
 <%parameters.forEach(function(parameter){-%>
-        /// <param name='<%-project.helper.CamelCase(parameter.language.default.name)%>>'
+        /// <param name='<%-project.helper.CamelCase(parameter.language.default.name)%>'>
         /// Required. <%-parameter.language.default.description%>
         /// </param>
 <%});-%>
@@ -230,9 +230,6 @@ if (parameters.length > 0) {-%>
         /// Required. <%-parameter.language.default.description%>
         /// </param>
 <%});-%>
-        /// <param name='rootHandler'>
-        /// Optional. The http client handler used to handle http transport.
-        /// </param>
         /// <param name='handlers'>
         /// Optional. The delegating handlers to add to the http client pipeline.
         /// </param>
