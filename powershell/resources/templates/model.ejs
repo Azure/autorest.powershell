@@ -48,7 +48,7 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
         additionInfo = additionInfo +  choices.join(', ');
 }
 %>
-        /// <param name="<%-p.property.language.default.name%>"><%-p.property.language.default.description%><%-additionInfo%></param>
+        /// <param name="<%-p.property.language.default.name%>"><%=p.property.language.default.description%><%-additionInfo%></param>
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
@@ -88,7 +88,7 @@ const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
         partial void CustomInit();
 
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0, line 407-%>
-<% if (model.properties) { publicVirtualProperties.filter(p => p.property.schema.type != 'constant' && !project.helper.IsConstantProperty(p)).forEach(function(p){-%>
+<% (publicVirtualProperties || []).filter(p => p.property.schema.type != 'constant' && !project.helper.IsConstantProperty(p)).forEach(function(p){-%>
 <%
         var additionInfo = '';
         if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -99,7 +99,7 @@ const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
         }
 %>
         /// <summary>
-        /// <%-p.property.language.csharp.formattedPropertySummary%><%-additionInfo%>
+        /// <%=p.property.language.csharp.formattedPropertySummary%><%=additionInfo%>
         /// </summary>
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
@@ -121,11 +121,11 @@ switch(p.property.language.default.flavor) {
 <% var type = p.property.schema.language.csharp.fullname-%>
 <%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
-<% });} -%>
+<% }); -%>
 <%#Below is support for ClassProperties in the model, const properties -%>
 <% (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p)).forEach(function(p){-%>
         /// <summary>
-        /// <%-p.property.language.csharp.formattedPropertySummary%>
+        /// <%=p.property.language.csharp.formattedPropertySummary%>
         /// </summary>
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]

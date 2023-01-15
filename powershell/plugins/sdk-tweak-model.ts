@@ -123,6 +123,8 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   let declarations: Array<string> = [];
   const optionalDeclarations: Array<string> = [];
   const requiredDeclarations: Array<string> = [];
+  const requiredArgs: Array<string> = [];
+  const optionalArgs: Array<string> = [];
   const schemaDefinitionResolver = new SchemaDefinitionResolver();
   const args: Array<string> = [];
   let bodyParameters: Array<Parameter> = [];
@@ -141,7 +143,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
       if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
         // skip required const parameter
         parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-        args.push(parameter.language.default.name);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
       }
     });
 
@@ -152,13 +154,13 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
         constructorParametersDeclaration.split(', ').forEach(function (p) {
           requiredDeclarations.push(p);
-          args.push(p.split(' ')[1]);
+          requiredArgs.push(p.split(' ')[1]);
         });
       } else {
         const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
         const postfix = typePostfix(parameter.schema);
         parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-        args.push(parameter.language.default.name);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
       }
     });
 
@@ -172,6 +174,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   declarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
+  args.push(...requiredArgs, ...optionalArgs);
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
   const argsWithCustomerHeaders: Array<string> = [...args];
   args.push('null');
