@@ -48,7 +48,7 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
         additionInfo = additionInfo +  choices.join(', ');
 }
 %>
-        /// <param name="<%-p.property.language.default.name%>"><%=p.property.language.default.description%><%-additionInfo%></param>
+        /// <param name="<%-project.helper.CamelCase(p.name)%>"><%=p.property.language.default.description%><%-additionInfo%></param>
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
@@ -61,7 +61,7 @@ if (model.language.default.baseConstructorCall) {
         {
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0-%>
 <%publicVirtualProperties.filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
-            this.<%-p.property.language.csharp.name%> = <%-p.property.language.default.name%>;
+            this.<%-p.name%> = <%-project.helper.CamelCase(p.name)%>;
 <%});-%>
             CustomInit();
         }
@@ -77,7 +77,7 @@ if (constantProperties.length > 0) {-%>
 <% constantProperties.forEach(function(p) {
 const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
 -%>
-            <%-p.property.language.csharp.name%> = <%-quote + p.property.schema.choices[0].value + quote%>;
+            <%-p.name%> = <%-quote + p.property.schema.choices[0].value + quote%>;
 <%});-%>
         }
 <% } -%>
@@ -120,7 +120,7 @@ switch(p.property.language.default.flavor) {
 <% } -%>
 <% var type = p.property.schema.language.csharp.fullname-%>
 <%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
-        public <%-type %> <%-p.property.language.csharp.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
+        public <%-type %> <%-p.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% }); -%>
 <%#Below is support for ClassProperties in the model, const properties -%>
 <% (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p)).forEach(function(p){-%>
@@ -136,7 +136,7 @@ switch(p.property.language.default.flavor) {
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% } -%>
 <% var type = p.property.schema.language.csharp.fullname-%>
-        public static <%-type %> <%-p.property.language.csharp.name%> {get; private set; }
+        public static <%-type %> <%-p.name%> {get; private set; }
 <%});-%>
 <%#ToDo support for ShouldValidateChain-%>
 <% if (project.helper.ShouldValidateChain(model)) {
@@ -158,9 +158,9 @@ var anythingToValidate = false;-%>
 <%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantProperty(p) && !project.helper.IsEnum(p.property.schema)).forEach(function(p) {
             anythingToValidate = true;
 -%>
-            if (this.<%-p.property.language.csharp.name%> == null)
+            if (this.<%-p.name%> == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-p.property.language.csharp.name%>");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-p.name%>");
             }
 <%});-%>
 <%publicVirtualProperties.filter(p=> project.helper.HasConstrains(p.property.schema) || !project.helper.IsValueType(p.property.schema.type)).forEach(function(p) {
