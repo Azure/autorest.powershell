@@ -15,6 +15,7 @@ import { SdkModel } from '../utils/SdkModel';
 import { ModelState } from '../utils/model-state';
 import { DeepPartial } from '@azure-tools/codegen';
 import { SchemaDetails as NewSchemaDetails, getMutability } from '../utils/schema';
+import { Helper } from '../sdk/utility';
 
 type State = ModelState<SdkModel>;
 
@@ -61,6 +62,7 @@ type State = ModelState<SdkModel>;
 function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
+  const helper = new Helper();
   const typeMap = new Map<string, string>([
     ['integer', 'int'],
     ['number', 'double'],
@@ -130,15 +132,20 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           fullname: 'object',
         };
       } else if (schema.type === SchemaType.Array) {
-        const type = typeMap.get((<ArraySchema>schema).elementType.type);
-        const postfix = (type && type !== 'string' ? '?' : '');
+        const rawElementType = (<ArraySchema>schema).elementType;
+        let elementType = rawElementType;
+        if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
+          elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
+        }
+        const type = typeMap.get(elementType.type);
+        const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) ? '?' : '';
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
           name: schemaName,
           fullname: `System.Collections.Generic.IList<${type ? type + postfix :
-            ((<ArraySchema>schema).elementType.type === SchemaType.SealedChoice ? (<ArraySchema>schema).elementType.language.default.name + '?' : (<ArraySchema>schema).elementType.language.default.name)}>`,
+            (helper.IsEnum(rawElementType) ? (<ArraySchema>schema).elementType.language.default.name + '?' : (<ArraySchema>schema).elementType.language.default.name)}>`,
         };
       } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type
@@ -201,12 +208,17 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         thisNamespace.delete(schemaName);
       } else {
         // handle dictionary
-        const elementType = (<DictionarySchema>schema).elementType;
-        let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name;
-        if (elementType.type === 'any') {
+        const rawElementType = (<DictionarySchema>schema).elementType;
+        let elementType = rawElementType;
+        if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
+          elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
+        }
+
+        let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : rawElementType.language.default.name;
+        if (rawElementType.type === 'any') {
           valueType = 'object';
         }
-        if ((typeMap.get(elementType.type) && valueType !== 'string') || elementType.type === SchemaType.SealedChoice) {
+        if ((typeMap.get(elementType.type) && valueType !== 'string') || helper.IsEnum(rawElementType)) {
           valueType += '?';
         }
         schema.language.csharp = {
