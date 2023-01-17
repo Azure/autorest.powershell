@@ -5,7 +5,7 @@
         /// </summary>
 <% };-%>
 <%# ToDo: add remark if both description and summary is provided, question here is in m4, there is no summary provided-%>
-<%  if(method.parameters) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
+<%  if(method.parameters&&!method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
 <%# ToDo: should use camel name instead of pascal name here -%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>
@@ -24,6 +24,11 @@
         /// </param>
 <%}-%>
 <% });-%>
+<% if(method.language.default.pageable?.nextPageOperation) {-%>
+        /// <param name='nextPageLink'>
+        /// The NextLink from the previous successful call to List operation.
+        /// </param>
+<% } -%>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>

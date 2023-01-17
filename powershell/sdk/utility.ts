@@ -12,12 +12,32 @@ export class Helper {
   constructor() { }
 
   public HasConstrains(schema: Schema): boolean {
-    if (!!(<any>schema).minimum || !!(<any>schema).maximum || !!(<any>schema).maxLength || !!(<any>schema).minLength || !!(<any>schema).maxItems || !!(<any>schema).minItems || !!(<any>schema).multipleOf || !!(<any>schema).pattern || !!(<any>schema).uniqueItems) {
+    if ((<any>schema).minimum !== undefined || (<any>schema).maximum !== undefined || (<any>schema).maxLength !== undefined || (<any>schema).minLength !== undefined || (<any>schema).maxItems !== undefined || (<any>schema).minItems !== undefined || (<any>schema).multipleOf !== undefined || (<any>schema).pattern !== undefined || (<any>schema).uniqueItems !== undefined) {
       return true;
     }
     return false;
   }
 
+  public GetCsharpType(type: string): string {
+    const typeMap = new Map<string, string>([
+      ['integer', 'int'],
+      ['number', 'double'],
+      ['boolean', 'bool'],
+      ['string', 'string'],
+      ['unixtime', 'System.DateTime'],
+      ['credential', 'string'],
+      ['byte-array', 'byte[]'],
+      ['duration', 'System.TimeSpan'],
+      ['uuid', 'System.Guid'],
+      ['date-time', 'System.DateTime'],
+      ['date', 'System.DateTime'],
+      ['binary', 'string']
+    ]);
+    if (typeMap.has(type)) {
+      return <string>typeMap.get(type);
+    }
+    return '';
+  }
   private isArraySchema(schema: Schema): schema is ArraySchema {
     return schema.type === SchemaType.Array;
   }
@@ -56,7 +76,7 @@ export class Helper {
 
   private appendConstraintValidations(valueReference: string, sb: Array<string>, model: Schema) {
     const schema = <any>model;
-    if (schema.maximum) {
+    if (schema.maximum !== undefined) {
       const rule = schema.exclusiveMaximum ? 'ExclusiveMaximum' : 'InclusiveMaximum';
       const cmp = schema.exclusiveMaximum ? '>=' : '>';
       sb.push(`if (${valueReference} ${cmp} ${schema.maximum})`);
@@ -64,7 +84,7 @@ export class Helper {
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.maximum});`);
       sb.push('}');
     }
-    if (schema.minimum) {
+    if (schema.minimum !== undefined) {
       const rule = schema.exclusiveMinimum ? 'ExclusiveMinimum' : 'InclusiveMinimum';
       const cmp = schema.exclusiveMinimum ? '<=' : '<';
       sb.push(`if (${valueReference} ${cmp} ${schema.minimum})`);
@@ -72,38 +92,38 @@ export class Helper {
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.${rule}, "${valueReference.replace('this.', '')}", ${schema.minimum});`);
       sb.push('}');
     }
-    if (schema.maxItems) {
+    if (schema.maxItems !== undefined) {
       sb.push(`if (${valueReference}.Count > ${schema.maxItems})`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxItems, "${valueReference.replace('this.', '')}", ${schema.maxItems});`);
       sb.push('}');
     }
-    if (schema.maxLength) {
+    if (schema.maxLength !== undefined) {
       sb.push(`if (${valueReference}.Length > ${schema.maxLength})`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "${valueReference.replace('this.', '')}", ${schema.maxLength});`);
       sb.push('}');
     }
-    if (schema.minLength) {
+    if (schema.minLength !== undefined) {
       sb.push(`if (${valueReference}.Length < ${schema.minLength})`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "${valueReference.replace('this.', '')}", ${schema.minLength});`);
       sb.push('}');
     }
-    if (schema.minItems) {
+    if (schema.minItems !== undefined) {
       sb.push(`if (${valueReference}.Count < ${schema.minItems})`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinItems, "${valueReference.replace('this.', '')}", ${schema.minItems});`);
       sb.push('}');
     }
-    if (schema.multipleOf) {
+    if (schema.multipleOf !== undefined) {
       sb.push(`if (${valueReference} % ${schema.multipleOf} != 0)`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MultipleOf, "${valueReference.replace('this.', '')}", ${schema.multipleOf});`);
       sb.push('}');
     }
-    if (schema.pattern) {
-      const constraintValue = '"' + schema.pattern.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+    if (schema.pattern !== undefined) {
+      const constraintValue = "\"" + schema.pattern.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\"";
       let condition = `!System.Text.RegularExpressions.Regex.IsMatch(${valueReference}, ${constraintValue})`;
       if (schema.type === SchemaType.Dictionary) {
         condition = `!System.Linq.Enumerable.All(${valueReference}.Values, value => System.Text.RegularExpressions.Regex.IsMatch(value, ${constraintValue}))`;
@@ -113,7 +133,7 @@ export class Helper {
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "${valueReference.replace('this.', '')}", ${constraintValue});`);
       sb.push('}');
     }
-    if (schema.uniqueItems && 'true' === schema.uniqueItems.toString()) {
+    if (schema.uniqueItems !== undefined && 'true' === schema.uniqueItems.toString()) {
       sb.push(`if (${valueReference}.Count != System.Linq.Enumerable.Count(System.Linq.Enumerable.Distinct(${valueReference})))`);
       sb.push('{');
       sb.push(`    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.UniqueItems, "${valueReference.replace('this.', '')}");`);

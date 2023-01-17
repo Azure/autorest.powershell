@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Sample.Models
         /// used as the event source's timestamp. If a value isn't specified
         /// for timestampPropertyName, or if null or empty-string is specified,
         /// the event creation time will be used.</param>
-        public IoTHubEventSourceResource(string location, string eventSourceResourceId, string iotHubName, string consumerGroupName, string keyName, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), System.DateTime? creationTime = default(System.DateTime?), string timestampPropertyName = default(string), bool? ioTHubEventSourceResourceName = default(bool?))
+        public IoTHubEventSourceResource(string location, string eventSourceResourceId, string iotHubName, string consumerGroupName, string keyName, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), System.DateTime? creationTime = default(System.DateTime?), string timestampPropertyName = default(string), bool? propertiesName = default(bool?))
             : base(location, id, name, type, tags)
         {
             this.ProvisioningState = provisioningState;
@@ -64,7 +64,7 @@ namespace Microsoft.Azure.Sample.Models
             this.IotHubName = iotHubName;
             this.ConsumerGroupName = consumerGroupName;
             this.KeyName = keyName;
-            this.IoTHubEventSourceResourceName = ioTHubEventSourceResourceName;
+            this.PropertiesName = propertiesName;
             CustomInit();
         }
 
@@ -79,7 +79,7 @@ namespace Microsoft.Azure.Sample.Models
         /// 'Deleting'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public ProvisioningState? ProvisioningState { get; set; }
+        public ProvisioningState? ProvisioningState {get; private set; }
 
         /// <summary>
         /// Gets the time the resource was created.
@@ -128,7 +128,7 @@ namespace Microsoft.Azure.Sample.Models
         /// <summary>
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.name")]
-        public bool? IoTHubEventSourceResourceName { get; set; }
+        public bool? PropertiesName {get; set; }
 
         /// <summary>
         /// Validate the object.

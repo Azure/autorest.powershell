@@ -73,8 +73,8 @@ function tweakSchema(model: SdkModel) {
         continue;
       }
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string']))) && !virtualProperty.required ? `${type}?` : type;
-      const CamelName = virtualProperty.property.language.default.name;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required ? `${type}?` : type;
+      const CamelName = camelCase(virtualProperty.name);
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
     if (obj.parents && obj.parents.immediate.length === 1) {
@@ -123,6 +123,8 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   let declarations: Array<string> = [];
   const optionalDeclarations: Array<string> = [];
   const requiredDeclarations: Array<string> = [];
+  const requiredArgs: Array<string> = [];
+  const optionalArgs: Array<string> = [];
   const schemaDefinitionResolver = new SchemaDefinitionResolver();
   const args: Array<string> = [];
   let bodyParameters: Array<Parameter> = [];
@@ -138,8 +140,11 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
       }
       const postfix = typePostfix(parameter.schema);
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-      args.push(parameter.language.default.name);
+      if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
+        // skip required const parameter
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+      }
     });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
@@ -149,13 +154,13 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
         constructorParametersDeclaration.split(', ').forEach(function (p) {
           requiredDeclarations.push(p);
-          args.push(p.split(' ')[1]);
+          requiredArgs.push(p.split(' ')[1]);
         });
       } else {
         const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
         const postfix = typePostfix(parameter.schema);
         parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-        args.push(parameter.language.default.name);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
       }
     });
 
@@ -169,6 +174,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   declarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = declarations.join(', ');
 
+  args.push(...requiredArgs, ...optionalArgs);
   operation.language.default.syncMethodInvocationArgs = args.join(', ');
   const argsWithCustomerHeaders: Array<string> = [...args];
   args.push('null');
@@ -240,7 +246,7 @@ async function tweakOperation(state: State) {
         }
         const responses = operation.responses.filter(r => (<any>r).schema);
         const hasHeaderResponse = operation.responses.some(r => (<any>r).protocol.http.headers);
-        const headerSchema = pascalCase(operationGroup.$key + operation.language.default.name + 'Headers');
+        const headerSchema = pascalCase(operationGroup.$key + (operation.language.default.original ?? operation.language.default.name) + 'Headers');
         operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
         let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {
@@ -285,7 +291,7 @@ function setFailureStatusCodePredicate(operation: Operation) {
   const failureStatusCodePredicate = Array<string>();
   for (const resp of values(operation.responses)) {
     const status = resp.protocol.http?.statusCodes[0];
-    failureStatusCodePredicate.push(`(int)_statusCode != ${status} `);
+    failureStatusCodePredicate.push(`(int)_statusCode != ${status}`);
   }
   if (failureStatusCodePredicate.length > 0) {
     operation.language.default.failureStatusCodePredicate = failureStatusCodePredicate.join(' && ');

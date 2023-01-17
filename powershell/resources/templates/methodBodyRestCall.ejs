@@ -45,7 +45,10 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <%(method.parameters || []).filter(p => p.protocol.http.in == 'complex').forEach(function(parameter) {-%>
 <%-project.helper.PopulateGroupParameters(parameter)%>
 <%});-%>
-<%# ToDo: add support for p => p.IsConstant && !p.IsClientProperty -%>
+<%# support for p => p.IsConstant && !p.IsClientProperty -%>
+<%(method.parameters || []).filter(p => p.implementation !== 'Client' && p.schema.type === 'constant' && p.required).forEach(function(parameter) {-%>
+            <%-project.helper.GetCsharpType(parameter.schema.valueType.type)%> <%-parameter.language.default.name%> = <%-parameter.schema.valueType.type === 'string' ? '"' + parameter.schema.value.value + '"' : parameter.schema.value.value%>;
+<%});-%>
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
@@ -98,7 +101,7 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <% });}-%>
 <% }%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
-<%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
+<%if (method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
 <% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <% if (queryParameter.extensions && queryParameter.extensions['x-ms-odata']) {-%>
             if (<%-queryParameter.language.default.name%> != null)
@@ -207,7 +210,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 
             if (<%-method.language.default.failureStatusCodePredicate%>)
             {
-                var ex = new <%-method.exceptions && method.exceptions[0].schema ? `${method.exceptions[0].schema.language.default.name}Exception`: 'Microsoft.Rest.Azure.CloudException'%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new <%-((!method.exceptions || !method.exceptions[0].schema || (method.exceptions[0].schema.language.default.name === 'CloudError')) ? 'Microsoft.Rest.Azure.CloudException' : `${method.exceptions[0].schema.language.default.name}Exception`)%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
 <%# ToDo: not sure whether there is the case that there is no default response(error). If so, we will need to add support for it -%>
                 try
                 {
@@ -217,7 +220,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                     <%-errorClass%> _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-errorClass%>>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
-<% if(!method.exceptions || !method.exceptions[0].schema) { -%>
+<% if(!method.exceptions || !method.exceptions[0].schema || (method.exceptions[0].schema.language.default.name === 'CloudError')) { -%>
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
 <% } -%>
                         ex.Body = _errorBody;
@@ -229,10 +232,10 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 }
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
-<% if (!method.exceptions || !method.exceptions[0].schema) {-%>
-                if (_httpResponse.Headers.Contains("<%-requestId%>"))
+<% if (!method.exceptions || !method.exceptions[0].schema || method.exceptions[0].schema.language.default.name === 'CloudError') {-%>
+                if (_httpResponse.Headers.Contains("<%-(method.extensions && method.extensions[requestId]) ?? requestId%>"))
                 {
-                    ex.RequestId = _httpResponse.Headers.GetValues("<%-requestId%>").FirstOrDefault();
+                    ex.RequestId = _httpResponse.Headers.GetValues("<%-(method.extensions && method.extensions[requestId]) ?? requestId%>").FirstOrDefault();
                 }
 <% } -%>
                 if (_shouldTrace)

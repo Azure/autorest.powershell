@@ -60,7 +60,7 @@ namespace Microsoft.Azure.Sample.Models
         /// environment's state.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "stateDetails")]
-        public EnvironmentStateDetails StateDetails { get; set; }
+        public EnvironmentStateDetails StateDetails {get; private set; }
 
     }
 }

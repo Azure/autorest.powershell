@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Sample.Models
         /// provides the connection details that allows the Time Series
         /// Insights service to connect to the customer storage account that is
         /// used to store the environment's data.</param>
-        public LongTermEnvironmentUpdateParameters(string dataRetention, string tags = default(string), LongTermStorageConfigurationMutableProperties storageConfiguration = default(LongTermStorageConfigurationMutableProperties))
+        public LongTermEnvironmentUpdateParameters(string tags = default(string), LongTermStorageConfigurationMutableProperties storageConfiguration = default(LongTermStorageConfigurationMutableProperties), string dataRetention = default(string))
             : base(tags)
         {
             this.StorageConfiguration = storageConfiguration;
@@ -79,10 +79,6 @@ namespace Microsoft.Azure.Sample.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.DataRetention == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "DataRetention");
-            }
             if (this.StorageConfiguration != null)
             {
                 this.StorageConfiguration.Validate();

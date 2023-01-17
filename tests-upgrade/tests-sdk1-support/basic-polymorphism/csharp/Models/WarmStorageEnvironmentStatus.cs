@@ -60,7 +60,7 @@ namespace Microsoft.Azure.Sample.Models
         /// values include: 'Ok', 'Error', 'Unknown'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "propertiesUsage.state")]
-        public WarmStoragePropertiesState? State { get; set; }
+        public WarmStoragePropertiesState? State {get; private set; }
 
         /// <summary>
         /// Gets or sets a value that represents the number of properties used
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.Sample.Models
         /// Warm Store for PAYG SKU
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "propertiesUsage.stateDetails.currentCount")]
-        public int? CurrentCount { get; set; }
+        public int? CurrentCount {get; private set; }
 
         /// <summary>
         /// Gets or sets a value that represents the maximum number of
@@ -76,7 +76,7 @@ namespace Microsoft.Azure.Sample.Models
         /// maximum number of properties allowed by Warm Store for PAYG SKU.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "propertiesUsage.stateDetails.maxCount")]
-        public int? MaxCount { get; set; }
+        public int? MaxCount {get; private set; }
 
         /// <summary>
         /// Validate the object.

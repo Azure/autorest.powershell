@@ -101,13 +101,13 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       // to the suggested name, unless we have collisions
       // at which point, we're going to add a number (for now?)
       const details = schema.language.default;
-      let schemaName = getPascalIdentifier(details.name);
+      let schemaName = details.name;
       const apiName = (!thisApiversion) ? '' : getPascalIdentifier(`Api ${thisApiversion}`);
 
 
       let n = 1;
       while (thisNamespace.has(schemaName)) {
-        schemaName = getPascalIdentifier(`${details.name}_${n++}`);
+        schemaName = `${details.name}_${n++}`;
       }
       thisNamespace.add(schemaName);
 
@@ -117,16 +117,16 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Models']),  // objects have a namespace
-          fullname: getPascalIdentifier(schemaName),
+          fullname: schemaName,
         };
       } else if (schema.type === SchemaType.Any) {
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           fullname: 'object',
         };
       } else if (schema.type === SchemaType.Array) {
@@ -136,7 +136,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           fullname: `System.Collections.Generic.IList<${type ? type + postfix :
             ((<ArraySchema>schema).elementType.type === SchemaType.SealedChoice ? (<ArraySchema>schema).elementType.language.default.name + '?' : (<ArraySchema>schema).elementType.language.default.name)}>`,
         };
@@ -166,7 +166,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         schema.language.csharp = <SchemaDetails>{
           ...details,
           interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
-          name: getPascalIdentifier(schemaName),
+          name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Support']),
           fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? getPascalIdentifier(schema.language.default.name) : typeMap.get(choiceSchema.choiceType.type),
           enum: {
@@ -202,12 +202,19 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       } else {
         // handle dictionary
         const elementType = (<DictionarySchema>schema).elementType;
+        let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name;
+        if (elementType.type === 'any') {
+          valueType = 'object';
+        }
+        if ((typeMap.get(elementType.type) && valueType !== 'string') || elementType.type === SchemaType.SealedChoice) {
+          valueType += '?';
+        }
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: getPascalIdentifier(schemaName),
-          fullname: `System.Collections.Generic.IDictionary<string, ${typeMap.get(elementType.type) ? typeMap.get(elementType.type) : elementType.language.default.name}>`,
+          name: schemaName,
+          fullname: `System.Collections.Generic.IDictionary<string, ${valueType}>`,
         };
       }
     }
@@ -288,7 +295,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 function duplicateLRO(model: SdkModel) {
   for (const operationGroup of model.operationGroups) {
     for (const operation of operationGroup.operations) {
-      if (operation.extensions && 'x-ms-long-running-operation' in operation.extensions) {
+      if (operation.extensions && operation.extensions['x-ms-long-running-operation']) {
         const duplicate = new Operation('Begin' + operation.language.default.name, '', operation);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const extensions = Object.assign({}, duplicate.extensions);
@@ -297,6 +304,7 @@ function duplicateLRO(model: SdkModel) {
           delete extensions['x-ms-examples'];
         }
         duplicate.extensions = extensions;
+        duplicate.language.default.original = duplicate.language.default.name;
         duplicate.language.default.name = 'Begin' + duplicate.language.default.name;
         operationGroup.operations.push(duplicate);
       }
@@ -305,19 +313,19 @@ function duplicateLRO(model: SdkModel) {
 }
 
 const xmsPageable = 'x-ms-pageable';
-// nextLineName is required parameter in 'x-ms-pageable'
-const defaultNextLinkName = undefined;
+// nextLineName is required parameter in 'x-ms-pageable' but its value could be null
+const defaultNextLinkName = '';
 const defaultItemName = 'value';
 
 function getPageClass(operation: Operation, model: SdkModel): string | null {
   if (!operation.extensions || !(xmsPageable in operation.extensions)) {
     return null;
   }
-  let nextLinkName = operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName;
-  let itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
-  let pair: string = `${nextLinkName} ${itemName}`;
+  const nextLinkName = operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName;
+  const itemName = operation.extensions[xmsPageable].itemName || defaultItemName;
+  const pair = `${nextLinkName} ${itemName}`;
   if (!(pair in model.language.default.pageClasses)) {
-    let className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length}` : "Page";
+    const className = Object.keys(model.language.default.pageClasses).length > 0 ? `Page${Object.keys(model.language.default.pageClasses).length}` : 'Page';
     model.language.default.pageClasses[pair] = className;
   }
   return model.language.default.pageClasses[pair];
@@ -337,24 +345,26 @@ function addNextPageOperation(model: SdkModel) {
           nextPageOperation: false,
         };
 
-        const nextPageOperation = new Operation(operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`, '', operation);
-        nextPageOperation.language.default.pageable = {
-          pageType: getPageClass(operation, model),
-          ipageType: operation.extensions[xmsPageable].nextLinkName ? 'Microsoft.Rest.Azure.IPage' : 'System.Collections.Generic.IEnumerable',
-          nextLinkName: operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName,
-          itemName: operation.extensions[xmsPageable].itemName || defaultItemName,
-          operationName: operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`,
-          nextPageOperation: true,
-        }
-
-        const extensions = Object.assign({}, nextPageOperation.extensions);
+        const extensions = Object.assign({}, operation.extensions);
         delete extensions[xmsPageable];
-        operation.extensions = extensions;
-        nextPageOperation.extensions = extensions;
 
-        // Set operation name, the name initialization in new Operation() doesn't work
-        nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`
-        operationGroup.operations.push(nextPageOperation);
+        if (operation.extensions[xmsPageable].nextLinkName) {
+          const nextPageOperation = new Operation(operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`, '', operation);
+          nextPageOperation.language.default.pageable = {
+            pageType: getPageClass(operation, model),
+            ipageType: operation.extensions[xmsPageable].nextLinkName ? 'Microsoft.Rest.Azure.IPage' : 'System.Collections.Generic.IEnumerable',
+            nextLinkName: operation.extensions[xmsPageable].nextLinkName || defaultNextLinkName,
+            itemName: operation.extensions[xmsPageable].itemName || defaultItemName,
+            operationName: operation.extensions[xmsPageable].operationName || `${operation.language.default.name}Next`,
+            nextPageOperation: true,
+          };
+          nextPageOperation.extensions = extensions;
+
+          // Set operation name, the name initialization in new Operation() doesn't work
+          nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`;
+          operationGroup.operations.push(nextPageOperation);
+        }
+        operation.extensions = extensions;
       }
     }
   }
@@ -388,4 +398,3 @@ export async function csnamerSdk(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
   await service.WriteFile('sdk-code-model-v4-csnamer.yaml', serialize(await nameStuffRight(state)), undefined, 'code-model-v4');
 }
-

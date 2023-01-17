@@ -9,7 +9,7 @@
         /// The operations group for this extension method.
         /// </param>
 <% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
-        /// <param name='<%-parameter.language.default.serializedName%>'>
+        /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>
         /// </param>
 <% });}-%>
@@ -39,7 +39,7 @@
         /// The operations group for this extension method.
         /// </param>
 <% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client').forEach(function (parameter) {-%>
-        /// <param name='<%-parameter.language.default.serializedName%>'>
+        /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>
         /// </param>
 <% });}-%>

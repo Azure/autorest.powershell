@@ -64,12 +64,14 @@ namespace Microsoft.Azure.Sample.Models
         /// <param name="status">An object that represents the status of the
         /// environment, and its internal state in the Time Series Insights
         /// service.</param>
-        public StandardEnvironmentResource(string location, Sku sku, string dataRetentionTime, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), StorageLimitExceededBehavior? storageLimitExceededBehavior = default(StorageLimitExceededBehavior?), System.Collections.Generic.IList<TimeSeriesIdProperty> partitionKeyProperties = default(System.Collections.Generic.IList<TimeSeriesIdProperty>), string dataAccessId = default(string), string dataAccessFqdn = default(string), EnvironmentStatus status = default(EnvironmentStatus))
+        public StandardEnvironmentResource(string location, Sku sku, string dataRetentionTime, string id = default(string), string name = default(string), string type = default(string), string tags = default(string), ProvisioningState? provisioningState = default(ProvisioningState?), StorageLimitExceededBehavior? storageLimitExceededBehavior = default(StorageLimitExceededBehavior?), System.Collections.Generic.IList<TimeSeriesIdProperty> partitionKeyProperties = default(System.Collections.Generic.IList<TimeSeriesIdProperty>), System.DateTime? creationTime = default(System.DateTime?), string dataAccessId = default(string), string dataAccessFqdn = default(string), EnvironmentStatus status = default(EnvironmentStatus))
             : base(location, sku, id, name, type, tags)
         {
+            this.ProvisioningState = provisioningState;
             this.DataRetentionTime = dataRetentionTime;
             this.StorageLimitExceededBehavior = storageLimitExceededBehavior;
             this.PartitionKeyProperties = partitionKeyProperties;
+            this.CreationTime = creationTime;
             this.DataAccessId = dataAccessId;
             this.DataAccessFqdn = dataAccessFqdn;
             this.Status = status;
@@ -82,6 +84,8 @@ namespace Microsoft.Azure.Sample.Models
         partial void CustomInit();
 
         /// <summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
+        public ProvisioningState? ProvisioningState {get; private set; }
         /// Gets or sets ISO8601 timespan specifying the minimum number of days
         /// the environment's events will be available for query.
         /// </summary>
@@ -109,6 +113,8 @@ namespace Microsoft.Azure.Sample.Models
 
         /// <summary>
         /// Gets an id used to access the environment data, e.g. to query the
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.creationTime")]
+        public System.DateTime? CreationTime {get; private set; }
         /// environment's events or upload reference data for the environment.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.dataAccessId")]
@@ -128,7 +134,7 @@ namespace Microsoft.Azure.Sample.Models
         /// service.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.status")]
-        public EnvironmentStatus Status { get; set; }
+        public EnvironmentStatus Status {get; private set; }
 
         /// <summary>
         /// Validate the object.
