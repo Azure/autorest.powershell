@@ -16,6 +16,8 @@ import { ModelState } from '../utils/model-state';
 import { DeepPartial } from '@azure-tools/codegen';
 import { SchemaDetails as NewSchemaDetails, getMutability } from '../utils/schema';
 import { Helper } from '../sdk/utility';
+import { getEscapedReservedName } from '../utils/code-namer';
+
 
 type State = ModelState<SdkModel>;
 
@@ -115,13 +117,14 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
 
       // object types.
       if (schema.type === SchemaType.Object) {
+        schema.language.default.name = getEscapedReservedName(schemaName, 'Model');
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
-          name: schemaName,
+          name: getEscapedReservedName(schemaName, 'Model'),
           namespace: pascalCase([serviceNamespace, '.', 'Models']),  // objects have a namespace
-          fullname: schemaName,
+          fullname: getEscapedReservedName(schemaName, 'Model'),
         };
       } else if (schema.type === SchemaType.Any) {
         schema.language.csharp = {
@@ -382,6 +385,22 @@ function addNextPageOperation(model: SdkModel) {
   }
 }
 
+function correctParameterNames(model: SdkModel) {
+  for (const operationGroup of model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      for (const parameter of values(operation.parameters)) {
+        parameter.language.default.name = getEscapedReservedName(parameter.language.default.name, 'Parameter');
+      }
+      if (operation.requests) {
+        // body parameters
+        for (const parameter of values(operation.requests[0].parameters)) {
+          parameter.language.default.name = getEscapedReservedName(parameter.language.default.name, 'Parameter');
+        }
+      }
+    }
+  }
+}
+
 async function nameStuffRight(state: State): Promise<SdkModel> {
   const resolver = new SchemaDefinitionResolver();
   const model = state.model;
@@ -403,6 +422,7 @@ async function nameStuffRight(state: State): Promise<SdkModel> {
   setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace);
   duplicateLRO(model);
   addNextPageOperation(model);
+  correctParameterNames(model);
   return model;
 }
 

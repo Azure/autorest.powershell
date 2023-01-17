@@ -75,7 +75,7 @@ if (constantProperties.length > 0) {-%>
         static <%-model.language.default.name%>()
         {
 <% constantProperties.forEach(function(p) {
-const quote = p.property.schema.choiceType !== 'string' ? '' : '"';
+const quote = p.property.schema.choiceType.type !== 'string' ? '' : '"';
 -%>
             <%-p.name%> = <%-quote + p.property.schema.choices[0].value + quote%>;
 <%});-%>
@@ -135,7 +135,7 @@ switch(p.property.language.default.flavor) {
 <% } else {-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% } -%>
-<% var type = p.property.schema.language.csharp.fullname-%>
+<% var type = p.property.schema.type === 'constant' ? p.property.schema.language.csharp.fullname : project.helper.GetCsharpType(p.property.schema.choiceType.type)-%>
         public static <%-type %> <%-p.name%> {get; private set; }
 <%});-%>
 <%#ToDo support for ShouldValidateChain-%>

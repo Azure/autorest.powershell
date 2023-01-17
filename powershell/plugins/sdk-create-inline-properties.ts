@@ -15,6 +15,7 @@ import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMu
 import { resolveParameterNames } from '../utils/resolve-conflicts';
 import { OperationType } from '../utils/command-operation';
 import { Header, HeaderPropertyType } from '@azure-tools/codemodel-v3';
+import { getEscapedReservedName } from '../utils/code-namer';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -122,7 +123,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
 
       // we are just copying over theirs to ours.
       const inheritedProperty = {
-        name: virtualProperty.name,
+        name: getEscapedReservedName(virtualProperty.name, 'Property'),
         property: virtualProperty.property,
         private: virtualProperty.private,
         nameComponents: virtualProperty.nameComponents,
@@ -194,7 +195,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
       // if the child property is low enough (or it's 'properties'), let's create virtual properties for each one.
       // create a private property for the inlined ones to use.
       const privateProperty = {
-        name: getPascalIdentifier(propertyName),
+        name: getEscapedReservedName(getPascalIdentifier(propertyName), 'Property'),
         propertySchema: schema,
         property,
         nameComponents: [getPascalIdentifier(propertyName)],
@@ -226,7 +227,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
         const read = mutability.read && inlinedProperty.read;
         readonly = readonly || (read && !update && !create);
         virtualProperties.inlined.push({
-          name: proposedName,
+          name: getEscapedReservedName(proposedName, 'Property'),
           property: inlinedProperty.property,
           private: inlinedProperty.private,
           nameComponents: components,
@@ -264,7 +265,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
         readonly = readonly || (read && !update && !create);
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         virtualProperties.inlined.push({
-          name: proposedName,
+          name: getEscapedReservedName(proposedName, 'Property'),
           property: inlinedProperty.property,
           private: inlinedProperty.private,
           nameComponents: components,
