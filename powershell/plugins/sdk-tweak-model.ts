@@ -16,6 +16,7 @@ import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from 
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
 import { isReserved } from '../utils/code-namer';
+import { verbEnum } from '../internal/powershell-declarations';
 
 type State = ModelState<SdkModel>;
 
@@ -67,6 +68,10 @@ function tweakSchema(model: SdkModel) {
       };
     }
     for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
+      if (virtualProperty.name.toLowerCase() === obj.language.default.name.toLowerCase()) {
+        // If the name is same as class name, will add 'Property' suffix
+        virtualProperty.name = virtualProperty.name + 'Property';
+      }
       if (virtualProperty.required && (virtualProperty.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>virtualProperty.property.schema).choices.length === 1)
         || (virtualProperty.property.schema.type === SchemaType.Choice && (<ChoiceSchema>virtualProperty.property.schema).choices.length === 1)) {
         // For choice or seal choice with only one value and required, will not be handled as constant

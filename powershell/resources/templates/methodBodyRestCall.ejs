@@ -210,17 +210,17 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 
             if (<%-method.language.default.failureStatusCodePredicate%>)
             {
-                var ex = new <%-((!method.exceptions || !method.exceptions[0].schema || (method.exceptions[0].schema.language.default.name === 'CloudError')) ? 'Microsoft.Rest.Azure.CloudException' : `${method.exceptions[0].schema.language.default.name}Exception`)%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new <%-project.helper.IsCloudErrorException(method) ? 'Microsoft.Rest.Azure.CloudException' : `${method.exceptions[0].schema.language.default.name}Exception`%>(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
 <%# ToDo: not sure whether there is the case that there is no default response(error). If so, we will need to add support for it -%>
                 try
                 {
 <%# ToDo: Need to add support for primary type -%>
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-<%var errorClass = method.exceptions && method.exceptions[0].schema ? method.exceptions[0].schema.language.default.name : 'CloudError'-%>
+<%var errorClass = !project.helper.IsCloudErrorException(method) ? method.exceptions[0].schema.language.default.name : 'CloudError'-%>
                     <%-errorClass%> _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-errorClass%>>(_responseContent, this.Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
-<% if(!method.exceptions || !method.exceptions[0].schema || (method.exceptions[0].schema.language.default.name === 'CloudError')) { -%>
+<% if(project.helper.IsCloudErrorException(method)) { -%>
                         ex = new Microsoft.Rest.Azure.CloudException(_errorBody.Message);
 <% } -%>
                         ex.Body = _errorBody;
@@ -232,7 +232,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 }
                 ex.Request = new Microsoft.Rest.HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new Microsoft.Rest.HttpResponseMessageWrapper(_httpResponse, _responseContent);
-<% if (!method.exceptions || !method.exceptions[0].schema || method.exceptions[0].schema.language.default.name === 'CloudError') {-%>
+<% if (project.helper.IsCloudErrorException(method)) {-%>
                 if (_httpResponse.Headers.Contains("<%-(method.extensions && method.extensions[requestId]) ?? requestId%>"))
                 {
                     ex.RequestId = _httpResponse.Headers.GetValues("<%-(method.extensions && method.extensions[requestId]) ?? requestId%>").FirstOrDefault();

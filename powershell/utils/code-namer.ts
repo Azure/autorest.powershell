@@ -23,6 +23,13 @@ const reservedWords = new Set([
   'volatile', 'while', 'yield', 'var'
 ]);
 
+export function getEscapedReservedName(name: string, appendValue: string): string {
+  if (isReserved(name)) {
+    return name + appendValue;
+  }
+  return name;
+}
+
 export function isReserved(name: string): boolean {
   return reservedWords.has(name.toLowerCase());
 }

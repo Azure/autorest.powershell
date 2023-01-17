@@ -107,10 +107,6 @@ namespace Microsoft.Azure.Management.Storage.Models
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MaxLength, "Value", 256);
                 }
-                if (this.Value.Length < 0)
-                {
-                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.MinLength, "Value", 0);
-                }
             }
         }
     }
