@@ -291,7 +291,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
   }
 
   for (const property of nonObjectProperties) {
-    const name = getPascalIdentifier(<string>property.language.default.name);
+    const name = getEscapedReservedName(getPascalIdentifier(<string>property.language.default.name), 'Property');
     // this is not something that has properties,
     // so we don't need to do any inlining
     // however, we can add it to our list of virtual properties
