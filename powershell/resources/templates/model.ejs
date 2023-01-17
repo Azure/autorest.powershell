@@ -119,7 +119,7 @@ switch(p.property.language.default.flavor) {
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% } -%>
 <% var type = p.property.schema.language.csharp.fullname-%>
-<%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema)) || p.required ? type : type + '?'-%>
+<%type = (!project.helper.IsValueType(p.property.schema.type) && !project.helper.IsEnum(p.property.schema) && !(p.property.schema.choiceType && project.helper.IsValueType(p.property.schema.choiceType.type))) || p.required ? type : type + '?'-%>
         public <%-type %> <%-p.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% }); -%>
 <%#Below is support for ClassProperties in the model, const properties -%>
