@@ -25,14 +25,14 @@ namespace <%- project.namespace %>
         /// </remarks>
 <% };-%>
 <% if(!method.language.default.pageable?.nextPageOperation) {-%>
-<% method.parameters.filter(p=>p.implementation != 'Client').forEach(function(parameter){-%>
+<% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%= parameter.language.default.description%>
         /// </param>
 <% }); -%>
-<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
+<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
-<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).forEach(function(vp) {-%>
+<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantProperty(p)).forEach(function(vp) {-%>
         /// <param name='<%-vp.property.language.default.name%>'>
         /// <%= vp.property.language.default.description%>
         /// </param>

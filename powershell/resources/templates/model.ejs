@@ -38,7 +38,7 @@ namespace <%- project.namespace %>.Models
         /// <summary>
         /// Initializes a new instance of the <%=model.language.default.name%> class.
         /// </summary>
-<%project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties).forEach(function(p) {-%>
+<%project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties).filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
 <%
 var additionInfo = '';
 if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')

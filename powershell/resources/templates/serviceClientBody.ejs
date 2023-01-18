@@ -118,7 +118,7 @@ if (parameters.length > 0) {-%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
         /// </summary>
-<%parameters.forEach(function(parameter){-%>
+<%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
         /// <param name='<%-project.helper.CamelCase(parameter.language.default.name)%>'>
         /// Required. <%-parameter.language.default.description%>
         /// </param>
@@ -151,7 +151,7 @@ if (parameters.length > 0) {-%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
         /// </summary>
-<%parameters.forEach(function(parameter) {-%>
+<%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
         /// Required. <%-parameter.language.default.description%>
         /// </param>
@@ -185,7 +185,7 @@ if (parameters.length > 0) {-%>
         /// <summary>
         /// Initializes a new instance of the <%-project.model.info.title%> class.
         /// </summary>
-<%parameters.forEach(function(parameter) {-%>
+<%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
         /// Required. <%-parameter.language.default.description%>
         /// </param>
@@ -225,7 +225,7 @@ if (parameters.length > 0) {-%>
         /// <param name='baseUri'>
         /// Optional. The base URI of the service.
         /// </param>
-<%parameters.forEach(function(parameter) {-%>
+<%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
         /// Required. <%-parameter.language.default.description%>
         /// </param>
@@ -265,7 +265,7 @@ if (parameters.length > 0) {-%>
         /// <param name='baseUri'>
         /// Optional. The base URI of the service.
         /// </param>
-<%parameters.forEach(function(parameter) {-%>
+<%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
         /// Required. <%-parameter.language.default.description%>
         /// </param>
