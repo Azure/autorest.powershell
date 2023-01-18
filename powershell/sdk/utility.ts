@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation, NumberSchema } from '@azure-tools/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
@@ -19,9 +19,16 @@ export class Helper {
     return false;
   }
 
-  public GetCsharpType(type: string): string {
+  public GetCsharpType(schema: Schema): string {
+    let type = <string>schema.type;
+    if (schema.type === SchemaType.Integer) {
+      type = type + (<NumberSchema>schema).precision;
+    }
+
     const typeMap = new Map<string, string>([
       ['integer', 'int'],
+      ['integer32', 'int'],
+      ['integer64', 'long'],
       ['number', 'double'],
       ['boolean', 'bool'],
       ['string', 'string'],
@@ -323,7 +330,7 @@ export class Helper {
     const parameters = [...nonBodyParameters, ...bodyParameters].filter(each => this.IsConstantParameter(each));
     for (const parameter of values(parameters)) {
       const quote = (<ChoiceSchema>parameter.schema).choiceType.type === SchemaType.String ? '"' : '';
-      const csharpType = this.GetCsharpType((<ChoiceSchema>(parameter.schema)).choiceType.type);
+      const csharpType = this.GetCsharpType((<ChoiceSchema>(parameter.schema)).choiceType);
       result.push(`            ${csharpType} ${parameter.language.default.name} = ${quote}${(<ChoiceSchema>parameter.schema).choices[0].value}${quote};`);
     }
     return result.join('\r\n');

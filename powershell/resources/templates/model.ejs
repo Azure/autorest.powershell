@@ -135,7 +135,7 @@ switch(p.property.language.default.flavor) {
 <% } else {-%>
         [Newtonsoft.Json.JsonProperty(PropertyName = "<%-p.serializedName%>")]
 <% } -%>
-<% var type = p.property.schema.type === 'constant' ? p.property.schema.language.csharp.fullname : project.helper.GetCsharpType(p.property.schema.choiceType.type)-%>
+<% var type = p.property.schema.type === 'constant' ? p.property.schema.language.csharp.fullname : project.helper.GetCsharpType(p.property.schema.choiceType)-%>
         public static <%-type %> <%-p.name%> {get; private set; }
 <%});-%>
 <%#ToDo support for ShouldValidateChain-%>

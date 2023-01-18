@@ -65,20 +65,6 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
   const helper = new Helper();
-  const typeMap = new Map<string, string>([
-    ['integer', 'int'],
-    ['number', 'double'],
-    ['boolean', 'bool'],
-    ['string', 'string'],
-    ['unixtime', 'System.DateTime'],
-    ['credential', 'string'],
-    ['byte-array', 'byte[]'],
-    ['duration', 'System.TimeSpan'],
-    ['uuid', 'System.Guid'],
-    ['date-time', 'System.DateTime'],
-    ['date', 'System.DateTime'],
-    ['binary', 'string']
-  ]);
 
   for (const group of values(schemaGroups)) {
     for (const schema of group) {
@@ -140,7 +126,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
           elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
         }
-        const type = typeMap.get(elementType.type);
+        const type = helper.GetCsharpType(elementType);
         const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) ? '?' : '';
         schema.language.csharp = {
           ...details,
@@ -178,7 +164,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
           name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Support']),
-          fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? getPascalIdentifier(schema.language.default.name) : typeMap.get(choiceSchema.choiceType.type),
+          fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? getPascalIdentifier(schema.language.default.name) : helper.GetCsharpType(choiceSchema.choiceType),
           enum: {
             ...schema.language.default.enum,
             name: getPascalIdentifier(schema.language.default.name),
@@ -196,7 +182,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         const schemaDetails = <SchemaDetails>{
           ...details,
           name: schemaName,
-          fullname: typeMap.get(schema.type)
+          fullname: helper.GetCsharpType(schema)
         };
         // add jonconverters for some types
         if (schema.type === SchemaType.Date) {
@@ -217,11 +203,11 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
         }
 
-        let valueType = typeMap.get(elementType.type) ? typeMap.get(elementType.type) : rawElementType.language.default.name;
+        let valueType = helper.GetCsharpType(elementType) ? helper.GetCsharpType(elementType) : rawElementType.language.default.name;
         if (rawElementType.type === 'any') {
           valueType = 'object';
         }
-        if ((typeMap.get(elementType.type) && valueType !== 'string') || helper.IsEnum(rawElementType)) {
+        if ((helper.GetCsharpType(elementType) && valueType !== 'string') || helper.IsEnum(rawElementType)) {
           valueType += '?';
         }
         schema.language.csharp = {
