@@ -82,7 +82,7 @@ namespace Microsoft.Azure.Sample
             // Construct URL
             var _baseUrl = this.Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "subscriptions/resourceGroup/{resourceGroup}").ToString();
-            _url = _url.Replace("{resourceGroup}", System.Uri.EscapeDataString(Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(this.Client.ResourceGroup, this.Client.SerializationSettings).Trim('"')));
+            _url = _url.Replace("{resourceGroup}", System.Uri.EscapeDataString(this.Client.ResourceGroup));
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
             if (_queryParameters.Count > 0)
             {

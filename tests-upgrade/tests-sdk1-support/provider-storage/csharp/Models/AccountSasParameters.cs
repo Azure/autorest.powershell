@@ -52,12 +52,12 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// becomes valid.</param>
         /// <param name="keyToSign">The key to sign the account SAS token
         /// with.</param>
-        public AccountSasParameters(string services, string resourceTypes, string permissions, System.DateTime sharedAccessExpiryTime, string iPAddressOrRange = default(string), HttpProtocol? protocols = default(HttpProtocol?), System.DateTime? sharedAccessStartTime = default(System.DateTime?), string keyToSign = default(string))
+        public AccountSasParameters(string services, string resourceTypes, string permissions, System.DateTime sharedAccessExpiryTime, string ipAddressOrRange = default(string), HttpProtocol? protocols = default(HttpProtocol?), System.DateTime? sharedAccessStartTime = default(System.DateTime?), string keyToSign = default(string))
         {
             this.Services = services;
             this.ResourceTypes = resourceTypes;
             this.Permissions = permissions;
-            this.IPAddressOrRange = iPAddressOrRange;
+            this.IPAddressOrRange = ipAddressOrRange;
             this.Protocols = protocols;
             this.SharedAccessStartTime = sharedAccessStartTime;
             this.SharedAccessExpiryTime = sharedAccessExpiryTime;
