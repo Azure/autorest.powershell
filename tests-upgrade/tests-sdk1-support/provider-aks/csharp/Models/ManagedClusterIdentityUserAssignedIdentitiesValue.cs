@@ -12,26 +12,26 @@ namespace Microsoft.Azure.Management.ContainerService.Models
 {
     using System.Linq;
 
-    public partial class ManagedClusterIdentityUserAssignedIdentitiesValue
+    public partial class ManagedServiceIdentityUserAssignedIdentitiesValue
     {
         /// <summary>
         /// Initializes a new instance of the
-        /// ManagedClusterIdentityUserAssignedIdentitiesValue class.
+        /// ManagedServiceIdentityUserAssignedIdentitiesValue class.
         /// </summary>
-        public ManagedClusterIdentityUserAssignedIdentitiesValue()
+        public ManagedServiceIdentityUserAssignedIdentitiesValue()
         {
             CustomInit();
         }
 
         /// <summary>
         /// Initializes a new instance of the
-        /// ManagedClusterIdentityUserAssignedIdentitiesValue class.
+        /// ManagedServiceIdentityUserAssignedIdentitiesValue class.
         /// </summary>
         /// <param name="principalId">The principal id of user assigned
         /// identity.</param>
         /// <param name="clientId">The client id of user assigned
         /// identity.</param>
-        public ManagedClusterIdentityUserAssignedIdentitiesValue(string principalId = default(string), string clientId = default(string))
+        public ManagedServiceIdentityUserAssignedIdentitiesValue(string principalId = default(string), string clientId = default(string))
         {
             this.PrincipalId = principalId;
             this.ClientId = clientId;

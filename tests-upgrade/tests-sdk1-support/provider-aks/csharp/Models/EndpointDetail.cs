@@ -35,7 +35,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="description">Description of the detail</param>
         public EndpointDetail(string ipAddress = default(string), int? port = default(int?), string protocol = default(string), string description = default(string))
         {
-            this.IpAddress = ipAddress;
+            this.IPAddress = ipAddress;
             this.Port = port;
             this.Protocol = protocol;
             this.Description = description;
@@ -51,7 +51,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets an IP Address that Domain Name currently resolves to.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "ipAddress")]
-        public string IpAddress { get; set; }
+        public string IPAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the port an endpoint is connected to.

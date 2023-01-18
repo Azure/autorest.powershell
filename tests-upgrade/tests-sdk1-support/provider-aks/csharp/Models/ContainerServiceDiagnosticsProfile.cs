@@ -34,7 +34,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// container service VMs.</param>
         public ContainerServiceDiagnosticsProfile(ContainerServiceVMDiagnostics vmDiagnostics)
         {
-            this.VmDiagnostics = vmDiagnostics;
+            this.VMDiagnostics = vmDiagnostics;
             CustomInit();
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets profile for diagnostics on the container service VMs.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vmDiagnostics")]
-        public ContainerServiceVMDiagnostics VmDiagnostics { get; set; }
+        public ContainerServiceVMDiagnostics VMDiagnostics { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -57,13 +57,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.VmDiagnostics == null)
+            if (this.VMDiagnostics == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "VmDiagnostics");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "VMDiagnostics");
             }
-            if (this.VmDiagnostics != null)
+            if (this.VMDiagnostics != null)
             {
-                this.VmDiagnostics.Validate();
+                this.VMDiagnostics.Validate();
             }
         }
     }

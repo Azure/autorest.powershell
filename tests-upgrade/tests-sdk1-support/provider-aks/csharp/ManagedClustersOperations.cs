@@ -915,7 +915,6 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        [System.Obsolete("This operation is deprecated. Please do not use it any longer.")]
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<ManagedClusterAccessProfile>> GetAccessProfileWithHttpMessagesAsync(string resourceGroupName, string resourceName, string roleName, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (this.Client.ApiVersion == null)
@@ -2849,6 +2848,14 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<ManagedCluster>> BeginCreateOrUpdateWithHttpMessagesAsync(string resourceGroupName, string resourceName, ManagedCluster parameters, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (parameters == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
+            }
+            if (parameters != null)
+            {
+                parameters.Validate();
+            }
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -2898,14 +2905,6 @@ namespace Microsoft.Azure.Management.ContainerService
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "resourceName", "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-_a-zA-Z0-9]{0,61}[a-zA-Z0-9]$");
                 }
-            }
-            if (parameters == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
-            }
-            if (parameters != null)
-            {
-                parameters.Validate();
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
@@ -3115,6 +3114,10 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<ManagedCluster>> BeginUpdateTagsWithHttpMessagesAsync(string resourceGroupName, string resourceName, TagsObject parameters, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (parameters == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
+            }
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -3164,10 +3167,6 @@ namespace Microsoft.Azure.Management.ContainerService
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "resourceName", "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-_a-zA-Z0-9]{0,61}[a-zA-Z0-9]$");
                 }
-            }
-            if (parameters == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
@@ -3569,6 +3568,14 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse> BeginResetServicePrincipalProfileWithHttpMessagesAsync(string resourceGroupName, string resourceName, ManagedClusterServicePrincipalProfile parameters, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (parameters == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
+            }
+            if (parameters != null)
+            {
+                parameters.Validate();
+            }
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -3618,14 +3625,6 @@ namespace Microsoft.Azure.Management.ContainerService
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "resourceName", "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-_a-zA-Z0-9]{0,61}[a-zA-Z0-9]$");
                 }
-            }
-            if (parameters == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
-            }
-            if (parameters != null)
-            {
-                parameters.Validate();
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
@@ -3796,6 +3795,11 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse> BeginResetAADProfileWithHttpMessagesAsync(string resourceGroupName, string resourceName, ManagedClusterAADProfile parameters, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (parameters == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
+            }
+
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -3845,10 +3849,6 @@ namespace Microsoft.Azure.Management.ContainerService
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "resourceName", "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-_a-zA-Z0-9]{0,61}[a-zA-Z0-9]$");
                 }
-            }
-            if (parameters == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;
@@ -4894,6 +4894,14 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<RunCommandResult>> BeginRunCommandWithHttpMessagesAsync(string resourceGroupName, string resourceName, RunCommandRequest requestPayload, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (requestPayload == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "requestPayload");
+            }
+            if (requestPayload != null)
+            {
+                requestPayload.Validate();
+            }
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -4943,14 +4951,6 @@ namespace Microsoft.Azure.Management.ContainerService
                 {
                     throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.Pattern, "resourceName", "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-_a-zA-Z0-9]{0,61}[a-zA-Z0-9]$");
                 }
-            }
-            if (requestPayload == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "requestPayload");
-            }
-            if (requestPayload != null)
-            {
-                requestPayload.Validate();
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;

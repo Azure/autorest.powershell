@@ -33,26 +33,26 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Initializes a new instance of the ManagedClusterAADProfile class.
         /// </summary>
         /// <param name="managed">Whether to enable managed AAD.</param>
-        /// <param name="enableAzureRBAC">Whether to enable Azure RBAC for
+        /// <param name="enableAzureRbac">Whether to enable Azure RBAC for
         /// Kubernetes authorization.</param>
         /// <param name="adminGroupObjectIDs">The list of AAD group object IDs
         /// that will have admin role of the cluster.</param>
-        /// <param name="clientAppID">The client AAD application ID.</param>
-        /// <param name="serverAppID">The server AAD application ID.</param>
+        /// <param name="clientAppId">The client AAD application ID.</param>
+        /// <param name="serverAppId">The server AAD application ID.</param>
         /// <param name="serverAppSecret">The server AAD application
         /// secret.</param>
-        /// <param name="tenantID">The AAD tenant ID to use for authentication.
+        /// <param name="tenantId">The AAD tenant ID to use for authentication.
         /// If not specified, will use the tenant of the deployment
         /// subscription.</param>
-        public ManagedClusterAADProfile(bool? managed = default(bool?), bool? enableAzureRBAC = default(bool?), System.Collections.Generic.IList<string> adminGroupObjectIDs = default(System.Collections.Generic.IList<string>), string clientAppID = default(string), string serverAppID = default(string), string serverAppSecret = default(string), string tenantID = default(string))
+        public ManagedClusterAADProfile(bool? managed = default(bool?), bool? enableAzureRbac = default(bool?), System.Collections.Generic.IList<string> adminGroupObjectIDs = default(System.Collections.Generic.IList<string>), string clientAppId = default(string), string serverAppId = default(string), string serverAppSecret = default(string), string tenantId = default(string))
         {
             this.Managed = managed;
-            this.EnableAzureRBAC = enableAzureRBAC;
+            this.EnableAzureRbac = enableAzureRbac;
             this.AdminGroupObjectIDs = adminGroupObjectIDs;
-            this.ClientAppID = clientAppID;
-            this.ServerAppID = serverAppID;
+            this.ClientAppId = clientAppId;
+            this.ServerAppId = serverAppId;
             this.ServerAppSecret = serverAppSecret;
-            this.TenantID = tenantID;
+            this.TenantId = tenantId;
             CustomInit();
         }
 
@@ -72,7 +72,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// authorization.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "enableAzureRBAC")]
-        public bool? EnableAzureRBAC { get; set; }
+        public bool? EnableAzureRbac { get; set; }
 
         /// <summary>
         /// Gets or sets the list of AAD group object IDs that will have admin
@@ -85,13 +85,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets the client AAD application ID.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "clientAppID")]
-        public string ClientAppID { get; set; }
+        public string ClientAppId { get; set; }
 
         /// <summary>
         /// Gets or sets the server AAD application ID.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "serverAppID")]
-        public string ServerAppID { get; set; }
+        public string ServerAppId { get; set; }
 
         /// <summary>
         /// Gets or sets the server AAD application secret.
@@ -104,7 +104,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// specified, will use the tenant of the deployment subscription.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "tenantID")]
-        public string TenantID { get; set; }
+        public string TenantId { get; set; }
 
     }
 }

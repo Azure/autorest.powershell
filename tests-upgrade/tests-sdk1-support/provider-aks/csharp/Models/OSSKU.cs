@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
     /// <summary>
     /// Defines values for OSSKU.
     /// </summary>
-    public static class OSSKU
+    public static class Ossku
     {
         public const string Ubuntu = "Ubuntu";
         public const string CBLMariner = "CBLMariner";

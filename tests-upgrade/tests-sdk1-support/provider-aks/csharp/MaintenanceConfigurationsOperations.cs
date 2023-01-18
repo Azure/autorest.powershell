@@ -551,6 +551,10 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </return>
         public async System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<MaintenanceConfiguration>> CreateOrUpdateWithHttpMessagesAsync(string resourceGroupName, string resourceName, string configName, MaintenanceConfiguration parameters, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (parameters == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
+            }
             if (this.Client.ApiVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "this.Client.ApiVersion");
@@ -604,10 +608,6 @@ namespace Microsoft.Azure.Management.ContainerService
             if (configName == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "configName");
-            }
-            if (parameters == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "parameters");
             }
             // Tracing
             bool _shouldTrace = Microsoft.Rest.ServiceClientTracing.IsEnabled;

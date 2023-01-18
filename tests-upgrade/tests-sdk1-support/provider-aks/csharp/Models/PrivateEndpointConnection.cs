@@ -41,13 +41,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// 'Failed'</param>
         /// <param name="privateEndpoint">The resource of private
         /// endpoint.</param>
-        public PrivateEndpointConnection(PrivateLinkServiceConnectionState privateLinkServiceConnectionState, string id = default(string), string name = default(string), string type = default(string), string provisioningState = default(string), PrivateEndpoint privateEndpoint = default(PrivateEndpoint))
+        public PrivateEndpointConnection(string id = default(string), string name = default(string), string type = default(string), PrivateEndpoint privateEndpoint = default(PrivateEndpoint), string provisioningState = default(string), PrivateLinkServiceConnectionState privateLinkServiceConnectionState = default(PrivateLinkServiceConnectionState))
         {
             this.Id = id;
             this.Name = name;
             this.Type = type;
+            this.PrivateEndpoint = privateEndpoint;            
             this.ProvisioningState = provisioningState;
-            this.PrivateEndpoint = privateEndpoint;
             this.PrivateLinkServiceConnectionState = privateLinkServiceConnectionState;
             CustomInit();
         }
@@ -76,6 +76,12 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string Type { get; private set; }
 
         /// <summary>
+        /// Gets or sets the resource of private endpoint.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.privateEndpoint")]
+        public PrivateEndpoint PrivateEndpoint { get; set; }
+
+        /// <summary>
         /// Gets the current provisioning state. Possible values include:
         /// 'Succeeded', 'Creating', 'Deleting', 'Failed'
         /// </summary>
@@ -83,30 +89,10 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string ProvisioningState { get; private set; }
 
         /// <summary>
-        /// Gets or sets the resource of private endpoint.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.privateEndpoint")]
-        public PrivateEndpoint PrivateEndpoint { get; set; }
-
-        /// <summary>
         /// Gets or sets a collection of information about the state of the
         /// connection between service consumer and provider.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.privateLinkServiceConnectionState")]
         public PrivateLinkServiceConnectionState PrivateLinkServiceConnectionState { get; set; }
-
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-            if (this.PrivateLinkServiceConnectionState == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "PrivateLinkServiceConnectionState");
-            }
-        }
     }
 }

@@ -55,15 +55,15 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Benefits](https://azure.microsoft.com/pricing/hybrid-benefit/faq/)
         /// for more details. Possible values include: 'None',
         /// 'Windows_Server'</param>
-        /// <param name="enableCSIProxy">Whether to enable CSI proxy.</param>
+        /// <param name="enableCsiProxy">Whether to enable CSI proxy.</param>
         /// <param name="gmsaProfile">The Windows gMSA Profile in the Managed
         /// Cluster.</param>
-        public ManagedClusterWindowsProfile(string adminUsername, string adminPassword = default(string), string licenseType = default(string), bool? enableCSIProxy = default(bool?), WindowsGmsaProfile gmsaProfile = default(WindowsGmsaProfile))
+        public ManagedClusterWindowsProfile(string adminUsername, string adminPassword = default(string), string licenseType = default(string), bool? enableCsiProxy = default(bool?), WindowsGmsaProfile gmsaProfile = default(WindowsGmsaProfile))
         {
             this.AdminUsername = adminUsername;
             this.AdminPassword = adminPassword;
             this.LicenseType = licenseType;
-            this.EnableCSIProxy = enableCSIProxy;
+            this.EnableCsiProxy = enableCsiProxy;
             this.GmsaProfile = gmsaProfile;
             CustomInit();
         }
@@ -122,7 +122,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// repo](https://github.com/kubernetes-csi/csi-proxy).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "enableCSIProxy")]
-        public bool? EnableCSIProxy { get; set; }
+        public bool? EnableCsiProxy { get; set; }
 
         /// <summary>
         /// Gets or sets the Windows gMSA Profile in the Managed Cluster.

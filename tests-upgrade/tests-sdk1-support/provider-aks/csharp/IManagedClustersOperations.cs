@@ -144,7 +144,6 @@ namespace Microsoft.Azure.Management.ContainerService
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        [System.Obsolete("This operation is deprecated. Please do not use it any longer.")]
         System.Threading.Tasks.Task<Microsoft.Rest.Azure.AzureOperationResponse<ManagedClusterAccessProfile>> GetAccessProfileWithHttpMessagesAsync(string resourceGroupName, string resourceName, string roleName, System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>> customHeaders = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
         /// <summary>
         /// Lists the admin credentials of a managed cluster.

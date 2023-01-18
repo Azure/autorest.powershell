@@ -34,16 +34,16 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="groupId">The group ID of the resource.</param>
         /// <param name="requiredMembers">The RequiredMembers of the
         /// resource</param>
-        /// <param name="privateLinkServiceID">The private link service ID of
+        /// <param name="privateLinkServiceId">The private link service ID of
         /// the resource, this field is exposed only to NRP internally.</param>
-        public PrivateLinkResource(string id = default(string), string name = default(string), string type = default(string), string groupId = default(string), System.Collections.Generic.IList<string> requiredMembers = default(System.Collections.Generic.IList<string>), string privateLinkServiceID = default(string))
+        public PrivateLinkResource(string id = default(string), string name = default(string), string type = default(string), string groupId = default(string), System.Collections.Generic.IList<string> requiredMembers = default(System.Collections.Generic.IList<string>), string privateLinkServiceId = default(string))
         {
             this.Id = id;
             this.Name = name;
             this.Type = type;
             this.GroupId = groupId;
             this.RequiredMembers = requiredMembers;
-            this.PrivateLinkServiceID = privateLinkServiceID;
+            this.PrivateLinkServiceId = privateLinkServiceId;
             CustomInit();
         }
 
@@ -87,7 +87,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// exposed only to NRP internally.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "privateLinkServiceID")]
-        public string PrivateLinkServiceID { get; private set; }
+        public string PrivateLinkServiceId { get; private set; }
 
     }
 }

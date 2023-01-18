@@ -30,20 +30,20 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Initializes a new instance of the ManagedClusterStorageProfile
         /// class.
         /// </summary>
-        /// <param name="diskCSIDriver">AzureDisk CSI Driver settings for the
+        /// <param name="diskCsiDriver">AzureDisk CSI Driver settings for the
         /// storage profile.</param>
-        /// <param name="fileCSIDriver">AzureFile CSI Driver settings for the
+        /// <param name="fileCsiDriver">AzureFile CSI Driver settings for the
         /// storage profile.</param>
         /// <param name="snapshotController">Snapshot Controller settings for
         /// the storage profile.</param>
-        /// <param name="blobCSIDriver">AzureBlob CSI Driver settings for the
+        /// <param name="blobCsiDriver">AzureBlob CSI Driver settings for the
         /// storage profile.</param>
-        public ManagedClusterStorageProfile(ManagedClusterStorageProfileDiskCSIDriver diskCSIDriver = default(ManagedClusterStorageProfileDiskCSIDriver), ManagedClusterStorageProfileFileCSIDriver fileCSIDriver = default(ManagedClusterStorageProfileFileCSIDriver), ManagedClusterStorageProfileSnapshotController snapshotController = default(ManagedClusterStorageProfileSnapshotController), ManagedClusterStorageProfileBlobCSIDriver blobCSIDriver = default(ManagedClusterStorageProfileBlobCSIDriver))
+        public ManagedClusterStorageProfile(ManagedClusterStorageProfileDiskCSIDriver diskCsiDriver = default(ManagedClusterStorageProfileDiskCSIDriver), ManagedClusterStorageProfileFileCSIDriver fileCsiDriver = default(ManagedClusterStorageProfileFileCSIDriver), ManagedClusterStorageProfileSnapshotController snapshotController = default(ManagedClusterStorageProfileSnapshotController), ManagedClusterStorageProfileBlobCSIDriver blobCsiDriver = default(ManagedClusterStorageProfileBlobCSIDriver))
         {
-            this.DiskCSIDriver = diskCSIDriver;
-            this.FileCSIDriver = fileCSIDriver;
+            this.DiskCsiDriver = diskCsiDriver;
+            this.FileCsiDriver = fileCsiDriver;
             this.SnapshotController = snapshotController;
-            this.BlobCSIDriver = blobCSIDriver;
+            this.BlobCsiDriver = blobCsiDriver;
             CustomInit();
         }
 
@@ -56,13 +56,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets azureDisk CSI Driver settings for the storage profile.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "diskCSIDriver")]
-        public ManagedClusterStorageProfileDiskCSIDriver DiskCSIDriver { get; set; }
+        public ManagedClusterStorageProfileDiskCSIDriver DiskCsiDriver { get; set; }
 
         /// <summary>
         /// Gets or sets azureFile CSI Driver settings for the storage profile.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "fileCSIDriver")]
-        public ManagedClusterStorageProfileFileCSIDriver FileCSIDriver { get; set; }
+        public ManagedClusterStorageProfileFileCSIDriver FileCsiDriver { get; set; }
 
         /// <summary>
         /// Gets or sets snapshot Controller settings for the storage profile.
@@ -74,7 +74,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets azureBlob CSI Driver settings for the storage profile.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "blobCSIDriver")]
-        public ManagedClusterStorageProfileBlobCSIDriver BlobCSIDriver { get; set; }
+        public ManagedClusterStorageProfileBlobCSIDriver BlobCsiDriver { get; set; }
 
     }
 }

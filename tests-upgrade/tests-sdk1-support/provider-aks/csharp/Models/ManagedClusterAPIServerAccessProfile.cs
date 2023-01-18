@@ -34,18 +34,18 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// the Kubernetes API server.</param>
         /// <param name="enablePrivateCluster">Whether to create the cluster as
         /// a private cluster or not.</param>
-        /// <param name="privateDNSZone">The private DNS zone mode for the
+        /// <param name="privateDnsZone">The private DNS zone mode for the
         /// cluster.</param>
-        /// <param name="enablePrivateClusterPublicFQDN">Whether to create
+        /// <param name="enablePrivateClusterPublicFqdn">Whether to create
         /// additional public FQDN for private cluster or not.</param>
         /// <param name="disableRunCommand">Whether to disable run command for
         /// the cluster or not.</param>
-        public ManagedClusterAPIServerAccessProfile(System.Collections.Generic.IList<string> authorizedIPRanges = default(System.Collections.Generic.IList<string>), bool? enablePrivateCluster = default(bool?), string privateDNSZone = default(string), bool? enablePrivateClusterPublicFQDN = default(bool?), bool? disableRunCommand = default(bool?))
+        public ManagedClusterAPIServerAccessProfile(System.Collections.Generic.IList<string> authorizedIPRanges = default(System.Collections.Generic.IList<string>), bool? enablePrivateCluster = default(bool?), string privateDnsZone = default(string), bool? enablePrivateClusterPublicFqdn = default(bool?), bool? disableRunCommand = default(bool?))
         {
             this.AuthorizedIPRanges = authorizedIPRanges;
             this.EnablePrivateCluster = enablePrivateCluster;
-            this.PrivateDNSZone = privateDNSZone;
-            this.EnablePrivateClusterPublicFQDN = enablePrivateClusterPublicFQDN;
+            this.PrivateDnsZone = privateDnsZone;
+            this.EnablePrivateClusterPublicFqdn = enablePrivateClusterPublicFqdn;
             this.DisableRunCommand = disableRunCommand;
             CustomInit();
         }
@@ -89,14 +89,14 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Allowed values are 'system' and 'none'.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "privateDNSZone")]
-        public string PrivateDNSZone { get; set; }
+        public string PrivateDnsZone { get; set; }
 
         /// <summary>
         /// Gets or sets whether to create additional public FQDN for private
         /// cluster or not.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "enablePrivateClusterPublicFQDN")]
-        public bool? EnablePrivateClusterPublicFQDN { get; set; }
+        public bool? EnablePrivateClusterPublicFqdn { get; set; }
 
         /// <summary>
         /// Gets or sets whether to disable run command for the cluster or not.

@@ -15,19 +15,19 @@ namespace Microsoft.Azure.Management.ContainerService.Models
     /// <summary>
     /// Cluster HTTP proxy configuration.
     /// </summary>
-    public partial class ManagedClusterHTTPProxyConfig
+    public partial class ManagedClusterHttpProxyConfig
     {
         /// <summary>
-        /// Initializes a new instance of the ManagedClusterHTTPProxyConfig
+        /// Initializes a new instance of the ManagedClusterHttpProxyConfig
         /// class.
         /// </summary>
-        public ManagedClusterHTTPProxyConfig()
+        public ManagedClusterHttpProxyConfig()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the ManagedClusterHTTPProxyConfig
+        /// Initializes a new instance of the ManagedClusterHttpProxyConfig
         /// class.
         /// </summary>
         /// <param name="httpProxy">The HTTP proxy server endpoint to
@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// proxy.</param>
         /// <param name="trustedCa">Alternative CA cert to use for connecting
         /// to proxy servers.</param>
-        public ManagedClusterHTTPProxyConfig(string httpProxy = default(string), string httpsProxy = default(string), System.Collections.Generic.IList<string> noProxy = default(System.Collections.Generic.IList<string>), string trustedCa = default(string))
+        public ManagedClusterHttpProxyConfig(string httpProxy = default(string), string httpsProxy = default(string), System.Collections.Generic.IList<string> noProxy = default(System.Collections.Generic.IList<string>), string trustedCa = default(string))
         {
             this.HttpProxy = httpProxy;
             this.HttpsProxy = httpsProxy;

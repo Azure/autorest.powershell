@@ -15,27 +15,27 @@ namespace Microsoft.Azure.Management.ContainerService.Models
     /// <summary>
     /// The OIDC issuer profile of the Managed Cluster.
     /// </summary>
-    public partial class ManagedClusterOIDCIssuerProfile
+    public partial class ManagedClusterOidcIssuerProfile
     {
         /// <summary>
-        /// Initializes a new instance of the ManagedClusterOIDCIssuerProfile
+        /// Initializes a new instance of the ManagedClusterOidcIssuerProfile
         /// class.
         /// </summary>
-        public ManagedClusterOIDCIssuerProfile()
+        public ManagedClusterOidcIssuerProfile()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the ManagedClusterOIDCIssuerProfile
+        /// Initializes a new instance of the ManagedClusterOidcIssuerProfile
         /// class.
         /// </summary>
-        /// <param name="issuerURL">The OIDC issuer url of the Managed
+        /// <param name="issuerUrl">The OIDC issuer url of the Managed
         /// Cluster.</param>
         /// <param name="enabled">Whether the OIDC issuer is enabled.</param>
-        public ManagedClusterOIDCIssuerProfile(string issuerURL = default(string), bool? enabled = default(bool?))
+        public ManagedClusterOidcIssuerProfile(string issuerUrl = default(string), bool? enabled = default(bool?))
         {
-            this.IssuerURL = issuerURL;
+            this.IssuerUrl = issuerUrl;
             this.Enabled = enabled;
             CustomInit();
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets the OIDC issuer url of the Managed Cluster.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "issuerURL")]
-        public string IssuerURL { get; private set; }
+        public string IssuerUrl { get; private set; }
 
         /// <summary>
         /// Gets or sets whether the OIDC issuer is enabled.

@@ -45,15 +45,15 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// 'Temporary'</param>
         /// <param name="workloadRuntime">Possible values include:
         /// 'OCIContainer', 'WasmWasi'</param>
-        /// <param name="vnetSubnetID">The ID of the subnet which agent pool
+        /// <param name="vnetSubnetId">The ID of the subnet which agent pool
         /// nodes and optionally pods will join on startup.</param>
-        /// <param name="podSubnetID">The ID of the subnet which pods will join
+        /// <param name="podSubnetId">The ID of the subnet which pods will join
         /// when launched.</param>
         /// <param name="maxPods">The maximum number of pods that can run on a
         /// node.</param>
         /// <param name="osType">Possible values include: 'Linux',
         /// 'Windows'</param>
-        /// <param name="osSKU">Possible values include: 'Ubuntu',
+        /// <param name="osSku">Possible values include: 'Ubuntu',
         /// 'CBLMariner', 'Windows2019', 'Windows2022'</param>
         /// <param name="maxCount">The maximum number of nodes for
         /// auto-scaling</param>
@@ -63,7 +63,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// auto-scaler</param>
         /// <param name="scaleDownMode">The scale down mode to use when scaling
         /// the Agent Pool.</param>
-        /// <param name="agentPoolType">Possible values include:
+        /// <param name="propertiesType">Possible values include:
         /// 'VirtualMachineScaleSets', 'AvailabilitySet'</param>
         /// <param name="mode">Possible values include: 'System',
         /// 'User'</param>
@@ -79,11 +79,11 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="powerState">Whether the Agent Pool is running or
         /// stopped.</param>
         /// <param name="availabilityZones">The list of Availability zones to
-        /// use for nodes. This can only be specified if the AgentPoolType
+        /// use for nodes. This can only be specified if the PropertiesType
         /// property is 'VirtualMachineScaleSets'.</param>
         /// <param name="enableNodePublicIP">Whether each node is allocated its
         /// own public IP.</param>
-        /// <param name="nodePublicIPPrefixID">The public IP prefix ID which VM
+        /// <param name="nodePublicIPPrefixId">The public IP prefix ID which VM
         /// nodes should use IPs from.</param>
         /// <param name="scaleSetPriority">The Virtual Machine Scale Set
         /// priority. If not specified, the default is 'Regular'. Possible
@@ -100,7 +100,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// nodes in agent pool.</param>
         /// <param name="nodeTaints">The taints added to new nodes during node
         /// pool create and scale. For example, key=value:NoSchedule.</param>
-        /// <param name="proximityPlacementGroupID">The ID for Proximity
+        /// <param name="proximityPlacementGroupId">The ID for Proximity
         /// Placement Group.</param>
         /// <param name="kubeletConfig">The Kubelet configuration on the agent
         /// pool nodes.</param>
@@ -108,61 +108,61 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// nodes.</param>
         /// <param name="enableEncryptionAtHost">Whether to enable host based
         /// OS and data drive encryption.</param>
-        /// <param name="enableUltraSSD">Whether to enable UltraSSD</param>
-        /// <param name="enableFIPS">Whether to use a FIPS-enabled OS.</param>
+        /// <param name="enableUltraSsd">Whether to enable UltraSSD</param>
+        /// <param name="enableFips">Whether to use a FIPS-enabled OS.</param>
         /// <param name="gpuInstanceProfile">GPUInstanceProfile to be used to
         /// specify GPU MIG instance profile for supported GPU VM SKU. Possible
         /// values include: 'MIG1g', 'MIG2g', 'MIG3g', 'MIG4g', 'MIG7g'</param>
         /// <param name="creationData">CreationData to be used to specify the
         /// source Snapshot ID if the node pool will be created/upgraded using
         /// a snapshot.</param>
-        /// <param name="hostGroupID">The fully qualified resource ID of the
+        /// <param name="hostGroupId">The fully qualified resource ID of the
         /// Dedicated Host Group to provision virtual machines from, used only
         /// in creation scenario and not allowed to changed once set.</param>
-        public AgentPool(string id = default(string), string name = default(string), string type = default(string), int? count = default(int?), string vmSize = default(string), int? osDiskSizeGB = default(int?), string osDiskType = default(string), string kubeletDiskType = default(string), string workloadRuntime = default(string), string vnetSubnetID = default(string), string podSubnetID = default(string), int? maxPods = default(int?), string osType = default(string), string osSKU = default(string), int? maxCount = default(int?), int? minCount = default(int?), bool? enableAutoScaling = default(bool?), string scaleDownMode = default(string), string agentPoolType = default(string), string mode = default(string), string orchestratorVersion = default(string), string currentOrchestratorVersion = default(string), string nodeImageVersion = default(string), AgentPoolUpgradeSettings upgradeSettings = default(AgentPoolUpgradeSettings), string provisioningState = default(string), PowerState powerState = default(PowerState), System.Collections.Generic.IList<string> availabilityZones = default(System.Collections.Generic.IList<string>), bool? enableNodePublicIP = default(bool?), string nodePublicIPPrefixID = default(string), string scaleSetPriority = default(string), string scaleSetEvictionPolicy = default(string), double? spotMaxPrice = default(double?), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), System.Collections.Generic.IDictionary<string, string> nodeLabels = default(System.Collections.Generic.IDictionary<string, string>), System.Collections.Generic.IList<string> nodeTaints = default(System.Collections.Generic.IList<string>), string proximityPlacementGroupID = default(string), KubeletConfig kubeletConfig = default(KubeletConfig), LinuxOSConfig linuxOSConfig = default(LinuxOSConfig), bool? enableEncryptionAtHost = default(bool?), bool? enableUltraSSD = default(bool?), bool? enableFIPS = default(bool?), string gpuInstanceProfile = default(string), CreationData creationData = default(CreationData), string hostGroupID = default(string))
+        public AgentPool(string id = default(string), string name = default(string), string type = default(string), string workloadRuntime = default(string), string osType = default(string), PowerState powerState = default(PowerState), KubeletConfig kubeletConfig = default(KubeletConfig), CreationData creationData = default(CreationData), int? count = default(int?), string vmSize = default(string), int? osDiskSizeGb = default(int?), string osDiskType = default(string), string kubeletDiskType = default(string), string vnetSubnetId = default(string), string podSubnetId = default(string), int? maxPods = default(int?), string osSku = default(string), int? maxCount = default(int?), int? minCount = default(int?), bool? enableAutoScaling = default(bool?), string scaleDownMode = default(string), string propertiesType = default(string), string mode = default(string), string orchestratorVersion = default(string), string currentOrchestratorVersion = default(string), string nodeImageVersion = default(string), AgentPoolUpgradeSettings upgradeSettings = default(AgentPoolUpgradeSettings), string provisioningState = default(string), System.Collections.Generic.IList<string> availabilityZones = default(System.Collections.Generic.IList<string>), bool? enableNodePublicIP = default(bool?), string nodePublicIPPrefixId = default(string), string scaleSetPriority = default(string), string scaleSetEvictionPolicy = default(string), double? spotMaxPrice = default(double?), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), System.Collections.Generic.IDictionary<string, string> nodeLabels = default(System.Collections.Generic.IDictionary<string, string>), System.Collections.Generic.IList<string> nodeTaints = default(System.Collections.Generic.IList<string>), string proximityPlacementGroupId = default(string), LinuxOSConfig linuxOSConfig = default(LinuxOSConfig), bool? enableEncryptionAtHost = default(bool?), bool? enableUltraSsd = default(bool?), bool? enableFips = default(bool?), string gpuInstanceProfile = default(string), string hostGroupId = default(string))
             : base(id, name, type)
         {
-            this.Count = count;
-            this.VmSize = vmSize;
-            this.OsDiskSizeGB = osDiskSizeGB;
-            this.OsDiskType = osDiskType;
-            this.KubeletDiskType = kubeletDiskType;
             this.WorkloadRuntime = workloadRuntime;
-            this.VnetSubnetID = vnetSubnetID;
-            this.PodSubnetID = podSubnetID;
+            this.OSType = osType;
+            this.PowerState = powerState;
+            this.KubeletConfig = kubeletConfig;
+            this.CreationData = creationData;
+            this.Count = count;
+            this.VMSize = vmSize;
+            this.OSDiskSizeGb = osDiskSizeGb;
+            this.OSDiskType = osDiskType;
+            this.KubeletDiskType = kubeletDiskType;
+            this.VnetSubnetId = vnetSubnetId;
+            this.PodSubnetId = podSubnetId;
             this.MaxPods = maxPods;
-            this.OsType = osType;
-            this.OsSKU = osSKU;
+            this.OSSku = osSku;
             this.MaxCount = maxCount;
             this.MinCount = minCount;
             this.EnableAutoScaling = enableAutoScaling;
             this.ScaleDownMode = scaleDownMode;
-            this.AgentPoolType = agentPoolType;
+            this.PropertiesType = propertiesType;
             this.Mode = mode;
             this.OrchestratorVersion = orchestratorVersion;
             this.CurrentOrchestratorVersion = currentOrchestratorVersion;
             this.NodeImageVersion = nodeImageVersion;
             this.UpgradeSettings = upgradeSettings;
             this.ProvisioningState = provisioningState;
-            this.PowerState = powerState;
             this.AvailabilityZones = availabilityZones;
             this.EnableNodePublicIP = enableNodePublicIP;
-            this.NodePublicIPPrefixID = nodePublicIPPrefixID;
+            this.NodePublicIPPrefixId = nodePublicIPPrefixId;
             this.ScaleSetPriority = scaleSetPriority;
             this.ScaleSetEvictionPolicy = scaleSetEvictionPolicy;
             this.SpotMaxPrice = spotMaxPrice;
             this.Tags = tags;
             this.NodeLabels = nodeLabels;
             this.NodeTaints = nodeTaints;
-            this.ProximityPlacementGroupID = proximityPlacementGroupID;
-            this.KubeletConfig = kubeletConfig;
+            this.ProximityPlacementGroupId = proximityPlacementGroupId;
             this.LinuxOSConfig = linuxOSConfig;
             this.EnableEncryptionAtHost = enableEncryptionAtHost;
-            this.EnableUltraSSD = enableUltraSSD;
-            this.EnableFIPS = enableFIPS;
+            this.EnableUltraSsd = enableUltraSsd;
+            this.EnableFips = enableFips;
             this.GpuInstanceProfile = gpuInstanceProfile;
-            this.CreationData = creationData;
-            this.HostGroupID = hostGroupID;
+            this.HostGroupId = hostGroupId;
             CustomInit();
         }
 
@@ -170,6 +170,44 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
+
+        /// <summary>
+        /// Gets or sets possible values include: 'OCIContainer', 'WasmWasi'
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.workloadRuntime")]
+        public string WorkloadRuntime { get; set; }
+
+        /// <summary>
+        /// Gets or sets possible values include: 'Linux', 'Windows'
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
+        public string OSType { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the Agent Pool is running or stopped.
+        /// </summary>
+        /// <remarks>
+        /// When an Agent Pool is first created it is initially Running. The
+        /// Agent Pool can be stopped by setting this field to Stopped. A
+        /// stopped Agent Pool stops all of its VMs and does not accrue billing
+        /// charges. An Agent Pool can only be stopped if it is Running and
+        /// provisioning state is Succeeded
+        /// </remarks>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.powerState")]
+        public PowerState PowerState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Kubelet configuration on the agent pool nodes.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.kubeletConfig")]
+        public KubeletConfig KubeletConfig { get; set; }
+
+        /// <summary>
+        /// Gets or sets creationData to be used to specify the source Snapshot
+        /// ID if the node pool will be created/upgraded using a snapshot.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.creationData")]
+        public CreationData CreationData { get; set; }
 
         /// <summary>
         /// Gets or sets number of agents (VMs) to host docker containers.
@@ -190,18 +228,18 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// https://docs.microsoft.com/azure/aks/quotas-skus-regions
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.vmSize")]
-        public string VmSize { get; set; }
+        public string VMSize { get; set; }
 
         /// <summary>
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osDiskSizeGB")]
-        public int? OsDiskSizeGB { get; set; }
+        public int? OSDiskSizeGb { get; set; }
 
         /// <summary>
         /// Gets or sets possible values include: 'Managed', 'Ephemeral'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osDiskType")]
-        public string OsDiskType { get; set; }
+        public string OSDiskType { get; set; }
 
         /// <summary>
         /// Gets or sets possible values include: 'OS', 'Temporary'
@@ -210,23 +248,17 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string KubeletDiskType { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'OCIContainer', 'WasmWasi'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.workloadRuntime")]
-        public string WorkloadRuntime { get; set; }
-
-        /// <summary>
         /// Gets or sets the ID of the subnet which agent pool nodes and
         /// optionally pods will join on startup.
         /// </summary>
         /// <remarks>
         /// If this is not specified, a VNET and subnet will be generated and
-        /// used. If no podSubnetID is specified, this applies to nodes and
+        /// used. If no podSubnetId is specified, this applies to nodes and
         /// pods, otherwise it applies to just nodes. This is of the form:
         /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.vnetSubnetID")]
-        public string VnetSubnetID { get; set; }
+        public string VnetSubnetId { get; set; }
 
         /// <summary>
         /// Gets or sets the ID of the subnet which pods will join when
@@ -234,11 +266,11 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </summary>
         /// <remarks>
         /// If omitted, pod IPs are statically assigned on the node subnet (see
-        /// vnetSubnetID for more details). This is of the form:
+        /// vnetSubnetId for more details). This is of the form:
         /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.podSubnetID")]
-        public string PodSubnetID { get; set; }
+        public string PodSubnetId { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of pods that can run on a node.
@@ -247,17 +279,11 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public int? MaxPods { get; set; }
 
         /// <summary>
-        /// Gets or sets possible values include: 'Linux', 'Windows'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
-        public string OsType { get; set; }
-
-        /// <summary>
         /// Gets or sets possible values include: 'Ubuntu', 'CBLMariner',
         /// 'Windows2019', 'Windows2022'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osSKU")]
-        public string OsSKU { get; set; }
+        public string OSSku { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of nodes for auto-scaling
@@ -294,7 +320,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// 'AvailabilitySet'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.type")]
-        public string AgentPoolType { get; set; }
+        public string PropertiesType { get; set; }
 
         /// <summary>
         /// Gets or sets possible values include: 'System', 'User'
@@ -354,21 +380,8 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string ProvisioningState { get; private set; }
 
         /// <summary>
-        /// Gets or sets whether the Agent Pool is running or stopped.
-        /// </summary>
-        /// <remarks>
-        /// When an Agent Pool is first created it is initially Running. The
-        /// Agent Pool can be stopped by setting this field to Stopped. A
-        /// stopped Agent Pool stops all of its VMs and does not accrue billing
-        /// charges. An Agent Pool can only be stopped if it is Running and
-        /// provisioning state is Succeeded
-        /// </remarks>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.powerState")]
-        public PowerState PowerState { get; set; }
-
-        /// <summary>
         /// Gets or sets the list of Availability zones to use for nodes. This
-        /// can only be specified if the AgentPoolType property is
+        /// can only be specified if the PropertiesType property is
         /// 'VirtualMachineScaleSets'.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.availabilityZones")]
@@ -398,7 +411,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPPrefixes/{publicIPPrefixName}
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.nodePublicIPPrefixID")]
-        public string NodePublicIPPrefixID { get; set; }
+        public string NodePublicIPPrefixId { get; set; }
 
         /// <summary>
         /// Gets or sets the Virtual Machine Scale Set priority. If not
@@ -459,13 +472,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets the ID for Proximity Placement Group.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.proximityPlacementGroupID")]
-        public string ProximityPlacementGroupID { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Kubelet configuration on the agent pool nodes.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.kubeletConfig")]
-        public KubeletConfig KubeletConfig { get; set; }
+        public string ProximityPlacementGroupId { get; set; }
 
         /// <summary>
         /// Gets or sets the OS configuration of Linux agent nodes.
@@ -489,7 +496,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets whether to enable UltraSSD
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableUltraSSD")]
-        public bool? EnableUltraSSD { get; set; }
+        public bool? EnableUltraSsd { get; set; }
 
         /// <summary>
         /// Gets or sets whether to use a FIPS-enabled OS.
@@ -500,7 +507,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// for more details.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableFIPS")]
-        public bool? EnableFIPS { get; set; }
+        public bool? EnableFips { get; set; }
 
         /// <summary>
         /// Gets or sets gPUInstanceProfile to be used to specify GPU MIG
@@ -509,13 +516,6 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.gpuInstanceProfile")]
         public string GpuInstanceProfile { get; set; }
-
-        /// <summary>
-        /// Gets or sets creationData to be used to specify the source Snapshot
-        /// ID if the node pool will be created/upgraded using a snapshot.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.creationData")]
-        public CreationData CreationData { get; set; }
 
         /// <summary>
         /// Gets or sets the fully qualified resource ID of the Dedicated Host
@@ -529,7 +529,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.hostGroupID")]
-        public string HostGroupID { get; set; }
+        public string HostGroupId { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -543,6 +543,19 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             {
                 this.KubeletConfig.Validate();
             }
+            
+            if (this.OSDiskSizeGb != null)
+            {
+                if (this.OSDiskSizeGb > 2048)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.InclusiveMaximum, "OSDiskSizeGb", 2048);
+                }
+                if (this.OSDiskSizeGb < 0)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.InclusiveMinimum, "OSDiskSizeGb", 0);
+                }
+            }
+
         }
     }
 }

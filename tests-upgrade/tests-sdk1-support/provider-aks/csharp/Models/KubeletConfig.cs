@@ -49,14 +49,14 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// or unsafe sysctl patterns (ending in `*`).</param>
         /// <param name="failSwapOn">If set to true it will make the Kubelet
         /// fail to start if swap is enabled on the node.</param>
-        /// <param name="containerLogMaxSizeMB">The maximum size (e.g. 10Mi) of
+        /// <param name="containerLogMaxSizeMb">The maximum size (e.g. 10Mi) of
         /// container log file before it is rotated.</param>
         /// <param name="containerLogMaxFiles">The maximum number of container
         /// log files that can be present for a container. The number must be ≥
         /// 2.</param>
         /// <param name="podMaxPids">The maximum number of processes per
         /// pod.</param>
-        public KubeletConfig(string cpuManagerPolicy = default(string), bool? cpuCfsQuota = default(bool?), string cpuCfsQuotaPeriod = default(string), int? imageGcHighThreshold = default(int?), int? imageGcLowThreshold = default(int?), string topologyManagerPolicy = default(string), System.Collections.Generic.IList<string> allowedUnsafeSysctls = default(System.Collections.Generic.IList<string>), bool? failSwapOn = default(bool?), int? containerLogMaxSizeMB = default(int?), int? containerLogMaxFiles = default(int?), int? podMaxPids = default(int?))
+        public KubeletConfig(string cpuManagerPolicy = default(string), bool? cpuCfsQuota = default(bool?), string cpuCfsQuotaPeriod = default(string), int? imageGcHighThreshold = default(int?), int? imageGcLowThreshold = default(int?), string topologyManagerPolicy = default(string), System.Collections.Generic.IList<string> allowedUnsafeSysctls = default(System.Collections.Generic.IList<string>), bool? failSwapOn = default(bool?), int? containerLogMaxSizeMb = default(int?), int? containerLogMaxFiles = default(int?), int? podMaxPids = default(int?))
         {
             this.CpuManagerPolicy = cpuManagerPolicy;
             this.CpuCfsQuota = cpuCfsQuota;
@@ -66,7 +66,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.TopologyManagerPolicy = topologyManagerPolicy;
             this.AllowedUnsafeSysctls = allowedUnsafeSysctls;
             this.FailSwapOn = failSwapOn;
-            this.ContainerLogMaxSizeMB = containerLogMaxSizeMB;
+            this.ContainerLogMaxSizeMb = containerLogMaxSizeMb;
             this.ContainerLogMaxFiles = containerLogMaxFiles;
             this.PodMaxPids = podMaxPids;
             CustomInit();
@@ -162,7 +162,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// before it is rotated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "containerLogMaxSizeMB")]
-        public int? ContainerLogMaxSizeMB { get; set; }
+        public int? ContainerLogMaxSizeMb { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of container log files that can be

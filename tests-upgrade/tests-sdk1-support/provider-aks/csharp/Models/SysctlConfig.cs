@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// net.ipv4.tcp_keepalive_intvl.</param>
         /// <param name="netIpv4TcpTwReuse">Sysctl setting
         /// net.ipv4.tcp_tw_reuse.</param>
-        /// <param name="netIpv4IpLocalPortRange">Sysctl setting
+        /// <param name="netIpv4IPLocalPortRange">Sysctl setting
         /// net.ipv4.ip_local_port_range.</param>
         /// <param name="netIpv4NeighDefaultGcThresh1">Sysctl setting
         /// net.ipv4.neigh.default.gc_thresh1.</param>
@@ -80,7 +80,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="vmSwappiness">Sysctl setting vm.swappiness.</param>
         /// <param name="vmVfsCachePressure">Sysctl setting
         /// vm.vfs_cache_pressure.</param>
-        public SysctlConfig(int? netCoreSomaxconn = default(int?), int? netCoreNetdevMaxBacklog = default(int?), int? netCoreRmemDefault = default(int?), int? netCoreRmemMax = default(int?), int? netCoreWmemDefault = default(int?), int? netCoreWmemMax = default(int?), int? netCoreOptmemMax = default(int?), int? netIpv4TcpMaxSynBacklog = default(int?), int? netIpv4TcpMaxTwBuckets = default(int?), int? netIpv4TcpFinTimeout = default(int?), int? netIpv4TcpKeepaliveTime = default(int?), int? netIpv4TcpKeepaliveProbes = default(int?), int? netIpv4TcpkeepaliveIntvl = default(int?), bool? netIpv4TcpTwReuse = default(bool?), string netIpv4IpLocalPortRange = default(string), int? netIpv4NeighDefaultGcThresh1 = default(int?), int? netIpv4NeighDefaultGcThresh2 = default(int?), int? netIpv4NeighDefaultGcThresh3 = default(int?), int? netNetfilterNfConntrackMax = default(int?), int? netNetfilterNfConntrackBuckets = default(int?), int? fsInotifyMaxUserWatches = default(int?), int? fsFileMax = default(int?), int? fsAioMaxNr = default(int?), int? fsNrOpen = default(int?), int? kernelThreadsMax = default(int?), int? vmMaxMapCount = default(int?), int? vmSwappiness = default(int?), int? vmVfsCachePressure = default(int?))
+        public SysctlConfig(int? netCoreSomaxconn = default(int?), int? netCoreNetdevMaxBacklog = default(int?), int? netCoreRmemDefault = default(int?), int? netCoreRmemMax = default(int?), int? netCoreWmemDefault = default(int?), int? netCoreWmemMax = default(int?), int? netCoreOptmemMax = default(int?), int? netIpv4TcpMaxSynBacklog = default(int?), int? netIpv4TcpMaxTwBuckets = default(int?), int? netIpv4TcpFinTimeout = default(int?), int? netIpv4TcpKeepaliveTime = default(int?), int? netIpv4TcpKeepaliveProbes = default(int?), int? netIpv4TcpkeepaliveIntvl = default(int?), bool? netIpv4TcpTwReuse = default(bool?), string netIpv4IPLocalPortRange = default(string), int? netIpv4NeighDefaultGcThresh1 = default(int?), int? netIpv4NeighDefaultGcThresh2 = default(int?), int? netIpv4NeighDefaultGcThresh3 = default(int?), int? netNetfilterNfConntrackMax = default(int?), int? netNetfilterNfConntrackBuckets = default(int?), int? fsInotifyMaxUserWatches = default(int?), int? fsFileMax = default(int?), int? fsAioMaxNr = default(int?), int? fsNrOpen = default(int?), int? kernelThreadsMax = default(int?), int? vmMaxMapCount = default(int?), int? vmSwappiness = default(int?), int? vmVfsCachePressure = default(int?))
         {
             this.NetCoreSomaxconn = netCoreSomaxconn;
             this.NetCoreNetdevMaxBacklog = netCoreNetdevMaxBacklog;
@@ -96,7 +96,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.NetIpv4TcpKeepaliveProbes = netIpv4TcpKeepaliveProbes;
             this.NetIpv4TcpkeepaliveIntvl = netIpv4TcpkeepaliveIntvl;
             this.NetIpv4TcpTwReuse = netIpv4TcpTwReuse;
-            this.NetIpv4IpLocalPortRange = netIpv4IpLocalPortRange;
+            this.NetIpv4IPLocalPortRange = netIpv4IPLocalPortRange;
             this.NetIpv4NeighDefaultGcThresh1 = netIpv4NeighDefaultGcThresh1;
             this.NetIpv4NeighDefaultGcThresh2 = netIpv4NeighDefaultGcThresh2;
             this.NetIpv4NeighDefaultGcThresh3 = netIpv4NeighDefaultGcThresh3;
@@ -107,9 +107,9 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.FsAioMaxNr = fsAioMaxNr;
             this.FsNrOpen = fsNrOpen;
             this.KernelThreadsMax = kernelThreadsMax;
-            this.VmMaxMapCount = vmMaxMapCount;
-            this.VmSwappiness = vmSwappiness;
-            this.VmVfsCachePressure = vmVfsCachePressure;
+            this.VMMaxMapCount = vmMaxMapCount;
+            this.VMSwappiness = vmSwappiness;
+            this.VMVfsCachePressure = vmVfsCachePressure;
             CustomInit();
         }
 
@@ -206,7 +206,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets sysctl setting net.ipv4.ip_local_port_range.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "netIpv4IpLocalPortRange")]
-        public string NetIpv4IpLocalPortRange { get; set; }
+        public string NetIpv4IPLocalPortRange { get; set; }
 
         /// <summary>
         /// Gets or sets sysctl setting net.ipv4.neigh.default.gc_thresh1.
@@ -272,19 +272,19 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets sysctl setting vm.max_map_count.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vmMaxMapCount")]
-        public int? VmMaxMapCount { get; set; }
+        public int? VMMaxMapCount { get; set; }
 
         /// <summary>
         /// Gets or sets sysctl setting vm.swappiness.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vmSwappiness")]
-        public int? VmSwappiness { get; set; }
+        public int? VMSwappiness { get; set; }
 
         /// <summary>
         /// Gets or sets sysctl setting vm.vfs_cache_pressure.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vmVfsCachePressure")]
-        public int? VmVfsCachePressure { get; set; }
+        public int? VMVfsCachePressure { get; set; }
 
     }
 }

@@ -90,11 +90,11 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="count">Number of masters (VMs) in the container
         /// service cluster. Allowed values are 1, 3, and 5. The default value
         /// is 1.</param>
-        /// <param name="osDiskSizeGB">OS Disk Size in GB to be used to specify
+        /// <param name="osDiskSizeGb">OS Disk Size in GB to be used to specify
         /// the disk size for every machine in this master/agent pool. If you
         /// specify 0, it will apply the default osDisk size according to the
         /// vmSize specified.</param>
-        /// <param name="vnetSubnetID">VNet SubnetID specifies the VNet's
+        /// <param name="vnetSubnetId">VNet SubnetID specifies the VNet's
         /// subnet identifier.</param>
         /// <param name="firstConsecutiveStaticIP">FirstConsecutiveStaticIP
         /// used to specify the first static ip of masters.</param>
@@ -103,13 +103,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// empty, we will choose for you based on the orchestrator choice.
         /// Possible values include: 'StorageAccount', 'ManagedDisks'</param>
         /// <param name="fqdn">FQDN for the master pool.</param>
-        public ContainerServiceMasterProfile(string dnsPrefix, string vmSize, int? count = default(int?), int? osDiskSizeGB = default(int?), string vnetSubnetID = default(string), string firstConsecutiveStaticIP = default(string), string storageProfile = default(string), string fqdn = default(string))
+        public ContainerServiceMasterProfile(string dnsPrefix, string vmSize, int? count = default(int?), int? osDiskSizeGb = default(int?), string vnetSubnetId = default(string), string firstConsecutiveStaticIP = default(string), string storageProfile = default(string), string fqdn = default(string))
         {
             this.Count = count;
             this.DnsPrefix = dnsPrefix;
-            this.VmSize = vmSize;
-            this.OsDiskSizeGB = osDiskSizeGB;
-            this.VnetSubnetID = vnetSubnetID;
+            this.VMSize = vmSize;
+            this.OSDiskSizeGb = osDiskSizeGb;
+            this.VnetSubnetId = vnetSubnetId;
             this.FirstConsecutiveStaticIP = firstConsecutiveStaticIP;
             this.StorageProfile = storageProfile;
             this.Fqdn = fqdn;
@@ -193,7 +193,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// 'Standard_NV12', 'Standard_NV24', 'Standard_NV6'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vmSize")]
-        public string VmSize { get; set; }
+        public string VMSize { get; set; }
 
         /// <summary>
         /// Gets or sets OS Disk Size in GB to be used to specify the disk size
@@ -202,13 +202,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// specified.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "osDiskSizeGB")]
-        public int? OsDiskSizeGB { get; set; }
+        public int? OSDiskSizeGb { get; set; }
 
         /// <summary>
         /// Gets or sets vNet SubnetID specifies the VNet's subnet identifier.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "vnetSubnetID")]
-        public string VnetSubnetID { get; set; }
+        public string VnetSubnetId { get; set; }
 
         /// <summary>
         /// Gets or sets firstConsecutiveStaticIP used to specify the first
@@ -244,10 +244,22 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "DnsPrefix");
             }
-            if (this.VmSize == null)
+            if (this.VMSize == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "VmSize");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "VMSize");
             }
+            if (this.OSDiskSizeGb != null)
+            {
+                if (this.OSDiskSizeGb > 2048)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.InclusiveMaximum, "OSDiskSizeGb", 2048);
+                }
+                if (this.OSDiskSizeGb < 0)
+                {
+                    throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.InclusiveMinimum, "OSDiskSizeGb", 0);
+                }
+            }
+
         }
     }
 }

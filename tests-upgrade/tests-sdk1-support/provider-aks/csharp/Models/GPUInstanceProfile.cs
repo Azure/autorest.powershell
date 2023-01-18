@@ -16,10 +16,10 @@ namespace Microsoft.Azure.Management.ContainerService.Models
     /// </summary>
     public static class GPUInstanceProfile
     {
-        public const string MIG1g = "MIG1g";
-        public const string MIG2g = "MIG2g";
-        public const string MIG3g = "MIG3g";
-        public const string MIG4g = "MIG4g";
-        public const string MIG7g = "MIG7g";
+        public const string MIG1G = "MIG1g";
+        public const string MIG2G = "MIG2g";
+        public const string MIG3G = "MIG3g";
+        public const string MIG4G = "MIG4g";
+        public const string MIG7G = "MIG7g";
     }
 }

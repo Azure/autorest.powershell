@@ -33,7 +33,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// FIPS-enabled.</param>
         public OSOptionProperty(string osType, bool enableFipsImage)
         {
-            this.OsType = osType;
+            this.OSType = osType;
             this.EnableFipsImage = enableFipsImage;
             CustomInit();
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets the OS type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "os-type")]
-        public string OsType { get; set; }
+        public string OSType { get; set; }
 
         /// <summary>
         /// Gets or sets whether the image is FIPS-enabled.
@@ -63,9 +63,9 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.OsType == null)
+            if (this.OSType == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OsType");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OSType");
             }
         }
     }
