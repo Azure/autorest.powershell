@@ -142,15 +142,14 @@ export class Helper {
     }
   }
 
-  private isKindOfString(schema: Schema): boolean {
+  private isKindOfString(schema: Schema, required = false): boolean {
     if (schema.type === SchemaType.String) {
       return true;
     } else if (schema.type === SchemaType.Constant && (<ConstantSchema>schema).valueType.type === SchemaType.String) {
       return true;
-    } else if (schema.type === SchemaType.Choice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String && (<ChoiceSchema>schema).choices.length === 1) {
+    } else if (schema.type === SchemaType.Choice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String) {
       return true;
-    } else if (schema.type === SchemaType.SealedChoice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String &&
-      (<ChoiceSchema>schema).choices.length === 1 && schema.extensions?.['x-ms-enum']?.modelAsString === true) {
+    } else if (schema.type === SchemaType.SealedChoice && (<ChoiceSchema>schema).choiceType.type === SchemaType.String && (schema.extensions?.['x-ms-model-as-string'] === true || (required && (<ChoiceSchema>schema).choices.length === 1))) {
       return true;
     }
     // ToDo: we need to figure how to handle the case when schema type is enum
@@ -171,7 +170,7 @@ export class Helper {
     }
     const prefix = parameter.implementation === 'Client' ? 'this.Client.' : '';
     let res = '';
-    if (this.isKindOfString(parameter.schema)) {
+    if (this.isKindOfString(parameter.schema, parameter.required)) {
       res = `${prefix}${parameter.language.default.name}`;
     } else {
       let serializationSettings = 'this.Client.SerializationSettings';
@@ -194,7 +193,8 @@ export class Helper {
       return `System.Uri.EscapeDataString(${res})`;
     }
   }
-  public ValidateType(schema: Schema, scope: any, valueReference: string, isNullable: boolean): string {
+  public ValidateType(schema: Schema, scope: any, valueReference: string, isNullable: boolean, indentation = 3): string {
+    const indentationSpaces = '    '.repeat(indentation);
     const sb = new Array<string>();
     if (!scope) {
       throw new Error('scope is null');
@@ -208,31 +208,29 @@ export class Helper {
     if (schema && this.isArraySchema(schema) && this.ShouldValidateChain(schema)) {
       // ToDo: Should try to get a unique name instead of element
       const elementVar = 'element';
-      const innerValidation = this.ValidateType((<ArraySchema>schema).elementType, scope, elementVar, true);
+      const innerValidation = this.ValidateType((<ArraySchema>schema).elementType, scope, elementVar, true, 1);
       if (innerValidation) {
-        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
         sb.push(`foreach (var ${elementVar} in ${valueReference})`);
         sb.push('{');
-        sb.push(`${innerValidation}`);
+        innerValidation.split('\r\n').map(str => sb.push(str));
         sb.push('}');
       }
     } else if (schema && this.isDictionarySchema(schema) && this.ShouldValidateChain(schema)) {
       // ToDo: Should try to get a unique name instead of valueElement
       const valueVar = 'valueElement';
-      const innerValidation = this.ValidateType((<DictionarySchema>schema).elementType, scope, valueVar, true);
+      const innerValidation = this.ValidateType((<DictionarySchema>schema).elementType, scope, valueVar, true, 1);
       if (innerValidation) {
-        innerValidation.split('\r\n').map(str => '        ' + str).join('\r\n');
         sb.push(`foreach (var ${valueVar} in ${valueReference}.Values)`);
         sb.push('{');
-        sb.push(`${innerValidation}`);
+        innerValidation.split('\r\n').map(str => sb.push(str));
         sb.push('}');
       }
     }
     if (sb.length > 0) {
       if (this.IsValueType(schema.type) && !isNullable) {
-        return sb.map(str => '            ' + str).join('\r\n');
+        return sb.map(str => indentationSpaces + str).join('\r\n');
       } else {
-        return `            if (${valueReference} != null)\r\n            {\r\n${sb.map(str => '                ' + str).join('\r\n')}\r\n            }`;
+        return `${indentationSpaces}if (${valueReference} != null)\r\n${indentationSpaces}{\r\n${sb.map(str => indentationSpaces + '    ' + str).join('\r\n')}\r\n${indentationSpaces}}`;
       }
     }
     return '';
