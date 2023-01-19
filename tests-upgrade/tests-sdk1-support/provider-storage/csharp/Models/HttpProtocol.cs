@@ -18,7 +18,7 @@ namespace Microsoft.Azure.Management.Storage.Models
     public enum HttpProtocol
     {
         [System.Runtime.Serialization.EnumMember(Value = "https,http")]
-        Httpshttp,
+        HttpsHttp,
         [System.Runtime.Serialization.EnumMember(Value = "https")]
         Https
     }
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         {
             switch( value )
             {
-                case HttpProtocol.Httpshttp:
+                case HttpProtocol.HttpsHttp:
                     return "https,http";
                 case HttpProtocol.Https:
                     return "https";
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Management.Storage.Models
             switch( value )
             {
                 case "https,http":
-                    return HttpProtocol.Httpshttp;
+                    return HttpProtocol.HttpsHttp;
                 case "https":
                     return HttpProtocol.Https;
             }

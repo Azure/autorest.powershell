@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Management.Storage.Models
             this.Bypass = bypass;
             this.ResourceAccessRules = resourceAccessRules;
             this.VirtualNetworkRules = virtualNetworkRules;
-            this.IpRules = ipRules;
+            this.IPRules = ipRules;
             this.DefaultAction = defaultAction;
             CustomInit();
         }
@@ -82,7 +82,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// Gets or sets sets the IP ACL rules
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "ipRules")]
-        public System.Collections.Generic.IList<IPRule> IpRules { get; set; }
+        public System.Collections.Generic.IList<IPRule> IPRules {get; set; }
 
         /// <summary>
         /// Gets or sets specifies the default action of allow or deny when no
@@ -109,13 +109,13 @@ namespace Microsoft.Azure.Management.Storage.Models
                     }
                 }
             }
-            if (this.IpRules != null)
+            if (this.IPRules != null)
             {
-                foreach (var element1 in this.IpRules)
+                foreach (var element in this.IPRules)
                 {
-                    if (element1 != null)
+                    if (element != null)
                     {
-                        element1.Validate();
+                        element.Validate();
                     }
                 }
             }

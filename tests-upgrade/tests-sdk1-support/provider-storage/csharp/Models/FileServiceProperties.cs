@@ -45,7 +45,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <param name="protocolSettings">Protocol settings for file
         /// service</param>
         /// <param name="sku">Sku name and tier.</param>
-        public FileServiceProperties(string id = default(string), string name = default(string), string type = default(string), CorsRules cors = default(CorsRules), DeleteRetentionPolicy shareDeleteRetentionPolicy = default(DeleteRetentionPolicy), ProtocolSettings protocolSettings = default(ProtocolSettings), Sku sku = default(Sku))
+        public FileServiceProperties(string id = default(string), string name = default(string), string type = default(string), Sku sku = default(Sku), ProtocolSettings protocolSettings = default(ProtocolSettings), CorsRules cors = default(CorsRules), DeleteRetentionPolicy shareDeleteRetentionPolicy = default(DeleteRetentionPolicy))
             : base(id, name, type)
         {
             this.Cors = cors;

@@ -37,7 +37,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// SAS. Possible values include: Read (r), Write (w), Delete (d), List
         /// (l), Add (a), Create (c), Update (u) and Process (p). Possible
         /// values include: 'r', 'd', 'w', 'l', 'a', 'c', 'u', 'p'</param>
-        /// <param name="iPAddressOrRange">An IP address or a range of IP
+        /// <param name="ipAddressOrRange">An IP address or a range of IP
         /// addresses from which to accept requests.</param>
         /// <param name="protocols">The protocol permitted for a request made
         /// with the account SAS. Possible values include: 'https,http',
@@ -65,12 +65,12 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// content language.</param>
         /// <param name="contentType">The response header override for content
         /// type.</param>
-        public ServiceSasParameters(string canonicalizedResource, string resource = default(string), string permissions = default(string), string iPAddressOrRange = default(string), HttpProtocol? protocols = default(HttpProtocol?), System.DateTime? sharedAccessStartTime = default(System.DateTime?), System.DateTime? sharedAccessExpiryTime = default(System.DateTime?), string identifier = default(string), string partitionKeyStart = default(string), string partitionKeyEnd = default(string), string rowKeyStart = default(string), string rowKeyEnd = default(string), string keyToSign = default(string), string cacheControl = default(string), string contentDisposition = default(string), string contentEncoding = default(string), string contentLanguage = default(string), string contentType = default(string))
+        public ServiceSasParameters(string canonicalizedResource, string resource = default(string), string permissions = default(string), string ipAddressOrRange = default(string), HttpProtocol? protocols = default(HttpProtocol?), System.DateTime? sharedAccessStartTime = default(System.DateTime?), System.DateTime? sharedAccessExpiryTime = default(System.DateTime?), string identifier = default(string), string partitionKeyStart = default(string), string partitionKeyEnd = default(string), string rowKeyStart = default(string), string rowKeyEnd = default(string), string keyToSign = default(string), string cacheControl = default(string), string contentDisposition = default(string), string contentEncoding = default(string), string contentLanguage = default(string), string contentType = default(string))
         {
             this.CanonicalizedResource = canonicalizedResource;
             this.Resource = resource;
             this.Permissions = permissions;
-            this.IPAddressOrRange = iPAddressOrRange;
+            this.IPAddressOrRange = ipAddressOrRange;
             this.Protocols = protocols;
             this.SharedAccessStartTime = sharedAccessStartTime;
             this.SharedAccessExpiryTime = sharedAccessExpiryTime;

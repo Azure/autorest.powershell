@@ -43,7 +43,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <param name="provisioningState">The provisioning state of the
         /// private endpoint connection resource. Possible values include:
         /// 'Succeeded', 'Creating', 'Deleting', 'Failed'</param>
-        public PrivateEndpointConnection(PrivateLinkServiceConnectionState privateLinkServiceConnectionState, string id = default(string), string name = default(string), string type = default(string), PrivateEndpoint privateEndpoint = default(PrivateEndpoint), string provisioningState = default(string))
+        public PrivateEndpointConnection(string id = default(string), string name = default(string), string type = default(string), PrivateEndpoint privateEndpoint = default(PrivateEndpoint), PrivateLinkServiceConnectionState privateLinkServiceConnectionState = default(PrivateLinkServiceConnectionState), string provisioningState = default(string))
             : base(id, name, type)
         {
             this.PrivateEndpoint = privateEndpoint;
@@ -76,20 +76,8 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// 'Creating', 'Deleting', 'Failed'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public string ProvisioningState { get; set; }
+        public string ProvisioningState {get; private set; }
 
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-            if (this.PrivateLinkServiceConnectionState == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "PrivateLinkServiceConnectionState");
-            }
-        }
+
     }
 }

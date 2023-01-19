@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <param name="etag">ImmutabilityPolicy Etag.</param>
         /// <param name="updateHistory">The ImmutabilityPolicy update history
         /// of the blob container.</param>
-        public ImmutabilityPolicyProperties(int? immutabilityPeriodSinceCreationInDays = default(int?), string state = default(string), bool? allowProtectedAppendWrites = default(bool?), bool? allowProtectedAppendWritesAll = default(bool?), string etag = default(string), System.Collections.Generic.IList<UpdateHistoryProperty> updateHistory = default(System.Collections.Generic.IList<UpdateHistoryProperty>))
+        public ImmutabilityPolicyProperties(string etag = default(string), System.Collections.Generic.IList<UpdateHistoryProperty> updateHistory = default(System.Collections.Generic.IList<UpdateHistoryProperty>), int? immutabilityPeriodSinceCreationInDays = default(int?), string state = default(string), bool? allowProtectedAppendWrites = default(bool?), bool? allowProtectedAppendWritesAll = default(bool?))
         {
             this.ImmutabilityPeriodSinceCreationInDays = immutabilityPeriodSinceCreationInDays;
             this.State = state;

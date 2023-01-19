@@ -43,7 +43,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// values include: 'r', 'd', 'w', 'l', 'a', 'c', 'u', 'p'</param>
         /// <param name="sharedAccessExpiryTime">The time at which the shared
         /// access signature becomes invalid.</param>
-        /// <param name="iPAddressOrRange">An IP address or a range of IP
+        /// <param name="ipAddressOrRange">An IP address or a range of IP
         /// addresses from which to accept requests.</param>
         /// <param name="protocols">The protocol permitted for a request made
         /// with the account SAS. Possible values include: 'https,http',

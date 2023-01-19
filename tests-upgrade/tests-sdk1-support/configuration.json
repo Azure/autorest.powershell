@@ -55,7 +55,8 @@
     "extension-ms-mutability",
     "extension-ms-pageable",
     "extension-ms-paramlocation",
-    "model-validate"
+    "model-validate",
+    "provider-storage"
   ],
   "whiteTestListFull": [
     "basic-disableazure-get",
