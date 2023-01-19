@@ -28,13 +28,13 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <summary>
         /// Initializes a new instance of the IPRule class.
         /// </summary>
-        /// <param name="iPAddressOrRange">Specifies the IP or IP range in CIDR
+        /// <param name="ipAddressOrRange">Specifies the IP or IP range in CIDR
         /// format. Only IPV4 address is allowed.</param>
         /// <param name="action">The action of IP ACL rule. Possible values
         /// include: 'Allow'</param>
-        public IPRule(string iPAddressOrRange, Action? action = default(Action?))
+        public IPRule(string ipAddressOrRange, Action? action = default(Action?))
         {
-            this.IPAddressOrRange = iPAddressOrRange;
+            this.IPAddressOrRange = ipAddressOrRange;
             this.Action = action;
             CustomInit();
         }

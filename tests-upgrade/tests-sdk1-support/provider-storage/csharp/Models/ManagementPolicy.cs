@@ -40,7 +40,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// "Microsoft.Storage/storageAccounts"</param>
         /// <param name="lastModifiedTime">Returns the date and time the
         /// ManagementPolicies was last modified.</param>
-        public ManagementPolicy(ManagementPolicySchema policy, string id = default(string), string name = default(string), string type = default(string), System.DateTime? lastModifiedTime = default(System.DateTime?))
+        public ManagementPolicy(string id = default(string), string name = default(string), string type = default(string), System.DateTime? lastModifiedTime = default(System.DateTime?), ManagementPolicySchema policy = default(ManagementPolicySchema))
             : base(id, name, type)
         {
             this.LastModifiedTime = lastModifiedTime;
@@ -76,10 +76,6 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.Policy == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Policy");
-            }
             if (this.Policy != null)
             {
                 this.Policy.Validate();

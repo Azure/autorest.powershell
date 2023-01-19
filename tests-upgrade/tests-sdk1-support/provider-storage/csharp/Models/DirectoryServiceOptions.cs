@@ -17,8 +17,8 @@ namespace Microsoft.Azure.Management.Storage.Models
     public static class DirectoryServiceOptions
     {
         public const string None = "None";
-        public const string AADDS = "AADDS";
+        public const string Aadds = "AADDS";
         public const string AD = "AD";
-        public const string AADKERB = "AADKERB";
+        public const string Aadkerb = "AADKERB";
     }
 }

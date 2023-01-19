@@ -60,7 +60,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// property to configure last access time based tracking
         /// policy.</param>
         /// <param name="sku">Sku name and tier.</param>
-        public BlobServiceProperties(string id = default(string), string name = default(string), string type = default(string), CorsRules cors = default(CorsRules), string defaultServiceVersion = default(string), DeleteRetentionPolicy deleteRetentionPolicy = default(DeleteRetentionPolicy), bool? isVersioningEnabled = default(bool?), bool? automaticSnapshotPolicyEnabled = default(bool?), ChangeFeed changeFeed = default(ChangeFeed), RestorePolicyProperties restorePolicy = default(RestorePolicyProperties), DeleteRetentionPolicy containerDeleteRetentionPolicy = default(DeleteRetentionPolicy), LastAccessTimeTrackingPolicy lastAccessTimeTrackingPolicy = default(LastAccessTimeTrackingPolicy), Sku sku = default(Sku))
+        public BlobServiceProperties(string id = default(string), string name = default(string), string type = default(string), Sku sku = default(Sku), ChangeFeed changeFeed = default(ChangeFeed), CorsRules cors = default(CorsRules), string defaultServiceVersion = default(string), DeleteRetentionPolicy deleteRetentionPolicy = default(DeleteRetentionPolicy), bool? isVersioningEnabled = default(bool?), bool? automaticSnapshotPolicyEnabled = default(bool?), RestorePolicyProperties restorePolicy = default(RestorePolicyProperties), DeleteRetentionPolicy containerDeleteRetentionPolicy = default(DeleteRetentionPolicy), LastAccessTimeTrackingPolicy lastAccessTimeTrackingPolicy = default(LastAccessTimeTrackingPolicy))
             : base(id, name, type)
         {
             this.Cors = cors;

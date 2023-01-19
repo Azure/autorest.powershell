@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <param name="requireInfrastructureEncryption">A boolean indicating
         /// whether or not the service applies a secondary layer of encryption
         /// with platform managed keys for data at rest.</param>
-        public EncryptionScope(string id = default(string), string name = default(string), string type = default(string), string source = default(string), string state = default(string), System.DateTime? creationTime = default(System.DateTime?), System.DateTime? lastModifiedTime = default(System.DateTime?), EncryptionScopeKeyVaultProperties keyVaultProperties = default(EncryptionScopeKeyVaultProperties), bool? requireInfrastructureEncryption = default(bool?))
+        public EncryptionScope(string id = default(string), string name = default(string), string type = default(string), System.DateTime? creationTime = default(System.DateTime?), string source = default(string), string state = default(string), System.DateTime? lastModifiedTime = default(System.DateTime?), EncryptionScopeKeyVaultProperties keyVaultProperties = default(EncryptionScopeKeyVaultProperties), bool? requireInfrastructureEncryption = default(bool?))
             : base(id, name, type)
         {
             this.Source = source;
