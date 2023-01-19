@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         {
             this.KubernetesVersion = kubernetesVersion;
             this.Name = name;
-            this.OsType = osType;
+            this.OSType = osType;
             this.Upgrades = upgrades;
             CustomInit();
         }
@@ -67,7 +67,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets possible values include: 'Linux', 'Windows'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "osType")]
-        public string OsType { get; set; }
+        public string OSType { get; set; }
 
         /// <summary>
         /// Gets or sets list of orchestrator types and versions available for
@@ -88,9 +88,9 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "KubernetesVersion");
             }
-            if (this.OsType == null)
+            if (this.OSType == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OsType");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OSType");
             }
         }
     }

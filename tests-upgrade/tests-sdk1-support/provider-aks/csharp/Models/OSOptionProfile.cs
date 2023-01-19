@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.Id = id;
             this.Name = name;
             this.Type = type;
-            this.OsOptionPropertyList = osOptionPropertyList;
+            this.OSOptionPropertyList = osOptionPropertyList;
             CustomInit();
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets the list of OS options.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osOptionPropertyList")]
-        public System.Collections.Generic.IList<OSOptionProperty> OsOptionPropertyList { get; set; }
+        public System.Collections.Generic.IList<OSOptionProperty> OSOptionPropertyList { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -79,13 +79,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.OsOptionPropertyList == null)
+            if (this.OSOptionPropertyList == null)
             {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OsOptionPropertyList");
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OSOptionPropertyList");
             }
-            if (this.OsOptionPropertyList != null)
+            if (this.OSOptionPropertyList != null)
             {
-                foreach (var element in this.OsOptionPropertyList)
+                foreach (var element in this.OSOptionPropertyList)
                 {
                     if (element != null)
                     {

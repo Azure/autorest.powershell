@@ -59,8 +59,8 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="fqdnSubdomain">The FQDN subdomain of the private
         /// cluster with custom private dns zone.</param>
         /// <param name="fqdn">The FQDN of the master pool.</param>
-        /// <param name="privateFQDN">The FQDN of private cluster.</param>
-        /// <param name="azurePortalFQDN">The special FQDN used by the Azure
+        /// <param name="privateFqdn">The FQDN of private cluster.</param>
+        /// <param name="azurePortalFqdn">The special FQDN used by the Azure
         /// Portal to access the Managed Cluster. This FQDN is for use only by
         /// the Azure Portal and should not be used by other clients.</param>
         /// <param name="agentPoolProfiles">The agent pool properties.</param>
@@ -79,7 +79,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Managed Cluster.</param>
         /// <param name="nodeResourceGroup">The name of the resource group
         /// containing agent pool nodes.</param>
-        /// <param name="enableRBAC">Whether to enable Kubernetes Role-Based
+        /// <param name="enableRbac">Whether to enable Kubernetes Role-Based
         /// Access Control.</param>
         /// <param name="enablePodSecurityPolicy">(DEPRECATING) Whether to
         /// enable Kubernetes pod security policy (preview). This feature is
@@ -95,7 +95,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// cluster-autoscaler when enabled</param>
         /// <param name="apiServerAccessProfile">The access profile for managed
         /// cluster API server.</param>
-        /// <param name="diskEncryptionSetID">The Resource ID of the disk
+        /// <param name="diskEncryptionSetId">The Resource ID of the disk
         /// encryption set to use for enabling encryption at rest.</param>
         /// <param name="identityProfile">Identities associated with the
         /// cluster.</param>
@@ -111,22 +111,22 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// cluster.</param>
         /// <param name="publicNetworkAccess">PublicNetworkAccess of the
         /// managedCluster</param>
-        public ManagedCluster(string location, string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), ManagedClusterSKU sku = default(ManagedClusterSKU), ExtendedLocation extendedLocation = default(ExtendedLocation), ManagedClusterIdentity identity = default(ManagedClusterIdentity), string provisioningState = default(string), PowerState powerState = default(PowerState), int? maxAgentPools = default(int?), string kubernetesVersion = default(string), string currentKubernetesVersion = default(string), string dnsPrefix = default(string), string fqdnSubdomain = default(string), string fqdn = default(string), string privateFQDN = default(string), string azurePortalFQDN = default(string), System.Collections.Generic.IList<ManagedClusterAgentPoolProfile> agentPoolProfiles = default(System.Collections.Generic.IList<ManagedClusterAgentPoolProfile>), ContainerServiceLinuxProfile linuxProfile = default(ContainerServiceLinuxProfile), ManagedClusterWindowsProfile windowsProfile = default(ManagedClusterWindowsProfile), ManagedClusterServicePrincipalProfile servicePrincipalProfile = default(ManagedClusterServicePrincipalProfile), System.Collections.Generic.IDictionary<string, ManagedClusterAddonProfile> addonProfiles = default(System.Collections.Generic.IDictionary<string, ManagedClusterAddonProfile>), ManagedClusterPodIdentityProfile podIdentityProfile = default(ManagedClusterPodIdentityProfile), ManagedClusterOIDCIssuerProfile oidcIssuerProfile = default(ManagedClusterOIDCIssuerProfile), string nodeResourceGroup = default(string), bool? enableRBAC = default(bool?), bool? enablePodSecurityPolicy = default(bool?), ContainerServiceNetworkProfile networkProfile = default(ContainerServiceNetworkProfile), ManagedClusterAADProfile aadProfile = default(ManagedClusterAADProfile), ManagedClusterAutoUpgradeProfile autoUpgradeProfile = default(ManagedClusterAutoUpgradeProfile), ManagedClusterPropertiesAutoScalerProfile autoScalerProfile = default(ManagedClusterPropertiesAutoScalerProfile), ManagedClusterAPIServerAccessProfile apiServerAccessProfile = default(ManagedClusterAPIServerAccessProfile), string diskEncryptionSetID = default(string), System.Collections.Generic.IDictionary<string, UserAssignedIdentity> identityProfile = default(System.Collections.Generic.IDictionary<string, UserAssignedIdentity>), System.Collections.Generic.IList<PrivateLinkResource> privateLinkResources = default(System.Collections.Generic.IList<PrivateLinkResource>), bool? disableLocalAccounts = default(bool?), ManagedClusterHTTPProxyConfig httpProxyConfig = default(ManagedClusterHTTPProxyConfig), ManagedClusterSecurityProfile securityProfile = default(ManagedClusterSecurityProfile), ManagedClusterStorageProfile storageProfile = default(ManagedClusterStorageProfile), string publicNetworkAccess = default(string))
+        public ManagedCluster(string location, string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), ManagedClusterSKU sku = default(ManagedClusterSKU), ExtendedLocation extendedLocation = default(ExtendedLocation), ManagedClusterIdentity identity = default(ManagedClusterIdentity), PowerState powerState = default(PowerState), string provisioningState = default(string), int? maxAgentPools = default(int?), string kubernetesVersion = default(string), string currentKubernetesVersion = default(string), string dnsPrefix = default(string), string fqdnSubdomain = default(string), string fqdn = default(string), string privateFqdn = default(string), string azurePortalFqdn = default(string), System.Collections.Generic.IList<ManagedClusterAgentPoolProfile> agentPoolProfiles = default(System.Collections.Generic.IList<ManagedClusterAgentPoolProfile>), ContainerServiceLinuxProfile linuxProfile = default(ContainerServiceLinuxProfile), ManagedClusterWindowsProfile windowsProfile = default(ManagedClusterWindowsProfile), ManagedClusterServicePrincipalProfile servicePrincipalProfile = default(ManagedClusterServicePrincipalProfile), System.Collections.Generic.IDictionary<string, ManagedClusterAddonProfile> addonProfiles = default(System.Collections.Generic.IDictionary<string, ManagedClusterAddonProfile>), ManagedClusterPodIdentityProfile podIdentityProfile = default(ManagedClusterPodIdentityProfile), ManagedClusterOidcIssuerProfile oidcIssuerProfile = default(ManagedClusterOidcIssuerProfile), string nodeResourceGroup = default(string), bool? enableRbac = default(bool?), bool? enablePodSecurityPolicy = default(bool?), ContainerServiceNetworkProfile networkProfile = default(ContainerServiceNetworkProfile), ManagedClusterAADProfile aadProfile = default(ManagedClusterAADProfile), ManagedClusterAutoUpgradeProfile autoUpgradeProfile = default(ManagedClusterAutoUpgradeProfile), ManagedClusterPropertiesAutoScalerProfile autoScalerProfile = default(ManagedClusterPropertiesAutoScalerProfile), ManagedClusterAPIServerAccessProfile apiServerAccessProfile = default(ManagedClusterAPIServerAccessProfile), string diskEncryptionSetId = default(string), System.Collections.Generic.IDictionary<string, UserAssignedIdentity> identityProfile = default(System.Collections.Generic.IDictionary<string, UserAssignedIdentity>), System.Collections.Generic.IList<PrivateLinkResource> privateLinkResources = default(System.Collections.Generic.IList<PrivateLinkResource>), bool? disableLocalAccounts = default(bool?), ManagedClusterHttpProxyConfig httpProxyConfig = default(ManagedClusterHttpProxyConfig), ManagedClusterSecurityProfile securityProfile = default(ManagedClusterSecurityProfile), ManagedClusterStorageProfile storageProfile = default(ManagedClusterStorageProfile), string publicNetworkAccess = default(string))
             : base(location, id, name, type, systemData, tags)
         {
             this.Sku = sku;
             this.ExtendedLocation = extendedLocation;
             this.Identity = identity;
-            this.ProvisioningState = provisioningState;
             this.PowerState = powerState;
+            this.ProvisioningState = provisioningState;
             this.MaxAgentPools = maxAgentPools;
             this.KubernetesVersion = kubernetesVersion;
             this.CurrentKubernetesVersion = currentKubernetesVersion;
             this.DnsPrefix = dnsPrefix;
             this.FqdnSubdomain = fqdnSubdomain;
             this.Fqdn = fqdn;
-            this.PrivateFQDN = privateFQDN;
-            this.AzurePortalFQDN = azurePortalFQDN;
+            this.PrivateFqdn = privateFqdn;
+            this.AzurePortalFqdn = azurePortalFqdn;
             this.AgentPoolProfiles = agentPoolProfiles;
             this.LinuxProfile = linuxProfile;
             this.WindowsProfile = windowsProfile;
@@ -135,14 +135,14 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.PodIdentityProfile = podIdentityProfile;
             this.OidcIssuerProfile = oidcIssuerProfile;
             this.NodeResourceGroup = nodeResourceGroup;
-            this.EnableRBAC = enableRBAC;
+            this.EnableRbac = enableRbac;
             this.EnablePodSecurityPolicy = enablePodSecurityPolicy;
             this.NetworkProfile = networkProfile;
             this.AadProfile = aadProfile;
             this.AutoUpgradeProfile = autoUpgradeProfile;
             this.AutoScalerProfile = autoScalerProfile;
             this.ApiServerAccessProfile = apiServerAccessProfile;
-            this.DiskEncryptionSetID = diskEncryptionSetID;
+            this.DiskEncryptionSetId = diskEncryptionSetId;
             this.IdentityProfile = identityProfile;
             this.PrivateLinkResources = privateLinkResources;
             this.DisableLocalAccounts = disableLocalAccounts;
@@ -177,16 +177,16 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public ManagedClusterIdentity Identity { get; set; }
 
         /// <summary>
-        /// Gets the current provisioning state.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
-        public string ProvisioningState { get; private set; }
-
-        /// <summary>
         /// Gets the Power State of the cluster.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.powerState")]
         public PowerState PowerState { get; private set; }
+
+        /// <summary>
+        /// Gets the current provisioning state.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.provisioningState")]
+        public string ProvisioningState { get; private set; }
 
         /// <summary>
         /// Gets the max number of agent pools for the managed cluster.
@@ -256,7 +256,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets the FQDN of private cluster.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.privateFQDN")]
-        public string PrivateFQDN { get; private set; }
+        public string PrivateFqdn { get; private set; }
 
         /// <summary>
         /// Gets the special FQDN used by the Azure Portal to access the
@@ -270,7 +270,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// CORS, allowing the Azure Portal to function properly.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.azurePortalFQDN")]
-        public string AzurePortalFQDN { get; private set; }
+        public string AzurePortalFqdn { get; private set; }
 
         /// <summary>
         /// Gets or sets the agent pool properties.
@@ -318,7 +318,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Gets or sets the OIDC issuer profile of the Managed Cluster.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.oidcIssuerProfile")]
-        public ManagedClusterOIDCIssuerProfile OidcIssuerProfile { get; set; }
+        public ManagedClusterOidcIssuerProfile OidcIssuerProfile { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the resource group containing agent pool
@@ -332,7 +332,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Control.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableRBAC")]
-        public bool? EnableRBAC { get; set; }
+        public bool? EnableRbac { get; set; }
 
         /// <summary>
         /// Gets or sets (DEPRECATING) Whether to enable Kubernetes pod
@@ -382,7 +382,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{encryptionSetName}'
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.diskEncryptionSetID")]
-        public string DiskEncryptionSetID { get; set; }
+        public string DiskEncryptionSetId { get; set; }
 
         /// <summary>
         /// Gets or sets identities associated with the cluster.
@@ -414,7 +414,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// proxy servers.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.httpProxyConfig")]
-        public ManagedClusterHTTPProxyConfig HttpProxyConfig { get; set; }
+        public ManagedClusterHttpProxyConfig HttpProxyConfig { get; set; }
 
         /// <summary>
         /// Gets or sets security profile for the managed cluster.

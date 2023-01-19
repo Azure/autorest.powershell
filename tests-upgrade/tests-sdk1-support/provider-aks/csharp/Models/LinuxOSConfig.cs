@@ -40,14 +40,14 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="transparentHugePageDefrag">Whether the kernel should
         /// make aggressive use of memory compaction to make more hugepages
         /// available.</param>
-        /// <param name="swapFileSizeMB">The size in MB of a swap file that
+        /// <param name="swapFileSizeMb">The size in MB of a swap file that
         /// will be created on each node.</param>
-        public LinuxOSConfig(SysctlConfig sysctls = default(SysctlConfig), string transparentHugePageEnabled = default(string), string transparentHugePageDefrag = default(string), int? swapFileSizeMB = default(int?))
+        public LinuxOSConfig(SysctlConfig sysctls = default(SysctlConfig), string transparentHugePageEnabled = default(string), string transparentHugePageDefrag = default(string), int? swapFileSizeMb = default(int?))
         {
             this.Sysctls = sysctls;
             this.TransparentHugePageEnabled = transparentHugePageEnabled;
             this.TransparentHugePageDefrag = transparentHugePageDefrag;
-            this.SwapFileSizeMB = swapFileSizeMB;
+            this.SwapFileSizeMb = swapFileSizeMb;
             CustomInit();
         }
 
@@ -91,7 +91,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// each node.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "swapFileSizeMB")]
-        public int? SwapFileSizeMB { get; set; }
+        public int? SwapFileSizeMb { get; set; }
 
     }
 }

@@ -51,18 +51,18 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="osSku">Possible values include: 'Ubuntu',
         /// 'CBLMariner', 'Windows2019', 'Windows2022'</param>
         /// <param name="vmSize">The size of the VM.</param>
-        /// <param name="enableFIPS">Whether to use a FIPS-enabled OS.</param>
-        public Snapshot(string location, string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), CreationData creationData = default(CreationData), string snapshotType = default(string), string kubernetesVersion = default(string), string nodeImageVersion = default(string), string osType = default(string), string osSku = default(string), string vmSize = default(string), bool? enableFIPS = default(bool?))
+        /// <param name="enableFips">Whether to use a FIPS-enabled OS.</param>
+        public Snapshot(string location, string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), CreationData creationData = default(CreationData), string snapshotType = default(string), string osType = default(string), string kubernetesVersion = default(string), string nodeImageVersion = default(string), string osSku = default(string), string vmSize = default(string), bool? enableFips = default(bool?))
             : base(location, id, name, type, systemData, tags)
         {
             this.CreationData = creationData;
             this.SnapshotType = snapshotType;
+            this.OSType = osType;
             this.KubernetesVersion = kubernetesVersion;
             this.NodeImageVersion = nodeImageVersion;
-            this.OsType = osType;
-            this.OsSku = osSku;
-            this.VmSize = vmSize;
-            this.EnableFIPS = enableFIPS;
+            this.OSSku = osSku;
+            this.VMSize = vmSize;
+            this.EnableFips = enableFips;
             CustomInit();
         }
 
@@ -85,6 +85,12 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string SnapshotType { get; set; }
 
         /// <summary>
+        /// Gets possible values include: 'Linux', 'Windows'
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
+        public string OSType { get; private set; }
+
+        /// <summary>
         /// Gets the version of Kubernetes.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.kubernetesVersion")]
@@ -97,29 +103,23 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string NodeImageVersion { get; private set; }
 
         /// <summary>
-        /// Gets possible values include: 'Linux', 'Windows'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
-        public string OsType { get; private set; }
-
-        /// <summary>
         /// Gets possible values include: 'Ubuntu', 'CBLMariner',
         /// 'Windows2019', 'Windows2022'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osSku")]
-        public string OsSku { get; private set; }
+        public string OSSku { get; private set; }
 
         /// <summary>
         /// Gets the size of the VM.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.vmSize")]
-        public string VmSize { get; private set; }
+        public string VMSize { get; private set; }
 
         /// <summary>
         /// Gets whether to use a FIPS-enabled OS.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableFIPS")]
-        public bool? EnableFIPS { get; private set; }
+        public bool? EnableFips { get; private set; }
 
         /// <summary>
         /// Validate the object.

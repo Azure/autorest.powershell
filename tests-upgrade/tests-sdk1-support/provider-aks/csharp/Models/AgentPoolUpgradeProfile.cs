@@ -42,13 +42,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// available for upgrade.</param>
         /// <param name="latestNodeImageVersion">The latest AKS supported node
         /// image version.</param>
-        public AgentPoolUpgradeProfile(string kubernetesVersion, string osType, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IList<AgentPoolUpgradeProfilePropertiesUpgradesItem> upgrades = default(System.Collections.Generic.IList<AgentPoolUpgradeProfilePropertiesUpgradesItem>), string latestNodeImageVersion = default(string))
+        public AgentPoolUpgradeProfile(string osType, string kubernetesVersion, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IList<AgentPoolUpgradeProfilePropertiesUpgradesItem> upgrades = default(System.Collections.Generic.IList<AgentPoolUpgradeProfilePropertiesUpgradesItem>), string latestNodeImageVersion = default(string))
         {
             this.Id = id;
             this.Name = name;
             this.Type = type;
+            this.OSType = osType;
             this.KubernetesVersion = kubernetesVersion;
-            this.OsType = osType;
             this.Upgrades = upgrades;
             this.LatestNodeImageVersion = latestNodeImageVersion;
             CustomInit();
@@ -78,16 +78,16 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         public string Type { get; private set; }
 
         /// <summary>
+        /// Gets or sets possible values include: 'Linux', 'Windows'
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
+        public string OSType { get; set; }
+
+        /// <summary>
         /// Gets or sets the Kubernetes version (major.minor.patch).
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.kubernetesVersion")]
         public string KubernetesVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets possible values include: 'Linux', 'Windows'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "properties.osType")]
-        public string OsType { get; set; }
 
         /// <summary>
         /// Gets or sets list of orchestrator types and versions available for
@@ -110,13 +110,13 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </exception>
         public virtual void Validate()
         {
+            if (this.OSType == null)
+            {
+                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OSType");
+            }
             if (this.KubernetesVersion == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "KubernetesVersion");
-            }
-            if (this.OsType == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "OsType");
             }
         }
     }

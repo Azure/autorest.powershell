@@ -33,9 +33,9 @@ namespace Microsoft.Azure.Management.ContainerService
             /// <param name='parameters'>
             /// Parameters required in order to resolve a private link service ID.
             /// </param>
-            public static PrivateLinkResource POST(this IResolvePrivateLinkServiceIdOperations operations, string resourceGroupName, string resourceName, PrivateLinkResource parameters)
+            public static PrivateLinkResource Post(this IResolvePrivateLinkServiceIdOperations operations, string resourceGroupName, string resourceName, PrivateLinkResource parameters)
             {
-                return ((IResolvePrivateLinkServiceIdOperations)operations).POSTAsync(resourceGroupName, resourceName, parameters).GetAwaiter().GetResult();
+                return ((IResolvePrivateLinkServiceIdOperations)operations).PostAsync(resourceGroupName, resourceName, parameters).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -56,9 +56,9 @@ namespace Microsoft.Azure.Management.ContainerService
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task<PrivateLinkResource> POSTAsync(this IResolvePrivateLinkServiceIdOperations operations, string resourceGroupName, string resourceName, PrivateLinkResource parameters, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+            public static async System.Threading.Tasks.Task<PrivateLinkResource> PostAsync(this IResolvePrivateLinkServiceIdOperations operations, string resourceGroupName, string resourceName, PrivateLinkResource parameters, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                using (var _result = await operations.POSTWithHttpMessagesAsync(resourceGroupName, resourceName, parameters, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.PostWithHttpMessagesAsync(resourceGroupName, resourceName, parameters, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

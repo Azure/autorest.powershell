@@ -182,8 +182,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// <param name='roleName'>
             /// The name of the role for managed cluster accessProfile resource.
             /// </param>
-            [System.Obsolete("This operation is deprecated. Please do not use it any longer.")]
-            public static ManagedClusterAccessProfile GetAccessProfile(this IManagedClustersOperations operations, string resourceGroupName, string resourceName, string roleName)
+                public static ManagedClusterAccessProfile GetAccessProfile(this IManagedClustersOperations operations, string resourceGroupName, string resourceName, string roleName)
             {
                 return ((IManagedClustersOperations)operations).GetAccessProfileAsync(resourceGroupName, resourceName, roleName).GetAwaiter().GetResult();
             }
@@ -213,8 +212,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            [System.Obsolete("This operation is deprecated. Please do not use it any longer.")]
-            public static async System.Threading.Tasks.Task<ManagedClusterAccessProfile> GetAccessProfileAsync(this IManagedClustersOperations operations, string resourceGroupName, string resourceName, string roleName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+                public static async System.Threading.Tasks.Task<ManagedClusterAccessProfile> GetAccessProfileAsync(this IManagedClustersOperations operations, string resourceGroupName, string resourceName, string roleName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
                 using (var _result = await operations.GetAccessProfileWithHttpMessagesAsync(resourceGroupName, resourceName, roleName, null, cancellationToken).ConfigureAwait(false))
                 {

@@ -37,7 +37,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <param name="userAssignedIdentities">The user identity associated
         /// with the managed cluster. This identity will be used in control
         /// plane. Only one user assigned identity is allowed.</param>
-        public ManagedClusterIdentity(string principalId = default(string), string tenantId = default(string), ResourceIdentityType? type = default(ResourceIdentityType?), System.Collections.Generic.IDictionary<string, ManagedClusterIdentityUserAssignedIdentitiesValue> userAssignedIdentities = default(System.Collections.Generic.IDictionary<string, ManagedClusterIdentityUserAssignedIdentitiesValue>))
+        public ManagedClusterIdentity(string principalId = default(string), string tenantId = default(string), ResourceIdentityType? type = default(ResourceIdentityType?), System.Collections.Generic.IDictionary<string, ManagedServiceIdentityUserAssignedIdentitiesValue> userAssignedIdentities = default(System.Collections.Generic.IDictionary<string, ManagedServiceIdentityUserAssignedIdentitiesValue>))
         {
             this.PrincipalId = principalId;
             this.TenantId = tenantId;
@@ -86,7 +86,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "userAssignedIdentities")]
-        public System.Collections.Generic.IDictionary<string, ManagedClusterIdentityUserAssignedIdentitiesValue> UserAssignedIdentities { get; set; }
+        public System.Collections.Generic.IDictionary<string, ManagedServiceIdentityUserAssignedIdentitiesValue> UserAssignedIdentities { get; set; }
 
     }
 }

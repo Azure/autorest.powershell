@@ -78,7 +78,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
             this.NatGatewayProfile = natGatewayProfile;
             this.PodCidrs = podCidrs;
             this.ServiceCidrs = serviceCidrs;
-            this.IpFamilies = ipFamilies;
+            this.IPFamilies = ipFamilies;
             CustomInit();
         }
 
@@ -212,7 +212,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// dual-stack, the expected values are IPv4 and IPv6.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "ipFamilies")]
-        public System.Collections.Generic.IList<string> IpFamilies { get; set; }
+        public System.Collections.Generic.IList<string> IPFamilies { get; set; }
 
         /// <summary>
         /// Validate the object.
