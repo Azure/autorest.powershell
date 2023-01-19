@@ -13,6 +13,7 @@ In this repository
  - `powershell` - all the source code for the AutoRest.PowerShell extension.
  - `samples/` - a couple small non-azure examples to generate modules 
  - `tests/` - **WORK IN PROGRESS** scripts to generate some tests to validate the code generator.
+ - `UX/` - the portal UX metadata files use to display usage of powershell cmdlet for resource in portal page.
 
 ### The `powershell` plugin
 - `cmdlets/` - code for creating the cmdlet classes
