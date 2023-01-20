@@ -30,7 +30,12 @@ namespace <%- project.namespace %>.Models
         /// </summary>
         public <%- model.language.default.name%>()
         {
-<%#ToDo support for object model that contains ContainsConstantProperties-%>
+<%#support for object model that contains ContainsConstantProperties-%>
+<% if (model.properties || model.parents) {-%>
+<%project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties).filter(p => p.required && p.property.schema.type === 'object' && project.helper.HasConstantProperty(p.property.schema)).forEach(function(p) {-%>
+            this.<%-p.name%> = new <%-p.property.schema.language.csharp.fullname%>();
+<%});-%>
+<%}-%>
             CustomInit();
         }
 <%#ToDo support for constructorParameters in the model, the constructorParameter is mapped to properties for the time being%>

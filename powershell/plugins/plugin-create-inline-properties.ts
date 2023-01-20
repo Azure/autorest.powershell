@@ -32,9 +32,9 @@ export function singularize(word: string): string {
 }
 
 function getCombinedDescription(rawDescription: string, externalDocsUrl?: string): string {
-  let description = rawDescription ?? "";
+  let description = rawDescription ?? '';
   if (!!externalDocsUrl && !!externalDocsUrl.trim()) {
-    description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`)
+    description = description.concat(` Please visit external url ${externalDocsUrl} to get more information.`);
   }
   return description;
 }

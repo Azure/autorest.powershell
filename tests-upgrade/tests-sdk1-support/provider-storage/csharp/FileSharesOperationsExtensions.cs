@@ -477,9 +477,9 @@ namespace Microsoft.Azure.Management.Storage
             /// <param name='xMsSnapshot'>
             /// Optional. Specify the snapshot time to lease a snapshot.
             /// </param>
-            public static LeaseShareResponse Lease(this IFileSharesOperations operations, string resourceGroupName, string accountName, string shareName, LeaseShareRequest parameters = default(LeaseShareRequest), string xMsSnapshot = default(string))
+        public static LeaseShareResponse Lease(this IFileSharesOperations operations, string resourceGroupName, string accountName, string shareName, string xMsSnapshot = default(string), LeaseShareRequest parameters = default(LeaseShareRequest))
             {
-                return ((IFileSharesOperations)operations).LeaseAsync(resourceGroupName, accountName, shareName, parameters, xMsSnapshot).GetAwaiter().GetResult();
+                return ((IFileSharesOperations)operations).LeaseAsync(resourceGroupName, accountName, shareName, xMsSnapshot, parameters).GetAwaiter().GetResult();
             }
 
             /// <summary>
@@ -514,9 +514,9 @@ namespace Microsoft.Azure.Management.Storage
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async System.Threading.Tasks.Task<LeaseShareResponse> LeaseAsync(this IFileSharesOperations operations, string resourceGroupName, string accountName, string shareName, LeaseShareRequest parameters = default(LeaseShareRequest), string xMsSnapshot = default(string), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public static async System.Threading.Tasks.Task<LeaseShareResponse> LeaseAsync(this IFileSharesOperations operations, string resourceGroupName, string accountName, string shareName, string xMsSnapshot = default(string), LeaseShareRequest parameters = default(LeaseShareRequest), System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
             {
-                using (var _result = await operations.LeaseWithHttpMessagesAsync(resourceGroupName, accountName, shareName, parameters, xMsSnapshot, null, cancellationToken).ConfigureAwait(false))
+            using (var _result = await operations.LeaseWithHttpMessagesAsync(resourceGroupName, accountName, shareName, xMsSnapshot, parameters, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

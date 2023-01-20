@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// false to remove existing SSH key.</param>
         /// <param name="hasSshPassword">Indicates whether ssh password exists.
         /// Set it to false to remove existing SSH password.</param>
-        public LocalUser(string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IList<PermissionScope> permissionScopes = default(System.Collections.Generic.IList<PermissionScope>), string homeDirectory = default(string), System.Collections.Generic.IList<SshPublicKey> sshAuthorizedKeys = default(System.Collections.Generic.IList<SshPublicKey>), string sid = default(string), bool? hasSharedKey = default(bool?), bool? hasSshKey = default(bool?), bool? hasSshPassword = default(bool?), SystemData systemData = default(SystemData))
+        public LocalUser(string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.Collections.Generic.IList<PermissionScope> permissionScopes = default(System.Collections.Generic.IList<PermissionScope>), string homeDirectory = default(string), System.Collections.Generic.IList<SshPublicKey> sshAuthorizedKeys = default(System.Collections.Generic.IList<SshPublicKey>), string sid = default(string), bool? hasSharedKey = default(bool?), bool? hasSshKey = default(bool?), bool? hasSshPassword = default(bool?))
             : base(id, name, type)
         {
             this.PermissionScopes = permissionScopes;
@@ -113,7 +113,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <summary>
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "systemData")]
-        public SystemData SystemData { get; set; }
+        public SystemData SystemData { get; private set; }
 
     }
 }

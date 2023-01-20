@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// the source account.</param>
         /// <param name="rules">The storage account object replication
         /// rules.</param>
-        public ObjectReplicationPolicy(string sourceAccount, string destinationAccount, string id = default(string), string name = default(string), string type = default(string), string policyId = default(string), System.DateTime? enabledTime = default(System.DateTime?), System.Collections.Generic.IList<ObjectReplicationPolicyRule> rules = default(System.Collections.Generic.IList<ObjectReplicationPolicyRule>))
+        public ObjectReplicationPolicy(string id = default(string), string name = default(string), string type = default(string), string policyId = default(string), System.DateTime? enabledTime = default(System.DateTime?), string sourceAccount = default(string), string destinationAccount = default(string), System.Collections.Generic.IList<ObjectReplicationPolicyRule> rules = default(System.Collections.Generic.IList<ObjectReplicationPolicyRule>))
             : base(id, name, type)
         {
             this.PolicyId = policyId;
@@ -96,32 +96,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.rules")]
         public System.Collections.Generic.IList<ObjectReplicationPolicyRule> Rules { get; set; }
 
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-            if (this.SourceAccount == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "SourceAccount");
-            }
-            if (this.DestinationAccount == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "DestinationAccount");
-            }
-            if (this.Rules != null)
-            {
-                foreach (var element in this.Rules)
-                {
-                    if (element != null)
-                    {
-                        element.Validate();
-                    }
-                }
-            }
-        }
+
+
     }
 }

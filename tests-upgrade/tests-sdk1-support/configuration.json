@@ -1,8 +1,7 @@
 {
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
   "whiteTestFailed": [
-    "provider-containerRegistry",
-    "provider-storage"
+    "provider-containerRegistry"
   ],
   "whiteTestList": [
     "basic-disableazure-get",
@@ -55,7 +54,8 @@
     "extension-ms-pageable",
     "extension-ms-paramlocation",
     "model-validate",
-    "provider-aks"
+    "provider-aks",
+    "provider-storage"
   ],
   "whiteTestListFull": [
     "basic-disableazure-get",

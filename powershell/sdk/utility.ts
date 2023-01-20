@@ -19,6 +19,11 @@ export class Helper {
     return false;
   }
 
+  public HasConstantProperty(schema: Schema): boolean {
+    const virtualProperties = this.GetAllPublicVirtualProperties(schema.language.default.virtualProperties);
+    return virtualProperties.filter(p => p.required && (p.property.schema.type === SchemaType.Constant || this.IsConstantProperty(p))).length > 0;
+  }
+
   public GetCsharpType(schema: Schema): string {
     let type = <string>schema.type;
     if (schema.type === SchemaType.Integer) {

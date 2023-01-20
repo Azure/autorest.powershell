@@ -23,7 +23,6 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// </summary>
         public BlobInventoryPolicy()
         {
-            this.Policy = new BlobInventoryPolicySchema();
             CustomInit();
         }
 
@@ -40,7 +39,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// "Microsoft.Storage/storageAccounts"</param>
         /// <param name="lastModifiedTime">Returns the last modified date and
         /// time of the blob inventory policy.</param>
-        public BlobInventoryPolicy(BlobInventoryPolicySchema policy, string id = default(string), string name = default(string), string type = default(string), System.DateTime? lastModifiedTime = default(System.DateTime?), SystemData systemData = default(SystemData))
+        public BlobInventoryPolicy(string id = default(string), string name = default(string), string type = default(string), SystemData systemData = default(SystemData), System.DateTime? lastModifiedTime = default(System.DateTime?), BlobInventoryPolicySchema policy = default(BlobInventoryPolicySchema))
             : base(id, name, type)
         {
             this.LastModifiedTime = lastModifiedTime;
@@ -71,7 +70,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <summary>
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "systemData")]
-        public SystemData SystemData { get; set; }
+        public SystemData SystemData { get; private set; }
 
         /// <summary>
         /// Validate the object.
@@ -81,10 +80,6 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (this.Policy == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Policy");
-            }
             if (this.Policy != null)
             {
                 this.Policy.Validate();

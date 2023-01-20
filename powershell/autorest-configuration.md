@@ -75,6 +75,7 @@ docs-folder: $(current-folder)/docs
 dependency-module-folder: $(module-folder)/modules
 examples-folder: $(current-folder)/examples
 resources-folder: $(current-folder)/resources
+ux-folder: $(current-folder)/UX
 ```
 
 > File Paths

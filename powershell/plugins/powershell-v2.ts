@@ -4,7 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 //import { codemodel } from '@azure-tools/codemodel-v3';
-import { deserialize, applyOverrides, copyResources, copyBinaryResources, safeEval } from '@azure-tools/codegen';
+import {
+  deserialize,
+  applyOverrides,
+  copyResources,
+  copyBinaryResources,
+  safeEval,
+} from '@azure-tools/codegen';
 import { Host } from '@azure-tools/autorest-extension-base';
 import { join } from 'path';
 import { Project } from '../internal/project';
@@ -19,41 +25,94 @@ import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
 
-
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
 
 async function copyRequiredFiles(project: Project) {
-  const transformOutput = async (input: string) => { return await project.state.resolveVariables(input); };
+  const transformOutput = async (input: string) => {
+    return await project.state.resolveVariables(input);
+  };
 
   // Project assets
-  await copyResources(join(resources, 'assets'), async (fname, content) => project.state.writeFile(fname, content, undefined, 'source-file-other'), undefined, transformOutput);
+  await copyResources(
+    join(resources, 'assets'),
+    async (fname, content) =>
+      project.state.writeFile(fname, content, undefined, 'source-file-other'),
+    undefined,
+    transformOutput
+  );
 
   // Runtime files
-  await copyResources(join(resources, 'psruntime'), async (fname, content) => project.state.writeFile(join(project.runtimeFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+  await copyResources(
+    join(resources, 'psruntime'),
+    async (fname, content) =>
+      project.state.writeFile(
+        join(project.runtimeFolder, fname),
+        content,
+        undefined,
+        sourceFileCSharp
+      ),
+    project.overrides,
+    transformOutput
+  );
 
   // utils cmdlets
-  await copyResources(join(resources, 'utils'), async (fname, content) => project.state.writeFile(join(project.utilsFolder, fname), content, undefined, sourceFileCSharp), project.overrides, transformOutput);
+  await copyResources(
+    join(resources, 'utils'),
+    async (fname, content) =>
+      project.state.writeFile(
+        join(project.utilsFolder, fname),
+        content,
+        undefined,
+        sourceFileCSharp
+      ),
+    project.overrides,
+    transformOutput
+  );
 
   // Modules files
   if (project.azure) {
-    await copyBinaryResources(join(resources, 'modules'), async (fname, content) => project.state.writeFile(join(project.dependencyModuleFolder, fname), content, undefined, 'binary-file'));
+    await copyBinaryResources(
+      join(resources, 'modules'),
+      async (fname, content) =>
+        project.state.writeFile(
+          join(project.dependencyModuleFolder, fname),
+          content,
+          undefined,
+          'binary-file'
+        )
+    );
   }
 
   if (project.azure) {
     // Signing key file
-    await copyBinaryResources(join(resources, 'signing'), async (fname, content) => project.state.writeFile(join(project.baseFolder, fname), content, undefined, 'binary-file'));
+    await copyBinaryResources(
+      join(resources, 'signing'),
+      async (fname, content) =>
+        project.state.writeFile(
+          join(project.baseFolder, fname),
+          content,
+          undefined,
+          'binary-file'
+        )
+    );
   }
 }
 
-
 export async function powershellV2(service: Host) {
-  const debug = await service.GetValue('debug') || false;
+  const debug = (await service.GetValue('debug')) || false;
 
   try {
     const project = await new Project(service).init();
 
-    await project.writeFiles(async (filename, content) => project.state.writeFile(filename, applyOverrides(content, project.overrides), undefined, sourceFileCSharp));
+    await project.writeFiles(async (filename, content) =>
+      project.state.writeFile(
+        filename,
+        applyOverrides(content, project.overrides),
+        undefined,
+        sourceFileCSharp
+      )
+    );
 
     await service.ProtectFiles(project.psd1);
     await service.ProtectFiles(project.readme);
@@ -62,6 +121,7 @@ export async function powershellV2(service: Host) {
     await service.ProtectFiles(project.docsFolder);
     await service.ProtectFiles(project.examplesFolder);
     await service.ProtectFiles(project.resourcesFolder);
+    await service.ProtectFiles(project.uxFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
@@ -76,7 +136,6 @@ export async function powershellV2(service: Host) {
     await generateReadme(project);
 
     await generateScriptCmdlets(project);
-
   } catch (E) {
     if (debug) {
       console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
@@ -84,4 +143,3 @@ export async function powershellV2(service: Host) {
     throw E;
   }
 }
-

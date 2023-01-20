@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <summary>
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "sharedKey")]
-        public string SharedKey { get; set; }
+        public string SharedKey {get; private set; }
 
     }
 }
