@@ -53,7 +53,7 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
         additionInfo = additionInfo +  choices.join(', ');
 }
 %>
-        /// <param name="<%-project.helper.CamelCase(p.name)%>"><%=p.property.language.default.description%><%-additionInfo%></param>
+        /// <param name="<%-project.helper.CamelCase(p.name)%>"><%=wrapComments('/// ', p.property.language.default.description)%><%-additionInfo%></param>
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
@@ -104,7 +104,7 @@ const quote = p.property.schema.choiceType.type !== 'string' ? '' : '"';
         }
 %>
         /// <summary>
-        /// <%=p.property.language.csharp.formattedPropertySummary%><%=additionInfo%>
+        /// <%=wrapComments('/// ', p.property.language.csharp.formattedPropertySummary)%><%=additionInfo%>
         /// </summary>
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
