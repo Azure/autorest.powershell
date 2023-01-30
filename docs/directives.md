@@ -102,6 +102,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Argument Completers](#Argument-Completers)
 - [Default Values](#Default-Values)
 - [Polymorphism](#Polymorphism)
+- [Upcoming Breaking Changes and Preview](https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md)
 
 *Note*: If you have feedback about these directives, or you would like additional configurations, feel free to open an issue at https://github.com/Azure/autorest.powershell/issues.
 
