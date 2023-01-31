@@ -7,12 +7,12 @@ namespace <%- project.namespace %>.Models
 <%# ToDo: need to populate effectiveDocumentation in the model-%>
 <% if (model.language.default.description) {-%>
     /// <summary>
-    /// <%=model.language.default.description%>
+    /// <%=wrapComments('/// ', model.language.default.description)%>
     /// </summary>
 <% }-%>
 <% if (model.summary && model.language.default.description) { -%>
     /// <remarks>
-    /// <%=model.language.default.description %>
+    /// <%=wrapComments('/// ', model.language.default.description)%>
     /// </remarks>
 <% } -%>
 <%# ToDo: support NeedsPolymorphicConverter-%>
