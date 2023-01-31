@@ -1629,6 +1629,20 @@ export class CmdletClass extends Class {
         if (cat) {
           regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
         }
+      } else {
+        const cat = operation.callGraph[0].requests?.[0].parameters?.find(
+          (param) => param.language.csharp?.name === vParam.origin.name
+        );
+
+        if (cat) {
+          regularCmdletParameter.add(
+            new Attribute(CategoryAttribute, {
+              parameters: [
+                `${ParameterCategory}.${pascalCase(cat.protocol.http?.in)}`,
+              ],
+            })
+          );
+        }
       }
 
 
