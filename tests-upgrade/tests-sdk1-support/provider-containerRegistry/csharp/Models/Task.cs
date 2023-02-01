@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// the task.</param>
         /// <param name="credentials">The properties that describes a set of
         /// credentials that will be used when this run is invoked.</param>
-        public Task(string location, PlatformProperties platform, TaskStepProperties step, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), IdentityProperties identity = default(IdentityProperties), string provisioningState = default(string), System.DateTime? creationDate = default(System.DateTime?), string status = default(string), AgentProperties agentConfiguration = default(AgentProperties), int? timeout = default(int?), TriggerProperties trigger = default(TriggerProperties), Credentials credentials = default(Credentials))
+        public Task(string location, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), IdentityProperties identity = default(IdentityProperties), string provisioningState = default(string), Credentials credentials = default(Credentials), System.DateTime? creationDate = default(System.DateTime?), string status = default(string), PlatformProperties platform = default(PlatformProperties), AgentProperties agentConfiguration = default(AgentProperties), int? timeout = default(int?), TaskStepProperties step = default(TaskStepProperties), TriggerProperties trigger = default(TriggerProperties))
             : base(location, id, name, type, tags)
         {
             this.Identity = identity;
@@ -149,14 +149,6 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         public override void Validate()
         {
             base.Validate();
-            if (this.Platform == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Platform");
-            }
-            if (this.Step == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Step");
-            }
             if (this.Platform != null)
             {
                 this.Platform.Validate();

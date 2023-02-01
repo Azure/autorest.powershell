@@ -45,7 +45,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// be triggered. For example, 'foo:*' means events for all tags under
         /// repository 'foo'. 'foo:bar' means events for 'foo:bar' only. 'foo'
         /// is equivalent to 'foo:latest'. Empty means all events.</param>
-        public WebhookCreateParameters(string location, string serviceUri, System.Collections.Generic.IList<string> actions, System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), System.Collections.Generic.IDictionary<string, string> customHeaders = default(System.Collections.Generic.IDictionary<string, string>), string status = default(string), string scope = default(string))
+        public WebhookCreateParameters(string location, System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), string serviceUri = default(string), System.Collections.Generic.IDictionary<string, string> customHeaders = default(System.Collections.Generic.IDictionary<string, string>), string status = default(string), string scope = default(string), System.Collections.Generic.IList<string> actions = default(System.Collections.Generic.IList<string>))
         {
             this.Tags = tags;
             this.Location = location;
@@ -122,14 +122,6 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
             if (this.Location == null)
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Location");
-            }
-            if (this.ServiceUri == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "ServiceUri");
-            }
-            if (this.Actions == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Actions");
             }
         }
     }

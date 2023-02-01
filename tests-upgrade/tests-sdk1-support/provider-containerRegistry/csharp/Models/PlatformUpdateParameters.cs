@@ -36,7 +36,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// 'v6', 'v7', 'v8'</param>
         public PlatformUpdateParameters(string os = default(string), string architecture = default(string), string variant = default(string))
         {
-            this.Os = os;
+            this.OS = os;
             this.Architecture = architecture;
             this.Variant = variant;
             CustomInit();
@@ -52,7 +52,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// Possible values include: 'Windows', 'Linux'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "os")]
-        public string Os { get; set; }
+        public string OS {get; set; }
 
         /// <summary>
         /// Gets or sets the OS architecture. Possible values include: 'amd64',
