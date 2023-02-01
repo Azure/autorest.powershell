@@ -2,7 +2,7 @@ const defaultMaximumCommentColumns = 80;
 const defaultGeneratedIndentation = '        ';
 const splitter = /\r\n|\r|\n/i;
 
-export function wrapComments(prefix: string, comments: string): string {
+export function wrapComments(indentation: string, prefix: string, comments: string): string {
   if (comments === null || comments.length === 0) {
     return '';
   }
@@ -15,25 +15,22 @@ export function wrapComments(prefix: string, comments: string): string {
       result[i] = prefix + result[i];
     }
   }
-  return result.join('\n' + defaultGeneratedIndentation);
+  return result.join('\n' + indentation);
 }
 
 function lineBreak(comments: string, length: number): Array<string> {
   const lines = new Array<string>();
   for (const line of comments.split(splitter)) {
-    let processedLine = line.trim();
-    if (processedLine.length === 0) {
-      lines.push(processedLine);
-      continue;
-    }
+    let processedLine = line;
     while (processedLine.length > 0) {
-      const whiteSpacePositions = [...new Array(processedLine.length + 1).keys()].filter(i => /\s/.test(processedLine[i]));
+      processedLine = processedLine.trim();
+      const whiteSpacePositions = [...new Array(processedLine.length).keys()].filter(i => /\s/.test(processedLine[i])).concat([processedLine.length]);
       let preWidthWrapAt = 0;
       let postWidthWrapAt = 0;
       for (const index of whiteSpacePositions) {
         if (index <= length) {
           preWidthWrapAt = index;
-        } else {
+        } else if (postWidthWrapAt === 0) {
           postWidthWrapAt = index;
         }
       }
