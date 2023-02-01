@@ -136,10 +136,10 @@ namespace Microsoft.Azure.Management.ContainerRegistry
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
             if (odataQuery != null)
             {
-                var _odataFilter = odataQuery.ToString();
-                if (!string.IsNullOrEmpty(_odataFilter))
+                var _runFilter = odataQuery.ToString();
+                if (!string.IsNullOrEmpty(_runFilter))
                 {
-                    _queryParameters.Add(_odataFilter);
+                    _queryParameters.Add(_runFilter);
                 }
             }
             if (apiVersion != null)
