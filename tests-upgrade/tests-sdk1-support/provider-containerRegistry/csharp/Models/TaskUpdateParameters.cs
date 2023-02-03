@@ -43,7 +43,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// <param name="credentials">The parameters that describes a set of
         /// credentials that will be used when this run is invoked.</param>
         /// <param name="tags">The ARM resource tags.</param>
-        public TaskUpdateParameters(IdentityProperties identity = default(IdentityProperties), string status = default(string), PlatformUpdateParameters platform = default(PlatformUpdateParameters), AgentProperties agentConfiguration = default(AgentProperties), int? timeout = default(int?), TaskStepUpdateParameters step = default(TaskStepUpdateParameters), TriggerUpdateParameters trigger = default(TriggerUpdateParameters), Credentials credentials = default(Credentials), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>))
+        public TaskUpdateParameters(IdentityProperties identity = default(IdentityProperties), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), Credentials credentials = default(Credentials), string status = default(string), PlatformUpdateParameters platform = default(PlatformUpdateParameters), AgentProperties agentConfiguration = default(AgentProperties), int? timeout = default(int?), TaskStepUpdateParameters step = default(TaskStepUpdateParameters), TriggerUpdateParameters trigger = default(TriggerUpdateParameters))
         {
             this.Identity = identity;
             this.Status = status;

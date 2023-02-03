@@ -48,7 +48,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// webhook at the time the operation was called. Possible values
         /// include: 'Creating', 'Updating', 'Deleting', 'Succeeded', 'Failed',
         /// 'Canceled'</param>
-        public Webhook(string location, System.Collections.Generic.IList<string> actions, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), string status = default(string), string scope = default(string), string provisioningState = default(string))
+        public Webhook(string location, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), string provisioningState = default(string), string status = default(string), string scope = default(string), System.Collections.Generic.IList<string> actions = default(System.Collections.Generic.IList<string>))
             : base(location, id, name, type, tags)
         {
             this.Status = status;
@@ -103,10 +103,6 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         public override void Validate()
         {
             base.Validate();
-            if (this.Actions == null)
-            {
-                throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "Actions");
-            }
         }
     }
 }

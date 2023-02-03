@@ -11,6 +11,7 @@ import { ModelState } from '../utils/model-state';
 import { Project } from '../sdk/project';
 import { OperationGroup } from '@azure-tools/codemodel';
 import { getAllPublicVirtualProperties } from '@azure-tools/codemodel-v3';
+import { wrapComments } from '../utils/WrapComments';
 
 const ejs = require('ejs');
 
@@ -23,7 +24,7 @@ async function generateModels(project: Project) {
       // skip flattened model and pageble model
       continue;
     }
-    const content = await ejs.renderFile(path, { model: model, project: project });
+    const content = await ejs.renderFile(path, { model: model, project: project, wrapComments: wrapComments });
     project.state.writeFile(`${project.baseFolder}\\Models\\${model.language.default.name}.cs`, content, undefined, 'source-file-csharp');
   }
 }

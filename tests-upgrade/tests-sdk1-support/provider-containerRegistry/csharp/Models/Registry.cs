@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// registry.</param>
         /// <param name="policies">The policies for a container
         /// registry.</param>
-        public Registry(string location, Sku sku, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), string loginServer = default(string), System.DateTime? creationDate = default(System.DateTime?), string provisioningState = default(string), Status status = default(Status), bool? adminUserEnabled = default(bool?), StorageAccountProperties storageAccount = default(StorageAccountProperties), NetworkRuleSet networkRuleSet = default(NetworkRuleSet), Policies policies = default(Policies))
+        public Registry(string location, Sku sku, string id = default(string), string name = default(string), string type = default(string), System.Collections.Generic.IDictionary<string, string> tags = default(System.Collections.Generic.IDictionary<string, string>), string provisioningState = default(string), Status status = default(Status), Policies policies = default(Policies), string loginServer = default(string), System.DateTime? creationDate = default(System.DateTime?), bool? adminUserEnabled = default(bool?), StorageAccountProperties storageAccount = default(StorageAccountProperties), NetworkRuleSet networkRuleSet = default(NetworkRuleSet))
             : base(location, id, name, type, tags)
         {
             this.Sku = sku;

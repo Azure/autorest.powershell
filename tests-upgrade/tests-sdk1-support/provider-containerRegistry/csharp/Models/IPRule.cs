@@ -32,10 +32,10 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// format. Only IPV4 address is allowed.</param>
         /// <param name="action">The action of IP ACL rule. Possible values
         /// include: 'Allow'</param>
-        public IPRule(string iPAddressOrRange, string action = default(string))
+        public IPRule(string ipAddressOrRange, string action = default(string))
         {
             this.Action = action;
-            this.IPAddressOrRange = iPAddressOrRange;
+            this.IPAddressOrRange = ipAddressOrRange;
             CustomInit();
         }
 

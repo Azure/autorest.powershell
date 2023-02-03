@@ -86,11 +86,11 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
             }
             if (this.SourceTriggers != null)
             {
-                foreach (var element1 in this.SourceTriggers)
+                foreach (var element in this.SourceTriggers)
                 {
-                    if (element1 != null)
+                    if (element != null)
                     {
-                        element1.Validate();
+                        element.Validate();
                     }
                 }
             }

@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         {
             this.DefaultAction = defaultAction;
             this.VirtualNetworkRules = virtualNetworkRules;
-            this.IpRules = ipRules;
+            this.IPRules = ipRules;
             CustomInit();
         }
 
@@ -64,8 +64,7 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// Gets or sets the IP ACL rules.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "ipRules")]
-        public System.Collections.Generic.IList<IPRule> IpRules { get; set; }
-
+        public System.Collections.Generic.IList<IPRule> IPRules {get; set; }
         /// <summary>
         /// Validate the object.
         /// </summary>
@@ -88,13 +87,13 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
                     }
                 }
             }
-            if (this.IpRules != null)
+            if (this.IPRules != null)
             {
-                foreach (var element1 in this.IpRules)
+                foreach (var element in this.IPRules)
                 {
-                    if (element1 != null)
+                    if (element != null)
                     {
-                        element1.Validate();
+                        element.Validate();
                     }
                 }
             }

@@ -34,10 +34,10 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// os.Hostname() along with the running port.</param>
         /// <param name="instanceID">The running instance of an application.
         /// Changes after each restart.</param>
-        public Source(string addr = default(string), string instanceID = default(string))
+        public Source(string addr = default(string), string instanceId = default(string))
         {
             this.Addr = addr;
-            this.InstanceID = instanceID;
+            this.InstanceId = instanceId;
             CustomInit();
         }
 
@@ -59,7 +59,6 @@ namespace Microsoft.Azure.Management.ContainerRegistry.Models
         /// each restart.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "instanceID")]
-        public string InstanceID { get; set; }
-
+        public string InstanceId {get; set; }
     }
 }
