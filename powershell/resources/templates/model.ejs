@@ -39,7 +39,7 @@ namespace <%- project.namespace %>.Models
             CustomInit();
         }
 <%#ToDo support for constructorParameters in the model, the constructorParameter is mapped to properties for the time being%>
-<% if (model.properties || model.parents) {-%>
+<% if ((model.properties || []).filter(p => !p.isDiscriminator).length > 0 || model.parents) {-%>
         /// <summary>
         /// Initializes a new instance of the <%=model.language.default.name%> class.
         /// </summary>
