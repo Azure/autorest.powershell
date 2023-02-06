@@ -82,6 +82,7 @@ function Test-FunctionSupported()
     $customFiles = Get-ChildItem -Path custom -Filter "$cmdletName.*"
     if ($customFiles.Length -ne 0)
     {
+        Write-Host -ForegroundColor Yellow "There are come custom files for $cmdletName, skip generate UX data for it."
         return $false
     }
 
