@@ -255,9 +255,16 @@ async function tweakOperation(state: State) {
         operation.language.default.returnTypeHeader.name = hasHeaderResponse ? headerSchema : '';
         let headerPostfix = hasHeaderResponse ? `,${headerSchema}` : '';
         if (respCountWithBody === 0) {
-          headerPostfix = hasHeaderResponse ? (isHead ? `AzureOperationResponse<bool,${headerSchema}>` : `AzureOperationHeaderResponse<${headerSchema}>`) : 'AzureOperationResponse';
-          operation.language.default.responseType = `Microsoft.Rest.Azure.${headerPostfix}`;
-          operation.language.default.returnType = hasHeaderResponse ? (isHead ? 'bool' : headerSchema) : 'void';
+          const statusCodes = new Array<string>();
+          operation.responses.forEach(resp => statusCodes.push(resp.protocol.http?.statusCodes[0]));
+          if (isHead && operation.responses?.length === 2 && statusCodes.includes('404') && !hasHeaderResponse) {
+            operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse<bool>';
+            operation.language.default.returnType = 'bool';
+          } else {
+            headerPostfix = hasHeaderResponse ? (isHead ? `AzureOperationResponse<bool,${headerSchema}>` : `AzureOperationHeaderResponse<${headerSchema}>`) : 'AzureOperationResponse';
+            operation.language.default.responseType = `Microsoft.Rest.Azure.${headerPostfix}`;
+            operation.language.default.returnType = hasHeaderResponse ? (isHead ? 'bool' : headerSchema) : 'void';
+          }
         } else if (respCountWithBody === 1) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
