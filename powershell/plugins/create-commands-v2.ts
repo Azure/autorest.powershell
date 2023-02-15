@@ -33,7 +33,6 @@ export function titleToAzureServiceName(title: string): string {
   return serviceName || titleCamelCase;
 }
 
-
 const pluralizationService = new EnglishPluralizationService();
 pluralizationService.addWord('Database', 'Databases');
 pluralizationService.addWord('database', 'databases');
@@ -446,15 +445,24 @@ export /* @internal */ class Inferrer {
     //state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
-    const [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each?.protocol?.http?.in === ParameterLocation.Path);
+    // eslint-disable-next-line prefer-const
+    let [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each?.protocol?.http?.in === ParameterLocation.Path);
     const dvi = await state.getValue('disable-via-identity', false);
 
-    if (!dvi && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
-      // we have an operation that has path parameters, a good canididate for piping for identity.
-      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
-    }
+    // if (!dvi && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
+    //   // we have an operation that has path parameters, a good canididate for piping for identity.
+    //   await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+    // }
+    //pathParams[0].language.default.name
 
+    //assume that all path parameters placed following the order in the actual path
+    pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
+    for (let i = pathParams.length - 1; i >= 0; i--) {
+      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+    }
   }
+
+  reservedPathParam = new Set<string>(['SubscriptionId', 'resourceGroupName']);
 
   createCommandVariant(action: string, subject: Array<string>, variant: Array<string>, model: PwshModel): CommandVariant {
     const verb = this.getPowerShellVerb(action);
@@ -465,7 +473,7 @@ export /* @internal */ class Inferrer {
         subject = [action, ...subject];
       }
     }
-    
+
     return {
       alias: [],
       subject: pascalCase([...removeSequentialDuplicates(subject.map(each => pluralizationService.singularize(each)))]),
