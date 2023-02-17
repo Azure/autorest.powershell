@@ -16,6 +16,7 @@ import { resolveParameterNames } from '../utils/resolve-conflicts';
 import { OperationType } from '../utils/command-operation';
 import { Header, HeaderPropertyType } from '@azure-tools/codemodel-v3';
 import { getEscapedReservedName } from '../utils/code-namer';
+import { Helper } from '../sdk/utility';
 
 function getPluralizationService(): EnglishPluralizationService {
   const result = new EnglishPluralizationService();
@@ -465,6 +466,29 @@ async function implementHeaderResponse(state: State) {
   });
 }
 
+async function handlePayloadFlatteningThreshold(state: State): Promise<void> {
+  const helper = new Helper();
+  const payloadFlatteningThreshold = await state.getValue('payload-flattening-threshold', 0);
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      if (operation.requests && operation.requests[0].parameters) {
+        const parameters = operation.requests[0].parameters;
+        const bodyParameter = parameters.find(p => p.protocol.http?.in === 'body');
+        if (bodyParameter && payloadFlatteningThreshold > 0) {
+          const bodyParameterSchema = bodyParameter.schema;
+          if (bodyParameterSchema.type === SchemaType.Object) {
+            const virtualProperties = getAllPublicVirtualProperties(bodyParameterSchema.language.default.virtualProperties).filter(vp => !vp.readOnly && !(vp.required && (vp.property.schema.type === SchemaType.Constant || helper.IsConstantProperty(vp))));
+            if (virtualProperties.length <= payloadFlatteningThreshold) {
+              bodyParameter.extensions = bodyParameter.extensions || {};
+              bodyParameter.extensions['x-ms-client-flatten'] = true;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 async function createVirtuals(state: State): Promise<PwshModel> {
   fixModelAsString(state);
   // add support for x-ms-odata
@@ -502,6 +526,10 @@ async function createVirtuals(state: State): Promise<PwshModel> {
     }
     throw new Error('Circular references exists, must mark models as `no-inline`');
   }
+
+  // handle payload-flattening-threshold
+  // when this value is set, we will flatten the body parameter if the number of non-constant & non-readonly virtual properties is less than or equal to the threshold
+  await handlePayloadFlatteningThreshold(state);
 
   return state.model;
 }
