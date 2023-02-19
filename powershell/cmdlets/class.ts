@@ -1054,7 +1054,7 @@ export class CmdletClass extends Class {
                   const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
                   // match up vp name
                   const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
-                  if (vp) {
+                  if (vp && each.expression === dotnet.Null) {
                     idOpParamsFromIdentity.push({
                       name: `InputObject.${vp.name}`,
                       value: `InputObject.${vp.name} ?? ${defaultOfType}`
