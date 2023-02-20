@@ -69,16 +69,16 @@ Contains the packages from which the projects depend on.
 Specifies untracked directories and files that Git should ignore. By default directories included here are: /bin, /obj, /exports and /node_modules. By default the files included here are all ps1xml files.
 
 ### \<format-file>.format.ps1xml
-Defines the default display of objects in the PS console. Read more: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-6
+Defines the default display of objects in the PS console. Read more: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-6
 
 ### \<cs-project-file>.csproj
 C# project file.
 
 ### \<manifest-file\>.psd1
-Describes the content of a module and determines how a module is processed. Generally, inside this file the author description, files in the module, systems requirements, among other data is specified. Read more at: https://docs.microsoft.com/en-us/powershell/developer/module/how-to-write-a-powershell-module-manifest
+Describes the content of a module and determines how a module is processed. Generally, inside this file the author description, files in the module, systems requirements, among other data is specified. Read more at: https://learn.microsoft.com/en-us/powershell/developer/module/how-to-write-a-powershell-module-manifest
 
 ### \<module-file\>.psm1
-Defines a set of related script files, assemblies and related sources as a module. Read more at: https://docs.microsoft.com/en-us/powershell/developer/module/understanding-a-windows-powershell-module
+Defines a set of related script files, assemblies and related sources as a module. Read more at: https://learn.microsoft.com/en-us/powershell/developer/module/understanding-a-windows-powershell-module
 
 ### build-module.ps1
 Compiles the C# source files to binaries used by the script cmdlets.
@@ -105,7 +105,7 @@ Used to run tests on the cmdlets.
 Used to re-run AutoRest using the configuration provided inside 'readme.md' file.
 
 ### types.ps1xml
-Used to extend object types in PowerShell. Read more: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-6
+Used to extend object types in PowerShell. Read more: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-6
 
 ### dll-help.ps1xml
 Includes the help generated from combining docs and examples.
