@@ -243,7 +243,7 @@
         ],
         "operationId": "ManagedClusters_GetAccessProfile",
         "summary": "Gets an access profile of a managed cluster.",
-        "description": "**WARNING**: This API will be deprecated. Instead use [ListClusterUserCredentials](https://docs.microsoft.com/rest/api/aks/managedclusters/listclusterusercredentials) or [ListClusterAdminCredentials](https://docs.microsoft.com/rest/api/aks/managedclusters/listclusteradmincredentials) .",
+        "description": "**WARNING**: This API will be deprecated. Instead use [ListClusterUserCredentials](https://learn.microsoft.com/rest/api/aks/managedclusters/listclusterusercredentials) or [ListClusterAdminCredentials](https://learn.microsoft.com/rest/api/aks/managedclusters/listclusteradmincredentials) .",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1187,7 +1187,7 @@
         ],
         "operationId": "AgentPools_GetAvailableAgentPoolVersions",
         "summary": "Gets a list of supported Kubernetes versions for the specified agent pool.",
-        "description": "See [supported Kubernetes versions](https://docs.microsoft.com/azure/aks/supported-kubernetes-versions) for more details about the version lifecycle.",
+        "description": "See [supported Kubernetes versions](https://learn.microsoft.com/azure/aks/supported-kubernetes-versions) for more details about the version lifecycle.",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1335,7 +1335,7 @@
         ],
         "operationId": "ManagedClusters_RotateClusterCertificates",
         "summary": "Rotates the certificates of a managed cluster.",
-        "description": "See [Certificate rotation](https://docs.microsoft.com/azure/aks/certificate-rotation) for more details about rotating managed cluster certificates.",
+        "description": "See [Certificate rotation](https://learn.microsoft.com/azure/aks/certificate-rotation) for more details about rotating managed cluster certificates.",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1430,7 +1430,7 @@
         ],
         "operationId": "ManagedClusters_Stop",
         "summary": "Stops a Managed Cluster",
-        "description": "This can only be performed on Azure Virtual Machine Scale set backed clusters. Stopping a cluster stops the control plane and agent nodes entirely, while maintaining all object and cluster state. A cluster does not accrue charges while it is stopped. See [stopping a cluster](https://docs.microsoft.com/azure/aks/start-stop-cluster) for more details about stopping a cluster.",
+        "description": "This can only be performed on Azure Virtual Machine Scale set backed clusters. Stopping a cluster stops the control plane and agent nodes entirely, while maintaining all object and cluster state. A cluster does not accrue charges while it is stopped. See [stopping a cluster](https://learn.microsoft.com/azure/aks/start-stop-cluster) for more details about stopping a cluster.",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1474,7 +1474,7 @@
         ],
         "operationId": "ManagedClusters_Start",
         "summary": "Starts a previously stopped Managed Cluster",
-        "description": "See [starting a cluster](https://docs.microsoft.com/azure/aks/start-stop-cluster) for more details about starting a cluster.",
+        "description": "See [starting a cluster](https://learn.microsoft.com/azure/aks/start-stop-cluster) for more details about starting a cluster.",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1518,7 +1518,7 @@
         ],
         "operationId": "PrivateEndpointConnections_List",
         "summary": "Gets a list of private endpoint connections in the specified managed cluster.",
-        "description": "To learn more about private clusters, see: https://docs.microsoft.com/azure/aks/private-clusters",
+        "description": "To learn more about private clusters, see: https://learn.microsoft.com/azure/aks/private-clusters",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1561,7 +1561,7 @@
         ],
         "operationId": "PrivateEndpointConnections_Get",
         "summary": "Gets the specified private endpoint connection.",
-        "description": "To learn more about private clusters, see: https://docs.microsoft.com/azure/aks/private-clusters",
+        "description": "To learn more about private clusters, see: https://learn.microsoft.com/azure/aks/private-clusters",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1715,7 +1715,7 @@
         ],
         "operationId": "AgentPools_UpgradeNodeImageVersion",
         "summary": "Upgrades the node image version of an agent pool to the latest.",
-        "description": "Upgrading the node image version of an agent pool applies the newest OS and runtime updates to the nodes. AKS provides one new image per week with the latest updates. For more details on node image versions, see: https://docs.microsoft.com/azure/aks/node-image-upgrade",
+        "description": "Upgrading the node image version of an agent pool applies the newest OS and runtime updates to the nodes. AKS provides one new image per week with the latest updates. For more details on node image versions, see: https://learn.microsoft.com/azure/aks/node-image-upgrade",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1775,7 +1775,7 @@
         ],
         "operationId": "PrivateLinkResources_List",
         "summary": "Gets a list of private link resources in the specified managed cluster.",
-        "description": "To learn more about private clusters, see: https://docs.microsoft.com/azure/aks/private-clusters",
+        "description": "To learn more about private clusters, see: https://learn.microsoft.com/azure/aks/private-clusters",
         "parameters": [
           {
             "$ref": "../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
@@ -1869,7 +1869,7 @@
         ],
         "operationId": "ManagedClusters_RunCommand",
         "summary": "Submits a command to run against the Managed Cluster.",
-        "description": "AKS will create a pod to run the command. This is primarily useful for private clusters. For more information see [AKS Run Command](https://docs.microsoft.com/azure/aks/private-clusters#aks-run-command-preview).",
+        "description": "AKS will create a pod to run the command. This is primarily useful for private clusters. For more information see [AKS Run Command](https://learn.microsoft.com/azure/aks/private-clusters#aks-run-command-preview).",
         "x-ms-long-running-operation": true,
         "parameters": [
           {
@@ -2683,7 +2683,7 @@
         "vmSize": {
           "type": "string",
           "title": "The size of the agent pool VMs.",
-          "description": "VM size availability varies by region. If a node contains insufficient compute resources (memory, cpu, etc) pods might fail to run correctly. For more details on restricted VM sizes, see: https://docs.microsoft.com/azure/aks/quotas-skus-regions"
+          "description": "VM size availability varies by region. If a node contains insufficient compute resources (memory, cpu, etc) pods might fail to run correctly. For more details on restricted VM sizes, see: https://learn.microsoft.com/azure/aks/quotas-skus-regions"
         },
         "osDiskSizeGB": {
           "$ref": "#/definitions/ContainerServiceOSDisk"
@@ -2762,7 +2762,7 @@
         "orchestratorVersion": {
           "type": "string",
           "title": "The version of Kubernetes specified by the user.",
-          "description": "Both patch version <major.minor.patch> (e.g. 1.20.13) and <major.minor> (e.g. 1.20) are supported. When <major.minor> is specified, the latest supported GA patch version is chosen automatically. Updating the cluster with the same <major.minor> once it has been created (e.g. 1.14.x -> 1.14) will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool)."
+          "description": "Both patch version <major.minor.patch> (e.g. 1.20.13) and <major.minor> (e.g. 1.20) are supported. When <major.minor> is specified, the latest supported GA patch version is chosen automatically. Updating the cluster with the same <major.minor> once it has been created (e.g. 1.14.x -> 1.14) will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool)."
         },
         "currentOrchestratorVersion": {
           "readOnly": true,
@@ -2799,7 +2799,7 @@
         "enableNodePublicIP": {
           "type": "boolean",
           "title": "Whether each node is allocated its own public IP.",
-          "description": "Some scenarios may require nodes in a node pool to receive their own dedicated public IP addresses. A common scenario is for gaming workloads, where a console needs to make a direct connection to a cloud virtual machine to minimize hops. For more information see [assigning a public IP per node](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools). The default is false."
+          "description": "Some scenarios may require nodes in a node pool to receive their own dedicated public IP addresses. A common scenario is for gaming workloads, where a console needs to make a direct connection to a cloud virtual machine to minimize hops. For more information see [assigning a public IP per node](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools). The default is false."
         },
         "nodePublicIPPrefixID": {
           "type": "string",
@@ -2826,7 +2826,7 @@
         "spotMaxPrice": {
           "$ref": "#/definitions/SpotMaxPrice",
           "title": "The max price (in US Dollars) you are willing to pay for spot instances. Possible values are any decimal value greater than zero or -1 which indicates default price to be up-to on-demand.",
-          "description": "Possible values are any decimal value greater than zero or -1 which indicates the willingness to pay any on-demand price. For more details on spot pricing, see [spot VMs pricing](https://docs.microsoft.com/azure/virtual-machines/spot-vms#pricing)"
+          "description": "Possible values are any decimal value greater than zero or -1 which indicates the willingness to pay any on-demand price. For more details on spot pricing, see [spot VMs pricing](https://learn.microsoft.com/azure/virtual-machines/spot-vms#pricing)"
         },
         "tags": {
           "type": "object",
@@ -2864,7 +2864,7 @@
         "enableEncryptionAtHost": {
           "type": "boolean",
           "title": "Whether to enable host based OS and data drive encryption.",
-          "description": "This is only supported on certain VM sizes and in certain Azure regions. For more information, see: https://docs.microsoft.com/azure/aks/enable-host-encryption"
+          "description": "This is only supported on certain VM sizes and in certain Azure regions. For more information, see: https://learn.microsoft.com/azure/aks/enable-host-encryption"
         },
         "enableUltraSSD": {
           "type": "boolean",
@@ -2873,7 +2873,7 @@
         "enableFIPS": {
           "type": "boolean",
           "title": "Whether to use a FIPS-enabled OS.",
-          "description": "See [Add a FIPS-enabled node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#add-a-fips-enabled-node-pool-preview) for more details."
+          "description": "See [Add a FIPS-enabled node pool](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#add-a-fips-enabled-node-pool-preview) for more details."
         },
         "gpuInstanceProfile": {
           "$ref": "#/definitions/GPUInstanceProfile",
@@ -2894,7 +2894,7 @@
             ]
           },
           "title": "The fully qualified resource ID of the Dedicated Host Group to provision virtual machines from, used only in creation scenario and not allowed to changed once set.",
-          "description": "This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts)."
+          "description": "This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://learn.microsoft.com/azure/virtual-machines/dedicated-hosts)."
         }
       },
       "description": "Properties for the container service agent pool profile."
@@ -2962,7 +2962,7 @@
         ]
       },
       "title": "The mode of an agent pool.",
-      "description": "A cluster must have at least one 'System' Agent Pool at all times. For additional information on agent pool restrictions and best practices, see: https://docs.microsoft.com/azure/aks/use-system-pools"
+      "description": "A cluster must have at least one 'System' Agent Pool at all times. For additional information on agent pool restrictions and best practices, see: https://learn.microsoft.com/azure/aks/use-system-pools"
     },
     "AgentPoolListResult": {
       "type": "object",
@@ -2988,7 +2988,7 @@
         "maxSurge": {
           "type": "string",
           "title": "The maximum number or percentage of nodes that are surged during upgrade.",
-          "description": "This can either be set to an integer (e.g. '5') or a percentage (e.g. '50%'). If a percentage is specified, it is the percentage of the total agent pool size at the time of the upgrade. For percentages, fractional nodes are rounded up. If not specified, the default is 1. For more information, including best practices, see: https://docs.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade"
+          "description": "This can either be set to an integer (e.g. '5') or a percentage (e.g. '50%'). If a percentage is specified, it is the percentage of the total agent pool size at the time of the upgrade. For percentages, fractional nodes are rounded up. If not specified, the default is 1. For more information, including best practices, see: https://learn.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade"
         }
       },
       "description": "Settings for upgrading an agentpool"
@@ -3112,15 +3112,15 @@
             "values": [
               {
                 "value": "azure",
-                "description": "Use the Azure CNI network plugin. See [Azure CNI (advanced) networking](https://docs.microsoft.com/azure/aks/concepts-network#azure-cni-advanced-networking) for more information."
+                "description": "Use the Azure CNI network plugin. See [Azure CNI (advanced) networking](https://learn.microsoft.com/azure/aks/concepts-network#azure-cni-advanced-networking) for more information."
               },
               {
                 "value": "kubenet",
-                "description": "Use the Kubenet network plugin. See [Kubenet (basic) networking](https://docs.microsoft.com/azure/aks/concepts-network#kubenet-basic-networking) for more information."
+                "description": "Use the Kubenet network plugin. See [Kubenet (basic) networking](https://learn.microsoft.com/azure/aks/concepts-network#kubenet-basic-networking) for more information."
               },
               {
                 "value": "none",
-                "description": "No CNI plugin is pre-installed. See [BYO CNI](https://docs.microsoft.com/en-us/azure/aks/use-byo-cni) for more information."
+                "description": "No CNI plugin is pre-installed. See [BYO CNI](https://learn.microsoft.com/en-us/azure/aks/use-byo-cni) for more information."
               }
             ]
           },
@@ -3138,11 +3138,11 @@
             "values": [
               {
                 "value": "calico",
-                "description": "Use Calico network policies. See [differences between Azure and Calico policies](https://docs.microsoft.com/azure/aks/use-network-policies#differences-between-azure-and-calico-policies-and-their-capabilities) for more information."
+                "description": "Use Calico network policies. See [differences between Azure and Calico policies](https://learn.microsoft.com/azure/aks/use-network-policies#differences-between-azure-and-calico-policies-and-their-capabilities) for more information."
               },
               {
                 "value": "azure",
-                "description": "Use Azure network policies. See [differences between Azure and Calico policies](https://docs.microsoft.com/azure/aks/use-network-policies#differences-between-azure-and-calico-policies-and-their-capabilities) for more information."
+                "description": "Use Azure network policies. See [differences between Azure and Calico policies](https://learn.microsoft.com/azure/aks/use-network-policies#differences-between-azure-and-calico-policies-and-their-capabilities) for more information."
               }
             ]
           },
@@ -3160,7 +3160,7 @@
             "values": [
               {
                 "value": "transparent",
-                "description": "No bridge is created. Intra-VM Pod to Pod communication is through IP routes created by Azure CNI. See [Transparent Mode](https://docs.microsoft.com/azure/aks/faq#transparent-mode) for more information."
+                "description": "No bridge is created. Intra-VM Pod to Pod communication is through IP routes created by Azure CNI. See [Transparent Mode](https://learn.microsoft.com/azure/aks/faq#transparent-mode) for more information."
               },
               {
                 "value": "bridge",
@@ -3209,11 +3209,11 @@
             "values": [
               {
                 "value": "loadBalancer",
-                "description": "The load balancer is used for egress through an AKS assigned public IP. This supports Kubernetes services of type 'loadBalancer'. For more information see [outbound type loadbalancer](https://docs.microsoft.com/azure/aks/egress-outboundtype#outbound-type-of-loadbalancer)."
+                "description": "The load balancer is used for egress through an AKS assigned public IP. This supports Kubernetes services of type 'loadBalancer'. For more information see [outbound type loadbalancer](https://learn.microsoft.com/azure/aks/egress-outboundtype#outbound-type-of-loadbalancer)."
               },
               {
                 "value": "userDefinedRouting",
-                "description": "Egress paths must be defined by the user. This is an advanced scenario and requires proper network configuration. For more information see [outbound type userDefinedRouting](https://docs.microsoft.com/azure/aks/egress-outboundtype#outbound-type-of-userdefinedrouting)."
+                "description": "Egress paths must be defined by the user. This is an advanced scenario and requires proper network configuration. For more information see [outbound type userDefinedRouting](https://learn.microsoft.com/azure/aks/egress-outboundtype#outbound-type-of-userdefinedrouting)."
               },
               {
                 "value": "managedNATGateway",
@@ -3227,7 +3227,7 @@
           },
           "default": "loadBalancer",
           "title": "The outbound (egress) routing method.",
-          "description": "This can only be set at cluster creation time and cannot be changed later. For more information see [egress outbound type](https://docs.microsoft.com/azure/aks/egress-outboundtype)."
+          "description": "This can only be set at cluster creation time and cannot be changed later. For more information see [egress outbound type](https://learn.microsoft.com/azure/aks/egress-outboundtype)."
         },
         "loadBalancerSku": {
           "type": "string",
@@ -3241,7 +3241,7 @@
             "values": [
               {
                 "value": "standard",
-                "description": "Use a a standard Load Balancer. This is the recommended Load Balancer SKU. For more information about on working with the load balancer in the managed cluster, see the [standard Load Balancer](https://docs.microsoft.com/azure/aks/load-balancer-standard) article."
+                "description": "Use a a standard Load Balancer. This is the recommended Load Balancer SKU. For more information about on working with the load balancer in the managed cluster, see the [standard Load Balancer](https://learn.microsoft.com/azure/aks/load-balancer-standard) article."
               },
               {
                 "value": "basic",
@@ -3250,7 +3250,7 @@
             ]
           },
           "title": "The load balancer sku for the managed cluster.",
-          "description": "The default is 'standard'. See [Azure Load Balancer SKUs](https://docs.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs."
+          "description": "The default is 'standard'. See [Azure Load Balancer SKUs](https://learn.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs."
         },
         "loadBalancerProfile": {
           "$ref": "#/definitions/ManagedClusterLoadBalancerProfile",
@@ -3334,7 +3334,7 @@
         }
       },
       "title": "Planned maintenance configuration, used to configure when updates can be deployed to a Managed Cluster.",
-      "description": "See [planned maintenance](https://docs.microsoft.com/azure/aks/planned-maintenance) for more information about planned maintenance."
+      "description": "See [planned maintenance](https://learn.microsoft.com/azure/aks/planned-maintenance) for more information about planned maintenance."
     },
     "MaintenanceConfigurationProperties": {
       "type": "object",
@@ -3754,7 +3754,7 @@
         "kubernetesVersion": {
           "type": "string",
           "title": "The version of Kubernetes specified by the user.",
-          "description": "Both patch version <major.minor.patch> (e.g. 1.20.13) and <major.minor> (e.g. 1.20) are supported. When <major.minor> is specified, the latest supported GA patch version is chosen automatically. Updating the cluster with the same <major.minor> once it has been created (e.g. 1.14.x -> 1.14) will not trigger an upgrade, even if a newer patch version is available. When you upgrade a supported AKS cluster, Kubernetes minor versions cannot be skipped. All upgrades must be performed sequentially by major version number. For example, upgrades between 1.14.x -> 1.15.x or 1.15.x -> 1.16.x are allowed, however 1.14.x -> 1.16.x is not allowed. See [upgrading an AKS cluster](https://docs.microsoft.com/azure/aks/upgrade-cluster) for more details."
+          "description": "Both patch version <major.minor.patch> (e.g. 1.20.13) and <major.minor> (e.g. 1.20) are supported. When <major.minor> is specified, the latest supported GA patch version is chosen automatically. Updating the cluster with the same <major.minor> once it has been created (e.g. 1.14.x -> 1.14) will not trigger an upgrade, even if a newer patch version is available. When you upgrade a supported AKS cluster, Kubernetes minor versions cannot be skipped. All upgrades must be performed sequentially by major version number. For example, upgrades between 1.14.x -> 1.15.x or 1.15.x -> 1.16.x are allowed, however 1.14.x -> 1.16.x is not allowed. See [upgrading an AKS cluster](https://learn.microsoft.com/azure/aks/upgrade-cluster) for more details."
         },
         "currentKubernetesVersion": {
           "readOnly": true,
@@ -3818,7 +3818,7 @@
         "podIdentityProfile": {
           "$ref": "#/definitions/ManagedClusterPodIdentityProfile",
           "title": "The pod identity profile of the Managed Cluster.",
-          "description": "See [use AAD pod identity](https://docs.microsoft.com/azure/aks/use-azure-ad-pod-identity) for more details on AAD pod identity integration."
+          "description": "See [use AAD pod identity](https://learn.microsoft.com/azure/aks/use-azure-ad-pod-identity) for more details on AAD pod identity integration."
         },
         "oidcIssuerProfile": {
           "$ref": "#/definitions/ManagedClusterOIDCIssuerProfile",
@@ -4001,7 +4001,7 @@
         "disableLocalAccounts": {
           "type": "boolean",
           "title": "If local accounts should be disabled on the Managed Cluster.",
-          "description": "If set to true, getting static credentials will be disabled for this cluster. This must only be used on Managed Clusters that are AAD enabled. For more details see [disable local accounts](https://docs.microsoft.com/azure/aks/managed-aad#disable-local-accounts-preview)."
+          "description": "If set to true, getting static credentials will be disabled for this cluster. This must only be used on Managed Clusters that are AAD enabled. For more details see [disable local accounts](https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts-preview)."
         },
         "httpProxyConfig": {
           "$ref": "#/definitions/ManagedClusterHTTPProxyConfig",
@@ -4068,17 +4068,17 @@
             "type": "string"
           },
           "title": "The IP ranges authorized to access the Kubernetes API server.",
-          "description": "IP ranges are specified in CIDR format, e.g. 137.117.106.88/29. This feature is not compatible with clusters that use Public IP Per Node, or clusters that are using a Basic Load Balancer. For more information see [API server authorized IP ranges](https://docs.microsoft.com/azure/aks/api-server-authorized-ip-ranges)."
+          "description": "IP ranges are specified in CIDR format, e.g. 137.117.106.88/29. This feature is not compatible with clusters that use Public IP Per Node, or clusters that are using a Basic Load Balancer. For more information see [API server authorized IP ranges](https://learn.microsoft.com/azure/aks/api-server-authorized-ip-ranges)."
         },
         "enablePrivateCluster": {
           "type": "boolean",
           "title": "Whether to create the cluster as a private cluster or not.",
-          "description": "For more details, see [Creating a private AKS cluster](https://docs.microsoft.com/azure/aks/private-clusters)."
+          "description": "For more details, see [Creating a private AKS cluster](https://learn.microsoft.com/azure/aks/private-clusters)."
         },
         "privateDNSZone": {
           "type": "string",
           "title": "The private DNS zone mode for the cluster.",
-          "description": "The default is System. For more details see [configure private DNS zone](https://docs.microsoft.com/azure/aks/private-clusters#configure-private-dns-zone). Allowed values are 'system' and 'none'."
+          "description": "The default is System. For more details see [configure private DNS zone](https://learn.microsoft.com/azure/aks/private-clusters#configure-private-dns-zone). Allowed values are 'system' and 'none'."
         },
         "enablePrivateClusterPublicFQDN": {
           "type": "boolean",
@@ -4107,7 +4107,7 @@
         "type": {
           "type": "string",
           "title": "The type of identity used for the managed cluster.",
-          "description": "For more information see [use managed identities in AKS](https://docs.microsoft.com/azure/aks/use-managed-identity).",
+          "description": "For more information see [use managed identities in AKS](https://learn.microsoft.com/azure/aks/use-managed-identity).",
           "enum": [
             "SystemAssigned",
             "UserAssigned",
@@ -4310,7 +4310,7 @@
             ]
           },
           "title": "The upgrade channel for auto upgrade. The default is 'none'.",
-          "description": "For more information see [setting the AKS cluster auto-upgrade channel](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel)."
+          "description": "For more information see [setting the AKS cluster auto-upgrade channel](https://learn.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel)."
         }
       },
       "description": "Auto upgrade profile for a managed cluster."
@@ -4351,7 +4351,7 @@
         }
       },
       "title": "AADProfile specifies attributes for Azure Active Directory integration.",
-      "description": "For more details see [managed AAD on AKS](https://docs.microsoft.com/azure/aks/managed-aad)."
+      "description": "For more details see [managed AAD on AKS](https://learn.microsoft.com/azure/aks/managed-aad)."
     },
     "ManagedClusterAddonProfile": {
       "type": "object",
@@ -4507,7 +4507,7 @@
         "allowNetworkPluginKubenet": {
           "type": "boolean",
           "title": "Whether pod identity is allowed to run on clusters with Kubenet networking.",
-          "description": "Running in Kubenet is disabled by default due to the security related nature of AAD Pod Identity and the risks of IP spoofing. See [using Kubenet network plugin with AAD Pod Identity](https://docs.microsoft.com/azure/aks/use-azure-ad-pod-identity#using-kubenet-network-plugin-with-azure-active-directory-pod-managed-identities) for more information."
+          "description": "Running in Kubenet is disabled by default due to the security related nature of AAD Pod Identity and the risks of IP spoofing. See [using Kubenet network plugin with AAD Pod Identity](https://learn.microsoft.com/azure/aks/use-azure-ad-pod-identity#using-kubenet-network-plugin-with-azure-active-directory-pod-managed-identities) for more information."
         },
         "userAssignedIdentities": {
           "description": "The pod identities to use in the cluster.",
@@ -4527,7 +4527,7 @@
         }
       },
       "title": "The pod identity profile of the Managed Cluster.",
-      "description": "See [use AAD pod identity](https://docs.microsoft.com/azure/aks/use-azure-ad-pod-identity) for more details on pod identity integration."
+      "description": "See [use AAD pod identity](https://learn.microsoft.com/azure/aks/use-azure-ad-pod-identity) for more details on pod identity integration."
     },
     "ManagedClusterOIDCIssuerProfile": {
       "type": "object",
@@ -4748,7 +4748,7 @@
         "values": [
           {
             "value": "Spot",
-            "description": "Spot priority VMs will be used. There is no SLA for spot nodes. See [spot on AKS](https://docs.microsoft.com/azure/aks/spot-node-pool) for more information."
+            "description": "Spot priority VMs will be used. There is no SLA for spot nodes. See [spot on AKS](https://learn.microsoft.com/azure/aks/spot-node-pool) for more information."
           },
           {
             "value": "Regular",
@@ -4780,13 +4780,13 @@
         ]
       },
       "title": "The Virtual Machine Scale Set eviction policy.",
-      "description": "The eviction policy specifies what to do with the VM when it is evicted. The default is Delete. For more information about eviction see [spot VMs](https://docs.microsoft.com/azure/virtual-machines/spot-vms)"
+      "description": "The eviction policy specifies what to do with the VM when it is evicted. The default is Delete. For more information about eviction see [spot VMs](https://learn.microsoft.com/azure/virtual-machines/spot-vms)"
     },
     "SpotMaxPrice": {
       "type": "number",
       "default": -1,
       "title": "The max price (in US Dollars) you are willing to pay for spot instances. Possible values are any decimal value greater than zero or -1 which indicates default price to be up-to on-demand.",
-      "description": "Possible values are any decimal value greater than zero or -1 which indicates the willingness to pay any on-demand price. For more details on spot pricing, see [spot VMs pricing](https://docs.microsoft.com/azure/virtual-machines/spot-vms#pricing)"
+      "description": "Possible values are any decimal value greater than zero or -1 which indicates the willingness to pay any on-demand price. For more details on spot pricing, see [spot VMs pricing](https://learn.microsoft.com/azure/virtual-machines/spot-vms#pricing)"
     },
     "ScaleDownMode": {
       "type": "string",
@@ -4808,7 +4808,7 @@
           }
         ]
       },
-      "description": "Describes how VMs are added to or removed from Agent Pools. See [billing states](https://docs.microsoft.com/azure/virtual-machines/states-billing)."
+      "description": "Describes how VMs are added to or removed from Agent Pools. See [billing states](https://learn.microsoft.com/azure/virtual-machines/states-billing)."
     },
     "ProximityPlacementGroupID": {
       "type": "string",
@@ -4909,7 +4909,7 @@
         "tier": {
           "type": "string",
           "title": "The tier of a managed cluster SKU.",
-          "description": "If not specified, the default is 'Free'. See [uptime SLA](https://docs.microsoft.com/azure/aks/uptime-sla) for more details.",
+          "description": "If not specified, the default is 'Free'. See [uptime SLA](https://learn.microsoft.com/azure/aks/uptime-sla) for more details.",
           "enum": [
             "Paid",
             "Free"
@@ -5113,7 +5113,7 @@
         ]
       },
       "title": "The OS disk type to be used for machines in the agent pool.",
-      "description": "The default is 'Ephemeral' if the VM supports it and has a cache disk larger than the requested OSDiskSizeGB. Otherwise, defaults to 'Managed'. May not be changed after creation. For more information see [Ephemeral OS](https://docs.microsoft.com/azure/aks/cluster-configuration#ephemeral-os)."
+      "description": "The default is 'Ephemeral' if the VM supports it and has a cache disk larger than the requested OSDiskSizeGB. Otherwise, defaults to 'Managed'. May not be changed after creation. For more information see [Ephemeral OS](https://learn.microsoft.com/azure/aks/cluster-configuration#ephemeral-os)."
     },
     "KubeletDiskType": {
       "type": "string",
@@ -5161,7 +5161,7 @@
     },
     "KubeletConfig": {
       "title": "Kubelet configurations of agent nodes.",
-      "description": "See [AKS custom node configuration](https://docs.microsoft.com/azure/aks/custom-node-configuration) for more details.",
+      "description": "See [AKS custom node configuration](https://learn.microsoft.com/azure/aks/custom-node-configuration) for more details.",
       "type": "object",
       "properties": {
         "cpuManagerPolicy": {
@@ -5227,7 +5227,7 @@
     },
     "LinuxOSConfig": {
       "title": "OS configurations of Linux agent nodes.",
-      "description": "See [AKS custom node configuration](https://docs.microsoft.com/azure/aks/custom-node-configuration) for more details.",
+      "description": "See [AKS custom node configuration](https://learn.microsoft.com/azure/aks/custom-node-configuration) for more details.",
       "type": "object",
       "properties": {
         "sysctls": {
@@ -5628,7 +5628,7 @@
         },
         "keyId": {
           "type": "string",
-          "description": "Identifier of Azure Key Vault key. See [key identifier format](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty."
+          "description": "Identifier of Azure Key Vault key. See [key identifier format](https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty."
         },
         "keyVaultNetworkAccess": {
           "type": "string",

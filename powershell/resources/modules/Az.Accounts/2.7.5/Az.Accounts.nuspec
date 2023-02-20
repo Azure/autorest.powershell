@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Azure/azure-powershell</projectUrl>
     <description>Microsoft Azure PowerShell - Accounts credential management cmdlets for Azure Resource Manager in Windows PowerShell and PowerShell Core.
 
-For more information on account credential management, please visit the following: https://docs.microsoft.com/powershell/azure/authenticate-azureps</description>
+For more information on account credential management, please visit the following: https://learn.microsoft.com/powershell/azure/authenticate-azureps</description>
     <releaseNotes>* Added 'SshCredentialFactory' to support get ssh credential of vm from msal.
 * Fixed the bug of cmdlet fails when -DefaultProfile is set to service principal login context. [#16617]
 * Fixed the issue that authorization does not work in Dogfood environment</releaseNotes>
