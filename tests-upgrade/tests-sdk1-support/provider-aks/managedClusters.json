@@ -3120,7 +3120,7 @@
               },
               {
                 "value": "none",
-                "description": "No CNI plugin is pre-installed. See [BYO CNI](https://learn.microsoft.com/en-us/azure/aks/use-byo-cni) for more information."
+                "description": "No CNI plugin is pre-installed. See [BYO CNI](https://learn.microsoft.com/azure/aks/use-byo-cni) for more information."
               }
             ]
           },
@@ -5628,7 +5628,7 @@
         },
         "keyId": {
           "type": "string",
-          "description": "Identifier of Azure Key Vault key. See [key identifier format](https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty."
+          "description": "Identifier of Azure Key Vault key. See [key identifier format](https://learn.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty."
         },
         "keyVaultNetworkAccess": {
           "type": "string",

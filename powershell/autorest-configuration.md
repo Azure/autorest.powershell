@@ -34,7 +34,7 @@ pipeline-model: v3
 ``` yaml
 module-version: 0.1.0
 skip-model-cmdlets: false
-help-link-prefix: https://learn.microsoft.com/en-us/powershell/module/
+help-link-prefix: https://learn.microsoft.com/powershell/module/
 metadata:
   authors: ''
   owners: ''

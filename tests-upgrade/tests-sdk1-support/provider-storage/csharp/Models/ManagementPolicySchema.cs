@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Management.Storage.Models
 
     /// <summary>
     /// The Storage Account ManagementPolicies Rules. See more details in:
-    /// https://learn.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
+    /// https://learn.microsoft.com/azure/storage/common/storage-lifecycle-managment-concepts.
     /// </summary>
     public partial class ManagementPolicySchema
     {
@@ -31,7 +31,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// </summary>
         /// <param name="rules">The Storage Account ManagementPolicies Rules.
         /// See more details in:
-        /// https://learn.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.</param>
+        /// https://learn.microsoft.com/azure/storage/common/storage-lifecycle-managment-concepts.</param>
         public ManagementPolicySchema(System.Collections.Generic.IList<ManagementPolicyRule> rules)
         {
             this.Rules = rules;
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.Management.Storage.Models
         /// <summary>
         /// Gets or sets the Storage Account ManagementPolicies Rules. See more
         /// details in:
-        /// https://learn.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
+        /// https://learn.microsoft.com/azure/storage/common/storage-lifecycle-managment-concepts.
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "rules")]
         public System.Collections.Generic.IList<ManagementPolicyRule> Rules { get; set; }

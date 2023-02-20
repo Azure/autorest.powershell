@@ -33,7 +33,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// management service. The default is false.</param>
         /// <param name="keyId">Identifier of Azure Key Vault key. See [key
         /// identifier
-        /// format](https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name)
+        /// format](https://learn.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name)
         /// for more details. When Azure Key Vault key management service is
         /// enabled, this field is required and must be a valid key identifier.
         /// When Azure Key Vault key management service is disabled, leave the
@@ -67,7 +67,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
 
         /// <summary>
         /// Gets or sets identifier of Azure Key Vault key. See [key identifier
-        /// format](https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name)
+        /// format](https://learn.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name)
         /// for more details. When Azure Key Vault key management service is
         /// enabled, this field is required and must be a valid key identifier.
         /// When Azure Key Vault key management service is disabled, leave the
