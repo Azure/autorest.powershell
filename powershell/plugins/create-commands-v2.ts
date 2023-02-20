@@ -453,12 +453,13 @@ export /* @internal */ class Inferrer {
     //   // we have an operation that has path parameters, a good canididate for piping for identity.
     //   await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
     // }
-    //pathParams[0].language.default.name
 
     //assume that all path parameters placed following the order in the actual path
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
-    for (let i = pathParams.length - 1; i >= 0; i--) {
-      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+    if (!dvi) {
+      for (let i = pathParams.length - 1; i >= 0; i--) {
+        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+      }
     }
   }
 

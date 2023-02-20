@@ -1099,10 +1099,15 @@ export class CmdletClass extends Class {
                   .where(p => p.metadata.parameterDefinition)
                   .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
                 if (each.name && serializedName) {
-                  pathParams += each.name ? `$"/${serializedName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}";` : '';
+                  if (!pathParams) {
+                    pathParams += '$"';
+                  }
+                  pathParams += `/${serializedName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}`;
                 }
               });
+
               if (pathParams && pathParams.length > 0) {
+                pathParams += '";';
                 yield `this.InputObject.Id += ${pathParams}`;
               }
               yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`;
