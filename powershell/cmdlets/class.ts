@@ -344,6 +344,7 @@ export class CmdletClass extends Class {
   private hasStreamOutput: boolean;
   private outFileParameter?: Property;
   private clientsidePagination?: boolean;
+  private inputObjectParameterName: string;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -366,6 +367,7 @@ export class CmdletClass extends Class {
 
     this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
     this.clientsidePagination = !!operation.details.csharp.clientsidePagination && !!operation.callGraph[0].language.csharp?.pageable;
+    this.inputObjectParameterName = 'InputObject';
 
   }
 
@@ -1056,8 +1058,8 @@ export class CmdletClass extends Class {
                   const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
                   if (vp && each.expression === dotnet.Null) {
                     idOpParamsFromIdentity.push({
-                      name: `InputObject.${vp.name}`,
-                      value: `InputObject.${vp.name} ?? ${defaultOfType}`
+                      name: `${$this.inputObjectParameterName}.${vp.name}`,
+                      value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
                     });
                     return;
                   }
@@ -1078,14 +1080,14 @@ export class CmdletClass extends Class {
               });
             }
 
-            const parameters = [toExpression('InputObject.Id'), ...noneIdOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+            const parameters = [toExpression(`${$this.inputObjectParameterName}.Id`), ...noneIdOpParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
 
             const identityFromPathParams = function* () {
               yield '// try to call with PATH parameters from Input Object';
               if (idschema) {
                 for (const opParam of idOpParamsFromIdentity) {
                   if (opParam && opParam.name) {
-                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`);
+                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
                   }
                 }
                 yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParamsFromIdentity.map(each => toExpression(each.value)), ...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
@@ -1108,7 +1110,7 @@ export class CmdletClass extends Class {
 
               if (pathParams && pathParams.length > 0) {
                 pathParams += '";';
-                yield `this.InputObject.Id += ${pathParams}`;
+                yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
               }
               yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`;
             };
@@ -1117,7 +1119,7 @@ export class CmdletClass extends Class {
               if (serializationMode) {
                 parameters.push(serializationMode);
               }
-              yield If('InputObject?.Id != null', identityParams);
+              yield If(`${$this.inputObjectParameterName}?.Id != null`, identityParams);
               yield Else(identityFromPathParams);
             } else {
               yield identityFromPathParams;
@@ -1350,7 +1352,6 @@ export class CmdletClass extends Class {
     });
   }
 
-
   private NewAddPowershellParameters(operation: CommandOperation) {
     const vps = operation.details.csharp.virtualParameters || {
       body: [],
@@ -1552,11 +1553,11 @@ export class CmdletClass extends Class {
     }
 
     if (this.isViaIdentity) {
+      this.inputObjectParameterName = `${this.name.split('ViaIdentity')[1]}InputObject`;
       // add in the pipeline parameter for the identity
-
       const idschema = values(this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
       const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state);
-      const idParam = this.add(new BackedProperty('InputObject', idtd, {
+      const idParam = this.add(new BackedProperty(this.inputObjectParameterName, idtd, {
         description: 'Identity Parameter'
       }));
       const parameters = [new LiteralExpression('Mandatory = true'), new LiteralExpression('HelpMessage = "Identity Parameter"'), new LiteralExpression('ValueFromPipeline = true')];

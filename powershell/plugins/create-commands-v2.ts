@@ -449,7 +449,7 @@ export /* @internal */ class Inferrer {
     let [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each?.protocol?.http?.in === ParameterLocation.Path);
     const dvi = await state.getValue('disable-via-identity', false);
 
-    // if (!dvi && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
+    // if (!dvi && length(pathParams) > 0 && variant.action. != 'list') {
     //   // we have an operation that has path parameters, a good canididate for piping for identity.
     //   await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
     // }
@@ -458,12 +458,20 @@ export /* @internal */ class Inferrer {
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
     if (!dvi) {
       for (let i = pathParams.length - 1; i >= 0; i--) {
-        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+        if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
+          await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+        } else {
+          const resourceName = operation.requests ? this.getResourceName(operation.requests[0].protocol.http?.path, pathParams[i].language.default.name) : pathParams[i].language.default.name;
+          await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+        }
       }
     }
   }
 
   reservedPathParam = new Set<string>(['SubscriptionId', 'resourceGroupName']);
+  getResourceName(path: string, name: string) {
+    return pluralizationService.singularize(path.slice(path.search(new RegExp(`/[^/]*/{${name}}`))).split('/')[1]);
+  }
 
   createCommandVariant(action: string, subject: Array<string>, variant: Array<string>, model: PwshModel): CommandVariant {
     const verb = this.getPowerShellVerb(action);
@@ -472,7 +480,7 @@ export /* @internal */ class Inferrer {
       // so, only include the operation name in the group name if it's anything else
       if (action.toLowerCase() !== 'post') {
         subject = [action, ...subject];
-      }
+      } 2;
     }
 
     return {
