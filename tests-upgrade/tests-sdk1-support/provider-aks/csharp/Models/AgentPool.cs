@@ -225,7 +225,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// VM size availability varies by region. If a node contains
         /// insufficient compute resources (memory, cpu, etc) pods might fail
         /// to run correctly. For more details on restricted VM sizes, see:
-        /// https://docs.microsoft.com/azure/aks/quotas-skus-regions
+        /// https://learn.microsoft.com/azure/aks/quotas-skus-regions
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.vmSize")]
         public string VMSize { get; set; }
@@ -344,7 +344,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// version must be within two minor versions of the control plane
         /// version. The node pool version cannot be greater than the control
         /// plane version. For more information see [upgrading a node
-        /// pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).
+        /// pool](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.orchestratorVersion")]
         public string OrchestratorVersion { get; set; }
@@ -396,7 +396,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// workloads, where a console needs to make a direct connection to a
         /// cloud virtual machine to minimize hops. For more information see
         /// [assigning a public IP per
-        /// node](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools).
+        /// node](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools).
         /// The default is false.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableNodePublicIP")]
@@ -442,7 +442,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// Possible values are any decimal value greater than zero or -1 which
         /// indicates the willingness to pay any on-demand price. For more
         /// details on spot pricing, see [spot VMs
-        /// pricing](https://docs.microsoft.com/azure/virtual-machines/spot-vms#pricing)
+        /// pricing](https://learn.microsoft.com/azure/virtual-machines/spot-vms#pricing)
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.spotMaxPrice")]
         public double? SpotMaxPrice { get; set; }
@@ -487,7 +487,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// <remarks>
         /// This is only supported on certain VM sizes and in certain Azure
         /// regions. For more information, see:
-        /// https://docs.microsoft.com/azure/aks/enable-host-encryption
+        /// https://learn.microsoft.com/azure/aks/enable-host-encryption
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableEncryptionAtHost")]
         public bool? EnableEncryptionAtHost { get; set; }
@@ -503,7 +503,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </summary>
         /// <remarks>
         /// See [Add a FIPS-enabled node
-        /// pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#add-a-fips-enabled-node-pool-preview)
+        /// pool](https://learn.microsoft.com/azure/aks/use-multiple-node-pools#add-a-fips-enabled-node-pool-preview)
         /// for more details.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.enableFIPS")]
@@ -526,7 +526,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// This is of the form:
         /// /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}.
         /// For more information see [Azure dedicated
-        /// hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).
+        /// hosts](https://learn.microsoft.com/azure/virtual-machines/dedicated-hosts).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "properties.hostGroupID")]
         public string HostGroupId { get; set; }

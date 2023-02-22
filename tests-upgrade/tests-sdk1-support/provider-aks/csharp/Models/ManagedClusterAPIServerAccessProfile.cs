@@ -64,7 +64,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// This feature is not compatible with clusters that use Public IP Per
         /// Node, or clusters that are using a Basic Load Balancer. For more
         /// information see [API server authorized IP
-        /// ranges](https://docs.microsoft.com/azure/aks/api-server-authorized-ip-ranges).
+        /// ranges](https://learn.microsoft.com/azure/aks/api-server-authorized-ip-ranges).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "authorizedIPRanges")]
         public System.Collections.Generic.IList<string> AuthorizedIPRanges { get; set; }
@@ -75,7 +75,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </summary>
         /// <remarks>
         /// For more details, see [Creating a private AKS
-        /// cluster](https://docs.microsoft.com/azure/aks/private-clusters).
+        /// cluster](https://learn.microsoft.com/azure/aks/private-clusters).
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "enablePrivateCluster")]
         public bool? EnablePrivateCluster { get; set; }
@@ -85,7 +85,7 @@ namespace Microsoft.Azure.Management.ContainerService.Models
         /// </summary>
         /// <remarks>
         /// The default is System. For more details see [configure private DNS
-        /// zone](https://docs.microsoft.com/azure/aks/private-clusters#configure-private-dns-zone).
+        /// zone](https://learn.microsoft.com/azure/aks/private-clusters#configure-private-dns-zone).
         /// Allowed values are 'system' and 'none'.
         /// </remarks>
         [Newtonsoft.Json.JsonProperty(PropertyName = "privateDNSZone")]
