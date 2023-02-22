@@ -1553,7 +1553,7 @@ export class CmdletClass extends Class {
     }
 
     if (this.isViaIdentity) {
-      this.inputObjectParameterName = `${this.name.split('ViaIdentity')[1]}InputObject`;
+      this.inputObjectParameterName = `${this.name.split('ViaIdentity')[1].split('Expanded')[0]}InputObject`;
       // add in the pipeline parameter for the identity
       const idschema = values(this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
       const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state);
