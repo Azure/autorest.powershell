@@ -904,12 +904,12 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
   for (const operation of values(state.model.commands.operations)) {
     const details = operation.details.csharp;
 
-    let fname = `${details.verb} -${details.subject} -${details.name} `;
+    let fname = `${details.verb} -${details.subjectPrefix}${details.subject} -${details.name} `;
     let n = 1;
 
     while (operationIdentities.has(fname)) {
       details.name = pascalCase(`${details.name.replace(/\d*$/g, '')} ${n++}`);
-      fname = pascalCase(`${details.verb} -${details.subject} -${details.name}`);
+      fname = pascalCase(`${details.verb} -${details.subjectPrefix}${details.subject} -${details.name}`);
     }
     operationIdentities.add(fname);
   }
