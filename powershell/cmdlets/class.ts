@@ -1027,6 +1027,7 @@ export class CmdletClass extends Class {
           const noneIdOpParams = operationParameters.filter(each => !each.isPathParam);
           const idOpParams: Array<{ name: string | undefined; value: string; }> = [];
           const idOpParamsFromIdentity: Array<{ name: string; value: string; }> = [];
+          const idOpParamsNotFromIdentity: Array<{ name: string | undefined; value: string; }> = [];
           const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
           let serializationMode = null;
@@ -1044,10 +1045,12 @@ export class CmdletClass extends Class {
               operationParameters.forEach(each => {
                 const pascalName = pascalCase(`${each.name}`);
                 if (!each.isPathParam) {
-                  idOpParams.push({
+                  const param = {
                     name: undefined,
                     value: valueOf(each.expression)
-                  });
+                  };
+                  idOpParams.push(param);
+                  idOpParamsNotFromIdentity.push(param);
                   return;
                 }
                 const match = props.find(p => pascalCase(p.serializedName) === pascalName);
@@ -1057,25 +1060,31 @@ export class CmdletClass extends Class {
                   // match up vp name
                   const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
                   if (vp && each.expression === dotnet.Null) {
-                    idOpParamsFromIdentity.push({
+                    const param = {
                       name: `${$this.inputObjectParameterName}.${vp.name}`,
                       value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
-                    });
+                    };
+                    idOpParams.push(param);
+                    idOpParamsFromIdentity.push(param);
                     return;
                   }
                   // fall back!
 
                   console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
-                  idOpParams.push({
+                  const param = {
                     name: `${pascalCase(match.language.csharp?.name ?? '')}`,
                     value: `${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
-                  });
+                  };
+                  idOpParams.push(param);
+                  idOpParamsNotFromIdentity.push(param);
                 } else {
                   console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
-                  idOpParams.push({
+                  const param = {
                     name: `${pascalName}`,
                     value: `${pascalName}`
-                  });
+                  };
+                  idOpParams.push(param);
+                  idOpParamsNotFromIdentity.push(param);
                 }
               });
             }
@@ -1090,13 +1099,13 @@ export class CmdletClass extends Class {
                     yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
                   }
                 }
-                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParamsFromIdentity.map(each => toExpression(each.value)), ...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
               }
             };
 
             const identityParams = function* () {
               let pathParams = '';
-              idOpParams.forEach(each => {
+              idOpParamsNotFromIdentity.forEach(each => {
                 const serializedName = values($this.properties)
                   .where(p => p.metadata.parameterDefinition)
                   .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
