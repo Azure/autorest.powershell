@@ -480,7 +480,7 @@ export /* @internal */ class Inferrer {
       // so, only include the operation name in the group name if it's anything else
       if (action.toLowerCase() !== 'post') {
         subject = [action, ...subject];
-      } 2;
+      }
     }
 
     return {
