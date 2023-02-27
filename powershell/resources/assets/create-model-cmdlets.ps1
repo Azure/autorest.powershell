@@ -149,7 +149,7 @@ Create an in-memory object for ${ObjectType}.
 .Outputs
 ${ObjectTypeWithNamespace}
 .Link
-${$project.helpLinkPrefix}az.${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
+${$project.helpLinkPrefix}az.${$project.rootModuleName}/new-Az${ModulePrefix}${ObjectType}Object
 #>
 function New-Az${ModulePrefix}${ObjectType}Object {
     [OutputType('${ObjectTypeWithNamespace}')]
