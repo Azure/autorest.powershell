@@ -12,10 +12,13 @@ function CreateModelCmdlet {
     }
 
     $ModelCsPath = Join-Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.apiFolder)}') 'Models'
-    $ModuleName = '${$project.subjectPrefix}'
     $OutputDir = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.modelCmdletFolder)}'
     $null = New-Item -ItemType Directory -Force -Path $OutputDir
-
+    if ('${$project.rootModuleName}'.length -gt 0) {
+        $ModuleName = '${$project.rootModuleName}'
+    } else {
+        $ModuleName = '${$project.moduleName}'
+    }
     $CsFiles = Get-ChildItem -Path $ModelCsPath -Recurse -Filter *.cs
     $Content = ''
     $null = $CsFiles | ForEach-Object -Process { if ($_.Name.Split('.').count -eq 2 )
@@ -53,10 +56,10 @@ function CreateModelCmdlet {
         $ObjectType = $Model
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
         # remove duplicated module name
-        if ($ObjectType.StartsWith($ModuleName)) {
+        if ($ObjectType.StartsWith('${$project.subjectPrefix}')) {
             $ModulePrefix = ''
         } else {
-            $ModulePrefix = $ModuleName
+            $ModulePrefix = '${$project.subjectPrefix}'
         }
         $OutputPath = Join-Path -ChildPath "New-Az${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
 
@@ -149,7 +152,7 @@ Create an in-memory object for ${ObjectType}.
 .Outputs
 ${ObjectTypeWithNamespace}
 .Link
-${$project.helpLinkPrefix}az.${$project.rootModuleName}/new-Az${ModulePrefix}${ObjectType}Object
+${$project.helpLinkPrefix}${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
 #>
 function New-Az${ModulePrefix}${ObjectType}Object {
     [OutputType('${ObjectTypeWithNamespace}')]
