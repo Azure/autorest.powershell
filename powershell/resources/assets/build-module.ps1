@@ -120,6 +120,10 @@ $null = New-Item -ItemType Directory -Force -Path $examplesFolder
 
 Write-Host -ForegroundColor Green 'Creating cmdlets for specified models...'
 $modelCmdlets = @(${$project.modelCmdletsInPS})
+$modelCmdletFolder = Join-Path (Join-Path $PSScriptRoot '${$project.customFolder}') 'autogen-model-cmdlets'
+if (Test-Path $modelCmdletFolder) {
+  $null = Remove-Item -Force -Recurse -Path $modelCmdletFolder
+}
 if ($modelCmdlets.Count -gt 0) {
   . (Join-Path $PSScriptRoot 'create-model-cmdlets.ps1')
   CreateModelCmdlet($modelCmdlets)
