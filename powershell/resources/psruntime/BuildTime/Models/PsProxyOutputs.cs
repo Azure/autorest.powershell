@@ -214,7 +214,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             {
                 return $@"
 {Indent}{Indent}if ($null -eq [Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet]::PowerShellVersion) {{
-{Indent}{Indent}{Indent}[Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet]::PowerShellVersion = $Host.Version.ToString()
+{Indent}{Indent}{Indent}[Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet]::PowerShellVersion = $PSVersionTable.PSVersion.ToString()
 {Indent}{Indent}}}         
 {Indent}{Indent}$preTelemetryId = [Microsoft.WindowsAzure.Commands.Common.MetricHelper]::TelemetryId
 {Indent}{Indent}if ($preTelemetryId -eq '') {{

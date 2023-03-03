@@ -685,8 +685,8 @@ export class CmdletClass extends Class {
     proxyUri.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     if (this.state.project.azure) {
-      this.defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: 'The credentials, account, tenant, and subscription used for communication with Azure' }));
-      this.defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "The credentials, account, tenant, and subscription used for communication with Azure."'] }));
+      this.defaultProfile = this.add(new Property('DefaultProfile', PSObject, { description: 'The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription' }));
+      this.defaultProfile.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = false', 'HelpMessage = "The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription."'] }));
       this.defaultProfile.add(new Attribute(ValidateNotNull));
       this.defaultProfile.add(new Attribute(Alias, { parameters: ['"AzureRMContext"', '"AzureCredential"'] }));
       this.defaultProfile.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Azure`] }));
