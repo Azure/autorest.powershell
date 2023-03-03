@@ -23,6 +23,7 @@ import { IParameter as NewIParameter } from '../utils/components';
 import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp';
 import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 import { HandlerDirective } from '../plugins/modifiers-v2';
+import { getChildResourceNameFromPath, getResourceNameFromPath } from '../utils/resourceName';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
@@ -1027,6 +1028,7 @@ export class CmdletClass extends Class {
           const noneIdOpParams = operationParameters.filter(each => !each.isPathParam);
           const idOpParams: Array<{ name: string | undefined; value: string; }> = [];
           const idOpParamsFromIdentity: Array<{ name: string; value: string; }> = [];
+          const idOpParamsFromIdentityserializedName: Array<string> = [];
           const idOpParamsNotFromIdentity: Array<{ name: string | undefined; value: string; }> = [];
           const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
 
@@ -1066,6 +1068,7 @@ export class CmdletClass extends Class {
                     };
                     idOpParams.push(param);
                     idOpParamsFromIdentity.push(param);
+                    idOpParamsFromIdentityserializedName.push(match.serializedName);
                     return;
                   }
                   // fall back!
@@ -1104,6 +1107,7 @@ export class CmdletClass extends Class {
             };
 
             const identityParams = function* () {
+              const path = $this.operation.callGraph?.[0].requests?.[0].protocol.http?.path;
               let pathParams = '';
               idOpParamsNotFromIdentity.forEach(each => {
                 const serializedName = values($this.properties)
@@ -1113,10 +1117,22 @@ export class CmdletClass extends Class {
                   if (!pathParams) {
                     pathParams += '$"';
                   }
-                  pathParams += `/${serializedName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}`;
+                  const resourceName = getResourceNameFromPath(path, serializedName);
+                  if (resourceName) {
+                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}`;
+                  }
                 }
               });
-
+              const hasPath = pathParams && pathParams.length > 0;
+              //add child resource to path for list operation
+              if ($this.operation.variant.startsWith('List') && idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]) {
+                const childResourceName = getChildResourceNameFromPath(path, idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]);
+                if (pathParams && pathParams.length > 0) {
+                  pathParams += `/${childResourceName}`;
+                } else {
+                  pathParams += `"/${childResourceName}`;
+                }
+              }
               if (pathParams && pathParams.length > 0) {
                 pathParams += '";';
                 yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;

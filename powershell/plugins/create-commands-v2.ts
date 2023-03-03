@@ -17,6 +17,7 @@ import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation } from '../utils/command-operation';
 import { OperationType } from '../utils/command-operation';
+import { getResourceNameFromPath } from '../utils/resourceName';
 
 type State = ModelState<PwshModel>;
 
@@ -461,17 +462,16 @@ export /* @internal */ class Inferrer {
         if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
           await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
         } else {
-          const resourceName = operation.requests ? this.getResourceName(operation.requests[0].protocol.http?.path, pathParams[i].language.default.name) : pathParams[i].language.default.name;
-          await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+          const resourceName = getResourceNameFromPath(operation.requests?.[0].protocol.http?.path, pathParams[i].language.default.name, true);
+          if (resourceName) {
+            await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+          }
         }
       }
     }
   }
 
   reservedPathParam = new Set<string>(['SubscriptionId', 'resourceGroupName']);
-  getResourceName(path: string, name: string) {
-    return pluralizationService.singularize(path.slice(path.search(new RegExp(`/[^/]*/{${name}}`))).split('/')[1]);
-  }
 
   createCommandVariant(action: string, subject: Array<string>, variant: Array<string>, model: PwshModel): CommandVariant {
     const verb = this.getPowerShellVerb(action);
