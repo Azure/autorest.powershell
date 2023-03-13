@@ -106,7 +106,7 @@ function CreateModelCmdlet {
                     continue
                 }
                 $Identifier = $Member.Identifier.Value
-                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
+                $Type = $Member.Type.ToString().replace('?', '').replace('<', '[').replace('>', ']').Split("::")[-1]
                 $ParameterDefinePropertyList = New-Object System.Collections.Generic.List[string]
                 if ($Required -and $mutability.Create -and $mutability.Update)
                 {
