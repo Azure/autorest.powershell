@@ -1409,7 +1409,7 @@ export class CmdletClass extends Class {
             const fixedArrayPropertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, true);
             cmdletParameter = new Property(vParam.name, fixedArrayPropertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}?.ToArray()${` ?? ${fixedArrayPropertyType.defaultOfType}`}`),
-              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = new ${propertyType.declaration}(value)`),
+              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = (value != null ? new ${propertyType.declaration}(value) : null)`),
               new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
             });
           }
