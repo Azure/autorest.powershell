@@ -106,7 +106,17 @@ function CreateModelCmdlet {
                     continue
                 }
                 $Identifier = $Member.Identifier.Value
-                $Type = $Member.Type.ToString().replace('?', '').replace('<', '[').replace('>', ']').Split("::")[-1]
+                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
+                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
+                if ($Type.StartsWith("System.Collections.Generic.List"))
+                {
+                    # if the type is a list, we need to convert it to array
+                    $matched = $Type -match '\<(?<Name>.+)\>$'
+                    if ($matched)
+                    {
+                        $Type = $matches.Name + '[]';
+                    }
+                }
                 $ParameterDefinePropertyList = New-Object System.Collections.Generic.List[string]
                 if ($Required -and $mutability.Create -and $mutability.Update)
                 {
