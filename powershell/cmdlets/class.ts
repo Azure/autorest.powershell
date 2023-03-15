@@ -493,33 +493,39 @@ export class CmdletClass extends Class {
     if ($this.state.project.autoSwitchView) {
       if (isEnumerable) {
         return function* () {
-          yield If(`0 == _responseSize && 1 == ${valueName}.Length`, function* () {
-            yield `_firstResponse = ${valueName}[0];`;
-            yield `_responseSize = 1;`;
-          });
-          yield Else(function* () {
-            yield $this.FlushResponse(false);
-            yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
-            yield `foreach(var value in ${valueName})`;
-            yield '{';
-            yield `  values.Add(PsExtensions.AddMultipleTypeNameIntoPSObject(value));`;
-            yield '}';
-            yield 'WriteObject(values, true); ';
-            yield `_responseSize = 2;`;
+          yield `var outputObjects = ${valueName};`;
+          yield If(`null != outputObjects`, function* () {
+            yield If(`0 == _responseSize && 1 == outputObjects.Length`, function* () {
+              yield `_firstResponse = outputObjects[0];`;
+              yield `_responseSize = 1;`;
+            });
+            yield Else(function* () {
+              yield $this.FlushResponse(false);
+              yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
+              yield `foreach(var value in outputObjects)`;
+              yield '{';
+              yield `  values.Add(PsExtensions.AddMultipleTypeNameIntoPSObject(value));`;
+              yield '}';
+              yield 'WriteObject(values, true); ';
+              yield `_responseSize = 2;`;
+            });
           });
         }
       } else {
-        return If(`null != ${valueName}`, function* () {
-          yield If(`0 == _responseSize`, function* () {
-            yield `_firstResponse = ${valueName};`;
-            yield `_responseSize = 1;`;
+        return function* () {
+          yield `var outputObject = ${valueName};`;
+          yield If(`null != outputObject`, function* () {
+            yield If(`0 == _responseSize`, function* () {
+              yield `_firstResponse = outputObject;`;
+              yield `_responseSize = 1;`;
+            });
+            yield Else(function* () {
+              yield $this.FlushResponse(false);
+              yield `WriteObject(PsExtensions.AddMultipleTypeNameIntoPSObject(outputObject));`;
+              yield `_responseSize = 2;`;
+            });
           });
-          yield Else(function* () {
-            yield $this.FlushResponse(false);
-            yield `WriteObject(PsExtensions.AddMultipleTypeNameIntoPSObject(${valueName}));`;
-            yield `_responseSize = 2;`;
-          });
-        });
+        }
       }
     } else {
       return `WriteObject(${valueName}, ${isEnumerable})`;
