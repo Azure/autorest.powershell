@@ -61,6 +61,7 @@ export async function powershellV2(service: Host) {
     await service.ProtectFiles(project.docsFolder);
     await service.ProtectFiles(project.examplesFolder);
     await service.ProtectFiles(project.resourcesFolder);
+    await service.ProtectFiles(project.uxFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
