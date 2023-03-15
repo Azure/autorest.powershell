@@ -107,6 +107,7 @@ export class Project extends codeDomProject {
   public docsFolder!: string;
   public examplesFolder!: string;
   public resourcesFolder!: string;
+  public uxFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
   public rootModuleName!: string;
@@ -239,6 +240,7 @@ export class Project extends codeDomProject {
     this.dependencyModuleFolder = await this.state.getValue('dependency-module-folder');
     this.examplesFolder = await this.state.getValue('examples-folder');
     this.resourcesFolder = await this.state.getValue('resources-folder');
+    this.uxFolder = await this.state.getValue('ux-folder');
 
     // File paths
     this.csproj = await this.state.getValue('csproj');
