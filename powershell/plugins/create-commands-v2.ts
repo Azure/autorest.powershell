@@ -463,9 +463,10 @@ export /* @internal */ class Inferrer {
           await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
         } else {
           const resourceName = getResourceNameFromPath(operation.requests?.[0].protocol.http?.path, pathParams[i].language.default.name, true);
-          if (resourceName) {
-            await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+          if (!resourceName) {
+            break;
           }
+          await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
         }
       }
     }

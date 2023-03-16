@@ -12,7 +12,8 @@ function slicePath(path: string, name: string, index: number) {
 }
 
 function get(path: string | undefined, name: string, singularize = false, index: number) {
-  return path ? (singularize ? pluralizationService.singularize(slicePath(path, name, index)) : slicePath(path, name, index)) : undefined;
+  const resourceName = path ? slicePath(path, name, index) : undefined;
+  return resourceName && !isResourceNameVariable(resourceName) ? (singularize ? pluralizationService.singularize(resourceName) : resourceName) : undefined;
 }
 
 export function getResourceNameFromPath(path: string | undefined, name: string, singularize = false) {
@@ -21,4 +22,8 @@ export function getResourceNameFromPath(path: string | undefined, name: string, 
 
 export function getChildResourceNameFromPath(path: string, parent: string, singularize = false) {
   return get(path, parent, singularize, 3);
+}
+
+function isResourceNameVariable(name: string) {
+  return /^{.*}$/g.test(name);
 }
