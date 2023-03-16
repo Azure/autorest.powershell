@@ -78,9 +78,8 @@ export interface PsRequiredModule {
 
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
-    return `global::System.Management.Automation.SwitchParameter${
-      this.isRequired ? '' : '?'
-    }`;
+    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'
+      }`;
   }
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {
@@ -88,7 +87,8 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
   resolveTypeDeclaration(
     schema: NewSchema | undefined,
     required: boolean,
-    state: ModelState<PwshModel>
+    state: ModelState<PwshModel>,
+    isFixedArray?: boolean
   ): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
@@ -106,7 +106,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
         }
       }
 
-      return super.resolveTypeDeclaration(schema, required, state);
+      return super.resolveTypeDeclaration(schema, required, state, isFixedArray);
     } finally {
       this.inResolve = before;
     }
