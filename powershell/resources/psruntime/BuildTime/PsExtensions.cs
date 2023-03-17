@@ -13,7 +13,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {
     internal static class PsExtensions
     {
-        public static PSObject AddMultipleTypeNameIntoPSObject(object obj, string multipleTag = "#Multiple")
+        public static PSObject AddMultipleTypeNameIntoPSObject(this object obj, string multipleTag = "#Multiple")
         {
             var psObj = new PSObject(obj);
             psObj.TypeNames.Insert(0, $"{psObj.TypeNames[0]}{multipleTag}");

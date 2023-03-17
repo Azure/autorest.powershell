@@ -483,7 +483,7 @@ export class CmdletClass extends Class {
         if (singleFlush) {
           yield 'WriteObject(_firstResponse);';
         } else {
-          yield 'WriteObject(PsExtensions.AddMultipleTypeNameIntoPSObject(_firstResponse));';
+          yield 'WriteObject(_firstResponse.AddMultipleTypeNameIntoPSObject());';
         }
       }) : '';
   };
@@ -502,10 +502,9 @@ export class CmdletClass extends Class {
             yield Else(function* () {
               yield $this.FlushResponse(false);
               yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
-              yield `foreach(var value in outputObjects)`;
-              yield '{';
-              yield `  values.Add(PsExtensions.AddMultipleTypeNameIntoPSObject(value));`;
-              yield '}';
+              yield ForEach(`value`, `outputObjects`, function* () {
+                yield `values.Add(value.AddMultipleTypeNameIntoPSObject());`
+              });
               yield 'WriteObject(values, true); ';
               yield `_responseSize = 2;`;
             });
@@ -521,7 +520,7 @@ export class CmdletClass extends Class {
             });
             yield Else(function* () {
               yield $this.FlushResponse(false);
-              yield `WriteObject(PsExtensions.AddMultipleTypeNameIntoPSObject(outputObject));`;
+              yield `WriteObject(outputObject.AddMultipleTypeNameIntoPSObject());`;
               yield `_responseSize = 2;`;
             });
           });
