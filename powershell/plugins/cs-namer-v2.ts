@@ -57,12 +57,12 @@ function setPropertyNames(schema: Schema) {
 }
 
 
-function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string) {
+function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, addAPIVersion: boolean = false) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
   // dolauli need to notice this -- schemas in the namespace of the lowest supported api version
   // in Azure Mode, we want to always put schemas into the namespace of the lowest supported apiversion.
-  // otherwise, we just want to differientiate with a simple incremental numbering scheme.
+  // otherwise, we just want to differentiate with a simple incremental numbering scheme.
 
   for (const group of values(schemaGroups)) {
     for (const schema of group) {
@@ -91,8 +91,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       const details = schema.language.default;
       let schemaName = getPascalIdentifier(details.name);
       const apiName = (!thisApiversion) ? '' : getPascalIdentifier(`Api ${thisApiversion}`);
-      const ns = (!thisApiversion) ? [] : ['.', apiName];
-
+      const ns = addAPIVersion && !!thisApiversion ? ['.', apiName] : [];
 
       let n = 1;
       while (thisNamespace.has(schemaName)) {
@@ -244,6 +243,7 @@ async function nameStuffRight(state: State): Promise<PwshModel> {
   const serviceNamespace = await state.getValue('namespace', 'Sample.API');
   const azure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
   const clientName = getPascalIdentifier(model.language.default.name);
+  const addAPIVersion = await state.getValue('add-api-version-in-model-namespace', false);
 
   // dolauli see model.details.csharp for c# related staff
   // set c# client details (name)
@@ -254,7 +254,7 @@ async function nameStuffRight(state: State): Promise<PwshModel> {
     fullname: `${serviceNamespace}.${clientName}`
   };
 
-  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace);
+  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace, addAPIVersion);
   await setOperationNames(state, resolver);
 
   return model;
