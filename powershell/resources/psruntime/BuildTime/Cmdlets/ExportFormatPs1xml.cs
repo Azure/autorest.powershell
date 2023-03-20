@@ -25,6 +25,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     private static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
 
+    private static string SelectedBySuffix = @"${$project.autoSwitchView? "#Multiple" : ""}";
+    
     protected override void ProcessRecord()
     {
       try
@@ -76,7 +78,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         Name = viewParameters.Type.FullName,
         ViewSelectedBy = new ViewSelectedBy
         {
-          TypeName = viewParameters.Type.FullName
+          TypeName = string.Concat(viewParameters.Type.FullName, SelectedBySuffix)
         },
         TableControl = new TableControl
         {

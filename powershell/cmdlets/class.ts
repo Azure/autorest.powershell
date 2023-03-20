@@ -461,6 +461,77 @@ export class CmdletClass extends Class {
     return ops ? `${header}\n${docComment(xmlize('remarks', ops))}` : header;
   }
 
+  private AddSwitchViewProperty(responseType: TypeDeclaration = dotnet.Object) {
+    var fieldNames = this.fields.map(f => f.name);
+    if (!fieldNames.includes('_responseSize')) {
+      this.add(new Field('_responseSize', dotnet.Int, {
+        initialValue: '0', description: 'A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object. Two means multiple returned objects in response.', access: Access.Private
+      }));
+    }
+    if (!fieldNames.includes('_firstResponse')) {
+      this.add(new Field('_firstResponse', responseType, {
+        initialValue: dotnet.Null, description: 'A buffer to record first returned object in response.', access: Access.Private
+      }));
+    }
+  }
+
+  private FlushResponse(singleFlush: boolean = true) {
+    var fieldNames = this.fields.map(f => f.name);
+    return fieldNames.includes('_responseSize') ?
+      If(`1 ==_responseSize`, function* () {
+        yield '// Flush buffer';
+        if (singleFlush) {
+          yield 'WriteObject(_firstResponse);';
+        } else {
+          yield 'WriteObject(_firstResponse.AddMultipleTypeNameIntoPSObject());';
+        }
+      }) : '';
+  };
+
+  private WriteObjectWithViewControl(valueName: string, isEnumerable: boolean = false) {
+    const $this = this;
+    if ($this.state.project.autoSwitchView) {
+      if (isEnumerable) {
+        return function* () {
+          yield `var outputObjects = ${valueName};`;
+          yield If(`null != outputObjects`, function* () {
+            yield If(`0 == _responseSize && 1 == outputObjects.Count`, function* () {
+              yield `_firstResponse = outputObjects[0];`;
+              yield `_responseSize = 1;`;
+            });
+            yield Else(function* () {
+              yield $this.FlushResponse(false);
+              yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
+              yield ForEach(`value`, `outputObjects`, function* () {
+                yield `values.Add(value.AddMultipleTypeNameIntoPSObject());`
+              });
+              yield 'WriteObject(values, true); ';
+              yield `_responseSize = 2;`;
+            });
+          });
+        }
+      } else {
+        return function* () {
+          yield `var outputObject = ${valueName};`;
+          yield If(`null != outputObject`, function* () {
+            yield If(`0 == _responseSize`, function* () {
+              yield `_firstResponse = outputObject;`;
+              yield `_responseSize = 1;`;
+            });
+            yield Else(function* () {
+              yield $this.FlushResponse(false);
+              yield `WriteObject(outputObject.AddMultipleTypeNameIntoPSObject());`;
+              yield `_responseSize = 2;`;
+            });
+          });
+        }
+      }
+    } else {
+      return `WriteObject(${valueName}, ${isEnumerable})`;
+    }
+  }
+
+
   private addCommonStuff() {
 
     // add a private copy of invocation information for our own uses.
@@ -473,6 +544,11 @@ export class CmdletClass extends Class {
     if (this.state.project.azure) {
       this.correlationId = this.add(new Field('__correlationId', dotnet.String, { initialValue: 'System.Guid.NewGuid().ToString()', description: 'A unique id generatd for the this cmdlet when it is instantiated.', access: Access.Private }));
       this.processRecordId = this.add(new Field('__processRecordId', dotnet.String, { description: 'A unique id generatd for the this cmdlet when ProcessRecord() is called.', access: Access.Private }));
+    }
+
+    // switch view property
+    if (this.state.project.autoSwitchView) {
+      this.AddSwitchViewProperty(dotnet.Object);
     }
 
     // pipeline property
@@ -488,10 +564,13 @@ export class CmdletClass extends Class {
     });
 
     const $this = this;
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(function* () {
-      // gs01: remember what you were doing here to make it so these can be parallelized...
-      yield '';
-    });
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
+      function* () {
+        // gs01: remember what you were doing here to make it so these can be parallelized...
+        if ($this.state.project.autoSwitchView) {
+          yield $this.FlushResponse();
+        }
+      });
 
     // debugging
     const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
@@ -880,12 +959,12 @@ export class CmdletClass extends Class {
                         yield Else(function* () {
                           yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);');
                           yield ('var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);');
-                          yield ('WriteObject(requiredResult, true);');
+                          yield $this.WriteObjectWithViewControl(`requiredResult`, true);
                           yield ('this.PagingParameters.Skip = 0;');
                           yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
                         });
                       } else {
-                        yield `WriteObject(${result.value}.${vp.name},true);`;
+                        yield $this.WriteObjectWithViewControl(`${result.value}.${vp.name}`, true);
                       }
                     }
                     const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
@@ -918,7 +997,7 @@ export class CmdletClass extends Class {
                     // it's just a nested array
                     const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (p) {
-                      yield `WriteObject((await response).${p.name}, true);`;
+                      yield $this.WriteObjectWithViewControl(`(await response).${p.name}`, true);
                     }
                     return;
                   }
@@ -928,7 +1007,7 @@ export class CmdletClass extends Class {
                 // it's just an array,
                 case 'array':
                   // just write-object(enumerate) with the output
-                  yield 'WriteObject(await response, true);';
+                  yield $this.WriteObjectWithViewControl('(await response)', true);
                   return;
               }
               // ok, let's see if the response type
@@ -936,9 +1015,7 @@ export class CmdletClass extends Class {
             const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
-
             // we expect to get back some data from this call.
-
             const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
             yield `// (await response) // should be ${rType.declaration}`;
             if ($this.hasStreamOutput && $this.outFileParameter) {
@@ -970,7 +1047,7 @@ export class CmdletClass extends Class {
             }
 
             //  let's just return the result object (or unwrapped result object)
-            yield `WriteObject(${outValue});`;
+            yield $this.WriteObjectWithViewControl(`${outValue}`);
             return;
           }
 
@@ -985,8 +1062,8 @@ export class CmdletClass extends Class {
               yield paths.declarationStatement;
               yield Try(function* () {
                 yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`;
-                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
+                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
               });
               const notfound = new Parameter('', { declaration: 'global::System.Management.Automation.ItemNotFoundException' });
               yield Catch(notfound, function* () {
@@ -1070,7 +1147,7 @@ export class CmdletClass extends Class {
                       value: `InputObject.${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
                     };
                   }
-                  console.error(`Unable to match idenity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
+                  console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
                   return {
                     name: `InputObject.${pascalName}`,
                     value: `InputObject.${pascalName}`
@@ -1078,7 +1155,7 @@ export class CmdletClass extends Class {
                 });
                 for (const opParam of idOpParams) {
                   if (opParam.name) {
-                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject) );`);
+                    yield If(IsNull(opParam.name), `ThrowTerminatingError(new ${ErrorRecord}(new global::System.Exception("InputObject has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, InputObject));`);
                   }
                 }
                 yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...idOpParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
@@ -1115,7 +1192,7 @@ export class CmdletClass extends Class {
       });
       const ure = new Parameter('urexception', { declaration: `${ClientRuntime.fullName}.UndeclaredResponseException` });
       yield Catch(ure, function* () {
-        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
+        yield `WriteError(new global::System.Management.Automation.ErrorRecord(${ure.value}, ${ure.value}.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(',')}})
 {
   ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ure.value}.Message) { RecommendedAction = ${ure.value}.Action }
 });`;
@@ -1166,7 +1243,7 @@ export class CmdletClass extends Class {
   }
   private implementConstructors() {
     // default constructor
-    this.add(new Constructor(this, { description: `Intializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
+    this.add(new Constructor(this, { description: `Initializes a new instance of the <see cref="${this.name}" /> cmdlet class.` }));
   }
 
   private implementIContext() {
@@ -1312,11 +1389,11 @@ export class CmdletClass extends Class {
 
       if ($this.state.project.azure) {
         // in azure mode, we signal the AzAccount module with every event that makes it here.
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i, t, m) => ((${ClientRuntime.IEventListener})this).Signal(i, t, () => ${ClientRuntime.EventDataConverter}.ConvertFrom(m()) as ${ClientRuntime.EventData}), ${$this.invocationInfo.value}, this.ParameterSetName, ${$this.correlationId.value}, ${$this.processRecordId.value}, null );`;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       } else {
         // In Non-Azure Modes, emit the Signal method without coorelation and processrecordid
-        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i,t,m) => ((${ClientRuntime.IEventListener})this).Signal(i,t,()=> ${ClientRuntime.EventDataConverter}.ConvertFrom( m() ) as ${ClientRuntime.EventData} ), ${$this.invocationInfo.value}, this.ParameterSetName, null );`;
+        yield `await ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.Signal(${id.value}, ${token.value}, ${messageData.value}, (i, t, m) => ((${ClientRuntime.IEventListener})this).Signal(i, t, () => ${ClientRuntime.EventDataConverter}.ConvertFrom(m()) as ${ClientRuntime.EventData}), ${$this.invocationInfo.value}, this.ParameterSetName, null ); `;
         yield If(`${token.value}.IsCancellationRequested`, Return());
       }
       yield `WriteDebug($"{id}: {(messageData().Message ?? ${System.String.Empty})}");`;
@@ -1787,8 +1864,8 @@ export class CmdletClass extends Class {
           parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
           if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
         }
-        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`);
-        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`);
+        if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName = "${breakingChange.cmdlet.replacement}"`);
+        if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.cmdlet.changeDescription}"`);
 
         this.add(new Attribute(ClientRuntime.CmdletBreakingChangeAttribute, { parameters: parameters }));
       }
@@ -1799,7 +1876,7 @@ export class CmdletClass extends Class {
           parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
           if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
         }
-        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`);
+        if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.variant.changeDescription}"`);
 
         this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
       }
@@ -1815,18 +1892,18 @@ export class CmdletClass extends Class {
           parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
           if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
         }
-        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`);
+        if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType = "${breakingChange.output.replacement}"`);
         if (breakingChange.output.deprecatedOutputProperties) {
           const properties: Array<string> = Object.assign([], breakingChange.output.deprecatedOutputProperties);
           properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`DeprecatedOutputProperties=new string[] {${properties.join(',')}}`);
+          parameters.push(`DeprecatedOutputProperties = new string[] {${properties.join(',')}}`);
         }
         if (breakingChange.output.newOutputProperties) {
           const properties: Array<string> = Object.assign([], breakingChange.output.newOutputProperties);
           properties.forEach((element, index) => properties[index] = '"' + element + '"');
-          parameters.push(`NewOutputProperties=new string[] {${properties.join(',')}}`);
+          parameters.push(`NewOutputProperties = new string[] {${properties.join(',')} } `);
         }
-        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription="${breakingChange.output.changeDescription}"`);
+        if (breakingChange.output.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.output.changeDescription}"`);
 
         this.add(new Attribute(ClientRuntime.OutputBreakingChangeAttribute, { parameters: parameters }));
       }
