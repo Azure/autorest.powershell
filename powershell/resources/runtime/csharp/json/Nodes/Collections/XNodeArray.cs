@@ -21,6 +21,11 @@ namespace Carbon.Json
             items = new List<JsonNode>(values);
         }
 
+        public XNodeArray(System.Collections.Generic.List<JsonNode> values)
+        {
+            items = new List<JsonNode>(values);
+        }
+
         public override JsonNode this[int index] => items[index];
 
         public override JsonType? ElementType => null;

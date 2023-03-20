@@ -1474,14 +1474,22 @@ export class CmdletClass extends Class {
 
           // we need to know if the actual underlying property is actually nullable.
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
-
-          const cmdletParameter = new Property(vParam.name, propertyType, {
-            get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
-            // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
-            set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
-            new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
-          });
-
+          let cmdletParameter: Property;
+          if (propertyType.schema.type !== SchemaType.Array) {
+            cmdletParameter = new Property(vParam.name, propertyType, {
+              get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
+              // get: toExpression(`null == ${expandedBodyParameter.value}.${vParam.origin.name} ? ${propertyType.defaultOfType} : (${propertyType.declaration}) ${expandedBodyParameter.value}.${vParam.origin.name}`),
+              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value`),
+              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
+            });
+          } else {
+            const fixedArrayPropertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, true);
+            cmdletParameter = new Property(vParam.name, fixedArrayPropertyType, {
+              get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}?.ToArray()${` ?? ${fixedArrayPropertyType.defaultOfType}`}`),
+              set: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = (value != null ? new ${propertyType.declaration}(value) : null)`),
+              new: PropertiesRequiringNew.has(vParam.name) ? Modifier.New : Modifier.None
+            });
+          }
           if (vParam.schema.language.csharp?.byReference) {
             // this parameter's schema is marked as 'by-reference' which means we should
             // tag it with an ExportAs attribute for the I*Reference type.

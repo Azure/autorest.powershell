@@ -86,7 +86,8 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
   resolveTypeDeclaration(
     schema: NewSchema | undefined,
     required: boolean,
-    state: ModelState<PwshModel>
+    state: ModelState<PwshModel>,
+    isFixedArray?: boolean
   ): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
@@ -104,7 +105,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
         }
       }
 
-      return super.resolveTypeDeclaration(schema, required, state);
+      return super.resolveTypeDeclaration(schema, required, state, isFixedArray);
     } finally {
       this.inResolve = before;
     }

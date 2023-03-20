@@ -161,7 +161,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// </summary>
         /// <remarks>
         /// See [supported Kubernetes
-        /// versions](https://docs.microsoft.com/azure/aks/supported-kubernetes-versions)
+        /// versions](https://learn.microsoft.com/azure/aks/supported-kubernetes-versions)
         /// for more details about the version lifecycle.
         /// </remarks>
         /// <param name='resourceGroupName'>
@@ -194,7 +194,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// newest OS and runtime updates to the nodes. AKS provides one new
         /// image per week with the latest updates. For more details on node
         /// image versions, see:
-        /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+        /// https://learn.microsoft.com/azure/aks/node-image-upgrade
         /// </remarks>
         /// <param name='resourceGroupName'>
         /// The name of the resource group. The name is case insensitive.
@@ -285,7 +285,7 @@ namespace Microsoft.Azure.Management.ContainerService
         /// newest OS and runtime updates to the nodes. AKS provides one new
         /// image per week with the latest updates. For more details on node
         /// image versions, see:
-        /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+        /// https://learn.microsoft.com/azure/aks/node-image-upgrade
         /// </remarks>
         /// <param name='resourceGroupName'>
         /// The name of the resource group. The name is case insensitive.
