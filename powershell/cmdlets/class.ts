@@ -495,7 +495,7 @@ export class CmdletClass extends Class {
         return function* () {
           yield `var outputObjects = ${valueName};`;
           yield If(`null != outputObjects`, function* () {
-            yield If(`0 == _responseSize && 1 == outputObjects.Length`, function* () {
+            yield If(`0 == _responseSize && 1 == outputObjects.Count`, function* () {
               yield `_firstResponse = outputObjects[0];`;
               yield `_responseSize = 1;`;
             });
