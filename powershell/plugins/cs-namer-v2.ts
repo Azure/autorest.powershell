@@ -76,7 +76,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       if (azure) {
         const versions = [...values(schema.apiVersions).select(v => v.version)];
         if (schema.language.default?.uid !== 'universal-parameter-type') {
-          if (versions && length(versions) > 0) {
+          if (addAPIVersion && versions && length(versions) > 0) {
             thisApiversion = minimum(versions);
             thisNamespace = subNamespace.get(thisApiversion) || new Set<string>();
             subNamespace.set(thisApiversion, thisNamespace);
