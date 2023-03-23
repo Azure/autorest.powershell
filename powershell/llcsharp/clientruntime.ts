@@ -44,6 +44,7 @@ export const ClientRuntime = intersect(clientRuntimeNamespace, {
   EventDataConverter: new ClassType(clientRuntimeNamespace, 'EventDataConverter'),
   ISendAsync: new Interface(clientRuntimeNamespace, 'ISendAsync'),
   Extensions: new ClassType(clientRuntimeNamespace, 'Extensions'),
+  PowerShell: new ClassType(clientRuntimeNamespace, 'PowerShell'),
   Cmdlets: new ClassType(clientRuntimeNamespace, 'Cmdlets'),
   IJsonSerializable: new Interface(clientRuntimeNamespace, 'IJsonSerializable'),
   JsonSerializable: new Interface(clientRuntimeNamespace, 'JsonSerializable'),
