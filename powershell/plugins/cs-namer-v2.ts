@@ -57,9 +57,10 @@ function setPropertyNames(schema: Schema) {
 }
 
 
-function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, addAPIVersion: boolean = false) {
+function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, keepNames: string[], addAPIVersion: boolean = false) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
+
   // dolauli need to notice this -- schemas in the namespace of the lowest supported api version
   // in Azure Mode, we want to always put schemas into the namespace of the lowest supported apiversion.
   // otherwise, we just want to differentiate with a simple incremental numbering scheme.
@@ -94,7 +95,8 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
       const ns = addAPIVersion && !!thisApiversion ? ['.', apiName] : [];
 
       let n = 1;
-      while (thisNamespace.has(schemaName)) {
+      while (thisNamespace.has(schemaName) ||
+        (keepNames.includes(schemaName) && schema.language.default?.uid !== 'universal-parameter-type')) {
         schemaName = getPascalIdentifier(`${details.name}_${n++}`);
       }
       thisNamespace.add(schemaName);
@@ -254,7 +256,9 @@ async function nameStuffRight(state: State): Promise<PwshModel> {
     fullname: `${serviceNamespace}.${clientName}`
   };
 
-  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace, addAPIVersion);
+  const universalIdName = `${await state.getValue('service-name')}Identity`;
+
+  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace, [universalIdName], addAPIVersion);
   await setOperationNames(state, resolver);
 
   return model;
