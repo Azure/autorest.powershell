@@ -50,7 +50,6 @@ interface CommandVariant {
   action: string;
 }
 
-
 function fn<T>(active: Array<T>, remaining: Array<T>, result: Array<Array<T>>): Array<Array<T>> {
   if (length(active) || length(remaining)) {
     if (length(remaining)) {
@@ -456,9 +455,13 @@ export /* @internal */ class Inferrer {
     // }
 
     //assume that all path parameters placed following the order in the actual path
+    const enableGetDisableList = await this.state.getValue('ps-pipeline-input-enable-getByIteself-and-disable-listByParent', false);
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
     if (!dvi) {
       for (let i = pathParams.length - 1; i >= 0; i--) {
+        if ((enableGetDisableList && variant.action.toLowerCase() === 'list') || (i === pathParams.length - 1 && !enableGetDisableList && variant.action.toLowerCase() === 'get')) {
+          continue;
+        }
         if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
           await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
         } else {
