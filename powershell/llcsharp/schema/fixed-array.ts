@@ -21,11 +21,11 @@ import { Schema as NewSchema } from '@azure-tools/codemodel';
 import { popTempVar, pushTempVar } from '../schema/primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
-export class ArrayOf implements EnhancedTypeDeclaration {
+export class FixedArrayOf implements EnhancedTypeDeclaration {
   public isXmlAttribute = false;
   public isNullable = true;
   get defaultOfType() {
-    return toExpression('null /* arrayOf */');
+    return toExpression('null /* fixedArrayOf */');
   }
 
   constructor(public schema: NewSchema, public isRequired: boolean, public elementType: EnhancedTypeDeclaration, protected minItems: number | undefined, protected maxItems: number | undefined, protected unique: boolean | undefined) {
@@ -48,7 +48,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
   }
 
   get declaration(): string {
-    return `System.Collections.Generic.List<${this.elementType.declaration}>`;
+    return `${this.elementType.declaration}[]`;
   }
 
   get encode(): string {
@@ -61,7 +61,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
       const v = pushTempVar();
       const i = pushTempVar();
       // return `${v} => ${v} is string || !(${v} is global::System.Collections.IEnumerable) ? new ${this.declaration} {  ${this.elementType.convertObjectMethod}(${v}) } :  System.Linq.Enumerable.ToArray( System.Linq.Enumerable.Select( System.Linq.Enumerable.OfType<object>((global::System.Collections.IEnumerable)${v}), ${this.elementType.convertObjectMethod}))`
-      return `${v} => TypeConverterExtensions.SelectToList<${this.elementTypeDeclaration}>(${v}, ${this.elementType.convertObjectMethod})`;
+      return `${v} => TypeConverterExtensions.SelectToArray<${this.elementTypeDeclaration}>(${v}, ${this.elementType.convertObjectMethod})`;
     } finally {
       popTempVar();
       popTempVar();
@@ -101,7 +101,7 @@ export class ArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Json: {
           // const deser = `System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select( ${tmp} , (${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}) ) )`;
 
-          const deser = toExpression(`${System.Linq.Enumerable}.ToList(${valueOf(System.Linq.Enumerable.Select(tmp, `(${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}`))})`);
+          const deser = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(tmp, `(${each})=>(${this.elementType.declaration}) (${this.elementType.deserializeFromNode(mediaType, each, this.elementType.defaultOfType)}`));
 
           return toExpression(`If( ${valueOf(node)} as ${ClientRuntime.JsonArray}, out var ${tmp}) ? ${System.Func(this).new(`()=> ${valueOf(deser)} )`)}() : ${defaultValue}`);
         }
@@ -152,20 +152,20 @@ export class ArrayOf implements EnhancedTypeDeclaration {
 
       switch (mediaType) {
         case KnownMediaType.Json: {
-          const serArray = `global::System.Linq.Enumerable.ToList(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}))`;
+          const serArray = `global::System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, serializedName, mode)}))`;
           return toExpression(`null != ${value} ? new ${ClientRuntime.XNodeArray}(${serArray}) : null`);
         }
         case KnownMediaType.Xml: {
           if (this.isWrapped) {
             const name = this.elementType.schema.serialization?.xml ? this.elementType.schema.serialization?.xml.name || serializedName : serializedName;
-            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
+            return toExpression(`null != ${value} ? global::new System.Xml.Linq.XElement("${name}", global::System.Linq.Enumerable.ToArray(global::System.Linq.Enumerable.Select(${value}, (${each}) => ${this.elementType.serializeToNode(mediaType, each, name, mode)}))`);
           } else {
             throw new Error('Can\'t set an Xml Array to the document without wrapping it.');
           }
         }
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter:
-          return toExpression(`(null != ${value}  && ${value}.Count > 0 ? "${serializedName}=" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( ${this.encode}(null == each ? ${System.String.Empty} : each.ToString()) ))) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${serializedName}=" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( ${this.encode}(null == each ? ${System.String.Empty} : each.ToString()) ))) : ${System.String.Empty})`);
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:
@@ -256,11 +256,10 @@ export class ArrayOf implements EnhancedTypeDeclaration {
 
     return `
       if (${property} != null ) {
-        for (int __i = 0; __i < ${property}.Count; __i++) {
+        for (int __i = 0; __i < ${property}.Length; __i++) {
           ${this.elementType.validateValue(eventListener, new LocalVariable(`${property}[__i]`, dotnet.Var))}
         }
       }
       `.trim();
   }
 }
-

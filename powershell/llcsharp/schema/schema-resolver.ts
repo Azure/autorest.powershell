@@ -12,6 +12,7 @@ import { ArrayOf } from './array';
 import { Binary } from './binary';
 import { Boolean } from './boolean';
 import { ByteArray } from './byte-array';
+import { FixedArrayOf } from './fixed-array';
 import { Char } from './char';
 import { Date } from './date';
 import { DateTime, DateTime1123, UnixTime } from './date-time';
@@ -36,7 +37,8 @@ export class SchemaDefinitionResolver {
     return value;
   }
 
-  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<CodeModel>): EnhancedTypeDeclaration {
+  // isFixedArray is used to determine if we want to use a fixed array or not
+  resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<CodeModel>, isFixedArray?: boolean): EnhancedTypeDeclaration {
     if (!schema) {
       throw new Error('SCHEMA MISSING?');
     }
@@ -48,7 +50,11 @@ export class SchemaDefinitionResolver {
         // handle boolean arrays as booleans (powershell will try to turn it into switches!)
         const ar = <ArraySchema>schema;
         const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
-        return new ArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
+        if (isFixedArray) {
+          return new FixedArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
+        } else {
+          return new ArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
+        }
       }
 
       case SchemaType.Any:

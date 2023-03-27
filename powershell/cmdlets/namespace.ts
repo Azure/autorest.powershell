@@ -22,6 +22,7 @@ export class CmdletNamespace extends Namespace {
 
   async init() {
     this.add(new ImportDirective(`static ${ClientRuntime.Extensions}`));
+    this.add(new ImportDirective(`${ClientRuntime.PowerShell}`));
     this.add(new ImportDirective(`${ClientRuntime.Cmdlets}`));
     this.add(new ImportDirective('System'));
 

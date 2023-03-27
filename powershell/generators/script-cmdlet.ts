@@ -198,7 +198,7 @@ $\{ProxyUseDefaultCredentials\}
   .Description
   Export data from the redis cache to blobs in a container.
   .Link
-  https://docs.microsoft.com/powershell/module/az.redis/export-azredisredisdata
+  https://learn.microsoft.com/powershell/module/az.redis/export-azredisredisdata
   #>
   function Export-AzRedisRedisData {
   [OutputType('System.Boolean')]
