@@ -10,8 +10,7 @@ When developing PowerShell commands for a service, you may encounter various com
 
 4. CreateViaIdentityExpanded: This variant combines the functionality of CreateExpanded and CreateViaIdentity. It accepts an identity object as input and flattens the request body, expanding the properties.
 
-Similar variants may exist for other verbs, such as Update, Get, Remove, etc. 
-For New-* cmdlets, ViaIdentity is not required, so CreateViaIdentityExpanded is removed as well.
+Similar variants may exist for other verbs, such as Update, Get, Remove, etc. For New-* cmdlets, ViaIdentity is not required, so CreateViaIdentityExpanded is removed as well.
 
 Whether or not to use these variants in your service depends on the specific requirements and scenarios of your service. In general, you may want to consider using these variants if your service has complex request bodies with nested objects or arrays, or if you want to support creating resources via identity objects.
 
