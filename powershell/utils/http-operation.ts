@@ -1,7 +1,7 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+// /*---------------------------------------------------------------------------------------------
+//  *  Copyright (c) Microsoft Corporation. All rights reserved.
+//  *  Licensed under the MIT License. See License.txt in the project root for license information.
+//  *--------------------------------------------------------------------------------------------*/
 
 // import { Components, Example, ExternalDocumentation, ImplementationDetails, ImplementationLocation, IOperation, IOperationBase, IParameter, LanguageDetails, Link, ParameterDetails, ResponseDetails, SecurityRequirement, Server } from './components';
 // import { Extensions } from './extensions';
@@ -10,10 +10,7 @@
 // import { DeepPartial } from '@azure-tools/codegen';
 // import { Dictionary } from '@azure-tools/linq';
 // import { uid } from './uid';
-import {
-  Operation,
-  Parameter as NewHttpOperationParameter,
-} from "@azure-tools/codemodel";
+import { Operation, Parameter as NewHttpOperationParameter } from "@azure-tools/codemodel";
 
 // export interface HttpOperationDetails extends ImplementationDetails {
 // }
@@ -72,11 +69,11 @@ import {
 // }
 
 export enum ParameterLocation {
-  Uri = "uri",
-  Query = "query",
-  Header = "header",
-  Cookie = "cookie",
-  Path = "path",
+  Uri = 'uri',
+  Query = 'query',
+  Header = 'header',
+  Cookie = 'cookie',
+  Path = 'path',
 }
 
 // export enum EncodingStyle {
