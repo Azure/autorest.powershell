@@ -3,34 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import {
-  Attribute,
-  ImportDirective,
-  Namespace,
-  Property,
-  System,
-} from '@azure-tools/codegen-csharp';
+import { Attribute, ImportDirective, Namespace, Property, System } from '@azure-tools/codegen-csharp';
 import { Schema, ClientRuntime } from '../llcsharp/exports';
 import { State } from '../internal/state';
 import { CmdletClass } from './class';
 import { DeepPartial } from '@azure-tools/codegen';
-import {
-  CommandOperation,
-  VirtualParameter as CommandVirtualParameter,
-} from '../utils/command-operation';
+import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
 import { IParameter } from '../utils/components';
-import {
-  SchemaType,
-  Parameter,
-  Schema as SchemaModel,
-  Operation,
-} from '@azure-tools/codemodel';
-import {
-  CategoryAttribute,
-  ParameterAttribute,
-  ParameterCategory,
-  ValidateNotNull,
-} from '../internal/powershell-declarations';
+import { SchemaType, Parameter, Schema as SchemaModel, Operation } from '@azure-tools/codemodel';
+import { CategoryAttribute, ParameterAttribute, ParameterCategory, ValidateNotNull } from '../internal/powershell-declarations';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
@@ -38,11 +19,7 @@ export class CmdletNamespace extends Namespace {
     return this.state.project.cmdletFolder;
   }
 
-  constructor(
-    parent: Namespace,
-    private state: State,
-    objectInitializer?: DeepPartial<CmdletNamespace>
-  ) {
+  constructor(parent: Namespace, private state: State, objectInitializer?: DeepPartial<CmdletNamespace>) {
     super('Cmdlets', parent);
     this.apply(objectInitializer);
   }
@@ -56,32 +33,15 @@ export class CmdletNamespace extends Namespace {
     const processedViaJsonOperation = new Set();
 
     // generate cmdlet classes on top of the SDK
-    for (const { key: index, value: operation } of items(
-      this.state.model.commands.operations
-    )) {
+    for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
       // skip ViaIdentity for set-* cmdlets.
-      if (
-        this.state.project.azure &&
-        operation.details.csharp.verb === 'Set' &&
-        operation.details.csharp.name.indexOf('ViaIdentity') > 0
-      ) {
+      if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
         continue;
       }
-      this.addClass(
-        await new CmdletClass(
-          this,
-          operation,
-          this.state.path('commands', 'operations', index)
-        ).init()
-      );
+      this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
 
-      if (
-        this.state.project.supportJsonInput &&
-        hasValidBodyParameters(operation)
-      ) {
-        const operationCommandId = `${operation.verb}-${
-          (<any>operation).subjectPrefix
-        }${(<any>operation).subject}`;
+      if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
+        const operationCommandId = `${operation.verb}-${(<any>operation).subjectPrefix}${(<any>operation).subject}`;
         if (!processedViaJsonOperation.has(operationCommandId)) {
           const callGraph = {
             language: JSON.parse(
@@ -136,31 +96,17 @@ export class CmdletNamespace extends Namespace {
     const description = `Json string supplied to the ${operation.variant} operation`;
     operation.details.csharp.name = `${operation.variant}ViaJsonFilePath`;
 
-    const newClass = await new CmdletClass(
-      this,
-      operation,
-      this.state.path('commands', 'operations', index)
-    ).init();
+    const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
 
     const property = new Property(name, System.String);
-    property.add(
-      new Attribute(ParameterAttribute, {
-        parameters: ['Mandatory = true', `HelpMessage = "${description}"`],
-      })
-    );
+    property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
     property.add(new Attribute(ValidateNotNull));
-    property.add(
-      new Attribute(CategoryAttribute, {
-        parameters: [`${ParameterCategory}.Runtime`],
-      })
-    );
+    property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
 
     property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value);';
     newClass.addProperty(property);
 
-    const jsonStringProperty = newClass.properties.find(
-      (item) => item.name === 'JsonString'
-    );
+    const jsonStringProperty = newClass.properties.find((item) => item.name === 'JsonString');
     jsonStringProperty!.attributes = [];
 
     this.addClass(newClass);
@@ -172,12 +118,8 @@ export class CmdletNamespace extends Namespace {
   ) {
     operation.details.csharp.name = `${operation.variant}ViaJsonString`;
     operation.details.csharp.hidden = false;
-    operation.parameters = operation.parameters.filter(
-      (item) => item.details.default.isBodyParameter !== true
-    );
-    operation.callGraph[0].language.csharp!.name = `${
-      (<any>operation.callGraph[0]).language.csharp!.name
-    }ViaJsonString`;
+    operation.parameters = operation.parameters.filter((item) => item.details.default.isBodyParameter !== true);
+    operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
     const name = 'JsonString';
     const serializedName = 'jsonString';
     const description = `Json string supplied to the ${operation.variant} operation`;
@@ -247,11 +189,7 @@ export class CmdletNamespace extends Namespace {
       origin: parameter,
     };
     operation.details.csharp.virtualParameters?.operation.push(vparam);
-    const newClass = await new CmdletClass(
-      this,
-      operation,
-      this.state.path('commands', 'operations', index)
-    ).init();
+    const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
     this.addClass(newClass);
   }
 }
