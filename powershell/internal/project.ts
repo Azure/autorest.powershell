@@ -3,38 +3,38 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Dictionary, values } from "@azure-tools/linq";
+import { Dictionary, values } from '@azure-tools/linq';
 import {
   SchemaDetails,
   LanguageDetails,
   EnhancedTypeDeclaration,
   Boolean,
   SchemaDefinitionResolver,
-} from "../llcsharp/exports";
-import { State } from "./state";
-import { Project as codeDomProject } from "@azure-tools/codegen-csharp";
-import { EnumNamespace } from "../enums/namespace";
-import { ModelExtensionsNamespace } from "../models/model-extensions";
-import { pwshHeaderText } from "../utils/powershell-comment";
+} from '../llcsharp/exports';
+import { State } from './state';
+import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
+import { EnumNamespace } from '../enums/namespace';
+import { ModelExtensionsNamespace } from '../models/model-extensions';
+import { pwshHeaderText } from '../utils/powershell-comment';
 
-import { ModuleNamespace } from "../module/module-namespace";
-import { CmdletNamespace } from "../cmdlets/namespace";
-import { Host } from "@azure-tools/autorest-extension-base";
+import { ModuleNamespace } from '../module/module-namespace';
+import { CmdletNamespace } from '../cmdlets/namespace';
+import { Host } from '@azure-tools/autorest-extension-base';
 import {
   codemodel,
   PropertyDetails,
   exportedModels as T,
-} from "@azure-tools/codemodel-v3";
-import { DeepPartial, comment } from "@azure-tools/codegen";
-import { PwshModel } from "../utils/PwshModel";
-import { ModelState } from "../utils/model-state";
+} from '@azure-tools/codemodel-v3';
+import { DeepPartial, comment } from '@azure-tools/codegen';
+import { PwshModel } from '../utils/PwshModel';
+import { ModelState } from '../utils/model-state';
 import {
   BooleanSchema,
   ChoiceSchema,
   ConstantSchema,
   Schema as NewSchema,
   SchemaType,
-} from "@azure-tools/codemodel";
+} from '@azure-tools/codemodel';
 
 export type Schema = T.SchemaT<
   LanguageDetails<SchemaDetails>,
@@ -78,9 +78,7 @@ export interface PsRequiredModule {
 
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
-    return `global::System.Management.Automation.SwitchParameter${
-      this.isRequired ? "" : "?"
-    }`;
+    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
   }
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {
@@ -107,12 +105,7 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
         }
       }
 
-      return super.resolveTypeDeclaration(
-        schema,
-        required,
-        state,
-        isFixedArray
-      );
+      return super.resolveTypeDeclaration(schema, required, state, isFixedArray);
     } finally {
       this.inResolve = before;
     }
@@ -202,49 +195,49 @@ export class Project extends codeDomProject {
 
     this.schemaDefinitionResolver = new PSSchemaResolver();
 
-    this.projectNamespace = this.state.model.language.csharp?.namespace || "";
+    this.projectNamespace = this.state.model.language.csharp?.namespace || '';
 
     this.overrides = {
-      "Carbon.Json.Converters": `${this.projectNamespace}.Runtime.Json`,
-      "Carbon.Internal.Extensions": `${this.projectNamespace}.Runtime.Json`,
-      "Carbon.Internal": `${this.projectNamespace}.Runtime.Json`,
-      "Carbon.Data": `${this.projectNamespace}.Runtime.Json`,
-      "using Data;": "",
-      "using Parser;": "",
-      "using Converters;": "",
-      "using Internal.Extensions;": "",
+      'Carbon.Json.Converters': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal.Extensions': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Internal': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Data': `${this.projectNamespace}.Runtime.Json`,
+      'using Data;': '',
+      'using Parser;': '',
+      'using Converters;': '',
+      'using Internal.Extensions;': '',
 
-      "Carbon.Json.Parser": `${this.projectNamespace}.Runtime.Json`,
-      "Carbon.Json": `${this.projectNamespace}.Runtime.Json`,
-      "Microsoft.Rest.ClientRuntime": `${this.projectNamespace}.Runtime`,
-      "Microsoft.Message.ClientRuntime": `${this.projectNamespace}.Runtime`,
-      "Microsoft.generated.runtime.Properties": `${this.projectNamespace}.generated.runtime.Properties`,
-      "Microsoft.Rest": `${this.projectNamespace}`,
+      'Carbon.Json.Parser': `${this.projectNamespace}.Runtime.Json`,
+      'Carbon.Json': `${this.projectNamespace}.Runtime.Json`,
+      'Microsoft.Rest.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.Message.ClientRuntime': `${this.projectNamespace}.Runtime`,
+      'Microsoft.generated.runtime.Properties': `${this.projectNamespace}.generated.runtime.Properties`,
+      'Microsoft.Rest': `${this.projectNamespace}`,
     };
 
     // Values
-    this.moduleVersion = await this.state.getValue("module-version");
+    this.moduleVersion = await this.state.getValue('module-version');
     // skip-for-time-being
     //this.profiles = this.model.info.extensions['x-ms-metadata'].profiles || [];
     this.profiles = [];
-    this.accountsVersionMinimum = "2.7.5";
-    this.helpLinkPrefix = await this.state.getValue("help-link-prefix");
-    this.metadata = await this.state.getValue<Metadata>("metadata");
+    this.accountsVersionMinimum = '2.7.5';
+    this.helpLinkPrefix = await this.state.getValue('help-link-prefix');
+    this.metadata = await this.state.getValue<Metadata>('metadata');
     this.preprocessMetadata();
-    this.license = await this.state.getValue("header-text", "");
+    this.license = await this.state.getValue('header-text', '');
     const pwshLicenseHeader = await this.state.getValue(
-      "pwsh-license-header",
-      ""
+      'pwsh-license-header',
+      ''
     );
     // if pwsh license header is not set, use the license set by license-header
     this.pwshCommentHeader = comment(
       pwshLicenseHeader
         ? pwshHeaderText(
-            pwshLicenseHeader,
-            await this.service.GetValue("header-definitions")
-          )
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
         : this.license,
-      "#"
+      '#'
     );
     this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(
       /"/g,
@@ -253,101 +246,101 @@ export class Project extends codeDomProject {
     this.csharpCommentHeader = comment(
       pwshLicenseHeader
         ? pwshHeaderText(
-            pwshLicenseHeader,
-            await this.service.GetValue("header-definitions")
-          )
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
         : this.license,
-      "//"
+      '//'
     );
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
     let directives: Array<any> = [];
-    const allDirectives = await this.state.getValue("directive");
+    const allDirectives = await this.state.getValue('directive');
     directives = values(<any>allDirectives).toArray();
-    for (const directive of directives.filter((each) => each["model-cmdlet"])) {
+    for (const directive of directives.filter((each) => each['model-cmdlet'])) {
       this.modelCmdlets = this.modelCmdlets.concat(
-        <ConcatArray<string>>values(directive["model-cmdlet"]).toArray()
+        <ConcatArray<string>>values(directive['model-cmdlet']).toArray()
       );
     }
     // input handlers
-    this.inputHandlers = await this.state.getValue("input-handlers", []);
+    this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
     this.azure = this.model.language.default.isAzure;
     this.addToString = await this.state.getValue(
-      "nested-object-to-string",
+      'nested-object-to-string',
       false
     );
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;
     this.subjectPrefix = this.model.language.default.subjectPrefix;
-    this.moduleName = await this.state.getValue("module-name");
-    this.rootModuleName = await this.state.getValue("root-module-name", "");
-    this.dllName = await this.state.getValue("dll-name");
+    this.moduleName = await this.state.getValue('module-name');
+    this.rootModuleName = await this.state.getValue('root-module-name', '');
+    this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
     if (this.azure) {
       this.endpointResourceIdKeyName = await this.state.getValue(
-        "endpoint-resource-id-key-name",
-        ""
+        'endpoint-resource-id-key-name',
+        ''
       );
       this.endpointSuffixKeyName = await this.state.getValue(
-        "endpoint-suffix-key-name",
-        ""
+        'endpoint-suffix-key-name',
+        ''
       );
     }
 
     // Folders
-    this.baseFolder = await this.state.getValue("current-folder");
-    this.moduleFolder = await this.state.getValue("module-folder");
-    this.cmdletFolder = await this.state.getValue("cmdlet-folder");
-    this.modelCmdletFolder = await this.state.getValue("model-cmdlet-folder");
+    this.baseFolder = await this.state.getValue('current-folder');
+    this.moduleFolder = await this.state.getValue('module-folder');
+    this.cmdletFolder = await this.state.getValue('cmdlet-folder');
+    this.modelCmdletFolder = await this.state.getValue('model-cmdlet-folder');
 
-    this.customFolder = await this.state.getValue("custom-cmdlet-folder");
-    this.utilsFolder = await this.state.getValue("utils-cmdlet-folder");
-    this.internalFolder = await this.state.getValue("internal-cmdlet-folder");
-    this.testFolder = await this.state.getValue("test-folder");
-    this.runtimeFolder = await this.state.getValue("runtime-folder");
-    this.apiFolder = await this.state.getValue("api-folder");
+    this.customFolder = await this.state.getValue('custom-cmdlet-folder');
+    this.utilsFolder = await this.state.getValue('utils-cmdlet-folder');
+    this.internalFolder = await this.state.getValue('internal-cmdlet-folder');
+    this.testFolder = await this.state.getValue('test-folder');
+    this.runtimeFolder = await this.state.getValue('runtime-folder');
+    this.apiFolder = await this.state.getValue('api-folder');
 
-    this.binFolder = await this.state.getValue("bin-folder");
-    this.objFolder = await this.state.getValue("obj-folder");
-    this.exportsFolder = await this.state.getValue("exports-folder");
-    this.docsFolder = await this.state.getValue("docs-folder");
+    this.binFolder = await this.state.getValue('bin-folder');
+    this.objFolder = await this.state.getValue('obj-folder');
+    this.exportsFolder = await this.state.getValue('exports-folder');
+    this.docsFolder = await this.state.getValue('docs-folder');
     this.dependencyModuleFolder = await this.state.getValue(
-      "dependency-module-folder"
+      'dependency-module-folder'
     );
-    this.examplesFolder = await this.state.getValue("examples-folder");
-    this.resourcesFolder = await this.state.getValue("resources-folder");
-    this.uxFolder = await this.state.getValue("ux-folder");
+    this.examplesFolder = await this.state.getValue('examples-folder');
+    this.resourcesFolder = await this.state.getValue('resources-folder');
+    this.uxFolder = await this.state.getValue('ux-folder');
 
     // File paths
-    this.csproj = await this.state.getValue("csproj");
-    this.dll = await this.state.getValue("dll");
-    this.psd1 = await this.state.getValue("psd1");
-    this.psm1 = await this.state.getValue("psm1");
-    this.psm1Custom = await this.state.getValue("psm1-custom");
-    this.psm1Internal = await this.state.getValue("psm1-internal");
-    this.formatPs1xml = await this.state.getValue("format-ps1xml");
-    this.autoSwitchView = await this.state.getValue("auto-switch-view", true);
-    this.nuspec = await this.state.getValue("nuspec");
+    this.csproj = await this.state.getValue('csproj');
+    this.dll = await this.state.getValue('dll');
+    this.psd1 = await this.state.getValue('psd1');
+    this.psm1 = await this.state.getValue('psm1');
+    this.psm1Custom = await this.state.getValue('psm1-custom');
+    this.psm1Internal = await this.state.getValue('psm1-internal');
+    this.formatPs1xml = await this.state.getValue('format-ps1xml');
+    this.autoSwitchView = await this.state.getValue('auto-switch-view', true);
+    this.nuspec = await this.state.getValue('nuspec');
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
     this.supportJsonInput = await this.state.getValue(
-      "support-json-input",
+      'support-json-input',
       false
     );
 
     // excluded properties in table view
     const excludedList = <Array<string>>(
       values(
-        <any>await this.state.getValue("exclude-tableview-properties", [])
+        <any>await this.state.getValue('exclude-tableview-properties', [])
       ).toArray()
     );
     this.propertiesExcludedForTableview = excludedList
-      ? excludedList.join(",")
-      : "";
+      ? excludedList.join(',')
+      : '';
 
     // add project namespace
     this.serviceNamespace = new ModuleNamespace(this.state);
@@ -364,7 +357,7 @@ export class Project extends codeDomProject {
     this.modelsExtensions = new ModelExtensionsNamespace(
       this.serviceNamespace,
       <any>this.state.model.schemas,
-      this.state.path("components", "schemas")
+      this.state.path('components', 'schemas')
     );
     this.modelsExtensions.header = this.license;
     this.addNamespace(this.modelsExtensions);
@@ -392,12 +385,12 @@ export class Project extends codeDomProject {
         ...this.metadata,
         requiredModulesAsString: this.metadata.requiredModules
           ? this.metadata.requiredModules
-              .map(
-                (m) =>
-                  `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`
-              )
-              ?.join(", ")
-          : "undefined",
+            .map(
+              (m) =>
+                `@{ModuleName = '${m.name}'; ModuleVersion = '${m.version}'}`
+            )
+            ?.join(', ')
+          : 'undefined',
         requiredAssembliesAsString: this.convertToPsListAsString(
           this.metadata.requiredAssemblies
         ),
@@ -427,6 +420,6 @@ export class Project extends codeDomProject {
   }
 
   private convertToPsListAsString(items: Array<string>): string {
-    return items ? items.map((i) => `'${i}'`).join(", ") : "undefined";
+    return items ? items.map((i) => `'${i}'`).join(', ') : 'undefined';
   }
 }
