@@ -37,14 +37,8 @@ export class ApiClass extends Class {
           identityMethod.emitCall(false);
           this.addMethod(identityMethod);
 
-          if (hasValidBodyParameters(operation)) {
-            const jsonMethod = new OperationMethod(
-              this,
-              operation,
-              false,
-              state,
-              true
-            );
+          if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
+            const jsonMethod = new OperationMethod(this, operation, false, state, true);
             jsonMethod.emitCall(false);
             this.addMethod(jsonMethod);
           }

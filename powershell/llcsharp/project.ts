@@ -32,6 +32,7 @@ export class Project extends codeDomProject {
   license!: string;
   identityCorrection!: boolean;
   resourceGroupAppend!: boolean;
+  supportJsonInput!: boolean;
   formats!: Dictionary<PropertyFormat>;
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
@@ -51,6 +52,7 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
     this.formats = await this.state.getValue('formats', {});
+    this.supportJsonInput = await this.state.getValue('support-json-input', false);
 
 
     // add project namespace
