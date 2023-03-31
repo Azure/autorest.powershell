@@ -88,7 +88,8 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
   resolveTypeDeclaration(
     schema: NewSchema | undefined,
     required: boolean,
-    state: ModelState<PwshModel>
+    state: ModelState<PwshModel>,
+    isFixedArray?: boolean
   ): EnhancedTypeDeclaration {
     const before = this.inResolve;
     try {
@@ -106,7 +107,12 @@ export class PSSchemaResolver extends SchemaDefinitionResolver {
         }
       }
 
-      return super.resolveTypeDeclaration(schema, required, state);
+      return super.resolveTypeDeclaration(
+        schema,
+        required,
+        state,
+        isFixedArray
+      );
     } finally {
       this.inResolve = before;
     }
@@ -153,6 +159,7 @@ export class Project extends codeDomProject {
   public psm1Custom!: string;
   public psm1Internal!: string;
   public formatPs1xml!: string;
+  public autoSwitchView!: boolean;
   public apiFolder!: string;
   public baseFolder!: string;
   public moduleFolder!: string;
@@ -322,6 +329,7 @@ export class Project extends codeDomProject {
     this.psm1Custom = await this.state.getValue("psm1-custom");
     this.psm1Internal = await this.state.getValue("psm1-internal");
     this.formatPs1xml = await this.state.getValue("format-ps1xml");
+    this.autoSwitchView = await this.state.getValue("auto-switch-view", true);
     this.nuspec = await this.state.getValue("nuspec");
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
