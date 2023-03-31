@@ -327,10 +327,7 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
-    this.supportJsonInput = await this.state.getValue(
-      'support-json-input',
-      false
-    );
+    this.supportJsonInput = await this.state.getValue('support-json-input', false);
 
     // excluded properties in table view
     const excludedList = <Array<string>>(
