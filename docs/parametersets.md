@@ -1,6 +1,14 @@
 # ParameterSets in Autorest Generation
 
-When developing PowerShell commands for a service, you may encounter various command variants related to creating new resources. These variants correspond to different parameter sets and are used in different scenarios, let's take `create` for example:
+In PowerShell, cmdlets are typically named with prefixes such as "New-", "Set-", "Get-", "Remove-", etc. to indicate the type of operation performed by the cmdlet, such as:
+
+New-Resource: Create a new resource
+Set-Resource: Update an existing resource
+Get-Resource: Retrieve a resource
+Remove-Resource: Delete a resource
+In addition, you can add additional prefixes and suffixes to differentiate between different cmdlets, such as "New-ResourceTemplate", "Get-ResourceUsage", etc., to better indicate their functionality and usage.
+
+When developing PowerShell commands for a service, you may encounter various command variants related to creating new resources. These variants correspond to different parameter sets and are used in different scenarios. The naming convention for ParameterSets variants typically involves a verb as a prefix, followed by an optional suffix such as "Expanded", "ViaIdentity", or "ViaIdentityExpanded" to specify different use cases and parameter sets. Let's take `create` for example: Variants for the Create command are often named "Create", "CreateExpanded", "CreateViaIdentity", and "CreateViaIdentityExpanded".
 
 1. Create: This is the standard Create command that accepts a request body as input and creates a new resource in the service.
 
