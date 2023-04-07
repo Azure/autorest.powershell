@@ -27,9 +27,27 @@ function CreateModelCmdlet {
 
     $Tree = [Microsoft.CodeAnalysis.CSharp.SyntaxFactory]::ParseCompilationUnit($Content)
     $Nodes = $Tree.ChildNodes().ChildNodes()
+    $classConstantMember = @{}
     foreach ($Model in $Models)
     {
         $InterfaceNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'interface') -and ($_.Identifier.value -eq "I$Model") }
+        $ClassNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'class') -and ($_.Identifier.value -eq "$Model") }
+        $classConstantMember = @()
+        foreach ($class in $ClassNode) {
+            foreach ($member in $class.Members) {
+                $isConstant = $false
+                foreach ($attr in $member.AttributeLists) {
+                    $memberName = $attr.Attributes.Name.ToString()
+                    if ($memberName.EndsWith('.Constant')) {
+                        $isConstant = $true
+                        break
+                    }
+                }
+                if (($member.Modifiers.ToString() -eq 'public') -and $isConstant) {
+                    $classConstantMember += $member.Identifier.Value
+                }
+            }
+        }
         if ($InterfaceNode.count -eq 0) {
             continue
         }
@@ -69,6 +87,10 @@ function CreateModelCmdlet {
         {
             foreach ($Member in $Node.Members)
             {
+                if ($classConstantMember.Contains($Member.Identifier.Value)) {
+                    # skip constant member
+                    continue
+                }
                 $Arguments = $Member.AttributeLists.Attributes.ArgumentList.Arguments
                 $Required = $false
                 $Description = ""

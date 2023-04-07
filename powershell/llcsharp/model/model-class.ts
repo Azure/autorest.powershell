@@ -13,7 +13,7 @@ import { ObjectImplementation } from '../schema/object';
 import { ModelInterface } from './interface';
 import { JsonSerializableClass } from './model-class-json';
 import { ModelProperty } from './property';
-import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute } from '../csharp-declarations';
+import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute, ConstantAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
 import { Languages, Language, Schema as NewSchema, SchemaType, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
@@ -253,10 +253,23 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         const opsType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>virtualProperty.originalContainingSchema, false, this.state);
         const via = <NewVirtualProperty>virtualProperty.accessViaProperty;
         const parentCast = `(${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName})`;
+        let getFunc = toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`);
+        let setFunc = (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`);
+        let isConstant = false;
+        if (virtualProperty.property.isDiscriminator && this.schema.discriminatorValue) {
+          for (const parent of values(this.schema.parents?.all)) {
+            if ((<ObjectSchema>parent).discriminator?.property === virtualProperty.property) {
+              getFunc = toExpression(`"${this.schema.discriminatorValue}"`);
+              setFunc = toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = "${this.schema.discriminatorValue}"`);
+              isConstant = true;
+              break;
+            }
+          }
+        }
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.language.csharp?.description,
-          get: toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)}`),
-          set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
+          get: getFunc,
+          set: setFunc
         }));
 
         if (virtualProperty.property.language.csharp?.constantValue !== undefined) {
@@ -274,7 +287,9 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
             set: toExpression(`(${parentCast}${parentField.field.name}).${via.name} = value`)
           }));
         }
-
+        if (isConstant) {
+          vp.add(new Attribute(ConstantAttribute));
+        }
         if (this.state.getValue('powershell')) {
           vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
           this.addFormatAttributesToProperty(vp, virtualProperty);
