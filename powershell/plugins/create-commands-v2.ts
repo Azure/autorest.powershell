@@ -455,11 +455,11 @@ export /* @internal */ class Inferrer {
     // }
 
     //assume that all path parameters placed following the order in the actual path
-    const enableGetDisableList = await this.state.getValue('ps-pipeline-input-enable-getByIteself-and-disable-listByParent', false);
+    const disableGetEnableList = await this.state.getValue('ps-pipeline-input-disable-getByIteself-and-enable-listByParent', false);
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
     if (!dvi) {
       for (let i = pathParams.length - 1; i >= 0; i--) {
-        if ((enableGetDisableList && variant.action.toLowerCase() === 'list') || (i === pathParams.length - 1 && !enableGetDisableList && variant.action.toLowerCase() === 'get')) {
+        if ((!disableGetEnableList && variant.action.toLowerCase() === 'list') || (i === pathParams.length - 1 && disableGetEnableList && variant.action.toLowerCase() === 'get')) {
           continue;
         }
         if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
