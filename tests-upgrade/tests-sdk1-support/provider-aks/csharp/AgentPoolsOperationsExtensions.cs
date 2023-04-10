@@ -250,7 +250,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// </summary>
             /// <remarks>
             /// See [supported Kubernetes
-            /// versions](https://docs.microsoft.com/azure/aks/supported-kubernetes-versions)
+            /// versions](https://learn.microsoft.com/azure/aks/supported-kubernetes-versions)
             /// for more details about the version lifecycle.
             /// </remarks>
             /// <param name='operations'>
@@ -272,7 +272,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// </summary>
             /// <remarks>
             /// See [supported Kubernetes
-            /// versions](https://docs.microsoft.com/azure/aks/supported-kubernetes-versions)
+            /// versions](https://learn.microsoft.com/azure/aks/supported-kubernetes-versions)
             /// for more details about the version lifecycle.
             /// </remarks>
             /// <param name='operations'>
@@ -302,7 +302,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// Upgrading the node image version of an agent pool applies the newest OS and
             /// runtime updates to the nodes. AKS provides one new image per week with the
             /// latest updates. For more details on node image versions, see:
-            /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+            /// https://learn.microsoft.com/azure/aks/node-image-upgrade
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -328,7 +328,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// Upgrading the node image version of an agent pool applies the newest OS and
             /// runtime updates to the nodes. AKS provides one new image per week with the
             /// latest updates. For more details on node image versions, see:
-            /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+            /// https://learn.microsoft.com/azure/aks/node-image-upgrade
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -455,7 +455,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// Upgrading the node image version of an agent pool applies the newest OS and
             /// runtime updates to the nodes. AKS provides one new image per week with the
             /// latest updates. For more details on node image versions, see:
-            /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+            /// https://learn.microsoft.com/azure/aks/node-image-upgrade
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -481,7 +481,7 @@ namespace Microsoft.Azure.Management.ContainerService
             /// Upgrading the node image version of an agent pool applies the newest OS and
             /// runtime updates to the nodes. AKS provides one new image per week with the
             /// latest updates. For more details on node image versions, see:
-            /// https://docs.microsoft.com/azure/aks/node-image-upgrade
+            /// https://learn.microsoft.com/azure/aks/node-image-upgrade
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.

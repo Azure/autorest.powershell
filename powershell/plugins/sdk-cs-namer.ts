@@ -60,6 +60,22 @@ type State = ModelState<SdkModel>;
 
 // }
 
+function csharpForArray(elementType: Schema): string {
+  if (elementType.type === SchemaType.Array) {
+    // recursively generate the csharpForArray
+    return `System.Collections.Generic.IList<${csharpForArray((<ArraySchema>elementType).elementType)}>`;
+  }
+  const rawElementType = elementType;
+  const helper = new Helper();
+  elementType = rawElementType;
+  if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
+    elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
+  }
+  const type = helper.GetCsharpType(elementType);
+  const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) ? '?' : '';
+  return `System.Collections.Generic.IList<${type ? type + postfix :
+    (helper.IsEnum(rawElementType) ? rawElementType.language.default.name + '?' : rawElementType.language.default.name)}>`;
+}
 
 function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string) {
   const baseNamespace = new Set<string>();
@@ -121,20 +137,12 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           fullname: 'object',
         };
       } else if (schema.type === SchemaType.Array) {
-        const rawElementType = (<ArraySchema>schema).elementType;
-        let elementType = rawElementType;
-        if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
-          elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
-        }
-        const type = helper.GetCsharpType(elementType);
-        const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) ? '?' : '';
         schema.language.csharp = {
           ...details,
           apiversion: thisApiversion,
           apiname: apiName,
           name: schemaName,
-          fullname: `System.Collections.Generic.IList<${type ? type + postfix :
-            (helper.IsEnum(rawElementType) ? (<ArraySchema>schema).elementType.language.default.name + '?' : (<ArraySchema>schema).elementType.language.default.name)}>`,
+          fullname: csharpForArray((<ArraySchema>schema).elementType),
         };
       } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type

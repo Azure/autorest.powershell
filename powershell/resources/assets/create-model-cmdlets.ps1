@@ -12,10 +12,13 @@ function CreateModelCmdlet {
     }
 
     $ModelCsPath = Join-Path (Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.apiFolder)}') 'Models'
-    $ModuleName = '${$project.subjectPrefix}'
     $OutputDir = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.modelCmdletFolder)}'
     $null = New-Item -ItemType Directory -Force -Path $OutputDir
-
+    if ('${$project.rootModuleName}'.length -gt 0) {
+        $ModuleName = '${$project.rootModuleName}'
+    } else {
+        $ModuleName = '${$project.moduleName}'
+    }
     $CsFiles = Get-ChildItem -Path $ModelCsPath -Recurse -Filter *.cs
     $Content = ''
     $null = $CsFiles | ForEach-Object -Process { if ($_.Name.Split('.').count -eq 2 )
@@ -53,10 +56,10 @@ function CreateModelCmdlet {
         $ObjectType = $Model
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
         # remove duplicated module name
-        if ($ObjectType.StartsWith($ModuleName)) {
+        if ($ObjectType.StartsWith('${$project.subjectPrefix}')) {
             $ModulePrefix = ''
         } else {
-            $ModulePrefix = $ModuleName
+            $ModulePrefix = '${$project.subjectPrefix}'
         }
         $OutputPath = Join-Path -ChildPath "New-Az${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
 
@@ -104,6 +107,16 @@ function CreateModelCmdlet {
                 }
                 $Identifier = $Member.Identifier.Value
                 $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
+                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
+                if ($Type.StartsWith("System.Collections.Generic.List"))
+                {
+                    # if the type is a list, we need to convert it to array
+                    $matched = $Type -match '\<(?<Name>.+)\>$'
+                    if ($matched)
+                    {
+                        $Type = $matches.Name + '[]';
+                    }
+                }
                 $ParameterDefinePropertyList = New-Object System.Collections.Generic.List[string]
                 if ($Required -and $mutability.Create -and $mutability.Update)
                 {
@@ -149,7 +162,7 @@ Create an in-memory object for ${ObjectType}.
 .Outputs
 ${ObjectTypeWithNamespace}
 .Link
-${$project.helpLinkPrefix}az.${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
+${$project.helpLinkPrefix}${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
 #>
 function New-Az${ModulePrefix}${ObjectType}Object {
     [OutputType('${ObjectTypeWithNamespace}')]

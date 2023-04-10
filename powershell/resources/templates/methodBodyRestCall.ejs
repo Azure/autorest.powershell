@@ -52,7 +52,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
-            <%-method.language.default.returnType%> <%-parameter.language.default.name%> = new <%-method.language.default.returnType%>();
+            <%-parameter.schema.language.default.name%> <%-parameter.language.default.name%> = new <%-parameter.schema.language.default.name%>();
 <% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties)-%>
             if(<%-vps.map(vp=>`${vp.property.language.default.name} != null`).join('||')%>)
             {
