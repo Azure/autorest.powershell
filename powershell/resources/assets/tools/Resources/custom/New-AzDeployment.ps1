@@ -1,5 +1,5 @@
 function New-AzDeployment {
-    [OutputType('Microsoft.Azure.PowerShell.Cmdlets.Resources.Models.Api20180501.IDeploymentExtended')]
+    [OutputType('Microsoft.Azure.PowerShell.Cmdlets.Resources.Models.IDeploymentExtended')]
     [CmdletBinding(DefaultParameterSetName='CreateWithTemplateFileParameterFile', PositionalBinding=$false, SupportsShouldProcess, ConfirmImpact='Medium')]
     [Microsoft.Azure.PowerShell.Cmdlets.Resources.Description('You can provide the template and parameters directly in the request or link to JSON files.')]
     param(
