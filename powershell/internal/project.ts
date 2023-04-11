@@ -13,7 +13,7 @@ import {
 } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-import { EnumNamespace } from '../enums/namespace';
+// import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
 import { pwshHeaderText } from '../utils/powershell-comment';
 
@@ -82,7 +82,12 @@ interface ModelCmdletDirective {
 }
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
+<<<<<<< HEAD
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
+=======
+    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'
+      }`;
+>>>>>>> a864733d... Change Enum class to its origin type
   }
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {
@@ -172,7 +177,7 @@ export class Project extends codeDomProject {
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
   public serviceNamespace!: ModuleNamespace;
-  public supportNamespace!: EnumNamespace;
+  // public supportNamespace!: EnumNamespace;
   public cmdlets!: CmdletNamespace;
 
   public modelsExtensions!: ModelExtensionsNamespace;
@@ -348,12 +353,12 @@ export class Project extends codeDomProject {
     this.serviceNamespace.header = this.license;
     this.addNamespace(this.serviceNamespace);
 
-    this.supportNamespace = new EnumNamespace(
-      this.serviceNamespace,
-      this.state
-    );
-    this.supportNamespace.header = this.license;
-    this.addNamespace(this.supportNamespace);
+    // this.supportNamespace = new EnumNamespace(
+    //   this.serviceNamespace,
+    //   this.state
+    // );
+    // this.supportNamespace.header = this.license;
+    // this.addNamespace(this.supportNamespace);
 
     this.modelsExtensions = new ModelExtensionsNamespace(
       this.serviceNamespace,

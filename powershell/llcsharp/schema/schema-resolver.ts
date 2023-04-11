@@ -126,17 +126,18 @@ export class SchemaDefinitionResolver {
       case SchemaType.Constant:
         return this.resolveTypeDeclaration((<ConstantSchema>schema).valueType, required, state);
 
-      case SchemaType.Choice: {
+      case SchemaType.Choice:
+      case SchemaType.SealedChoice: {
         return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
       }
-      case SchemaType.SealedChoice:
-        if (schema.language.default.skip === true) {
-          return new String(schema, required);
-        }
-        return new EnumImplementation(schema, required);
+      // if (schema.language.default.skip === true) {
+      //   return new String(schema, required);
+      // }
+      // return new EnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
-          return new EnumImplementation(<StringSchema>schema, required);
+          return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
+          //return new EnumImplementation(<StringSchema>schema, required);
         }
 
         // "any" case
