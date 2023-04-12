@@ -32,6 +32,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
   return model;
 }
 
+//sort path parameters to follow the order in path for each operation
 function sortParameters(model: CodeModel) {
   model.operationGroups.forEach(group => {
     group.operations?.forEach(operation => {

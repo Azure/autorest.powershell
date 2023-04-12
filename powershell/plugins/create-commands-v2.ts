@@ -445,33 +445,37 @@ export /* @internal */ class Inferrer {
     //state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
     await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
 
+    if (await state.getValue('disable-via-identity', false)) {
+      return;
+    }
+
+    const disableGetEnableList = await this.state.getValue('ps-pipeline-input-disable-getByIteself-and-enable-listByParent', false);
     // eslint-disable-next-line prefer-const
     let [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each?.protocol?.http?.in === ParameterLocation.Path);
-    const dvi = await state.getValue('disable-via-identity', false);
-
-    // if (!dvi && length(pathParams) > 0 && variant.action. != 'list') {
-    //   // we have an operation that has path parameters, a good canididate for piping for identity.
-    //   await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
-    // }
-
-    //assume that all path parameters placed following the order in the actual path
-    const disableGetEnableList = await this.state.getValue('ps-pipeline-input-disable-getByIteself-and-enable-listByParent', false);
+    //exclude subscriptionId and resourceGroupName from path parameters
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
-    if (!dvi) {
-      for (let i = pathParams.length - 1; i >= 0; i--) {
-        if ((!disableGetEnableList && variant.action.toLowerCase() === 'list') || (i === pathParams.length - 1 && disableGetEnableList && variant.action.toLowerCase() === 'get')) {
-          continue;
-        }
-        if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
-          await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
-        } else {
-          const resourceName = getResourceNameFromPath(operation.requests?.[0].protocol.http?.path, pathParams[i].language.default.name, true);
-          if (!resourceName) {
-            break;
-          }
-          await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
-        }
+    /*
+      for resource /A1/A2/.../An-1/An, generate variants that take
+        ViaIdentity: An as identity
+        ViaIdentity{An-1}: An-1 as identity + An Name
+        ...
+        ViaIdentity{A1}: A1 as identity + [A2 + A3 + ... + An-1 + An] Names
+    */
+    for (let i = pathParams.length - 1; i >= 0; i--) {
+      if ((!disableGetEnableList && variant.action.toLowerCase() === 'list') || (disableGetEnableList && i === pathParams.length - 1 && variant.action.toLowerCase() === 'get')) {
+        continue;
       }
+      let resourceName = getResourceNameFromPath(operation.requests?.[0].protocol.http?.path, pathParams[i].language.default.name, true);
+      //cannot get resource name from path, give up generate ViaIdentity variant
+      if (!resourceName) {
+        break;
+      }
+
+      //variant for current resource is simply named ViaIdentity otherwise ViaIdentity${resourceName}
+      if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
+        resourceName = '';
+      }
+      await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
     }
   }
 
