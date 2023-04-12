@@ -4,7 +4,7 @@ ${$project.pwshCommentHeader}
 
 function CreateModelCmdlet {
 
-    param([string[]]$Models)
+    param([Hashtable[]]$Models)
 
     if ($Models.Count -eq 0)
     {
@@ -30,8 +30,9 @@ function CreateModelCmdlet {
     $classConstantMember = @{}
     foreach ($Model in $Models)
     {
-        $InterfaceNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'interface') -and ($_.Identifier.value -eq "I$Model") }
-        $ClassNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'class') -and ($_.Identifier.value -eq "$Model") }
+        $ModelName = $Model.modelName
+        $InterfaceNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'interface') -and ($_.Identifier.value -eq "I$ModelName") }
+        $ClassNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'class') -and ($_.Identifier.value -eq "$ModelName") }
         $classConstantMember = @()
         foreach ($class in $ClassNode) {
             foreach ($member in $class.Members) {
@@ -53,7 +54,7 @@ function CreateModelCmdlet {
         }
         # through a queue, we iterate all the parent models.
         $Queue = @($InterfaceNode)
-        $visited = @("I$Model")
+        $visited = @("I$ModelName")
         $AllInterfaceNodes = @()
         while ($Queue.count -ne 0)
         {
@@ -71,7 +72,7 @@ function CreateModelCmdlet {
         }
 
         $Namespace =  $InterfaceNode.Parent.Name
-        $ObjectType = $Model
+        $ObjectType = $ModelName
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
         # remove duplicated module name
         if ($ObjectType.StartsWith('${$project.subjectPrefix}')) {
@@ -170,6 +171,11 @@ function CreateModelCmdlet {
         $ParameterDefineScript = $ParameterDefineScriptList | Join-String -Separator ","
         $ParameterAssignScript = $ParameterAssignScriptList | Join-String -Separator ""
 
+        $cmdletName = "New-Az${ModulePrefix}${ObjectType}Object"
+        if ('' -ne $Model.cmdletName) {
+            $cmdletName = $Model.cmdletName
+        }
+        $cmdletNameInLowerCase = $cmdletName.ToLower()
         $Script = "
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeaderForCsharp}
@@ -184,9 +190,9 @@ Create an in-memory object for ${ObjectType}.
 .Outputs
 ${ObjectTypeWithNamespace}
 .Link
-${$project.helpLinkPrefix}${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
+${$project.helpLinkPrefix}${ModuleName}/${cmdletNameInLowerCase}
 #>
-function New-Az${ModulePrefix}${ObjectType}Object {
+function ${cmdletName} {
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(
