@@ -115,6 +115,7 @@ ${$project.pwshCommentHeaderForCsharp}
                         sb.Append(parameterGroup.Aliases.ToAliasOutput(true));
                         sb.Append(parameterGroup.HasValidateNotNull.ToValidateNotNullOutput());
                         sb.Append(parameterGroup.HasAllowEmptyArray.ToAllowEmptyArray());
+                        sb.Append(parameterGroup.PSArgumentCompleterInfo.ToPSArgumentCompleterOutput());
                         sb.Append(parameterGroup.CompleterInfo.ToArgumentCompleterOutput());
                         sb.Append(parameterGroup.OrderCategory.ToParameterCategoryOutput());
                         sb.Append(parameterGroup.InfoAttribute.ToInfoOutput(parameterGroup.ParameterType));

@@ -121,6 +121,21 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
+    internal class PSArgumentCompleterOutput
+    {
+        public PSArgumentCompleterInfo PSArgumentCompleterInfo { get; }
+
+        public PSArgumentCompleterOutput(PSArgumentCompleterInfo completerInfo)
+        {
+            PSArgumentCompleterInfo = completerInfo;
+        }
+
+
+        public override string ToString() => PSArgumentCompleterInfo != null
+            ? $"{Indent}[{typeof(PSArgumentCompleterAttribute)}({(PSArgumentCompleterInfo.IsTypeCompleter ? $"[{PSArgumentCompleterInfo.Type.Unwrap().ToPsType()}]" : $"{PSArgumentCompleterInfo.ResourceTypes?.Select(r => $"\"{r}\"")?.JoinIgnoreEmpty(", ")}")})]{Environment.NewLine}"
+            : String.Empty;
+    }
+
     internal class DefaultInfoOutput
     {
         public bool HasDefaultInfo { get; }
@@ -570,6 +585,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static AllowEmptyArrayOutput ToAllowEmptyArray(this bool hasAllowEmptyArray) => new AllowEmptyArrayOutput(hasAllowEmptyArray);
 
         public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
+
+        public static PSArgumentCompleterOutput ToPSArgumentCompleterOutput(this PSArgumentCompleterInfo completerInfo) => new PSArgumentCompleterOutput(completerInfo);
 
         public static DefaultInfoOutput ToDefaultInfoOutput(this ParameterGroup parameterGroup) => new DefaultInfoOutput(parameterGroup);
 

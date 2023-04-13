@@ -175,6 +175,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool HasValidateNotNull { get; }
         public bool HasAllowEmptyArray { get; }
         public CompleterInfo CompleterInfo { get; }
+        public PSArgumentCompleterInfo PSArgumentCompleterInfo { get; }
         public DefaultInfo DefaultInfo { get; }
         public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }
@@ -211,6 +212,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasAllowEmptyArray = Parameters.SelectMany(p => p.Attributes.OfType<AllowEmptyCollectionAttribute>()).Any();
             CompleterInfo = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault()?.ToCompleterInfo()
                             ?? Parameters.Select(p => p.ArgumentCompleterAttribute).FirstOrDefault()?.ToCompleterInfo();
+            PSArgumentCompleterInfo = Parameters.Select(p => p.PSArgumentCompleterAttribute).FirstOrDefault()?.ToPSArgumentCompleterInfo();
             DefaultInfo = Parameters.Select(p => p.DefaultInfoAttribute).FirstOrDefault()?.ToDefaultInfo(this)
                             ?? Parameters.Select(p => p.DefaultValueAttribute).FirstOrDefault(dv => dv != null)?.ToDefaultInfo(this);
             HasDefaultInfo = DefaultInfo != null && !String.IsNullOrEmpty(DefaultInfo.Script);
@@ -254,6 +256,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
+        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -287,6 +290,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
             CompleterInfoAttribute = Attributes.OfType<CompleterInfoAttribute>().FirstOrDefault();
             ArgumentCompleterAttribute = Attributes.OfType<ArgumentCompleterAttribute>().FirstOrDefault();
+            PSArgumentCompleterAttribute = Attributes.OfType<PSArgumentCompleterAttribute>().FirstOrDefault();
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
@@ -424,6 +428,29 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class PSArgumentCompleterInfo
+    {
+        public string Script { get; }
+        public Type Type { get; }
+        public bool IsTypeCompleter { get; }
+        public string[] ResourceTypes { get; }
+
+        public PSArgumentCompleterInfo(PSArgumentCompleterAttribute completerAttribute)
+        {
+            Script = completerAttribute.ScriptBlock?.ToString();
+            if (completerAttribute.Type != null)
+            {
+                Type = completerAttribute.Type;
+                IsTypeCompleter = true;
+            }
+            else
+            {
+                IsTypeCompleter = false;
+                ResourceTypes = completerAttribute.ResourceTypes;
+            }
+        }
+    }
+
     internal class DefaultInfo
     {
         public string Name { get; }
@@ -513,6 +540,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static CompleterInfo ToCompleterInfo(this CompleterInfoAttribute infoAttribute) => new CompleterInfo(infoAttribute);
         public static CompleterInfo ToCompleterInfo(this ArgumentCompleterAttribute completerAttribute) => new CompleterInfo(completerAttribute);
+        
+        public static PSArgumentCompleterInfo ToPSArgumentCompleterInfo(this PSArgumentCompleterAttribute completerAttribute) => new PSArgumentCompleterInfo(completerAttribute);
 
         public static DefaultInfo ToDefaultInfo(this DefaultInfoAttribute infoAttribute, ParameterGroup parameterGroup) => new DefaultInfo(infoAttribute, parameterGroup);
         public static DefaultInfo ToDefaultInfo(this PSDefaultValueAttribute defaultValueAttribute, ParameterGroup parameterGroup) => new DefaultInfo(defaultValueAttribute, parameterGroup);

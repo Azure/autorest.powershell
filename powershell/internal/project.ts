@@ -82,12 +82,7 @@ interface ModelCmdletDirective {
 }
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
-<<<<<<< HEAD
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
-=======
-    return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'
-      }`;
->>>>>>> a864733d... Change Enum class to its origin type
   }
 }
 export class PSSchemaResolver extends SchemaDefinitionResolver {

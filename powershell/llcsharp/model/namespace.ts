@@ -18,6 +18,7 @@ import * as validation from '../validations';
 import { ModelInterface } from './interface';
 import { ModelClass } from './model-class';
 import { DeepPartial } from '@azure-tools/codegen';
+import { isEnumImplementation } from '../../cmdlets/class';
 
 
 class ApiVersionNamespace extends Namespace {
@@ -111,14 +112,14 @@ export class ModelsNamespace extends Namespace {
         return td;
       }
 
-      if (td instanceof EnumImplementation) {
-        if (schema.language.csharp?.enum) {
-          const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
-          if (length(ec) === 0) {
-            new EnumClass(td, state);
-            // return schema.language.csharp.typeDeclaration = <EnumClass>ec[0];
-          }
-        }
+      if (isEnumImplementation(schema)) {
+        // if (schema.language.csharp?.enum) {
+        //   const ec = state.project.supportNamespace.findClassByName(schema.language.csharp.enum.name);
+        //   if (length(ec) === 0) {
+        //     new EnumClass(td, state);
+        //     // return schema.language.csharp.typeDeclaration = <EnumClass>ec[0];
+        //   }
+        // }
         schema.language.csharp = schema.language.csharp || new Language();
         return schema.language.csharp.typeDeclaration = td;
       }

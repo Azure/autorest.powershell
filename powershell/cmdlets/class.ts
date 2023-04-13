@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -170,6 +170,15 @@ export function NewAddCompleterInfo(targetProperty: Property, parameter: NewVirt
   }
 }
 
+export function isEnumImplementation(schema: NewSchema | undefined): boolean {
+  return (schema?.type === SchemaType.SealedChoice && !schema.language.default.skip) ||
+    (schema?.extensions && schema.extensions['x-ms-enum']);
+}
+
+export function addPSArgumentCompleterAttribute(targetProperty: Property, parameter: any) {
+  const enumValues = values(parameter.schema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(", ");
+  targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
+}
 
 export function addParameterBreakingChange(targetProperty: Property, parameter: any) {
   if (parameter.breakingChange) {
@@ -1569,6 +1578,12 @@ export class CmdletClass extends Class {
           if (isEnum || hasEnum) {
             cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
           }
+
+          const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+          if (addArgumentCompleter) {
+            addPSArgumentCompleterAttribute(cmdletParameter, vParam);
+          }
+
           // add aliases if there is any
           if (length(vParam.alias) > 0) {
             cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
@@ -1731,6 +1746,12 @@ export class CmdletClass extends Class {
       if (propertyType && (isEnum || hasEnum)) {
         regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
+
+      const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+      if (addArgumentCompleter) {
+        addPSArgumentCompleterAttribute(regularCmdletParameter, vParam);
+      }
+
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {
