@@ -76,6 +76,10 @@ export interface PsRequiredModule {
   version: string;
 }
 
+interface ModelCmdletDirective {
+  'model-name': string;
+  'cmdlet-name'?: string
+}
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
@@ -159,7 +163,8 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
   public profiles!: Array<string>;
-  public modelCmdlets!: Array<string>;
+  public modelCmdlets!: Array<ModelCmdletDirective>;
+  public modelCmdletsInPS!: string;
   public inputHandlers!: Array<string>;
 
   public prefix!: string;
@@ -259,9 +264,10 @@ export class Project extends codeDomProject {
     directives = values(<any>allDirectives).toArray();
     for (const directive of directives.filter((each) => each['model-cmdlet'])) {
       this.modelCmdlets = this.modelCmdlets.concat(
-        <ConcatArray<string>>values(directive['model-cmdlet']).toArray()
+        <ConcatArray<ModelCmdletDirective>>values(directive['model-cmdlet']).toArray()
       );
     }
+    this.modelCmdletsInPS = this.modelCmdlets.map(each => `@{modelName="${each['model-name']}"; cmdletName="${each['cmdlet-name'] || ''}"}`).join(', ') || '';
     // input handlers
     this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
