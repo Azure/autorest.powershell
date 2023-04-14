@@ -586,7 +586,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
 
-        public static PSArgumentCompleterOutput ToPSArgumentCompleterOutput(this PSArgumentCompleterInfo completerInfo) => new PSArgumentCompleterOutput(completerInfo);
+        public static PSArgumentCompleterOutput ToArgumentCompleterOutput(this PSArgumentCompleterInfo completerInfo) => new PSArgumentCompleterOutput(completerInfo);
 
         public static DefaultInfoOutput ToDefaultInfoOutput(this ParameterGroup parameterGroup) => new DefaultInfoOutput(parameterGroup);
 
