@@ -175,8 +175,8 @@ export function isEnumImplementation(schema: NewSchema | undefined): boolean {
     (schema?.extensions && schema.extensions['x-ms-enum']);
 }
 
-export function addPSArgumentCompleterAttribute(targetProperty: Property, parameter: any) {
-  const enumValues = values(parameter.schema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(", ");
+export function addPSArgumentCompleterAttribute(targetProperty: Property, parameterSchema: any) {
+  const enumValues = values(parameterSchema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(", ");
   targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
 }
 
@@ -1581,7 +1581,7 @@ export class CmdletClass extends Class {
 
           const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
           if (addArgumentCompleter) {
-            addPSArgumentCompleterAttribute(cmdletParameter, vParam);
+            addPSArgumentCompleterAttribute(cmdletParameter, vParam.schema);
           }
 
           // add aliases if there is any
@@ -1749,7 +1749,7 @@ export class CmdletClass extends Class {
 
       const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
       if (addArgumentCompleter) {
-        addPSArgumentCompleterAttribute(regularCmdletParameter, vParam);
+        addPSArgumentCompleterAttribute(regularCmdletParameter, vParam.schema);
       }
 
     }

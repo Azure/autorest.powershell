@@ -151,11 +151,9 @@ function CreateModelCmdlet {
                 }
                 $ParameterDefineProperty = [System.String]::Join(", ", $ParameterDefinePropertyList)
                 # check whether completer is needed
-                $completer = '';
-                if($Type.Split('.').Split('.')[-2] -eq 'Support') {
-                    # If Type is an array, need to strip []
-                    $strippedType = $Type.Replace('[]', '')
-                    $completer += "`n        [ArgumentCompleter([${strippedType}])]"
+                $completer = '';              
+                if(IsEnumType($Member)){                    
+                    $completer += GetCompleter($Member)
                 }
                 $ParameterDefineScript = "
         [Parameter($ParameterDefineProperty)]${completer}
@@ -207,5 +205,35 @@ ${ParameterAssignScript}
 }
 "
         Set-Content -Path $OutputPath -Value $Script
+    }
+}
+
+function IsEnumType {
+    param (
+        [Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax]$property
+    )
+    $isEnum = $false
+    foreach ($attr in $property.AttributeLists) {
+        $attributeName = $attr.Attributes.Name.ToString()
+        if ($attributeName.Contains('ArgumentCompleter')) {
+            $isEnum = $true
+            break
+        }
+    }
+    return $isEnum;
+}
+
+function GetCompleter {
+    param (
+        [Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax]$property
+    )
+    foreach ($attr in $property.AttributeLists) {
+        $attributeName = $attr.Attributes.Name.ToString()
+        if ($attributeName.Contains('ArgumentCompleter')) {
+            $attributeName = $attributeName.Split("::")[-1]
+            $possibleValues = [System.String]::Join(", ", $attr.Attributes.ArgumentList.Arguments)
+            $completer += "`n        [${attributeName}(${possibleValues})]"
+            return $completer
+        }
     }
 }
