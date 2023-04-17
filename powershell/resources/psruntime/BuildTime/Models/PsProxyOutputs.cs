@@ -121,11 +121,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
-    internal class PSArgumentCompleterOutput
+    internal class PSArgumentCompleterOutput: ArgumentCompleterOutput
     {
         public PSArgumentCompleterInfo PSArgumentCompleterInfo { get; }
 
-        public PSArgumentCompleterOutput(PSArgumentCompleterInfo completerInfo)
+        public PSArgumentCompleterOutput(PSArgumentCompleterInfo completerInfo) : base(completerInfo)
         {
             PSArgumentCompleterInfo = completerInfo;
         }
@@ -584,7 +584,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static AllowEmptyArrayOutput ToAllowEmptyArray(this bool hasAllowEmptyArray) => new AllowEmptyArrayOutput(hasAllowEmptyArray);
 
-        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => new ArgumentCompleterOutput(completerInfo);
+        public static ArgumentCompleterOutput ToArgumentCompleterOutput(this CompleterInfo completerInfo) => (completerInfo is PSArgumentCompleterInfo psArgumentCompleterInfo) ? psArgumentCompleterInfo.ToArgumentCompleterOutput() : new ArgumentCompleterOutput(completerInfo);
 
         public static PSArgumentCompleterOutput ToArgumentCompleterOutput(this PSArgumentCompleterInfo completerInfo) => new PSArgumentCompleterOutput(completerInfo);
 
