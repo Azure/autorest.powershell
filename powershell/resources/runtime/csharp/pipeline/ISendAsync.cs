@@ -92,6 +92,69 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         public HttpPipeline Clone() => new HttpPipeline(terminal) { steps = this.steps.ToList(), pipeline = this.pipeline };
 
+        private shouldRetry429(HttpResponseMessage response)
+        {
+            if (response.StatusCode == (System.Net.HttpStatusCode)429)
+            {
+                var retryAfter = response.Headers.RetryAfter;
+                if (retryAfter != null && retryAfter.Delta.HasValue)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// The step to handle 429 response with retry-after header.
+        /// </summary>
+        public async Task<HttpResponseMessage> Retry429(HttpRequestMessage request, IEventListener callback, ISendAsync next)
+        {
+            var response = await next.SendAsync(request, callback);
+            while (shouldRetry429(response))
+            {
+                var retryAfter = response.Headers.RetryAfter;
+                await Task.Delay(retryAfter.Delta.Value, callback.Token);
+                response = await next.SendAsync(request, callback);
+            }
+            return response;
+        }
+
+        private shouldRetryError(HttpResponseMessage response)
+        {
+            if (response.StatusCode >= System.Net.HttpStatusCode.InternalServerError)
+            {
+                if (response.StatusCode != System.Net.HttpStatusCode.NotImplemented &&
+                    response.StatusCode != System.Net.HttpStatusCode.HttpVersionNotSupported)
+                {
+                    return true;
+                }
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
+            {
+                return true;
+            }
+            else if (response.StatusCode == (System.Net.HttpStatusCode)429 && response.Headers.RetryAfter == null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if status code in HttpRequestExceptionWithStatus exception is greater 
+        /// than or equal to 500 and not NotImplemented (501) or HttpVersionNotSupported (505).
+        /// Or it's 429 (TOO MANY REQUESTS) without Retry-After header.
+        /// </summary>
+        public async Task<HttpResponseMessage> RetryError(HttpRequestMessage request, IEventListener callback, ISendAsync next)
+        {
+            var response = await next.SendAsync(request, callback);
+            while (shouldRetryError)
+            {
+                response = await next.SendAsync(request, callback);
+            }
+            return response;
+        }
+
         public ISendAsyncTerminalFactory TerminalFactory
         {
             get => terminal;
@@ -117,6 +180,8 @@ namespace Microsoft.Rest.ClientRuntime
 
                 // create the pipeline from scratch.
                 var next = terminal.Create();
+                next = (new SendAsyncFactory(Retry429)).Create(next) ?? next;
+                next = (new SendAsyncFactory(RetryError)).Create(next) ?? next;
                 foreach (var factory in steps)
                 {
                     // skip factories that return null.
