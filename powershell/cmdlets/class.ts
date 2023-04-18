@@ -953,12 +953,12 @@ export class CmdletClass extends Class {
                     const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
                       if ($this.clientsidePagination) {
-                        yield (If('(ulong)result.Value.Length <= this.PagingParameters.Skip', function* () {
-                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Length;');
+                        yield (If('(ulong)result.Value.Count <= this.PagingParameters.Skip', function* () {
+                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Count;');
                         }));
                         yield Else(function* () {
-                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);');
-                          yield ('var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);');
+                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
+                          yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
                           yield $this.WriteObjectWithViewControl(`requiredResult`, true);
                           yield ('this.PagingParameters.Skip = 0;');
                           yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
