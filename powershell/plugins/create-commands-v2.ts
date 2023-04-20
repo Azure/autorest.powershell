@@ -449,11 +449,17 @@ export /* @internal */ class Inferrer {
       return;
     }
 
-    const disableGetEnableList = await this.state.getValue('ps-pipeline-input-disable-getByIteself-and-enable-listByParent', false);
     // eslint-disable-next-line prefer-const
     let [pathParams, otherParams] = values(requiredParameters).bifurcate(each => each?.protocol?.http?.in === ParameterLocation.Path);
     //exclude subscriptionId and resourceGroupName from path parameters
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
+    //if parent pipline input is disabled, only generate identity for current resource itself
+    if (!await state.getValue('enable-parent-pipeline-input', this.isAzure) && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
+      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+      return;
+    }
+
+    const disableGetEnableList = await this.state.getValue('enable-parent-pipeline-input-for-list', false);
     /*
       for resource /A1/A2/.../An-1/An, generate variants that take
         ViaIdentity: An as identity
