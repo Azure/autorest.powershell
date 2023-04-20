@@ -16,6 +16,8 @@ import { TypeContainer } from '@azure-tools/codegen-csharp';
 import { DeepPartial } from '@azure-tools/codegen';
 import { values } from '@azure-tools/linq';
 import { VirtualProperty as NewVirtualProperty, VirtualProperties as NewVirtualProperties, Mutability } from '../../utils/schema';
+import { isEnumImplementation, addPSArgumentCompleterAttribute } from '../../cmdlets/class';
+import { ArrayOf } from '../exports';
 
 
 export function addInfoAttribute(targetProperty: Property, pType: TypeDeclaration, isRequired: boolean, isReadOnly: boolean, description: string, serializedName: string) {
@@ -223,7 +225,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         const internalSet = !!(!this.isInternal && (modelProperty.readOnly || !!virtualProperty.readOnly || (<any>modelProperty.language.csharp).constantValue));
 
         const isRequired = !!modelProperty.required;
-        const mutability = {read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create};
+        const mutability = { read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create };
         const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
         const p = this.add(new InterfaceProperty(virtualProperty.name, pType, {
           description: modelProperty.language.default.description,
@@ -231,6 +233,12 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         }));
 
         this.addInfoAttribute(p, pType, isRequired, internalSet, mutability, modelProperty.language.default.description, modelProperty.serializedName);
+
+        if (isEnumImplementation(modelProperty.schema)) {
+          addPSArgumentCompleterAttribute(p, modelProperty.schema);
+        } else if (pType instanceof ArrayOf && isEnumImplementation((<any>modelProperty.schema).elementType)) {
+          addPSArgumentCompleterAttribute(p, (<any>modelProperty.schema).elementType);
+        }
 
         if (!this.isInternal && (<any>modelProperty.language.csharp).constantValue !== undefined) {
           p.setAccess = Access.Internal;
@@ -246,7 +254,7 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
 
         const modelProperty = virtualProperty.property;
         const isRequired = !!virtualProperty.required;
-        const mutability = {read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create};
+        const mutability = { read: !!virtualProperty.read, update: !!virtualProperty.update, create: !!virtualProperty.create };
 
         const pType = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>modelProperty.schema, isRequired, this.state.path('schema'));
 
@@ -258,6 +266,11 @@ export class ModelInterface extends Interface implements EnhancedTypeDeclaration
         }));
         this.addInfoAttribute(p, pType, isRequired, internalSet, mutability, modelProperty.language.default.description, modelProperty.serializedName);
 
+        if (isEnumImplementation(modelProperty.schema)) {
+          addPSArgumentCompleterAttribute(p, modelProperty.schema);
+        } else if (pType instanceof ArrayOf && isEnumImplementation((<any>modelProperty.schema).elementType)) {
+          addPSArgumentCompleterAttribute(p, (<any>modelProperty.schema).elementType);
+        }
       }
     }
 
