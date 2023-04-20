@@ -1573,12 +1573,6 @@ export class CmdletClass extends Class {
             this.addDoNotExport(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType instanceof EnumImplementation;
-          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-          if (isEnum || hasEnum) {
-            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
-          }
-
           const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
           if (addArgumentCompleter) {
             addPSArgumentCompleterAttribute(cmdletParameter, vParam.schema);
@@ -1738,13 +1732,6 @@ export class CmdletClass extends Class {
             })
           );
         }
-      }
-
-
-      const isEnum = propertyType instanceof EnumImplementation;
-      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-      if (propertyType && (isEnum || hasEnum)) {
-        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
       }
 
       const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
