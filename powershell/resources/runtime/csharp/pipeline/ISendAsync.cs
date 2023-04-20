@@ -12,6 +12,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Collections;
     using System.Linq;
 
+
     /// <summary>
     /// The interface for sending an HTTP request across the wire.
     /// </summary>
@@ -70,6 +71,7 @@ namespace Microsoft.Rest.ClientRuntime
 
     public partial class HttpPipeline : ISendAsync
     {
+        private const int DefaultMaxRetry = 3;
         private ISendAsync pipeline;
         private ISendAsyncTerminalFactory terminal;
         private List<ISendAsyncFactory> steps = new List<ISendAsyncFactory>();
@@ -92,7 +94,7 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         public HttpPipeline Clone() => new HttpPipeline(terminal) { steps = this.steps.ToList(), pipeline = this.pipeline };
 
-        private shouldRetry429(HttpResponseMessage response)
+        private bool shouldRetry429(HttpResponseMessage response)
         {
             if (response.StatusCode == (System.Net.HttpStatusCode)429)
             {
@@ -109,9 +111,21 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         public async Task<HttpResponseMessage> Retry429(HttpRequestMessage request, IEventListener callback, ISendAsync next)
         {
+            int retryCount = int.MaxValue;
+
+            try
+            {
+                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES_FOR_429"));
+                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES_FOR_429"));
+            }
+            catch (System.Exception)
+            {
+                //no action
+            }
             var response = await next.SendAsync(request, callback);
             while (shouldRetry429(response))
             {
+                await request.CloneWithContentAndDispose();
                 var retryAfter = response.Headers.RetryAfter;
                 await Task.Delay(retryAfter.Delta.Value, callback.Token);
                 response = await next.SendAsync(request, callback);
@@ -119,7 +133,7 @@ namespace Microsoft.Rest.ClientRuntime
             return response;
         }
 
-        private shouldRetryError(HttpResponseMessage response)
+        private bool shouldRetryError(HttpResponseMessage response)
         {
             if (response.StatusCode >= System.Net.HttpStatusCode.InternalServerError)
             {
@@ -147,9 +161,22 @@ namespace Microsoft.Rest.ClientRuntime
         /// </summary>
         public async Task<HttpResponseMessage> RetryError(HttpRequestMessage request, IEventListener callback, ISendAsync next)
         {
-            var response = await next.SendAsync(request, callback);
-            while (shouldRetryError)
+            int retryCount = DefaultMaxRetry;
+
+            try
             {
+                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES"));
+                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES"));
+            }
+            catch (System.Exception)
+            {
+                //no action
+            }
+
+            var response = await next.SendAsync(request, callback);
+            while (shouldRetryError(response))
+            {
+                await request.CloneWithContentAndDispose();
                 response = await next.SendAsync(request, callback);
             }
             return response;
@@ -180,8 +207,11 @@ namespace Microsoft.Rest.ClientRuntime
 
                 // create the pipeline from scratch.
                 var next = terminal.Create();
-                next = (new SendAsyncFactory(Retry429)).Create(next) ?? next;
-                next = (new SendAsyncFactory(RetryError)).Create(next) ?? next;
+                if (Convert.ToBoolean(@"${$project.enableApiRetry}"))
+                {
+                    next = (new SendAsyncFactory(Retry429)).Create(next) ?? next;
+                    next = (new SendAsyncFactory(RetryError)).Create(next) ?? next;
+                }
                 foreach (var factory in steps)
                 {
                     // skip factories that return null.
