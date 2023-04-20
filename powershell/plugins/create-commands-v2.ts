@@ -454,8 +454,10 @@ export /* @internal */ class Inferrer {
     //exclude subscriptionId and resourceGroupName from path parameters
     pathParams = pathParams.filter(pathParam => !this.reservedPathParam.has(pathParam.language.default.name));
     //if parent pipline input is disabled, only generate identity for current resource itself
-    if (!await state.getValue('enable-parent-pipeline-input', this.isAzure) && length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
-      await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+    if (!await state.getValue('enable-parent-pipeline-input', this.isAzure)) {
+      if (length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
+        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+      }
       return;
     }
 
