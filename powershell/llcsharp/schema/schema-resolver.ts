@@ -130,14 +130,9 @@ export class SchemaDefinitionResolver {
       case SchemaType.SealedChoice: {
         return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
       }
-      // if (schema.language.default.skip === true) {
-      //   return new String(schema, required);
-      // }
-      // return new EnumImplementation(schema, required);
       case undefined:
         if (schema.extensions && schema.extensions['x-ms-enum']) {
           return this.resolveTypeDeclaration((<ChoiceSchema>schema).choiceType, required, state);
-          //return new EnumImplementation(<StringSchema>schema, required);
         }
 
         // "any" case
