@@ -13,7 +13,6 @@ import {
 } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-// import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
 import { pwshHeaderText } from '../utils/powershell-comment';
 
@@ -172,7 +171,6 @@ export class Project extends codeDomProject {
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
   public serviceNamespace!: ModuleNamespace;
-  // public supportNamespace!: EnumNamespace;
   public cmdlets!: CmdletNamespace;
 
   public modelsExtensions!: ModelExtensionsNamespace;
@@ -347,13 +345,6 @@ export class Project extends codeDomProject {
     this.serviceNamespace = new ModuleNamespace(this.state);
     this.serviceNamespace.header = this.license;
     this.addNamespace(this.serviceNamespace);
-
-    // this.supportNamespace = new EnumNamespace(
-    //   this.serviceNamespace,
-    //   this.state
-    // );
-    // this.supportNamespace.header = this.license;
-    // this.addNamespace(this.supportNamespace);
 
     this.modelsExtensions = new ModelExtensionsNamespace(
       this.serviceNamespace,
