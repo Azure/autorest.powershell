@@ -210,6 +210,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HasValidateNotNull = Parameters.SelectMany(p => p.Attributes.OfType<ValidateNotNullAttribute>()).Any();
             HasAllowEmptyArray = Parameters.SelectMany(p => p.Attributes.OfType<AllowEmptyCollectionAttribute>()).Any();
             CompleterInfo = Parameters.Select(p => p.CompleterInfoAttribute).FirstOrDefault()?.ToCompleterInfo()
+                            ?? Parameters.Select(p => p.PSArgumentCompleterAttribute).FirstOrDefault()?.ToPSArgumentCompleterInfo()
                             ?? Parameters.Select(p => p.ArgumentCompleterAttribute).FirstOrDefault()?.ToCompleterInfo();
             DefaultInfo = Parameters.Select(p => p.DefaultInfoAttribute).FirstOrDefault()?.ToDefaultInfo(this)
                             ?? Parameters.Select(p => p.DefaultValueAttribute).FirstOrDefault(dv => dv != null)?.ToDefaultInfo(this);
@@ -254,6 +255,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
+        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -286,7 +288,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             }
             SupportsWildcards = Attributes.OfType<SupportsWildcardsAttribute>().Any();
             CompleterInfoAttribute = Attributes.OfType<CompleterInfoAttribute>().FirstOrDefault();
-            ArgumentCompleterAttribute = Attributes.OfType<ArgumentCompleterAttribute>().FirstOrDefault();
+            PSArgumentCompleterAttribute = Attributes.OfType<PSArgumentCompleterAttribute>().FirstOrDefault();
+            ArgumentCompleterAttribute = Attributes.OfType<ArgumentCompleterAttribute>().FirstOrDefault(attr => !attr.GetType().Equals(typeof(PSArgumentCompleterAttribute)));
 
             ValueFromPipeline = ParameterAttribute.ValueFromPipeline;
             ValueFromPipelineByPropertyName = ParameterAttribute.ValueFromPipelineByPropertyName;
@@ -424,6 +427,16 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
+    internal class PSArgumentCompleterInfo: CompleterInfo
+    {
+        public string[] ResourceTypes { get; }
+
+        public PSArgumentCompleterInfo(PSArgumentCompleterAttribute completerAttribute) : base(completerAttribute)
+        {
+            ResourceTypes = completerAttribute.ResourceTypes;
+        }
+    }
+
     internal class DefaultInfo
     {
         public string Name { get; }
@@ -513,7 +526,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public static CompleterInfo ToCompleterInfo(this CompleterInfoAttribute infoAttribute) => new CompleterInfo(infoAttribute);
         public static CompleterInfo ToCompleterInfo(this ArgumentCompleterAttribute completerAttribute) => new CompleterInfo(completerAttribute);
-
+        public static PSArgumentCompleterInfo ToPSArgumentCompleterInfo(this PSArgumentCompleterAttribute completerAttribute) => new PSArgumentCompleterInfo(completerAttribute);
         public static DefaultInfo ToDefaultInfo(this DefaultInfoAttribute infoAttribute, ParameterGroup parameterGroup) => new DefaultInfo(infoAttribute, parameterGroup);
         public static DefaultInfo ToDefaultInfo(this PSDefaultValueAttribute defaultValueAttribute, ParameterGroup parameterGroup) => new DefaultInfo(defaultValueAttribute, parameterGroup);
     }

@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -171,6 +171,15 @@ export function NewAddCompleterInfo(targetProperty: Property, parameter: NewVirt
   }
 }
 
+export function isEnumImplementation(schema: NewSchema | undefined): boolean {
+  return (schema?.type === SchemaType.SealedChoice && !schema.language.default.skip) ||
+    (schema?.extensions && schema.extensions['x-ms-enum']);
+}
+
+export function addPSArgumentCompleterAttribute(targetProperty: Property, parameterSchema: any) {
+  const enumValues = values(parameterSchema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(", ");
+  targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
+}
 
 export function addParameterBreakingChange(targetProperty: Property, parameter: any) {
   if (parameter.breakingChange) {
@@ -956,13 +965,13 @@ export class CmdletClass extends Class {
                     const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
                       if ($this.clientsidePagination) {
-                        yield (If('(ulong)result.Value.Length <= this.PagingParameters.Skip', function* () {
-                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Length;');
+                        yield (If('(ulong)result.Value.Count <= this.PagingParameters.Skip', function* () {
+                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Count;');
                         }));
                         yield Else(function* () {
-                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Length - this.PagingParameters.Skip);');
-                          yield ('var requiredResult = result.Value.SubArray((int)this.PagingParameters.Skip, (int)toRead);');
-                          yield $this.WriteObjectWithViewControl('requiredResult', true);
+                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
+                          yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
+                          yield $this.WriteObjectWithViewControl(`requiredResult`, true);
                           yield ('this.PagingParameters.Skip = 0;');
                           yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
                         });
@@ -1629,11 +1638,11 @@ export class CmdletClass extends Class {
             this.addDoNotExport(cmdletParameter, vParam);
           }
 
-          const isEnum = propertyType instanceof EnumImplementation;
-          const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-          if (isEnum || hasEnum) {
-            cmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+          const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+          if (addArgumentCompleter) {
+            addPSArgumentCompleterAttribute(cmdletParameter, vParam.schema);
           }
+
           // add aliases if there is any
           if (length(vParam.alias) > 0) {
             cmdletParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
@@ -1791,12 +1800,11 @@ export class CmdletClass extends Class {
         }
       }
 
-
-      const isEnum = propertyType instanceof EnumImplementation;
-      const hasEnum = propertyType instanceof ArrayOf && propertyType.elementType instanceof EnumImplementation;
-      if (propertyType && (isEnum || hasEnum)) {
-        regularCmdletParameter.add(new Attribute(ArgumentCompleterAttribute, { parameters: [`typeof(${hasEnum ? (<ArrayOf>propertyType).elementType.declaration : propertyType.declaration})`] }));
+      const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+      if (addArgumentCompleter) {
+        addPSArgumentCompleterAttribute(regularCmdletParameter, vParam.schema);
       }
+
     }
     const ifmatch = this.properties.find((v) => v.name.toLowerCase() === 'ifmatch');
     if (ifmatch) {

@@ -48,6 +48,7 @@ export const ProfileAttribute: TypeDeclaration = new ClassType(rest, 'Profile');
 export const CategoryAttribute: TypeDeclaration = new ClassType(rest, 'Category');
 export const ExportAsAttribute: TypeDeclaration = new ClassType(rest, 'ExportAs');
 export const ParameterCategory: TypeDeclaration = new ClassType(rest, 'ParameterCategory');
+export const PSArgumentCompleterAttribute: TypeDeclaration = new ClassType(rest, 'PSArgumentCompleterAttribute');
 export const HttpPathAttribute: TypeDeclaration = new ClassType(rest, 'HttpPath');
 
 export function ErrorCategory(category: string): Expression {
