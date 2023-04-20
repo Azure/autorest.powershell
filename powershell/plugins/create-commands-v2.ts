@@ -459,7 +459,7 @@ export /* @internal */ class Inferrer {
       return;
     }
 
-    const disableGetEnableList = await this.state.getValue('enable-parent-pipeline-input-for-list', false);
+    const disableGetEnableList = await this.state.getValue('enable-parent-pipeline-input-for-list', true);
     /*
       for resource /A1/A2/.../An-1/An, generate variants that take
         ViaIdentity: An as identity
