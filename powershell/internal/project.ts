@@ -270,10 +270,7 @@ export class Project extends codeDomProject {
     this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
     this.azure = this.model.language.default.isAzure;
-    this.addToString = await this.state.getValue(
-      'nested-object-to-string',
-      false
-    );
+    this.addToString = await this.state.getValue('nested-object-to-string', this.azure ? true : false);
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;
