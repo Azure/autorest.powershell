@@ -8,20 +8,21 @@ import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-t
 import { join } from 'path';
 import { Model } from '../llcsharp/code-model';
 import { Project } from '../llcsharp/project';
-import { PwshModel } from '../utils/PwshModel';
-import { Dictionary } from '@azure-tools/linq';
 
 const resources = `${__dirname}/../../resources`;
 
 export async function llcsharpV2(service: Host) {
   try {
     const project = await new Project(service).init();
+    const transformOutput = async (input: string) => {
+      return await project.state.resolveVariables(input);
+    };
 
     await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 
     // recursive copy resources
     await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
-    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
     // Note:
     // we are using the Carbon.Json library, but we don't *really* want to expose that as public members where we don't have to
     // and I don't want to make code changes in the source repository, so I can keep merging from upstream as simple as possible.

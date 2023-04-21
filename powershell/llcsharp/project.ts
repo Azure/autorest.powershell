@@ -21,10 +21,11 @@ export class Project extends codeDomProject {
   public xmlSerialization = false;
   public defaultPipeline = true;
   public emitSignals = true;
+  public enableApiRetry = true;
   public exportPropertiesForDict!: boolean;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  protected state!: State;
+  public state!: State;
 
   apifolder!: string;
   runtimefolder!: string;
@@ -51,6 +52,7 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
     this.formats = await this.state.getValue('formats', {});
+    this.enableApiRetry = await this.state.getValue('enable-api-retry', true);
 
 
     // add project namespace
