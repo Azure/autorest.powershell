@@ -11,6 +11,7 @@ namespace Microsoft.Rest.ClientRuntime
     using System.Threading.Tasks;
     using System.Collections;
     using System.Linq;
+    using System;
 
 
     /// <summary>
@@ -115,19 +116,28 @@ namespace Microsoft.Rest.ClientRuntime
 
             try
             {
-                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES_FOR_429"));
-                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES_FOR_429"));
+                try
+                {
+                    retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES_FOR_429"));
+                }
+                finally
+                {
+                    retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES_FOR_429"));
+                }
             }
             catch (System.Exception)
             {
                 //no action
             }
+            var cloneRequest = await request.CloneWithContent();
             var response = await next.SendAsync(request, callback);
-            while (shouldRetry429(response))
+            int count = 0;
+            while (shouldRetry429(response) && count++ < retryCount)
             {
-                await request.CloneWithContentAndDispose();
+                request = await cloneRequest.CloneWithContent();
                 var retryAfter = response.Headers.RetryAfter;
                 await Task.Delay(retryAfter.Delta.Value, callback.Token);
+                await callback.Signal("Debug", $"Start to retry {count} time(s) on status code 429 after waiting {retryAfter.Delta.Value.TotalSeconds} seconds.");
                 response = await next.SendAsync(request, callback);
             }
             return response;
@@ -165,18 +175,26 @@ namespace Microsoft.Rest.ClientRuntime
 
             try
             {
-                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES"));
-                retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES"));
+                try
+                {
+                    retryCount = int.Parse(System.Environment.GetEnvironmentVariable("PS_HTTP_MAX_RETRIES"));
+                }
+                finally
+                {
+                    retryCount = int.Parse(System.Environment.GetEnvironmentVariable("AZURE_PS_HTTP_MAX_RETRIES"));
+                }
             }
             catch (System.Exception)
             {
                 //no action
             }
-
+            var cloneRequest = await request.CloneWithContent();
             var response = await next.SendAsync(request, callback);
-            while (shouldRetryError(response))
+            int count = 0;
+            while (shouldRetryError(response) && count++ < retryCount)
             {
-                await request.CloneWithContentAndDispose();
+                await callback.Signal("Debug", $"Start to retry {count} time(s) on status code {response.StatusCode}");
+                request = await cloneRequest.CloneWithContent();
                 response = await next.SendAsync(request, callback);
             }
             return response;

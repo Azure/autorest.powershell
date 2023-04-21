@@ -25,7 +25,7 @@ export class Project extends codeDomProject {
   public exportPropertiesForDict!: boolean;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  protected state!: State;
+  public state!: State;
 
   apifolder!: string;
   runtimefolder!: string;
