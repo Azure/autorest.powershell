@@ -332,6 +332,30 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
 
 async function tweakModel(state: State): Promise<PwshModel> {
 
+  const isAzure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
+  const removePecAndPlr = !await state.getValue('keep-PEC-and-PLR', isAzure ? false : true);
+
+  if (removePecAndPlr) {
+    const PecOrPlrRegex = "^PrivateEndpointConnection$|^PrivateLinkResource$";
+    let operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+      .select(operation => operation.key)
+      .toArray());
+
+    operationsToRemoveKeys = new Set(items(state.model.commands.operations)
+      .where(operation => !!`${operation.value.details.csharp.subject}`.match(PecOrPlrRegex) && operationsToRemoveKeys.has(operation.key))
+      .select(operation => operation.key)
+      .toArray());
+
+    for (const key of values(operationsToRemoveKeys)) {
+      const operationInfo = state.model.commands.operations[key].details.csharp;
+      state.message({
+        Channel: Channel.Debug, Text: `[DIRECTIVE] Removed command ${operationInfo.verb}-${operationInfo.subjectPrefix}${operationInfo.subject}${operationInfo.name ? `_${operationInfo.name}` : ''}`
+      });
+
+      delete state.model.commands.operations[key];
+    }
+  }
+
   // only look at directives without the `transform` node.
   // dolauli for directives with transform are implemented in autorest core
   for (const directive of directives.filter(each => !each.transform)) {
@@ -833,7 +857,6 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
       continue;
     }
-
 
     if (isRemoveCommandDirective(directive)) {
       const selectType = directive.select;
