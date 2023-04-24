@@ -12,6 +12,7 @@ import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '.
 import { IParameter } from '../utils/components';
 import { SchemaType, Parameter, Schema as SchemaModel, Operation } from '@azure-tools/codemodel';
 import { CategoryAttribute, ParameterAttribute, ParameterCategory, ValidateNotNull } from '../internal/powershell-declarations';
+import { hasValidBodyParameters } from '../utils/http-operation';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
@@ -40,7 +41,7 @@ export class CmdletNamespace extends Namespace {
       }
       this.addClass(await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init());
 
-      if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
+      if (this.state.project.supportJsonInput && hasValidBodyParameters(operation.callGraph[0])) {
         const operationCommandId = `${operation.verb}-${(<any>operation).subjectPrefix}${(<any>operation).subject}`;
         if (!processedViaJsonOperation.has(operationCommandId)) {
           const callGraph = {
@@ -192,19 +193,4 @@ export class CmdletNamespace extends Namespace {
     const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
     this.addClass(newClass);
   }
-}
-
-export function hasValidBodyParameters(operation: CommandOperation): boolean {
-  if (
-    operation.callGraph[0].requests &&
-    operation.callGraph[0].requests.length > 0 &&
-    operation.callGraph[0].requests[0].parameters &&
-    operation.callGraph[0].requests[0].parameters.length > 0
-  ) {
-    const param = operation.callGraph[0].requests[0].parameters.find(
-      (p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0
-    );
-    return !!param;
-  }
-  return false;
 }
