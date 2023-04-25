@@ -333,7 +333,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
 async function tweakModel(state: State): Promise<PwshModel> {
 
   const isAzure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);
-  const removePecAndPlr = !await state.getValue('keep-PEC-and-PLR', isAzure ? false : true);
+  const removePecAndPlr = !await state.getValue('keep-pec-and-plr', isAzure ? false : true);
 
   if (removePecAndPlr) {
     const PecOrPlrRegex = "^PrivateEndpointConnection$|^PrivateLinkResource$";
