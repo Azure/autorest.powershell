@@ -19,6 +19,7 @@ import { CommandOperation, VirtualParameter as CommandVirtualParameter} from '..
 import { OperationType } from '../utils/command-operation';
 import { Schema as SchemaModel } from '@azure-tools/codemodel';
 import { getResourceNameFromPath } from '../utils/resourceName';
+import { hasValidBodyParameters } from "../utils/http-operation";
 
 type State = ModelState<PwshModel>;
 
@@ -281,7 +282,7 @@ export /* @internal */ class Inferrer {
     return this.inferCommand(operation, group);
   }
 
-  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State) {
+  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<CommandOperation> {
     const op = await this.addCommandOperation(vname, parameters, operation, variant, state);
 
     // if this has a body with it, let's add that parameter
@@ -311,13 +312,10 @@ export /* @internal */ class Inferrer {
             }
           }
         }));
-
-        if (this.supportJsonInput && !vname.includes('Via-identity')) {
-          await this.addCommandOperation(`${vname}ViaJsonString`, parameters, operation, variant, state);
-          await this.addCommandOperation(`${vname}ViaJsonFilePath`, parameters, operation, variant, state);
-        }
       }
     }
+
+    return op
   }
 
   // skip-for-time-being
@@ -499,6 +497,52 @@ export /* @internal */ class Inferrer {
         resourceName = '';
       }
       await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+    }
+
+    if (this.supportJsonInput && hasValidBodyParameters(operation) && !vname.includes('Via-identity')) {
+      const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
+        const schema = new SchemaModel(name, description, SchemaType.String);
+        const language = {
+          default: {
+            name: name,
+            description: description,
+            serializedName: serializedName,
+          },
+        };
+        schema.language = language;
+        const httpParameter = {
+          implementation: 'Method',
+          language: language,
+          schema: schema,
+          required: true,
+        };
+        const parameter = new IParameter(name, schema, {
+          description: description,
+          required: true,
+          details: {
+            default: {
+              description: description,
+              name: name,
+              isBodyParameter: false,
+              httpParameter: httpParameter,
+            },
+          },
+          schema: schema,
+          allowEmptyValue: false,
+          deprecated: false,
+        });
+        (<any>parameter).httpParameter = httpParameter;
+        return parameter;
+      }
+      const opJsonString = await this.addVariant(`${vname}ViaJsonString`, body, bodyParameterName, clone(parameters), operation, variant, state);
+      opJsonString.details.default.dropBodyParameter = true;
+      opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
+      opJsonString.parameters.push(createStringParameter("JsonString",  `Json string supplied to the ${vname} operation`, 'jsonString'));
+
+      const opJsonFilePath = await this.addVariant(`${vname}ViaJsonFilePath`, body, bodyParameterName, clone(parameters), operation, variant, state);
+      opJsonFilePath.details.default.dropBodyParameter = true;
+      opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
+      opJsonFilePath.parameters.push(createStringParameter("JsonFilePath",  `Path of Json file supplied to the ${vname} operation`, 'jsonFilePath'));
     }
   }
 

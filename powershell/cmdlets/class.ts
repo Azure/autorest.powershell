@@ -1312,7 +1312,6 @@ export class CmdletClass extends Class {
         for (const f of $this.thingsToSerialize) {
           yield `${i.value}.${f} = this.${f};`;
         }
-
         // _name = this._name,
         //_parametersBody = this._parametersBody,
         //_resourceGroupName = this._resourceGroupName,

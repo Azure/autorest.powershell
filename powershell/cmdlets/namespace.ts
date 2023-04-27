@@ -9,10 +9,7 @@ import { State } from '../internal/state';
 import { CmdletClass } from './class';
 import { DeepPartial } from '@azure-tools/codegen';
 import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
-import { IParameter } from '../utils/components';
-import { SchemaType, Parameter, Schema as SchemaModel, Operation } from '@azure-tools/codemodel';
 import { CategoryAttribute, ParameterAttribute, ParameterCategory, ValidateNotNull } from '../internal/powershell-declarations';
-import { hasValidBodyParameters } from '../utils/http-operation';
 
 export class CmdletNamespace extends Namespace {
   inputModels = new Array<Schema>();
@@ -41,33 +38,28 @@ export class CmdletNamespace extends Namespace {
 
       if (operation.variant.includes('ViaJsonString')) {
         const name = 'JsonString';
-        const description = `Json string supplied to the ${operation.variant} operation`;
         operation.details.csharp.name = `${operation.variant}Via${name}`;
-
-        const property = new Property(name, System.String);
-        property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
-        property.add(new Attribute(ValidateNotNull));
-        property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
-        property.set = 'this._jsonString = value;';
-        property.get = 'return this._jsonString;';
-        newClass.addProperty(property);
-        const jsonStringField = new Field("_jsonString", System.String);
-        newClass.add(jsonStringField);
 
         operation.callGraph[0] = clone(operation.callGraph[0]);
         operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
       }
       if (operation.variant.includes('ViaJsonFilePath')) {
         const name = 'JsonFilePath';
-        const description = `Json string supplied to the ${operation.variant} operation`;
         operation.details.csharp.name = `${operation.variant}Via${name}`;
 
-        const property = new Property(name, System.String);
-        property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
-        property.add(new Attribute(ValidateNotNull));
-        property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
-        property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value);';
-        newClass.addProperty(property);
+        // const property = new Property(name, System.String);
+        // property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
+        // property.add(new Attribute(ValidateNotNull));
+        // property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+        // property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
+        // property.get = 'return this._jsonFilePath;';
+        // newClass.addProperty(property);
+        // const jsonFilePathField = new Field("_jsonFilePath", System.String);
+        // newClass.add(jsonFilePathField);
+        const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath')
+        if (jsonFilePath.length > 0) {
+          jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
+        }
         const jsonStringField = new Field("_jsonString", System.String);
         newClass.add(jsonStringField);
 
