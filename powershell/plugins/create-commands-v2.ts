@@ -312,7 +312,7 @@ export /* @internal */ class Inferrer {
           }
         }));
 
-        if (this.supportJsonInput && !vname.endsWith('Via-identity')) {
+        if (this.supportJsonInput && !vname.includes('Via-identity')) {
           const opJsonString = await this.addCommandOperation(`${vname}ViaJsonString`, clone(parameters), operation, variant, state);
           opJsonString.details.default.dropBodyParameter = true;
           opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
