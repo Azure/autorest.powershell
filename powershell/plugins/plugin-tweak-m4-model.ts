@@ -8,6 +8,7 @@ import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
+import { sortPathParameters } from '../utils/sort-parameters';
 
 import { Host } from '@azure-tools/autorest-extension-base';
 
@@ -18,6 +19,8 @@ let directives: Array<any> = [];
 async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
 
+  sortParameters(model);
+
   addResponseHeaderSchema(model);
 
   addDictionaryApiVersion(model);
@@ -27,6 +30,15 @@ async function tweakModel(state: State): Promise<PwshModel> {
   handleNoinlineDirective(state);
 
   return model;
+}
+
+//sort path parameters to follow the order in path for each operation
+function sortParameters(model: CodeModel) {
+  model.operationGroups.forEach(group => {
+    group.operations?.forEach(operation => {
+      operation.parameters = sortPathParameters(operation.requests?.[0].protocol.http?.path, operation.parameters);
+    });
+  });
 }
 
 function handleNoinlineDirective(state: State) {

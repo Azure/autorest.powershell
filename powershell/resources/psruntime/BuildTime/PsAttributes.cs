@@ -110,6 +110,11 @@ namespace Microsoft.Rest
     }
 
     [AttributeUsage(AttributeTargets.Property)]
+    public class ConstantAttribute : Attribute
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
     public class FormatTableAttribute : Attribute
     {
         public int Index { get; set; } = -1;

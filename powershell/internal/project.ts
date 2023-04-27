@@ -13,7 +13,6 @@ import {
 } from '../llcsharp/exports';
 import { State } from './state';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
-import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
 import { pwshHeaderText } from '../utils/powershell-comment';
 
@@ -76,6 +75,10 @@ export interface PsRequiredModule {
   version: string;
 }
 
+interface ModelCmdletDirective {
+  'model-name': string;
+  'cmdlet-name'?: string
+}
 export class NewPSSwitch extends Boolean {
   get declaration(): string {
     return `global::System.Management.Automation.SwitchParameter${this.isRequired ? '' : '?'}`;
@@ -159,7 +162,8 @@ export class Project extends codeDomProject {
   public schemaDefinitionResolver!: SchemaDefinitionResolver;
   public moduleVersion!: string;
   public profiles!: Array<string>;
-  public modelCmdlets!: Array<string>;
+  public modelCmdlets!: Array<ModelCmdletDirective>;
+  public modelCmdletsInPS!: string;
   public inputHandlers!: Array<string>;
 
   public prefix!: string;
@@ -167,7 +171,6 @@ export class Project extends codeDomProject {
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
   public serviceNamespace!: ModuleNamespace;
-  public supportNamespace!: EnumNamespace;
   public cmdlets!: CmdletNamespace;
 
   public modelsExtensions!: ModelExtensionsNamespace;
@@ -259,17 +262,15 @@ export class Project extends codeDomProject {
     directives = values(<any>allDirectives).toArray();
     for (const directive of directives.filter((each) => each['model-cmdlet'])) {
       this.modelCmdlets = this.modelCmdlets.concat(
-        <ConcatArray<string>>values(directive['model-cmdlet']).toArray()
+        <ConcatArray<ModelCmdletDirective>>values(directive['model-cmdlet']).toArray()
       );
     }
+    this.modelCmdletsInPS = this.modelCmdlets.map(each => `@{modelName="${each['model-name']}"; cmdletName="${each['cmdlet-name'] || ''}"}`).join(', ') || '';
     // input handlers
     this.inputHandlers = await this.state.getValue('input-handlers', []);
     // Flags
     this.azure = this.model.language.default.isAzure;
-    this.addToString = await this.state.getValue(
-      'nested-object-to-string',
-      false
-    );
+    this.addToString = await this.state.getValue('nested-object-to-string', this.azure ? true : false);
     // Names
     this.prefix = this.model.language.default.prefix;
     this.serviceName = this.model.language.default.serviceName;
@@ -341,13 +342,6 @@ export class Project extends codeDomProject {
     this.serviceNamespace = new ModuleNamespace(this.state);
     this.serviceNamespace.header = this.license;
     this.addNamespace(this.serviceNamespace);
-
-    this.supportNamespace = new EnumNamespace(
-      this.serviceNamespace,
-      this.state
-    );
-    this.supportNamespace.header = this.license;
-    this.addNamespace(this.supportNamespace);
 
     this.modelsExtensions = new ModelExtensionsNamespace(
       this.serviceNamespace,

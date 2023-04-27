@@ -21,10 +21,11 @@ export class Project extends codeDomProject {
   public xmlSerialization = false;
   public defaultPipeline = true;
   public emitSignals = true;
+  public enableApiRetry = true;
   public exportPropertiesForDict!: boolean;
   public projectNamespace!: string;
   public overrides!: Dictionary<string>;
-  protected state!: State;
+  public state!: State;
 
   apifolder!: string;
   runtimefolder!: string;
@@ -47,10 +48,10 @@ export class Project extends codeDomProject {
     this.apifolder = await this.state.getValue('api-folder', '');
     this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
     this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);
-    this.identityCorrection = await this.state.getValue('identity-correction-for-post', false);
-    this.resourceGroupAppend = await this.state.getValue('resourcegroup-append', false);
+    this.identityCorrection = await this.state.getValue('identity-correction-for-post', this.azure ? true : false);
+    this.resourceGroupAppend = await this.state.getValue('resourcegroup-append', this.azure ? true : false);
     this.license = await this.state.getValue('header-text', '');
-    this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
+    this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', this.azure ? true : false);
     this.formats = await this.state.getValue('formats', {});
     if (this.azure)
     {
@@ -60,6 +61,7 @@ export class Project extends codeDomProject {
     {
       this.supportJsonInput = await this.state.getValue('support-json-input', false);
     }
+    this.enableApiRetry = await this.state.getValue('enable-api-retry', true);
 
 
     // add project namespace

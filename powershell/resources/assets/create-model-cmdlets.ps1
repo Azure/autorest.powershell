@@ -4,7 +4,7 @@ ${$project.pwshCommentHeader}
 
 function CreateModelCmdlet {
 
-    param([string[]]$Models)
+    param([Hashtable[]]$Models)
 
     if ($Models.Count -eq 0)
     {
@@ -27,15 +27,34 @@ function CreateModelCmdlet {
 
     $Tree = [Microsoft.CodeAnalysis.CSharp.SyntaxFactory]::ParseCompilationUnit($Content)
     $Nodes = $Tree.ChildNodes().ChildNodes()
+    $classConstantMember = @{}
     foreach ($Model in $Models)
     {
-        $InterfaceNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'interface') -and ($_.Identifier.value -eq "I$Model") }
+        $ModelName = $Model.modelName
+        $InterfaceNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'interface') -and ($_.Identifier.value -eq "I$ModelName") }
+        $ClassNode = $Nodes | Where-Object { ($_.Keyword.value -eq 'class') -and ($_.Identifier.value -eq "$ModelName") }
+        $classConstantMember = @()
+        foreach ($class in $ClassNode) {
+            foreach ($member in $class.Members) {
+                $isConstant = $false
+                foreach ($attr in $member.AttributeLists) {
+                    $memberName = $attr.Attributes.Name.ToString()
+                    if ($memberName.EndsWith('.Constant')) {
+                        $isConstant = $true
+                        break
+                    }
+                }
+                if (($member.Modifiers.ToString() -eq 'public') -and $isConstant) {
+                    $classConstantMember += $member.Identifier.Value
+                }
+            }
+        }
         if ($InterfaceNode.count -eq 0) {
             continue
         }
         # through a queue, we iterate all the parent models.
         $Queue = @($InterfaceNode)
-        $visited = @("I$Model")
+        $visited = @("I$ModelName")
         $AllInterfaceNodes = @()
         while ($Queue.count -ne 0)
         {
@@ -53,7 +72,7 @@ function CreateModelCmdlet {
         }
 
         $Namespace =  $InterfaceNode.Parent.Name
-        $ObjectType = $Model
+        $ObjectType = $ModelName
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
         # remove duplicated module name
         if ($ObjectType.StartsWith('${$project.subjectPrefix}')) {
@@ -69,6 +88,10 @@ function CreateModelCmdlet {
         {
             foreach ($Member in $Node.Members)
             {
+                if ($classConstantMember.Contains($Member.Identifier.Value)) {
+                    # skip constant member
+                    continue
+                }
                 $Arguments = $Member.AttributeLists.Attributes.ArgumentList.Arguments
                 $Required = $false
                 $Description = ""
@@ -128,11 +151,9 @@ function CreateModelCmdlet {
                 }
                 $ParameterDefineProperty = [System.String]::Join(", ", $ParameterDefinePropertyList)
                 # check whether completer is needed
-                $completer = '';
-                if($Type.Split('.').Split('.')[-2] -eq 'Support') {
-                    # If Type is an array, need to strip []
-                    $strippedType = $Type.Replace('[]', '')
-                    $completer += "`n        [ArgumentCompleter([${strippedType}])]"
+                $completer = '';              
+                if(IsEnumType($Member)){                    
+                    $completer += GetCompleter($Member)
                 }
                 $ParameterDefineScript = "
         [Parameter($ParameterDefineProperty)]${completer}
@@ -148,6 +169,11 @@ function CreateModelCmdlet {
         $ParameterDefineScript = $ParameterDefineScriptList | Join-String -Separator ","
         $ParameterAssignScript = $ParameterAssignScriptList | Join-String -Separator ""
 
+        $cmdletName = "New-Az${ModulePrefix}${ObjectType}Object"
+        if ('' -ne $Model.cmdletName) {
+            $cmdletName = $Model.cmdletName
+        }
+        $cmdletNameInLowerCase = $cmdletName.ToLower()
         $Script = "
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeaderForCsharp}
@@ -162,9 +188,9 @@ Create an in-memory object for ${ObjectType}.
 .Outputs
 ${ObjectTypeWithNamespace}
 .Link
-${$project.helpLinkPrefix}${ModuleName}/new-Az${ModulePrefix}${ObjectType}Object
+${$project.helpLinkPrefix}${ModuleName}/${cmdletNameInLowerCase}
 #>
-function New-Az${ModulePrefix}${ObjectType}Object {
+function ${cmdletName} {
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(
@@ -179,5 +205,35 @@ ${ParameterAssignScript}
 }
 "
         Set-Content -Path $OutputPath -Value $Script
+    }
+}
+
+function IsEnumType {
+    param (
+        [Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax]$property
+    )
+    $isEnum = $false
+    foreach ($attr in $property.AttributeLists) {
+        $attributeName = $attr.Attributes.Name.ToString()
+        if ($attributeName.Contains('ArgumentCompleter')) {
+            $isEnum = $true
+            break
+        }
+    }
+    return $isEnum;
+}
+
+function GetCompleter {
+    param (
+        [Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax]$property
+    )
+    foreach ($attr in $property.AttributeLists) {
+        $attributeName = $attr.Attributes.Name.ToString()
+        if ($attributeName.Contains('ArgumentCompleter')) {
+            $attributeName = $attributeName.Split("::")[-1]
+            $possibleValues = [System.String]::Join(", ", $attr.Attributes.ArgumentList.Arguments)
+            $completer += "`n        [${attributeName}(${possibleValues})]"
+            return $completer
+        }
     }
 }
