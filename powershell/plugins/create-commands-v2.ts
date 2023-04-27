@@ -499,7 +499,7 @@ export /* @internal */ class Inferrer {
       await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
     }
 
-    if (this.supportJsonInput && hasValidBodyParameters(operation) && !vname.includes('Via-identity')) {
+    if (this.supportJsonInput && hasValidBodyParameters(operation)) {
       const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
         const schema = new SchemaModel(name, description, SchemaType.String);
         const language = {
