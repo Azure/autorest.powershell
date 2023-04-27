@@ -47,15 +47,6 @@ export class CmdletNamespace extends Namespace {
         const name = 'JsonFilePath';
         operation.details.csharp.name = `${operation.variant}Via${name}`;
 
-        // const property = new Property(name, System.String);
-        // property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
-        // property.add(new Attribute(ValidateNotNull));
-        // property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
-        // property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
-        // property.get = 'return this._jsonFilePath;';
-        // newClass.addProperty(property);
-        // const jsonFilePathField = new Field("_jsonFilePath", System.String);
-        // newClass.add(jsonFilePathField);
         const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath')
         if (jsonFilePath.length > 0) {
           jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
@@ -69,29 +60,5 @@ export class CmdletNamespace extends Namespace {
       this.addClass(newClass);
     }
     return this;
-  }
-
-  private async addJsonFilePathOperation(
-    operation: CommandOperation,
-    index: string
-  ) {
-    const name = 'JsonFilePath';
-    const description = `Json string supplied to the ${operation.variant} operation`;
-    operation.details.csharp.name = `${operation.variant}ViaJsonFilePath`;
-
-    const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
-
-    const property = new Property(name, System.String);
-    property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
-    property.add(new Attribute(ValidateNotNull));
-    property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
-
-    property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value);';
-    newClass.addProperty(property);
-
-    const jsonStringProperty = newClass.properties.find((item) => item.name === 'JsonString');
-    jsonStringProperty!.attributes = [];
-
-    this.addClass(newClass);
   }
 }
