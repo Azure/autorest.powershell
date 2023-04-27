@@ -36,12 +36,12 @@ export class ApiClass extends Class {
           const identityMethod = new OperationMethod(this, operation, true, state);
           identityMethod.emitCall(false);
           this.addMethod(identityMethod);
+        }
 
-          if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
-            const jsonMethod = new OperationMethod(this, operation, false, state, true);
-            jsonMethod.emitCall(false);
-            this.addMethod(jsonMethod);
-          }
+        if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
+          const jsonMethod = new OperationMethod(this, operation, false, state, true);
+          jsonMethod.emitCall(false);
+          this.addMethod(jsonMethod);
         }
 
         // check if this exact method is been created before (because _call and _validate have less specific parameters than the api) 
