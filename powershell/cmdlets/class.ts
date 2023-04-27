@@ -1174,11 +1174,17 @@ export class CmdletClass extends Class {
               yield identityFromPathParams;
             }
           } else {
-            const parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+            let parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
             if (serializationMode) {
               parameters.push(serializationMode);
             }
-            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...parameters).implementation}`;
+            let httpOperationName = `${apiCall.language.csharp?.name}`
+            if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
+              httpOperationName = `${httpOperationName}ViaJsonString`;
+              const jsonParameter = new Field("_jsonString", System.String);
+              parameters = [...operationParameters.map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
+            }
+            yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
           }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };

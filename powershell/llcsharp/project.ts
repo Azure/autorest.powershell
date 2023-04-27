@@ -52,7 +52,14 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', true);
     this.formats = await this.state.getValue('formats', {});
-    this.supportJsonInput = await this.state.getValue('support-json-input', false) || this.azure;
+    if (this.azure)
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', true);
+    }
+    else
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', false);
+    }
 
 
     // add project namespace

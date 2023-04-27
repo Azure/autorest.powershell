@@ -176,7 +176,6 @@ export class Project extends codeDomProject {
   public metadata!: Metadata;
   public state!: State;
   public helpLinkPrefix!: string;
-  public supportJsonInput!: boolean;
   get model() {
     return <PwshModel>this.state.model;
   }
@@ -327,7 +326,6 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
-    this.supportJsonInput = await this.state.getValue('support-json-input', false) || this.azure;
 
     // excluded properties in table view
     const excludedList = <Array<string>>(

@@ -15,8 +15,9 @@ import { PwshModel } from '../utils/PwshModel';
 import { IParameter } from '../utils/components';
 import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
-import { CommandOperation } from '../utils/command-operation';
+import { CommandOperation, VirtualParameter as CommandVirtualParameter} from '../utils/command-operation';
 import { OperationType } from '../utils/command-operation';
+import { Schema as SchemaModel } from '@azure-tools/codemodel';
 
 type State = ModelState<PwshModel>;
 
@@ -96,6 +97,7 @@ export /* @internal */ class Inferrer {
   serviceName!: string;
   subjectPrefix!: string;
   isAzure!: boolean;
+  supportJsonInput!: boolean;
 
   constructor(private state: State) {
   }
@@ -109,6 +111,14 @@ export /* @internal */ class Inferrer {
     this.isAzure = await this.state.getValue('azure', false);
     this.prefix = await this.state.getValue('prefix');
     this.serviceName = titleToAzureServiceName(await this.state.getValue('service-name'));
+    if (this.isAzure)
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', true);
+    }
+    else
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', false);
+    }
     this.state.setValue('service-name', this.serviceName);
 
     this.subjectPrefix = await this.state.getValue('subject-prefix');
@@ -302,6 +312,51 @@ export /* @internal */ class Inferrer {
             }
           }
         }));
+
+        if (this.supportJsonInput && !vname.endsWith('Via-identity')) {
+          const opJsonString = await this.addCommandOperation(`${vname}ViaJsonString`, clone(parameters), operation, variant, state);
+          opJsonString.details.default.dropBodyParameter = true;
+          opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
+          const name = "JsonString";
+          const description = `Json string supplied to the ${vname} operation`;
+          const schema = new SchemaModel(name, description, SchemaType.String);
+          const serializedName = 'jsonString';
+          const language = {
+            default: {
+              name: name,
+              description: description,
+              serializedName: serializedName,
+            },
+          };
+          schema.language = language;
+          const httpParameter = {
+            implementation: 'Method',
+            language: language,
+            schema: schema,
+            required: true,
+          };
+          const parameter = new IParameter(name, schema, {
+            description: description,
+            required: true,
+            details: {
+              default: {
+                description: description,
+                name: name,
+                isBodyParameter: false,
+                httpParameter: httpParameter,
+              },
+            },
+            schema: schema,
+            allowEmptyValue: false,
+            deprecated: false,
+          });
+          (<any>parameter).httpParameter = httpParameter;
+          opJsonString.parameters.push(parameter);
+          const opJsonFilePath = await this.addCommandOperation(`${vname}ViaJsonFilePath`, clone(parameters), operation, variant, state);
+          opJsonFilePath.details.default.dropBodyParameter = true;
+          opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
+          // opJsonFilePath.parameters.push(parameter);
+        }
       }
     }
   }
