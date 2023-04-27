@@ -313,48 +313,8 @@ export /* @internal */ class Inferrer {
         }));
 
         if (this.supportJsonInput && !vname.includes('Via-identity')) {
-          const opJsonString = await this.addCommandOperation(`${vname}ViaJsonString`, clone(parameters), operation, variant, state);
-          opJsonString.details.default.dropBodyParameter = true;
-          opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
-          const name = "JsonString";
-          const description = `Json string supplied to the ${vname} operation`;
-          const schema = new SchemaModel(name, description, SchemaType.String);
-          const serializedName = 'jsonString';
-          const language = {
-            default: {
-              name: name,
-              description: description,
-              serializedName: serializedName,
-            },
-          };
-          schema.language = language;
-          const httpParameter = {
-            implementation: 'Method',
-            language: language,
-            schema: schema,
-            required: true,
-          };
-          const parameter = new IParameter(name, schema, {
-            description: description,
-            required: true,
-            details: {
-              default: {
-                description: description,
-                name: name,
-                isBodyParameter: false,
-                httpParameter: httpParameter,
-              },
-            },
-            schema: schema,
-            allowEmptyValue: false,
-            deprecated: false,
-          });
-          (<any>parameter).httpParameter = httpParameter;
-          opJsonString.parameters.push(parameter);
-          const opJsonFilePath = await this.addCommandOperation(`${vname}ViaJsonFilePath`, clone(parameters), operation, variant, state);
-          opJsonFilePath.details.default.dropBodyParameter = true;
-          opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
-          // opJsonFilePath.parameters.push(parameter);
+          await this.addCommandOperation(`${vname}ViaJsonString`, parameters, operation, variant, state);
+          await this.addCommandOperation(`${vname}ViaJsonFilePath`, parameters, operation, variant, state);
         }
       }
     }

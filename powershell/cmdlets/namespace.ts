@@ -31,8 +31,6 @@ export class CmdletNamespace extends Namespace {
     this.add(new ImportDirective(`${ClientRuntime.Cmdlets}`));
     this.add(new ImportDirective('System'));
 
-    const processedViaJsonOperation = new Set();
-
     // generate cmdlet classes on top of the SDK
     for (const { key: index, value: operation } of items(this.state.model.commands.operations)) {
       // skip ViaIdentity for set-* cmdlets.
@@ -42,24 +40,37 @@ export class CmdletNamespace extends Namespace {
       const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
 
       if (operation.variant.includes('ViaJsonString')) {
+        const name = 'JsonString';
+        const description = `Json string supplied to the ${operation.variant} operation`;
+        operation.details.csharp.name = `${operation.variant}Via${name}`;
+
+        const property = new Property(name, System.String);
+        property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
+        property.add(new Attribute(ValidateNotNull));
+        property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
+        property.set = 'this._jsonString = value;';
+        property.get = 'return this._jsonString;';
+        newClass.addProperty(property);
+        const jsonStringField = new Field("_jsonString", System.String);
+        newClass.add(jsonStringField);
+
         operation.callGraph[0] = clone(operation.callGraph[0]);
         operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
       }
       if (operation.variant.includes('ViaJsonFilePath')) {
         const name = 'JsonFilePath';
         const description = `Json string supplied to the ${operation.variant} operation`;
-        operation.details.csharp.name = `${operation.variant}ViaJsonFilePath`;
+        operation.details.csharp.name = `${operation.variant}Via${name}`;
 
         const property = new Property(name, System.String);
         property.add(new Attribute(ParameterAttribute, { parameters: ['Mandatory = true', `HelpMessage = "${description}"`] }));
         property.add(new Attribute(ValidateNotNull));
         property.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Runtime`] }));
-
         property.set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value);';
         newClass.addProperty(property);
-
         const jsonStringField = new Field("_jsonString", System.String);
         newClass.add(jsonStringField);
+
         operation.callGraph[0] = clone(operation.callGraph[0]);
         operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
       }
