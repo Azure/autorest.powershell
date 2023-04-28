@@ -534,12 +534,12 @@ export /* @internal */ class Inferrer {
         (<any>parameter).httpParameter = httpParameter;
         return parameter;
       }
-      const opJsonString = await this.addVariant(`${vname}ViaJsonString`, body, bodyParameterName, clone(parameters), operation, variant, state);
+      const opJsonString = await this.addVariant(`${vname}ViaJsonString`, null, "", clone(parameters), operation, variant, state);
       opJsonString.details.default.dropBodyParameter = true;
       opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonString.parameters.push(createStringParameter("JsonString",  `Json string supplied to the ${vname} operation`, 'jsonString'));
 
-      const opJsonFilePath = await this.addVariant(`${vname}ViaJsonFilePath`, body, bodyParameterName, clone(parameters), operation, variant, state);
+      const opJsonFilePath = await this.addVariant(`${vname}ViaJsonFilePath`, null, "", clone(parameters), operation, variant, state);
       opJsonFilePath.details.default.dropBodyParameter = true;
       opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonFilePath.parameters.push(createStringParameter("JsonFilePath",  `Path of Json file supplied to the ${vname} operation`, 'jsonFilePath'));
