@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -2029,6 +2029,10 @@ export class CmdletClass extends Class {
         this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${request.protocol?.http?.path}"`, `ApiVersion = "${apiVersion}"`] }));
       });
     });
+
+    if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
+      this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
+    }
   }
 }
 
