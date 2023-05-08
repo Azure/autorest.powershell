@@ -1,13 +1,13 @@
 ﻿# ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$IncludeGeneralParameters, [switch]$UseExpandedFormat)
+param([switch]$NotIsolated, [switch]$IncludeGeneralParameters, [switch]$UseExpandedFormat)
 $ErrorActionPreference = 'Stop'
 
 $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-if(-not $Isolated) {
+if(-not $NotIsolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
-  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -NotIsolated
   return
 }
 

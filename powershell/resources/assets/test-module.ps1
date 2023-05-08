@@ -1,17 +1,17 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Live, [switch]$Record, [switch]$Playback, [switch]$RegenerateSupportModule, [switch]$UsePreviousConfigForRecord, [string[]]$TestName)
+param([switch]$NotIsolated, [switch]$Live, [switch]$Record, [switch]$Playback, [switch]$RegenerateSupportModule, [switch]$UsePreviousConfigForRecord, [string[]]$TestName)
 $ErrorActionPreference = 'Stop'
 
-if(-not $Isolated)
+if(-not $NotIsolated)
 {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   if ($PSBoundParameters.ContainsKey("TestName")) {
     $PSBoundParameters["TestName"] = $PSBoundParameters["TestName"] -join ","
   }
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
+  & "$pwsh" -NonInteractive -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -NotIsolated
   return
 }
 
@@ -23,7 +23,7 @@ if ($PSBoundParameters.ContainsKey("TestName") -and ($TestName.count -eq 1) -and
 $ProgressPreference = 'SilentlyContinue'
 $baseName = $PSScriptRoot.BaseName
 $requireResourceModule = (($baseName -ne "Resources") -and ($Record.IsPresent -or $Live.IsPresent))
-. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts:$false -Pester -Resources:$requireResourceModule -RegenerateSupportModule:$RegenerateSupportModule
+. (Join-Path $PSScriptRoot 'check-dependencies.ps1') -NotIsolated -Accounts:$false -Pester -Resources:$requireResourceModule -RegenerateSupportModule:$RegenerateSupportModule
 . ("$PSScriptRoot\test\utils.ps1")
 
 if ($requireResourceModule)
@@ -67,10 +67,10 @@ try
   $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
   if ($null -ne $TestName)
   {
-    Invoke-Pester -Script @{ Path = $testFolder } -TestName $TestName -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
+    Invoke-Pester -Script @{ Path = $testFolder } -TestName $TestName -ExcludeTag $ExcludeTag -EnableExit:(-not $NotIsolated) -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
   } else
   {
-    Invoke-Pester -Script @{ Path = $testFolder } -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
+    Invoke-Pester -Script @{ Path = $testFolder } -ExcludeTag $ExcludeTag -EnableExit:(-not $NotIsolated) -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
   }
 } Finally
 {
