@@ -1,19 +1,19 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Code)
+param([switch]$NotIsolated, [switch]$Code)
 $ErrorActionPreference = 'Stop'
 
-if(-not $Isolated) {
+if(-not $NotIsolated) {
   Write-Host -ForegroundColor Green 'Creating isolated process...'
   $pwsh = [System.Diagnostics.Process]::GetCurrentProcess().Path
-  & "$pwsh" -NoExit -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -Isolated
+  & "$pwsh" -NoExit -NoLogo -NoProfile -File $MyInvocation.MyCommand.Path @PSBoundParameters -NotIsolated
   return
 }
 
 $isAzure = $${$project.azure}
 if($isAzure) {
-  . (Join-Path $PSScriptRoot 'check-dependencies.ps1') -Isolated -Accounts
+  . (Join-Path $PSScriptRoot 'check-dependencies.ps1') -NotIsolated -Accounts
   # Load the latest version of Az.Accounts installed
   Import-Module -Name Az.Accounts -RequiredVersion (Get-Module -Name Az.Accounts -ListAvailable | Sort-Object -Property Version -Descending)[0].Version
 }
