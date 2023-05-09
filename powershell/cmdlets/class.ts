@@ -1165,7 +1165,7 @@ export class CmdletClass extends Class {
                   //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
                   const param = {
                     name: `${pascalCase(match.language.csharp?.name ?? '')}`,
-                    value: `${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
+                    value: `${pascalCase(match.language.csharp?.name ?? '')}`
                   };
                   allParams.push(param);
                   idOpParamsNotFromIdentity.push(param);
@@ -1218,7 +1218,7 @@ export class CmdletClass extends Class {
                   }
                   const resourceName = getResourceNameFromPath(path, serializedName);
                   if (resourceName) {
-                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}`;
+                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
                   }
                 }
               });
