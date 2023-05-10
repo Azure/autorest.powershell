@@ -88,3 +88,16 @@ export interface CommandComponents extends Components<CommandOperation, IParamet
 
 export class CommandComponents extends Components<CommandOperation, IParameter> {
 }
+
+export function isWritableCmdlet(operation: CommandOperation): boolean {
+  if (operation.callGraph[0].requests) {
+    switch (operation.callGraph[0].requests[0]?.protocol.http?.method.toLowerCase()) {
+      case 'put':
+      case 'post':
+      case 'delete':
+      case 'patch':
+        return true;
+    }
+  }
+  return false;
+}

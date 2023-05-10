@@ -9,7 +9,7 @@ import { VirtualParameter } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
 import common = require('mocha/lib/interfaces/common');
-import { CommandOperation } from '../utils/command-operation';
+import { CommandOperation, isWritableCmdlet } from '../utils/command-operation';
 // import { CommandOperation } from '@azure-tools/codemodel-v3/dist/code-model/command-operation';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
@@ -55,6 +55,7 @@ interface WhereCommandDirective {
   };
   set?: {
     'alias': Array<string> | string;
+    'suppress-should-process'?: boolean;
     'subject'?: string;
     'subject-prefix'?: string;
     'verb'?: string;
@@ -371,6 +372,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
       const verbRegex = getPatternToMatch(directive.where.verb);
       const variantRegex = getPatternToMatch(directive.where.variant);
       const parameterRegex = getPatternToMatch(directive.where['parameter-name']);
+      const SupportsShouldProcess = (directive.set !== undefined) ? directive.set['suppress-should-process'] : undefined;
 
       const alias =
         (directive.set !== undefined) ?
@@ -511,6 +513,10 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
       } else if (operations) {
         for (const operation of values(operations)) {
+          // set suppress-should-process
+          if (!!SupportsShouldProcess && isWritableCmdlet(operation)) {
+            operation.details.csharp.supportShouldProcess = SupportsShouldProcess;
+          }
           const getCmdletName = (verb: string, subjectPrefix: string, subject: string, variantName: string): string => {
             return `${verb}-${subjectPrefix}${subject}${variantName ? `_${variantName}` : ''}`;
           };
