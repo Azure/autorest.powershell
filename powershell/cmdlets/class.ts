@@ -860,7 +860,13 @@ export class CmdletClass extends Class {
           description: `<c>${override}</c> will be called before the regular ${each.language.csharp?.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
           returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
         });
+        const overrideResponsePageableWriteVariableMethod = new PartialMethod(override, dotnet.Void, {
+          parameters: [...parameters, returnNow],
+          description: `<c>${override}</c> will be called before the regular ${each.language.csharp?.name} has been output to PowerShell, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
+          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+        });
         $this.add(overrideResponseMethod);
+        $this.add(overrideResponsePageableWriteVariableMethod);
 
         const responseMethod = new Method(`${each.language.csharp?.name}`, System.Threading.Tasks.Task(), {
           access: Access.Private,
