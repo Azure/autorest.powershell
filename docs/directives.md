@@ -9,7 +9,6 @@ The built-in directives for PowerShell consist of three parts:
   - `parameter`
   - `model`
   - `property`
-  - `enum`
 
   *Note*: Depending of the filters, AutoRest infers the type of object that needs to be selected. For example:
   ```yaml $false
@@ -96,7 +95,6 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Parameter Hiding](#Parameter-Hiding)
 - [Parameter Description](#Parameter-Description)
 - [Model Rename](#Model-Rename)
-- [Enum Value Rename](#Property-Rename)
 - [Alias Removal](#Alias-Removal)
 - [Table Formatting](#Table-Formatting)
 - [Argument Completers](#Argument-Completers)
@@ -328,17 +326,6 @@ directive:
       property-name: (.*)Name
     set:
       property-name: Name
-```
-
-### Enum Value Rename
-In some instances names can have conflicts with the enum-value-names that get generated for Enum fields. In this case, we can rename the name of the value. For example:
-```yaml $false
-directive:
-  - where:
-      enum-name: ComparisonOperationType
-      enum-value-name: Equals
-    set:
-      enum-value-name: Equal
 ```
 
 ### Alias Removal
