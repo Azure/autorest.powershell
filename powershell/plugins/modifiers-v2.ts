@@ -62,6 +62,7 @@ interface WhereCommandDirective {
     'variant'?: string;
     'parameter-name'?: string;
     'parameter-description'?: string;
+    'command-description'?: string;
     'completer'?: {
       name: string;
       description: string;
@@ -254,7 +255,7 @@ function isWhereModelDirective(it: any): it is WhereModelDirective {
   if (where && set && (where['model-name'] || where['model-fullname'] || where['model-namespace'] || where['property-name'] || directive.select === 'model')) {
     const prohibitedFilters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
-    const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer', 'default'];
+    const prohibitedSetters = ['enum-name', 'enum-value-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'command-description', 'completer', 'default'];
     error += getSetError(set, prohibitedSetters, 'enum');
     const modelSelectNameConflict = [];
     let modelSelectNameType = '';
@@ -320,7 +321,7 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   if (where && set && (where['enum-name'] || where['enum-value-name'] || directive.select === 'enum')) {
     const prohibitedFilters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name'];
     let error = getFilterError(where, prohibitedFilters, 'enum');
-    const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'completer', 'default'];
+    const prohibitedSetters = ['model-name', 'property-name', 'subject', 'subject-prefix', 'verb', 'variant', 'parameter-name', 'parameter-description', 'command-description', 'completer', 'default'];
     error += getSetError(set, prohibitedSetters, 'enum');
     if (error) {
       throw Error(`Incorrect Directive: ${JSON.stringify(it, null, 2)}. Reason: ${error}.`);
@@ -390,6 +391,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
       const variantReplacer = (directive.set !== undefined) ? directive.set.variant : undefined;
       const parameterReplacer = (directive.set !== undefined) ? directive.set['parameter-name'] : undefined;
       const paramDescriptionReplacer = (directive.set !== undefined) ? directive.set['parameter-description'] : undefined;
+      const commandDescriptionReplacer = (directive.set !== undefined) ? directive.set['command-description'] : undefined;
       const paramCompleterReplacer = (directive.set !== undefined) ? directive.set['completer'] : undefined;
       const paramDefaultReplacer = (directive.set !== undefined) ? directive.set['default'] : undefined;
       const cliensidePagination = (directive.set !== undefined) ? directive.set['clientside-pagination'] : undefined;
@@ -533,6 +535,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
           operation.details.csharp.verb = verbReplacer ? verbRegex ? prevVerb.replace(verbRegex, verbReplacer) : verbReplacer : prevVerb;
           operation.details.csharp.name = variantReplacer ? variantRegex ? prevVariantName.replace(variantRegex, variantReplacer) : variantReplacer : prevVariantName;
           operation.details.csharp.hidden = (directive.hide !== undefined) ? !!directive.hide : operation.details.csharp.hidden;
+          operation.details.csharp.description = commandDescriptionReplacer ? commandDescriptionReplacer : operation.details.csharp.description;
 
           const newSubject = operation.details.csharp.subject;
           const newSubjectPrefix = operation.details.csharp.subjectPrefix;
