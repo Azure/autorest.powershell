@@ -34,6 +34,14 @@ export class CmdletNamespace extends Namespace {
       if (this.state.project.azure && operation.details.csharp.verb === 'Set' && operation.details.csharp.name.indexOf('ViaIdentity') > 0) {
         continue;
       }
+      if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
+        if (operation.details.default.virtualParameters) {
+          operation.details.default.virtualParameters!.body = [];
+        }
+        if (operation.details.csharp.virtualParameters) {
+          operation.details.csharp.virtualParameters!.body = [];
+        }
+      }
       const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
 
       if (operation.variant.includes('ViaJsonString')) {

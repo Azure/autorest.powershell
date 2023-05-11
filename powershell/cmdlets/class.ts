@@ -1257,7 +1257,7 @@ export class CmdletClass extends Class {
             if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
               httpOperationName = `${httpOperationName}ViaJsonString`;
               const jsonParameter = new Field("_jsonString", System.String);
-              parameters = [...operationParameters.map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
+              parameters = [...operationParameters.filter(each => each.name !== 'body').map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
             }
             yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
           }

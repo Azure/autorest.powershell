@@ -535,15 +535,28 @@ export /* @internal */ class Inferrer {
         return parameter;
       }
       const jsonVariant = pascalCase([variant.action, vname]);
+      const parameter = new IParameter(`${bodyParameterName}Body`, body!.schema, {
+          details: {
+            default: {
+              description: body!.schema.language.default.description,
+              name: pascalCase(`${bodyParameterName}Body`),
+              isBodyParameter: true,
+            }
+          }
+        })
       const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, "", [...constants, ...requiredParameters], operation, variant, state);
       opJsonString.details.default.dropBodyParameter = true;
       opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonString.parameters.push(createStringParameter("JsonString",  `Json string supplied to the ${jsonVariant} operation`, 'jsonString'));
+      opJsonString.parameters.push(parameter);
+      opJsonString.details.default.dropBodyParameter = true;
 
       const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, "", [...constants, ...requiredParameters], operation, variant, state);
       opJsonFilePath.details.default.dropBodyParameter = true;
       opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonFilePath.parameters.push(createStringParameter("JsonFilePath",  `Path of Json file supplied to the ${jsonVariant} operation`, 'jsonFilePath'));
+      opJsonFilePath.parameters.push(parameter);
+      opJsonFilePath.details.default.dropBodyParameter = true;
     }
   }
 
