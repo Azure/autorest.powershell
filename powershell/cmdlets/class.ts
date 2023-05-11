@@ -777,7 +777,7 @@ export class CmdletClass extends Class {
       };
       for (const vParam of [...vps.body, ...vps.operation]) {
         if (vParam.hidden) {
-          const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>vParam.schema, true, $this.state);
+          const td = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>vParam.schema, true, $this.state, true);
           yield If(`true == this.MyInvocation?.BoundParameters?.ContainsKey("${vParam.name}")`, `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`);
         }
       }
@@ -1165,7 +1165,7 @@ export class CmdletClass extends Class {
                   //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
                   const param = {
                     name: `${pascalCase(match.language.csharp?.name ?? '')}`,
-                    value: `${pascalCase(match.language.csharp?.name ?? '')} ?? ${defaultOfType}`
+                    value: `${pascalCase(match.language.csharp?.name ?? '')}`
                   };
                   allParams.push(param);
                   idOpParamsNotFromIdentity.push(param);
@@ -1218,7 +1218,7 @@ export class CmdletClass extends Class {
                   }
                   const resourceName = getResourceNameFromPath(path, serializedName);
                   if (resourceName) {
-                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}))}`;
+                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
                   }
                 }
               });
