@@ -6,7 +6,7 @@
 const ejs = require('ejs');
 import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@azure-tools/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { CommandOperation, OperationType, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
+import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
@@ -622,24 +622,8 @@ export class CmdletClass extends Class {
     }
   }
 
-
-  private NewIsWritableCmdlet(operation: CommandOperation): boolean {
-    if (operation.callGraph[0].requests) {
-      switch (operation.callGraph[0].requests[0]?.protocol.http?.method.toLowerCase()) {
-        case 'put':
-        case 'post':
-        case 'delete':
-        case 'patch':
-          return true;
-      }
-    }
-    return false;
-  }
-
-
   private NewImplementProcessRecord(operation: CommandOperation) {
     const $this = this;
-    const writable = this.NewIsWritableCmdlet(operation);
 
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: 'Performs execution of the command.' })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
@@ -693,7 +677,7 @@ export class CmdletClass extends Class {
           yield Else(normal);
         } : normal;
 
-        if (writable) {
+        if (isWritableCmdlet(operation) && !operation.details.csharp.supportShouldProcess) {
           yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].language.csharp?.name}' operation")`, work);
         } else {
           yield work;
@@ -1835,7 +1819,7 @@ export class CmdletClass extends Class {
       new StringExpression(variantName)
     ];
 
-    if (this.NewIsWritableCmdlet(operation)) {
+    if (isWritableCmdlet(operation) && !operation.details.csharp.supportShouldProcess) {
       cmdletAttribParams.push('SupportsShouldProcess = true');
     }
 
