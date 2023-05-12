@@ -38,9 +38,14 @@ export class CmdletNamespace extends Namespace {
         if (operation.details.default.virtualParameters) {
           operation.details.default.virtualParameters!.body = [];
         }
+        const callGraph = operation.callGraph[0];
+        if (callGraph.requests && callGraph.requests.length > 0) {
+          callGraph.requests[0].parameters = callGraph.requests[0].parameters?.filter(element => element.protocol.http?.in !== 'body');
+        }
         if (operation.details.csharp.virtualParameters) {
           operation.details.csharp.virtualParameters!.body = [];
         }
+        operation.parameters = operation.parameters.filter(element => element.required === true);
       }
       const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
 
