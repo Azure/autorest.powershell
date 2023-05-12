@@ -944,19 +944,10 @@ export class CmdletClass extends Class {
             const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
 
-            const awaitExpression = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
+            const awaitExpression = (length(props) === 1 && !apiCall.language.csharp?.pageable) ? `(await response).${props[0].name}` : '(await response)';
             const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(awaitExpression) });
             yield `// (await response) // should be ${rType.declaration}`;
             yield result.declarationStatement;
-
-            const deserializedResponse = new Parameter('deserializedResponse', rType, { description: `the deserialized response message as an ${rType}.` });
-            const overrideResponseMethodAfterDeserialize = new PartialMethod(`${override}ResponseAfterDeserialize`, dotnet.Void, {
-              parameters: [deserializedResponse],
-              description: `<c>${override}</c> will be called after the regular ${each.language.csharp?.name} has been deserialized, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
-              returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
-            });
-            $this.add(overrideResponseMethodAfterDeserialize);
-            yield `${overrideResponseMethodAfterDeserialize.invoke(result.value)};`;
 
             if (apiCall.language.csharp?.pageable) {
               const pageable = apiCall.language.csharp.pageable;
