@@ -15,7 +15,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -1233,11 +1233,17 @@ export class CmdletClass extends Class {
               yield identityFromPathParams;
             }
           } else {
-            const parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+            let parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
             if (serializationMode) {
               parameters.push(serializationMode);
             }
-            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...parameters).implementation}`;
+            let httpOperationName = `${apiCall.language.csharp?.name}`
+            if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
+              httpOperationName = `${httpOperationName}ViaJsonString`;
+              const jsonParameter = new Field("_jsonString", System.String);
+              parameters = [...operationParameters.filter(each => each.name !== 'body').map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
+            }
+            yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
           }
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };
@@ -1290,7 +1296,6 @@ export class CmdletClass extends Class {
         for (const f of $this.thingsToSerialize) {
           yield `${i.value}.${f} = this.${f};`;
         }
-
         // _name = this._name,
         //_parametersBody = this._parametersBody,
         //_resourceGroupName = this._resourceGroupName,
@@ -2008,6 +2013,10 @@ export class CmdletClass extends Class {
         this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${request.protocol?.http?.path}"`, `ApiVersion = "${apiVersion}"`] }));
       });
     });
+
+    if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
+      this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
+    }
   }
 }
 

@@ -87,8 +87,15 @@ export class OperationMethod extends Method {
 
   protected callName: string;
 
-  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
-    super(viaIdentity ? `${operation.language.csharp?.name}ViaIdentity` : operation.language.csharp?.name || '', System.Threading.Tasks.Task());
+  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: State, public viaJson: boolean = false, objectInitializer?: DeepPartial<OperationMethod>) {
+    super(
+      viaJson
+        ? `${operation.language.csharp?.name}ViaJsonString`
+        : viaIdentity
+        ? `${operation.language.csharp?.name}ViaIdentity`
+        : operation.language.csharp?.name || "",
+      System.Threading.Tasks.Task()
+    );
     this.apply(objectInitializer);
     this.async = Modifier.Async;
     this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
@@ -142,12 +149,20 @@ export class OperationMethod extends Method {
       // this request does have a request body.
       const param = this.operation.requests[0].parameters.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0);
       if (param) {
-        this.bodyParameter = new OperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
-          // TODO: temp solution. We need a class like NewKnowMediaType
-          mediaType: knownMediaType(KnownMediaType.Json),
-          contentType: KnownMediaType.Json
-        });
-        this.addParameter(this.bodyParameter);
+        if (!viaJson) {
+          this.bodyParameter = new OperationBodyParameter(this, 'body', param.language.default.description, param.schema, param.required ?? false, this.state, {
+            // TODO: temp solution. We need a class like NewKnowMediaType
+            mediaType: knownMediaType(KnownMediaType.Json),
+            contentType: KnownMediaType.Json
+          });
+          this.addParameter(this.bodyParameter);
+        } else {
+          this.addParameter(
+            new Parameter("jsonString", System.String, {
+              description: `Json string supplied to the ${operation.language.csharp?.name} operation`,
+            })
+          );
+        }
       }
     }
 
@@ -283,6 +298,13 @@ export class OperationMethod extends Method {
         yield '// set body content';
         yield `request.Content = ${bp.serializeToContent(bp.mediaType, new LiteralExpression('serializationMode'))};`;
         yield `request.Content.Headers.ContentType = ${System.Net.Http.Headers.MediaTypeHeaderValue.Parse(bp.contentType)};`;
+        yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
+      }
+
+      if (viaJson) {
+        yield "// set body content";
+        yield "request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);";
+        yield 'request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");';
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
       }
 
