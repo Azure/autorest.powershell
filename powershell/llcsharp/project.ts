@@ -33,6 +33,7 @@ export class Project extends codeDomProject {
   license!: string;
   identityCorrection!: boolean;
   resourceGroupAppend!: boolean;
+  supportJsonInput!: boolean;
   formats!: Dictionary<PropertyFormat>;
 
   constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
@@ -52,6 +53,14 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', this.azure ? true : false);
     this.formats = await this.state.getValue('formats', {});
+    if (this.azure)
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', true);
+    }
+    else
+    {
+      this.supportJsonInput = await this.state.getValue('support-json-input', false);
+    }
     this.enableApiRetry = await this.state.getValue('enable-api-retry', true);
 
 

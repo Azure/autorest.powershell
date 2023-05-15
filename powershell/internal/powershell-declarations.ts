@@ -50,6 +50,7 @@ export const ExportAsAttribute: TypeDeclaration = new ClassType(rest, 'ExportAs'
 export const ParameterCategory: TypeDeclaration = new ClassType(rest, 'ParameterCategory');
 export const PSArgumentCompleterAttribute: TypeDeclaration = new ClassType(rest, 'PSArgumentCompleterAttribute');
 export const HttpPathAttribute: TypeDeclaration = new ClassType(rest, 'HttpPath');
+export const NotSuggestDefaultParameterSetAttribute: TypeDeclaration = new ClassType(rest, 'NotSuggestDefaultParameterSet');
 
 export function ErrorCategory(category: string): Expression {
   return new LiteralExpression(`${sma}.ErrorCategory.${category}`);

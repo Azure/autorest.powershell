@@ -10,13 +10,14 @@
 // import { DeepPartial } from '@azure-tools/codegen';
 // import { Dictionary } from '@azure-tools/linq';
 // import { uid } from './uid';
+import { Operation, Parameter as NewHttpOperationParameter } from "@azure-tools/codemodel";
 
 // export interface HttpOperationDetails extends ImplementationDetails {
 // }
 
-// /** 
-//  * An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies. 
-//  * This attribute is only applicable to multipart and application/x-www-form-urlencoded request bodies. 
+// /**
+//  * An encoding attribute is introduced to give you control over the serialization of parts of multipart request bodies.
+//  * This attribute is only applicable to multipart and application/x-www-form-urlencoded request bodies.
 // */
 // export class Encoding extends Extensions implements Encoding {
 //   public headers = new Array<Header>();
@@ -298,3 +299,20 @@ export enum ParameterLocation {
 //     this.apply(initializer);
 //   }
 // }
+
+export function hasValidBodyParameters(
+  operation: Operation
+): NewHttpOperationParameter | undefined {
+  if (
+    operation.requests &&
+    operation.requests.length > 0 &&
+    operation.requests[0].parameters &&
+    operation.requests[0].parameters.length > 0
+  ) {
+    const param = operation.requests[0].parameters.find(
+      (p) => !p.origin || p.origin.indexOf("modelerfour:synthesized") < 0
+    );
+    return param;
+  }
+  return undefined;
+}

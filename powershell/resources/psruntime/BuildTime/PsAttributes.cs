@@ -55,6 +55,11 @@ namespace Microsoft.Rest
         public string ApiVersion { get; set; }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
+    public class NotSuggestDefaultParameterSetAttribute : Attribute
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class CategoryAttribute : Attribute
     {

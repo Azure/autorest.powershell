@@ -10,6 +10,7 @@ import { State } from '../generator';
 import { OperationMethod, CallMethod, ValidationMethod } from '../operation/method';
 import { ParameterLocation } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
+import { hasValidBodyParameters } from "../../utils/http-operation";
 
 export class ApiClass extends Class {
 
@@ -35,7 +36,12 @@ export class ApiClass extends Class {
           const identityMethod = new OperationMethod(this, operation, true, state);
           identityMethod.emitCall(false);
           this.addMethod(identityMethod);
+        }
 
+        if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
+          const jsonMethod = new OperationMethod(this, operation, false, state, true);
+          jsonMethod.emitCall(false);
+          this.addMethod(jsonMethod);
         }
 
         // check if this exact method is been created before (because _call and _validate have less specific parameters than the api) 
