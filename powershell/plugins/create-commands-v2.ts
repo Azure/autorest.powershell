@@ -273,11 +273,8 @@ export /* @internal */ class Inferrer {
 
   async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State) {
     // beth: filter command description for New/Update command
-    const createOrUpdateRegex = /creates? or updates?/i
-    let result = operation.language.default.description.match(createOrUpdateRegex)
-    if (result) {
-      operation.language.default.description = operation.language.default.description.replace(result[0], `${variant.action.capitalize()}s`);
-    }
+    const createOrUpdateRegex = /creates? or updates?/gi;
+    operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
     const op = await this.addCommandOperation(vname, parameters, operation, variant, state);
 
     // if this has a body with it, let's add that parameter
