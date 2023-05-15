@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, SchemaResponse } from '@azure-tools/codemodel';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
@@ -143,10 +143,40 @@ export /* @internal */ class Inferrer {
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
+      let hasPatch = false;
+      let getOperation: Operation | undefined, putOperation: Operation | undefined;
+      let pathLength = -1;
       for (const operation of values(operationGroup.operations)) {
+        if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
+          hasPatch = true;
+        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get' && operation.requests?.[0]?.protocol?.http?.path?.length > pathLength) {
+          //assign get operation with longest path (make sure it's get not list to getOperation)
+          pathLength = operation.requests?.[0]?.protocol?.http?.path?.length;
+          getOperation = operation;
+        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
+          putOperation = operation;
+        }
         for (const variant of await this.inferCommandNames(operation, operationGroup.$key, this.state)) {
           await this.addVariants(operation.parameters, operation, variant, '', this.state);
         }
+      }
+      /*
+        generate variants for Update(Get+Put) for subjects only if:
+        - there is no patch operation
+        - there is a get operation
+        - there is a put operation
+        - get operation path is the same as put operation path
+        - get operation response schema type is the same as put operation request schema type
+      */
+      if (!hasPatch
+        && putOperation
+        && getOperation
+        && getOperation.requests?.[0]?.protocol?.http?.path === putOperation.requests?.[0]?.protocol?.http?.path
+        && putOperation.parameters?.find(p => p.schema === (<SchemaResponse>getOperation?.responses?.[0])?.schema)) {
+        // for (const variant of await this.inferCommandNames(putOperation, operationGroup.$key, this.state)) {
+        //   await this.addVariants(operation.parameters, operation, variant, '', this.state);
+        // }
+        pathLength = -1;
       }
     }
     // for (const operation of values(model.http.operations)) {
