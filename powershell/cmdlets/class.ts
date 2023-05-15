@@ -505,16 +505,15 @@ export class CmdletClass extends Class {
     if ($this.state.project.autoSwitchView) {
       if (isEnumerable) {
         return function* () {
-          yield `var outputObjects = ${valueName};`;
-          yield If('null != outputObjects', function* () {
-            yield If('0 == _responseSize && 1 == outputObjects.Count', function* () {
-              yield '_firstResponse = outputObjects[0];';
+          yield If(`null != ${valueName}`, function* () {
+            yield If(`0 == _responseSize && 1 == ${valueName}.Count`, function* () {
+              yield `_firstResponse = ${valueName}[0];`;
               yield '_responseSize = 1;';
             });
             yield Else(function* () {
               yield $this.FlushResponse(false);
               yield 'var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();';
-              yield ForEach('value', 'outputObjects', function* () {
+              yield ForEach('value', valueName, function* () {
                 yield 'values.Add(value.AddMultipleTypeNameIntoPSObject());';
               });
               yield 'WriteObject(values, true); ';
@@ -524,15 +523,14 @@ export class CmdletClass extends Class {
         };
       } else {
         return function* () {
-          yield `var outputObject = ${valueName};`;
-          yield If('null != outputObject', function* () {
+          yield If(`null != ${valueName}`, function* () {
             yield If('0 == _responseSize', function* () {
-              yield '_firstResponse = outputObject;';
+              yield `_firstResponse = ${valueName};`;
               yield '_responseSize = 1;';
             });
             yield Else(function* () {
               yield $this.FlushResponse(false);
-              yield 'WriteObject(outputObject.AddMultipleTypeNameIntoPSObject());';
+              yield `WriteObject(${valueName}.AddMultipleTypeNameIntoPSObject());`;
               yield '_responseSize = 2;';
             });
           });
@@ -927,6 +925,13 @@ export class CmdletClass extends Class {
 
           if ('schema' in each) {
             const schema = (<SchemaResponse>each).schema;
+            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
+            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
+
+            const awaitExpression = (length(props) === 1 && !apiCall.language.csharp?.pageable) ? `(await response).${props[0].name}` : '(await response)';
+            const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(awaitExpression) });
+            yield `// (await response) // should be ${rType.declaration}`;
+            yield result.declarationStatement;
 
             if (apiCall.language.csharp?.pageable) {
               const pageable = apiCall.language.csharp.pageable;
@@ -943,8 +948,6 @@ export class CmdletClass extends Class {
                   const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
                   if (valueProperty && nextLinkProperty) {
                     // it's pageable!
-                    const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('await response') });
-                    yield result.declarationStatement;
                     // write out the current contents
                     const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (vp) {
@@ -993,7 +996,7 @@ export class CmdletClass extends Class {
                     // it's just a nested array
                     const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                     if (p) {
-                      yield $this.WriteObjectWithViewControl(`(await response).${p.name}`, true);
+                      yield $this.WriteObjectWithViewControl(`${result.value}.${p.name}`, true);
                     }
                     return;
                   }
@@ -1003,17 +1006,13 @@ export class CmdletClass extends Class {
                 // it's just an array,
                 case 'array':
                   // just write-object(enumerate) with the output
-                  yield $this.WriteObjectWithViewControl('(await response)', true);
+                  yield $this.WriteObjectWithViewControl(result.value, true);
                   return;
               }
               // ok, let's see if the response type
             }
-            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
-            const outValue = (length(props) === 1) ? `(await response).${props[0].name}` : '(await response)';
 
             // we expect to get back some data from this call.
-            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
-            yield `// (await response) // should be ${rType.declaration}`;
             if ($this.hasStreamOutput && $this.outFileParameter) {
               const outfile = $this.outFileParameter;
               const provider = Local('provider');
@@ -1025,14 +1024,14 @@ export class CmdletClass extends Class {
 
               if (rType.declaration === System.IO.Stream.declaration) {
                 // this is a stream output. write to outfile
-                const stream = Local('stream', 'await response');
+                const stream = Local('stream', result.value);
                 yield Using(stream.declarationExpression, function* () {
                   const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
                   yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
                 });
               } else {
-                // assuming byte array output (via outValue)
-                yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${outValue});`;
+                // assuming byte array output (via result)
+                yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${result.value});`;
               }
 
               yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
@@ -1043,7 +1042,7 @@ export class CmdletClass extends Class {
             }
 
             //  let's just return the result object (or unwrapped result object)
-            yield $this.WriteObjectWithViewControl(`${outValue}`);
+            yield $this.WriteObjectWithViewControl(result.value);
             return;
           }
 
