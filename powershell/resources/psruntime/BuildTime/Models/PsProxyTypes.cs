@@ -101,12 +101,23 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             if (String.IsNullOrEmpty(defaultParameterSet))
             {
                 var variantParamCountGroups = Variants
+                    .Where(v => !v.IsNotSuggestDefaultParameterSet)
                     .Select(v => (
                         variant: v.VariantName,
                         paramCount: v.CmdletOnlyParameters.Count(p => p.IsMandatory),
                         isSimple: v.CmdletOnlyParameters.Where(p => p.IsMandatory).All(p => p.ParameterType.IsPsSimple())))
                     .GroupBy(vpc => vpc.isSimple)
                     .ToArray();
+                if (variantParamCountGroups.Length == 0)
+                {
+                    variantParamCountGroups = Variants
+                        .Select(v => (
+                            variant: v.VariantName,
+                            paramCount: v.CmdletOnlyParameters.Count(p => p.IsMandatory),
+                            isSimple: v.CmdletOnlyParameters.Where(p => p.IsMandatory).All(p => p.ParameterType.IsPsSimple())))
+                        .GroupBy(vpc => vpc.isSimple)
+                        .ToArray();
+                }
                 var variantParameterCounts = (variantParamCountGroups.Any(g => g.Key) ? variantParamCountGroups.Where(g => g.Key) : variantParamCountGroups).SelectMany(g => g).ToArray();
                 var smallestParameterCount = variantParameterCounts.Min(vpc => vpc.paramCount);
                 defaultParameterSet = variantParameterCounts.First(vpc => vpc.paramCount == smallestParameterCount).variant;
@@ -135,6 +146,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public Parameter[] CmdletOnlyParameters { get; }
         public bool IsInternal { get; }
         public bool IsDoNotExport { get; }
+        public bool IsNotSuggestDefaultParameterSet { get; }
         public string[] Profiles { get; }
 
         public Variant(string cmdletName, string variantName, CommandInfo info, CommandMetadata metadata, bool hasParameterSets = false, PsHelpInfo helpInfo = null)
@@ -155,6 +167,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             Parameters = this.ToParameters().OrderBy(p => p.OrderCategory).ThenByDescending(p => p.IsMandatory).ToArray();
             IsInternal = Attributes.OfType<InternalExportAttribute>().Any();
             IsDoNotExport = Attributes.OfType<DoNotExportAttribute>().Any();
+            IsNotSuggestDefaultParameterSet = Attributes.OfType<NotSuggestDefaultParameterSetAttribute>().Any();
             CmdletOnlyParameters = Parameters.Where(p => !p.Categories.Any(c => c == ParameterCategory.Azure || c == ParameterCategory.Runtime)).ToArray();
             Profiles = Attributes.OfType<ProfileAttribute>().SelectMany(pa => pa.Profiles).ToArray();
         }
