@@ -928,8 +928,7 @@ export class CmdletClass extends Class {
             const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
             const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
 
-            const awaitExpression = (length(props) === 1 && !apiCall.language.csharp?.pageable) ? `(await response).${props[0].name}` : '(await response)';
-            const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression(awaitExpression) });
+            const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('(await response)') });
             yield `// (await response) // should be ${rType.declaration}`;
             yield result.declarationStatement;
 
@@ -1865,7 +1864,7 @@ export class CmdletClass extends Class {
         const props = NewGetAllProperties(schema);
 
         // does the target type just wrap a single output?
-        const resultSchema = length(props) !== 1 ? <NewSchema>schema : <NewSchema>props[0].schema;
+        const resultSchema = <NewSchema>schema;
 
         // make sure return type for boolean stays boolean!
         if (resultSchema.type === SchemaType.Boolean ||
@@ -2018,4 +2017,3 @@ export class CmdletClass extends Class {
     }
   }
 }
-
