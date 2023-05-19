@@ -136,7 +136,8 @@ if($NoDocs) {
     $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
-  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid
+  $addComplexInterfaceInfo = ![System.Convert]::ToBoolean('${$project.azure}')
+  Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid -AddComplexInterfaceInfo:$addComplexInterfaceInfo
 }
 
 Write-Host -ForegroundColor Green 'Creating format.ps1xml...'
