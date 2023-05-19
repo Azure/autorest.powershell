@@ -189,12 +189,14 @@ export class OperationMethod extends Method {
 
     let rx = this.operation.requests ? this.operation.requests[0].protocol.http?.path : '';
     const path = rx;
+    let pathWithoutOperation = path;
     // For post API, Some URI may contain an action string .e.x '/start' at the end
     // of the URI, for such cases, we will drop the action string if identityCorrection
     // is set in the configuration
     if (this.operation.requests && this.operation.requests.length && this.operation.requests[0].protocol.http?.method === 'post' && this.state.project.identityCorrection) {
       const idx = rx.lastIndexOf('/');
       rx = rx.substr(0, idx);
+      pathWithoutOperation = rx;
     }
 
     let url = `/${path.startsWith('/') ? path.substr(1) : path}`;
@@ -253,7 +255,7 @@ export class OperationMethod extends Method {
 
         const match = Local('_match', `${System.Text.RegularExpressions.Regex.new(rx, 'global::System.Text.RegularExpressions.RegexOptions.IgnoreCase').value}.Match(${identity.value})`);
         yield match.declarationStatement;
-        yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${path}'");`);
+        yield If(`!${match}.Success`, `throw new global::System.Exception("Invalid identity for URI '${pathWithoutOperation}'");`);
         yield EOL;
         yield '// replace URI parameters with values from identity';
         for (const pp of pathParams) {
