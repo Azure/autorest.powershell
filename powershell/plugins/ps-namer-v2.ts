@@ -139,7 +139,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
           // first try to singularize the property
           const singularName = singularize(property.name);
-          if (prevName != singularName) {
+          if (prevName != singularName && !otherPropertiesNames.includes(singularName)) {
             property.name = singularName;
             state.message({ Channel: Channel.Debug, Text: `Sanitized property-name -> Changed property-name from ${prevName} to singular ${property.name} from model ${schema.language.csharp?.name}` });
           }
