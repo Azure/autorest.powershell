@@ -52,6 +52,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         [Parameter(Mandatory = true, ParameterSetName = "NoDocs")]
         public SwitchParameter ExcludeDocs { get; set; }
 
+        [Parameter(ParameterSetName = "Docs")]
+        public SwitchParameter AddComplexInterfaceInfo { get; set; }
+
         protected override void ProcessRecord()
         {
             try
@@ -152,7 +155,7 @@ ${$project.pwshCommentHeaderForCsharp}
                         var isValidProfile = !String.IsNullOrEmpty(profileName) && profileName != NoProfiles;
                         var docsFolder = isValidProfile ? Path.Combine(DocsFolder, profileName) : DocsFolder;
                         var examplesFolder = isValidProfile ? Path.Combine(ExamplesFolder, profileName) : ExamplesFolder;
-                        WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder);
+                        WriteMarkdowns(variantGroupsByProfile, moduleInfo, docsFolder, examplesFolder, AddComplexInterfaceInfo.IsPresent);
                     }
                 }
             }
