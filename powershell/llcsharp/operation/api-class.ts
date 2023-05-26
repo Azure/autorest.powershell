@@ -10,7 +10,7 @@ import { State } from '../generator';
 import { OperationMethod, CallMethod, ValidationMethod } from '../operation/method';
 import { ParameterLocation } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
-import { hasValidBodyParameters } from "../../utils/http-operation";
+import { hasValidBodyParameters } from '../../utils/http-operation';
 
 export class ApiClass extends Class {
 
@@ -27,6 +27,7 @@ export class ApiClass extends Class {
     // todo
     for (const operationGroup of state.model.operationGroups) {
       for (const operation of operationGroup.operations) {
+        //TODO: add method with result
         const operationMethod = new OperationMethod(this, operation, false, state);
         this.addMethod(operationMethod);
         // Compare with m3, m4 operation has one more parameter called '$host'. We should skip it
@@ -36,6 +37,7 @@ export class ApiClass extends Class {
           const identityMethod = new OperationMethod(this, operation, true, state);
           identityMethod.emitCall(false);
           this.addMethod(identityMethod);
+          //TODO: add method with result
         }
 
         if (this.state.project.supportJsonInput && hasValidBodyParameters(operation)) {
@@ -46,8 +48,10 @@ export class ApiClass extends Class {
 
         // check if this exact method is been created before (because _call and _validate have less specific parameters than the api) 
         const cm = new CallMethod(this, operationMethod, state);
+        const cmWithResult = new CallMethod(this, operationMethod, state, undefined, true);
         if (!this.hasMethodWithSameDeclaration(cm)) {
           this.addMethod(cm);
+          this.addMethod(cmWithResult);
         }
 
         const vm = new ValidationMethod(this, operationMethod, state);

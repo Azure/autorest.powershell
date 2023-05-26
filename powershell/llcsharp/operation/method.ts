@@ -7,7 +7,7 @@ import { NewResponse, ParameterLocation } from '@azure-tools/codemodel-v3';
 import { Operation, SchemaResponse, BinaryResponse, Schema as NewSchema, Response, BinarySchema } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { EOL, DeepPartial } from '@azure-tools/codegen';
-import { Access, Modifier } from '@azure-tools/codegen-csharp';
+import { Access, Else, IsNull, Modifier, Or, TypeDeclaration } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
 import { Binary } from '../schema/binary';
 
@@ -27,10 +27,12 @@ import { ClientRuntime } from '../clientruntime';
 import { HttpOperation, Schema } from '../code-model';
 import { State } from '../generator';
 import { CallbackParameter, OperationParameter, OperationBodyParameter } from '../operation/parameter';
+import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../../utils/schema';
 
 import { isMediaTypeJson, isMediaTypeXml, KnownMediaType, knownMediaType, normalizeMediaType, parseMediaType } from '@azure-tools/codemodel-v3';
 import { ClassType, dotnet, System } from '@azure-tools/codegen-csharp';
 import { Ternery } from '@azure-tools/codegen-csharp';
+import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
 
 function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMediaType): string {
@@ -92,8 +94,8 @@ export class OperationMethod extends Method {
       viaJson
         ? `${operation.language.csharp?.name}ViaJsonString`
         : viaIdentity
-        ? `${operation.language.csharp?.name}ViaIdentity`
-        : operation.language.csharp?.name || "",
+          ? `${operation.language.csharp?.name}ViaIdentity`
+          : operation.language.csharp?.name || "",
       System.Threading.Tasks.Task()
     );
     this.apply(objectInitializer);
@@ -158,7 +160,7 @@ export class OperationMethod extends Method {
           this.addParameter(this.bodyParameter);
         } else {
           this.addParameter(
-            new Parameter("jsonString", System.String, {
+            new Parameter('jsonString', System.String, {
               description: `Json string supplied to the ${operation.language.csharp?.name} operation`,
             })
           );
@@ -262,7 +264,7 @@ export class OperationMethod extends Method {
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
-)}
+      )}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''));
       yield pathAndQueryV.declarationStatement;
 
@@ -302,8 +304,8 @@ export class OperationMethod extends Method {
       }
 
       if (viaJson) {
-        yield "// set body content";
-        yield "request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);";
+        yield '// set body content';
+        yield 'request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);';
         yield 'request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");';
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
       }
@@ -332,10 +334,20 @@ export class OperationMethod extends Method {
     }
   }
 }
+
+function resolveResponseType(opMethod: OperationMethod, statusCode: string): EnhancedTypeDeclaration | undefined {
+  const response = opMethod.operation.responses?.find(each => each.protocol.http?.statusCodes[0] === statusCode);
+  if (!response) {
+    return undefined;
+  }
+  const responseType = opMethod.callbacks.find(each => each.name === response.language.csharp?.name)?.responseType;
+  return responseType ?? undefined;
+}
+
 export class CallMethod extends Method {
   public returnNull = false;
-  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>) {
-    super(`${opMethod.name}_Call`, System.Threading.Tasks.Task());
+  constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>, withResult?: boolean) {
+    super(withResult ? `${opMethod.name}_CallWithResult` : `${opMethod.name}_Call`, withResult && resolveResponseType(opMethod, '200') ? System.Threading.Tasks.Task(resolveResponseType(opMethod, '200')) : System.Threading.Tasks.Task());
     this.description = `Actual wire call for <see cref="${opMethod.name}" /> method.`;
     this.returnsDescription = opMethod.returnsDescription;
 
@@ -370,15 +382,15 @@ export class CallMethod extends Method {
 
           // add response handlers
           yield Switch(`${response}.StatusCode`, function* () {
-            const responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0]));});
+            const responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0])); });
             for (const resp of responses) {
-              if (resp.protocol.http?.statusCodes[0] !== 'default') {
-                const responseCode = resp.protocol.http?.statusCodes[0];
+              const responseCode = resp.protocol.http?.statusCodes[0];
+              if (responseCode !== 'default') {
                 const leadNum = parseInt(responseCode[0]);
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], eventListener));
+                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
               } else {
-                yield DefaultCase($this.responsesEmitter($this, opMethod, [resp], eventListener));
+                yield DefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
               }
             }
 
@@ -511,46 +523,45 @@ export class CallMethod extends Method {
 
             yield EOL;
             yield `
-// if we got back an OK, take a peek inside and see if it's done
-if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
-{
-    var error = false;
-    try {
-        if( ${ClientRuntime.JsonNode.Parse(toExpression(`await ${response.value}.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
-        {
-            var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState") ?? json.PropertyT<${ClientRuntime.JsonString}>("status");
-            if( state is null )
-            {
-                // the body doesn't contain any information that has the state of the LRO
-                // we're going to just get out, and let the consumer have the result
-                break;
-            }
-
-            switch( state?.ToString()?.ToLower() )
-            {
-              case "failed":
-                  error = true;
+  // if we got back an OK, take a peek inside and see if it's done
+  if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
+  {
+      var error = false;
+      try {
+          if( ${ClientRuntime.JsonNode.Parse(toExpression(`await ${response.value}.Content.ReadAsStringAsync()`))} is ${ClientRuntime.JsonObject} json)
+          {
+              var state = json.Property("properties")?.PropertyT<${ClientRuntime.JsonString}>("provisioningState") ?? json.PropertyT<${ClientRuntime.JsonString}>("status");
+              if( state is null )
+              {
+                  // the body doesn't contain any information that has the state of the LRO
+                  // we're going to just get out, and let the consumer have the result
                   break;
-              case "succeeded":
-              case "canceled":
-                // we're done polling.
-                break;
+              }
 
-              default:
-                // need to keep polling!
-                ${response.value}.StatusCode = ${System.Net.HttpStatusCode.Created};
-                continue;
-            }
-        }
-    } catch {
-        // if we run into a problem peeking into the result,
-        // we really don't want to do anything special.
-    }
-    if (error) {
-        throw new ${ClientRuntime.fullName}.UndeclaredResponseException(${response.value});
-    }
-}`;
+              switch( state?.ToString()?.ToLower() )
+              {
+                case "failed":
+                    error = true;
+                    break;
+                case "succeeded":
+                case "canceled":
+                  // we're done polling.
+                  break;
 
+                default:
+                  // need to keep polling!
+                  ${response.value}.StatusCode = ${System.Net.HttpStatusCode.Created};
+                  continue;
+              }
+          }
+      } catch {
+          // if we run into a problem peeking into the result,
+          // we really don't want to do anything special.
+      }
+      if (error) {
+          throw new ${ClientRuntime.fullName}.UndeclaredResponseException(${response.value});
+      }
+  }`;
             yield EOL;
             yield '// check for terminal status code';
             yield If(new LiteralExpression(`${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), 'continue;');
@@ -611,7 +622,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield 'break;';
   }
 
-  private * responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<Response>, eventListener: EventListener) {
+  private * responsesEmitter($this: CallMethod, opMethod: OperationMethod, responses: Array<Response>, responseVariable: LocalVariable, eventListener: EventListener, withResult?: boolean) {
     if (length(responses) > 1) {
       yield Switch('_contentType', function* () {
         for (const eachResponse of values(responses)) {
@@ -624,7 +635,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
             const mediaType = normalizeMediaType(<string>mt);
             if (mediaType) {
               if (count === 0) {
-                yield Case(new StringExpression(mediaType).toString(), $this.NewResponseHandler(mimetype, eachResponse, callbackParameter));
+                yield Case(new StringExpression(mediaType).toString(), $this.NewResponseHandler(mimetype, eachResponse, callbackParameter, responseVariable, withResult));
               } else {
                 yield TerminalCase(new StringExpression(mediaType).toString(), '');
               }
@@ -636,8 +647,8 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
       const response = responses[0];
       const callbackParameter = <CallbackParameter>values(opMethod.callbacks).first(each => each.name === response.language.csharp?.name);
       // all mimeTypes per for this response code.
-      yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, '_response');
-      yield $this.NewResponseHandler(<string>values(response.protocol.http?.mediaTypes).first() || '', response, callbackParameter);
+      yield eventListener.signal(ClientRuntime.Events.BeforeResponseDispatch, responseVariable.value);
+      yield $this.NewResponseHandler(<string>values(response.protocol.http?.mediaTypes).first() || '', response, callbackParameter, responseVariable, withResult);
     }
   }
 
@@ -669,12 +680,12 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield `await ${eachResponse.details.csharp.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(valueOf)});`;
   }
 
-  private * NewResponseHandlerForNormalPipeline(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter) {
+  private * NewResponseHandlerForNormalPipeline(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter, responseVariable: LocalVariable) {
     const callbackParameters = new Array<ExpressionOrLiteral>();
 
     if (callbackParameter.responseType) {
       // hande the body response
-      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression('_response'), toExpression('null'));
+      const r = callbackParameter.responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(responseVariable.value), toExpression('null'));
       if (r) {
 
         callbackParameters.push(r);
@@ -688,7 +699,7 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
 
     if (callbackParameter.headerType) {
       // header model deserialization...
-      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression('_response'), toExpression('null'));
+      const r = callbackParameter.headerType.deserializeFromResponse(KnownMediaType.Header, toExpression(responseVariable.value), toExpression('null'));
       if (r) {
         callbackParameters.push(r);
       }
@@ -697,11 +708,75 @@ if( ${response.value}.StatusCode == ${System.Net.HttpStatusCode.OK})
     yield `await ${eachResponse.language.csharp?.name}(_response${callbackParameters.length === 0 ? '' : ','}${callbackParameters.joinWith(valueOf)});`;
   }
 
+  private * NewResponseHandlerWithResult(mimetype: string, response: Response, callbackParameter: CallbackParameter, responseVariable: LocalVariable) {
+    const responseType = callbackParameter.responseType;
+    if (!responseType) {
+      yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(${responseVariable.value});`;
+      return;
+    }
+    const deserializeResponseAsync = responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(responseVariable.value), toExpression('null'));
+    yield `_result = ${deserializeResponseAsync};`;
+    switch (response.protocol.http?.statusCodes[0]) {
+      case '200': {
+        yield 'return _result;';
+        break;
+      }
+      case 'default': {
+        // this should write an error to the error channel.
+        yield `// Error Response : ${response.protocol.http?.statusCodes[0]}`;
+        const unexpected = function* () {
+          yield '// Unrecognized Response. Create an error record based on what we have.';
+          const ex = responseType ?
+            Local('ex', `new ${ClientRuntime.name}.RestException<${responseType}>(responseMessage, await _result)`) :
+            Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
+
+          yield ex.declarationStatement;
+          yield `throw ${ex};`;
+        };
+        if ((<SchemaResponse>response).schema !== undefined) {
+          // the schema should be the error information.
+          // this supports both { error { message, code} } and { message, code}
+
+          let props = NewGetAllPublicVirtualProperties((<SchemaResponse>response).schema.language.csharp?.virtualProperties);
+          const errorProperty = values(props).first(p => p.property.serializedName === 'error');
+          let ep = '';
+          if (errorProperty) {
+            props = NewGetAllPublicVirtualProperties(errorProperty.property.schema.language.csharp?.virtualProperties);
+            ep = `${errorProperty.name}?.`;
+          }
+
+          const codeProp = props.find(p => p.name.toLowerCase().indexOf('code') > -1); // first property with 'code'
+          const messageProp = props.find(p => p.name.toLowerCase().indexOf('message') > -1); // first property with 'message'
+          const actionProp = props.find(p => p.name.toLowerCase().indexOf('action') > -1); // first property with 'action'
+
+          if (codeProp && messageProp) {
+            const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await _result)?.${ep}${codeProp.name}` });
+            const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await _result)?.${ep}${messageProp.name}` });
+            const laction = actionProp ? new LocalVariable('action', dotnet.Var, { initializer: `(await _result)?.${ep}${actionProp.name} ?? ${System.String.Empty}` }) : undefined;
+            yield lcode;
+            yield lmessage;
+            yield laction;
+
+            yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
+            yield Else(`throw new global::System.Exception($"[{${lcode}}] : {${lmessage}}");`);
+          } else {
+            yield unexpected;
+          }
+        } else {
+          yield unexpected;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   private responseHandler(mimetype: string, eachResponse: NewResponse, callbackParameter: CallbackParameter) {
     return this.responseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
   }
-  private NewResponseHandler(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter) {
-    return this.NewResponseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter);
+  private NewResponseHandler(mimetype: string, eachResponse: Response, callbackParameter: CallbackParameter, responseVariable: LocalVariable, withResult?: boolean) {
+    return withResult ? this.NewResponseHandlerWithResult(mimetype, eachResponse, callbackParameter, responseVariable) : this.NewResponseHandlerForNormalPipeline(mimetype, eachResponse, callbackParameter, responseVariable);
   }
 }
 export class ValidationMethod extends Method {
