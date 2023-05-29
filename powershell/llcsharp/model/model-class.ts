@@ -277,6 +277,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           vp.set = undefined;
         }
 
+        if (virtualProperty.private) {
+          vp.setAccess = Access.Internal;
+          vp.getAccess = Access.Internal;
+        }
+
         if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
 
           this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
