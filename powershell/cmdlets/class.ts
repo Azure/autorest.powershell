@@ -1242,7 +1242,7 @@ export class CmdletClass extends Class {
                     }));
                     const nextLinkName = `${result.value}.${nl.name}`;
                     yield `_nextLink = ${nextLinkName};`;
-                    const nextLinkCondition = $this.clientsidePagination ? '_nextLink != null && this.PagingParameters.First > 0' : '_nextLink != null';
+                    const nextLinkCondition = $this.clientsidePagination ? '!String.IsNullOrEmpty(_nextLink) && this.PagingParameters.First > 0' : '!String.IsNullOrEmpty(_nextLink)';
                     yield (If('_isFirst', function* () {
                       yield '_isFirst = false;';
                       yield (While(nextLinkCondition,
