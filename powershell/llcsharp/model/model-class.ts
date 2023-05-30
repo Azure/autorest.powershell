@@ -196,6 +196,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
       /* Owned Properties */
       for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.owned))) {
+        let isPolymorphic = false;
+        if (virtualProperty.private && virtualProperty.property.schema.type === SchemaType.Object && (<ObjectSchema>virtualProperty.property.schema).discriminator) {
+          isPolymorphic = true;
+        }
         const actualProperty = virtualProperty.property;
         let n = 0;
         const decl = this.state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>actualProperty.schema, actualProperty.language.csharp?.required, this.state.path('schema'));
@@ -215,16 +219,19 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           myProperty.set = undefined;
         }
 
-        if (virtualProperty.private) {
+        if (virtualProperty.private && !isPolymorphic) {
           // when properties are inlined, the container accessor can be internalized. I think.
           myProperty.setAccess = Access.Internal;
           myProperty.getAccess = Access.Internal;
+        }
+
+        if (virtualProperty.private) {
           this.pMap.set(virtualProperty, myProperty);
         }
 
         this.ownedProperties.push(this.add(myProperty));
 
-        if (myProperty.getAccess !== Access.Public || myProperty.setAccess !== Access.Public || myProperty.set === undefined) {
+        if (myProperty.getAccess !== Access.Public || myProperty.setAccess !== Access.Public || myProperty.set === undefined || isPolymorphic) {
           /* internal interface property */
 
           this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, decl, {
@@ -244,6 +251,10 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
       /* Inherited properties. */
       for (const virtualProperty of values(<Array<NewVirtualProperty>>(this.schema.language.csharp.virtualProperties.inherited))) {
+        let isPolymorphic = false;
+        if (virtualProperty.private && virtualProperty.property.schema.type === SchemaType.Object && (<ObjectSchema>virtualProperty.property.schema).discriminator) {
+          isPolymorphic = true;
+        }
         // so each parent property that is getting exposed
         // has to be accessed via the field in this.backingFields
         const parentField = <BackingField>this.backingFields.find(each => virtualProperty.accessViaSchema ? virtualProperty.accessViaSchema.language.csharp?.interfaceImplementation.fullName === each.typeDeclaration.declaration : false);
@@ -277,12 +288,12 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           vp.set = undefined;
         }
 
-        if (virtualProperty.private) {
+        if (virtualProperty.private && !isPolymorphic) {
           vp.setAccess = Access.Internal;
           vp.getAccess = Access.Internal;
         }
 
-        if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
+        if (vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined || isPolymorphic) {
 
           this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
             description: `Internal Acessors for ${virtualProperty.name}`,
@@ -303,9 +314,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
 
       /* Inlined properties. */
       for (const virtualProperty of values(<Array<NewVirtualProperty>>this.schema.language.csharp.virtualProperties.inlined)) {
-        if (virtualProperty.private) {
+        let isPolymorphic = false;
+        if (virtualProperty.private && virtualProperty.property.schema.type === SchemaType.Object && (<ObjectSchema>virtualProperty.property.schema).discriminator) {
           // continue;
           // can't remove it, it has to be either public or internally implemented.
+          isPolymorphic = true;
         }
 
         if (virtualProperty.accessViaProperty) {
@@ -322,11 +335,11 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               set: (virtualProperty.property.language.csharp?.readOnly || virtualProperty.property.language.csharp?.constantValue) ? undefined : toExpression(`${this.accessor(virtualProperty)} = value ${virtualProperty.required ? '' : ` ?? ${requiredPropertyType.defaultOfType}`}`)
             });
 
-            if (!virtualProperty.private) {
+            if (!virtualProperty.private || isPolymorphic) {
               this.add(vp);
             }
 
-            if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined) {
+            if (virtualProperty.private || vp.getAccess !== Access.Public || vp.setAccess !== Access.Public || vp.set === undefined || isPolymorphic) {
               this.add(new Property(`${virtualProperty.originalContainingSchema.language.csharp?.internalInterfaceImplementation.fullName}.${virtualProperty.name}`, propertyType, {
                 description: `Internal Acessors for ${virtualProperty.name}`,
                 getAccess: Access.Explicit,
