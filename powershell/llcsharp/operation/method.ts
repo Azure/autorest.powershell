@@ -42,8 +42,11 @@ function removeEncoding(pp: OperationParameter, paramName: string, kmt: KnownMed
 
 
 export class EventListener {
-  constructor(protected expression: Expression, protected emitSignals: boolean) {
+  constructor(protected expression: Expression, protected emitSignals: boolean, withResult?: boolean) {
+    this.withResult = withResult;
   }
+
+  private withResult: boolean | undefined;
 
   *signalNoCheck(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
@@ -60,7 +63,7 @@ export class EventListener {
   *signal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
       const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
-      yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+      yield `await ${this.expression.value}.Signal(${eventName}${params}); if( ${this.expression.value}.Token.IsCancellationRequested ) { return${this.withResult ? ' null' : ''}; }`;
     } else {
       yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()}; }`;
     }
@@ -68,7 +71,7 @@ export class EventListener {
   *syncSignal(eventName: Expression, ...additionalParameters: Array<string | Expression>) {
     if (this.emitSignals) {
       const params = length(additionalParameters) > 0 ? `, ${additionalParameters.joinWith(each => typeof each === 'string' ? each : each.value)}` : '';
-      yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return; }`;
+      yield `${this.expression.value}.Signal(${eventName}${params}).Wait(); if( ${this.expression.value}.Token.IsCancellationRequested ) { return${this.withResult ? ' null' : ''}; }`;
     } else {
       yield `if( ${this.expression.value}.CancellationToken.IsCancellationRequested ) { throw ${System.OperationCanceledException.new()} }`;
     }
@@ -89,21 +92,21 @@ export class OperationMethod extends Method {
 
   protected callName: string;
 
-  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: State, public viaJson: boolean = false, objectInitializer?: DeepPartial<OperationMethod>) {
+  constructor(public parent: Class, public operation: Operation, public viaIdentity: boolean, protected state: State, public viaJson: boolean = false, withResult?: boolean, objectInitializer?: DeepPartial<OperationMethod>) {
     super(
       viaJson
-        ? `${operation.language.csharp?.name}ViaJsonString`
+        ? `${operation.language.csharp?.name}ViaJsonString${withResult ? 'WithResult' : ''}`
         : viaIdentity
-          ? `${operation.language.csharp?.name}ViaIdentity`
-          : operation.language.csharp?.name || "",
-      System.Threading.Tasks.Task()
+          ? `${operation.language.csharp?.name}ViaIdentity${withResult ? 'WithResult' : ''}`
+          : `${operation.language.csharp?.name}${withResult ? 'WithResult' : ''}` || '',
+      withResult ? System.Threading.Tasks.Task(ResolveResponseType(undefined, operation, state)) : System.Threading.Tasks.Task()
     );
     this.apply(objectInitializer);
     this.async = Modifier.Async;
-    this.returnsDescription = `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
+    this.returnsDescription = `A <see cref="${withResult ? System.Threading.Tasks.Task(ResolveResponseType(undefined, operation, state)) : System.Threading.Tasks.Task()}" /> that will be complete when handling of the response is completed.`;
     const $this = this;
 
-    this.callName = `${operation.language.csharp?.name}_Call`;
+    this.callName = `${operation.language.csharp?.name}${withResult ? 'WithResult' : ''}_Call`;
     this.push(Using('NoSynchronizationContext', ''));
 
     // add parameters
@@ -240,7 +243,7 @@ export class OperationMethod extends Method {
     // add method implementation...
 
     this.add(function* () {
-      const eventListener = new EventListener($this.contextParameter, $this.state.project.emitSignals);
+      const eventListener = new EventListener($this.contextParameter, $this.state.project.emitSignals, withResult);
 
       yield EOL;
 
@@ -314,14 +317,14 @@ export class OperationMethod extends Method {
     });
   }
 
-  emitCall(returnFromCall: boolean) {
+  emitCall(returnFromCall: boolean, withResult?: boolean) {
 
     // storage will return from the call for download, etc.
     if (returnFromCall) {
       this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     }
 
-    this.add(`await this.${this.callName}(request,${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use});`);
+    this.add(`${withResult ? 'return ' : ''}await this.${this.callName} (request, ${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use}); `);
 
     // remove constant parameters and make them locals instead.
     this.insert('// Constant Parameters');
@@ -335,20 +338,36 @@ export class OperationMethod extends Method {
   }
 }
 
-function resolveResponseType(opMethod: OperationMethod, statusCode: string): EnhancedTypeDeclaration | undefined {
-  const response = opMethod.operation.responses?.find(each => each.protocol.http?.statusCodes[0] === statusCode);
-  if (!response) {
-    return undefined;
+export function ResolveResponseType(opMethod?: OperationMethod, operation?: Operation, state?: State,): EnhancedTypeDeclaration | undefined {
+  let typeCount = 0;
+  let responseType: EnhancedTypeDeclaration | undefined = undefined;
+  if (opMethod) {
+    opMethod.callbacks.filter(each => each.name !== 'default').forEach(each => {
+      if (each.responseType && responseType && each.responseType !== responseType) {
+        typeCount++;
+      } else if (each.responseType && (!responseType) || each.responseType === responseType) {
+        responseType = each.responseType;
+      }
+    });
+  } else if (operation && state) {
+    for (const response of [...values(operation.responses)]) {
+      const eachResponseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(''), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : undefined);
+      if (eachResponseType && responseType && eachResponseType !== responseType) {
+        typeCount++;
+      } else if (eachResponseType && (!responseType) || eachResponseType === responseType) {
+        responseType = eachResponseType;
+        typeCount++;
+      }
+    }
   }
-  const responseType = opMethod.callbacks.find(each => each.name === response.language.csharp?.name)?.responseType;
-  return responseType ?? undefined;
+  return typeCount === 1 ? responseType : undefined;
 }
 
 export class CallMethod extends Method {
   public returnNull = false;
   constructor(protected parent: Class, protected opMethod: OperationMethod, protected state: State, objectInitializer?: DeepPartial<OperationMethod>, withResult?: boolean) {
-    super(withResult ? `${opMethod.name}_CallWithResult` : `${opMethod.name}_Call`, withResult && resolveResponseType(opMethod, '200') ? System.Threading.Tasks.Task(resolveResponseType(opMethod, '200')) : System.Threading.Tasks.Task());
-    this.description = `Actual wire call for <see cref="${opMethod.name}" /> method.`;
+    super(`${opMethod.name}_Call`, withResult && ResolveResponseType(opMethod) ? System.Threading.Tasks.Task(ResolveResponseType(opMethod)) : System.Threading.Tasks.Task());
+    this.description = `Actual wire call for <see cref= "${opMethod.name}" /> method.`;
     this.returnsDescription = opMethod.returnsDescription;
 
     this.apply(objectInitializer);
@@ -367,7 +386,7 @@ export class CallMethod extends Method {
 
     // add statements to this method
     this.add(function* () {
-      const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals);
+      const eventListener = new EventListener(opMethod.contextParameter, $this.state.project.emitSignals, withResult);
 
       const response = Local('_response', dotnet.Null, System.Net.Http.HttpResponseMessage);
       yield response;
@@ -388,9 +407,17 @@ export class CallMethod extends Method {
               if (responseCode !== 'default') {
                 const leadNum = parseInt(responseCode[0]);
                 // will use enum when it can, fall back to casting int when it can't
-                yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                if (withResult) {
+                  yield TerminalCase(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                } else {
+                  yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                }
               } else {
-                yield DefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                if (withResult) {
+                  yield TerminalDefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                } else {
+                  DefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                }
               }
             }
 
@@ -398,7 +425,7 @@ export class CallMethod extends Method {
             if (!opMethod.operation.exceptions) {
               // if no default, we need one that handles the rest of the stuff.
               yield TerminalDefaultCase(function* () {
-                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response);`;
+                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response); `;
               });
             }
           });
@@ -419,7 +446,7 @@ export class CallMethod extends Method {
           yield eventListener.signal(ClientRuntime.Events.Progress, new LiteralExpression('"intentional placeholder"'), new LiteralExpression('0'));
         }
 
-        yield `${response.value} = await ${sendTask.value};`;
+        yield `${response.value} = await ${sendTask.value}; `;
         yield eventListener.signal(ClientRuntime.Events.ResponseCreated, response.value);
         const EOL = 'EOL';
         // LRO processing (if appropriate)
@@ -602,7 +629,7 @@ export class CallMethod extends Method {
       }
     });
 
-    this.opMethod.emitCall($this.returnNull);
+    this.opMethod.emitCall($this.returnNull, withResult);
   }
 
   private * finalGet(eventListener: EventListener, finalLocation: ExpressionOrLiteral, reqParameter: Variable, response: Variable) {
@@ -715,19 +742,15 @@ export class CallMethod extends Method {
       return;
     }
     const deserializeResponseAsync = responseType.deserializeFromResponse(knownMediaType(mimetype), toExpression(responseVariable.value), toExpression('null'));
-    yield `_result = ${deserializeResponseAsync};`;
+    yield `var _result = ${deserializeResponseAsync};`;
     switch (response.protocol.http?.statusCodes[0]) {
-      case '200': {
-        yield 'return _result;';
-        break;
-      }
       case 'default': {
         // this should write an error to the error channel.
         yield `// Error Response : ${response.protocol.http?.statusCodes[0]}`;
         const unexpected = function* () {
           yield '// Unrecognized Response. Create an error record based on what we have.';
           const ex = responseType ?
-            Local('ex', `new ${ClientRuntime.name}.RestException<${responseType}>(responseMessage, await _result)`) :
+            Local('ex', `new ${ClientRuntime.name}.RestException<${responseType}>(${responseVariable.value}, await _result)`) :
             Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
 
           yield ex.declarationStatement;
@@ -767,8 +790,10 @@ export class CallMethod extends Method {
         }
         break;
       }
-      default:
+      default: {
+        yield 'return await _result;';
         break;
+      }
     }
   }
 
