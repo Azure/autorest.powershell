@@ -67,10 +67,10 @@ try
   $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
   if ($null -ne $TestName)
   {
-    Invoke-Pester -Script @{ Path = $testFolder } -TestName $TestName -ExcludeTag $ExcludeTag -EnableExit:(-not $NotIsolated) -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
+    Invoke-Pester -Script @{ Path = $testFolder } -TestName $TestName -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
   } else
   {
-    Invoke-Pester -Script @{ Path = $testFolder } -ExcludeTag $ExcludeTag -EnableExit:(-not $NotIsolated) -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
+    Invoke-Pester -Script @{ Path = $testFolder } -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
   }
 } Finally
 {
