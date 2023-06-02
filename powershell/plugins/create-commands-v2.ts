@@ -297,7 +297,7 @@ export /* @internal */ class Inferrer {
 
     // }
 
-    const groupWords = deconstruct(group);
+    const groupWords = [...removeSequentialDuplicates(deconstruct(group))];
     groupWords[groupWords.length - 1] = pluralizationService.singularize(groupWords.last);
 
     group = pascalCase(groupWords);
