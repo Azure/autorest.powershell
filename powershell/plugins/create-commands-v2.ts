@@ -178,7 +178,7 @@ export /* @internal */ class Inferrer {
         // simple operation, just an id with a single value
         // OPERATION => OPERATION-GROUP
         return [
-          this.createCommandVariant(operation[0], deconstruct(group), suffix, this.state.model)
+          this.createCommandVariant(operation[0], [group], suffix, this.state.model)
         ];
 
       case 2:
@@ -186,13 +186,13 @@ export /* @internal */ class Inferrer {
         if (verbs.has(operation[0])) {
           // [ACTION][SUBJECT]
           return [
-            this.createCommandVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
+            this.createCommandVariant(operation[0], [group, operation[1]], suffix, this.state.model)
           ];
         }
         if (verbs.has(operation[1])) {
           // [SUBJECT][ACTION]
           return [
-            this.createCommandVariant(operation[1], [...deconstruct(group), operation[0]], suffix, this.state.model)
+            this.createCommandVariant(operation[1], [group, operation[0]], suffix, this.state.model)
           ];
 
         }
@@ -200,7 +200,7 @@ export /* @internal */ class Inferrer {
         // but now let's mention that we are doing that.
         this.state.warning(`Operation ${operation[0]}/${operation[1]} is inferred without finding action.`, [], {});
         return [
-          this.createCommandVariant(operation[0], [...deconstruct(group), operation[1]], suffix, this.state.model)
+          this.createCommandVariant(operation[0], [group, operation[1]], suffix, this.state.model)
         ];
 
     }
@@ -228,24 +228,24 @@ export /* @internal */ class Inferrer {
         // if the action is first
         if (i === 0) {
           // everything else is the subject
-          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)];
+          return [this.createCommandVariant(operation[i], group ? [group, ...operation.slice(i + 1)] : operation.slice(i + 1), suffix, this.state.model)];
         }
         if (i === length(operation) - 1) {
           // if it's last, the subject would be the first thing
-          return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)];
+          return [this.createCommandVariant(operation[i], group ? [group, ...operation.slice(0, i)] : operation.slice(0, i), suffix, this.state.model)];
         }
 
         // otherwise          
         // things before are part of the subject
         // things after the verb should be part of the suffix
-        return [this.createCommandVariant(operation[i], group ? [...deconstruct(group), ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)];
+        return [this.createCommandVariant(operation[i], group ? [group, ...operation.slice(i, i)] : operation.slice(i, i), [...suffix, ...operation.slice(i + 1)], this.state.model)];
       }
     }
 
     // so couldn't tell what the action was.
     // fallback to the original behavior with a warning.
     this.state.warning(`Operation ${operation[0]}/${operation[1]} is inferred without finding action.`, [], {});
-    return [this.createCommandVariant(operation[0], group ? [...deconstruct(group), ...operation.slice(1)] : operation.slice(1), [...suffix, ...operation.slice(1)], this.state.model)];
+    return [this.createCommandVariant(operation[0], group ? [group, ...operation.slice(1)] : operation.slice(1), [...suffix, ...operation.slice(1)], this.state.model)];
   }
 
   async inferCommandNames(op: Operation, group: string, state: State): Promise<Array<CommandVariant>> {
