@@ -370,6 +370,12 @@ export class CmdletClass extends Class {
   private outFileParameter?: Property;
   private clientsidePagination?: boolean;
   private inputObjectParameterName: string;
+  private apiCall: Operation;
+  private operationParameters: Array<operationParameter>;
+  private responses: Array<Response>;
+  private callbackMethods: Array<LiteralExpression>;
+  private pipeline: Property;
+  private serializationMode: LiteralExpression | undefined;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -381,6 +387,52 @@ export class CmdletClass extends Class {
     this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.operation = operation;
+    this.apiCall = this.operation.callGraph[0];
+    this.pipeline = this.$<Property>('Pipeline');
+    // create the response handlers
+    this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
+    this.callbackMethods = values(this.responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
+    // find each parameter to the method, and find out where the value is going to come from.
+    this.operationParameters =
+      values(this.apiCall.parameters).
+        // filter out constants and path parameters when using piping for identity
+        where(each => !(each.language.csharp?.constantValue) && each.language.default?.name !== '$host'/* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
+
+        select(p => {
+          return {
+            name: p.language.csharp?.name,
+            param: values(this.properties).
+              where(each => each.metadata.parameterDefinition).
+              first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
+            isPathParam: this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
+          };
+
+        }).
+        select(each => {
+          if (each.param) {
+
+            const httpParam = (<HttpParameter>(each.param.metadata.parameterDefinition));
+            if (httpParam.required) {
+              return {
+                name: each.param,
+                expression: each.param,
+                isPathParam: each.isPathParam
+              };
+            }
+
+            const httpParamTD = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, this.state);
+            return {
+              name: each.param,
+              expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
+              isPathParam: each.isPathParam
+            };
+
+          }
+
+          return { name: each.name, expression: dotnet.Null, isPathParam: each.isPathParam };
+        }).toArray();
+    this.serializationMode = this.bodyParameter ? (this.operation.operationType === OperationType.Create ? ClientRuntime.SerializationMode.IncludeCreate : (this.operation.operationType === OperationType.Update ? ClientRuntime.SerializationMode.IncludeUpdate : undefined)) : undefined;
+
     this.state = state;
     this.thingsToSerialize = [];
     this.variantName = variantName;
@@ -441,9 +493,9 @@ export class CmdletClass extends Class {
     this.implementConstructors();
 
     // processRecord
-    this.NewImplementProcessRecord(this.operation);
+    this.NewImplementProcessRecord();
 
-    this.NewImplementProcessRecordAsync(this.operation);
+    this.NewImplementProcessRecordAsync();
     this.debugMode = await this.state.getValue('debug', false);
 
     // json serialization
@@ -635,9 +687,9 @@ export class CmdletClass extends Class {
     }
   }
 
-  private NewImplementProcessRecord(operation: CommandOperation) {
+  private NewImplementProcessRecord() {
     const $this = this;
-
+    const operation: CommandOperation = $this.operation;
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: 'Performs execution of the command.' })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
       if ($this.state.project.azure) {
@@ -719,8 +771,15 @@ export class CmdletClass extends Class {
 
   }
 
-  private NewImplementProcessRecordAsync(operation: CommandOperation) {
+  private NewImplementProcessRecordAsync() {
     const $this = this;
+    const operation: CommandOperation = $this.operation;
+    const apiCall = $this.apiCall;
+    const operationParameters = $this.operationParameters;
+    const responses = $this.responses;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.pipeline;
+
     const PAR = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
       description: 'Performs execution of the command, working asynchronously if required.',
@@ -742,8 +801,6 @@ export class CmdletClass extends Class {
 
       // construct the call to the operation
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-
-      const pipeline = $this.$<Property>('Pipeline');
 
       if ($this.state.project.azure) {
         yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName, this.ExtensibleParameters)`));
@@ -778,61 +835,15 @@ export class CmdletClass extends Class {
           yield If(`true == this.MyInvocation?.BoundParameters?.ContainsKey("${vParam.name}")`, `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`);
         }
       }
-      const apiCall = operation.callGraph[0];
-
-      // find each parameter to the method, and find out where the value is going to come from.
-      const operationParameters: Array<operationParameter> =
-        values(apiCall.parameters).
-          // filter out constants and path parameters when using piping for identity
-          where(each => !(each.language.csharp?.constantValue) && each.language.default?.name !== '$host'/* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
-
-          select(p => {
-            return {
-              name: p.language.csharp?.name,
-              param: values($this.properties).
-                where(each => each.metadata.parameterDefinition).
-                first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
-              isPathParam: $this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
-            };
-
-          }).
-          select(each => {
-            if (each.param) {
-
-              const httpParam = (<HttpParameter>(each.param.metadata.parameterDefinition));
-              if (httpParam.required) {
-                return {
-                  name: each.param,
-                  expression: each.param,
-                  isPathParam: each.isPathParam
-                };
-              }
-
-              const httpParamTD = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, $this.state);
-              return {
-                name: each.param,
-                expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
-                isPathParam: each.isPathParam
-              };
-
-            }
-
-            return { name: each.name, expression: dotnet.Null, isPathParam: each.isPathParam };
-          }).toArray();
 
       // is there a body parameter we should include?
       if ($this.bodyParameter) {
         operationParameters.push({ name: 'body', expression: $this.bodyParameter, isPathParam: false });
       }
 
-      // create the response handlers
-      const responses = [...values(apiCall.responses), ...values(apiCall.exceptions)];
-
-      const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
-
       // make callback methods
       for (const each of values(responses)) {
-        $this.NewImplementResponseMethod(each, apiCall, operationParameters, callbackMethods, pipeline);
+        $this.NewImplementResponseMethod(each);
       }
 
       yield Try(function* () {
@@ -1013,146 +1024,18 @@ export class CmdletClass extends Class {
     });
   }
 
-  private * ActualCall(operation: CommandOperation, apiCall: Operation, operationParameters: Array<operationParameter>, callbackMethods: Array<LiteralExpression>, pipeline: Property) {
+  private * ActualCall() {
     const $this = this;
+    const operation = $this.operation;
+    const apiCall = $this.apiCall;
+    const operationParameters: Array<operationParameter> = $this.operationParameters;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.pipeline;
+    const serializationMode = $this.serializationMode;
+
     yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
-    const nonPathParams = operationParameters.filter(each => !each.isPathParam);
-    const allParams: Array<{ name: string | undefined; value: string; }> = [];
-    const idOpParamsNotFromIdentity: Array<{ name: string | undefined; value: string; }> = [];
-    const idOpParamsFromIdentity: Array<{ name: string; value: string; }> = [];
-    const idOpParamsFromIdentityserializedName: Array<string> = [];
-    const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
-
-    let serializationMode = null;
-    if ($this.bodyParameter) {
-      if ($this.operation.operationType === OperationType.Create) {
-        serializationMode = ClientRuntime.SerializationMode.IncludeCreate;
-      } else if ($this.operation.operationType === OperationType.Update) {
-        serializationMode = ClientRuntime.SerializationMode.IncludeUpdate;
-      }
-    }
     if ($this.isViaIdentity) {
-      if (idschema) {
-        const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
-        const props = [...values(idschema.properties)];
-        operationParameters.forEach(each => {
-          const pascalName = pascalCase(`${each.name}`);
-          //push parameters that is not path parameters into allParams and idOpParamsNotFromIdentity
-          if (!each.isPathParam) {
-            const param = {
-              name: undefined,
-              value: valueOf(each.expression)
-            };
-            allParams.push(param);
-            idOpParamsNotFromIdentity.push(param);
-            return;
-          }
-          const match = props.find(p => pascalCase(p.serializedName) === pascalName);
-          if (match) {
-
-            const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
-            // match up vp name
-            const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
-            //push path parameters that form current identity into allParams, idOpParamsFromIdentity and idOpParamsFromIdentityserializedName
-            if (vp && each.expression === dotnet.Null) {
-              const param = {
-                name: `${$this.inputObjectParameterName}.${vp.name}`,
-                value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
-              };
-              allParams.push(param);
-              idOpParamsFromIdentity.push(param);
-              idOpParamsFromIdentityserializedName.push(match.serializedName);
-              return;
-            }
-            // fall back!
-
-            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
-            //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
-            const param = {
-              name: `${pascalCase(match.language.csharp?.name ?? '')}`,
-              value: `${pascalCase(match.language.csharp?.name ?? '')}`
-            };
-            allParams.push(param);
-            idOpParamsNotFromIdentity.push(param);
-          } else {
-            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
-            /*
-              push path parameters do not match the name in identity schema into allParams and idOpParamsNotFromIdentity
-              for example, module 'Service' has only one GET API:
-                /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Service/resource1/{resource1Name}/resource2/{resource2Name}/resource3/{resource3Name}
-                the identity schema 'ServiceIdentity.cs' will have properties: {subscriptionId, resourceGroupName, resource1Name, resource2Name, resource3Name}
-              for variant which has (identity of resource2 + resource3Name) combined as parameters, the parameter name for 'resource3Name' is called 'Name' which do not match 'resource3Name' in 'ServiceIdentity.cs'
-            */
-            const param = {
-              name: `${pascalName}`,
-              value: `${pascalName}`
-            };
-            allParams.push(param);
-            idOpParamsNotFromIdentity.push(param);
-          }
-        });
-      }
-
-      const parameters = [toExpression(`${$this.inputObjectParameterName}.Id`), ...nonPathParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
-
-      //when identity does not contain property: 'Id'
-      const identityFromPathParams = function* () {
-        yield '// try to call with PATH parameters from Input Object';
-        if (idschema) {
-          for (const opParam of idOpParamsFromIdentity) {
-            if (opParam && opParam.name) {
-              yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
-            }
-          }
-          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...allParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-        }
-      };
-
-      //when identity does contain property: 'Id'
-      const identityParams = function* () {
-        const path = $this.operation.callGraph?.[0].requests?.[0].protocol.http?.path;
-        let pathParams = '';
-        //append path parameters which are not part of current identity
-        idOpParamsNotFromIdentity.forEach(each => {
-          const serializedName = values($this.properties)
-            .where(p => p.metadata.parameterDefinition)
-            .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
-          if (each.name && serializedName) {
-            if (!pathParams) {
-              pathParams += '$"';
-            }
-            const resourceName = getResourceNameFromPath(path, serializedName);
-            if (resourceName) {
-              pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
-            }
-          }
-        });
-        const hasPath = pathParams && pathParams.length > 0;
-        //add child resource to path for list operation
-        if ($this.operation.variant.startsWith('List') && idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]) {
-          const childResourceName = getChildResourceNameFromPath(path, idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]);
-          if (pathParams && pathParams.length > 0) {
-            pathParams += `/${childResourceName}`;
-          } else {
-            pathParams += `"/${childResourceName}`;
-          }
-        }
-        if (pathParams && pathParams.length > 0) {
-          pathParams += '";';
-          yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
-        }
-        yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`;
-      };
-
-      if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
-        if (serializationMode) {
-          parameters.push(serializationMode);
-        }
-        yield If(`${$this.inputObjectParameterName}?.Id != null`, identityParams);
-        yield Else(identityFromPathParams);
-      } else {
-        yield identityFromPathParams;
-      }
+      this.ImplementViaIdentity();
     } else {
       let parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
       if (serializationMode) {
@@ -1169,8 +1052,149 @@ export class CmdletClass extends Class {
     yield $this.eventListener.signal(Events.CmdletAfterAPICall);
   }
 
-  private NewImplementResponseMethod(each: Response, apiCall: Operation, operationParameters: Array<operationParameter>, callbackMethods: Array<LiteralExpression>, pipeline: Property) {
+  private * ImplementViaIdentity() {
     const $this = this;
+    const apiCall = $this.apiCall;
+    const operationParameters: Array<operationParameter> = $this.operationParameters;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.pipeline;
+    const serializationMode = $this.serializationMode;
+
+    const nonPathParams = operationParameters.filter(each => !each.isPathParam);
+    const allParams: Array<{ name: string | undefined; value: string; }> = [];
+    const idOpParamsNotFromIdentity: Array<{ name: string | undefined; value: string; }> = [];
+    const idOpParamsFromIdentity: Array<{ name: string; value: string; }> = [];
+    const idOpParamsFromIdentityserializedName: Array<string> = [];
+    const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
+    if (idschema) {
+      const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
+      const props = [...values(idschema.properties)];
+      operationParameters.forEach(each => {
+        const pascalName = pascalCase(`${each.name}`);
+        //push parameters that is not path parameters into allParams and idOpParamsNotFromIdentity
+        if (!each.isPathParam) {
+          const param = {
+            name: undefined,
+            value: valueOf(each.expression)
+          };
+          allParams.push(param);
+          idOpParamsNotFromIdentity.push(param);
+          return;
+        }
+        const match = props.find(p => pascalCase(p.serializedName) === pascalName);
+        if (match) {
+
+          const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
+          // match up vp name
+          const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
+          //push path parameters that form current identity into allParams, idOpParamsFromIdentity and idOpParamsFromIdentityserializedName
+          if (vp && each.expression === dotnet.Null) {
+            const param = {
+              name: `${$this.inputObjectParameterName}.${vp.name}`,
+              value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
+            };
+            allParams.push(param);
+            idOpParamsFromIdentity.push(param);
+            idOpParamsFromIdentityserializedName.push(match.serializedName);
+            return;
+          }
+          // fall back!
+
+          console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
+          //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
+          const param = {
+            name: `${pascalCase(match.language.csharp?.name ?? '')}`,
+            value: `${pascalCase(match.language.csharp?.name ?? '')}`
+          };
+          allParams.push(param);
+          idOpParamsNotFromIdentity.push(param);
+        } else {
+          console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
+          /*
+            push path parameters do not match the name in identity schema into allParams and idOpParamsNotFromIdentity
+            for example, module 'Service' has only one GET API:
+              /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Service/resource1/{resource1Name}/resource2/{resource2Name}/resource3/{resource3Name}
+              the identity schema 'ServiceIdentity.cs' will have properties: {subscriptionId, resourceGroupName, resource1Name, resource2Name, resource3Name}
+            for variant which has (identity of resource2 + resource3Name) combined as parameters, the parameter name for 'resource3Name' is called 'Name' which do not match 'resource3Name' in 'ServiceIdentity.cs'
+          */
+          const param = {
+            name: `${pascalName}`,
+            value: `${pascalName}`
+          };
+          allParams.push(param);
+          idOpParamsNotFromIdentity.push(param);
+        }
+      });
+    }
+
+    const parameters = [toExpression(`${$this.inputObjectParameterName}.Id`), ...nonPathParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
+
+    //when identity does not contain property: 'Id'
+    const identityFromPathParams = function* () {
+      yield '// try to call with PATH parameters from Input Object';
+      if (idschema) {
+        for (const opParam of idOpParamsFromIdentity) {
+          if (opParam && opParam.name) {
+            yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
+          }
+        }
+        yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...allParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+      }
+    };
+
+    //when identity does contain property: 'Id'
+    const identityParams = function* () {
+      const path = $this.operation.callGraph?.[0].requests?.[0].protocol.http?.path;
+      let pathParams = '';
+      //append path parameters which are not part of current identity
+      idOpParamsNotFromIdentity.forEach(each => {
+        const serializedName = values($this.properties)
+          .where(p => p.metadata.parameterDefinition)
+          .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
+        if (each.name && serializedName) {
+          if (!pathParams) {
+            pathParams += '$"';
+          }
+          const resourceName = getResourceNameFromPath(path, serializedName);
+          if (resourceName) {
+            pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
+          }
+        }
+      });
+      const hasPath = pathParams && pathParams.length > 0;
+      //add child resource to path for list operation
+      if ($this.operation.variant.startsWith('List') && idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]) {
+        const childResourceName = getChildResourceNameFromPath(path, idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]);
+        if (pathParams && pathParams.length > 0) {
+          pathParams += `/${childResourceName}`;
+        } else {
+          pathParams += `"/${childResourceName}`;
+        }
+      }
+      if (pathParams && pathParams.length > 0) {
+        pathParams += '";';
+        yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
+      }
+      yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`;
+    };
+
+    if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
+      if (serializationMode) {
+        parameters.push(serializationMode);
+      }
+      yield If(`${$this.inputObjectParameterName}?.Id != null`, identityParams);
+      yield Else(identityFromPathParams);
+    } else {
+      yield identityFromPathParams;
+    }
+  }
+
+  private NewImplementResponseMethod(each: Response) {
+    const $this = this;
+    const apiCall = $this.apiCall;
+    const operationParameters: Array<operationParameter> = $this.operationParameters;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.pipeline;
     const isBinary = (<BinaryResponse>each).binary;
 
     const parameters = new Array<Parameter>();
