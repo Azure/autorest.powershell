@@ -374,7 +374,6 @@ export class CmdletClass extends Class {
   private operationParameters: Array<operationParameter>;
   private responses: Array<Response>;
   private callbackMethods: Array<LiteralExpression>;
-  private pipeline: Property;
   private serializationMode: LiteralExpression | undefined;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
@@ -388,7 +387,6 @@ export class CmdletClass extends Class {
     this.apply(objectInitializer);
     this.operation = operation;
     this.apiCall = this.operation.callGraph[this.operation.callGraph.length - 1];
-    this.pipeline = this.$<Property>('Pipeline');
     // create the response handlers
     this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
     this.callbackMethods = values(this.responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
@@ -452,7 +450,6 @@ export class CmdletClass extends Class {
 
     // basic stuff
     this.addCommonStuff();
-
     this.description = escapeString(this.operation.details.csharp.description);
     const $this = this;
 
@@ -777,7 +774,7 @@ export class CmdletClass extends Class {
   private NewImplementProcessRecordAsync() {
     const $this = this;
     const operationParameters = $this.operationParameters;
-    const pipeline = $this.pipeline;
+    const pipeline = $this.$<Property>('Pipeline');
 
     const PRA = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
@@ -883,7 +880,7 @@ export class CmdletClass extends Class {
     const apiCall = $this.apiCall;
     const operationParameters: Array<operationParameter> = $this.operationParameters;
     const callbackMethods = $this.callbackMethods;
-    const pipeline = $this.pipeline;
+    const pipeline = $this.$<Property>('Pipeline');
     const serializationMode = $this.serializationMode;
 
     if ($this.isViaIdentity) {
@@ -1046,7 +1043,7 @@ export class CmdletClass extends Class {
     const apiCall = $this.apiCall;
     const operationParameters: Array<operationParameter> = $this.operationParameters;
     const callbackMethods = $this.callbackMethods;
-    const pipeline = $this.pipeline;
+    const pipeline = $this.$<Property>('Pipeline');
 
     // make callback methods
     for (const each of values($this.responses)) {
