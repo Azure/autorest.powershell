@@ -387,7 +387,7 @@ export class CmdletClass extends Class {
     this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.operation = operation;
-    this.apiCall = this.operation.callGraph[0];
+    this.apiCall = this.operation.callGraph[this.operation.callGraph.length - 1];
     this.pipeline = this.$<Property>('Pipeline');
     // create the response handlers
     this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
