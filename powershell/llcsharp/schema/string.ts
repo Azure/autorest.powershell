@@ -200,11 +200,11 @@ ${this.validateEnum(eventListener, property)}
     return `await ${eventListener}.AssertMaximumLength(${nameof(property.value)},${property},${len});`;
   }
   private validateRegex(eventListener: Variable, property: Variable): string {
-    const pattern = (<any>this.schema).pattern;
+    const pattern = (<any>this.schema).pattern?.replace(/"/g,'""');
     if (!pattern) {
       return '';
     }
-    return `await ${eventListener}.AssertRegEx(${nameof(property.value)},${property},@"${pattern}");`;
+    return `await ${eventListener}.AssertRegEx(${nameof(property.value)}, ${property}, @"${pattern}");`;
   }
   private validateEnum(eventListener: Variable, property: Variable): string {
     if (this.schema.type !== SchemaType.SealedChoice && this.schema.type != SchemaType.Choice) {
