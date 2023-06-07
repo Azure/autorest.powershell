@@ -200,7 +200,7 @@ ${this.validateEnum(eventListener, property)}
     return `await ${eventListener}.AssertMaximumLength(${nameof(property.value)},${property},${len});`;
   }
   private validateRegex(eventListener: Variable, property: Variable): string {
-    const pattern = (<any>this.schema).pattern?.replace('"', '""');
+    const pattern = (<any>this.schema).pattern?.replace(/"/g,'""');
     if (!pattern) {
       return '';
     }
