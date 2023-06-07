@@ -374,7 +374,7 @@ export async function tweakSdkModelPlugin(service: Host) {
   try {
     service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
   } catch (E) {
-    if (debug) {
+    if (debug && E instanceof Error) {
       console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack} `);
     }
     throw E;

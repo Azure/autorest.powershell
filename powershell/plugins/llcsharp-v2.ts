@@ -73,7 +73,9 @@ export async function llcsharpV2(service: Host) {
     }
 
   } catch (E) {
-    console.error(`${__filename} - ${E.stack}/${E.message}`);
+    if (E instanceof Error) {
+      console.error(`${__filename} - ${E.stack}/${E.message}`);
+    }
     throw E;
   }
 }

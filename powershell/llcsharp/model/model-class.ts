@@ -109,7 +109,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.state = state;
     this.apply(objectInitializer);
 
-    if (this.state.getValue('powershell') && this.schema.language.csharp.suppressFormat) {
+    if (this.schema.language.csharp.suppressFormat) {
       this.add(new Attribute(DoNotFormatAttribute));
     }
 
@@ -243,10 +243,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
           }));
         }
 
-        if (this.state.getValue('powershell')) {
-          myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
-          this.addFormatAttributesToProperty(myProperty, virtualProperty);
-        }
+        myProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+        this.addFormatAttributesToProperty(myProperty, virtualProperty);
       }
 
       /* Inherited properties. */
@@ -306,10 +304,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         if (isConstant) {
           vp.add(new Attribute(ConstantAttribute));
         }
-        if (this.state.getValue('powershell')) {
-          vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
-          this.addFormatAttributesToProperty(vp, virtualProperty);
-        }
+        vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inherited`] }));
+        this.addFormatAttributesToProperty(vp, virtualProperty);
       }
 
       /* Inlined properties. */
@@ -354,10 +350,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               vp.set = undefined;
             }
 
-            if (this.state.getValue('powershell')) {
-              vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
-              this.addFormatAttributesToProperty(vp, virtualProperty);
-            }
+            vp.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Inlined`] }));
+            this.addFormatAttributesToProperty(vp, virtualProperty);
           }
         }
       }
@@ -561,10 +555,8 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
         format: format
       };
 
-      if (this.state.getValue('powershell')) {
-        resourceGroupNameProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
-        this.addFormatAttributesToProperty(resourceGroupNameProperty, virtualResourceGroupNameProperty);
-      }
+      resourceGroupNameProperty.add(new Attribute(PropertyOriginAttribute, { parameters: [`${this.state.project.serviceNamespace}.PropertyOrigin.Owned`] }));
+      this.addFormatAttributesToProperty(resourceGroupNameProperty, virtualResourceGroupNameProperty);
 
       this.add(resourceGroupNameProperty);
     }
