@@ -137,7 +137,7 @@ export async function powershellV2(service: Host) {
 
     await generateScriptCmdlets(project);
   } catch (E) {
-    if (debug) {
+    if (debug && E instanceof Error) {
       console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack}`);
     }
     throw E;

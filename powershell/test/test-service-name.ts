@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { suite, test } from 'mocha-typescript';
+import { suite, test } from '@testdeck/mocha';
 import * as assert from 'assert';
 import * as aio from '@azure-tools/async-io';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
