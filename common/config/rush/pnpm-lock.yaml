@@ -1,11 +1,11 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@autorest/codemodel': ~4.19.3
+  '@autorest/extension-base': ~3.3.2
   '@azure-tools/async-io': ~3.0.0
-  '@azure-tools/autorest-extension-base': ~3.1.0
   '@azure-tools/codegen': ~2.5.276
   '@azure-tools/codegen-csharp': ~3.0.0
-  '@azure-tools/codemodel': ~4.13.342
   '@azure-tools/codemodel-v3': ~3.1.0
   '@azure-tools/linq': ~3.1.0
   '@azure-tools/tasks': ~3.0.0
@@ -28,11 +28,11 @@ specifiers:
   xmlbuilder: 10.1.1
 
 dependencies:
+  '@autorest/codemodel': 4.19.3
+  '@autorest/extension-base': 3.3.2
   '@azure-tools/async-io': 3.0.254
-  '@azure-tools/autorest-extension-base': 3.1.267
   '@azure-tools/codegen': 2.5.294
   '@azure-tools/codegen-csharp': 3.0.264
-  '@azure-tools/codemodel': 4.13.349
   '@azure-tools/codemodel-v3': 3.1.266
   '@azure-tools/linq': 3.1.263
   '@azure-tools/tasks': 3.0.255
@@ -55,6 +55,23 @@ dependencies:
   xmlbuilder: 10.1.1
 
 packages:
+
+  /@autorest/codemodel/4.19.3:
+    resolution: {integrity: sha512-8RMPjq2BmLNn080EHGbSc0E9pk7EO6i+vi3vGrz8xrfnTBydOZPJUZqmOpEmNnV6LRbr23cthXQo0JbA/bStWg==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@azure-tools/codegen': 2.9.2
+      js-yaml: 4.0.0
+    dev: false
+
+  /@autorest/extension-base/3.3.2:
+    resolution: {integrity: sha512-kBTusd0GvjmBhN3NypCm/WxpmIxZL2/qCfI5sIYz7ICl7BW6LCGpM3yO1MBQY/pC3VGUT/ypzeW8+X691uh7fA==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@azure-tools/codegen': 2.8.0
+      js-yaml: 4.0.0
+      vscode-jsonrpc: 3.6.2
+    dev: false
 
   /@azure-tools/async-io/3.0.254:
     resolution: {integrity: sha512-X1C7XdyCuo50ch9FzKtTvmK18FgDxxf1Bbt3cSoknQqeDaRegHSSCO+zByq2YA4NvUzKXeZ1engh29IDxZXgpQ==}
@@ -88,6 +105,24 @@ packages:
       '@azure-tools/linq': 3.1.263
       js-yaml: 4.0.0
       semver: 5.7.1
+    dev: false
+
+  /@azure-tools/codegen/2.8.0:
+    resolution: {integrity: sha512-HzIWjWzzjCAiUr8uXH1EfeCiC9Gln5YPTbJyfPQCBQeXAQIMRFo1IabFnBXhJpuRl7R11vpt4THELydYZLbalw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@azure-tools/async-io': 3.0.254
+      js-yaml: 4.0.0
+      semver: 5.7.1
+    dev: false
+
+  /@azure-tools/codegen/2.9.2:
+    resolution: {integrity: sha512-brVLyffOtPiEijYYBYgV+4q7IyAfqXIec7XbdEqvv7As6SeEdq5WtbtN9N0LdGVHDWtEfc+JArwIx9aYGFdMUg==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@azure-tools/async-io': 3.0.254
+      js-yaml: 4.0.0
+      semver: 7.5.1
     dev: false
 
   /@azure-tools/codemodel-v3/3.1.266:
@@ -3027,10 +3062,12 @@ packages:
     dev: false
 
   file:projects/powershell.tgz:
-    resolution: {integrity: sha512-krHo3gQaa5yuc9XVCq33iFwQWmyIF+ztHXbJla3wna3dYWZmCb3WDwf/xO1aCxpdAbecP6faPxQrzRbuuUlJXA==, tarball: file:projects/powershell.tgz}
+    resolution: {integrity: sha512-u8pHTS99cxk4n2v5B7/KDyx577szjkt8TXSsWU1xEGvheQSXI3hfsb5mYklZXMSFmaHi399ml7NDU64GUhsDHw==, tarball: file:projects/powershell.tgz}
     name: '@rush-temp/powershell'
     version: 0.0.0
     dependencies:
+      '@autorest/codemodel': 4.19.3
+      '@autorest/extension-base': 3.3.2
       '@azure-tools/async-io': 3.0.254
       '@azure-tools/autorest-extension-base': 3.1.267
       '@azure-tools/codegen': 2.5.294

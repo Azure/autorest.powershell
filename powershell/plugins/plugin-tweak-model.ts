@@ -2,13 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Scheme, Schema, ConstantSchema, ConditionalValue } from '@azure-tools/codemodel';
+import { Property, SealedChoiceSchema, codeModelSchema, CodeModel, StringSchema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, ChoiceSchema, Schema, ConstantSchema, ConditionalValue } from '@autorest/codemodel';
 import { pascalCase, deconstruct, fixLeadingNumber, serialize, KnownMediaType } from '@azure-tools/codegen';
 import { items, keys, values, Dictionary, length } from '@azure-tools/linq';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 
-import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { Channel, Host, Session, startSession } from '@autorest/extension-base';
 import { defaultCipherList } from 'constants';
 import { String } from '../llcsharp/schema/string';
 import { JsonType } from '../utils/schema';

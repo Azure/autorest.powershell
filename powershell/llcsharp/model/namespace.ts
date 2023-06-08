@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Schema as NewSchema, Schemas as NewSchemas, Language } from '@azure-tools/codemodel';
+import { Schema as NewSchema, Schemas as NewSchemas, Language } from '@autorest/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { ImportDirective, Namespace } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';

@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Schema as NewSchema, ObjectSchema, SchemaType } from '@azure-tools/codemodel';
+import { Schema as NewSchema, ObjectSchema, SchemaType } from '@autorest/codemodel';
 import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } from '@azure-tools/codemodel-v3';
-import { getAllProperties as newGetAllProperties } from '@azure-tools/codemodel';
+import { getAllProperties as newGetAllProperties } from '@autorest/codemodel';
 import { EOL, DeepPartial, } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Access, Modifier, StringExpression, Expression, System } from '@azure-tools/codegen-csharp';
@@ -132,7 +132,7 @@ export class JsonSerializableClass extends Class {
           accessControlArray.push(ClientRuntime.SerializationMode.IncludeCreate.toString());
         }
         if (accessControlArray.length > 0) {
-          for(let i=0; i<accessControlArray.length; i++) {
+          for (let i = 0; i < accessControlArray.length; i++) {
             accessControlArray[i] = `${mode.use}.HasFlag(${accessControlArray[i]})`;
           }
           const accessControl = accessControlArray.join('||');

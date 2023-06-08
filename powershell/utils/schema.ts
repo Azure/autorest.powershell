@@ -8,7 +8,7 @@ import { Extensions } from './extensions';
 import { DeepPartial, } from '@azure-tools/codegen';
 import { Dictionary, values } from '@azure-tools/linq';
 import { uid } from './uid';
-import { Schema, ObjectSchema, Property, SchemaType, isObjectSchema } from '@azure-tools/codemodel';
+import { Schema, ObjectSchema, Property, SchemaType, isObjectSchema } from '@autorest/codemodel';
 import { EnhancedTypeDeclaration } from '../llcsharp/schema/extended-type-declaration';
 import { ModelClass } from '../llcsharp/model/model-class';
 import { ModelInterface } from '../llcsharp/model/interface';

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Method } from '@azure-tools/codegen-csharp';
-import { Parameter as NewHttpOperationParameter, Schema as NewSchema } from '@azure-tools/codemodel';
+import { Parameter as NewHttpOperationParameter, Schema as NewSchema } from '@autorest/codemodel';
 import { KnownMediaType } from '@azure-tools/codemodel-v3';
 import { System } from '@azure-tools/codegen-csharp';
 import { Expression, ExpressionOrLiteral } from '@azure-tools/codegen-csharp';

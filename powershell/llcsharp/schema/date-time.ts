@@ -11,7 +11,7 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, DateTimeSchema, UnixTimeSchema, DateSchema } from '@autorest/codemodel';
 import { NewPrimitive } from './primitive';
 
 

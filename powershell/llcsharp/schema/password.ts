@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Variable } from '@azure-tools/codegen-csharp';
-import { CredentialSchema } from '@azure-tools/codemodel';
+import { CredentialSchema } from '@autorest/codemodel';
 import { String } from './string';
 import { KnownMediaType } from '@azure-tools/codemodel-v3';
 import { camelCase, deconstruct } from '@azure-tools/codegen';

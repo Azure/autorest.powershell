@@ -10,7 +10,7 @@
 // import { DeepPartial } from '@azure-tools/codegen';
 // import { Dictionary } from '@azure-tools/linq';
 // import { uid } from './uid';
-import { Operation, Parameter as NewHttpOperationParameter } from '@azure-tools/codemodel';
+import { Operation, Parameter as NewHttpOperationParameter } from '@autorest/codemodel';
 
 // export interface HttpOperationDetails extends ImplementationDetails {
 // }

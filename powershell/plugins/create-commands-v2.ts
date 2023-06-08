@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, SchemaResponse } from '@azure-tools/codemodel';
+import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, SchemaResponse } from '@autorest/codemodel';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize, includeXDash } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
-import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { Channel, Host, Session, startSession } from '@autorest/extension-base';
 import { Lazy } from '@azure-tools/tasks';
 import { clone } from '@azure-tools/linq';
 import { verbs } from '../internal/verbs';
@@ -17,7 +17,7 @@ import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation, CommandOperationType, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
 import { OperationType } from '../utils/command-operation';
-import { Schema as SchemaModel } from '@azure-tools/codemodel';
+import { Schema as SchemaModel } from '@autorest/codemodel';
 import { getResourceNameFromPath } from '../utils/resourceName';
 import { hasValidBodyParameters } from '../utils/http-operation';
 

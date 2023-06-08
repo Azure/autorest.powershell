@@ -6,7 +6,7 @@
 import { nameof } from '@azure-tools/codegen';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { StringSchema } from '@azure-tools/codemodel';
+import { StringSchema } from '@autorest/codemodel';
 import { String } from './string';
 
 
