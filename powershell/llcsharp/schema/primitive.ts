@@ -186,13 +186,14 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
           toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
       case KnownMediaType.QueryParameter:
+        var formatSerializedName = serializedName ? `${serializedName}=` : '';
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + ${this.encode}(${value}.ToString())`);
+          return toExpression(`"${formatSerializedName}" + ${this.encode}(${value}.ToString())`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${value}.ToString()))`);
         }
 
-        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
@@ -206,6 +207,7 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    var formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject
@@ -224,14 +226,14 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString()}` :
+          `${formatSerializedName}{${value}.ToString()}` :
           `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}.ToString()}"}`;
 
       case KnownMediaType.UriParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString()}` :
-          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}.ToString()}"}`;
+          `${formatSerializedName}{${value}.ToString()}` :
+          `{null == ${value} ? ${System.String.Empty}: $"${formatSerializedName}{${value}.ToString()}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }

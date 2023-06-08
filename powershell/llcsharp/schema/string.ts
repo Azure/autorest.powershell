@@ -87,11 +87,11 @@ export class String implements EnhancedTypeDeclaration {
         return toExpression(`null != (${value}?.ToString()) ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
       case KnownMediaType.QueryParameter:
-
+        var formatSerializedName = serializedName ? `${serializedName}=` : '';
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + ${this.encode}(${value})`);
+          return toExpression(`"${formatSerializedName}" + ${this.encode}(${value})`);
         } else {
-          return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${valueOf(value)}))`);
+          return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${valueOf(value)}))`);
         }
 
       case KnownMediaType.Cookie:
@@ -135,6 +135,7 @@ export class String implements EnhancedTypeDeclaration {
   }
 
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    var formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${container}.Add );`;
@@ -151,14 +152,14 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString()}` :
-          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}.ToString()}"}`;
+          `${formatSerializedName}{${value}.ToString()}` :
+          `{null == ${value} ? ${System.String.Empty} : $"${formatSerializedName}{${value}.ToString()}"}`;
 
       case KnownMediaType.UriParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `(${serializedName}={${value}.ToString()})` :
-          `(null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}.ToString()}")`;
+          `(${formatSerializedName}{${value}.ToString()})` :
+          `(null == ${value} ? ${System.String.Empty}: $"${formatSerializedName}{${value}.ToString()}")`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
