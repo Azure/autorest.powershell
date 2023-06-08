@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@autorest/codemodel': ~4.19.3
-  '@autorest/extension-base': ~3.3.2
+  '@autorest/extension-base': ~3.5.2
   '@azure-tools/async-io': ~3.0.0
   '@azure-tools/codegen': ~2.5.276
   '@azure-tools/codegen-csharp': ~3.0.0
@@ -18,7 +18,7 @@ specifiers:
   '@types/xmlbuilder': 0.0.34
   '@typescript-eslint/eslint-plugin': ~5.29.0
   '@typescript-eslint/parser': ~5.29.0
-  autorest: ~3.0.6118
+  autorest: ~3.6.3
   ejs: ~3.1.8
   eslint: ~8.12.0
   js-yaml: 3.13.1
@@ -29,7 +29,7 @@ specifiers:
 
 dependencies:
   '@autorest/codemodel': 4.19.3
-  '@autorest/extension-base': 3.3.2
+  '@autorest/extension-base': 3.5.2
   '@azure-tools/async-io': 3.0.254
   '@azure-tools/codegen': 2.5.294
   '@azure-tools/codegen-csharp': 3.0.264
@@ -45,7 +45,7 @@ dependencies:
   '@types/xmlbuilder': 0.0.34
   '@typescript-eslint/eslint-plugin': 5.29.0_ifvwzowahspquf7ob7ibdbwr3q
   '@typescript-eslint/parser': 5.29.0_bxxcq4gtiti7cn2tgh35u7ub6a
-  autorest: 3.0.6339
+  autorest: 3.6.3
   ejs: 3.1.9
   eslint: 8.12.0
   js-yaml: 3.13.1
@@ -64,11 +64,11 @@ packages:
       js-yaml: 4.0.0
     dev: false
 
-  /@autorest/extension-base/3.3.2:
-    resolution: {integrity: sha512-kBTusd0GvjmBhN3NypCm/WxpmIxZL2/qCfI5sIYz7ICl7BW6LCGpM3yO1MBQY/pC3VGUT/ypzeW8+X691uh7fA==}
+  /@autorest/extension-base/3.5.2:
+    resolution: {integrity: sha512-brpRtQ34mo/SZPTWrOUYvDHOKbvDa9eX5N15qd0OGLX8q3y29nXjhokMVoink4w1jW+8p2KXy2emMIZL14s+HQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@azure-tools/codegen': 2.8.0
+      '@azure-tools/codegen': 2.9.2
       js-yaml: 4.0.0
       vscode-jsonrpc: 3.6.2
     dev: false
@@ -103,15 +103,6 @@ packages:
     dependencies:
       '@azure-tools/async-io': 3.0.254
       '@azure-tools/linq': 3.1.263
-      js-yaml: 4.0.0
-      semver: 5.7.1
-    dev: false
-
-  /@azure-tools/codegen/2.8.0:
-    resolution: {integrity: sha512-HzIWjWzzjCAiUr8uXH1EfeCiC9Gln5YPTbJyfPQCBQeXAQIMRFo1IabFnBXhJpuRl7R11vpt4THELydYZLbalw==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@azure-tools/async-io': 3.0.254
       js-yaml: 4.0.0
       semver: 5.7.1
     dev: false
@@ -532,9 +523,9 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
     dev: false
 
-  /autorest/3.0.6339:
-    resolution: {integrity: sha512-OCCmAxi5gUnh7yPho5A4n8kDrnp5uz4DdFrqwMmp/bU5DVByIdVwrWERlB7EnCFqQ9jz86oZtsjy91B07+zLnw==}
-    engines: {node: '>=10.13.0'}
+  /autorest/3.6.3:
+    resolution: {integrity: sha512-j/Axwk9bniifTNtBLYVxfQZGQIGPKljFaCQCBWOiybVar2j3tkHP1btiC4a/t9pAJXY6IaFgWctoPM3G/Puhyg==}
+    engines: {node: '>=12.0.0'}
     hasBin: true
     requiresBuild: true
     dev: false
@@ -3062,12 +3053,12 @@ packages:
     dev: false
 
   file:projects/powershell.tgz:
-    resolution: {integrity: sha512-u8pHTS99cxk4n2v5B7/KDyx577szjkt8TXSsWU1xEGvheQSXI3hfsb5mYklZXMSFmaHi399ml7NDU64GUhsDHw==, tarball: file:projects/powershell.tgz}
+    resolution: {integrity: sha512-4RBOmwKyWq5asrQNDM/ZIF9QnKpoOh69Cp9gnPK2A31YdXEaGsCoQafPSCz4l2OtyvO9k/0Zt0ZvVpUPsfUIrg==, tarball: file:projects/powershell.tgz}
     name: '@rush-temp/powershell'
     version: 0.0.0
     dependencies:
       '@autorest/codemodel': 4.19.3
-      '@autorest/extension-base': 3.3.2
+      '@autorest/extension-base': 3.5.2
       '@azure-tools/async-io': 3.0.254
       '@azure-tools/autorest-extension-base': 3.1.267
       '@azure-tools/codegen': 2.5.294
@@ -3084,7 +3075,7 @@ packages:
       '@types/xmlbuilder': 0.0.34
       '@typescript-eslint/eslint-plugin': 5.29.0_ifvwzowahspquf7ob7ibdbwr3q
       '@typescript-eslint/parser': 5.29.0_bxxcq4gtiti7cn2tgh35u7ub6a
-      autorest: 3.0.6339
+      autorest: 3.6.3
       ejs: 3.1.9
       eslint: 8.12.0
       js-yaml: 3.13.1

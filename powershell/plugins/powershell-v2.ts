@@ -11,7 +11,7 @@ import {
   copyBinaryResources,
   safeEval,
 } from '@azure-tools/codegen';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { join } from 'path';
 import { Project } from '../internal/project';
 import { generatePsm1 } from '../generators/psm1';
@@ -100,7 +100,7 @@ async function copyRequiredFiles(project: Project) {
 }
 
 export async function powershellV2(service: Host) {
-  const debug = (await service.GetValue('debug')) || false;
+  const debug = (await service.getValue('debug')) || false;
 
   try {
     const project = await new Project(service).init();
@@ -114,14 +114,14 @@ export async function powershellV2(service: Host) {
       )
     );
 
-    await service.ProtectFiles(project.psd1);
-    await service.ProtectFiles(project.readme);
-    await service.ProtectFiles(project.customFolder);
-    await service.ProtectFiles(project.testFolder);
-    await service.ProtectFiles(project.docsFolder);
-    await service.ProtectFiles(project.examplesFolder);
-    await service.ProtectFiles(project.resourcesFolder);
-    await service.ProtectFiles(project.uxFolder);
+    await service.protectFiles(project.psd1);
+    await service.protectFiles(project.readme);
+    await service.protectFiles(project.customFolder);
+    await service.protectFiles(project.testFolder);
+    await service.protectFiles(project.docsFolder);
+    await service.protectFiles(project.examplesFolder);
+    await service.protectFiles(project.resourcesFolder);
+    await service.protectFiles(project.uxFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);

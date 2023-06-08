@@ -8,7 +8,7 @@ import { items, keys, values, Dictionary, length } from '@azure-tools/linq';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 
-import { Channel, Host, Session, startSession } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { defaultCipherList } from 'constants';
 import { String } from '../llcsharp/schema/string';
 import { JsonType } from '../utils/schema';
@@ -178,7 +178,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
             if (!(<any>response).schema) {
               // no response schema? can we fake one?
-              // service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
+              // service.message{ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
               continue;
             }
 
@@ -496,7 +496,7 @@ async function tweakModelV2(state: State): Promise<PwshModel> {
 
 //             if (!response.schema) {
 //               // no response schema? can we fake one?
-//               // service.Message({ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
+//               // service.message{ Channel: Channel.Debug, Text: `${header.key} is in ${operation.details.default.name} but there is no response model` });
 //               continue;
 //             }
 
@@ -645,6 +645,6 @@ export async function tweakModelPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   const state = await new ModelState<PwshModel>(service).init();
   //const result = tweakModelV2(session);
-  await service.WriteFile('code-model-v4-tweakcodemodel-v2.yaml', serialize(await tweakModelV2(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-tweakcodemodel-v2.yaml', content: serialize(await tweakModelV2(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
   //return processCodeModel(tweakModelV2, service, 'tweakcodemodel-v2');
 }

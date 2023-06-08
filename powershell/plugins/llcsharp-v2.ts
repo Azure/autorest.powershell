@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Host, startSession } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, startSession } from '@autorest/extension-base';
 import { codeModelSchema } from '@autorest/codemodel';
 import { applyOverrides, copyResources, deserialize, serialize, } from '@azure-tools/codegen';
 import { join } from 'path';
@@ -18,17 +18,17 @@ export async function llcsharpV2(service: Host) {
       return await project.state.resolveVariables(input);
     };
 
-    await project.writeFiles(async (fname, content) => service.WriteFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
+    await project.writeFiles(async (fname, content) => service.writeFile({ filename: join(project.apifolder, fname), content: applyOverrides(content, project.overrides), sourceMap: undefined, artifactType: 'source-file-csharp'}));
 
     // recursive copy resources
-    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
-    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
+    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => service.writeFile({ filename: join(project.runtimefolder, fname), content: content, sourceMap: undefined, artifactType: 'source-file-csharp'}), project.overrides);
+    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => service.writeFile({ filename: join(project.runtimefolder, fname), content: content, sourceMap: undefined, artifactType: 'source-file-csharp'}), project.overrides, transformOutput);
     // Note:
     // we are using the Carbon.Json library, but we don't *really* want to expose that as public members where we don't have to
     // and I don't want to make code changes in the source repository, so I can keep merging from upstream as simple as possible.
     // so, we're converting as much as possible to internal, and exposing only what must be exposed to make the code compile.
 
-    await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), {
+    await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => service.writeFile({ filename: join(project.runtimefolder, fname), content: content, sourceMap: undefined, artifactType: 'source-file-csharp'}), {
       ...project.overrides,
       'public': 'internal',
       'internal (.*) class JsonNumber': 'public $1 class JsonNumber',
@@ -65,11 +65,11 @@ export async function llcsharpV2(service: Host) {
     });
 
     if (project.xmlSerialization) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => service.writeFile({ filename: join(project.runtimefolder, fname), content: content, sourceMap: undefined, artifactType: 'source-file-csharp'}), project.overrides);
     }
 
     if (project.azure) {
-      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.WriteFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => service.writeFile({ filename: join(project.runtimefolder, fname), content: content, sourceMap: undefined, artifactType: 'source-file-csharp'}), project.overrides);
     }
 
   } catch (E) {

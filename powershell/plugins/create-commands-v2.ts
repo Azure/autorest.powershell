@@ -7,7 +7,7 @@ import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isOb
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize, includeXDash } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
-import { Channel, Host, Session, startSession } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { Lazy } from '@azure-tools/tasks';
 import { clone } from '@azure-tools/linq';
 import { verbs } from '../internal/verbs';
@@ -664,7 +664,7 @@ export async function createCommandsV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-createcommands-v2.yaml', serialize(await (await new Inferrer(state).init()).createCommands()), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-createcommands-v2.yaml', content: serialize(await (await new Inferrer(state).init()).createCommands()), sourceMap: undefined, artifactType: 'code-model-v4'});
 
   // return processCodeModel(async (state) => {
   //   return await (await new Inferrer(state).init()).createCommands();

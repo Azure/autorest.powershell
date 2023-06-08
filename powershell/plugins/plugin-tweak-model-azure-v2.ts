@@ -6,7 +6,7 @@
 
 import { keys, length, values } from '@azure-tools/linq';
 
-import { Channel, Host } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
 import { getAllProperties, ObjectSchema, Response, SchemaType, Schema } from '@autorest/codemodel';
@@ -18,7 +18,7 @@ const xmsPageable = 'x-ms-pageable';
 async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
 
-  // service.Message({ Channel: Channel.Debug, Text: "THIS IS THE AZURE TWEAKER" });
+  // service.message{ Channel: Channel.Debug, Text: "THIS IS THE AZURE TWEAKER" });
 
   // TODO:
   // look at models, and extract out any case that has an IRESOURCE, IPROXYRESOURCE, etc.
@@ -198,5 +198,5 @@ function getSchema(response: Response): Schema {
 
 export async function tweakModelAzurePluginV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-tweakcodemodelazure-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-tweakcodemodelazure-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
 }

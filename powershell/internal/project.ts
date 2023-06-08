@@ -18,7 +18,7 @@ import { pwshHeaderText } from '../utils/powershell-comment';
 
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import {
   codemodel,
   PropertyDetails,
@@ -236,7 +236,7 @@ export class Project extends codeDomProject {
       pwshLicenseHeader
         ? pwshHeaderText(
           pwshLicenseHeader,
-          await this.service.GetValue('header-definitions')
+          await this.service.getValue('header-definitions')
         )
         : this.license,
       '#'
@@ -249,7 +249,7 @@ export class Project extends codeDomProject {
       pwshLicenseHeader
         ? pwshHeaderText(
           pwshLicenseHeader,
-          await this.service.GetValue('header-definitions')
+          await this.service.getValue('header-definitions')
         )
         : this.license,
       '//'

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { Project } from '../internal/project';
 
 export async function generateGitIgnore(project: Project) {

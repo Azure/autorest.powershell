@@ -5,7 +5,7 @@
 
 import { codeModelSchema } from '@autorest/codemodel';
 import { Model } from './code-model';
-import { Host, JsonPath, Session, startSession } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, JsonPointerSegments as JsonPath, Session, startSession } from '@autorest/extension-base';
 
 import { Project } from './project';
 import { Dictionary } from '@azure-tools/linq';

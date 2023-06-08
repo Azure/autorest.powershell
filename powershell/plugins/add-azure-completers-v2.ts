@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { values } from '@azure-tools/linq';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { serialize } from '@azure-tools/codegen';
@@ -46,5 +46,5 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
 export async function addCompleterV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-add-azure-completers-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  await service.writeFile({filename: 'code-model-v4-add-azure-completers-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
 }
