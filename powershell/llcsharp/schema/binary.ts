@@ -11,7 +11,7 @@ import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
-import { BinarySchema } from '@azure-tools/codemodel';
+import { BinarySchema } from '@autorest/codemodel';
 
 
 export class Binary implements EnhancedTypeDeclaration {

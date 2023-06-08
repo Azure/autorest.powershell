@@ -6,7 +6,7 @@
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, BooleanSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, BooleanSchema } from '@autorest/codemodel';
 import { NewPrimitive } from './primitive';
 
 export class Boolean extends NewPrimitive {

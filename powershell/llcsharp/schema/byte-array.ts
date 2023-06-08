@@ -10,7 +10,7 @@ import { If } from '@azure-tools/codegen-csharp';
 import { OneOrMoreStatements } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, ByteArraySchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, ByteArraySchema } from '@autorest/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';

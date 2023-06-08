@@ -18,7 +18,7 @@ import { pwshHeaderText } from '../utils/powershell-comment';
 
 import { ModuleNamespace } from '../module/module-namespace';
 import { CmdletNamespace } from '../cmdlets/namespace';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import {
   codemodel,
   PropertyDetails,
@@ -33,7 +33,7 @@ import {
   ConstantSchema,
   Schema as NewSchema,
   SchemaType,
-} from '@azure-tools/codemodel';
+} from '@autorest/codemodel';
 
 export type Schema = T.SchemaT<
   LanguageDetails<SchemaDetails>,

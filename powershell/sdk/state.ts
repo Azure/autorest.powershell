@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CodeModel } from '@azure-tools/codemodel';
+import { CodeModel } from '@autorest/codemodel';
 
-import { Host, JsonPath, Session } from '@azure-tools/autorest-extension-base';
+import { Host, JsonPath, Session } from '@autorest/extension-base';
 import { Project } from './project';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';

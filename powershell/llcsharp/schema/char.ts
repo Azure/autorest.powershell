@@ -6,7 +6,7 @@
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, SchemaType, ChoiceSchema, ChoiceValue } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType, ChoiceSchema, ChoiceValue } from '@autorest/codemodel';
 import { NewPrimitive } from './primitive';
 import { length } from '@azure-tools/linq';
 

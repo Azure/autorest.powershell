@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema, DictionarySchema, ArraySchema } from '@azure-tools/codemodel';
+import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema, DictionarySchema, ArraySchema } from '@autorest/codemodel';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
 
-import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { Channel, Host, Session, startSession } from '@autorest/extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { SdkModel } from '../utils/SdkModel';

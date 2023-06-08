@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { getAllPublicVirtualPropertiesForSdkWithoutInherited, getAllPublicVirtualPropertiesForSdk, VirtualProperty, VirtualProperties } from '../utils/schema';
-import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation, NumberSchema } from '@azure-tools/codemodel';
+import { ArraySchema, DictionarySchema, ObjectSchema, Schema, isObjectSchema, SchemaType, isNumberSchema, Parameter, ChoiceSchema, ConstantSchema, SealedChoiceSchema, Operation, NumberSchema } from '@autorest/codemodel';
 import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';

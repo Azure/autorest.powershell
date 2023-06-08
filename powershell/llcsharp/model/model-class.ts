@@ -16,7 +16,7 @@ import { ModelProperty } from './property';
 import { PropertyOriginAttribute, DoNotFormatAttribute, FormatTableAttribute, ConstantAttribute } from '../csharp-declarations';
 import { Schema } from '../code-model';
 import { DictionaryImplementation } from './model-class-dictionary';
-import { Languages, Language, Schema as NewSchema, SchemaType, ObjectSchema, DictionarySchema } from '@azure-tools/codemodel';
+import { Languages, Language, Schema as NewSchema, SchemaType, ObjectSchema, DictionarySchema } from '@autorest/codemodel';
 import { VirtualProperty as NewVirtualProperty, getAllVirtualProperties as newGetAllVirtualProperties } from '../../utils/schema';
 
 export function getVirtualPropertyName(vp?: NewVirtualProperty): string {

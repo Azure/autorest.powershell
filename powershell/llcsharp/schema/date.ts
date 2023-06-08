@@ -5,7 +5,7 @@
 
 import { StringExpression } from '@azure-tools/codegen-csharp';
 import { Schema } from '../code-model';
-import { DateSchema } from '@azure-tools/codemodel';
+import { DateSchema } from '@autorest/codemodel';
 import { DateTime } from './date-time';
 
 

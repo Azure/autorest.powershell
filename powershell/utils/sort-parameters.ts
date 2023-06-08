@@ -1,4 +1,4 @@
-import { Parameter } from '@azure-tools/codemodel';
+import { Parameter } from '@autorest/codemodel';
 
 export function sortPathParameters(path: string | undefined, params: Array<Parameter> | undefined): Array<Parameter> | undefined {
   if (path && params) {
