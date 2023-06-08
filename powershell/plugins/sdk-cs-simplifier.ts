@@ -5,7 +5,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { TrieNode } from '../utils/TrieNode';
 
 const predifinedNamespaces: Set<string> = new Set<string>(['Newtonsoft.Json', 'Newtonsoft.Json.Converters', 'System.Collections', 'System.Collections.Generic', 'System.Net', 'System.Net.Http', 'System.Threading', 'System.Threading.Tasks', 'Microsoft.Rest.Serialization', 'System.IO', 'System.Runtime', 'System.Runtime.Serialization', 'Microsoft.Rest', 'Microsoft.Rest.Azure', 'System.Linq', 'Models']);
@@ -27,16 +27,16 @@ const thisRegex = /this\./g;
 const characterCheckRegex = /(?![a-zA-Z])/i;
 
 export async function simplifierPlugin(service: Host) {
-  const files = await service.ListInputs();
+  const files = await service.listInputs();
   const trimTasks = files.map(async file => {
     let namespacesToAdd: Set<string> = new Set<string>();
-    let content: string = await service.ReadFile(file);
+    let content: string = await service.readFile(file);
     const usings = findUsing(content, namespacesToAdd);
     const beforeUsings: string = content.substring(0, usings[0]);
     let afterUsings: string = content.substring(usings[1]);
     afterUsings = trimNamespace(afterUsings, namespacesToAdd);
     content = removeThis(addUsings(beforeUsings, afterUsings, sortNamespaces([...namespacesToAdd]).join('')));
-    service.WriteFile(file, content, undefined, 'source-file-csharp');
+    service.writeFile({ filename: file, content: content, sourceMap: undefined, artifactType: 'source-file-csharp'});
   });
   await Promise.all(trimTasks);
 }

@@ -11,7 +11,7 @@ import { EnumNamespace } from '../enums/namespace';
 import { ModelExtensionsNamespace } from '../models/model-extensions';
 
 import { ModuleNamespace } from '../module/module-namespace';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { PropertyDetails, exportedModels as T } from '@azure-tools/codemodel-v3';
 import { DeepPartial, comment } from '@azure-tools/codegen';
 import { CodeModel } from '@autorest/codemodel';

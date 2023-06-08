@@ -10,7 +10,7 @@ import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length, isValue } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
 import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
@@ -370,9 +370,9 @@ function addAzureProperties(globalParameters: Array<Parameter>) {
 
 export async function tweakSdkModelPlugin(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-  const debug = await service.GetValue('debug') || false;
+  const debug = await service.getValue('debug') || false;
   try {
-    service.WriteFile('sdk-code-model-v4-tweaksdk.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+    service.writeFile({ filename: 'sdk-code-model-v4-tweaksdk.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
   } catch (E) {
     if (debug && E instanceof Error) {
       console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack} `);

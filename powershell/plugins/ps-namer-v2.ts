@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { codeModelSchema, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@autorest/codemodel';
-import { Host, Channel, Session, startSession } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, Channel, Session, startSession } from '@autorest/extension-base';
 //import { allVirtualParameters, allVirtualProperties, resolveParameterNames, resolvePropertyNames } from '@azure-tools/codemodel-v3';
 import { deconstruct, removeProhibitedPrefix, removeSequentialDuplicates, pascalCase, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
@@ -209,5 +209,5 @@ export async function namerV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-psnamer-v2.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-psnamer-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
 }

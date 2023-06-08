@@ -8,7 +8,7 @@ import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, low
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
 
-import { Channel, Host, Session, startSession } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { PwshModel } from '../utils/PwshModel';
@@ -271,6 +271,6 @@ export async function csnamerV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-csnamer-v2.yaml', serialize(await nameStuffRight(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-csnamer-v2.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
 }
 

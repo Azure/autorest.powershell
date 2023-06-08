@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { values } from '@azure-tools/linq';
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { join } from 'path';
 import { CodeModel, ObjectSchema } from '@autorest/codemodel';
 import { ModelState } from '../utils/model-state';
