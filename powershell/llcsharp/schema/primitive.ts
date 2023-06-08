@@ -14,7 +14,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, PrimitiveSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, PrimitiveSchema } from '@autorest/codemodel';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 
 let tmpVar: number | undefined;

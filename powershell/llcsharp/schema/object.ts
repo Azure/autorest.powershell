@@ -14,7 +14,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema, ObjectSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema, ObjectSchema } from '@autorest/codemodel';
 import { popTempVar, pushTempVar } from './primitive';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 

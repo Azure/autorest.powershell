@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, OperationGroup, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@azure-tools/codemodel';
+import { ArraySchema, ChoiceSchema, ChoiceValue, CodeModel, ConstantSchema, DictionarySchema, getAllProperties, HttpHeader, Language, MultipleChoices, ObjectSchema, Operation, OperationGroup, Parameter, ParameterLocation, Property, Schema, SchemaType, SealedChoiceSchema } from '@autorest/codemodel';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { SdkModel } from '../utils/SdkModel';
@@ -10,7 +10,7 @@ import { ModelState } from '../utils/model-state';
 import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length, isValue } from '@azure-tools/linq';
 import { SchemaDetails } from '../llcsharp/code-model';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
 import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';

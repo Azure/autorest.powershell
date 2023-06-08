@@ -7,9 +7,9 @@ import { Components, IParameter, LanguageDetails } from './components';
 import { Extensions } from './extensions';
 import { ProgramaticOperationDetails, ProgrammaticOperation } from './programatic-operation';
 import { VirtualProperty } from './schema';
-import { Schema } from '@azure-tools/codemodel';
+import { Schema } from '@autorest/codemodel';
 import { DeepPartial } from '@azure-tools/codegen';
-import { Operation } from '@azure-tools/codemodel';
+import { Operation } from '@autorest/codemodel';
 
 
 import { uid } from './uid';

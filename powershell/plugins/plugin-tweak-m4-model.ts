@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ArraySchema, CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@azure-tools/codemodel';
+import { ArraySchema, CodeModel, DictionarySchema, getAllProperties, HttpHeader, ObjectSchema, Property, Schema, SchemaType } from '@autorest/codemodel';
 import { serialize } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
@@ -10,7 +10,7 @@ import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { sortPathParameters } from '../utils/sort-parameters';
 
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 
 type State = ModelState<PwshModel>;
 

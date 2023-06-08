@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@azure-tools/codemodel';
+import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@autorest/codemodel';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize, includeXDash } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
-import { Channel, Host, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { Channel, Host, Session, startSession } from '@autorest/extension-base';
 import { Lazy } from '@azure-tools/tasks';
 import { clone } from '@azure-tools/linq';
 import { verbs } from '../internal/verbs';
@@ -17,13 +17,13 @@ import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
 import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
 import { OperationType } from '../utils/command-operation';
-import { Schema as SchemaModel } from '@azure-tools/codemodel';
+import { Schema as SchemaModel } from '@autorest/codemodel';
 import { getResourceNameFromPath } from '../utils/resourceName';
 import { hasValidBodyParameters } from "../utils/http-operation";
 
 type State = ModelState<PwshModel>;
 
-const specialWords : { [key: string]: Array<string> } = {in: <Array<string>>['sign']};
+const specialWords: { [key: string]: Array<string> } = { in: <Array<string>>['sign'] };
 
 // UNUSED: Moved to plugin-tweak-model.ts in remodeler
 // For now, we are not dynamically changing the service-name. Instead, we would figure out a method to change it during the creation of service readme's.
@@ -74,12 +74,12 @@ function filterSpecialWords(preposition: string, parts: Array<string>) {
   if (specialWords[preposition] !== undefined) {
     do {
       idx = parts.indexOf(preposition, start);
-      if (idx <= 0 || !specialWords[preposition].includes(parts[idx -1])) {
+      if (idx <= 0 || !specialWords[preposition].includes(parts[idx - 1])) {
         return idx;
       } else {
         start = idx + 1;
       }
-    // eslint-disable-next-line no-constant-condition
+      // eslint-disable-next-line no-constant-condition
     } while (true);
   }
   return parts.indexOf(preposition);
@@ -301,7 +301,7 @@ export /* @internal */ class Inferrer {
   async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<CommandOperation> {
     // beth: filter command description for New/Update command
     const createOrUpdateRegex = /creates? or updates?/gi;
-    operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`); 
+    operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
     const op = await this.addCommandOperation(vname, parameters, operation, variant, state);
 
     // if this has a body with it, let's add that parameter

@@ -16,7 +16,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 
 import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
-import { Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import { Schema as NewSchema, SchemaType } from '@autorest/codemodel';
 
 export class ModelProperty extends BackedProperty implements EnhancedVariable {
   /** emits an expression to deserialize a property from a member inside a container */

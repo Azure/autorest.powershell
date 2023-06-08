@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { values } from '@azure-tools/linq';
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { join } from 'path';
-import { CodeModel, ObjectSchema } from '@azure-tools/codemodel';
+import { CodeModel, ObjectSchema } from '@autorest/codemodel';
 import { ModelState } from '../utils/model-state';
 import { Project } from '../sdk/project';
-import { OperationGroup } from '@azure-tools/codemodel';
+import { OperationGroup } from '@autorest/codemodel';
 import { getAllPublicVirtualProperties } from '@azure-tools/codemodel-v3';
 import { wrapComments } from '../utils/WrapComments';
 

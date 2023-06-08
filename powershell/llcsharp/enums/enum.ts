@@ -25,7 +25,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { State } from '../generator';
 import { DeepPartial } from '@azure-tools/codegen';
 
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema } from '@autorest/codemodel';
 
 export class EnumClass extends Struct implements EnhancedTypeDeclaration {
   implementation: EnumImplementation;

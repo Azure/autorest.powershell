@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Channel, Host, JsonPath, Mapping, RawSourceMap, Message } from '@azure-tools/autorest-extension-base';
+import { Channel, Host, JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
 

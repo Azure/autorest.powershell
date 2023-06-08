@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host } from '@azure-tools/autorest-extension-base';
+import { Host } from '@autorest/extension-base';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Project as codeDomProject } from '@azure-tools/codegen-csharp';
 
@@ -53,12 +53,10 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     this.exportPropertiesForDict = await this.state.getValue('export-properties-for-dict', this.azure ? true : false);
     this.formats = await this.state.getValue('formats', {});
-    if (this.azure)
-    {
+    if (this.azure) {
       this.supportJsonInput = await this.state.getValue('support-json-input', true);
     }
-    else
-    {
+    else {
       this.supportJsonInput = await this.state.getValue('support-json-input', false);
     }
     this.enableApiRetry = await this.state.getValue('enable-api-retry', true);

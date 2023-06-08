@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { codeModelSchema } from '@azure-tools/codemodel';
+import { codeModelSchema } from '@autorest/codemodel';
 import { Model } from './code-model';
-import { Host, JsonPath, Session, startSession } from '@azure-tools/autorest-extension-base';
+import { Host, JsonPath, Session, startSession } from '@autorest/extension-base';
 
 import { Project } from './project';
 import { Dictionary } from '@azure-tools/linq';

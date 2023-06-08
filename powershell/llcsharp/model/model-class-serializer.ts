@@ -28,7 +28,7 @@ import { popTempVar, pushTempVar } from '../schema/primitive';
 
 import { ObjectImplementation } from '../schema/object';
 import { Schema } from '../code-model';
-import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@azure-tools/codemodel';
+import { DictionarySchema, ObjectSchema, Schema as NewSchema, SchemaType } from '@autorest/codemodel';
 
 import { getVirtualPropertyName } from './model-class';
 import { VirtualProperty as NewVirtualProperty } from '../../utils/schema';

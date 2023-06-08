@@ -8,7 +8,7 @@ import { EnhancedTypeDeclaration } from '../schema/extended-type-declaration';
 import { ClientRuntime } from '../clientruntime';
 import { getAllVirtualProperties } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
-import { DictionarySchema, ObjectSchema, SchemaType, Schema } from '@azure-tools/codemodel';
+import { DictionarySchema, ObjectSchema, SchemaType, Schema } from '@autorest/codemodel';
 
 export class DictionaryImplementation extends Class {
   private get state() { return this.modelClass.state; }

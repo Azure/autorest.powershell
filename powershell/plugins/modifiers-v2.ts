@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@azure-tools/autorest-extension-base';
+import { Host, Channel } from '@autorest/extension-base';
 import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
-import { VirtualParameter } from '@azure-tools/codemodel';
+import { VirtualParameter } from '@autorest/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
 import common = require('mocha/lib/interfaces/common');

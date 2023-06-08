@@ -15,7 +15,7 @@ import { Ternery } from '@azure-tools/codegen-csharp';
 import { LocalVariable, Variable } from '@azure-tools/codegen-csharp';
 import { ClientRuntime } from '../clientruntime';
 import { Schema } from '../code-model';
-import { Schema as NewSchema } from '@azure-tools/codemodel';
+import { Schema as NewSchema } from '@autorest/codemodel';
 
 
 import { popTempVar, pushTempVar } from '../schema/primitive';
