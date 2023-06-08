@@ -6,7 +6,7 @@
 import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@autorest/codemodel';
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
-import { Host, Session, startSession } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { CommandOperation } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
@@ -454,6 +454,6 @@ export async function createInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.WriteFile('code-model-v4-create-virtual-properties-v2.yaml', serialize(await createVirtuals(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-create-virtual-properties-v2.yaml', content: serialize(await createVirtuals(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
   //return processCodeModel(createVirtuals, service, 'create-virtual-properties-v2');
 }

@@ -10,7 +10,7 @@ import { StatusCodes } from '../utils/http-definitions';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { sortPathParameters } from '../utils/sort-parameters';
 
-import { Host } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 
 type State = ModelState<PwshModel>;
 
@@ -192,8 +192,8 @@ function recursiveRemoveM4DefaultDescription(schema: Schema, visited: Set<Schema
 }
 
 export async function tweakM4ModelPlugin(service: Host) {
-  const allDirectives = await service.GetValue('directive');
+  const allDirectives = await service.getValue<any>('directive');
   directives = values(allDirectives).toArray();
   const state = await new ModelState<PwshModel>(service).init();
-  service.WriteFile('code-model-v4-tweakm4codemodel.yaml', serialize(await tweakModel(state)), undefined, 'code-model-v4');
+  service.writeFile({ filename: 'code-model-v4-tweakm4codemodel.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }

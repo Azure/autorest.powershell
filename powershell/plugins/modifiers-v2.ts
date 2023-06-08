@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Host, Channel } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, Channel } from '@autorest/extension-base';
 import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
 import { VirtualParameter } from '@autorest/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
@@ -951,7 +951,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
 export async function applyModifiersV2(service: Host) {
   // dolauli implement directives
-  const allDirectives = await service.GetValue('directive');
+  const allDirectives = await service.getValue<any>('directive');
   directives = values(allDirectives)
     // .select(directive => directive)
     .where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
@@ -960,5 +960,5 @@ export async function applyModifiersV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
   const result = await tweakModel(state);
 
-  await service.WriteFile('code-model-v4-modifiers-v2.yaml', serialize(result), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'code-model-v4-modifiers-v2.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-v4'});
 }

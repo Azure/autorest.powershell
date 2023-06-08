@@ -8,7 +8,7 @@ import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, low
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { System } from '@azure-tools/codegen-csharp';
 
-import { Channel, Host, Session, startSession } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
 import { SchemaDefinitionResolver } from '../llcsharp/schema/schema-resolver';
 import { SdkModel } from '../utils/SdkModel';
@@ -422,5 +422,5 @@ async function nameStuffRight(state: State): Promise<SdkModel> {
 
 export async function csnamerSdk(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-  await service.WriteFile('sdk-code-model-v4-csnamer.yaml', serialize(await nameStuffRight(state)), undefined, 'code-model-v4');
+  await service.writeFile({ filename: 'sdk-code-model-v4-csnamer.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
 }

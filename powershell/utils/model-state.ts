@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Channel, Host, JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, JsonPointerSegments as JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
 
@@ -32,7 +32,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
 
   async initContext(project: any) {
     this.context = this.context || {
-      $config: await this.service.GetValue(''),
+      $config: await this.service.getValue(''),
       $project: project,
       $lib: {
         path: require('path')
@@ -42,7 +42,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   }
 
   async readFile(filename: string): Promise<string> {
-    return this.service.ReadFile(filename);
+    return this.service.readFile(filename);
   }
 
 
@@ -52,7 +52,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
 
     // fall back to the configuration
     if (value == null || value === undefined) {
-      value = await this.service.GetValue(key);
+      value = await this.service.getValue(key);
     }
 
     // try as a safe eval execution.
@@ -82,14 +82,14 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   }
 
   async listInputs(artifactType?: string | undefined): Promise<Array<string>> {
-    return this.service.ListInputs(artifactType);
+    return this.service.listInputs(artifactType);
   }
 
   async protectFiles(path: string): Promise<void> {
-    return this.service.ProtectFiles(path);
+    return this.service.protectFiles(path);
   }
   writeFile(filename: string, content: string, sourceMap?: Array<Mapping> | RawSourceMap | undefined, artifactType?: string | undefined): void {
-    return this.service.WriteFile(filename, content, sourceMap, artifactType);
+    return this.service.writeFile({ filename: filename, content: content, sourceMap: sourceMap, artifactType: artifactType});
   }
 
   message(message: Message): void {
@@ -99,7 +99,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
     if (message.Channel === Channel.Verbose && this._verbose === false) {
       return;
     }
-    return this.service.Message(message);
+    return this.service.message(message);
   }
 
   updateConfigurationFile(filename: string, content: string): void {
@@ -111,14 +111,14 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   protected errorCount = 0;
 
   protected static async getModel<T>(service: Host) {
-    const files = await service.ListInputs();
+    const files = await service.listInputs();
     const filename = files[0];
     if (files.length === 0) {
       throw new Error('Inputs missing.');
     }
     return {
       filename,
-      model: deserialize<T>(await service.ReadFile(filename), filename)
+      model: deserialize<T>(await service.readFile(filename), filename)
     };
   }
 

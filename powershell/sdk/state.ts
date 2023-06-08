@@ -5,7 +5,7 @@
 
 import { CodeModel } from '@autorest/codemodel';
 
-import { Host, JsonPath, Session } from '@autorest/extension-base';
+import { AutorestExtensionHost as Host, JsonPointerSegments as JsonPath, Session } from '@autorest/extension-base';
 import { Project } from './project';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';

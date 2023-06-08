@@ -26,7 +26,7 @@ import { Uuid } from './Uuid';
 import { EnhancedTypeDeclaration } from './extended-type-declaration';
 import { PwshModel } from '../../utils/PwshModel';
 import { ModelState } from '../../utils/model-state';
-import { Channel, Host, Session, startSession } from '@autorest/extension-base';
+import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { schemaHasEnum } from '../validations';
 import { Password } from './password';
 
