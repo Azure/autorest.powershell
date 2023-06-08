@@ -55,14 +55,16 @@ export class DateTime extends NewPrimitive {
       case KnownMediaType.Header:
       case KnownMediaType.Text:
       case KnownMediaType.UriParameter:
+        var formatSerializedName = serializedName ? `${serializedName}=` : '';
         return toExpression(this.isRequired ?
-          `"${serializedName}=" + ${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
-          `(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
+          `"${formatSerializedName}" + ${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
+          `(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
         );
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
+    var formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject
@@ -81,14 +83,14 @@ export class DateTime extends NewPrimitive {
       case KnownMediaType.QueryParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty} : $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `${formatSerializedName}{${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? ${System.String.Empty} : $"${formatSerializedName}{${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
 
       case KnownMediaType.UriParameter:
         // gives a name=value for use inside a c# template string($"foo{someProperty}") as a query parameter
         return this.isRequired ?
-          `${serializedName}={${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
-          `{null == ${value} ? ${System.String.Empty}: $"${serializedName}={${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
+          `${formatSerializedName}{${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}` :
+          `{null == ${value} ? ${System.String.Empty}: $"${formatSerializedName}{${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)}"}`;
     }
     return (`/* serializeToContainerMember doesn't support '${mediaType}' ${__filename}*/`);
   }
@@ -134,6 +136,7 @@ export class UnixTime extends NewPrimitive {
   }
 
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
+    var formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
@@ -147,12 +150,12 @@ export class UnixTime extends NewPrimitive {
 
       case KnownMediaType.QueryParameter:
         if (this.isRequired) {
-          return toExpression(`"${serializedName}=" + ${this.encode}(${value}.ToString())`);
+          return toExpression(`"${formatSerializedName}" + ${this.encode}(${value}.ToString())`);
         } else {
-          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${serializedName}=" + ${this.encode}(${value}.ToString()))`);
+          return toExpression(`(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${value}.ToString()))`);
         }
 
-        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
