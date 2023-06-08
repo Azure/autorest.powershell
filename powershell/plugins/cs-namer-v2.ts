@@ -57,7 +57,7 @@ function setPropertyNames(schema: Schema) {
 }
 
 
-function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, keepNames: string[], addAPIVersion: boolean = false) {
+function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, keepNames: Array<string>, addAPIVersion = false) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
 

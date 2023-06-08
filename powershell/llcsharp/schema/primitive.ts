@@ -185,16 +185,15 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
           toExpression(`new ${System.Xml.Linq.XElement}("${serializedName}",${value})`) :
           toExpression(`null != ${value} ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
-      case KnownMediaType.QueryParameter:
-        var formatSerializedName = serializedName ? `${serializedName}=` : '';
+      case KnownMediaType.QueryParameter: {
+        const formatSerializedName = serializedName ? `${serializedName}=` : '';
         if (this.isRequired) {
           return toExpression(`"${formatSerializedName}" + ${this.encode}(${value}.ToString())`);
         } else {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${value}.ToString()))`);
         }
-
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
-
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+      }
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
       case KnownMediaType.Text:
@@ -207,7 +206,7 @@ export abstract class NewPrimitive implements EnhancedTypeDeclaration {
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-    var formatSerializedName = serializedName ? `${serializedName}=` : '';
+    const formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject

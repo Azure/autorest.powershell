@@ -93,7 +93,7 @@ export class OperationMethod extends Method {
         ? `${operation.language.csharp?.name}ViaJsonString`
         : viaIdentity
           ? `${operation.language.csharp?.name}ViaIdentity`
-          : operation.language.csharp?.name || "",
+          : operation.language.csharp?.name || '',
       System.Threading.Tasks.Task()
     );
     this.apply(objectInitializer);
@@ -158,7 +158,7 @@ export class OperationMethod extends Method {
           this.addParameter(this.bodyParameter);
         } else {
           this.addParameter(
-            new Parameter("jsonString", System.String, {
+            new Parameter('jsonString', System.String, {
               description: `Json string supplied to the ${operation.language.csharp?.name} operation`,
             })
           );
@@ -264,7 +264,7 @@ export class OperationMethod extends Method {
         ${queryParams.length > 0 ? '+ "?"' : ''}${queryParams.joinWith(pp => `
         + ${removeEncoding(pp, pp.param.language.default.serializedName, KnownMediaType.QueryParameter)}`, `
         + "&"`
-      )}
+)}
         ,"\\\\?&*$|&*$|(\\\\?)&+|(&)&+","$1$2")`.replace(/\s*\+ ""/gm, ''));
       yield pathAndQueryV.declarationStatement;
 
@@ -304,8 +304,8 @@ export class OperationMethod extends Method {
       }
 
       if (viaJson) {
-        yield "// set body content";
-        yield "request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);";
+        yield '// set body content';
+        yield 'request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);';
         yield 'request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");';
         yield eventListener.signal(ClientRuntime.Events.BodyContentSet);
       }

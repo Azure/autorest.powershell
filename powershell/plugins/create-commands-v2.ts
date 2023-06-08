@@ -19,7 +19,7 @@ import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '.
 import { OperationType } from '../utils/command-operation';
 import { Schema as SchemaModel } from '@autorest/codemodel';
 import { getResourceNameFromPath } from '../utils/resourceName';
-import { hasValidBodyParameters } from "../utils/http-operation";
+import { hasValidBodyParameters } from '../utils/http-operation';
 
 type State = ModelState<PwshModel>;
 
@@ -334,7 +334,7 @@ export /* @internal */ class Inferrer {
       }
     }
 
-    return op
+    return op;
   }
 
   // skip-for-time-being
@@ -552,7 +552,7 @@ export /* @internal */ class Inferrer {
         });
         (<any>parameter).httpParameter = httpParameter;
         return parameter;
-      }
+      };
       const jsonVariant = pascalCase([variant.action, vname]);
       const parameter = new IParameter(`${bodyParameterName}Body`, body!.schema, {
         details: {
@@ -562,18 +562,18 @@ export /* @internal */ class Inferrer {
             isBodyParameter: true,
           }
         }
-      })
-      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, "", [...constants, ...requiredParameters], operation, variant, state);
+      });
+      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, '', [...constants, ...requiredParameters], operation, variant, state);
       opJsonString.details.default.dropBodyParameter = true;
       opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
-      opJsonString.parameters.push(createStringParameter("JsonString", `Json string supplied to the ${jsonVariant} operation`, 'jsonString'));
+      opJsonString.parameters.push(createStringParameter('JsonString', `Json string supplied to the ${jsonVariant} operation`, 'jsonString'));
       opJsonString.parameters.push(parameter);
       opJsonString.details.default.dropBodyParameter = true;
 
-      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, "", [...constants, ...requiredParameters], operation, variant, state);
+      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, '', [...constants, ...requiredParameters], operation, variant, state);
       opJsonFilePath.details.default.dropBodyParameter = true;
       opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
-      opJsonFilePath.parameters.push(createStringParameter("JsonFilePath", `Path of Json file supplied to the ${jsonVariant} operation`, 'jsonFilePath'));
+      opJsonFilePath.parameters.push(createStringParameter('JsonFilePath', `Path of Json file supplied to the ${jsonVariant} operation`, 'jsonFilePath'));
       opJsonFilePath.parameters.push(parameter);
       opJsonFilePath.details.default.dropBodyParameter = true;
     }

@@ -177,7 +177,7 @@ export function isEnumImplementation(schema: NewSchema | undefined): boolean {
 }
 
 export function addPSArgumentCompleterAttribute(targetProperty: Property, parameterSchema: any) {
-  const enumValues = values(parameterSchema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(", ");
+  const enumValues = values(parameterSchema.language.csharp.enum.values).select(v => `"${(<string>(<any>v).value)}"`).toArray().join(', ');
   targetProperty.add(new Attribute(PSArgumentCompleterAttribute, { parameters: [`${enumValues}`] }));
 }
 
@@ -964,7 +964,7 @@ export class CmdletClass extends Class {
                         yield Else(function* () {
                           yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
                           yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
-                          yield $this.WriteObjectWithViewControl(`requiredResult`, true);
+                          yield $this.WriteObjectWithViewControl('requiredResult', true);
                           yield ('this.PagingParameters.Skip = 0;');
                           yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
                         });
@@ -1242,10 +1242,10 @@ export class CmdletClass extends Class {
             if (serializationMode) {
               parameters.push(serializationMode);
             }
-            let httpOperationName = `${apiCall.language.csharp?.name}`
+            let httpOperationName = `${apiCall.language.csharp?.name}`;
             if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
               httpOperationName = `${httpOperationName}ViaJsonString`;
-              const jsonParameter = new Field("_jsonString", System.String);
+              const jsonParameter = new Field('_jsonString', System.String);
               parameters = [...operationParameters.filter(each => each.name !== 'body').map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
             }
             yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
@@ -1994,7 +1994,7 @@ export class CmdletClass extends Class {
     if (operation.details.default.externalDocs) {
       this.add(new Attribute(ExternalDocsAttribute, {
         parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
-        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
+          `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
       }));
     }
 

@@ -54,17 +54,18 @@ export class DateTime extends NewPrimitive {
       case KnownMediaType.QueryParameter:
       case KnownMediaType.Header:
       case KnownMediaType.Text:
-      case KnownMediaType.UriParameter:
-        var formatSerializedName = serializedName ? `${serializedName}=` : '';
+      case KnownMediaType.UriParameter: {
+        const formatSerializedName = serializedName ? `${serializedName}=` : '';
         return toExpression(this.isRequired ?
           `"${formatSerializedName}" + ${value}.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture)` :
           `(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${value}?.ToString(${this.DateTimeFormat},global::System.Globalization.CultureInfo.InvariantCulture))`
         );
+      }
     }
     return toExpression(`null /* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-    var formatSerializedName = serializedName ? `${serializedName}=` : '';
+    const formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         // container : JsonObject
@@ -136,7 +137,7 @@ export class UnixTime extends NewPrimitive {
   }
 
   serializeToNode(mediaType: KnownMediaType, value: ExpressionOrLiteral, serializedName: string, mode: Expression): Expression {
-    var formatSerializedName = serializedName ? `${serializedName}=` : '';
+    const formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         return this.isRequired ?
@@ -155,7 +156,7 @@ export class UnixTime extends NewPrimitive {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${value}.ToString()))`);
         }
 
-      // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
+        // return toExpression(`if (${value} != null) { queryParameters.Add($"${value}={${value}}"); }`);
 
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:

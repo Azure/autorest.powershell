@@ -140,34 +140,34 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-      let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-      if (parameter.extensions && parameter.extensions['x-ms-odata']) {
-        type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
-      }
-      const postfix = typePostfix(parameter.schema);
-      if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
-        // skip required const parameter
-        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
-      }
-    });
+    let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+    if (parameter.extensions && parameter.extensions['x-ms-odata']) {
+      type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
+    }
+    const postfix = typePostfix(parameter.schema);
+    if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
+      // skip required const parameter
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+      parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+    }
+  });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-      if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
-        const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-        constructorParametersDeclaration.split(', ').forEach(function (p) {
-          requiredDeclarations.push(p);
-          requiredArgs.push(p.split(' ')[1]);
-        });
-      } else {
-        const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-        const postfix = typePostfix(parameter.schema);
-        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
-      }
-    });
+    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+      constructorParametersDeclaration.split(', ').forEach(function (p) {
+        requiredDeclarations.push(p);
+        requiredArgs.push(p.split(' ')[1]);
+      });
+    } else {
+      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+      const postfix = typePostfix(parameter.schema);
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+      parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+    }
+  });
 
   declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
