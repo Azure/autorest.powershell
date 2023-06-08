@@ -11,7 +11,6 @@ import { OperationMethod, CallMethod, ValidationMethod, ResolveResponseType } fr
 import { ParameterLocation } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
 import { hasValidBodyParameters } from '../../utils/http-operation';
-import { resolve } from 'dns';
 import { EnhancedTypeDeclaration } from '../exports';
 
 export class ApiClass extends Class {

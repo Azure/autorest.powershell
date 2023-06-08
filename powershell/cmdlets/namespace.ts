@@ -36,14 +36,14 @@ export class CmdletNamespace extends Namespace {
       }
       if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
         if (operation.details.default.virtualParameters) {
-          operation.details.default.virtualParameters!.body = [];
+          operation.details.default.virtualParameters.body = [];
         }
         const callGraph = operation.callGraph[operation.callGraph.length - 1];
         if (callGraph.requests && callGraph.requests.length > 0) {
           callGraph.requests[0].parameters = callGraph.requests[0].parameters?.filter(element => element.protocol.http?.in !== 'body');
         }
         if (operation.details.csharp.virtualParameters) {
-          operation.details.csharp.virtualParameters!.body = [];
+          operation.details.csharp.virtualParameters.body = [];
         }
         operation.parameters = operation.parameters.filter(element => element.required === true);
       }
@@ -60,7 +60,7 @@ export class CmdletNamespace extends Namespace {
         const name = 'JsonFilePath';
         operation.details.csharp.name = `${operation.variant}Via${name}`;
 
-        const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath')
+        const jsonFilePath = newClass.properties.filter(p => p.name === 'JsonFilePath');
         if (jsonFilePath.length > 0) {
           jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
         }

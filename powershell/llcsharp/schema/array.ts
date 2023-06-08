@@ -164,9 +164,10 @@ export class ArrayOf implements EnhancedTypeDeclaration {
           }
         }
         case KnownMediaType.Cookie:
-        case KnownMediaType.QueryParameter:
-          var formatSerializedName = serializedName ? `${serializedName}=` : '';
+        case KnownMediaType.QueryParameter: {
+          const formatSerializedName = serializedName ? `${serializedName}=` : '';
           return toExpression(`(null != ${value}  && ${value}.Count > 0 ? "${formatSerializedName}" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( ${this.encode}(null == each ? ${System.String.Empty} : each.ToString()) ))) : ${System.String.Empty})`);
+        }
         case KnownMediaType.Header:
         case KnownMediaType.Text:
         case KnownMediaType.UriParameter:

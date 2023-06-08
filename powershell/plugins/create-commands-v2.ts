@@ -664,7 +664,7 @@ export async function createCommandsV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-createcommands-v2.yaml', content: serialize(await (await new Inferrer(state).init()).createCommands()), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-createcommands-v2.yaml', content: serialize(await (await new Inferrer(state).init()).createCommands()), sourceMap: undefined, artifactType: 'code-model-v4' });
 
   // return processCodeModel(async (state) => {
   //   return await (await new Inferrer(state).init()).createCommands();

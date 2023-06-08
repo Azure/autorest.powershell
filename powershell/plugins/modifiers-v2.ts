@@ -338,7 +338,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
   const removePecAndPlr = !await state.getValue('keep-pec-and-plr', isAzure ? false : true);
 
   if (removePecAndPlr) {
-    const PecOrPlrRegex = "^PrivateEndpointConnection$|^PrivateLinkResource$";
+    const PecOrPlrRegex = '^PrivateEndpointConnection$|^PrivateLinkResource$';
     let operationsToRemoveKeys = new Set(items(state.model.commands.operations)
       .select(operation => operation.key)
       .toArray());

@@ -136,6 +136,7 @@ export class Helper {
       sb.push('}');
     }
     if (schema.pattern !== undefined) {
+      // eslint-disable-next-line
       const constraintValue = "\"" + schema.pattern.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\"";
       let condition = `!System.Text.RegularExpressions.Regex.IsMatch(${valueReference}, ${constraintValue})`;
       if (schema.type === SchemaType.Dictionary) {

@@ -45,13 +45,14 @@ export class Duration extends NewPrimitive {
         }
         return toExpression(`${ClientRuntime.JsonString.new(`global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})`)}`).Cast(ClientRuntime.JsonNode);
 
-      case KnownMediaType.QueryParameter:
-        var formatSerializedName = serializedName ? `${serializedName}=` : '';
+      case KnownMediaType.QueryParameter: {
+        const formatSerializedName = serializedName ? `${serializedName}=` : '';
         if (this.isRequired) {
           return toExpression(`"${formatSerializedName}" + ${this.encode}(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value}))`);
         } else {
           return toExpression(`(null == ${value} ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(global::System.Xml.XmlConvert.ToString((global::System.TimeSpan)${value})))`);
         }
+      }
     }
     return toExpression(`/* serializeToNode doesn't support '${mediaType}' ${__filename}*/`);
   }

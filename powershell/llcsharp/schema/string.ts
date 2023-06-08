@@ -86,14 +86,14 @@ export class String implements EnhancedTypeDeclaration {
       case KnownMediaType.Xml:
         return toExpression(`null != (${value}?.ToString()) ? new ${System.Xml.Linq.XElement}("${serializedName}",${value}) : null`);
 
-      case KnownMediaType.QueryParameter:
-        var formatSerializedName = serializedName ? `${serializedName}=` : '';
+      case KnownMediaType.QueryParameter: {
+        const formatSerializedName = serializedName ? `${serializedName}=` : '';
         if (this.isRequired) {
           return toExpression(`"${formatSerializedName}" + ${this.encode}(${value})`);
         } else {
           return toExpression(`(string.IsNullOrEmpty(${value}) ? ${System.String.Empty} : "${formatSerializedName}" + ${this.encode}(${valueOf(value)}))`);
         }
-
+      }
       case KnownMediaType.Cookie:
       case KnownMediaType.Header:
       case KnownMediaType.Text:
@@ -135,7 +135,7 @@ export class String implements EnhancedTypeDeclaration {
   }
 
   serializeToContainerMember(mediaType: KnownMediaType, value: ExpressionOrLiteral, container: Variable, serializedName: string, mode: Expression): OneOrMoreStatements {
-    var formatSerializedName = serializedName ? `${serializedName}=` : '';
+    const formatSerializedName = serializedName ? `${serializedName}=` : '';
     switch (mediaType) {
       case KnownMediaType.Json:
         return `AddIf( ${this.serializeToNode(mediaType, value, serializedName, mode)}, "${serializedName}" ,${container}.Add );`;
