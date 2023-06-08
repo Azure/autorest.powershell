@@ -10,7 +10,7 @@ import { State } from '../generator';
 import { OperationMethod, CallMethod, ValidationMethod } from '../operation/method';
 import { ParameterLocation } from '@azure-tools/codemodel-v3';
 import { DeepPartial } from '@azure-tools/codegen';
-import { hasValidBodyParameters } from "../../utils/http-operation";
+import { hasValidBodyParameters } from '../../utils/http-operation';
 
 export class ApiClass extends Class {
 
