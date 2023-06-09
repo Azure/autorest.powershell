@@ -38,7 +38,7 @@ export class CmdletNamespace extends Namespace {
         if (operation.details.default.virtualParameters) {
           operation.details.default.virtualParameters!.body = [];
         }
-        const callGraph = operation.callGraph[0];
+        const callGraph = operation.callGraph[operation.callGraph.length - 1];
         if (callGraph.requests && callGraph.requests.length > 0) {
           callGraph.requests[0].parameters = callGraph.requests[0].parameters?.filter(element => element.protocol.http?.in !== 'body');
         }
@@ -53,8 +53,8 @@ export class CmdletNamespace extends Namespace {
         const name = 'JsonString';
         operation.details.csharp.name = `${operation.variant}Via${name}`;
 
-        operation.callGraph[0] = clone(operation.callGraph[0]);
-        operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
+        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1]);
+        operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
       }
       if (operation.variant.includes('ViaJsonFilePath')) {
         const name = 'JsonFilePath';
@@ -64,11 +64,11 @@ export class CmdletNamespace extends Namespace {
         if (jsonFilePath.length > 0) {
           jsonFilePath[0].set = 'if (!System.IO.File.Exists(value)) { throw new Exception("Cannot find File " + value); } this._jsonString = System.IO.File.ReadAllText(value); this._jsonFilePath = value;';
         }
-        const jsonStringField = new Field("_jsonString", System.String);
+        const jsonStringField = new Field('_jsonString', System.String);
         newClass.add(jsonStringField);
 
-        operation.callGraph[0] = clone(operation.callGraph[0]);
-        operation.callGraph[0].language.csharp!.name = `${(<any>operation.callGraph[0]).language.csharp!.name}ViaJsonString`;
+        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1]);
+        operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
       }
       this.addClass(newClass);
     }

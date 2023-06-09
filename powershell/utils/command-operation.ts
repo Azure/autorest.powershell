@@ -72,7 +72,7 @@ export class CommandOperation extends Extensions implements CommandOperation {
 
   public responses = new Dictionary<Dictionary<Schema>>();
 
-  constructor(name: string, initializer?: DeepPartial<CommandOperation>, commandOperationType?: CommandOperationType) {
+  constructor(name: string, initializer?: DeepPartial<CommandOperation>, commandOperationType?: CommandOperationType,) {
     super();
     this.details = {
       default: {
@@ -96,8 +96,8 @@ export class CommandComponents extends Components<CommandOperation, IParameter> 
 }
 
 export function isWritableCmdlet(operation: CommandOperation): boolean {
-  if (operation.callGraph[0].requests) {
-    switch (operation.callGraph[0].requests[0]?.protocol.http?.method.toLowerCase()) {
+  if (operation.callGraph.length > 0 && operation.callGraph[operation.callGraph.length - 1].requests) {
+    switch (operation.callGraph[operation.callGraph.length - 1].requests?.[0]?.protocol.http?.method.toLowerCase()) {
       case 'put':
       case 'post':
       case 'delete':

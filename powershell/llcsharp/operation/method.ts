@@ -175,10 +175,10 @@ export class OperationMethod extends Method {
       const responseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(''), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : null);
       const headerType = response.language.default.headerSchema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>response.language.default.headerSchema, true, state) : null;
       const newCallbackParameter = new CallbackParameter(response.language.csharp?.name || '', responseType, headerType, this.state, { description: response.language.csharp?.description });
-      this.addParameter(newCallbackParameter);
+      if (!withResult) {
+        this.addParameter(newCallbackParameter);
+      }
       this.callbacks.push(newCallbackParameter);
-
-
     }
 
     // add eventhandler parameter
@@ -324,7 +324,7 @@ export class OperationMethod extends Method {
       this.returnType = System.Threading.Tasks.Task(System.Net.Http.HttpResponseMessage);
     }
 
-    this.add(`${withResult ? 'return ' : ''}await this.${this.callName} (request, ${this.callbacks.joinWith(each => each.use, ',')},${this.contextParameter.use},${this.senderParameter.use}); `);
+    this.add(`${withResult ? 'return ' : ''}await this.${this.callName} (request, ${withResult ? '' : `${this.callbacks.joinWith(each => each.use, ',')},`}${this.contextParameter.use},${this.senderParameter.use}); `);
 
     // remove constant parameters and make them locals instead.
     this.insert('// Constant Parameters');
@@ -379,7 +379,11 @@ export class CallMethod extends Method {
     // add parameters
     // request, listener, sender
     const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: 'the prepared HttpRequestMessage to send.' }));
-    opMethod.callbacks.forEach(each => this.addParameter(each));
+    opMethod.callbacks.forEach(each => {
+      if (!withResult) {
+        this.addParameter(each);
+      }
+    });
 
     this.addParameter(opMethod.contextParameter);
     this.addParameter(opMethod.senderParameter);
