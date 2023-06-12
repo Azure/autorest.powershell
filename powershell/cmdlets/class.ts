@@ -1044,7 +1044,7 @@ export class CmdletClass extends Class {
 
   private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
-    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}FromGetResponse`, dotnet.Void, {
+    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}`, dotnet.Void, {
       access: Access.Private
     });
     const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''}WithResult`;
@@ -1061,7 +1061,7 @@ export class CmdletClass extends Class {
           return false;
         });
         for (const param of bodyParameters) {
-          yield If(`(bool)(this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
+          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
         }
       });
       $this.add(updateBodyMethod);

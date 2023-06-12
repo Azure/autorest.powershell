@@ -10,7 +10,7 @@
 // import { DeepPartial } from '@azure-tools/codegen';
 // import { Dictionary } from '@azure-tools/linq';
 // import { uid } from './uid';
-import { Operation, Parameter as NewHttpOperationParameter } from "@azure-tools/codemodel";
+import { Operation, Parameter as NewHttpOperationParameter } from '@azure-tools/codemodel';
 
 // export interface HttpOperationDetails extends ImplementationDetails {
 // }
@@ -310,7 +310,7 @@ export function hasValidBodyParameters(
     operation.requests[0].parameters.length > 0
   ) {
     const param = operation.requests[0].parameters.find(
-      (p) => !p.origin || p.origin.indexOf("modelerfour:synthesized") < 0
+      (p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0
     );
     return param;
   }
