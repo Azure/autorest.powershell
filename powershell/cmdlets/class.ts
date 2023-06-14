@@ -988,7 +988,7 @@ export class CmdletClass extends Class {
             }
             const resourceName = getResourceNameFromPath(path, serializedName);
             if (resourceName) {
-              pathParams += `/ ${resourceName} /{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
+              pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
             }
           }
         });
@@ -1619,6 +1619,7 @@ export class CmdletClass extends Class {
           const vSchema = vParam.schema;
           vParam.origin;
           const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
+          const mandatory = new LiteralExpression(`Mandatory = ${(vParam.required && !this.shouldBodyBeOptional()) ? 'true' : 'false'}`);
 
           // we need to know if the actual underlying property is actually nullable.
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
@@ -1695,14 +1696,14 @@ export class CmdletClass extends Class {
               description: `Input File for ${cmdletParameter.name} (${escapeString(desc)})`
             });
 
-            inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc || '.')})"`)] }));
+            inputFileParameter.add(new Attribute(ParameterAttribute, { parameters: [mandatory, new LiteralExpression(`HelpMessage = "Input File for ${cmdletParameter.name} (${escapeString(desc || '.')})"`)] }));
             inputFileParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             if (length(vParam.alias) > 0) {
               inputFileParameter.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
             }
             $this.add(inputFileParameter);
           } else {
-            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
+            cmdletParameter.add(new Attribute(ParameterAttribute, { parameters: [mandatory, new LiteralExpression(`HelpMessage = "${escapeString(desc || '.')}"`)] }));
             cmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.Body`] }));
             NewAddInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
             NewAddCompleterInfo(cmdletParameter, vParam);
@@ -1830,7 +1831,8 @@ export class CmdletClass extends Class {
       }
       this.thingsToSerialize.push(regularCmdletParameter);
 
-      const parameters = [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || '.'}"`)];
+      const mandatory = new LiteralExpression(`Mandatory = ${(vParam.required && (!origin?.details.csharp.isBodyParameter || !this.shouldBodyBeOptional())) ? 'true' : 'false'}`);
+      const parameters = [mandatory, new LiteralExpression(`HelpMessage = "${escapeString(vParam.description) || '.'}"`)];
       if (!!origin && origin.details.csharp.isBodyParameter) {
         parameters.push(new LiteralExpression('ValueFromPipeline = true'));
         this.bodyParameter = regularCmdletParameter;
@@ -2094,6 +2096,13 @@ export class CmdletClass extends Class {
     if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
       this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
     }
+  }
+
+  private shouldBodyBeOptional(): boolean {
+    if (this.operation.commandOperationType === CommandOperationType.GetPut) {
+      return true;
+    }
+    return false;
   }
 }
 
