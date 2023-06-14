@@ -344,11 +344,12 @@ export function ResolveResponseType(opMethod?: OperationMethod, operation?: Oper
   let typeCount = 0;
   let responseType: EnhancedTypeDeclaration | undefined = undefined;
   if (opMethod) {
-    opMethod.callbacks.filter(each => each.name !== 'default').forEach(each => {
+    opMethod.callbacks.filter(each => each.name !== 'onDefault' && each.name !== 'onNotFound').forEach(each => {
       if (each.responseType && responseType && each.responseType !== responseType) {
         typeCount++;
-      } else if (each.responseType && (!responseType) || each.responseType === responseType) {
+      } else if (each.responseType && !responseType) {
         responseType = each.responseType;
+        typeCount = 1;
       }
     });
   } else if (operation && state) {
@@ -356,9 +357,9 @@ export function ResolveResponseType(opMethod?: OperationMethod, operation?: Oper
       const eachResponseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(''), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : undefined);
       if (eachResponseType && responseType && eachResponseType !== responseType) {
         typeCount++;
-      } else if (eachResponseType && (!responseType) || eachResponseType === responseType) {
+      } else if (eachResponseType && !responseType) {
         responseType = eachResponseType;
-        typeCount++;
+        typeCount = 1;
       }
     }
   }
