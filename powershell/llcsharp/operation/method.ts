@@ -417,13 +417,13 @@ export class CallMethod extends Method {
                 if (withResult) {
                   yield TerminalCase(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
                 } else {
-                  yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                  yield Case(System.Net.HttpStatusCode[responseCode] ? System.Net.HttpStatusCode[responseCode].value : `${System.Net.HttpStatusCode.declaration} n when((int)n >= ${leadNum * 100} && (int)n < ${leadNum * 100 + 100})`, $this.responsesEmitter($this, opMethod, [resp], response, eventListener, false));
                 }
               } else {
                 if (withResult) {
                   yield TerminalDefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
                 } else {
-                  DefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, withResult));
+                  yield DefaultCase($this.responsesEmitter($this, opMethod, [resp], response, eventListener, false));
                 }
               }
             }
