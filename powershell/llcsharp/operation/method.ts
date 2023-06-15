@@ -344,7 +344,7 @@ export function ResolveResponseType(opMethod?: OperationMethod, operation?: Oper
   let typeCount = 0;
   let responseType: EnhancedTypeDeclaration | undefined = undefined;
   if (opMethod) {
-    opMethod.callbacks.filter(each => each.name !== 'onDefault' && each.name !== 'onNotFound').forEach(each => {
+    opMethod.callbacks.filter(each => each.name !== 'onDefault').forEach(each => {
       if (each.responseType && responseType && each.responseType !== responseType) {
         typeCount++;
       } else if (each.responseType && !responseType) {
@@ -353,7 +353,7 @@ export function ResolveResponseType(opMethod?: OperationMethod, operation?: Oper
       }
     });
   } else if (operation && state) {
-    for (const response of [...values(operation.responses)]) {
+    for (const response of [...values(operation.responses), ...values(operation.exceptions)].filter(each => each.language?.csharp?.name !== 'onDefault')) {
       const eachResponseType = (<BinaryResponse>response).binary ? new Binary(new BinarySchema(''), true) : ((<SchemaResponse>response).schema ? state.project.modelsNamespace.NewResolveTypeDeclaration(<NewSchema>((<SchemaResponse>response).schema), true, state) : undefined);
       if (eachResponseType && responseType && eachResponseType !== responseType) {
         typeCount++;
@@ -411,7 +411,7 @@ export class CallMethod extends Method {
             const responses = [...values(opMethod.operation.responses), ...values(opMethod.operation.exceptions)].sort(function (a, b) { return (<string>(a.protocol.http?.statusCodes[0])).localeCompare(<string>(b.protocol.http?.statusCodes[0])); });
             for (const resp of responses) {
               const responseCode = resp.protocol.http?.statusCodes[0];
-              if (responseCode !== 'default') {
+              if (responseCode !== 'default'/*TODO: !== not found, handle other exception response */) {
                 const leadNum = parseInt(responseCode[0]);
                 // will use enum when it can, fall back to casting int when it can't
                 if (withResult) {
