@@ -968,11 +968,12 @@ export class CmdletClass extends Class {
             }
           }
           const pathParameters = [...pathParamsInIdentity.map(each => toExpression(each.value)), ...pathParamsNotInIdentity.map(each => toExpression(each.value))];
-          const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline];
+          const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value))];
+          const parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
           if (serializationMode) {
-            nonPathParameters.push(serializationMode);
+            parameters.push(serializationMode);
           }
-          const parameters = bodyParameter ? [...pathParameters, toExpression(bodyParameter.value), ...nonPathParameters] : [...pathParameters, ...nonPathParameters];
+
           if (preProcess) {
             yield preProcess($this, pathParameters, [...nonPathParams.map(each => toExpression(each.value)), dotnet.This, pipeline], false);
           }
@@ -1013,11 +1014,11 @@ export class CmdletClass extends Class {
           yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
         }
         const pathParameters = [toExpression(`${$this.inputObjectParameterName}.Id`)];
-        const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline];
+        const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value))];
+        const parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
         if (serializationMode) {
-          nonPathParameters.push(serializationMode);
+          parameters.push(serializationMode);
         }
-        const parameters = bodyParameter ? [...pathParameters, toExpression(bodyParameter.value), ...nonPathParameters] : [...pathParameters, ...nonPathParameters];
         if (preProcess) {
           yield preProcess($this, pathParameters, [...nonPathParams.map(each => toExpression(each.value)), dotnet.This, pipeline], true);
         }
@@ -1032,11 +1033,11 @@ export class CmdletClass extends Class {
       }
     } else {
       const pathParameters = [...pathParamsInIdentity.map(each => toExpression(each.value)), ...pathParamsNotInIdentity.map(each => toExpression(each.value))];
-      const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline];
+      const nonPathParameters = [...nonPathParams.map(each => toExpression(each.value))];
+      let parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
       if (serializationMode) {
-        nonPathParameters.push(serializationMode);
+        parameters.push(serializationMode);
       }
-      let parameters = bodyParameter ? [...pathParameters, toExpression(bodyParameter.value), ...nonPathParameters] : [...pathParameters, ...nonPathParameters];
       if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
         httpOperationName = `${httpOperationName}ViaJsonString`;
         const jsonParameter = new Field('_jsonString', System.String);
