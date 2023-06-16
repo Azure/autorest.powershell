@@ -117,6 +117,9 @@ export class OperationMethod extends Method {
       this.addParameter(identity);
     }
     let baseUrl = '';
+    const paths = [];
+    const queries = [];
+    const others = [];
     for (let index = 0; index < length(this.operation.parameters) && this.operation.parameters; index++) {
       const value = this.operation.parameters[index];
 
@@ -133,7 +136,17 @@ export class OperationMethod extends Method {
 
       // don't add path parameters  when we're in identity mode
       if (!this.viaIdentity || value.protocol.http?.in !== ParameterLocation.Path) {
-        this.addParameter(p);
+        switch (value.protocol.http?.in) {
+          case ParameterLocation.Path:
+            paths.push(p);
+            break;
+          case ParameterLocation.Query:
+            queries.push(p);
+            break;
+          default:
+            others.push(p);
+            break;
+        }
       } else {
         this.add(function* () {
           yield '';
@@ -141,6 +154,7 @@ export class OperationMethod extends Method {
       }
       this.methodParameters.push(p);
     }
+    [...paths, ...queries, ...others].forEach(p => this.addParameter(p));
 
     if (baseUrl === '') {
       // Some services will make the host as an input parameter
