@@ -167,6 +167,7 @@ export /* @internal */ class Inferrer {
       operations: new Dictionary<any>(),
       parameters: new Dictionary<any>(),
     };
+    const disableGetPut = await this.state.getValue('disable-getput', false);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
@@ -196,7 +197,8 @@ export /* @internal */ class Inferrer {
         - there is only one put reqeust schema
         - get operation response schema type is the same as put operation request schema type
       */
-      if (!hasPatch
+      if (!disableGetPut
+        && !hasPatch
         && getOperation
         && putOperation
         && getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path
