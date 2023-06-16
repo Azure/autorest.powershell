@@ -1041,7 +1041,7 @@ export class CmdletClass extends Class {
       if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
         httpOperationName = `${httpOperationName}ViaJsonString`;
         const jsonParameter = new Field('_jsonString', System.String);
-        parameters = [...pathParameters, jsonParameter, ...nonPathParameters];
+        parameters = [...pathParameters, ...nonPathParameters, jsonParameter, ...callbackMethods, dotnet.This, pipeline];
       }
       if (preProcess) {
         yield preProcess($this, pathParameters, [...nonPathParams.map(each => toExpression(each.value)), dotnet.This, pipeline], false);
