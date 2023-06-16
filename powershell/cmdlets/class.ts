@@ -394,7 +394,6 @@ export class CmdletClass extends Class {
     // create the response handlers
     this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
     this.callbackMethods = values(this.responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
-    this.serializationMode = this.bodyParameter ? (this.operation.operationType === OperationType.Create ? ClientRuntime.SerializationMode.IncludeCreate : (this.operation.operationType === OperationType.Update ? ClientRuntime.SerializationMode.IncludeUpdate : undefined)) : undefined;
     this.operationParameters = [];
     this.state = state;
     this.thingsToSerialize = [];
@@ -781,6 +780,7 @@ export class CmdletClass extends Class {
     const $this = this;
     const operationParameters = $this.operationParameters;
     const pipeline = $this.$<Property>('Pipeline');
+    this.serializationMode = this.bodyParameter ? (this.operation.operationType === OperationType.Create ? ClientRuntime.SerializationMode.IncludeCreate : (this.operation.operationType === OperationType.Update ? ClientRuntime.SerializationMode.IncludeUpdate : undefined)) : undefined;
 
     const PRA = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
