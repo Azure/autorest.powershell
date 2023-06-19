@@ -400,11 +400,9 @@ export class CallMethod extends Method {
     // add parameters
     // request, listener, sender
     const reqParameter = this.addParameter(new Parameter('request', System.Net.Http.HttpRequestMessage, { description: 'the prepared HttpRequestMessage to send.' }));
-    opMethod.callbacks.forEach(each => {
-      if (!withResult) {
-        this.addParameter(each);
-      }
-    });
+    if (!withResult) {
+      opMethod.callbacks.forEach(each => this.addParameter(each));
+    }
 
     this.addParameter(opMethod.contextParameter);
     this.addParameter(opMethod.senderParameter);
@@ -450,7 +448,7 @@ export class CallMethod extends Method {
             if (!opMethod.operation.exceptions) {
               // if no default, we need one that handles the rest of the stuff.
               yield TerminalDefaultCase(function* () {
-                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response); `;
+                yield `throw new ${ClientRuntime.fullName}.UndeclaredResponseException(_response);`;
               });
             }
           });
