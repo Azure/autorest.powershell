@@ -197,7 +197,8 @@ export /* @internal */ class Inferrer {
         - there is only one put reqeust schema
         - get operation response schema type is the same as put operation request schema type
       */
-      if (!disableGetPut
+      if (this.isAzure
+        && !disableGetPut
         && !hasPatch
         && getOperation
         && putOperation
