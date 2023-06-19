@@ -988,7 +988,7 @@ export class CmdletClass extends Class {
           }
 
           if (preProcess) {
-            yield preProcess($this, pathParameters, [...nonPathParameters, ...callbackMethods, dotnet.This, pipeline], false);
+            yield preProcess($this, pathParameters, [...nonPathParameters, dotnet.This, pipeline], false);
           }
           yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
         }
@@ -1033,7 +1033,7 @@ export class CmdletClass extends Class {
           parameters.push(serializationMode);
         }
         if (preProcess) {
-          yield preProcess($this, pathParameters, [...nonPathParameters, ...callbackMethods, dotnet.This, pipeline], true);
+          yield preProcess($this, pathParameters, [...nonPathParameters, dotnet.This, pipeline], true);
         }
         yield `await this.${$this.$<Property>('Client').invokeMethod(`${httpOperationName}ViaIdentity`, ...parameters).implementation}`;
       };
@@ -1057,7 +1057,7 @@ export class CmdletClass extends Class {
         parameters = [...pathParameters, ...nonPathParameters, jsonParameter, ...callbackMethods, dotnet.This, pipeline];
       }
       if (preProcess) {
-        yield preProcess($this, pathParameters, [...nonPathParameters, ...callbackMethods, dotnet.This, pipeline], false);
+        yield preProcess($this, pathParameters, [...nonPathParameters, dotnet.This, pipeline], false);
       }
       yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
     }
