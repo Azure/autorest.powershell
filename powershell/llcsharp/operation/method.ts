@@ -118,6 +118,7 @@ export class OperationMethod extends Method {
     }
     let baseUrl = '';
     const paths = [];
+    const headers = [];
     const queries = [];
     const others = [];
     for (let index = 0; index < length(this.operation.parameters) && this.operation.parameters; index++) {
@@ -140,6 +141,9 @@ export class OperationMethod extends Method {
           case ParameterLocation.Path:
             paths.push(p);
             break;
+          case ParameterLocation.Header:
+            headers.push(p);
+            break;
           case ParameterLocation.Query:
             queries.push(p);
             break;
@@ -154,7 +158,7 @@ export class OperationMethod extends Method {
       }
       this.methodParameters.push(p);
     }
-    [...paths, ...queries, ...others].forEach(p => this.addParameter(p));
+    [...paths, ...headers, ...queries, ...others].forEach(p => this.addParameter(p));
 
     if (baseUrl === '') {
       // Some services will make the host as an input parameter
