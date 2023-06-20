@@ -454,7 +454,7 @@ function shouldBeRequired(operation: CommandOperation, virtualProperty: VirtualP
   if (!shouldBeOptional) {
     return virtualProperty.required;
   }
-  if (!virtualProperty.read && virtualProperty.create || virtualProperty.update) {
+  if (!virtualProperty.read && (virtualProperty.create || virtualProperty.update)) {
     return virtualProperty.required;
   }
   return false;
