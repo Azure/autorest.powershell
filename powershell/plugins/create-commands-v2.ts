@@ -172,15 +172,12 @@ export /* @internal */ class Inferrer {
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
-      let getOperation: Operation | undefined, putOperation: Operation | undefined;
-      let pathLength = -1;
+      let getOperations: Array<Operation> | undefined, putOperation: Operation | undefined;
       for (const operation of values(operationGroup.operations)) {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
-        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get' && operation.requests?.[0]?.protocol?.http?.path?.length > pathLength) {
-          //assign get operation with longest path (make sure it's get not list to getOperation)
-          pathLength = operation.requests?.[0]?.protocol?.http?.path?.length;
-          getOperation = operation;
+        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
+          getOperations?.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
           putOperation = operation;
         }
@@ -200,13 +197,13 @@ export /* @internal */ class Inferrer {
       if (this.isAzure
         && !disableGetPut
         && !hasPatch
-        && getOperation
+        && getOperations
         && putOperation
-        && getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path
         && putOperation.requests?.length == 1) {
+        const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
         //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
         const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
-        if (schema && [...values(getOperation?.responses), ...values(getOperation?.exceptions)].filter(each => each.protocol?.http?.StatusCode !== 'default' && (<SchemaResponse>each).schema !== schema).length === 0) {
+        if (getOperation && schema && [...values(getOperation?.responses), ...values(getOperation?.exceptions)].filter(each => each.protocol?.http?.StatusCode !== 'default' && (<SchemaResponse>each).schema !== schema).length === 0) {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandOperationType.GetPut);
         }
       }

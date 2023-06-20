@@ -7,7 +7,7 @@ import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, Gro
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
-import { CommandOperation } from '../utils/command-operation';
+import { CommandOperation, CommandOperationType } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { ExternalDocumentation } from '../utils/components';
@@ -381,7 +381,7 @@ function createVirtualParameters(operation: CommandOperation) {
             name: virtualProperty.name,
             description: virtualProperty.property.language.default.description,
             nameOptions: virtualProperty.nameOptions,
-            required: virtualProperty.required,
+            required: shouldBeRequired(operation, virtualProperty),
             schema: virtualProperty.property.schema,
             origin: virtualProperty,
             alias: []
@@ -449,11 +449,21 @@ async function createVirtuals(state: State): Promise<PwshModel> {
   return state.model;
 }
 
+function shouldBeRequired(operation: CommandOperation, virtualProperty: VirtualProperty): boolean {
+  const shouldBeOptional = operation.commandOperationType === CommandOperationType.GetPut;
+  if (!shouldBeOptional) {
+    return virtualProperty.required;
+  }
+  if (!virtualProperty.read && virtualProperty.create || virtualProperty.update) {
+    return virtualProperty.required;
+  }
+  return false;
+}
 
 export async function createInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-create-virtual-properties-v2.yaml', content: serialize(await createVirtuals(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-create-virtual-properties-v2.yaml', content: serialize(await createVirtuals(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
   //return processCodeModel(createVirtuals, service, 'create-virtual-properties-v2');
 }
