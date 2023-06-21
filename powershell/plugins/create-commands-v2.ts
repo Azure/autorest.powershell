@@ -202,9 +202,10 @@ export /* @internal */ class Inferrer {
         && putOperation
         && putOperation.requests?.length == 1) {
         const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
+        const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query');
         //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
         const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
-        if (getOperation && schema && [...values(getOperation?.responses), ...values(getOperation?.exceptions)].filter(each => each.protocol?.http?.statusCodes[0] !== 'default' && (<SchemaResponse>each).schema !== schema).length === 0) {
+        if (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses), ...values(getOperation?.exceptions)].filter(each => each.protocol?.http?.statusCodes[0] !== 'default' && (<SchemaResponse>each).schema !== schema).length === 0) {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       }
