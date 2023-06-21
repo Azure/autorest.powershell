@@ -60,7 +60,7 @@ export interface VirtualParameter {
   type?: string;
 }
 
-export enum CommandOperationType {
+export enum CommandType {
   Atomic,
   GetPut
 }
@@ -68,11 +68,11 @@ export enum CommandOperationType {
 export class CommandOperation extends Extensions implements CommandOperation {
   public extensions = new Dictionary<any>();
   public details: LanguageDetails<CommandOperationDetails>;
-  commandOperationType: CommandOperationType;
+  commandType: CommandType;
 
   public responses = new Dictionary<Dictionary<Schema>>();
 
-  constructor(name: string, initializer?: DeepPartial<CommandOperation>, commandOperationType?: CommandOperationType,) {
+  constructor(name: string, initializer?: DeepPartial<CommandOperation>, commandType?: CommandType,) {
     super();
     this.details = {
       default: {
@@ -83,7 +83,7 @@ export class CommandOperation extends Extensions implements CommandOperation {
     };
     this.deprecated = false;
     this.pure = true;
-    this.commandOperationType = commandOperationType ?? CommandOperationType.Atomic;
+    this.commandType = commandType ?? CommandType.Atomic;
     this.apply(initializer);
   }
 }

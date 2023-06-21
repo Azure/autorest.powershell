@@ -7,7 +7,7 @@ import { codeModelSchema, Property, CodeModel, ObjectSchema, ConstantSchema, Gro
 import { getPascalIdentifier, removeSequentialDuplicates, pascalCase, fixLeadingNumber, deconstruct, selectName, EnglishPluralizationService, serialize } from '@azure-tools/codegen';
 import { length, values, } from '@azure-tools/linq';
 import { AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
-import { CommandOperation, CommandOperationType } from '../utils/command-operation';
+import { CommandOperation, CommandType } from '../utils/command-operation';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
 import { ExternalDocumentation } from '../utils/components';
@@ -450,7 +450,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
 }
 
 function shouldBeRequired(operation: CommandOperation, virtualProperty: VirtualProperty): boolean {
-  const shouldBeOptional = operation.commandOperationType === CommandOperationType.GetPut;
+  const shouldBeOptional = operation.commandType === CommandType.GetPut;
   if (!shouldBeOptional) {
     return virtualProperty.required;
   }

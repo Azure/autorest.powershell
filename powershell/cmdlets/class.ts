@@ -6,7 +6,7 @@
 const ejs = require('ejs');
 import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema, Response, Operation } from '@autorest/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter, CommandOperationType } from '../utils/command-operation';
+import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter, CommandType } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
@@ -849,11 +849,11 @@ export class CmdletClass extends Class {
       yield Try(function* () {
         // make the call.
         let preProcess: PreProcess;
-        switch ($this.operation.commandOperationType) {
-          case CommandOperationType.GetPut:
+        switch ($this.operation.commandType) {
+          case CommandType.GetPut:
             preProcess = $this.GetPutPreProcess;
             break;
-          case CommandOperationType.Atomic:
+          case CommandType.Atomic:
           default:
             preProcess = undefined;
             break;
