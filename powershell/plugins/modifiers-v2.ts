@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AutorestExtensionHost as Host, Channel } from '@autorest/extension-base';
+import { Host, Channel } from '@azure-tools/autorest-extension-base';
 import { pascalCase, serialize, safeEval } from '@azure-tools/codegen';
-import { VirtualParameter } from '@autorest/codemodel';
+import { VirtualParameter } from '@azure-tools/codemodel';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { stat } from 'fs';
 import common = require('mocha/lib/interfaces/common');
@@ -83,7 +83,8 @@ interface WhereCommandDirective {
       'become-mandatory'?: boolean;
       // for all breaking changes
       'change-description'?: string;
-      'deprecated-by-version'?: string;
+      'deprecated-by-version': string;
+      'deprecated-by-azversion': string;
       'change-effective-date'?: string;
     };
     'preview-message'?: string;
@@ -462,6 +463,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
             parameter.breakingChange.oldParamaterType = (breakingChange && breakingChange['old-parameter-type']) ? breakingChange['old-parameter-type'] : undefined;
             parameter.breakingChange.newParameterType = (breakingChange && breakingChange['new-parameter-type']) ? breakingChange['new-parameter-type'] : undefined;
             parameter.breakingChange.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+            parameter.breakingChange.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
             parameter.breakingChange.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
             parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
           }
@@ -552,6 +554,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
               // handle parameter breaking change for variant
               operation.details.csharp.breakingChange.variant = <any>{};
               operation.details.csharp.breakingChange.variant.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+              operation.details.csharp.breakingChange.variant.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
               operation.details.csharp.breakingChange.variant.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
               operation.details.csharp.breakingChange.variant.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
 
@@ -566,6 +569,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                 operation.details.csharp.breakingChange.output.deprecatedOutputProperties = (breakingChange && breakingChange['deprecated-output-properties']) ? breakingChange['deprecated-output-properties'] : undefined;
                 operation.details.csharp.breakingChange.output.newOutputProperties = (breakingChange && breakingChange['new-output-properties']) ? breakingChange['new-output-properties'] : undefined;
                 operation.details.csharp.breakingChange.output.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+                operation.details.csharp.breakingChange.output.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
                 operation.details.csharp.breakingChange.output.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
                 operation.details.csharp.breakingChange.output.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
               } else {
@@ -576,6 +580,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                   operation.details.csharp.breakingChange.cmdlet.replacement = safeEval(operation.details.csharp.breakingChange.cmdlet.replacement.replace('$', `"${newCommandName.split('_')[0]}"`));
                 }
                 operation.details.csharp.breakingChange.cmdlet.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+                operation.details.csharp.breakingChange.cmdlet.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
                 operation.details.csharp.breakingChange.cmdlet.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
                 operation.details.csharp.breakingChange.cmdlet.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
                 operation.details.csharp.breakingChange.cmdlet.name = newCommandName.split('_')[0];
@@ -951,7 +956,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
 export async function applyModifiersV2(service: Host) {
   // dolauli implement directives
-  const allDirectives = await service.getValue<any>('directive');
+  const allDirectives = await service.GetValue('directive');
   directives = values(allDirectives)
     // .select(directive => directive)
     .where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
@@ -960,5 +965,5 @@ export async function applyModifiersV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
   const result = await tweakModel(state);
 
-  await service.writeFile({ filename: 'code-model-v4-modifiers-v2.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.WriteFile('code-model-v4-modifiers-v2.yaml', serialize(result), undefined, 'code-model-v4');
 }
