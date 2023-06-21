@@ -436,14 +436,11 @@ export /* @internal */ class Inferrer {
     // skip-for-time-being x-ms-metadata looks not supported any more.
     //const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
     // Add operation type to support x-ms-mutability
-
-    // Problem is OperationType.Update was not applied to Set cmdlets before: operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update'
-    // which will cause breaking change if using variant.action.toLowerCase() === 'update', changed to variant.verb.toLowerCase() === 'update' instead.
     let operationType = OperationType.Other;
     if (operation.requests) {
       if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
         operationType = OperationType.Create;
-      } else if ((operation.requests[0].protocol.http?.method === 'patch' || operation.requests[0].protocol.http?.method === 'put') && variant.verb.toLowerCase() === 'update') {
+      } else if (operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
         operationType = OperationType.Update;
       }
     }
