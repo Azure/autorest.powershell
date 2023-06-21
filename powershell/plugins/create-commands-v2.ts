@@ -331,11 +331,11 @@ export /* @internal */ class Inferrer {
     return this.inferCommand(operation, group);
   }
 
-  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, CommandType?: CommandType): Promise<CommandOperation> {
+  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, commandType?: CommandType): Promise<CommandOperation> {
     // beth: filter command description for New/Update command
     const createOrUpdateRegex = /creates? or updates?/gi;
     operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
-    const op = await this.addCommandOperation(vname, parameters, operation, variant, state, preOperations, CommandType);
+    const op = await this.addCommandOperation(vname, parameters, operation, variant, state, preOperations, commandType);
 
     // if this has a body with it, let's add that parameter
     if (body && body.schema) {
@@ -353,7 +353,7 @@ export /* @internal */ class Inferrer {
       // let's add a variant where it's expanded out.
       // *IF* the body is an object or dictionary
       if (body.schema.type === SchemaType.Object || body.schema.type === SchemaType.Dictionary || body.schema.type === SchemaType.Any) {
-        const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state, preOperations, CommandType);
+        const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state, preOperations, commandType);
         opExpanded.details.default.dropBodyParameter = true;
         opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
           details: {
@@ -383,7 +383,7 @@ export /* @internal */ class Inferrer {
   // for tracking unique operation identities 
   operationIdentities = new Set<string>();
 
-  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, CommandType?: CommandType): Promise<CommandOperation> {
+  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, commandType?: CommandType): Promise<CommandOperation> {
     // skip-for-time-being following code seems redundant -----
     // let apiversion = '';
 
@@ -487,10 +487,10 @@ export /* @internal */ class Inferrer {
         // skip-for-time-being, this callGraph is used in the header comments
         callGraph: operations
       },
-      CommandType);
+      commandType);
   }
 
-  async addVariants(parameters: Array<Parameter> | undefined, operation: Operation, variant: CommandVariant, vname: string, state: State, preOperations?: Array<Operation>, CommandType?: CommandType) {
+  async addVariants(parameters: Array<Parameter> | undefined, operation: Operation, variant: CommandVariant, vname: string, state: State, preOperations?: Array<Operation>, commandType?: CommandType) {
     // now synthesize parameter set variants multiplexed by the variants.
     const [constants, requiredParameters] = values(parameters).bifurcate(parameter => parameter.language.default.constantValue || parameter.language.default.fromHost ? true : false);
     const constantParameters = constants.map(each => `'${each.language.default.constantValue}'`);
@@ -523,7 +523,7 @@ export /* @internal */ class Inferrer {
     // create variant 
     // skip-for-time-being, since operationId looks not included in m4.
     //state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-    await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state, preOperations, CommandType);
+    await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
 
     if (await state.getValue('disable-via-identity', false)) {
       return;
@@ -536,7 +536,7 @@ export /* @internal */ class Inferrer {
     //if parent pipline input is disabled, only generate identity for current resource itself
     if (!await state.getValue('enable-parent-pipeline-input', this.isAzure)) {
       if (length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
-        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state, preOperations, CommandType);
+        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state, preOperations, commandType);
       }
       return;
     }
@@ -563,10 +563,10 @@ export /* @internal */ class Inferrer {
       if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
         resourceName = '';
       }
-      await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state, preOperations, CommandType);
+      await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state, preOperations, commandType);
     }
 
-    if (this.supportJsonInput && hasValidBodyParameters(operation) && !CommandType) {
+    if (this.supportJsonInput && hasValidBodyParameters(operation) && !commandType) {
       const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
         const schema = new SchemaModel(name, description, SchemaType.String);
         const language = {
@@ -611,14 +611,14 @@ export /* @internal */ class Inferrer {
           }
         }
       });
-      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, CommandType);
+      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
       opJsonString.details.default.dropBodyParameter = true;
       opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonString.parameters.push(createStringParameter('JsonString', `Json string supplied to the ${jsonVariant} operation`, 'jsonString'));
       opJsonString.parameters.push(parameter);
       opJsonString.details.default.dropBodyParameter = true;
 
-      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, CommandType);
+      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
       opJsonFilePath.details.default.dropBodyParameter = true;
       opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonFilePath.parameters.push(createStringParameter('JsonFilePath', `Path of Json file supplied to the ${jsonVariant} operation`, 'jsonFilePath'));
