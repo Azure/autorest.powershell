@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 const ejs = require('ejs');
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema } from '@autorest/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema, Response, Operation } from '@autorest/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
-import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter } from '../utils/command-operation';
+import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter, CommandType } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
 import { escapeString, docComment, serialize, pascalCase, DeepPartial, camelCase } from '@azure-tools/codegen';
 import { items, values, Dictionary, length } from '@azure-tools/linq';
 import {
   Access, Attribute, BackedProperty, Catch, Class, ClassType, Constructor, dotnet, Else, Expression, Finally, ForEach, If, LambdaProperty, LiteralExpression, LocalVariable, Method, Modifier, Namespace, OneOrMoreStatements, Parameter, Property, Return, Statements, BlockStatement, StringExpression,
-  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
+  Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While, LiteralStatement
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
 import { Alias, ArgumentCompleterAttribute, PSArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, ExternalDocsAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute, NotSuggestDefaultParameterSetAttribute } from '../internal/powershell-declarations';
@@ -24,6 +24,9 @@ import { Variable, Local, ParameterModifier } from '@azure-tools/codegen-csharp'
 import { getVirtualPropertyName } from '../llcsharp/model/model-class';
 import { HandlerDirective } from '../plugins/modifiers-v2';
 import { getChildResourceNameFromPath, getResourceNameFromPath } from '../utils/resourceName';
+import { OperationParameter } from '../llcsharp/operation/parameter';
+import { get } from 'http';
+import { hasValidBodyParameters } from '../utils/http-operation';
 const PropertiesRequiringNew = new Set(['Host', 'Events']);
 
 
@@ -334,6 +337,22 @@ export function NewAddInfoAttribute(targetProperty: Property, pType: TypeDeclara
 
 }
 
+type operationParameter = {
+  name: Property;
+  expression: Property;
+  parameterLocation: ParameterLocation;
+} | {
+  name: Property;
+  expression: Expression;
+  parameterLocation: ParameterLocation;
+} | {
+  name: string | undefined;
+  expression: LiteralExpression;
+  parameterLocation: ParameterLocation;
+};
+
+type PreProcess = ((cmdlet: CmdletClass, pathParameters: Array<Expression>, nonPathParameters: Array<Expression | Property>, viaIdentity: boolean) => Statements) | undefined;
+
 export class CmdletClass extends Class {
   private cancellationToken!: Expression;
   public state: State;
@@ -355,6 +374,11 @@ export class CmdletClass extends Class {
   private outFileParameter?: Property;
   private clientsidePagination?: boolean;
   private inputObjectParameterName: string;
+  private apiCall: Operation;
+  private operationParameters: Array<operationParameter>;
+  private responses: Array<Response>;
+  private callbackMethods: Array<LiteralExpression>;
+  private serializationMode: LiteralExpression | undefined;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -366,6 +390,11 @@ export class CmdletClass extends Class {
     this.dropBodyParameter = operation.details.csharp.dropBodyParameter ? true : false;
     this.apply(objectInitializer);
     this.operation = operation;
+    this.apiCall = this.operation.callGraph[this.operation.callGraph.length - 1];
+    // create the response handlers
+    this.responses = [...values(this.apiCall.responses), ...values(this.apiCall.exceptions)];
+    this.callbackMethods = values(this.responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
+    this.operationParameters = [];
     this.state = state;
     this.thingsToSerialize = [];
     this.variantName = variantName;
@@ -376,7 +405,7 @@ export class CmdletClass extends Class {
     this.eventListener = new EventListener(new LiteralExpression(`((${ClientRuntime.IEventListener})this)`), true);
 
     this.isViaIdentity = variantName.indexOf('ViaIdentity') > 0;
-    this.clientsidePagination = !!operation.details.csharp.clientsidePagination && !!operation.callGraph[0].language.csharp?.pageable;
+    this.clientsidePagination = !!operation.details.csharp.clientsidePagination && !!this.apiCall.language.csharp?.pageable;
     this.inputObjectParameterName = 'InputObject';
 
   }
@@ -385,7 +414,6 @@ export class CmdletClass extends Class {
 
     // basic stuff
     this.addCommonStuff();
-
     this.description = escapeString(this.operation.details.csharp.description);
     const $this = this;
 
@@ -425,10 +453,51 @@ export class CmdletClass extends Class {
     // add constructors
     this.implementConstructors();
 
-    // processRecord
-    this.NewImplementProcessRecord(this.operation);
+    // add callback methods
+    this.NewImplementResponseMethod();
 
-    this.NewImplementProcessRecordAsync(this.operation);
+    // processRecord
+    this.NewImplementProcessRecord();
+
+    // find each parameter to the method, and find out where the value is going to come from.
+    this.operationParameters =
+      values(this.apiCall.parameters).
+        // filter out constants and path parameters when using piping for identity
+        where(each => !(each.language.csharp?.constantValue) && each.language.default?.name !== '$host'/* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
+        select(p => {
+          return {
+            name: p.language.csharp?.name,
+            param: values(this.properties).
+              where(each => each.metadata.parameterDefinition).
+              first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
+            parameterLocation: p.protocol?.http?.in
+          };
+
+        }).
+        select(each => {
+          if (each.param) {
+
+            const httpParam = (<HttpParameter>(each.param.metadata.parameterDefinition));
+            if (httpParam.required) {
+              return {
+                name: each.param,
+                expression: each.param,
+                parameterLocation: each.parameterLocation
+              };
+            }
+
+            const httpParamTD = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, this.state);
+            return {
+              name: each.param,
+              expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
+              parameterLocation: each.parameterLocation
+            };
+
+          }
+          return { name: each.name, expression: dotnet.Null, parameterLocation: each.parameterLocation };
+        }).toArray();
+
+    this.NewImplementProcessRecordAsync();
     this.debugMode = await this.state.getValue('debug', false);
 
     // json serialization
@@ -623,9 +692,9 @@ export class CmdletClass extends Class {
     }
   }
 
-  private NewImplementProcessRecord(operation: CommandOperation) {
+  private NewImplementProcessRecord() {
     const $this = this;
-
+    const operation: CommandOperation = $this.operation;
     this.add(new Method('ProcessRecord', undefined, { access: Access.Protected, override: Modifier.Override, description: 'Performs execution of the command.' })).add(function* () {
       yield $this.eventListener.syncSignal(Events.CmdletProcessRecordStart);
       if ($this.state.project.azure) {
@@ -679,7 +748,7 @@ export class CmdletClass extends Class {
         } : normal;
 
         if (isWritableCmdlet(operation) && !operation.details.csharp.supportShouldProcess) {
-          yield If(`ShouldProcess($"Call remote '${operation.callGraph[0].language.csharp?.name}' operation")`, work);
+          yield If(`ShouldProcess($"Call remote '${$this.apiCall.language.csharp?.name}' operation")`, work);
         } else {
           yield work;
         }
@@ -707,18 +776,21 @@ export class CmdletClass extends Class {
 
   }
 
-  private NewImplementProcessRecordAsync(operation: CommandOperation) {
+  private NewImplementProcessRecordAsync() {
     const $this = this;
-    const PAR = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
+    const operationParameters = $this.operationParameters;
+    const pipeline = $this.$<Property>('Pipeline');
+    this.serializationMode = this.bodyParameter ? (this.operation.operationType === OperationType.Create ? ClientRuntime.SerializationMode.IncludeCreate : (this.operation.operationType === OperationType.Update ? ClientRuntime.SerializationMode.IncludeUpdate : undefined)) : undefined;
+
+    const PRA = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
       description: 'Performs execution of the command, working asynchronously if required.',
       returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
     }));
 
     // we don't want to use SynchContext here.
-    PAR.push(Using('NoSynchronizationContext', ''));
-
-    PAR.add(function* () {
+    PRA.push(Using('NoSynchronizationContext', ''));
+    PRA.add(function* () {
       if ($this.apProp && $this.bodyParameter && $this.bodyParameterInfo) {
         // yield `${ClientRuntime}.DictionaryExtensions.HashTableToDictionary<${$this.bodyParameterInfo.type.declaration},${$this.bodyParameterInfo.valueType.declaration}>(${$this.apProp.value},${$this.bodyParameter.Cast($this.bodyParameterInfo.type)});`;
         let vt = $this.bodyParameterInfo.valueType.declaration;
@@ -734,8 +806,6 @@ export class CmdletClass extends Class {
       }
 
       yield $this.eventListener.signal(Events.CmdletGetPipeline);
-
-      const pipeline = $this.$<Property>('Pipeline');
 
       if ($this.state.project.azure) {
         yield pipeline.assign(new LiteralExpression(`${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.CreatePipeline(${$this.invocationInfo}, ${$this.correlationId}, ${$this.processRecordId}, this.ParameterSetName, this.ExtensibleParameters)`));
@@ -770,486 +840,27 @@ export class CmdletClass extends Class {
           yield If(`true == this.MyInvocation?.BoundParameters?.ContainsKey("${vParam.name}")`, `${vParam.name} = (${td.declaration})this.MyInvocation.BoundParameters["${vParam.name}"];`);
         }
       }
-      const apiCall = operation.callGraph[0];
-
-      // find each parameter to the method, and find out where the value is going to come from.
-      const operationParameters =
-        values(apiCall.parameters).
-          // filter out constants and path parameters when using piping for identity
-          where(each => !(each.language.csharp?.constantValue) && each.language.default?.name !== '$host'/* && (!$this.isViaIdentity || each.in !== ParameterLocation.Path) */).
-
-          select(p => {
-            return {
-              name: p.language.csharp?.name,
-              param: values($this.properties).
-                where(each => each.metadata.parameterDefinition).
-                first(each => each.metadata.parameterDefinition.language.csharp?.serializedName === p.language.csharp?.serializedName), // xichen: Is it safe enough to use serializedName?
-              isPathParam: $this.isViaIdentity && p.protocol.http?.in === ParameterLocation.Path
-            };
-
-          }).
-          select(each => {
-            if (each.param) {
-
-              const httpParam = (<HttpParameter>(each.param.metadata.parameterDefinition));
-              if (httpParam.required) {
-                return {
-                  name: each.param,
-                  expression: each.param,
-                  isPathParam: each.isPathParam
-                };
-              }
-
-              const httpParamTD = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, $this.state);
-              return {
-                name: each.param,
-                expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
-                isPathParam: each.isPathParam
-              };
-
-            }
-
-            return { name: each.name, expression: dotnet.Null, isPathParam: each.isPathParam };
-          }).toArray();
 
       // is there a body parameter we should include?
-      if ($this.bodyParameter) {
-        operationParameters.push({ name: 'body', expression: $this.bodyParameter, isPathParam: false });
-      }
-
-      // create the response handlers
-      const responses = [...values(apiCall.responses), ...values(apiCall.exceptions)];
-
-      const callbackMethods = values(responses).toArray().map(each => new LiteralExpression(each.language.csharp?.name || ''));
-
-      // make callback methods
-      for (const each of values(responses)) {
-        const isBinary = (<BinaryResponse>each).binary;
-
-        const parameters = new Array<Parameter>();
-        parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
-
-        if (each.language.csharp?.responseType) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
-            description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
-          }));
-        }
-        if (each.language.csharp?.headerType) {
-          parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
-        }
-
-        if (isBinary) {
-          parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: 'the body result as a <see cref="global::System.IO.Stream" /> from the remote call' }));
-        }
-
-        const override = `override${pascalCase(each.language.csharp?.name || '')}`;
-        const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.language.csharp?.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
-        const overrideResponseMethod = new PartialMethod(override, dotnet.Void, {
-          parameters: [...parameters, returnNow],
-          description: `<c>${override}</c> will be called before the regular ${each.language.csharp?.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
-          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
-        });
-        $this.add(overrideResponseMethod);
-
-        const responseMethod = new Method(`${each.language.csharp?.name}`, System.Threading.Tasks.Task(), {
-          access: Access.Private,
-          parameters,
-          async: Modifier.Async,
-          description: each.language.csharp?.description,
-          returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
-        });
-        responseMethod.push(Using('NoSynchronizationContext', ''));
-
-
-        responseMethod.add(function* () {
-          const skip = Local('_returnNow', `${System.Threading.Tasks.Task(dotnet.Bool).declaration}.FromResult(${dotnet.False})`);
-          yield skip.declarationStatement;
-          yield `${overrideResponseMethod.invoke(...parameters, `ref ${skip.value}`)};`;
-          yield `// if ${override} has returned true, then return right away.`;
-          yield If(And(IsNotNull(skip), `await ${skip}`), Return());
-
-          if (each.language.csharp?.isErrorResponse) {
-            // this should write an error to the error channel.
-            yield `// Error Response : ${each.protocol.http?.statusCodes[0]}`;
-
-
-            const unexpected = function* () {
-              yield '// Unrecognized Response. Create an error record based on what we have.';
-              const ex = (each.language.csharp?.responseType) ?
-                Local('ex', `new ${ClientRuntime.name}.RestException<${each.language.csharp.responseType}>(responseMessage, await response)`) :
-                Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
-
-              yield ex.declarationStatement;
-
-              yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
-{
-  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
-});`;
-            };
-            if ((<SchemaResponse>each).schema !== undefined) {
-              // the schema should be the error information.
-              // this supports both { error { message, code} } and { message, code}
-
-              let props = NewGetAllPublicVirtualProperties((<SchemaResponse>each).schema.language.csharp?.virtualProperties);
-              const errorProperty = values(props).first(p => p.property.serializedName === 'error');
-              let ep = '';
-              if (errorProperty) {
-                props = NewGetAllPublicVirtualProperties(errorProperty.property.schema.language.csharp?.virtualProperties);
-                ep = `${errorProperty.name}?.`;
-              }
-
-              const codeProp = props.find(p => p.name.toLowerCase().indexOf('code') > -1); // first property with 'code'
-              const messageProp = props.find(p => p.name.toLowerCase().indexOf('message') > -1); // first property with 'message'
-              const actionProp = props.find(p => p.name.toLowerCase().indexOf('action') > -1); // first property with 'action'
-
-              if (codeProp && messageProp) {
-                const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
-                const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response)?.${ep}${messageProp.name}` });
-                const laction = actionProp ? new LocalVariable('action', dotnet.Var, { initializer: `(await response)?.${ep}${actionProp.name} ?? ${System.String.Empty}` }) : undefined;
-                yield lcode;
-                yield lmessage;
-                yield laction;
-
-                yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
-                yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
-{
-  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
-});`
-
-                );
-                return;
-              } else {
-                yield unexpected;
-                return;
-              }
-            } else {
-              yield unexpected;
-              return;
-            }
-          }
-
-          yield `// ${each.language.csharp?.name} - response for ${each.protocol.http?.statusCodes[0]} / ${values(each.protocol.http?.mediaTypes).join('/')}`;
-
-          if ('schema' in each) {
-            const schema = (<SchemaResponse>each).schema;
-            const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
-            const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
-
-            const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('(await response)') });
-            yield `// (await response) // should be ${rType.declaration}`;
-            yield result.declarationStatement;
-
-            if (apiCall.language.csharp?.pageable) {
-              const pageable = apiCall.language.csharp.pageable;
-              if ($this.clientsidePagination) {
-                yield '// clientside pagination enabled';
-              }
-              yield '// response should be returning an array of some kind. +Pageable';
-              yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
-              switch (pageable.responseType) {
-                // the result is (or works like a x-ms-pageable)
-                case 'pageable':
-                case 'nested-array': {
-                  const valueProperty = (<ObjectSchema>schema).properties?.find(p => p.serializedName === pageable.itemName);
-                  const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
-                  if (valueProperty && nextLinkProperty) {
-                    // it's pageable!
-                    // write out the current contents
-                    const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
-                    if (vp) {
-                      if ($this.clientsidePagination) {
-                        yield (If('(ulong)result.Value.Count <= this.PagingParameters.Skip', function* () {
-                          yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Count;');
-                        }));
-                        yield Else(function* () {
-                          yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
-                          yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
-                          yield $this.WriteObjectWithViewControl('requiredResult', true);
-                          yield ('this.PagingParameters.Skip = 0;');
-                          yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
-                        });
-                      } else {
-                        yield $this.WriteObjectWithViewControl(`${result.value}.${vp.name}`, true);
-                      }
-                    }
-                    const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
-                    if (nl) {
-                      $this.add(new Field('_isFirst', dotnet.Bool, {
-                        access: Access.Private,
-                        initialValue: new LiteralExpression('true'),
-                        description: 'A flag to tell whether it is the first onOK call.'
-                      }));
-                      $this.add(new Field('_nextLink', dotnet.String, {
-                        access: Access.Private,
-                        description: 'Link to retrieve next page.'
-                      }));
-                      const nextLinkName = `${result.value}.${nl.name}`;
-                      yield `_nextLink = ${nextLinkName};`;
-                      const nextLinkCondition = $this.clientsidePagination ? '!String.IsNullOrEmpty(_nextLink) && this.PagingParameters.First > 0' : '!String.IsNullOrEmpty(_nextLink)';
-                      yield (If('_isFirst', function* () {
-                        yield '_isFirst = false;';
-                        yield (While(nextLinkCondition,
-                          If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
-                            yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
-                            yield $this.eventListener.signal(Events.FollowingNextLink);
-                            yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-                          })
-                        ));
-                      }));
-                    }
-                    return;
-                  } else if (valueProperty) {
-                    // it's just a nested array
-                    const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
-                    if (p) {
-                      yield $this.WriteObjectWithViewControl(`${result.value}.${p.name}`, true);
-                    }
-                    return;
-                  }
-                }
-                  break;
-
-                // it's just an array,
-                case 'array':
-                  // just write-object(enumerate) with the output
-                  yield $this.WriteObjectWithViewControl(result.value, true);
-                  return;
-              }
-              // ok, let's see if the response type
-            }
-
-            // we expect to get back some data from this call.
-            if ($this.hasStreamOutput && $this.outFileParameter) {
-              const outfile = $this.outFileParameter;
-              const provider = Local('provider');
-              provider.initializer = undefined;
-              const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
-              yield paths.declarationStatement;
-              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
-
-              if (rType.declaration === System.IO.Stream.declaration) {
-                // this is a stream output. write to outfile
-                const stream = Local('stream', result.value);
-                yield Using(stream.declarationExpression, function* () {
-                  const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
-                  yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
-                });
-              } else {
-                // assuming byte array output (via result)
-                yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${result.value});`;
-              }
-
-              yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-                // no return type. Let's just return ... true?
-                yield 'WriteObject(true);';
-              });
-              return;
-            }
-
-            //  let's just return the result object (or unwrapped result object)
-            yield $this.WriteObjectWithViewControl(result.value);
-            return;
-          }
-
-          // in m4, there will be no schema deinfed for the binary response, instead, we will have a field called binary with value true.
-          if ('binary' in each) {
-            yield '// (await response) // should be global::System.IO.Stream';
-            if ($this.hasStreamOutput && $this.outFileParameter) {
-              const outfile = $this.outFileParameter;
-              const provider = Local('provider');
-              provider.initializer = undefined;
-              const paths = Local('paths', 'new global::System.Collections.ObjectModel.Collection<global::System.String>()');
-              yield paths.declarationStatement;
-              yield Try(function* () {
-                yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`;
-                yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
-                yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
-              });
-              const notfound = new Parameter('', { declaration: 'global::System.Management.Automation.ItemNotFoundException' });
-              yield Catch(notfound, function* () {
-                yield '// If the file does not exist, we will try to create it';
-                yield `${paths.value}.Add(${outfile.value});`;
-              });
-
-              // this is a stream output. write to outfile
-              const stream = Local('stream', 'await response');
-              yield Using(stream.declarationExpression, function* () {
-                const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
-                yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
-              });
-
-
-              yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-                // no return type. Let's just return ... true?
-                yield 'WriteObject(true);';
-              });
-              return;
-            }
-          }
-          yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
-            // no return type. Let's just return ... true?
-            yield 'WriteObject(true);';
-          });
-        });
-        $this.add(responseMethod);
-      }
+      // if ($this.bodyParameter) {
+      //   operationParameters.push({ name: 'body', expression: $this.bodyParameter, isPathParam: false });
+      // }
 
       yield Try(function* () {
         // make the call.
-
+        let preProcess: PreProcess;
+        switch ($this.operation.commandType) {
+          case CommandType.GetPut:
+            preProcess = $this.GetPutPreProcess;
+            break;
+          case CommandType.Atomic:
+          default:
+            preProcess = undefined;
+            break;
+        }
         const actualCall = function* () {
           yield $this.eventListener.signal(Events.CmdletBeforeAPICall);
-          const nonPathParams = operationParameters.filter(each => !each.isPathParam);
-          const allParams: Array<{ name: string | undefined; value: string; }> = [];
-          const idOpParamsNotFromIdentity: Array<{ name: string | undefined; value: string; }> = [];
-          const idOpParamsFromIdentity: Array<{ name: string; value: string; }> = [];
-          const idOpParamsFromIdentityserializedName: Array<string> = [];
-          const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
-
-          let serializationMode = null;
-          if ($this.bodyParameter) {
-            if ($this.operation.operationType === OperationType.Create) {
-              serializationMode = ClientRuntime.SerializationMode.IncludeCreate;
-            } else if ($this.operation.operationType === OperationType.Update) {
-              serializationMode = ClientRuntime.SerializationMode.IncludeUpdate;
-            }
-          }
-          if ($this.isViaIdentity) {
-            if (idschema) {
-              const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
-              const props = [...values(idschema.properties)];
-              operationParameters.forEach(each => {
-                const pascalName = pascalCase(`${each.name}`);
-                //push parameters that is not path parameters into allParams and idOpParamsNotFromIdentity
-                if (!each.isPathParam) {
-                  const param = {
-                    name: undefined,
-                    value: valueOf(each.expression)
-                  };
-                  allParams.push(param);
-                  idOpParamsNotFromIdentity.push(param);
-                  return;
-                }
-                const match = props.find(p => pascalCase(p.serializedName) === pascalName);
-                if (match) {
-
-                  const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
-                  // match up vp name
-                  const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
-                  //push path parameters that form current identity into allParams, idOpParamsFromIdentity and idOpParamsFromIdentityserializedName
-                  if (vp && each.expression === dotnet.Null) {
-                    const param = {
-                      name: `${$this.inputObjectParameterName}.${vp.name}`,
-                      value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
-                    };
-                    allParams.push(param);
-                    idOpParamsFromIdentity.push(param);
-                    idOpParamsFromIdentityserializedName.push(match.serializedName);
-                    return;
-                  }
-                  // fall back!
-
-                  console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
-                  //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
-                  const param = {
-                    name: `${pascalCase(match.language.csharp?.name ?? '')}`,
-                    value: `${pascalCase(match.language.csharp?.name ?? '')}`
-                  };
-                  allParams.push(param);
-                  idOpParamsNotFromIdentity.push(param);
-                } else {
-                  console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
-                  /*
-                    push path parameters do not match the name in identity schema into allParams and idOpParamsNotFromIdentity
-                    for example, module 'Service' has only one GET API:
-                      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Service/resource1/{resource1Name}/resource2/{resource2Name}/resource3/{resource3Name}
-                      the identity schema 'ServiceIdentity.cs' will have properties: {subscriptionId, resourceGroupName, resource1Name, resource2Name, resource3Name}
-                    for variant which has (identity of resource2 + resource3Name) combined as parameters, the parameter name for 'resource3Name' is called 'Name' which do not match 'resource3Name' in 'ServiceIdentity.cs'
-                  */
-                  const param = {
-                    name: `${pascalName}`,
-                    value: `${pascalName}`
-                  };
-                  allParams.push(param);
-                  idOpParamsNotFromIdentity.push(param);
-                }
-              });
-            }
-
-            const parameters = [toExpression(`${$this.inputObjectParameterName}.Id`), ...nonPathParams.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
-
-            //when identity does not contain property: 'Id'
-            const identityFromPathParams = function* () {
-              yield '// try to call with PATH parameters from Input Object';
-              if (idschema) {
-                for (const opParam of idOpParamsFromIdentity) {
-                  if (opParam && opParam.name) {
-                    yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
-                  }
-                }
-                yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}`, ...[...allParams.map(each => toExpression(each.value)), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
-              }
-            };
-
-            //when identity does contain property: 'Id'
-            const identityParams = function* () {
-              const path = $this.operation.callGraph?.[0].requests?.[0].protocol.http?.path;
-              let pathParams = '';
-              //append path parameters which are not part of current identity
-              idOpParamsNotFromIdentity.forEach(each => {
-                const serializedName = values($this.properties)
-                  .where(p => p.metadata.parameterDefinition)
-                  .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
-                if (each.name && serializedName) {
-                  if (!pathParams) {
-                    pathParams += '$"';
-                  }
-                  const resourceName = getResourceNameFromPath(path, serializedName);
-                  if (resourceName) {
-                    pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
-                  }
-                }
-              });
-              const hasPath = pathParams && pathParams.length > 0;
-              //add child resource to path for list operation
-              if ($this.operation.variant.startsWith('List') && idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]) {
-                const childResourceName = getChildResourceNameFromPath(path, idOpParamsFromIdentityserializedName?.[idOpParamsFromIdentityserializedName.length - 1]);
-                if (pathParams && pathParams.length > 0) {
-                  pathParams += `/${childResourceName}`;
-                } else {
-                  pathParams += `"/${childResourceName}`;
-                }
-              }
-              if (pathParams && pathParams.length > 0) {
-                pathParams += '";';
-                yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
-              }
-              yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}ViaIdentity`, ...parameters).implementation}`;
-            };
-
-            if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
-              if (serializationMode) {
-                parameters.push(serializationMode);
-              }
-              yield If(`${$this.inputObjectParameterName}?.Id != null`, identityParams);
-              yield Else(identityFromPathParams);
-            } else {
-              yield identityFromPathParams;
-            }
-          } else {
-            let parameters = [...operationParameters.map(each => each.expression), ...callbackMethods, dotnet.This, pipeline];
-            if (serializationMode) {
-              parameters.push(serializationMode);
-            }
-            let httpOperationName = `${apiCall.language.csharp?.name}`;
-            if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
-              httpOperationName = `${httpOperationName}ViaJsonString`;
-              const jsonParameter = new Field('_jsonString', System.String);
-              parameters = [...operationParameters.filter(each => each.name !== 'body').map(each => each.expression), jsonParameter, ...callbackMethods, dotnet.This, pipeline];
-            }
-            yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
-          }
+          yield $this.ImplementCall(preProcess);
           yield $this.eventListener.signal(Events.CmdletAfterAPICall);
         };
 
@@ -1273,6 +884,495 @@ export class CmdletClass extends Class {
     });
   }
 
+  private * ImplementCall(preProcess: PreProcess) {
+    const $this = this;
+    const operation = $this.operation;
+    const apiCall = $this.apiCall;
+    const operationParameters: Array<operationParameter> = $this.operationParameters;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.$<Property>('Pipeline');
+    const serializationMode = $this.serializationMode;
+    const bodyParameter = this.bodyParameter ? { name: 'body', value: valueOf(this.bodyParameter) } : undefined;
+    const pathParamsNotInIdentity: Array<{ name: string | undefined; value: string; }> = [];
+    const pathParamsInIdentity: Array<{ name: string; value: string; }> = [];
+    const pathParamsInIdentitySerializedName: Array<string> = [];
+    const headerParams: Array<{ name: string | undefined; value: string; }> = [];
+    const queryParams: Array<{ name: string | undefined; value: string; }> = [];
+    const otherParams: Array<{ name: string | undefined; value: string; }> = [];
+    const idschema = values($this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
+    let httpOperationName = `${apiCall.language.csharp?.name}`;
+
+    if (idschema) {
+      const allVPs = NewGetAllPublicVirtualProperties(idschema.language.csharp?.virtualProperties);
+      const props = [...values(idschema.properties)];
+      operationParameters.forEach(each => {
+        const pascalName = pascalCase(`${each.name}`);
+        //push parameters that is not path parameters into allParams and idOpParamsNotFromIdentity
+        if (each.parameterLocation !== ParameterLocation.Path) {
+          const param = {
+            name: undefined,
+            value: valueOf(each.expression)
+          };
+          switch (each.parameterLocation) {
+            case ParameterLocation.Header:
+              headerParams.push(param);
+              break;
+            case ParameterLocation.Query:
+              queryParams.push(param);
+              break;
+            default:
+              otherParams.push(param);
+              break;
+          }
+          return;
+        } else {
+          const match = props.find(p => pascalCase(p.serializedName) === pascalName);
+          if (match) {
+
+            const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
+            // match up vp name
+            const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
+            //push path parameters that form current identity into allParams, idOpParamsFromIdentity and idOpParamsFromIdentityserializedName
+            if (vp && each.expression === dotnet.Null) {
+              const param = {
+                name: `${$this.inputObjectParameterName}.${vp.name}`,
+                value: `${$this.inputObjectParameterName}.${vp.name} ?? ${defaultOfType}`
+              };
+              pathParamsInIdentity.push(param);
+              pathParamsInIdentitySerializedName.push(match.serializedName);
+              return;
+            }
+            // fall back!
+
+            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
+            //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
+            const param = {
+              name: `${pascalCase(match.language.csharp?.name ?? '')}`,
+              value: `${pascalCase(match.language.csharp?.name ?? '')}`
+            };
+            pathParamsNotInIdentity.push(param);
+          } else {
+            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
+            /*
+              push path parameters do not match the name in identity schema into allParams and idOpParamsNotFromIdentity
+              for example, module 'Service' has only one GET API:
+                /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Service/resource1/{resource1Name}/resource2/{resource2Name}/resource3/{resource3Name}
+                the identity schema 'ServiceIdentity.cs' will have properties: {subscriptionId, resourceGroupName, resource1Name, resource2Name, resource3Name}
+              for variant which has (identity of resource2 + resource3Name) combined as parameters, the parameter name for 'resource3Name' is called 'Name' which do not match 'resource3Name' in 'ServiceIdentity.cs'
+            */
+            const param = {
+              name: `${pascalName}`,
+              value: `${pascalName}`
+            };
+            pathParamsNotInIdentity.push(param);
+          }
+        }
+      });
+    }
+
+    if ($this.isViaIdentity) {
+      //when identity does not contain property: 'Id'
+      const identityFromPathParams = function* () {
+        yield '// try to call with PATH parameters from Input Object';
+        if (idschema) {
+          for (const opParam of pathParamsInIdentity) {
+            if (opParam && opParam.name) {
+              yield If(IsNull(opParam.name), `ThrowTerminatingError( new ${ErrorRecord}(new global::System.Exception("${$this.inputObjectParameterName} has null value for ${opParam.name}"),string.Empty, ${ErrorCategory('InvalidArgument')}, ${$this.inputObjectParameterName}) );`);
+            }
+          }
+          const pathParameters = [...pathParamsInIdentity.map(each => toExpression(each.value)), ...pathParamsNotInIdentity.map(each => toExpression(each.value))];
+          const nonPathParameters = [...headerParams.map(each => toExpression(each.value)), ...queryParams.map(each => toExpression(each.value)), ...otherParams.map(each => toExpression(each.value))];
+          const parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
+          if (serializationMode) {
+            parameters.push(serializationMode);
+          }
+
+          if (preProcess) {
+            yield preProcess($this, pathParameters, [...otherParams.map(each => toExpression(each.value)), dotnet.This, pipeline], false);
+          }
+          yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
+        }
+      };
+
+      //when identity does contain property: 'Id'
+      const identityParams = function* () {
+        const path = apiCall.requests?.[0].protocol.http?.path;
+        let pathParams = '';
+        //append path parameters which are not part of current identity
+        pathParamsNotInIdentity.forEach(each => {
+          const serializedName = values($this.properties)
+            .where(p => p.metadata.parameterDefinition)
+            .first(p => p.name === each.name)?.metadata.parameterDefinition.language.csharp.serializedName;
+          if (each.name && serializedName) {
+            if (!pathParams) {
+              pathParams += '$"';
+            }
+            const resourceName = getResourceNameFromPath(path, serializedName);
+            if (resourceName) {
+              pathParams += `/${resourceName}/{(global::System.Uri.EscapeDataString(this.${each.name}.ToString()))}`;
+            }
+          }
+        });
+        //add child resource to path for list operation
+        if ($this.operation.variant.startsWith('List') && pathParamsInIdentitySerializedName?.[pathParamsInIdentitySerializedName.length - 1]) {
+          const childResourceName = getChildResourceNameFromPath(path, pathParamsInIdentitySerializedName?.[pathParamsInIdentitySerializedName.length - 1]);
+          if (pathParams && pathParams.length > 0) {
+            pathParams += `/${childResourceName}`;
+          } else {
+            pathParams += `"/${childResourceName}`;
+          }
+        }
+        if (pathParams && pathParams.length > 0) {
+          pathParams += '";';
+          yield `this.${$this.inputObjectParameterName}.Id += ${pathParams}`;
+        }
+        const pathParameters = [toExpression(`${$this.inputObjectParameterName}.Id`)];
+        const nonPathParameters = [...headerParams.map(each => toExpression(each.value)), ...queryParams.map(each => toExpression(each.value)), ...otherParams.map(each => toExpression(each.value))];
+        const parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
+        if (serializationMode) {
+          parameters.push(serializationMode);
+        }
+        if (preProcess) {
+          yield preProcess($this, pathParameters, [...otherParams.map(each => toExpression(each.value)), dotnet.This, pipeline], true);
+        }
+        yield `await this.${$this.$<Property>('Client').invokeMethod(`${httpOperationName}ViaIdentity`, ...parameters).implementation}`;
+      };
+
+      if (idschema && values(idschema.properties).first(each => each.language.csharp?.uid === 'universal-parameter:resource identity')) {
+        yield If(`${$this.inputObjectParameterName}?.Id != null`, identityParams);
+        yield Else(identityFromPathParams);
+      } else {
+        yield identityFromPathParams;
+      }
+    } else {
+      const pathParameters = [...pathParamsInIdentity.map(each => toExpression(each.value)), ...pathParamsNotInIdentity.map(each => toExpression(each.value))];
+      const nonPathParameters = [...headerParams.map(each => toExpression(each.value)), ...queryParams.map(each => toExpression(each.value)), ...otherParams.map(each => toExpression(each.value))];
+      let parameters = bodyParameter ? [...pathParameters, ...nonPathParameters, toExpression(bodyParameter.value), ...callbackMethods, dotnet.This, pipeline] : [...pathParameters, ...nonPathParameters, ...callbackMethods, dotnet.This, pipeline];
+      if (serializationMode) {
+        parameters.push(serializationMode);
+      }
+      if (operation.variant.includes('ViaJsonString') || operation.variant.includes('ViaJsonFilePath')) {
+        httpOperationName = `${httpOperationName}ViaJsonString`;
+        const jsonParameter = new Field('_jsonString', System.String);
+        parameters = [...pathParameters, ...nonPathParameters, jsonParameter, ...callbackMethods, dotnet.This, pipeline];
+      }
+      if (preProcess) {
+        yield preProcess($this, pathParameters, [...otherParams.map(each => toExpression(each.value)), dotnet.This, pipeline], false);
+      }
+      yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
+    }
+  }
+
+  private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
+    const $this = cmdlet;
+    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}`, dotnet.Void, {
+      access: Access.Private
+    });
+    const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''}WithResult`;
+    if (!$this.hasMethodWithSameDeclaration(updateBodyMethod)) {
+      updateBodyMethod.add(function* () {
+        const bodyParameters = $this.properties.filter(each => {
+          for (const attribute of each.attributes) {
+            for (const parameter of attribute.parameters) {
+              if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        });
+        for (const param of bodyParameters) {
+          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
+        }
+      });
+      $this.add(updateBodyMethod);
+    }
+    const getPut = function* () {
+      yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation}`;
+      yield `this.${updateBodyMethod.name}();`;
+    };
+    return new Statements(getPut);
+  }
+
+  private NewImplementResponseMethod() {
+    const $this = this;
+    const apiCall = $this.apiCall;
+    const operationParameters: Array<operationParameter> = $this.operationParameters;
+    const callbackMethods = $this.callbackMethods;
+    const pipeline = $this.$<Property>('Pipeline');
+
+    // make callback methods
+    for (const each of values($this.responses)) {
+      const parameters = new Array<Parameter>();
+      const isBinary = (<BinaryResponse>each).binary;
+      parameters.push(new Parameter('responseMessage', System.Net.Http.HttpResponseMessage, { description: `the raw response message as an ${System.Net.Http.HttpResponseMessage}.` }));
+
+      if (each.language.csharp?.responseType) {
+        parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
+          description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
+        }));
+      }
+      if (each.language.csharp?.headerType) {
+        parameters.push(new Parameter('headers', System.Threading.Tasks.Task({ declaration: each.language.csharp.headerType }), { description: `the header result as a <see cref="${each.language.csharp.headerType}" /> from the remote call` }));
+      }
+
+      if (isBinary) {
+        parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: 'global::System.IO.Stream' }), { description: 'the body result as a <see cref="global::System.IO.Stream" /> from the remote call' }));
+      }
+
+      const override = `override${pascalCase(each.language.csharp?.name || '')}`;
+      const returnNow = new Parameter('returnNow', System.Threading.Tasks.Task(dotnet.Bool), { modifier: ParameterModifier.Ref, description: `/// Determines if the rest of the ${each.language.csharp?.name} method should be processed, or if the method should return immediately (set to true to skip further processing )` });
+      const overrideResponseMethod = new PartialMethod(override, dotnet.Void, {
+        parameters: [...parameters, returnNow],
+        description: `<c>${override}</c> will be called before the regular ${each.language.csharp?.name} has been processed, allowing customization of what happens on that response. Implement this method in a partial class to enable this behavior`,
+        returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+      });
+      $this.add(overrideResponseMethod);
+
+      const responseMethod = new Method(`${each.language.csharp?.name}`, System.Threading.Tasks.Task(), {
+        access: Access.Private,
+        parameters,
+        async: Modifier.Async,
+        description: each.language.csharp?.description,
+        returnsDescription: `A <see cref="${System.Threading.Tasks.Task()}" /> that will be complete when handling of the method is completed.`
+      });
+      responseMethod.push(Using('NoSynchronizationContext', ''));
+
+
+      responseMethod.add(function* () {
+        const skip = Local('_returnNow', `${System.Threading.Tasks.Task(dotnet.Bool).declaration}.FromResult(${dotnet.False})`);
+        yield skip.declarationStatement;
+        yield `${overrideResponseMethod.invoke(...parameters, `ref ${skip.value}`)};`;
+        yield `// if ${override} has returned true, then return right away.`;
+        yield If(And(IsNotNull(skip), `await ${skip}`), Return());
+
+        if (each.language.csharp?.isErrorResponse) {
+          // this should write an error to the error channel.
+          yield `// Error Response : ${each.protocol.http?.statusCodes[0]}`;
+
+
+          const unexpected = function* () {
+            yield '// Unrecognized Response. Create an error record based on what we have.';
+            const ex = (each.language.csharp?.responseType) ?
+              Local('ex', `new ${ClientRuntime.name}.RestException<${each.language.csharp.responseType}>(responseMessage, await response)`) :
+              Local('ex', `new ${ClientRuntime.name}.RestException(responseMessage)`);
+
+            yield ex.declarationStatement;
+
+            yield `WriteError( new global::System.Management.Automation.ErrorRecord(${ex.value}, ${ex.value}.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+{
+  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${ex.value}.Message) { RecommendedAction = ${ex.value}.Action }
+});`;
+          };
+          if ((<SchemaResponse>each).schema !== undefined) {
+            // the schema should be the error information.
+            // this supports both { error { message, code} } and { message, code}
+
+            let props = NewGetAllPublicVirtualProperties((<SchemaResponse>each).schema.language.csharp?.virtualProperties);
+            const errorProperty = values(props).first(p => p.property.serializedName === 'error');
+            let ep = '';
+            if (errorProperty) {
+              props = NewGetAllPublicVirtualProperties(errorProperty.property.schema.language.csharp?.virtualProperties);
+              ep = `${errorProperty.name}?.`;
+            }
+
+            const codeProp = props.find(p => p.name.toLowerCase().indexOf('code') > -1); // first property with 'code'
+            const messageProp = props.find(p => p.name.toLowerCase().indexOf('message') > -1); // first property with 'message'
+            const actionProp = props.find(p => p.name.toLowerCase().indexOf('action') > -1); // first property with 'action'
+
+            if (codeProp && messageProp) {
+              const lcode = new LocalVariable('code', dotnet.Var, { initializer: `(await response)?.${ep}${codeProp.name}` });
+              const lmessage = new LocalVariable('message', dotnet.Var, { initializer: `(await response)?.${ep}${messageProp.name}` });
+              const laction = actionProp ? new LocalVariable('action', dotnet.Var, { initializer: `(await response)?.${ep}${actionProp.name} ?? ${System.String.Empty}` }) : undefined;
+              yield lcode;
+              yield lmessage;
+              yield laction;
+
+              yield If(Or(IsNull(lcode), (IsNull(lmessage))), unexpected);
+              yield Else(`WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{${lcode}}] : {${lmessage}}"), ${lcode}?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ${operationParameters.filter(e => valueOf(e.expression) !== 'null').map(each => `${each.name}=${each.expression}`).join(', ')} })
+{
+  ErrorDetails = new global::System.Management.Automation.ErrorDetails(${lmessage}) { RecommendedAction = ${laction || System.String.Empty} }
+});`
+
+              );
+              return;
+            } else {
+              yield unexpected;
+              return;
+            }
+          } else {
+            yield unexpected;
+            return;
+          }
+        }
+
+        yield `// ${each.language.csharp?.name} - response for ${each.protocol.http?.statusCodes[0]} / ${values(each.protocol.http?.mediaTypes).join('/')}`;
+
+        if ('schema' in each) {
+          const schema = (<SchemaResponse>each).schema;
+          const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
+          const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
+
+          const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('(await response)') });
+          yield `// (await response) // should be ${rType.declaration}`;
+          yield result.declarationStatement;
+
+          if (apiCall.language.csharp?.pageable) {
+            const pageable = apiCall.language.csharp.pageable;
+            if ($this.clientsidePagination) {
+              yield '// clientside pagination enabled';
+            }
+            yield '// response should be returning an array of some kind. +Pageable';
+            yield `// ${pageable.responseType} / ${pageable.itemName || '<none>'} / ${pageable.nextLinkName || '<none>'}`;
+            switch (pageable.responseType) {
+              // the result is (or works like a x-ms-pageable)
+              case 'pageable':
+              case 'nested-array': {
+                const valueProperty = (<ObjectSchema>schema).properties?.find(p => p.serializedName === pageable.itemName);
+                const nextLinkProperty = (<ObjectSchema>schema)?.properties?.find(p => p.serializedName === pageable.nextLinkName);
+                if (valueProperty && nextLinkProperty) {
+                  // it's pageable!
+                  // write out the current contents
+                  const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
+                  if (vp) {
+                    if ($this.clientsidePagination) {
+                      yield (If('(ulong)result.Value.Count <= this.PagingParameters.Skip', function* () {
+                        yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Count;');
+                      }));
+                      yield Else(function* () {
+                        yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
+                        yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
+                        yield $this.WriteObjectWithViewControl('requiredResult', true);
+                        yield ('this.PagingParameters.Skip = 0;');
+                        yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
+                      });
+                    } else {
+                      yield $this.WriteObjectWithViewControl(`${result.value}.${vp.name}`, true);
+                    }
+                  }
+                  const nl = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, nextLinkProperty.serializedName);
+                  if (nl) {
+                    $this.add(new Field('_isFirst', dotnet.Bool, {
+                      access: Access.Private,
+                      initialValue: new LiteralExpression('true'),
+                      description: 'A flag to tell whether it is the first onOK call.'
+                    }));
+                    $this.add(new Field('_nextLink', dotnet.String, {
+                      access: Access.Private,
+                      description: 'Link to retrieve next page.'
+                    }));
+                    const nextLinkName = `${result.value}.${nl.name}`;
+                    yield `_nextLink = ${nextLinkName};`;
+                    const nextLinkCondition = $this.clientsidePagination ? '!String.IsNullOrEmpty(_nextLink) && this.PagingParameters.First > 0' : '!String.IsNullOrEmpty(_nextLink)';
+                    yield (If('_isFirst', function* () {
+                      yield '_isFirst = false;';
+                      yield (While(nextLinkCondition,
+                        If('responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage ', function* () {
+                          yield `requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),${ClientRuntime.Method.Get} );`;
+                          yield $this.eventListener.signal(Events.FollowingNextLink);
+                          yield `await this.${$this.$<Property>('Client').invokeMethod(`${apiCall.language.csharp?.name}_Call`, ...[toExpression('requestMessage'), ...callbackMethods, dotnet.This, pipeline]).implementation}`;
+                        })
+                      ));
+                    }));
+                  }
+                  return;
+                } else if (valueProperty) {
+                  // it's just a nested array
+                  const p = getVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
+                  if (p) {
+                    yield $this.WriteObjectWithViewControl(`${result.value}.${p.name}`, true);
+                  }
+                  return;
+                }
+              }
+                break;
+
+              // it's just an array,
+              case 'array':
+                // just write-object(enumerate) with the output
+                yield $this.WriteObjectWithViewControl(result.value, true);
+                return;
+            }
+            // ok, let's see if the response type
+          }
+
+          // we expect to get back some data from this call.
+          if ($this.hasStreamOutput && $this.outFileParameter) {
+            const outfile = $this.outFileParameter;
+            const provider = Local('provider');
+            provider.initializer = undefined;
+            const paths = Local('paths', `this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression})`);
+            yield paths.declarationStatement;
+            yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+            yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError( new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}) );`);
+
+            if (rType.declaration === System.IO.Stream.declaration) {
+              // this is a stream output. write to outfile
+              const stream = Local('stream', result.value);
+              yield Using(stream.declarationExpression, function* () {
+                const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
+                yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
+              });
+            } else {
+              // assuming byte array output (via result)
+              yield `global::System.IO.File.WriteAllBytes(${paths.value}[0],${result.value});`;
+            }
+
+            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+              // no return type. Let's just return ... true?
+              yield 'WriteObject(true);';
+            });
+            return;
+          }
+
+          //  let's just return the result object (or unwrapped result object)
+          yield $this.WriteObjectWithViewControl(result.value);
+          return;
+        }
+
+        // in m4, there will be no schema deinfed for the binary response, instead, we will have a field called binary with value true.
+        if ('binary' in each) {
+          yield '// (await response) // should be global::System.IO.Stream';
+          if ($this.hasStreamOutput && $this.outFileParameter) {
+            const outfile = $this.outFileParameter;
+            const provider = Local('provider');
+            provider.initializer = undefined;
+            const paths = Local('paths', 'new global::System.Collections.ObjectModel.Collection<global::System.String>()');
+            yield paths.declarationStatement;
+            yield Try(function* () {
+              yield `${paths.value} = this.SessionState.Path.GetResolvedProviderPathFromPSPath(${outfile.value}, out ${provider.declarationExpression});`;
+              yield If(`${provider.value}.Name != "FileSystem" || ${paths.value}.Count == 0`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Invalid output path."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
+              yield If(`${paths.value}.Count > 1`, `ThrowTerminatingError(new System.Management.Automation.ErrorRecord(new global::System.Exception("Multiple output paths not allowed."), string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, ${outfile.value}));`);
+            });
+            const notfound = new Parameter('', { declaration: 'global::System.Management.Automation.ItemNotFoundException' });
+            yield Catch(notfound, function* () {
+              yield '// If the file does not exist, we will try to create it';
+              yield `${paths.value}.Add(${outfile.value});`;
+            });
+
+            // this is a stream output. write to outfile
+            const stream = Local('stream', 'await response');
+            yield Using(stream.declarationExpression, function* () {
+              const fileStream = Local('fileStream', `global::System.IO.File.OpenWrite(${paths.value}[0])`);
+              yield Using(fileStream.declarationExpression, `await ${stream.value}.CopyToAsync(${fileStream.value});`);
+            });
+
+
+            yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+              // no return type. Let's just return ... true?
+              yield 'WriteObject(true);';
+            });
+            return;
+          }
+        }
+        yield If('true == MyInvocation?.BoundParameters?.ContainsKey("PassThru")', function* () {
+          // no return type. Let's just return ... true?
+          yield 'WriteObject(true);';
+        });
+      });
+      $this.add(responseMethod);
+    }
+  }
 
   private NewImplementSerialization(operation: CommandOperation) {
     const $this = this;
@@ -1778,7 +1878,7 @@ export class CmdletClass extends Class {
 
       if (httpParam) {
         // xichen: Is it safe to compare by csharp serializedName? Because we no longer have uid
-        const cat = operation.callGraph[0].parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
+        const cat = this.apiCall.parameters?.find((param) => !param.language.csharp?.constantValue && param.language.csharp?.serializedName === httpParam.language.csharp?.serializedName);
 
         if (cat) {
           regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
@@ -1994,7 +2094,7 @@ export class CmdletClass extends Class {
     if (operation.details.default.externalDocs) {
       this.add(new Attribute(ExternalDocsAttribute, {
         parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
-          `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
+        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
       }));
     }
 
@@ -2008,17 +2108,9 @@ export class CmdletClass extends Class {
 
       this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
     }
-
-    this.operation.callGraph.forEach((operationInfo) => {
-      let apiVersion = 'null';
-      if (operationInfo.apiVersions) {
-        apiVersion = operationInfo.apiVersions[0].version;
-      }
-      operationInfo.requests?.forEach((request) => {
-        this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${request.protocol?.http?.path}"`, `ApiVersion = "${apiVersion}"`] }));
-      });
-    });
-
+    if (this.operation.callGraph.length === 1) {
+      this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${this.apiCall.requests?.[0].protocol?.http?.path}"`, `ApiVersion = "${this.apiCall.apiVersions?.[0].version}"`] }));
+    }
     if (variantName.includes('ViaJsonString') || variantName.includes('ViaJsonFilePath')) {
       this.add(new Attribute(NotSuggestDefaultParameterSetAttribute));
     }

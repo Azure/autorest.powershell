@@ -60,13 +60,19 @@ export interface VirtualParameter {
   type?: string;
 }
 
+export enum CommandType {
+  Atomic,
+  GetPut
+}
+
 export class CommandOperation extends Extensions implements CommandOperation {
   public extensions = new Dictionary<any>();
   public details: LanguageDetails<CommandOperationDetails>;
+  commandType: CommandType;
 
   public responses = new Dictionary<Dictionary<Schema>>();
 
-  constructor(name: string, initializer?: DeepPartial<CommandOperation>) {
+  constructor(name: string, initializer?: DeepPartial<CommandOperation>, commandType?: CommandType,) {
     super();
     this.details = {
       default: {
@@ -77,7 +83,7 @@ export class CommandOperation extends Extensions implements CommandOperation {
     };
     this.deprecated = false;
     this.pure = true;
-
+    this.commandType = commandType ?? CommandType.Atomic;
     this.apply(initializer);
   }
 }
@@ -90,8 +96,8 @@ export class CommandComponents extends Components<CommandOperation, IParameter> 
 }
 
 export function isWritableCmdlet(operation: CommandOperation): boolean {
-  if (operation.callGraph[0].requests) {
-    switch (operation.callGraph[0].requests[0]?.protocol.http?.method.toLowerCase()) {
+  if (operation.callGraph.length > 0 && operation.callGraph[operation.callGraph.length - 1].requests) {
+    switch (operation.callGraph[operation.callGraph.length - 1].requests?.[0]?.protocol.http?.method.toLowerCase()) {
       case 'put':
       case 'post':
       case 'delete':

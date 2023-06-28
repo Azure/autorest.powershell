@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext } from '@autorest/codemodel';
+import { HttpMethod, codeModelSchema, CodeModel, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, SchemaResponse } from '@autorest/codemodel';
 import { deconstruct, fixLeadingNumber, pascalCase, EnglishPluralizationService, fail, removeSequentialDuplicates, serialize, includeXDash } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
 import { Schema } from '../llcsharp/exports';
@@ -15,7 +15,7 @@ import { PwshModel } from '../utils/PwshModel';
 import { IParameter } from '../utils/components';
 import { ModelState } from '../utils/model-state';
 //import { Schema as SchemaV3 } from '../utils/schema';
-import { CommandOperation, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
+import { CommandOperation, CommandType, VirtualParameter as CommandVirtualParameter } from '../utils/command-operation';
 import { OperationType } from '../utils/command-operation';
 import { Schema as SchemaModel } from '@autorest/codemodel';
 import { getResourceNameFromPath } from '../utils/resourceName';
@@ -167,12 +167,46 @@ export /* @internal */ class Inferrer {
       operations: new Dictionary<any>(),
       parameters: new Dictionary<any>(),
     };
+    const disableGetPut = await this.state.getValue('disable-getput', false);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
+      let hasPatch = false;
+      const getOperations: Array<Operation> = [];
+      let putOperation: Operation | undefined;
       for (const operation of values(operationGroup.operations)) {
+        if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
+          hasPatch = true;
+        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
+          getOperations.push(operation);
+        } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
+          putOperation = operation;
+        }
         for (const variant of await this.inferCommandNames(operation, operationGroup.$key, this.state)) {
           await this.addVariants(operation.parameters, operation, variant, '', this.state);
+        }
+      }
+      /*
+        generate variants for Update(Get+Put) for subjects only if:
+        - there is no patch operation
+        - there is a get operation
+        - there is a put operation
+        - get operation path is the same as put operation path
+        - there is only one put reqeust schema
+        - get operation response schema type is the same as put operation request schema type
+      */
+      if (this.isAzure
+        && !disableGetPut
+        && !hasPatch
+        && getOperations
+        && putOperation
+        && putOperation.requests?.length == 1) {
+        const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
+        const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
+        //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
+        const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
+        if (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses), ...values(getOperation?.exceptions)].filter(each => each.protocol?.http?.statusCodes[0] !== 'default' && (<SchemaResponse>each).schema !== schema).length === 0) {
+          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       }
     }
@@ -298,11 +332,11 @@ export /* @internal */ class Inferrer {
     return this.inferCommand(operation, group);
   }
 
-  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<CommandOperation> {
+  async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, commandType?: CommandType): Promise<CommandOperation> {
     // beth: filter command description for New/Update command
     const createOrUpdateRegex = /creates? or updates?/gi;
     operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
-    const op = await this.addCommandOperation(vname, parameters, operation, variant, state);
+    const op = await this.addCommandOperation(vname, parameters, operation, variant, state, preOperations, commandType);
 
     // if this has a body with it, let's add that parameter
     if (body && body.schema) {
@@ -320,7 +354,7 @@ export /* @internal */ class Inferrer {
       // let's add a variant where it's expanded out.
       // *IF* the body is an object or dictionary
       if (body.schema.type === SchemaType.Object || body.schema.type === SchemaType.Dictionary || body.schema.type === SchemaType.Any) {
-        const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state);
+        const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state, preOperations, commandType);
         opExpanded.details.default.dropBodyParameter = true;
         opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
           details: {
@@ -350,7 +384,7 @@ export /* @internal */ class Inferrer {
   // for tracking unique operation identities 
   operationIdentities = new Set<string>();
 
-  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State): Promise<CommandOperation> {
+  async addCommandOperation(vname: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, commandType?: CommandType): Promise<CommandOperation> {
     // skip-for-time-being following code seems redundant -----
     // let apiversion = '';
 
@@ -389,9 +423,19 @@ export /* @internal */ class Inferrer {
 
     variant.variant = vname;
     vname = pascalCase(vname);
+
+    let commandName = operation.language.default.name;
+    let operations = [operation];
+    const language = { default: { ...operation.language.default } };
+    //handle when there are pre operataions
+    if (preOperations && preOperations.length > 0) {
+      commandName = 'Update';
+      language.default.name = 'Update';
+      operations = [...preOperations, ...operations];
+    }
+
     // skip-for-time-being x-ms-metadata looks not supported any more.
     //const xmsMetadata = operation.pathExtensions ? operation.pathExtensions['x-ms-metadata'] ? clone(operation.pathExtensions['x-ms-metadata']) : {} : {};
-
     // Add operation type to support x-ms-mutability
     let operationType = OperationType.Other;
     if (operation.requests) {
@@ -401,51 +445,53 @@ export /* @internal */ class Inferrer {
         operationType = OperationType.Update;
       }
     }
-    return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new CommandOperation(operation.language.default.name, {
-      asjob: operation.language.default.asjob ? true : false,
-      operationType: operationType,
-      extensions: {
+    return state.model.commands.operations[`${length(state.model.commands.operations)}`] = new CommandOperation(commandName,
+      {
+        asjob: language.default.asjob ? true : false,
+        operationType: operationType,
+        extensions: {
 
+        },
+        ...variant,
+        details: {
+          ...language,
+          default: {
+            ...language.default,
+            subject: variant.subject,
+            subjectPrefix: variant.subjectPrefix,
+            verb: variant.verb,
+            name: vname,
+            alias: variant.alias,
+            externalDocs: operation.externalDocs
+          }
+        },
+        // operationId is not needed any more
+        operationId: '',
+        parameters: parameters.map(httpParameter => {
+          // make it's own copy of the parameter since after this, 
+          // the parameter can be altered for each operation individually.
+          const each = clone(httpParameter, false, undefined, undefined, ['schema', 'origin']);
+          each.language.default = {
+            ...each.language.default,
+            name: pascalCase(each.language.default.name),
+            httpParameter
+          };
+          each.details = {};
+          each.details.default = {
+            ...each.language.default,
+            name: pascalCase(each.language.default.name),
+            httpParameter
+          };
+          each.name = each.language.default.serializedName;
+          return each;
+        }),
+        // skip-for-time-being, this callGraph is used in the header comments
+        callGraph: operations
       },
-      ...variant,
-      details: {
-        ...operation.language,
-        default: {
-          ...operation.language.default,
-          subject: variant.subject,
-          subjectPrefix: variant.subjectPrefix,
-          verb: variant.verb,
-          name: vname,
-          alias: variant.alias,
-          externalDocs: operation.externalDocs
-        }
-      },
-      // operationId is not needed any more
-      operationId: '',
-      parameters: parameters.map(httpParameter => {
-        // make it's own copy of the parameter since after this, 
-        // the parameter can be altered for each operation individually.
-        const each = clone(httpParameter, false, undefined, undefined, ['schema', 'origin']);
-        each.language.default = {
-          ...each.language.default,
-          name: pascalCase(each.language.default.name),
-          httpParameter
-        };
-        each.details = {};
-        each.details.default = {
-          ...each.language.default,
-          name: pascalCase(each.language.default.name),
-          httpParameter
-        };
-        each.name = each.language.default.serializedName;
-        return each;
-      }),
-      // skip-for-time-being, this callGraph is used in the header comments
-      callGraph: [operation],
-    });
+      commandType);
   }
 
-  async addVariants(parameters: Array<Parameter> | undefined, operation: Operation, variant: CommandVariant, vname: string, state: State) {
+  async addVariants(parameters: Array<Parameter> | undefined, operation: Operation, variant: CommandVariant, vname: string, state: State, preOperations?: Array<Operation>, commandType?: CommandType) {
     // now synthesize parameter set variants multiplexed by the variants.
     const [constants, requiredParameters] = values(parameters).bifurcate(parameter => parameter.language.default.constantValue || parameter.language.default.fromHost ? true : false);
     const constantParameters = constants.map(each => `'${each.language.default.constantValue}'`);
@@ -467,15 +513,18 @@ export /* @internal */ class Inferrer {
     // skip-for-time-being, this is for polymorphism
     //const polymorphicBodies = (body && body.schema && body.schema.details.default.polymorphicChildren && length(body.schema.details.default.polymorphicChildren)) ? (<Array<Schema>>body.schema.details.default.polymorphicChildren).joinWith(child => child.details.default.name) : '';
 
-    // wait! "update" should be "set" if it's a POST
+    // wait! "update" should be "set" if it's a PUT
     if (variant.verb === 'Update' && operation.requests && operation.requests[0].protocol?.http?.method === HttpMethod.Put) {
       variant.verb = 'Set';
     }
-
+    //for operations which has pre operations (only support GET+PUT for now), change it's action to update
+    if (preOperations && preOperations.length > 0) {
+      variant.action = variant.verb = 'Update';
+    }
     // create variant 
     // skip-for-time-being, since operationId looks not included in m4.
     //state.message({ Channel: Channel.Debug, Text: `${variant.verb}-${variant.subject} //  ${operation.operationId} => ${JSON.stringify(variant)} taking ${requiredParameters.joinWith(each => each.name)}; ${constantParameters} ; ${bodyPropertyNames} ${polymorphicBodies ? `; Polymorphic bodies: ${polymorphicBodies} ` : ''}` });
-    await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state);
+    await this.addVariant(pascalCase([variant.action, vname]), body, bodyParameterName, [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
 
     if (await state.getValue('disable-via-identity', false)) {
       return;
@@ -488,7 +537,7 @@ export /* @internal */ class Inferrer {
     //if parent pipline input is disabled, only generate identity for current resource itself
     if (!await state.getValue('enable-parent-pipeline-input', this.isAzure)) {
       if (length(pathParams) > 0 && variant.action.toLowerCase() != 'list') {
-        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state);
+        await this.addVariant(pascalCase([variant.action, vname, 'via-identity']), body, bodyParameterName, [...constants, ...otherParams], operation, variant, state, preOperations, commandType);
       }
       return;
     }
@@ -515,10 +564,10 @@ export /* @internal */ class Inferrer {
       if (i === pathParams.length - 1 && variant.action.toLowerCase() !== 'list') {
         resourceName = '';
       }
-      await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state);
+      await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state, preOperations, commandType);
     }
 
-    if (this.supportJsonInput && hasValidBodyParameters(operation)) {
+    if (this.supportJsonInput && hasValidBodyParameters(operation) && !commandType) {
       const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
         const schema = new SchemaModel(name, description, SchemaType.String);
         const language = {
@@ -563,14 +612,14 @@ export /* @internal */ class Inferrer {
           }
         }
       });
-      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, '', [...constants, ...requiredParameters], operation, variant, state);
+      const opJsonString = await this.addVariant(`${jsonVariant}ViaJsonString`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
       opJsonString.details.default.dropBodyParameter = true;
       opJsonString.parameters = opJsonString.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonString.parameters.push(createStringParameter('JsonString', `Json string supplied to the ${jsonVariant} operation`, 'jsonString'));
       opJsonString.parameters.push(parameter);
       opJsonString.details.default.dropBodyParameter = true;
 
-      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, '', [...constants, ...requiredParameters], operation, variant, state);
+      const opJsonFilePath = await this.addVariant(`${jsonVariant}ViaJsonFilePath`, null, '', [...constants, ...requiredParameters], operation, variant, state, preOperations, commandType);
       opJsonFilePath.details.default.dropBodyParameter = true;
       opJsonFilePath.parameters = opJsonFilePath.parameters.filter(each => each.details.default.isBodyParameter !== true);
       opJsonFilePath.parameters.push(createStringParameter('JsonFilePath', `Path of Json file supplied to the ${jsonVariant} operation`, 'jsonFilePath'));
@@ -617,7 +666,7 @@ export async function createCommandsV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-createcommands-v2.yaml', content: serialize(await (await new Inferrer(state).init()).createCommands()), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-createcommands-v2.yaml', content: serialize(await (await new Inferrer(state).init()).createCommands()), sourceMap: undefined, artifactType: 'code-model-v4' });
 
   // return processCodeModel(async (state) => {
   //   return await (await new Inferrer(state).init()).createCommands();
