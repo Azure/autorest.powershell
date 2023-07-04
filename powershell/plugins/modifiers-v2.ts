@@ -55,7 +55,8 @@ interface WhereCommandDirective {
       'become-mandatory'?: boolean;
       // for all breaking changes
       'change-description'?: string;
-      'deprecated-by-version'?: string;
+      'deprecated-by-version': string;
+      'deprecated-by-azversion': string;
       'change-effective-date'?: string;
     };
     'preview-message'?: string;
@@ -351,6 +352,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
             parameter.breakingChange.oldParamaterType = (breakingChange && breakingChange['old-parameter-type']) ? breakingChange['old-parameter-type'] : undefined
             parameter.breakingChange.newParameterType = (breakingChange && breakingChange['new-parameter-type']) ? breakingChange['new-parameter-type'] : undefined
             parameter.breakingChange.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
+            parameter.breakingChange.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined
             parameter.breakingChange.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
             parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
           }
@@ -437,6 +439,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
               // handle parameter breaking change for variant
               operation.details.csharp.breakingChange.variant = <any>{}
               operation.details.csharp.breakingChange.variant.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+              operation.details.csharp.breakingChange.variant.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
               operation.details.csharp.breakingChange.variant.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
               operation.details.csharp.breakingChange.variant.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
 
@@ -451,6 +454,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                 operation.details.csharp.breakingChange.output.deprecatedOutputProperties = (breakingChange && breakingChange['deprecated-output-properties']) ? breakingChange['deprecated-output-properties'] : undefined;
                 operation.details.csharp.breakingChange.output.newOutputProperties = (breakingChange && breakingChange['new-output-properties']) ? breakingChange['new-output-properties'] : undefined;
                 operation.details.csharp.breakingChange.output.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined;
+                operation.details.csharp.breakingChange.output.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined;
                 operation.details.csharp.breakingChange.output.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined;
                 operation.details.csharp.breakingChange.output.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
               } else {
@@ -461,6 +465,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
                   operation.details.csharp.breakingChange.cmdlet.replacement = safeEval(operation.details.csharp.breakingChange.cmdlet.replacement.replace("$", `"${newCommandName.split('_')[0]}"`))
                 }
                 operation.details.csharp.breakingChange.cmdlet.deprecateByVersion = (breakingChange && breakingChange['deprecated-by-version']) ? breakingChange['deprecated-by-version'] : undefined
+                operation.details.csharp.breakingChange.cmdlet.deprecateByAzVersion = (breakingChange && breakingChange['deprecated-by-azversion']) ? breakingChange['deprecated-by-azversion'] : undefined
                 operation.details.csharp.breakingChange.cmdlet.changeInEfectByDate = (breakingChange && breakingChange['change-effective-date']) ? breakingChange['change-effective-date'] : undefined
                 operation.details.csharp.breakingChange.cmdlet.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined
                 operation.details.csharp.breakingChange.cmdlet.name = newCommandName.split('_')[0];
