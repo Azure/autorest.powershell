@@ -947,7 +947,7 @@ export class CmdletClass extends Class {
             }
             // fall back!
 
-            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`);
+            this.state.debug(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalCase(match.language.csharp?.name ?? '')}').`, {});
             //push path parameters that current identity does not contain into allParams and idOpParamsNotFromIdentity
             const param = {
               name: `${pascalCase(match.language.csharp?.name ?? '')}`,
@@ -955,7 +955,7 @@ export class CmdletClass extends Class {
             };
             pathParamsNotInIdentity.push(param);
           } else {
-            console.error(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`);
+            this.state.debug(`Unable to match identity parameter '${each.name}' member to appropriate virtual parameter. (Guessing '${pascalName}')`, {});
             /*
               push path parameters do not match the name in identity schema into allParams and idOpParamsNotFromIdentity
               for example, module 'Service' has only one GET API:
