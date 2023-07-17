@@ -173,6 +173,7 @@ function CreateModelCmdlet {
         if ('' -ne $Model.cmdletName) {
             $cmdletName = $Model.cmdletName
         }
+        $OutputPath = Join-Path -ChildPath "${cmdletName}.ps1" -Path $OutputDir
         $cmdletNameInLowerCase = $cmdletName.ToLower()
         $Script = "
 # ----------------------------------------------------------------------------------

@@ -81,9 +81,9 @@ By utilizing this directive, we can generate a cmdlet that facilitates the creat
 Here's an illustration showcasing the creation of a model cmdlet named New-AzWorkspaceObject for the Workspace model class.
 
 ```
-- model-cmdlet
+- model-cmdlet:
   - model-name: Workspace
-    model-cmdlet: New-AzWorkspaceObject
+    cmdlet-name: New-AzWorkspaceObject
 ```
 
 ### Adding a parameter
