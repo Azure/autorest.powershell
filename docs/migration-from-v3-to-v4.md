@@ -88,9 +88,9 @@ In v3, we could use the following directive to add a purely client-side cmdlet f
 In v4, the directive has changed to support setting the name for the model cmdlet:
 
 ```
-- model-cmdlet
+- model-cmdlet:
   - model-name: xxx
-    model-cmdlet: cmdlet-name
+    cmdlet-name: cmdlet-name
 ```
 
 ##### How to mitigate the breaking change
