@@ -43,7 +43,8 @@ namespace <%- project.namespace %>.Models
         /// <summary>
         /// Initializes a new instance of the <%=model.language.default.name%> class.
         /// </summary>
-<%project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties).filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
+<% var publicVirtualProperties = (model.extensions && model.extensions["x-ms-azure-resource"]) ? project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties) : project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties);
+publicVirtualProperties.filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
 <%
 var additionInfo = '';
 if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -58,8 +59,7 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
-<% var publicVirtualProperties = (model.extensions && model.extensions["x-ms-azure-resource"]) ? project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties) : project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties);
-if (model.language.default.baseConstructorCall) {
+<% if (model.language.default.baseConstructorCall) {
         publicVirtualProperties = project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties);
 -%>
         : <%-model.language.default.baseConstructorCall%>

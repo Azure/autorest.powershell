@@ -76,7 +76,7 @@ export class Helper {
         if (this.isArraySchema(modelToValidate) || this.isDictionarySchema(modelToValidate)) {
           typesToValidate.push(modelToValidate.elementType);
         } else if (isObjectSchema(modelToValidate)) {
-          const virtualProperties = getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
+          const virtualProperties = modelToValidate.extensions && modelToValidate.extensions['x-ms-azure-resource'] ? getAllPublicVirtualPropertiesForSdkWithoutInherited(modelToValidate.language.default.virtualProperties) : getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
           values(virtualProperties).where(p => isObjectSchema(p.property.schema)).forEach(cp => typesToValidate.push(cp.property.schema));
           if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant && !this.IsConstantProperty(p)) || this.HasConstrains(p.property.schema))) {
             return true;
@@ -267,7 +267,7 @@ export class Helper {
           if (this.ShouldValidate(modelToValidate)) {
             return true;
           }
-          if (modelToValidate.parents && modelToValidate.parents.immediate.length === 1) {
+          if (modelToValidate.parents && (modelToValidate.parents.immediate.length === 1 && !(modelToValidate.extensions && modelToValidate.extensions['x-ms-azure-resource']))) {
             typesToValidate.push(modelToValidate.parents.immediate[0]);
           }
         }
