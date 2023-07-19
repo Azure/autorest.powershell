@@ -12,7 +12,7 @@ import { items, values, keys, Dictionary, length, isValue } from '@azure-tools/l
 import { SchemaDetails } from '../llcsharp/code-model';
 import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { codemodel, schema } from '@azure-tools/codemodel-v3';
-import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, valueType } from '../utils/schema';
+import { VirtualProperty, getAllPublicVirtualPropertiesForSdk, getAllPublicVirtualPropertiesForSdkWithoutInherited, valueType } from '../utils/schema';
 import { SchemaDefinitionResolver } from '../llcsharp/exports';
 import { SchemaT } from '@azure-tools/codemodel-v3/dist/code-model/exports';
 import { isReserved } from '../utils/code-namer';
@@ -67,7 +67,8 @@ function tweakSchema(model: SdkModel) {
         formattedPropertySummary: (property.readOnly ? 'Gets ' : 'Gets or sets ') + property.language.default.description.substring(0, 1).toLowerCase() + property.language.default.description.substring(1)
       };
     }
-    for (const virtualProperty of getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties)) {
+    const publicProperties = obj.extensions && obj.extensions['x-ms-azure-resource'] ? getAllPublicVirtualPropertiesForSdkWithoutInherited(obj.language.default.virtualProperties) : getAllPublicVirtualPropertiesForSdk(obj.language.default.virtualProperties);
+    for (const virtualProperty of publicProperties) {
       if (virtualProperty.name.toLowerCase() === obj.language.default.name.toLowerCase()) {
         // If the name is same as class name, will add 'Property' suffix
         virtualProperty.name = virtualProperty.name + 'Property';
@@ -77,13 +78,14 @@ function tweakSchema(model: SdkModel) {
         // For choice or seal choice with only one value and required, will not be handled as constant
         continue;
       }
+
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
       type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required ? `${type}?` : type;
       const CamelName = camelCase(virtualProperty.name);
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
-    if (obj.parents && obj.parents.immediate.length === 1) {
-      // If there is only one direct parameter, will implement it as base class
+    if (obj.parents && (obj.parents.immediate.length === 1 && !(obj.extensions && obj.extensions['x-ms-azure-resource']))) {
+      // If there is only one direct parent parameter and extension x-ms-azure-resource is not set, will implement it as base class
       let baseConstructorParametersCall = Array<string>();
       const baseRequiredParameters = Array<string>();
       const baseOptionalParameters = Array<string>();
@@ -372,7 +374,7 @@ export async function tweakSdkModelPlugin(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
   const debug = await service.getValue('debug') || false;
   try {
-    service.writeFile({ filename: 'sdk-code-model-v4-tweaksdk.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+    service.writeFile({ filename: 'sdk-code-model-v4-tweaksdk.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
   } catch (E) {
     if (debug && E instanceof Error) {
       console.error(`${__filename} - FAILURE  ${JSON.stringify(E)} ${E.stack} `);
