@@ -44,7 +44,9 @@ export class Helper {
       ['uuid', 'System.Guid'],
       ['date-time', 'System.DateTime'],
       ['date', 'System.DateTime'],
-      ['binary', 'string']
+      ['binary', 'string'],
+      ['uri', 'string'],
+      ['arm-id', 'string']
     ]);
     if (typeMap.has(type)) {
       return <string>typeMap.get(type);
