@@ -109,7 +109,9 @@ try {
                 $result.Add($singleResult)
             }
             else {
-                $result.AddRange($singleResult)
+                foreach ($r in $singleResult) {
+                    $result.Add($r)
+                }
             }
         }
     }

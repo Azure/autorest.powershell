@@ -19,7 +19,7 @@ modelerfour:
 
 ``` yaml !isLoaded('@autorest/modelerfour')
 use-extension:
-  "@autorest/modelerfour": "~4.24.3"
+  "@autorest/modelerfour": "~4.26.0"
 
 # will use highest 2.0.x 
 ```
