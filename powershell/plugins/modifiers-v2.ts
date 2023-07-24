@@ -87,7 +87,10 @@ interface WhereCommandDirective {
       'deprecated-by-azversion': string;
       'change-effective-date'?: string;
     };
-    'preview-message'?: string;
+    'preview-announcement'?: {
+      'preview-message'?: string;
+      'estimated-ga-date'?: string;
+    };
     'default'?: {
       name: string;
       description: string;
@@ -385,7 +388,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
             : undefined
           : undefined;
       const breakingChange = (directive.set !== undefined) ? directive.set['breaking-change'] : undefined;
-      const previewMessage = (directive.set !== undefined) ? directive.set['preview-message'] : undefined;
+      const previewAnnouncement = (directive.set !== undefined) ? directive.set['preview-announcement'] : undefined;
       const subjectReplacer = (directive.set !== undefined) ? directive.set['subject'] : undefined;
       const subjectPrefixReplacer = (directive.set !== undefined) ? directive.set['subject-prefix'] : undefined;
       const verbReplacer = (directive.set !== undefined) ? directive.set.verb : undefined;
@@ -468,7 +471,11 @@ async function tweakModel(state: State): Promise<PwshModel> {
             parameter.breakingChange.changeDescription = (breakingChange && breakingChange['change-description']) ? breakingChange['change-description'] : undefined;
           }
           // handle preview message for parameter
-          parameter.previewMessage = previewMessage ? previewMessage : undefined;
+          if (previewAnnouncement) {
+            parameter.previewAnnouncement = <any>{};
+            parameter.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? "";
+            parameter.previewAnnouncement.estimatedGaDate = previewAnnouncement['estimated-ga-date'] ?? undefined;
+          }
           if (clearAlias) {
             parameter.alias = [];
             state.message({
@@ -589,7 +596,11 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
 
           }
           // handle preview message for cmdlet
-          operation.details.csharp.previewMessage = previewMessage ? previewMessage : undefined;
+          if (previewAnnouncement) {
+            operation.details.csharp.previewAnnouncement = <any>{};
+            operation.details.csharp.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? "";
+            operation.details.csharp.previewAnnouncement.estimatedGaDate = previewAnnouncement['estimated-ga-date'] ?? undefined;
+          }
 
           // just the subject prefix can be an empty string
           if (subjectPrefixReplacer !== undefined || subjectReplacer || verbReplacer || variantReplacer) {
@@ -965,5 +976,5 @@ export async function applyModifiersV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
   const result = await tweakModel(state);
 
-  await service.writeFile({ filename: 'code-model-v4-modifiers-v2.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-modifiers-v2.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-v4' });
 }
