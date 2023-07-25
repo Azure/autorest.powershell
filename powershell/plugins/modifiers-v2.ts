@@ -473,7 +473,7 @@ async function tweakModel(state: State): Promise<PwshModel> {
           // handle preview message for parameter
           if (previewAnnouncement) {
             parameter.previewAnnouncement = <any>{};
-            parameter.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? "";
+            parameter.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? '';
             parameter.previewAnnouncement.estimatedGaDate = previewAnnouncement['estimated-ga-date'] ?? undefined;
           }
           if (clearAlias) {
@@ -598,7 +598,7 @@ See https://github.com/Azure/autorest.powershell/blob/main/docs/directives.md#de
           // handle preview message for cmdlet
           if (previewAnnouncement) {
             operation.details.csharp.previewAnnouncement = <any>{};
-            operation.details.csharp.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? "";
+            operation.details.csharp.previewAnnouncement.previewMessage = previewAnnouncement['preview-message'] ?? '';
             operation.details.csharp.previewAnnouncement.estimatedGaDate = previewAnnouncement['estimated-ga-date'] ?? undefined;
           }
 

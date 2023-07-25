@@ -216,7 +216,7 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
 
 export function addParameterPreviewMessage(targetProperty: Property, parameter: any) {
   if (parameter.previewAnnouncement) {
-    var parameters = [];
+    const parameters = [];
     parameters.push(`"${parameter.previewAnnouncement.previewMessage}"`);
     if (parameter.previewAnnouncement.estimatedGaDate) parameters.push(`"${parameter.previewAnnouncement.estimatedGaDate}"`);
     targetProperty.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
@@ -2091,7 +2091,7 @@ export class CmdletClass extends Class {
 
     //add preview message attribute for cmdlet
     if (operation.details.csharp.previewAnnouncement) {
-      var parameters = [];
+      const parameters = [];
       parameters.push(`"${operation.details.csharp.previewAnnouncement.previewMessage}"`);
       if (operation.details.csharp.previewAnnouncement.estimatedGaDate) parameters.push(`"${operation.details.csharp.previewAnnouncement.estimatedGaDate}"`);
       this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
