@@ -96,8 +96,8 @@ function CompareSingleSdkFile {
 try {
     $result = New-Object -TypeName 'System.Collections.Generic.List[PSObject]'
 
-    $csharpApiFiles = Get-ChildItem -Path $CsharpSdkPath -Recurse -File -Exclude Models
-    $powershellApiFiles = Get-ChildItem -Path $PowerShellSdkPath -Recurse -File -Exclude Models
+    $csharpApiFiles = Get-ChildItem -Path $CsharpSdkPath -File
+    $powershellApiFiles = Get-ChildItem -Path $PowerShellSdkPath -File
 
     # Get files that exist in csharp and powershell exluding the Models folder
     $existCsharpApiFiles = $csharpApiFiles | Where-Object { $powershellApiFiles.Name -contains $_.Name }
@@ -129,7 +129,9 @@ try {
                 $result.Add($singleResult)
             }
             else {
-                $result.AddRange($singleResult)
+                foreach ($r in $singleResult) {
+                    $result.Add($r)
+                }
             }
         }
     }
