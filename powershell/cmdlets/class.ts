@@ -1017,7 +1017,7 @@ export class CmdletClass extends Class {
           }
         });
         //add child resource to path for list operation
-        if ($this.operation.variant.startsWith('List') && pathParamsInIdentitySerializedName?.[pathParamsInIdentitySerializedName.length - 1]) {
+        if ($this.operation.variant.startsWith('List') && $this.operation.callGraph[0].requests?.[0].protocol.http?.method.toLowerCase() !== 'post' && pathParamsInIdentitySerializedName?.[pathParamsInIdentitySerializedName.length - 1]) {
           const childResourceName = getChildResourceNameFromPath(path, pathParamsInIdentitySerializedName?.[pathParamsInIdentitySerializedName.length - 1]);
           if (pathParams && pathParams.length > 0) {
             pathParams += `/${childResourceName}`;
