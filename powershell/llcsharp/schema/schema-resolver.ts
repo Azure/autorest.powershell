@@ -67,6 +67,7 @@ export class SchemaDefinitionResolver {
         return this.add(schema, new ObjectImplementation(<ObjectSchema>schema));
       }
       case SchemaType.Time:
+      case SchemaType.ArmId:
       case SchemaType.String: {
         return new String(<StringSchema>schema, required);
 
