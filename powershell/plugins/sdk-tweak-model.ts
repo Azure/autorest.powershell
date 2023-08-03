@@ -56,6 +56,32 @@ function addClientRequiredConstructorParametersDeclaration(model: SdkModel) {
   model.language.default.requiredConstructorParametersDeclaration = declarations.join(', ');
 }
 
+function splitStringWithExclusion(input: string, split: string): Array<string> {
+  const result = [];
+  let temp = '';
+  let insideBracket = 0;
+
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] === '<') {
+      insideBracket++;
+      temp += input[i];
+    } else if (input[i] === '>') {
+      insideBracket--;
+      temp += input[i];
+    } else if (input[i] === split && insideBracket === 0) {
+      result.push(temp.trim());
+      temp = '';
+    } else {
+      temp += input[i];
+    }
+  }
+
+  if (temp !== '') {
+    result.push(temp.trim());
+  }
+
+  return result;
+}
 
 function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
@@ -159,10 +185,11 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
       const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-      constructorParametersDeclaration.split(', ').forEach(function (p) {
+      splitStringWithExclusion(constructorParametersDeclaration, ',').forEach(function (p) {
         requiredDeclarations.push(p);
-        requiredArgs.push(p.split(' ')[1]);
+        requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
       });
+
     } else {
       const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
       const postfix = typePostfix(parameter.schema);
