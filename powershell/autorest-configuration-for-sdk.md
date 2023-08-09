@@ -66,8 +66,11 @@ pipeline:
   csnamerSdk:
     input: createSdkInlinedPropertiesPlugin
 
-  tweakSdkModelPlugin:
+  applyModifiersSdk:
     input: csnamerSdk
+
+  tweakSdkModelPlugin:
+    input: applyModifiersSdk
  
   generate:
     input: tweakSdkModelPlugin
