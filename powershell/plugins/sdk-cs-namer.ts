@@ -368,7 +368,7 @@ function addNextPageOperation(model: SdkModel) {
             nextPageOperation: true,
           };
           nextPageOperation.extensions = extensions;
-
+          nextPageOperation.language.default.original = `${operation.language.default.name}`;
           // Set operation name, the name initialization in new Operation() doesn't work
           nextPageOperation.language.default.name = nextPageOperation.language.default.pageable.operationName || `${nextPageOperation.language.default.pageable.operationName}Next`;
           operationGroup.operations.push(nextPageOperation);
@@ -422,5 +422,5 @@ async function nameStuffRight(state: State): Promise<SdkModel> {
 
 export async function csnamerSdk(service: Host) {
   const state = await new ModelState<SdkModel>(service).init();
-  await service.writeFile({ filename: 'sdk-code-model-v4-csnamer.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'sdk-code-model-v4-csnamer.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }
