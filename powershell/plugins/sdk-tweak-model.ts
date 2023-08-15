@@ -42,7 +42,7 @@ async function tweakModel(state: State): Promise<SdkModel> {
 }
 
 
-function splitStringWithExclusion(input: string, delimiter: string) : Array<string> {
+function splitStringWithExclusion(input: string, delimiter: string): Array<string> {
   const result = [];
   let temp = '';
   let insideBracket = 0;
@@ -298,9 +298,17 @@ async function tweakOperation(state: State) {
           const respSchema = (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
             const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.language.csharp.fullname;
+            if (responseType) {
+              if (hasHeaderResponse) {
+                operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>${headerPostfix}>`;
+              } else {
+                operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
+              }
+            } else {
+              operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
+            }
             // Mark response as pageable
             respSchema.language.default.pagable = true;
-            operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${operation.language.default.pageable.ipageType}<${responseType}>>`;
             operation.language.default.returnType = `${operation.language.default.pageable.ipageType}<${responseType}>`;
             operation.language.default.deserializeType = `${operation.language.default.pageable.pageType}<${responseType}>`;
           } else {
