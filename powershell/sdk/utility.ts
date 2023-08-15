@@ -8,7 +8,7 @@ import { Dictionary, values } from '@azure-tools/linq';
 import { type } from 'os';
 import { schema } from '@azure-tools/codemodel-v3';
 import { pascalCase, camelCase } from '@azure-tools/codegen';
-import { FinallyStatement, Method } from '@azure-tools/codegen-csharp';
+import { FinallyStatement, Is, Method } from '@azure-tools/codegen-csharp';
 export class Helper {
   constructor() { }
 
@@ -21,7 +21,7 @@ export class Helper {
 
   public HasConstantProperty(schema: Schema): boolean {
     const virtualProperties = this.GetAllPublicVirtualProperties(schema.language.default.virtualProperties);
-    return virtualProperties.filter(p => p.required && (p.property.schema.type === SchemaType.Constant || this.IsConstantProperty(p) || (p.property.schema.type === SchemaType.Object && this.HasConstantProperty(p.property.schema)))).length > 0;
+    return virtualProperties.filter(p => p.required && (p.property.schema.type === SchemaType.Constant || this.IsConstantEnumProperty(p) || (p.property.schema.type === SchemaType.Object && this.HasConstantProperty(p.property.schema)))).length > 0;
   }
 
   public GetCsharpType(schema: Schema): string {
@@ -80,7 +80,7 @@ export class Helper {
         } else if (isObjectSchema(modelToValidate)) {
           const virtualProperties = modelToValidate.extensions && modelToValidate.extensions['x-ms-azure-resource'] ? getAllPublicVirtualPropertiesForSdkWithoutInherited(modelToValidate.language.default.virtualProperties) : getAllPublicVirtualPropertiesForSdk(modelToValidate.language.default.virtualProperties);
           values(virtualProperties).where(p => isObjectSchema(p.property.schema)).forEach(cp => typesToValidate.push(cp.property.schema));
-          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant && !this.IsConstantProperty(p)) || this.HasConstrains(p.property.schema))) {
+          if (values(virtualProperties).any(p => (p.required && p.property.schema.type !== SchemaType.Constant && !this.IsConstantEnumProperty(p)) || this.HasConstrains(p.property.schema))) {
             return true;
           }
         }
@@ -333,7 +333,7 @@ export class Helper {
     const result = new Array<string>();
     const bodyParameters = operation.requests && operation.requests.length > 0 ? (operation.requests[0].parameters || []).filter(each => each.protocol.http && each.protocol.http.in === 'body' && !(each.extensions && each.extensions['x-ms-client-flatten']) && each.implementation !== 'Client') : [];
     const nonBodyParameters = operation.parameters ? operation.parameters.filter(each => each.implementation !== 'Client') : [];
-    const parameters = [...nonBodyParameters, ...bodyParameters].filter(each => this.IsConstantParameter(each));
+    const parameters = [...nonBodyParameters, ...bodyParameters].filter(each => this.IsConstantEnumParameter(each));
     for (const parameter of values(parameters)) {
       const quote = (<ChoiceSchema>parameter.schema).choiceType.type === SchemaType.String ? '"' : '';
       const csharpType = this.GetCsharpType((<ChoiceSchema>(parameter.schema)).choiceType);
@@ -341,7 +341,7 @@ export class Helper {
     }
     return result.join('\r\n');
   }
-  public IsConstantParameter(parameter: Parameter): boolean {
+  public IsConstantEnumParameter(parameter: Parameter): boolean {
     if (!parameter.required) {
       // const parameters are always required
       return false;
@@ -354,7 +354,17 @@ export class Helper {
     return false;
   }
 
-  public IsConstantProperty(property: VirtualProperty): boolean {
+  public IsConstantParameter(parameter: Parameter): boolean {
+    if (this.IsConstantEnumParameter(parameter)) {
+      return true;
+    }
+    if (parameter.schema.type === SchemaType.Constant) {
+      return true;
+    }
+    return false;
+  }
+
+  public IsConstantEnumProperty(property: VirtualProperty): boolean {
     if (!property.required) {
       // const parameters are always required
       return false;
@@ -362,6 +372,16 @@ export class Helper {
     // skip parameter.schema.type === SchemaType.Constant, since there is a bug
     if ((property.property.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>(property.property.schema)).choices.length === 1)
       || (property.property.schema.type === SchemaType.Choice && (<ChoiceSchema>(property.property.schema)).choices.length === 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  public IsConstantProperty(property: VirtualProperty): boolean {
+    if (this.IsConstantEnumProperty(property)) {
+      return true;
+    }
+    if (property.property.schema.type === SchemaType.Constant) {
       return true;
     }
     return false;

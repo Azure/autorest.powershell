@@ -477,7 +477,7 @@ async function handlePayloadFlatteningThreshold(state: State): Promise<void> {
         if (bodyParameter && payloadFlatteningThreshold > 0) {
           const bodyParameterSchema = bodyParameter.schema;
           if (bodyParameterSchema.type === SchemaType.Object) {
-            const virtualProperties = getAllPublicVirtualProperties(bodyParameterSchema.language.default.virtualProperties).filter(vp => !vp.readOnly && !(vp.required && (vp.property.schema.type === SchemaType.Constant || helper.IsConstantProperty(vp))));
+            const virtualProperties = getAllPublicVirtualProperties(bodyParameterSchema.language.default.virtualProperties).filter(vp => !vp.readOnly && !(vp.required && (vp.property.schema.type === SchemaType.Constant || helper.IsConstantEnumProperty(vp))));
             if (virtualProperties.length <= payloadFlatteningThreshold) {
               bodyParameter.extensions = bodyParameter.extensions || {};
               bodyParameter.extensions['x-ms-client-flatten'] = true;
@@ -602,6 +602,6 @@ export async function createSdkInlinedPropertiesPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'sdk-code-model-v4-create-virtual-properties-v2.yaml', content: serialize(await createVirtuals(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'sdk-code-model-v4-create-virtual-properties-v2.yaml', content: serialize(await createVirtuals(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
   //return processCodeModel(createVirtuals, service, 'create-virtual-properties-v2');
 }

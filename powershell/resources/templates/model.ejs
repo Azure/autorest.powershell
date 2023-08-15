@@ -44,7 +44,7 @@ namespace <%- project.namespace %>.Models
         /// Initializes a new instance of the <%=model.language.default.name%> class.
         /// </summary>
 <% var publicVirtualProperties = (model.extensions && model.extensions["x-ms-azure-resource"]) ? project.helper.GetAllPublicVirtualPropertiesWithoutInherited(model.language.default.virtualProperties) : project.helper.GetAllPublicVirtualProperties(model.language.default.virtualProperties);
-publicVirtualProperties.filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
+publicVirtualProperties.filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(p) {-%>
 <%
 var additionInfo = '';
 if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -66,14 +66,14 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
 <%}-%>
         {
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0-%>
-<%publicVirtualProperties.filter(p => !project.helper.IsConstantProperty(p)).forEach(function(p) {-%>
+<%publicVirtualProperties.filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(p) {-%>
             this.<%-p.name%> = <%-project.helper.CamelCase(p.name)%>;
 <%});-%>
             CustomInit();
         }
 <% };-%>
 <%#Below is support for ClassProperties in the model, const properties-%>
-<% const constantProperties = (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p));
+<% const constantProperties = (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantEnumProperty(p));
 if (constantProperties.length > 0) {-%>
         /// <summary>
         /// Static constructor for <%-model.language.default.name%> class.
@@ -94,7 +94,7 @@ const quote = p.property.schema.choiceType.type !== 'string' ? '' : '"';
         partial void CustomInit();
 
 <%#ToDo support for InstanceProperties in the model, non const properties, priority 0, line 407-%>
-<% (publicVirtualProperties || []).filter(p => p.property.schema.type != 'constant' && !project.helper.IsConstantProperty(p)).forEach(function(p){-%>
+<% (publicVirtualProperties || []).filter(p => p.property.schema.type != 'constant' && !project.helper.IsConstantEnumProperty(p)).forEach(function(p){-%>
 <%
         var additionInfo = '';
         if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choice')
@@ -129,7 +129,7 @@ switch(p.property.language.default.flavor) {
         public <%-type %> <%-p.name%> {get; <%- p.readOnly ? "private " : ""-%>set; }
 <% }); -%>
 <%#Below is support for ClassProperties in the model, const properties -%>
-<% (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantProperty(p)).forEach(function(p){-%>
+<% (publicVirtualProperties || []).filter(p => p.property.schema.type === 'constant' || project.helper.IsConstantEnumProperty(p)).forEach(function(p){-%>
         /// <summary>
         /// <%=p.property.language.csharp.formattedPropertySummary%>
         /// </summary>
@@ -161,7 +161,7 @@ var anythingToValidate = false;-%>
 -%>
             base.Validate();
 <% } -%>
-<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantProperty(p) && !project.helper.IsEnum(p.property.schema)).forEach(function(p) {
+<%publicVirtualProperties.filter(p=> p.required && !p.readOnly && !project.helper.IsValueType(p.property.schema.type) && !project.helper.IsConstantEnumProperty(p) && !project.helper.IsEnum(p.property.schema)).forEach(function(p) {
             anythingToValidate = true;
 -%>
             if (this.<%-p.name%> == null)
