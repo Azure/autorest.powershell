@@ -10,7 +10,11 @@ import { schema } from '@azure-tools/codemodel-v3';
 import { pascalCase, camelCase } from '@azure-tools/codegen';
 import { FinallyStatement, Is, Method } from '@azure-tools/codegen-csharp';
 export class Helper {
-  constructor() { }
+
+  useDateTimeOffset: boolean;
+  constructor(useDateTimeOffset = false) {
+    this.useDateTimeOffset = useDateTimeOffset;
+  }
 
   public HasConstrains(schema: Schema): boolean {
     if ((<any>schema).minimum !== undefined || (<any>schema).maximum !== undefined || (<any>schema).maxLength !== undefined || (<any>schema).minLength !== undefined || (<any>schema).maxItems !== undefined || (<any>schema).minItems !== undefined || (<any>schema).multipleOf !== undefined || (<any>schema).pattern !== undefined || (<any>schema).uniqueItems !== undefined) {
@@ -29,7 +33,7 @@ export class Helper {
     if (schema.type === SchemaType.Integer) {
       type = type + (<NumberSchema>schema).precision;
     }
-
+    const offset = this.useDateTimeOffset ? 'Offset' : '';
     const typeMap = new Map<string, string>([
       ['integer', 'int'],
       ['integer32', 'int'],
@@ -42,7 +46,7 @@ export class Helper {
       ['byte-array', 'byte[]'],
       ['duration', 'System.TimeSpan'],
       ['uuid', 'System.Guid'],
-      ['date-time', 'System.DateTime'],
+      ['date-time', 'System.DateTime' + offset],
       ['date', 'System.DateTime'],
       ['binary', 'string'],
       ['uri', 'string'],

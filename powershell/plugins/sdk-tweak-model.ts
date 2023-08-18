@@ -107,7 +107,7 @@ function tweakSchema(model: SdkModel) {
       }
 
       let type = virtualProperty.property.schema.language.csharp?.fullname || '';
-      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required ? `${type}?` : type;
+      type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required && virtualProperty.property.nullable != false ? `${type}?` : type;
       const CamelName = camelCase(virtualProperty.name);
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
     }
@@ -149,8 +149,8 @@ function addMethodParameterDeclaration(operation: Operation, state: State) {
   }
 }
 
-function typePostfix(schema: Schema): string {
-  return valueType(schema.type) || (schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>schema).choiceType.type !== SchemaType.String || (schema.extensions && !schema.extensions['x-ms-model-as-string']))) ? '?' : '';
+function typePostfix(schema: Schema, nullable = true): string {
+  return (valueType(schema.type) || (schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>schema).choiceType.type !== SchemaType.String || (schema.extensions && !schema.extensions['x-ms-model-as-string'])))) && nullable ? '?' : '';
 }
 
 function addNormalMethodParameterDeclaration(operation: Operation, state: State) {
@@ -173,7 +173,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
     if (parameter.extensions && parameter.extensions['x-ms-odata']) {
       type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
     }
-    const postfix = typePostfix(parameter.schema);
+    const postfix = typePostfix(parameter.schema, parameter.nullable != false);
     if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
       // skip required const parameter
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
@@ -192,7 +192,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
       });
     } else {
       const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-      const postfix = typePostfix(parameter.schema);
+      const postfix = typePostfix(parameter.schema, parameter.nullable != false);
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
       parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
     }
@@ -308,10 +308,13 @@ async function tweakOperation(state: State) {
               operation.language.default.responseType = 'Microsoft.Rest.Azure.AzureOperationResponse';
             }
             // Mark response as pageable
-            respSchema.language.default.pagable = true;
+            if (respSchema.language.default.pagable == undefined) {
+              respSchema.language.default.pagable = true;
+            }
             operation.language.default.returnType = `${operation.language.default.pageable.ipageType}<${responseType}>`;
             operation.language.default.deserializeType = `${operation.language.default.pageable.pageType}<${responseType}>`;
           } else {
+            respSchema.language.default.pagable = false;
             const postfix = (valueType(respSchema.type)
               || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
               || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))

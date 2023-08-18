@@ -60,27 +60,25 @@ type State = ModelState<SdkModel>;
 
 // }
 
-function csharpForArray(elementType: Schema): string {
+function csharpForArray(elementType: Schema, helper: Helper, nullable = true): string {
   if (elementType.type === SchemaType.Array) {
     // recursively generate the csharpForArray
-    return `System.Collections.Generic.IList<${csharpForArray((<ArraySchema>elementType).elementType)}>`;
+    return `System.Collections.Generic.IList<${csharpForArray((<ArraySchema>elementType).elementType, helper)}>`;
   }
   const rawElementType = elementType;
-  const helper = new Helper();
   elementType = rawElementType;
   if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
     elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
   }
   const type = helper.GetCsharpType(elementType);
-  const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) ? '?' : '';
+  const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) && nullable ? '?' : '';
   return `System.Collections.Generic.IList<${type ? type + postfix :
-    (helper.IsEnum(rawElementType) ? rawElementType.language.default.name + '?' : rawElementType.language.default.name)}>`;
+    (helper.IsEnum(rawElementType) && nullable ? rawElementType.language.default.name + '?' : rawElementType.language.default.name)}>`;
 }
 
-function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string) {
+function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, helper: Helper) {
   const baseNamespace = new Set<string>();
   const subNamespace = new Map<string, Set<string>>();
-  const helper = new Helper();
 
   for (const group of values(schemaGroups)) {
     for (const schema of group) {
@@ -142,7 +140,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           apiversion: thisApiversion,
           apiname: apiName,
           name: schemaName,
-          fullname: csharpForArray((<ArraySchema>schema).elementType),
+          fullname: csharpForArray((<ArraySchema>schema).elementType, helper, (<ArraySchema>schema).nullableItems != false),
         };
       } else if (schema.type === SchemaType.Choice || schema.type === SchemaType.SealedChoice) {
         // oh, it's an enum type
@@ -215,7 +213,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
         if (rawElementType.type === 'any') {
           valueType = 'object';
         }
-        if ((helper.GetCsharpType(elementType) && valueType !== 'string') || helper.IsEnum(rawElementType)) {
+        if (((helper.GetCsharpType(elementType) && valueType !== 'string') || helper.IsEnum(rawElementType)) && (<DictionarySchema>schema).nullableItems != false) {
           valueType += '?';
         }
         schema.language.csharp = {
@@ -396,6 +394,8 @@ function correctParameterNames(model: SdkModel) {
 }
 
 async function nameStuffRight(state: State): Promise<SdkModel> {
+  const useDateTimeOffset = await state.getValue('useDateTimeOffset', false);
+  const helper = new Helper(useDateTimeOffset);
   const resolver = new SchemaDefinitionResolver();
   const model = state.model;
 
@@ -413,7 +413,7 @@ async function nameStuffRight(state: State): Promise<SdkModel> {
     fullname: `${serviceNamespace}.${clientName}`
   };
 
-  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace);
+  setSchemaNames(<Dictionary<Array<Schema>>><any>model.schemas, azure, serviceNamespace, helper);
   duplicateLRO(model);
   addNextPageOperation(model);
   correctParameterNames(model);

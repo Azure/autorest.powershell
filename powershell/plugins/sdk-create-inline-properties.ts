@@ -467,7 +467,8 @@ async function implementHeaderResponse(state: State) {
 }
 
 async function handlePayloadFlatteningThreshold(state: State): Promise<void> {
-  const helper = new Helper();
+  const useDateTimeOffset = await state.getValue('useDateTimeOffset', false);
+  const helper = new Helper(useDateTimeOffset);
   const payloadFlatteningThreshold = await state.getValue('payload-flattening-threshold', 0);
   for (const operationGroup of state.model.operationGroups) {
     for (const operation of operationGroup.operations) {

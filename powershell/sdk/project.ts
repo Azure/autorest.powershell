@@ -97,7 +97,8 @@ export class Project extends codeDomProject {
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
 
-    this.helper = new Helper();
+    const useDateTimeOffset = await this.state.getValue('useDateTimeOffset', false);
+    this.helper = new Helper(useDateTimeOffset);
 
 
     // abort now if we have any errors.
