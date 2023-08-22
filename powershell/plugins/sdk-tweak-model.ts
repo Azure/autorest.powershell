@@ -169,34 +169,34 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-    let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
-    if (parameter.extensions && parameter.extensions['x-ms-odata']) {
-      type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
-    }
-    const postfix = typePostfix(parameter.schema, parameter.nullable != false);
-    if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
-      // skip required const parameter
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-      parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
-    }
-  });
+      let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+      if (parameter.extensions && parameter.extensions['x-ms-odata']) {
+        type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
+      }
+      const postfix = typePostfix(parameter.schema, parameter.nullable != false);
+      if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
+        // skip required const parameter
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+      }
+    });
 
   bodyParameters.filter(p => !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
-    if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
-      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-      splitStringWithExclusion(constructorParametersDeclaration, ',').forEach(function (p) {
-        requiredDeclarations.push(p);
-        requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
-      });
-    } else {
-      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
-      const postfix = typePostfix(parameter.schema, parameter.nullable != false);
-      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
-      parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
-    }
-  });
+      if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+        const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
+        splitStringWithExclusion(constructorParametersDeclaration, ',').forEach(function (p) {
+          requiredDeclarations.push(p);
+          requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
+        });
+      } else {
+        const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+        const postfix = typePostfix(parameter.schema, parameter.nullable != false);
+        parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+        parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+      }
+    });
 
   declarations = [...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = declarations.join(', ');
@@ -220,7 +220,30 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
 }
 
 function addPageableMethodParameterDeclaration(operation: Operation) {
-  const pageableMethodDeclarations: Array<string> = ['string nextPageLink'];
+  const optionalDeclarations: Array<string> = [];
+  const requiredDeclarations: Array<string> = [];
+  const requiredArgs: Array<string> = [];
+  const optionalArgs: Array<string> = [];
+  let headerParameters: Array<Parameter> = (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+    && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
+    && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)
+    && p.protocol.http?.in === ParameterLocation.Header);
+
+  headerParameters.forEach(function (parameter) {
+
+    let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
+    if (parameter.extensions && parameter.extensions['x-ms-odata']) {
+      type = `Microsoft.Rest.Azure.OData.ODataQuery<${type}>`;
+    }
+    const postfix = typePostfix(parameter.schema, parameter.nullable != false);
+    if (!(parameter.required && parameter.schema.type === SchemaType.Constant)) {
+      // skip required const parameter
+      parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
+      parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
+    }
+  });
+
+  const pageableMethodDeclarations: Array<string> = ['string nextPageLink', ...requiredDeclarations, ...optionalDeclarations];
   operation.language.default.syncMethodParameterDeclaration = pageableMethodDeclarations.join(', ');
 
   pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
@@ -233,12 +256,17 @@ function addPageableMethodParameterDeclaration(operation: Operation) {
   pageableMethodDeclarations.push('System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)');
   operation.language.default.asyncMethodParameterDeclarationWithCustomHeader = pageableMethodDeclarations.join(', ');
 
-  const pageableMethodArgs: Array<string> = ['nextPageLink'];
+  const pageableMethodArgs: Array<string> = ['nextPageLink', ...requiredArgs, ...optionalArgs];
   operation.language.default.syncMethodInvocationArgs = pageableMethodArgs.join(', ');
 
+  const pageableMethodArgsWithCustomerHeaders: Array<string> = [...pageableMethodArgs];
   pageableMethodArgs.push('null');
   pageableMethodArgs.push('cancellationToken');
   operation.language.default.asyncMethodInvocationArgs = pageableMethodArgs.join(', ');
+
+  pageableMethodArgsWithCustomerHeaders.push('customHeaders');
+  pageableMethodArgsWithCustomerHeaders.push('cancellationToken');
+  operation.language.default.asyncMethodInvocationArgsWithCustomerHeaders = pageableMethodArgsWithCustomerHeaders.join(', ');
 }
 
 function tweakGlobalParameter(globalParameters: Array<Parameter>) {
