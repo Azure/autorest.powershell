@@ -191,7 +191,11 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
       });
     } else {
-      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+      let type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+      if (parameter.schema.type === SchemaType.Binary) {
+        //as response or request body, binary is always stream, otherwise it is string
+        type = 'System.IO.Stream';
+      }
       const postfix = typePostfix(parameter.schema, parameter.nullable != false);
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
       parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
@@ -268,12 +272,22 @@ async function tweakOperation(state: State) {
       operation.language.default.returnTypeHeader.name = '';
       if (operation.responses) {
         const schemas = new Set();
+        let respCountWithBody = 0;
+        let binaryResponse = false;
+        // sometimes, it will generate a binary response with no schema
+        let specialBinaryResponse = 0;
         operation.responses.forEach(function (resp) {
           if ((<any>resp).schema) {
             schemas.add((<any>resp).schema);
+            if ((<Schema>((<any>resp).schema)).type === SchemaType.Binary) {
+              binaryResponse = true;
+            }
+          } else if ((<any>resp).binary) {
+            binaryResponse = true;
+            specialBinaryResponse = 1;
           }
         });
-        const respCountWithBody = schemas.size;
+        respCountWithBody = schemas.size + specialBinaryResponse;
         const isHead = operation.requests && operation.requests[0].protocol.http?.method === 'head';
         if (isHead) {
           initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
@@ -295,7 +309,7 @@ async function tweakOperation(state: State) {
             operation.language.default.returnType = hasHeaderResponse ? (isHead ? 'bool' : headerSchema) : 'void';
           }
         } else if (respCountWithBody === 1) {
-          const respSchema = (<any>responses[0]).schema;
+          const respSchema = binaryResponse ? undefined : (<any>responses[0]).schema;
           if (operation.language.default.pageable) {
             const responseType = respSchema.language.default.virtualProperties.owned.find((p: VirtualProperty) => p.name === pascalCase(operation.language.default.pageable.itemName)).property.schema.elementType.language.csharp.fullname;
             if (responseType) {
@@ -314,13 +328,15 @@ async function tweakOperation(state: State) {
             operation.language.default.returnType = `${operation.language.default.pageable.ipageType}<${responseType}>`;
             operation.language.default.deserializeType = `${operation.language.default.pageable.pageType}<${responseType}>`;
           } else {
-            respSchema.language.default.pagable = false;
-            const postfix = (valueType(respSchema.type)
+            if (respSchema) {
+              respSchema.language.default.pagable = false;
+            }
+            const postfix = !!respSchema && (valueType(respSchema.type)
               || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && !respSchema.extensions['x-ms-model-as-string'])
               || (respSchema.type === SchemaType.Choice && valueType((<ChoiceSchema>respSchema).choiceType.type))
               || (respSchema.type === SchemaType.SealedChoice && respSchema.extensions && valueType((<SealedChoiceSchema>respSchema).choiceType.type))
             ) ? '?' : '';
-            const fullname = (respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && (valueType((<SealedChoiceSchema>respSchema).choiceType.type) || (respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])))) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname;
+            const fullname = binaryResponse ? 'System.IO.Stream' : ((respSchema.type === SchemaType.Choice || (respSchema.type === SchemaType.SealedChoice && (valueType((<SealedChoiceSchema>respSchema).choiceType.type) || (respSchema.extensions && respSchema.extensions['x-ms-model-as-string'])))) ? (<SealedChoiceSchema>respSchema).choiceType.language.csharp?.fullname : respSchema.language.csharp.fullname);
             operation.language.default.responseType = `Microsoft.Rest.Azure.AzureOperationResponse<${fullname}${postfix}${headerPostfix}>`;
             operation.language.default.returnType = `${fullname}${postfix}`;
           }

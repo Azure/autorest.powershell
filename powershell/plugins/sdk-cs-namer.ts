@@ -209,7 +209,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
         }
 
-        let valueType = helper.GetCsharpType(elementType) ? helper.GetCsharpType(elementType) : rawElementType.language.default.name;
+        let valueType = helper.GetCsharpType(elementType) ? helper.GetCsharpType(elementType) : (rawElementType.type === SchemaType.Array ? csharpForArray((<ArraySchema>rawElementType).elementType, helper): rawElementType.language.default.name);
         if (rawElementType.type === 'any') {
           valueType = 'object';
         }
