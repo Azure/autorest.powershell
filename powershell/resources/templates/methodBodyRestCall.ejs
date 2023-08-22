@@ -172,7 +172,19 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <%# ToDo: add RequestBody, formdata support-%>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
 <%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
-<% if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !project.helper.IsConstantEnumParameter(parameter)) {-%>
+<% if (parameter.schema.type == 'binary') {
+    if (parameter.required) {-%>
+            if (<%-parameter.language.default.name%> == null)
+            {
+                throw new System.ArgumentNullException("<%-parameter.language.default.name%>");
+            }
+    <% } -%>
+            if (<%-parameter.language.default.name%> != null && <%-parameter.language.default.name%> != System.IO.Stream.Null)
+            {
+                _httpRequest.Content = new System.Net.Http.StreamContent(<%-parameter.language.default.name%>);
+                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("<%-method.requests[0].protocol.http.mediaTypes[0]%>");
+            }
+<% } else if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !project.helper.IsConstantEnumParameter(parameter)) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
                 _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
@@ -198,8 +210,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
                 Microsoft.Rest.ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
             cancellationToken.ThrowIfCancellationRequested();
-<%# ToDo: Add support for primary type return -%>
-<% var responseHeadersRead = method.requests[0].protocol.http.method === 'head' ? 'System.Net.Http.HttpCompletionOption.ResponseHeadersRead, ': '' -%>
+<% var responseHeadersRead = method.requests[0].protocol.http.method === 'head' || method.language.default.returnType == 'System.IO.Stream' ? 'System.Net.Http.HttpCompletionOption.ResponseHeadersRead, ': '' -%>
             _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, <%-responseHeadersRead%>cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
@@ -260,11 +271,13 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
             {
                 _result.RequestId = _httpResponse.Headers.GetValues("<%-requestId%>").FirstOrDefault();
             }
-<%(method.responses || []).filter(r => r.schema).forEach(function(resp) {-%>
+<%(method.responses || []).filter(r => r.schema || r.binary).forEach(function(resp) {-%>
             // Deserialize Response
             if ((int)_statusCode == <%-resp.protocol.http.statusCodes[0]%>)
             {
-<%# ToDo: Need to add support for primary type -%>
+<% if(method.language.default.returnType == 'System.IO.Stream') {-%>
+                _result.Body = await _httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+<% } else { -%>
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 <%# ToDo: support for XmlSerialization, guess we do not need it actually -%>
                 try
@@ -288,6 +301,7 @@ const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.I
                     }
                     throw new Microsoft.Rest.SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
+<% } -%>
             }
 <% });-%>
 <%# ToDo: add support for case Model.ReturnType.Body != null && Model.DefaultResponse.Body != null && !Model.Responses.Any()-%>
