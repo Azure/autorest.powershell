@@ -48,7 +48,7 @@ export class Helper {
       ['uuid', 'System.Guid'],
       ['date-time', 'System.DateTime' + offset],
       ['date', 'System.DateTime'],
-      ['binary', 'System.IO.Stream'],
+      ['binary', 'string'],
       ['uri', 'string'],
       ['arm-id', 'string']
     ]);

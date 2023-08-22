@@ -191,7 +191,11 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
         requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
       });
     } else {
-      const type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+      let type = parameter.schema.language.csharp && parameter.schema.language.csharp.fullname && parameter.schema.language.csharp.fullname != '<INVALID_FULLNAME>' ? parameter.schema.language.csharp.fullname : parameter.schema.language.default.name;
+      if (parameter.schema.type === SchemaType.Binary) {
+        //as response or request body, binary is always stream, otherwise it is string
+        type = 'System.IO.Stream';
+      }
       const postfix = typePostfix(parameter.schema, parameter.nullable != false);
       parameter.required ? requiredDeclarations.push(`${type} ${parameter.language.default.name}`) : optionalDeclarations.push(`${type}${postfix} ${parameter.language.default.name} = default(${type}${postfix})`);
       parameter.required ? requiredArgs.push(parameter.language.default.name) : optionalArgs.push(parameter.language.default.name);
@@ -270,14 +274,20 @@ async function tweakOperation(state: State) {
         const schemas = new Set();
         let respCountWithBody = 0;
         let binaryResponse = false;
+        // sometimes, it will generate a binary response with no schema
+        let specialBinaryResponse = 0;
         operation.responses.forEach(function (resp) {
           if ((<any>resp).schema) {
             schemas.add((<any>resp).schema);
+            if ((<Schema>((<any>resp).schema)).type === SchemaType.Binary) {
+              binaryResponse = true;
+            }
           } else if ((<any>resp).binary) {
             binaryResponse = true;
+            specialBinaryResponse = 1;
           }
         });
-        respCountWithBody = schemas.size + (binaryResponse ? 1 : 0);
+        respCountWithBody = schemas.size + specialBinaryResponse;
         const isHead = operation.requests && operation.requests[0].protocol.http?.method === 'head';
         if (isHead) {
           initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
