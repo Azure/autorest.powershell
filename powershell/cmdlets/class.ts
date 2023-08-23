@@ -2045,12 +2045,12 @@ export class CmdletClass extends Class {
       if (breakingChange.variant) {
         const parameters = [];
         parameters.push(`new string[] {"${breakingChange.variant.name}"}`);
-        if (!breakingChange.output.deprecateByVersion || !breakingChange.output.deprecateByAzVersion) {
+        if (!breakingChange.variant.deprecateByVersion || !breakingChange.variant.deprecateByAzVersion) {
           throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
         }
-        parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
-        parameters.push(`"${breakingChange.output.deprecateByAzVersion}"`);
-        if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
+        parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
+        parameters.push(`"${breakingChange.variant.deprecateByAzVersion}"`);
+        if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
         if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription = "${breakingChange.variant.changeDescription}"`);
 
         this.add(new Attribute(ClientRuntime.ParameterSetBreakingChangeAttribute, { parameters: parameters }));
