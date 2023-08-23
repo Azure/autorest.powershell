@@ -74,6 +74,9 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
                 System.Collections.Generic.Dictionary<string, object> tracingParameters = new System.Collections.Generic.Dictionary<string, object>();
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
                 tracingParameters.Add("nextPageLink", nextPageLink);
+<% (method.parameters || []).filter(p => p.protocol.http.in == 'header').forEach(function(p) {-%>
+                tracingParameters.Add("<%-p.language.default.name%>", <%-p.language.default.name%>);
+<%});-%>               
 <% }else{-%>
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
 <%method.parameters.filter(p => p.implementation != 'Client' && p.protocol.http.in != 'complex').forEach(function(p) {-%>
