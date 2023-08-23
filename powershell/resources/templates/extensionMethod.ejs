@@ -58,14 +58,14 @@
 <%# ToDo: need to handle different return type, body, header and the others including no return type-%>
 <% if(method.language.default.returnType != 'void') {-%>
 <% if(method.language.default.returnType == 'System.IO.Stream') {-%>
-                var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false);
-                _result.Request.Dispose();
-                return _result.Body;
+            var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false);
+            _result.Request.Dispose();
+            return _result.Body;
 <% } else {-%>
-                using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
-                {
-                    return <%- method.language.default.responseType.startsWith('Microsoft.Rest.Azure.AzureOperationResponse') ? '_result.Body' : '_result.Headers'%>;
-                }
+            using (var _result = await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false))
+            {
+                return <%- method.language.default.responseType.startsWith('Microsoft.Rest.Azure.AzureOperationResponse') ? '_result.Body' : '_result.Headers'%>;
+            }
 <% }-%>
 <% } else { -%>
             (await operations.<%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodInvocationArgs%>).ConfigureAwait(false)).Dispose();
