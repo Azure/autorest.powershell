@@ -177,8 +177,8 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
     if (!parameter.breakingChange.deprecateByVersion || !parameter.breakingChange.deprecateByAzVersion) {
       throw new Error(`breakingChange.deprecateByVersion and breakingChange.deprecateByAzVersion must be set for ${parameter.name}`);
     }
-    parameters.push(`"${parameter.breakingChange.deprecateByVersion}"`);
     parameters.push(`"${parameter.breakingChange.deprecateByAzVersion}"`);
+    parameters.push(`"${parameter.breakingChange.deprecateByVersion}"`);
     if (parameter.breakingChange.changeInEfectByDate) parameters.push(`"${parameter.breakingChange.changeInEfectByDate}"`);
     if (parameter.breakingChange.replacement) parameters.push(`ReplaceMentCmdletParameterName="${parameter.breakingChange.replacement}"`)
     if (parameter.breakingChange.isBecomingMandatory) parameters.push(`IsBecomingMandatory=${parameter.breakingChange.isBecomingMandatory}`)
@@ -1672,8 +1672,8 @@ export class CmdletClass extends Class {
         if (!breakingChange.cmdlet.deprecateByVersion || !breakingChange.cmdlet.deprecateByAzVersion) {
           throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
         }
-        parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
         parameters.push(`"${breakingChange.cmdlet.deprecateByAzVersion}"`);
+        parameters.push(`"${breakingChange.cmdlet.deprecateByVersion}"`);
         if (breakingChange.cmdlet.changeInEfectByDate) parameters.push(`"${breakingChange.cmdlet.changeInEfectByDate}"`);
         if (breakingChange.cmdlet.replacement) parameters.push(`ReplacementCmdletName="${breakingChange.cmdlet.replacement}"`)
         if (breakingChange.cmdlet.changeDescription) parameters.push(`ChangeDescription="${breakingChange.cmdlet.changeDescription}"`)
@@ -1686,8 +1686,8 @@ export class CmdletClass extends Class {
         if (!breakingChange.variant.deprecateByVersion || !breakingChange.variant.deprecateByAzVersion) {
           throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
         }
-        parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
         parameters.push(`"${breakingChange.variant.deprecateByAzVersion}"`);
+        parameters.push(`"${breakingChange.variant.deprecateByVersion}"`);
         if (breakingChange.variant.changeInEfectByDate) parameters.push(`"${breakingChange.variant.changeInEfectByDate}"`);
         if (breakingChange.variant.changeDescription) parameters.push(`ChangeDescription="${breakingChange.variant.changeDescription}"`)
 
@@ -1704,8 +1704,8 @@ export class CmdletClass extends Class {
         if (!breakingChange.output.deprecateByVersion || !breakingChange.output.deprecateByAzVersion) {
           throw new Error('Cmdlet breaking change requires both \'deprecateByVersion\' and \'deprecateByAzVersion\', please refer to https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/breakingchange-for-autogen-module.md for more details.');
         }
-        parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
         parameters.push(`"${breakingChange.output.deprecateByAzVersion}"`);
+        parameters.push(`"${breakingChange.output.deprecateByVersion}"`);
         if (breakingChange.output.changeInEfectByDate) parameters.push(`"${breakingChange.output.changeInEfectByDate}"`);
         if (breakingChange.output.replacement) parameters.push(`ReplacementCmdletOutputType="${breakingChange.output.replacement}"`)
         if (breakingChange.output.deprecatedOutputProperties) {
