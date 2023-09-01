@@ -29,7 +29,8 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
             }
 <% } -%>
 <%if(method.requests[0].protocol.http.method != 'patch') {-%>
-<%-project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
+<%# for odata, validation is not needed. -%>
+<%-parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
 <%}-%>
 <%}-%>
 <% });-%>
@@ -42,7 +43,8 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "<%-prefix%><%-parameter.language.default.name%>");
             }
 <% } -%>
-<%-project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable)%>
+<%# for odata, validation is not needed. -%>
+<%- parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable)%>
 <%});}-%>
 <%(method.parameters || []).filter(p => p.protocol.http.in == 'complex').forEach(function(parameter) {-%>
 <%-project.helper.PopulateGroupParameters(parameter)%>
