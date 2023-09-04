@@ -124,18 +124,66 @@ async function tweakModel(state: State): Promise<SdkModel> {
         }
 
       } else if (models) {
+        // comment out below to disable model name change, which will be added in the tweakModelName before the plugin csnamerSdk
+        // for (const model of values(models)) {
+        //   const prevName = model.language.csharp?.name;
+        //   if (model.language.csharp) {
+        //     model.language.default.fullname = model.language.csharp.fullname = model.language.default.name = model.language.csharp.name = modelNameReplacer ? modelNameRegex ? model.language.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.language.csharp.name;
+        //   }
+        //   state.message({
+        //     Channel: Channel.Debug, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.language.csharp?.name}.`
+        //   });
+        // }
+      }
+    }
+  }
+
+  return state.model;
+}
+
+async function tweakModelName(state: State): Promise<SdkModel> {
+  // only look at directives without the `transform` node.
+  for (const directive of directives.filter(each => !each.transform)) {
+    const getPatternToMatch = (selector: string | undefined): RegExp | undefined => {
+      return selector ? !hasSpecialChars(selector) ? new RegExp(`^${selector}$`, 'gi') : new RegExp(selector, 'gi') : undefined;
+    };
+
+    if (isWhereModelDirective(directive)) {
+      const selectType = directive.select;
+      const modelNameRegex = getPatternToMatch(directive.where['model-name']);
+      const propertyNameRegex = getPatternToMatch(directive.where['property-name']);
+
+      const modelNameReplacer = directive.set['model-name'];
+      const propertyNameReplacer = directive.set['property-name'];
+
+      // select all models
+      let models = [...state.model.schemas.objects ?? []];
+      // let models = values(state.model.schemas).toArray();
+      if (modelNameRegex) {
+        models = values(models)
+          .where(model =>
+            !!`${model.language.default.name}`.match(modelNameRegex))
+          .toArray();
+      }
+
+      if (propertyNameRegex && selectType === 'model') {
+        models = values(models)
+          .where(model => values(allVirtualProperties(model.language.default.virtualProperties))
+            .any(property => !!`${property.name}`.match(propertyNameRegex)))
+          .toArray();
+      }
+
+      if (propertyNameRegex && (selectType === undefined || selectType === 'property')) {
+        // skip directive for property
+      } else if (models) {
         for (const model of values(models)) {
-          const prevName = model.language.csharp?.name;
-          if (model.language.csharp) {
-            model.language.default.fullname = model.language.csharp.fullname = model.language.default.name = model.language.csharp.name = modelNameReplacer ? modelNameRegex ? model.language.csharp.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.language.csharp.name;
-          }
+          const prevName = model.language.default.name;
+          model.language.default.name = modelNameReplacer ? modelNameRegex ? model.language.default.name.replace(modelNameRegex, modelNameReplacer) : modelNameReplacer : model.language.default.name;
           state.message({
-            Channel: Channel.Debug, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.language.csharp?.name}.`
+            Channel: Channel.Debug, Text: `[DIRECTIVE] Changed model-name from ${prevName} to ${model.language.default.name}.`
           });
         }
       }
-
-      continue;
     }
   }
 
@@ -154,4 +202,18 @@ export async function applyModifiersSdk(service: Host) {
   const result = await tweakModel(state);
 
   await service.writeFile({ filename: 'code-model-v4-modifiers-sdk.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-sdk' });
+}
+
+export async function applyModelNameModifiersSdk(service: Host) {
+  // dolauli implement directives
+  const allDirectives = await service.getValue<any>('directive');
+  directives = values(allDirectives)
+    // .select(directive => directive)
+    .where(directive => isWhereModelDirective(directive))
+    .toArray();
+
+  const state = await new ModelState<SdkModel>(service).init();
+  const result = await tweakModelName(state);
+
+  await service.writeFile({ filename: 'code-model-v4-model-name-modifiers-sdk.yaml', content: serialize(result), sourceMap: undefined, artifactType: 'code-model-sdk' });
 }
