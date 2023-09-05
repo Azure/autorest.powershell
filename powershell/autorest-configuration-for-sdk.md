@@ -63,8 +63,11 @@ pipeline:
   createSdkInlinedPropertiesPlugin:
     input: modelerfour/identity
 
-  csnamerSdk:
+  applyModelNameModifiersSdk:
     input: createSdkInlinedPropertiesPlugin
+
+  csnamerSdk:
+    input: applyModelNameModifiersSdk
 
   applyModifiersSdk:
     input: csnamerSdk
