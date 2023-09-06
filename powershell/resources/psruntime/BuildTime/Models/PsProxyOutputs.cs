@@ -121,7 +121,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             : String.Empty;
     }
 
-    internal class PSArgumentCompleterOutput: ArgumentCompleterOutput
+    internal class PSArgumentCompleterOutput : ArgumentCompleterOutput
     {
         public PSArgumentCompleterInfo PSArgumentCompleterInfo { get; }
 
@@ -206,8 +206,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public string GetProcessCustomAttributesAtRuntime()
         {
-            return VariantGroup.IsInternal ? "" : $@"{Indent}{Indent}$cmdInfo = Get-Command -Name $mapping[$parameterSet]{Environment.NewLine}{Indent}{Indent}[Microsoft.Message.ClientRuntime.MessageAttributeHelper]::ProcessCustomAttributesAtRuntime($cmdInfo, $MyInvocation, $parameterSet, $PSCmdlet)";
+            return VariantGroup.IsInternal ? "" : $@"{Indent}{Indent}$cmdInfo = Get-Command -Name $mapping[$parameterSet]
+{Indent}{Indent}[Microsoft.Message.ClientRuntime.MessageAttributeHelper]::ProcessCustomAttributesAtRuntime($cmdInfo, $MyInvocation, $parameterSet, $PSCmdlet)
+{Indent}{Indent}if ($null -ne $MyInvocation.MyCommand -and [Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet]::PromptedPreviewMessageCmdlets -notcontains $MyInvocation.MyCommand.Name -and [Microsoft.Message.ClientRuntime.MessageAttributeHelper]::ContainsPreviewAttribute($cmdInfo, $MyInvocation)){{
+{Indent}{Indent}{Indent}[Microsoft.Message.ClientRuntime.MessageAttributeHelper]::ProcessPreviewMessageAttributesAtRuntime($cmdInfo, $MyInvocation, $parameterSet, $PSCmdlet)
+{Indent}{Indent}{Indent}[Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet]::PromptedPreviewMessageCmdlets.Enqueue($MyInvocation.MyCommand.Name)
+{Indent}{Indent}}}";
         }
+
         private string GetTelemetry()
         {
             if (!VariantGroup.IsInternal && IsAzure)
@@ -278,7 +284,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var parameterName = defaultInfo.ParameterGroup.ParameterName;
                 sb.AppendLine();
                 var setCondition = " ";
-                if (!String.IsNullOrEmpty(defaultInfo.SetCondition)) {
+                if (!String.IsNullOrEmpty(defaultInfo.SetCondition))
+                {
                     setCondition = $" -and {defaultInfo.SetCondition}";
                 }
                 sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
