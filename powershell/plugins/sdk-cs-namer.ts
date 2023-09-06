@@ -64,6 +64,8 @@ function csharpForArray(elementType: Schema, helper: Helper, nullable = true): s
   if (elementType.type === SchemaType.Array) {
     // recursively generate the csharpForArray
     return `System.Collections.Generic.IList<${csharpForArray((<ArraySchema>elementType).elementType, helper)}>`;
+  } else if (elementType.type === SchemaType.Dictionary) {
+    return `System.Collections.Generic.IList<${csharpForDict(<DictionarySchema>elementType, helper)}>`;
   }
   const rawElementType = elementType;
   elementType = rawElementType;
@@ -74,6 +76,22 @@ function csharpForArray(elementType: Schema, helper: Helper, nullable = true): s
   const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) && nullable ? '?' : '';
   return `System.Collections.Generic.IList<${type ? type + postfix :
     (helper.IsEnum(rawElementType) && nullable ? rawElementType.language.default.name + '?' : rawElementType.language.default.name)}>`;
+}
+function csharpForDict(dictSchema: DictionarySchema, helper: Helper): string {
+  const rawElementType = dictSchema.elementType;
+  let elementType = rawElementType;
+  if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
+    elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
+  }
+
+  let valueType = helper.GetCsharpType(elementType) ? helper.GetCsharpType(elementType) : (rawElementType.type === SchemaType.Array ? csharpForArray((<ArraySchema>rawElementType).elementType, helper) : rawElementType.language.default.name);
+  if (rawElementType.type === 'any') {
+    valueType = 'object';
+  }
+  if (((helper.GetCsharpType(elementType) && valueType !== 'string') || helper.IsEnum(rawElementType)) && dictSchema.nullableItems != false) {
+    valueType += '?';
+  }
+  return `System.Collections.Generic.IDictionary<string, ${valueType}>`;
 }
 
 function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean, serviceNamespace: string, helper: Helper) {
@@ -221,7 +239,7 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           apiversion: thisApiversion,
           apiname: apiName,
           name: schemaName,
-          fullname: `System.Collections.Generic.IDictionary<string, ${valueType}>`,
+          fullname: csharpForDict(<DictionarySchema>schema, helper),
         };
       }
     }
