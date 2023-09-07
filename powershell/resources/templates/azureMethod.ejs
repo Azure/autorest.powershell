@@ -1,5 +1,5 @@
 <%if(!method.extensions || !method.extensions['x-ms-long-running-operation']) {-%>
-<%- include('method', {method: method}) %>
+<%- include('method', {method: method, clientPrefix: clientPrefix}) %>
 <%} else {-%>
-<%- include('longRunningOperationMethod', {method: method}) %>
+<%- include('longRunningOperationMethod', {method: method, clientPrefix: clientPrefix}) %>
 <%};-%>

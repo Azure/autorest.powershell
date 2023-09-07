@@ -13,65 +13,6 @@ namespace <%- project.namespace %>
     /// </summary>
     public partial interface I<%- typeName%>
     {
-<% methodGroup.operations.forEach(function(method){ -%>
-<%# ToDo: support for ExcludeFromInterface -%>
-<% if(method.language.default.description) {-%>
-        /// <summary>
-        /// <%= method.language.default.description%>
-<%# ToDo: support for  ExternalDocsUrl -%>
-        /// </summary>
-        /// <remarks>
-        /// <%= method.language.default.description%>
-        /// </remarks>
-<% };-%>
-<% if(!method.language.default.pageable?.nextPageOperation) {-%>
-<% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
-        /// <param name='<%-parameter.language.default.name%>'>
-        /// <%= parameter.language.default.description%>
-        /// </param>
-<% }); -%>
-<% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantEnumParameter(p)).forEach(function(parameter){-%>
-<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
-<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(vp) {-%>
-        /// <param name='<%-vp.property.language.default.name%>'>
-        /// <%= vp.property.language.default.description%>
-        /// </param>
-<%});-%>
-<%} else {-%>
-        /// <param name='<%-parameter.language.default.name%>'>
-        /// <%= parameter.language.default.description%>
-        /// </param>
-<%}-%>
-<% });-%>
-<% };-%>
-<% if(method.language.default.pageable?.nextPageOperation) {-%>
-        /// <param name='nextPageLink'>
-        /// The NextLink from the previous successful call to List operation.
-        /// </param>
-<% } -%>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-<%# ToDo: Need to figure out whether we could hand code the exception here -%>
-        /// <exception cref="Microsoft.Rest.Azure.CloudException">
-        /// Thrown when the operation returned an invalid status code
-        /// </exception>
-<% if ((method.responses || []).filter(r => r.schema).length > 0) {-%>
-        /// <exception cref="Microsoft.Rest.SerializationException">
-        /// Thrown when unable to deserialize the response
-        /// </exception>
-<% }; -%>
-<% if (method.parameters.filter(p => p.required && p.nullable).length > 0 || (method.requests[0].parameters || []).filter(p => p.required && p.nullable).length > 0) {-%>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown when a required parameter is null
-        /// </exception>
-<% }; -%>
-<%# ToDo: support GetObsoleteAttribute, deprecated message?-%>
-        System.Threading.Tasks.Task<<%-method.language.default.responseType %>> <%- method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>);
-
-<% }); -%>
+<%- include('methodGroupInterfaceBody', {methodGroup: methodGroup}) -%>
     }
 }

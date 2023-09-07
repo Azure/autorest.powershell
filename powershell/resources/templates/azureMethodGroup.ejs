@@ -40,7 +40,7 @@ namespace <%- project.namespace %>
         public <%-client%> Client { get; private set; }
 
 <% methodGroup.operations.forEach(function(method){ -%>
-<%- include('azureMethod', {method: method}) -%>
+<%- include('azureMethod', {method: method, clientPrefix: '.Client'}) -%>
 <% }); -%>
     }
 }
