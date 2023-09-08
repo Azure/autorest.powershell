@@ -42,6 +42,10 @@ async function generateMethodGroups(project: Project) {
   const interfacePath = join(join(resources, 'templates'), 'methodGroupInterface.ejs');
   const extensionPath = join(join(resources, 'templates'), 'extensions.ejs');
   for (const operationGroup of values(project.state.model.operationGroups)) {
+    if (operationGroup.$key === '') {
+      // for operations with no operation group, they will be added in the client class directly.
+      continue;
+    }
     // generate method group class
     const key = operationGroup.$key === 'Operations' ? '' : operationGroup.$key;
     const content = await ejs.renderFile(path, { methodGroup: operationGroup, project: project });

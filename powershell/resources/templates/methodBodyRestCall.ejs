@@ -36,7 +36,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <% });-%>
 <%  if(method.parameters) { method.parameters.filter(p => (p.schema.type != 'constant' && p.language.default.name != '$host') || p.language.default.name == 'ApiVersion').forEach(function (parameter) {-%>
 <%# ToDo: add check IsNullable with required -%>
-<% var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+<% var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-%>
 <% if ( !(parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) && parameter.required && !project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !project.helper.IsConstantEnumParameter(parameter)) {-%>
             if (<%-prefix%><%-parameter.language.default.name%> == null)
             {
@@ -98,18 +98,18 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
             _url = _url.Replace("{nextLink}", nextPageLink);
 <% }else{%>
 <%# ToDo: may need to support AbsoluteUrl -%>
-            var _baseUrl = this.Client.BaseUri.AbsoluteUri;
+            var _baseUrl = this<%-clientPrefix%>.BaseUri.AbsoluteUri;
 <%# ToDo: buildurl, currently only added simple cases, besides we need to handle skip url encoding -%>
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "<%-method.requests[0].protocol.http.path.substring(1)%>").ToString();
 <%if (method.parameters) { method.parameters.filter(p => p.protocol.http.in == 'path').forEach(function (pathParameter) {
-var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
+var prefix = pathParameter.implementation == 'Client' ? `this${clientPrefix}.` : '';
 -%>
-            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", <%-project.helper.PathParameterString(pathParameter)%>);
+            _url = _url.Replace("{<%-pathParameter.language.default.serializedName%>}", <%-project.helper.PathParameterString(pathParameter, clientPrefix)%>);
 <% });}-%>
 <% }%>
             System.Collections.Generic.List<string> _queryParameters = new System.Collections.Generic.List<string>();
 <%if (method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.protocol.http.in == 'query').forEach(function (queryParameter) { -%>
-<% var prefix = queryParameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+<% var prefix = queryParameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-%>
 <% if (queryParameter.extensions && queryParameter.extensions['x-ms-odata']) {-%>
             if (<%-queryParameter.language.default.name%> != null)
             {
@@ -122,7 +122,7 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
 <% } else {-%>
             if (<%-prefix%><%-queryParameter.language.default.name%> != null)
             {
-                _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", <%-project.helper.PathParameterString(queryParameter)%>));
+                _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", <%-project.helper.PathParameterString(queryParameter, clientPrefix)%>));
             }
 <% }-%>
 <% });}-%>
@@ -137,20 +137,20 @@ var prefix = pathParameter.implementation == 'Client' ? 'this.Client.' : '';
             _httpRequest.RequestUri = new System.Uri(_url);
             // Set Headers
 <%# ToDo: Add headers except for following default ones -%>
-            if (this.Client.GenerateClientRequestId != null && this.Client.GenerateClientRequestId.Value)
+            if (this<%-clientPrefix%>.GenerateClientRequestId != null && this<%-clientPrefix%>.GenerateClientRequestId.Value)
             {
                 _httpRequest.Headers.TryAddWithoutValidation("<%-clientRequestId%>", System.Guid.NewGuid().ToString());
             }
-            if (this.Client.AcceptLanguage != null)
+            if (this<%-clientPrefix%>.AcceptLanguage != null)
             {
                 if (_httpRequest.Headers.Contains("accept-language"))
                 {
                     _httpRequest.Headers.Remove("accept-language");
                 }
-                _httpRequest.Headers.TryAddWithoutValidation("accept-language", this.Client.AcceptLanguage);
+                _httpRequest.Headers.TryAddWithoutValidation("accept-language", this<%-clientPrefix%>.AcceptLanguage);
             }
 <% (method.parameters || []).filter(p => p.protocol.http.in == 'header').forEach(function(parameter) {
-var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
+var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-%>
             if (<%-prefix%><%-parameter.language.default.name%> != null)
             {
                 if (_httpRequest.Headers.Contains("<%-parameter.language.default.serializedName%>"))
@@ -192,22 +192,22 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <% } else if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !project.helper.IsConstantEnumParameter(parameter)) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
+                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, `this${clientPrefix}`)%>);
                 _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
                 _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 <% } else { -%>
-            _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, 'this.Client')%>);
+            _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, `this${clientPrefix}`)%>);
             _httpRequest.Content = new System.Net.Http.StringContent(_requestContent, System.Text.Encoding.UTF8);
             _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 <% } -%>
 <% });-%>
 <%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
             // Set Credentials
-            if (this.Client.Credentials != null)
+            if (this<%-clientPrefix%>.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await this.Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await this<%-clientPrefix%>.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
             // Send Request
             if (_shouldTrace)
@@ -216,7 +216,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
             }
             cancellationToken.ThrowIfCancellationRequested();
 <% var responseHeadersRead = method.requests[0].protocol.http.method === 'head' || method.language.default.returnType == 'System.IO.Stream' ? 'System.Net.Http.HttpCompletionOption.ResponseHeadersRead, ': '' -%>
-            _httpResponse = await this.Client.HttpClient.SendAsync(_httpRequest, <%-responseHeadersRead%>cancellationToken).ConfigureAwait(false);
+            _httpResponse = await this<%-clientPrefix%>.HttpClient.SendAsync(_httpRequest, <%-responseHeadersRead%>cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 Microsoft.Rest.ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
@@ -235,7 +235,7 @@ var prefix = parameter.implementation == 'Client' ? 'this.Client.' : ''-%>
 <%# ToDo: Need to add support for primary type -%>
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 <%var errorClass = !project.helper.IsCloudErrorException(method) ? method.exceptions[0].schema.language.default.name : 'CloudError'-%>
-                    <%-errorClass%> _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-errorClass%>>(_responseContent, this.Client.DeserializationSettings);
+                    <%-errorClass%> _errorBody =  Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-errorClass%>>(_responseContent, this<%-clientPrefix%>.DeserializationSettings);
                     if (_errorBody != null)
                     {
 <% if(project.helper.IsCloudErrorException(method)) { -%>
@@ -295,7 +295,7 @@ if(resp.schema.type === 'choice' || (resp.schema.type === 'sealed-choice' && (re
 var deserializeType =  method.language.default.deserializeType ? method.language.default.deserializeType : respSchema.language.csharp.fullname;
 const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.IsEnum(resp.schema)) ? '?' : '';
 -%>
-                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, 'this.Client')%>);
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<<%-deserializeType + postfix%>>(_responseContent, <%-project.helper.GetDeserializationSettings(respSchema, `this${clientPrefix}`)%>);
                 }
                 catch (Newtonsoft.Json.JsonException ex)
                 {
@@ -314,7 +314,7 @@ const postfix = (project.helper.IsValueType(respSchema.type) || project.helper.I
 <% if (method.language.default.returnTypeHeader.name !== '') { -%>
             try
             {
-                _result.Headers = _httpResponse.GetHeadersAsJson().ToObject<<%-method.language.default.returnTypeHeader.name%>>(Newtonsoft.Json.JsonSerializer.Create(this.Client.DeserializationSettings));
+                _result.Headers = _httpResponse.GetHeadersAsJson().ToObject<<%-method.language.default.returnTypeHeader.name%>>(Newtonsoft.Json.JsonSerializer.Create(this<%-clientPrefix%>.DeserializationSettings));
             }
             catch (Newtonsoft.Json.JsonException ex)
             {

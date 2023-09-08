@@ -1,16 +1,20 @@
-<% if (method.language.default.description) {-%>
+<% methodGroup.operations.forEach(function(method){ -%>
+<%# ToDo: support for ExcludeFromInterface -%>
+<% if(method.language.default.description) {-%>
         /// <summary>
         /// <%= method.language.default.description%>
-<%# ToDo: add externaldocsurl -%>
+<%# ToDo: support for  ExternalDocsUrl -%>
         /// </summary>
+        /// <remarks>
+        /// <%= method.language.default.description%>
+        /// </remarks>
 <% };-%>
-<%# ToDo: add remark if both description and summary is provided, question here is in m4, there is no summary provided-%>
-<%  if(method.parameters&&!method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p)).forEach(function (parameter) {-%>
-<%# ToDo: should use camel name instead of pascal name here -%>
+<% if(!method.language.default.pageable?.nextPageOperation) {-%>
+<% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
         /// <param name='<%-parameter.language.default.name%>'>
-        /// <%=parameter.language.default.description%>
+        /// <%= parameter.language.default.description%>
         /// </param>
-<% });}-%>
+<% }); -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantEnumParameter(p)).forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
 <%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(vp) {-%>
@@ -24,42 +28,33 @@
         /// </param>
 <%}-%>
 <% });-%>
+<% };-%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
         /// <param name='nextPageLink'>
         /// The NextLink from the previous successful call to List operation.
         /// </param>
 <% } -%>
         /// <param name='customHeaders'>
-        /// Headers that will be added to request.
+        /// The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
+<%# ToDo: Need to figure out whether we could hand code the exception here -%>
         /// <exception cref="Microsoft.Rest.Azure.CloudException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
-<% if ((method.responses || []).filter(p => p.schema).length > 0) {-%>
+<% if ((method.responses || []).filter(r => r.schema).length > 0) {-%>
         /// <exception cref="Microsoft.Rest.SerializationException">
         /// Thrown when unable to deserialize the response
         /// </exception>
-<% };-%>
-<%# ToDo: add isnullable check -%>
-<% if (method.parameters.filter(p => p.schema.type != 'constant' && p.required)) {-%>
+<% }; -%>
+<% if (method.parameters.filter(p => p.required && p.nullable).length > 0 || (method.requests[0].parameters || []).filter(p => p.required && p.nullable).length > 0) {-%>
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
-        /// </exception>
-<% };-%>
-        /// <return>
-        /// A response object containing the response body and response headers.
-        /// </return>
-<%# ToDo: add GetObsoleteAttribute -%>
-<%# ToDo: need to check in which case the method is not public(AccessModifier), currently set it to public -%>
-        public async System.Threading.Tasks.Task<<%-method.language.default.responseType%>> <%-method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>)
-        {
-<%# ToDo: add support for method.Flavor, currently assume it is RestCall -%>
+<% }; -%>
+<%# ToDo: support GetObsoleteAttribute, deprecated message?-%>
+        System.Threading.Tasks.Task<<%-method.language.default.responseType %>> <%- method.language.default.name%>WithHttpMessagesAsync(<%-method.language.default.asyncMethodParameterDeclarationWithCustomHeader%>);
 
-<%- include('methodBodyRestCall', {method: method, clientPrefix: clientPrefix}) -%>
-        }
+<% }); -%>

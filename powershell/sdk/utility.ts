@@ -183,16 +183,16 @@ export class Helper {
     // }
     return false;
   }
-  public PathParameterString(parameter: Parameter): string {
+  public PathParameterString(parameter: Parameter, clientPrefix: string): string {
     if (!['path', 'query'].includes(parameter.protocol.http?.in)) {
       return '';
     }
-    const prefix = parameter.implementation === 'Client' ? 'this.Client.' : '';
+    const prefix = parameter.implementation === 'Client' ? `this${clientPrefix}.` : '';
     let res = '';
     if (this.isKindOfString(parameter.schema, parameter.required)) {
       res = `${prefix}${parameter.language.default.name}`;
     } else {
-      let serializationSettings = 'this.Client.SerializationSettings';
+      let serializationSettings = `this${clientPrefix}.SerializationSettings`;
       if (this.IsValueType(parameter.schema.type)) {
         if (parameter.schema.type === SchemaType.Date) {
           serializationSettings = 'new Microsoft.Rest.Serialization.DateJsonConverter()';

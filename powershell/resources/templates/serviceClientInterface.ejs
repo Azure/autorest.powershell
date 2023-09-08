@@ -51,5 +51,11 @@ namespace <%- project.namespace %>
 
 <% }); -%>
 <%# ToDo: Add method whose group is empty, and need to check in which case the group is empty.-%>
+<% var methodGroupWithoutKey = (project.state.model.operationGroups || []).filter(op => op.$key == '')
+if (methodGroupWithoutKey.length > 0) {
+    var methodGroup = methodGroupWithoutKey[0]
+-%>
+<%- include('methodGroupInterfaceBody', {methodGroup: methodGroup}) -%>
+<% } -%>
     }
 }
