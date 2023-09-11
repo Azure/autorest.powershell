@@ -17,7 +17,7 @@ steps:
 
 - script: |
     # ensure latest npm is installed
-    npm install -g npm 
+    npm install -g npm@9.8.1
 
     # make sure the versions are all synchronized and pull in dependencies
     npx @microsoft/rush sync-versions
