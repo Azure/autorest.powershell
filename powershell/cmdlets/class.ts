@@ -199,9 +199,12 @@ export function addParameterBreakingChange(targetProperty: Property, parameter: 
   }
 }
 
-export function addPreviewMessage(targetProperty: Property, parameter: any) {
-  if (parameter.previewMessage) {
-    targetProperty.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${parameter.previewMessage}"`] }));
+export function addParameterPreviewMessage(targetProperty: Property, parameter: any) {
+  if (parameter.previewAnnouncement) {
+    const parameters = [];
+    parameters.push(`"${parameter.previewAnnouncement.previewMessage}"`);
+    if (parameter.previewAnnouncement.estimatedGaDate) parameters.push(`"${parameter.previewAnnouncement.estimatedGaDate}"`);
+    targetProperty.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
   }
 }
 
@@ -1382,7 +1385,7 @@ export class CmdletClass extends Class {
             NewAddInfoAttribute(cmdletParameter, propertyType, !!vParam.required, false, desc, (<NewVirtualProperty>vParam.origin).property.serializedName);
             NewAddCompleterInfo(cmdletParameter, vParam);
             addParameterBreakingChange(cmdletParameter, vParam);
-            addPreviewMessage(cmdletParameter, vParam);
+            addParameterPreviewMessage(cmdletParameter, vParam);
             addDefaultInfo(cmdletParameter, vParam);
             this.addDoNotExport(cmdletParameter, vParam);
           }
@@ -1508,7 +1511,7 @@ export class CmdletClass extends Class {
       NewAddInfoAttribute(regularCmdletParameter, propertyType, vParam.required ?? false, false, vParam.description, origin.name);
       NewAddCompleterInfo(regularCmdletParameter, vParam);
       addParameterBreakingChange(regularCmdletParameter, vParam);
-      addPreviewMessage(regularCmdletParameter, vParam);
+      addParameterPreviewMessage(regularCmdletParameter, vParam);
       addDefaultInfo(regularCmdletParameter, vParam);
       this.addDoNotExport(regularCmdletParameter, vParam);
 
@@ -1725,9 +1728,13 @@ export class CmdletClass extends Class {
     }
 
     //add preview message attribute for cmdlet
-    if (operation.details.csharp.previewMessage) {
-      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: [`"${operation.details.csharp.previewMessage}"`] }))
+    if (operation.details.csharp.previewAnnouncement) {
+      const parameters = [];
+      parameters.push(`"${operation.details.csharp.previewAnnouncement.previewMessage}"`);
+      if (operation.details.csharp.previewAnnouncement.estimatedGaDate) parameters.push(`"${operation.details.csharp.previewAnnouncement.estimatedGaDate}"`);
+      this.add(new Attribute(ClientRuntime.PreviewMessageAttribute, { parameters: parameters }));
     }
+
     this.add(new Attribute(OutputTypeAttribute, { parameters: [...outputTypes] }));
     if (shouldAddPassThru) {
       const passThru = this.add(new Property('PassThru', SwitchParameter, { description: 'When specified, forces the cmdlet return a \'bool\' given that there isn\'t a return type by default.' }));
@@ -1736,6 +1743,7 @@ export class CmdletClass extends Class {
     }
 
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
+
     this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
       const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
