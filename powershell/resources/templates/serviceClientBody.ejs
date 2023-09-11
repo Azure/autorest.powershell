@@ -23,7 +23,7 @@
         public <%- type %> <%- parameter.language.default.name%> { get; set;}
 <% }%>
 <%});-%>
-<% project.model.operationGroups.forEach(function(methodGroup){ -%>
+<% project.model.operationGroups.filter(methodGroup => methodGroup.$key != '').forEach(function(methodGroup){ -%>
 <% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
         /// <summary>
         /// Gets the I<%- project.helper.PascalCase(key) %>Operations
