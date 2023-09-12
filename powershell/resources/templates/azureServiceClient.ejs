@@ -74,6 +74,7 @@ namespace <%- project.namespace %>
             DeserializationSettings.Converters.Add(new Microsoft.Rest.Serialization.TransformationJsonConverter());
 <% } -%>
             DeserializationSettings.Converters.Add(new Microsoft.Rest.Azure.CloudErrorJsonConverter());
+        }
 <%# ToDo: Add method whose group is empty, and need to check in which case the group is empty.-%>
 <% var methodGroupWithoutKey = (project.state.model.operationGroups || []).filter(op => op.$key == '')
 if (methodGroupWithoutKey.length > 0) {
@@ -82,6 +83,5 @@ if (methodGroupWithoutKey.length > 0) {
 -%>
 <%- include('azureMethod', {method: method, clientPrefix: ''}) -%>
 <% });} -%>
-        }
     }
 }
