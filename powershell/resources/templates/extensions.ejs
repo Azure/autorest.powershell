@@ -5,15 +5,21 @@ namespace <%- project.namespace %>
 <% project.model.usings.forEach(function(using){ -%>
     using <%- using %>;
 <% }); -%>
-
+<%if (client != '') {-%>
+    /// <summary>
+    /// Extension methods for <%- client %>
+    /// </summary>
+    public static partial class <%- client %>Extensions
+<% } else {-%>
     /// <summary>
     /// Extension methods for <%- project.helper.PascalCase(key) %>Operations
     /// </summary>
     public static partial class <%- project.helper.PascalCase(key) %>OperationsExtensions
+<% }-%>
     {
 <% methodGroup.operations.forEach(function(method){ -%>
 <%# ToDo: add support for ExcludeFromInterface-%>
-<%- include('extensionMethod', {method: method, group: methodGroup, project: project}) %>
+<%- include('extensionMethod', {method: method, group: methodGroup, project: project, client: client}) %>
 <% }); -%>
     }
 }

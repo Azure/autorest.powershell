@@ -44,6 +44,8 @@ async function generateMethodGroups(project: Project) {
   for (const operationGroup of values(project.state.model.operationGroups)) {
     if (operationGroup.$key === '') {
       // for operations with no operation group, they will be added in the client class directly.
+      const clientExtensionContent = await ejs.renderFile(extensionPath, { methodGroup: operationGroup, project: project, client: project.state.model.info.title });
+      project.state.writeFile(`${project.baseFolder}\\${project.state.model.info.title}Extensions.cs`, clientExtensionContent, undefined, 'source-file-csharp');
       continue;
     }
     // generate method group class
@@ -54,7 +56,7 @@ async function generateMethodGroups(project: Project) {
     const interfaceContent = await ejs.renderFile(interfacePath, { methodGroup: operationGroup, project: project });
     project.state.writeFile(`${project.baseFolder}\\I${key}Operations.cs`, interfaceContent, undefined, 'source-file-csharp');
     // generate method group extensions
-    const extensionContent = await ejs.renderFile(extensionPath, { methodGroup: operationGroup, project: project });
+    const extensionContent = await ejs.renderFile(extensionPath, { methodGroup: operationGroup, project: project, client: '' });
     project.state.writeFile(`${project.baseFolder}\\${key}OperationsExtensions.cs`, extensionContent, undefined, 'source-file-csharp');
   }
 }
