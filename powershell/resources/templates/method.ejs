@@ -11,6 +11,7 @@
         /// <%=parameter.language.default.description%>
         /// </param>
 <% });}-%>
+<% if(!method.language.default.pageable?.nextPageOperation) {-%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantEnumParameter(p)).forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
 <%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(vp) {-%>
@@ -24,6 +25,7 @@
         /// </param>
 <%}-%>
 <% });-%>
+<% } -%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
         /// <param name='nextPageLink'>
         /// The NextLink from the previous successful call to List operation.

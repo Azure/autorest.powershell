@@ -30,7 +30,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <% } -%>
 <%if(method.requests[0].protocol.http.method != 'patch') {-%>
 <%# for odata, validation is not needed. -%>
-<%-parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable)%>
+<%-parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, parameter.language.default.name, parameter.nullable != false)%>
 <%}-%>
 <%}-%>
 <% });-%>
@@ -44,7 +44,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
             }
 <% } -%>
 <%# for odata, validation is not needed. -%>
-<%- parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable)%>
+<%- parameter.extensions && parameter.extensions['x-ms-odata'] ? '' : project.helper.ValidateType(parameter.schema, method, prefix + parameter.language.default.name, parameter.nullable != false)%>
 <%});}-%>
 <%(method.parameters || []).filter(p => p.protocol.http.in == 'complex').forEach(function(parameter) {-%>
 <%-project.helper.PopulateGroupParameters(parameter)%>
@@ -174,6 +174,7 @@ var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-
             }
             // Serialize Request
             string _requestContent = null;
+<% if(!method.language.default.pageable?.nextPageOperation) {-%>
 <%# ToDo: add RequestBody, formdata support-%>
 <% (method.requests[0].parameters || []).filter(p =>p.protocol.http.in == 'body').forEach(function (parameter) {-%>
 <%# ToDo: currently only support for an unexpanded nullable body, need other support in the future -%>
@@ -202,6 +203,7 @@ var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-
             _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 <% } -%>
 <% });-%>
+<% } -%>
 <%# ToDo: Need to confirm in which case Settings.AddCredentials is false -%>
             // Set Credentials
             if (this<%-clientPrefix%>.Credentials != null)

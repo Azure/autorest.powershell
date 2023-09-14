@@ -188,14 +188,14 @@ function setSchemaNames(schemaGroups: Dictionary<Array<Schema>>, azure: boolean,
           interfaceName: 'I' + pascalCase(fixLeadingNumber([...deconstruct(schemaName)])),
           name: schemaName,
           namespace: pascalCase([serviceNamespace, '.', 'Support']),
-          fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? getPascalIdentifier(schema.language.default.name) : helper.GetCsharpType(choiceSchema.choiceType),
+          fullname: choiceSchema.extensions && !choiceSchema.extensions['x-ms-model-as-string'] && choiceSchema.choiceType.type === SchemaType.String ? schemaName : helper.GetCsharpType(choiceSchema.choiceType),
           enum: {
             ...schema.language.default.enum,
-            name: getPascalIdentifier(schema.language.default.name),
+            name: schemaName,
             values: choiceSchema.choices.map(each => {
               return {
                 ...each,
-                name: getPascalIdentifier(each.language.default.name),
+                name: each.language.default.name,
                 description: each.language.default.description
               };
             })
