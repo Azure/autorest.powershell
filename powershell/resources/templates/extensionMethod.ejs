@@ -1,5 +1,5 @@
 <% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
-<% var OperationsName = client != '' ? client : project.helper.PascalCase(key) + 'Operations'%>
+<% var OperationsName = clientName != '' ? clientName : project.helper.PascalCase(key) + 'Operations'-%>
 <%# ToDo: currently assume the SyncMethodsGenerationMode is Essential type, and need to add support for other types -%>
         /// <summary>
         /// <%=method.language.default.description%>
