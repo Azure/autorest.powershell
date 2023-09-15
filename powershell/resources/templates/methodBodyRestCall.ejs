@@ -57,7 +57,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
             <%-parameter.schema.language.default.name%> <%-parameter.language.default.name%> = new <%-parameter.schema.language.default.name%>();
-<% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties)-%>
+<% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(vp => !project.helper.IsConstantEnumProperty(vp) && !vp.readOnly)-%>
             if(<%-vps.map(vp=>`${vp.property.language.default.name} != null`).join('||')%>)
             {
 <%vps.forEach(function(vp) {-%>
@@ -157,7 +157,11 @@ var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-
                 {
                     _httpRequest.Headers.Remove("<%-parameter.language.default.serializedName%>");
                 }
+<% if (parameter.schema.type == 'uuid') { -%>
+                _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-prefix%><%-parameter.language.default.name%>, this.Client.SerializationSettings).Trim('"'));
+<% } else {-%>
                 _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", <%-prefix%><%-parameter.language.default.name%>);
+<% } -%>
             }
 <% });-%>
 
