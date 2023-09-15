@@ -88,6 +88,8 @@ function tweakSchema(model: SdkModel) {
   for (const obj of values(model.schemas.objects)) {
     const optionalParameters = Array<string>();
     const requiredParameters = Array<string>();
+    const optionalParametersWithoutReadOnly = Array<string>();
+    const requiredParametersWithoutReadOnly = Array<string>();
     for (const property of values(obj.properties)) {
       property.language.csharp = <any>{
         name: property.language.default.name.substring(0, 1).toUpperCase() + property.language.default.name.substring(1),
@@ -110,6 +112,9 @@ function tweakSchema(model: SdkModel) {
       type = (valueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && !virtualProperty.required && virtualProperty.property.nullable != false ? `${type}?` : type;
       const CamelName = camelCase(virtualProperty.name);
       virtualProperty.required ? requiredParameters.push(`${type} ${CamelName}`) : optionalParameters.push(`${type} ${CamelName} = default(${type})`);
+      if (!virtualProperty.readOnly) {
+        virtualProperty.required ? requiredParametersWithoutReadOnly.push(`${type} ${CamelName}`) : optionalParametersWithoutReadOnly.push(`${type} ${CamelName} = default(${type})`);
+      }
     }
     if (obj.parents && (obj.parents.immediate.length === 1 && !(obj.extensions && obj.extensions['x-ms-azure-resource']))) {
       // If there is only one direct parent parameter and extension x-ms-azure-resource is not set, will implement it as base class
@@ -130,6 +135,7 @@ function tweakSchema(model: SdkModel) {
       }
     }
     obj.language.default.constructorParametersDeclaration = [...requiredParameters, ...optionalParameters].join(', ');
+    obj.language.default.constructorParametersDeclarationWithoutReadOnly = [...requiredParametersWithoutReadOnly, ...optionalParametersWithoutReadOnly].join(', ');
   }
 }
 
@@ -185,8 +191,8 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
     if (parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
-      const constructorParametersDeclaration = <string>parameter.schema.language.default.constructorParametersDeclaration;
-      splitStringWithExclusion(constructorParametersDeclaration, ',').forEach(function (p) {
+      const constructorParametersDeclarationWithoutReadOnly = <string>parameter.schema.language.default.constructorParametersDeclarationWithoutReadOnly;
+      splitStringWithExclusion(constructorParametersDeclarationWithoutReadOnly, ',').forEach(function (p) {
         requiredDeclarations.push(p);
         requiredArgs.push(splitStringWithExclusion(p, ' ')[1]);
       });
