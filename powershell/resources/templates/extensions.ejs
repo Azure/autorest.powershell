@@ -6,14 +6,21 @@ namespace <%- project.namespace %>
     using <%- using %>;
 <% }); -%>
 
+<%if (clientName != '') {-%>
+    /// <summary>
+    /// Extension methods for <%- clientName %>
+    /// </summary>
+    public static partial class <%- clientName %>Extensions
+<% } else {-%>
     /// <summary>
     /// Extension methods for <%- project.helper.PascalCase(key) %>Operations
     /// </summary>
     public static partial class <%- project.helper.PascalCase(key) %>OperationsExtensions
+<% }-%>
     {
 <% methodGroup.operations.forEach(function(method){ -%>
 <%# ToDo: add support for ExcludeFromInterface-%>
-<%- include('extensionMethod', {method: method, group: methodGroup, project: project}) %>
+<%- include('extensionMethod', {method: method, group: methodGroup, project: project, clientName: clientName}) %>
 <% }); -%>
     }
 }
