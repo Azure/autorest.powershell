@@ -304,6 +304,10 @@ export class Helper {
     return ref + '.SerializationSettings';
   }
 
+  public IsNullCheckRequiredForVirtualProperty(virtualProperty: VirtualProperty): boolean {
+    return !((this.IsValueType(virtualProperty.property.schema.type) || (virtualProperty.property.schema.type === SchemaType.SealedChoice && ((<SealedChoiceSchema>virtualProperty.property.schema).choiceType.type !== SchemaType.String || (virtualProperty.property.schema.extensions && !virtualProperty.property.schema.extensions['x-ms-model-as-string'])))) && (virtualProperty.required || virtualProperty.property.nullable === false));
+  }
+
   public CamelCase(str: string): string {
     // str = str.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
     //   return index === 0 ? word.toLowerCase() : word.toUpperCase();
