@@ -395,6 +395,26 @@ export class Helper {
     return false;
   }
 
+  public GetUniqueName(name: string, usedNames: Array<string>) : string {
+    let uniqueName = name;
+    let i = 0;
+    while (usedNames.includes(uniqueName)) {
+      uniqueName = `${name}${++i}`;
+    }
+    return uniqueName;
+  }
+
+  public GetValidCsharpName(name : string) : string {
+    let validChars = name.replace(/[^a-zA-Z0-9_]/g, '');
+
+    // prepend '_' if the name starts with a digit
+    if (!/^[a-zA-Z_]/.test(validChars)) {
+      validChars = '_' + validChars;
+    }
+
+    return validChars;
+  }
+
   public IsEnum(schema: Schema): boolean {
     if (schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>schema).choiceType.type === SchemaType.String && schema.extensions && !schema.extensions['x-ms-model-as-string']) {
       return true;

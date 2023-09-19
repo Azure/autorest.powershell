@@ -55,10 +55,13 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <%});-%>
 <%# ToDo: add support for BuildInputMappings -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
-<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {-%>
+<%if(parameter.extensions && parameter.extensions['x-ms-client-flatten']) {
+    var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(vp => !project.helper.IsConstantEnumProperty(vp) && !vp.readOnly);
+    parameter.language.default.name = project.helper.GetUniqueName(parameter.language.default.name, vps.map(function(vp) {return vp.property.language.default.name;}));
+
+-%>
             <%-parameter.schema.language.default.name%> <%-parameter.language.default.name%> = new <%-parameter.schema.language.default.name%>();
-<% var vps = project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(vp => !project.helper.IsConstantEnumProperty(vp) && !vp.readOnly)
-   var vpsWithNullCheck = vps.filter(virtualProperty => project.helper.IsNullCheckRequiredForVirtualProperty(virtualProperty));
+<% var vpsWithNullCheck = vps.filter(virtualProperty => project.helper.IsNullCheckRequiredForVirtualProperty(virtualProperty));
    var vpsWithoutNullCheck = vps.filter(virtualProperty => !project.helper.IsNullCheckRequiredForVirtualProperty(virtualProperty));
 -%>
 <% if(vpsWithNullCheck.length > 0) {-%>

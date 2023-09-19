@@ -10,14 +10,14 @@
         /// </remarks>
 <% };-%>
 <% if(!method.language.default.pageable?.nextPageOperation) {-%>
-<% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
+<% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function(parameter){-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%= parameter.language.default.description%>
         /// </param>
 <% }); -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantEnumParameter(p)).forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
-<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p)).forEach(function(vp) {-%>
+<%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p) && !p.readOnly).forEach(function(vp) {-%>
         /// <param name='<%-vp.property.language.default.name%>'>
         /// <%= vp.property.language.default.description%>
         /// </param>
