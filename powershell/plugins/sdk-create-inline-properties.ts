@@ -479,7 +479,7 @@ async function handlePayloadFlatteningThreshold(state: State): Promise<void> {
           const bodyParameterSchema = bodyParameter.schema;
           if (bodyParameterSchema.type === SchemaType.Object) {
             const virtualProperties = getAllPublicVirtualProperties(bodyParameterSchema.language.default.virtualProperties).filter(vp => !vp.readOnly && !(vp.required && (vp.property.schema.type === SchemaType.Constant || helper.IsConstantEnumProperty(vp))));
-            if (virtualProperties.length <= payloadFlatteningThreshold) {
+            if (virtualProperties.length <= payloadFlatteningThreshold && !(bodyParameter.schema.type === SchemaType.Object && ((<ObjectSchema>bodyParameter.schema).discriminator || (<ObjectSchema>bodyParameter.schema).discriminatorValue))) {
               bodyParameter.extensions = bodyParameter.extensions || {};
               bodyParameter.extensions['x-ms-client-flatten'] = true;
             }
