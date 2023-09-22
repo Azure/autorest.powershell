@@ -13,6 +13,7 @@ By default, AutoRest's PowerShell Generator will place all the generated files u
 - [/obj](#obj)
 - [/resources](#resources)
 - [/test](#test)
+- [/UX](#ux)
 - [/node-modules](#node-modules) (coming soon)
 - [.gitignore](#gitignore) 
 - [\<format-file>.format.ps1xml](#format-fileformatps1xml)
@@ -61,6 +62,9 @@ Contains files not consumed by *any* process. Only for the repo as reference ass
 
 ### /test
 Contains tests for the cmdlets. By default, it contains an example pester test and a httpipelinemock.ps1 script.
+
+### /UX
+Contains metadata files for portal UX. Portal use these to display the usage of cmdlet for the resource in portal page.
 
 ### /node_modules
 Contains the packages from which the projects depend on.
