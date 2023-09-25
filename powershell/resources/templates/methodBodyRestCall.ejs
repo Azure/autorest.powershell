@@ -131,10 +131,14 @@ var prefix = pathParameter.implementation == 'Client' ? `this${clientPrefix}.` :
                 }
             }
 <% } else {-%>
+<% if (!queryParameter.required || (!project.helper.IsValueType(queryParameter.schema.type) && !project.helper.IsEnum(queryParameter.schema) && !(queryParameter.schema.choiceType && project.helper.IsValueType(queryParameter.schema.choiceType.type)))) {-%>
             if (<%-prefix%><%-queryParameter.language.default.name%> != null)
             {
                 _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", <%-project.helper.PathParameterString(queryParameter, clientPrefix)%>));
             }
+<% } else {-%>
+            _queryParameters.Add(string.Format("<%-queryParameter.language.default.serializedName%>={0}", <%-project.helper.PathParameterString(queryParameter, clientPrefix)%>));
+<% } -%>
 <% }-%>
 <% });}-%>
             if (_queryParameters.Count > 0)
@@ -205,7 +209,7 @@ var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-
                 _httpRequest.Content = new System.Net.Http.StreamContent(<%-parameter.language.default.name%>);
                 _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("<%-method.requests[0].protocol.http.mediaTypes[0]%>");
             }
-<% } else if (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !project.helper.IsConstantEnumParameter(parameter)) {-%>
+<% } else if (!parameter.required || (!project.helper.IsValueType(parameter.schema.type) && !project.helper.IsEnum(parameter.schema) && !(parameter.schema.choiceType && project.helper.IsValueType(parameter.schema.choiceType.type)))) {-%>
             if(<%-parameter.language.default.name%> != null)
             {
                 _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-parameter.language.default.name%>, <%-project.helper.GetSerializationSettings(parameter.schema, `this${clientPrefix}`)%>);
