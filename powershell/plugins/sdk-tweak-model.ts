@@ -172,7 +172,7 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
     bodyParameters = (operation.requests[0].parameters || []).filter(p => p.protocol.http?.in === ParameterLocation.Body);
   }
 
-  (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
+  (operation.parameters || []).filter(p => p.implementation != 'Client' && p.protocol.http?.in !== 'complexHeader' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)).forEach(function (parameter) {
     let type = parameter.schema.language.csharp?.fullname || parameter.schema.language.csharp?.name || '';
@@ -237,7 +237,7 @@ function addPageableMethodParameterDeclaration(operation: Operation) {
   const headerParameters: Array<Parameter> = (operation.parameters || []).filter(p => p.implementation != 'Client' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])
     && !(p.required && p.schema.type === SchemaType.Choice && (<ChoiceSchema>p.schema).choices.length === 1)
     && !(p.required && p.schema.type === SchemaType.SealedChoice && (<SealedChoiceSchema>p.schema).choices.length === 1)
-    && p.protocol.http?.in === ParameterLocation.Header);
+    && (p.protocol.http?.in === ParameterLocation.Header || p.protocol.http?.in === 'complexHeader'));
 
   headerParameters.forEach(function (parameter) {
 

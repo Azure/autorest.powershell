@@ -19,6 +19,9 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
             {
                 throw new Microsoft.Rest.ValidationException(Microsoft.Rest.ValidationRules.CannotBeNull, "nextPageLink");
             }
+<%(method.parameters || []).filter(p => p.protocol.http.in == 'complexHeader').forEach(function(parameter) {-%>
+<%-project.helper.PopulateGroupParameters(parameter)%>
+<%});-%>
 <% }else{-%> 
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body').forEach(function(parameter){-%>
 <%if(!(parameter.extensions && parameter.extensions['x-ms-client-flatten'])) {-%>
@@ -92,7 +95,7 @@ if (method.extensions && method.extensions['x-ms-request-id']) {
 <%});-%>               
 <% }else{-%>
 <%# ToDo: add support for Model.LogicalParameters.Where(p => !p.IsClientProperty)-%>
-<%method.parameters.filter(p => p.implementation != 'Client' && p.protocol.http.in != 'complex').forEach(function(p) {-%>
+<%method.parameters.filter(p => p.implementation != 'Client' && p.protocol.http.in != 'complex' && p.protocol.http.in != 'complexHeader').forEach(function(p) {-%>
                 tracingParameters.Add("<%-p.language.default.name%>", <%-p.language.default.name%>);
 <%});-%>
 <%# ToDo: currently we just add the unexpanded body parameter, and need to be fixed in the future %>

@@ -5,7 +5,7 @@
         /// </summary>
 <% };-%>
 <%# ToDo: add remark if both description and summary is provided, question here is in m4, there is no summary provided-%>
-<%  if(method.parameters&&!method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
+<%  if(method.parameters&&!method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
 <%# ToDo: should use camel name instead of pascal name here -%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>

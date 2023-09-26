@@ -9,7 +9,7 @@
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
-<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
+<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>
         /// </param>
@@ -39,7 +39,7 @@
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
-<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && !p.readOnly).forEach(function (parameter) {-%>
+<% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !p.readOnly && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.name%>'>
         /// <%=parameter.language.default.description%>
         /// </param>

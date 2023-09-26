@@ -349,6 +349,8 @@ function parameterGroupName(operationGroup: OperationGroup, operation: Operation
 
 async function implementGroupParameters(state: State) {
   const parameterGroup = new Map<string, ObjectSchema>();
+  const parameterGroupContainerHeader = new Map<string, boolean>();
+  const parameterGroupContainerOthers = new Map<string, boolean>();
   const parameterAdded = new Map<string, Array<string>>();
   for (const operationGroup of state.model.operationGroups) {
     for (const operation of operationGroup.operations) {
@@ -358,6 +360,11 @@ async function implementGroupParameters(state: State) {
       for (const parameter of [...(operation.requests && operation.requests.length > 0 ? operation.requests[0].parameters || [] : []), ...(operation.parameters || [])]) {
         if (parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) {
           const key = parameterGroupName(operationGroup, operation, parameter.extensions['x-ms-parameter-grouping']);
+          if (parameter.protocol.http?.in === ParameterLocation.Header) {
+            parameterGroupContainerHeader.set(key, true);
+          } else {
+            parameterGroupContainerOthers.set(key, true);
+          }
           const groupObj = parameterGroup.get(key) || new ObjectSchema(key, '');
           if (!parameterGroup.has(key)) {
             groupObj.extensions = {};
@@ -383,6 +390,76 @@ async function implementGroupParameters(state: State) {
           } else {
             if (!addedOperationGroupParameters.get(key)) {
               addedOperationGroupParameters.set(key, !!(parameter.required));
+            }
+          }
+        } else {
+          continue;
+        }
+      }
+      for (const groupParameter of operationGroupParameters) {
+        groupParameter.required = addedOperationGroupParameters.get(pascalCase(groupParameter.language.default.name)) || false;
+      }
+      operation.parameters = [...operationGroupParameters, ...(operation.parameters || [])];
+    }
+  }
+  implementGroupParametersForPagination(state, parameterGroup, parameterGroupContainerHeader, parameterGroupContainerOthers);
+}
+
+async function implementGroupParametersForPagination(state: State, GroupObjects: Map<string, ObjectSchema>, parameterGroupContainHeader: Map<string, boolean>, parameterGroupContainOthers: Map<string, boolean>) {
+  const parameterGroup = new Map<string, ObjectSchema>();
+  const parameterAdded = new Map<string, Array<string>>();
+  for (const operationGroup of state.model.operationGroups) {
+    for (const operation of operationGroup.operations) {
+      if (!(operation.extensions && operation.extensions['x-ms-pageable'])) {
+        // skip none pageable operations
+        continue;
+      }
+      const operationGroupParameters = new Array<Parameter>();
+      // value means if the parameter is required
+      const addedOperationGroupParameters = new Map<string, boolean>();
+      for (const parameter of [...(operation.requests && operation.requests.length > 0 ? operation.requests[0].parameters || [] : []), ...(operation.parameters || [])]) {
+        if (parameter.protocol.http?.in === ParameterLocation.Header && parameter.extensions && parameter.extensions['x-ms-parameter-grouping']) {
+          const key = parameterGroupName(operationGroup, operation, parameter.extensions['x-ms-parameter-grouping']);
+          if (parameterGroupContainHeader.get(key) && parameterGroupContainOthers.get(key)) {
+            const keyWithModel = `${key}Model`;
+            const groupObj = parameterGroup.get(keyWithModel) || new ObjectSchema(keyWithModel, '');
+            if (!parameterGroup.has(keyWithModel)) {
+              groupObj.extensions = {};
+              groupObj.extensions['x-ms-parameter-grouping'] = parameter.extensions['x-ms-parameter-grouping'];
+              parameterGroup.set(keyWithModel, groupObj);
+              parameterAdded.set(keyWithModel, []);
+              state.model.schemas.objects = state.model.schemas.objects || [];
+              state.model.schemas.objects.push(groupObj);
+            }
+            const prop = new Property(parameter.language.default.name, parameter.language.default.description, parameter.schema, {
+              required: parameter.required,
+            });
+            if (parameterAdded.has(keyWithModel) && (parameterAdded.get(keyWithModel) || []).indexOf(parameter.language.default.name) === -1) {
+              groupObj.addProperty(prop);
+              parameterAdded.set(keyWithModel, [...(parameterAdded.get(keyWithModel) || []), parameter.language.default.name]);
+            }
+            if (!addedOperationGroupParameters.has(keyWithModel)) {
+              addedOperationGroupParameters.set(keyWithModel, !!(parameter.required));
+              const groupParameter = new Parameter(camelCase(keyWithModel), '', groupObj);
+              groupParameter.protocol.http = groupParameter.protocol.http || new Protocol();
+              groupParameter.protocol.http.in = 'complexHeader';
+              operationGroupParameters.push(groupParameter);
+            } else {
+              if (!addedOperationGroupParameters.get(keyWithModel)) {
+                addedOperationGroupParameters.set(keyWithModel, !!(parameter.required));
+              }
+            }
+          } else if (parameterGroupContainHeader.get(key)) {
+            if (!addedOperationGroupParameters.has(key)) {
+              addedOperationGroupParameters.set(key, !!(parameter.required));
+              const groupParameter = new Parameter(camelCase(key), '', GroupObjects.get(key) || new ObjectSchema(key, ''));
+              groupParameter.protocol.http = groupParameter.protocol.http || new Protocol();
+              groupParameter.protocol.http.in = 'complexHeader';
+              operationGroupParameters.push(groupParameter);
+            } else {
+              if (!addedOperationGroupParameters.get(key)) {
+                addedOperationGroupParameters.set(key, !!(parameter.required));
+              }
             }
           }
         } else {
