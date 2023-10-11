@@ -64,7 +64,7 @@ Contains files not consumed by *any* process. Only for the repo as reference ass
 Contains tests for the cmdlets. By default, it contains an example pester test and a httpipelinemock.ps1 script.
 
 ### /UX
-Contains metadata files for portal UX. Portal use these to display the usage of cmdlet for the resource in portal page.
+This directory is dedicated to Azure-specific content and includes metadata files essential for enhancing the user experience (UX) within the Azure portal. These files are utilized by the Azure portal to effectively present the usage of cmdlets related to specific resources on portal pages.
 
 ### /node_modules
 Contains the packages from which the projects depend on.

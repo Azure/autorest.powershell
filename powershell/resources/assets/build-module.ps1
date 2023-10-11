@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -150,8 +150,5 @@ Export-TestStub -ModuleName $moduleName -ExportsFolder $exportsFolder -OutputFol
 
 Write-Host -ForegroundColor Green 'Creating example stubs...'
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
-
-Write-Host -ForegroundColor Green 'Creating ux metadata...'
-. (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
