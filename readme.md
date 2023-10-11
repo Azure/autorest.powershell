@@ -10,7 +10,6 @@ See [Using AutoRest PowerShell ](docs/readme.md) for examples, etc.
 
 For instructions on cloning/building/etc, see [Development](docs/development.md)
 
-
 ## Contributor License Agreement Requirements
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
@@ -28,15 +27,15 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 <hr>
-<hr>
-<hr>
+
 # NOTES
-This file is really only used for local testing, where loading the individual plugins on the cmdline is terribly
+This file is really only used for local testing, where loading the individual plugins on the command line is terribly
 cumbersome.
 
 ### Autorest plugin configuration
 - Please don't edit this section unless you're re-configuring how the powershell extension plugs in to AutoRest
-AutoRest needs the below config to pick this up as a plug-in - see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
+
+AutoRest needs the below config to pick this up as a plug-in &mdash; see https://github.com/Azure/autorest/blob/master/docs/developer/architecture/AutoRest-extension.md
 
 ``` yaml 
 pipeline-model: v3
