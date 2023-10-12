@@ -196,7 +196,7 @@ export class Helper {
       if (this.IsValueType(parameter.schema.type)) {
         if (parameter.schema.type === SchemaType.Date) {
           serializationSettings = 'new Microsoft.Rest.Serialization.DateJsonConverter()';
-        } else if (parameter.schema.type === SchemaType.DateTime) {
+        } else if (parameter.schema.type === SchemaType.DateTime && (<any>parameter.schema).format === 'date-time-rfc1123') {
           serializationSettings = 'new Microsoft.Rest.Serialization.DateTimeRfc1123JsonConverter()';
         } else if (parameter.schema.type === SchemaType.Uri) {
           serializationSettings = 'new Microsoft.Rest.Serialization.Base64UrlJsonConverter()';
@@ -395,7 +395,7 @@ export class Helper {
     return false;
   }
 
-  public GetUniqueName(name: string, usedNames: Array<string>) : string {
+  public GetUniqueName(name: string, usedNames: Array<string>): string {
     let uniqueName = name;
     let i = 0;
     while (usedNames.includes(uniqueName)) {
@@ -404,7 +404,7 @@ export class Helper {
     return uniqueName;
   }
 
-  public GetValidCsharpName(name : string) : string {
+  public GetValidCsharpName(name: string): string {
     let validChars = name.replace(/[^a-zA-Z0-9_]/g, '');
 
     // prepend '_' if the name starts with a digit
