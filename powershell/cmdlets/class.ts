@@ -14,7 +14,7 @@ import {
   Switch, System, TerminalCase, toExpression, Try, Using, valueOf, Field, IsNull, Or, ExpressionOrLiteral, TerminalDefaultCase, xmlize, TypeDeclaration, And, IsNotNull, PartialMethod, Case, While
 } from '@azure-tools/codegen-csharp';
 import { ClientRuntime, EventListener, Schema, ArrayOf, EnumImplementation } from '../llcsharp/exports';
-import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute } from '../internal/powershell-declarations';
+import { Alias, ArgumentCompleterAttribute, AsyncCommandRuntime, AsyncJob, CmdletAttribute, ErrorCategory, ErrorRecord, Events, InvocationInfo, OutputTypeAttribute, ParameterAttribute, PSCmdlet, PSCredential, SwitchParameter, ValidateNotNull, verbEnum, GeneratedAttribute, DescriptionAttribute, CategoryAttribute, ParameterCategory, ProfileAttribute, PSObject, InternalExportAttribute, ExportAsAttribute, DefaultRunspace, RunspaceFactory, AllowEmptyCollectionAttribute, DoNotExportAttribute, HttpPathAttribute } from '../internal/powershell-declarations';
 import { State } from '../internal/state';
 import { Channel } from '@azure-tools/autorest-extension-base';
 import { IParameter } from '@azure-tools/codemodel-v3/dist/code-model/components';
@@ -1529,6 +1529,15 @@ export class CmdletClass extends Class {
 
         if (cat) {
           regularCmdletParameter.add(new Attribute(CategoryAttribute, { parameters: [`${ParameterCategory}.${pascalCase((cat.protocol.http?.in))}`] }));
+        } else {
+          const isBodyParameter = origin ? origin.details.csharp.isBodyParameter : false
+          if (isBodyParameter) {
+            regularCmdletParameter.add(
+              new Attribute(CategoryAttribute, {
+                parameters: [`${ParameterCategory}.Body`],
+              })
+            );
+          }
         }
       }
 
@@ -1754,6 +1763,16 @@ export class CmdletClass extends Class {
 
       this.add(new Attribute(ProfileAttribute, { parameters: [...profileNames] }));
     }
+
+    this.operation.callGraph.forEach((operationInfo) => {
+      let apiVersion = 'null';
+      if (operationInfo.apiVersions) {
+        apiVersion = operationInfo.apiVersions[0].version;
+      }
+      operationInfo.requests?.forEach((request) => {
+        this.add(new Attribute(HttpPathAttribute, { parameters: [`Path = "${request.protocol?.http?.path}"`, `ApiVersion = "${apiVersion}"`] }));
+      });
+    });
   }
 }
 

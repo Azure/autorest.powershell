@@ -13,6 +13,7 @@ By default, AutoRest's PowerShell Generator will place all the generated files u
 - [/obj](#obj)
 - [/resources](#resources)
 - [/test](#test)
+- [/UX](#ux)
 - [/node-modules](#node-modules) (coming soon)
 - [.gitignore](#gitignore) 
 - [\<format-file>.format.ps1xml](#format-fileformatps1xml)
@@ -61,6 +62,9 @@ Contains files not consumed by *any* process. Only for the repo as reference ass
 
 ### /test
 Contains tests for the cmdlets. By default, it contains an example pester test and a httpipelinemock.ps1 script.
+
+### /UX
+This directory is dedicated to Azure-specific content and includes metadata files essential for enhancing the user experience (UX) within the Azure portal. These files are utilized by the Azure portal to effectively present the usage of cmdlets related to specific resources on portal pages.
 
 ### /node_modules
 Contains the packages from which the projects depend on.
