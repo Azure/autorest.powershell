@@ -48,6 +48,8 @@ There are multiple scripts created for performing different actions for developi
   - Generates the Markdown documents for the modules into the `docs` folder.
   - Same as `-Docs` in `build-module.ps1`.
   - This process is now integrated into `build-module.ps1` automatically. To disable, use `-NoDocs` when running `build-module.ps1`.
+- `generate-portal-ux.ps1`
+  - Generates a folder dedicated to Azure-specific content and includes metadata files essential for enhancing the user experience (UX) within the Azure portal.
 - `export-surface.ps1`
   - Generates Markdown documents for both the cmdlet surface and the model (class) surface of the module.
   - These files are placed into the `resources` folder.

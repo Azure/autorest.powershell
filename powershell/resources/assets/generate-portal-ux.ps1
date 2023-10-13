@@ -1,5 +1,8 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
+#
+# This Script will create a folder dedicated to Azure-specific content and includes metadata files essential for enhancing the user experience (UX) within the Azure portal. 
+# These files are utilized by the Azure portal to effectively present the usage of cmdlets related to specific resources on portal pages.
 # ----------------------------------------------------------------------------------
 param([switch]$NotIsolated)
 $ErrorActionPreference = 'Stop'
