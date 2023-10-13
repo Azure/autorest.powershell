@@ -29,7 +29,7 @@ namespace <%- project.namespace %>
         private void Initialize()
         {
 <% project.model.operationGroups.filter(methodGroup => methodGroup.$key != '').forEach(function(methodGroup){ -%>
-<% var key = methodGroup.$key == 'Operations' ? '' : methodGroup.$key-%>
+<% var key = project.helper.ConvertToValidMethodGroupKey(methodGroup.$key)-%>
             this.<%- project.helper.PascalCase(methodGroup.$key) %> = new <%- project.helper.PascalCase(key) %>Operations(this);
 <% }); -%>
             this.BaseUri = new System.Uri("https://management.azure.com");
