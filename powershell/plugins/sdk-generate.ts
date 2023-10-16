@@ -49,7 +49,7 @@ async function generateMethodGroups(project: Project) {
       continue;
     }
     // generate method group class
-    const key = operationGroup.$key === 'Operations' ? '' : operationGroup.$key;
+    const key = project.helper.ConvertToValidMethodGroupKey(operationGroup.$key);
     const content = await ejs.renderFile(path, { methodGroup: operationGroup, project: project });
     project.state.writeFile(`${project.baseFolder}\\${key}Operations.cs`, content, undefined, 'source-file-csharp');
     // generate method group interface
