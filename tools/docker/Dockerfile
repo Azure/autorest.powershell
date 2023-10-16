@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:7.1.3-ubuntu-18.04
+FROM mcr.microsoft.com/powershell:lts-7.2-ubuntu-18.04
 
 # Install dependencies and clean up
 RUN apt-get update \
