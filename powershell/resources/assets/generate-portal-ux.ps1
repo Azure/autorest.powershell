@@ -14,23 +14,6 @@ if(-not $NotIsolated) {
   return
 }
 
-$exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
-if(-not (Test-Path $exportsFolder)) {
-  Write-Error "Exports folder '$exportsFolder' was not found."
-}
-
-$directories = Get-ChildItem -Directory -Path $exportsFolder
-$hasProfiles = ($directories | Measure-Object).Count -gt 0
-if(-not $hasProfiles) {
-  $directories = Get-Item -Path $exportsFolder
-}
-
-$docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
-if(Test-Path $docsFolder) {
-  $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
-}
-$null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
-
 $moduleName = '${$project.moduleName}'
 $rootModuleName = '${$project.rootModuleName}'
 if ($rootModuleName -eq "")
