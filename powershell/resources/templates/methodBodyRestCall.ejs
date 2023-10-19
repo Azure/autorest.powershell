@@ -176,7 +176,7 @@ var prefix = parameter.implementation == 'Client' ? `this${clientPrefix}.` : ''-
                     _httpRequest.Headers.Remove("<%-parameter.language.default.serializedName%>");
                 }
 <% if (parameter.schema.type == 'uuid') { -%>
-                _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-prefix%><%-parameter.language.default.name%>, this.Client.SerializationSettings).Trim('"'));
+                _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(<%-prefix%><%-parameter.language.default.name%>, this<%-clientPrefix%>.SerializationSettings).Trim('"'));
 <% } else {-%>
                 _httpRequest.Headers.TryAddWithoutValidation("<%-parameter.language.default.serializedName%>", <%-prefix%><%-parameter.language.default.name%>);
 <% } -%>
