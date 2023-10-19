@@ -72,8 +72,11 @@ function csharpForArray(elementType: Schema, helper: Helper, nullable = true): s
   if ((rawElementType.type === SchemaType.Choice || rawElementType.type === SchemaType.SealedChoice) && !helper.IsEnum(rawElementType)) {
     elementType = (<ChoiceSchema | SealedChoiceSchema>rawElementType).choiceType;
   }
-  const type = helper.GetCsharpType(elementType);
-  const postfix = ((type && type !== 'string') || helper.IsEnum(rawElementType)) && nullable ? '?' : '';
+  let type = helper.GetCsharpType(elementType);
+  if (elementType.type === 'any') {
+    type = 'object';
+  }
+  const postfix = ((type && type !== 'string' && type !== 'object') || helper.IsEnum(rawElementType)) && nullable ? '?' : '';
   return `System.Collections.Generic.IList<${type ? type + postfix :
     (helper.IsEnum(rawElementType) && nullable ? rawElementType.language.default.name + '?' : rawElementType.language.default.name)}>`;
 }
