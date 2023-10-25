@@ -482,7 +482,7 @@ async function implementOdata(state: State) {
         const odata = operation.extensions['x-ms-odata'];
         operation.parameters = (operation.parameters || []).filter(p => !(p.protocol.http?.in === 'query' && knownOdataParameters.indexOf((p.language.default.serializedName).toLowerCase()) > -1));
         const schemaName = odata.split('/').pop();
-        const odataSchema = (state.model.schemas.objects || []).find(s => s.language.default.name === pascalCase(schemaName)) || new ObjectSchema(pascalCase(schemaName), '');
+        const odataSchema = (state.model.schemas.objects || []).find(s => pascalCase(s.language.default.name) === pascalCase(schemaName)) || new ObjectSchema(pascalCase(schemaName), '');
         // add the odata parameter
         const odataParameter = new Parameter('odataQuery', '', odataSchema, {
           extensions: { 'x-ms-odata': true },
