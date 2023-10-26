@@ -7,7 +7,7 @@ import { KnownMediaType, HeaderProperty, HeaderPropertyType, getAllProperties } 
 import { getAllProperties as newGetAllProperties } from '@autorest/codemodel';
 import { EOL, DeepPartial, } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { Access, Modifier, StringExpression, Expression, System } from '@azure-tools/codegen-csharp';
+import { Access, Modifier, StringExpression, Expression, System, LiteralExpression } from '@azure-tools/codegen-csharp';
 import { Class } from '@azure-tools/codegen-csharp';
 import { Constructor } from '@azure-tools/codegen-csharp';
 import { IsDeclaration, toExpression } from '@azure-tools/codegen-csharp';
@@ -143,7 +143,7 @@ export class JsonSerializableClass extends Class {
       }
 
       if (prop.language.csharp.read) {
-        deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, prop)));
+        deserializeStatements.add(prop.assignPrivate((<EnhancedTypeDeclaration>prop.type).deserializeFromContainerMember(KnownMediaType.Json, jsonParameter, prop.serializedName, new LiteralExpression(prop.backingName))));
       }
     }
     popTempVar();
