@@ -94,6 +94,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
   /* @internal */  jsonSerializer?: JsonSerializableClass;
   // /* @internal */  xmlSerializer?: XmlSerializableClass;
   /* @internal */  dictionaryImpl?: DictionaryImplementation;
+  /* @internal */ constructorMethod?: Method;
 
   private readonly validationStatements = new Statements();
   public ownedProperties = new Array<ModelProperty>();
@@ -136,7 +137,7 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
     this.schema.language.csharp.interfaceImplementation.init();
 
     // add default constructor
-    this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
+    this.constructorMethod = this.addMethod(new Constructor(this, { description: `Creates an new <see cref="${this.name}" /> instance.` })); // default constructor for fits and giggles.
 
     // handle parent interface implementation
     if (!this.handleAllOf()) {
@@ -271,10 +272,14 @@ export class ModelClass extends Class implements EnhancedTypeDeclaration {
               getFunc = toExpression(`"${this.schema.discriminatorValue}"`);
               setFunc = toExpression(`(${parentCast}${parentField.field.name}).${this.accessor(virtualProperty)} = "${this.schema.discriminatorValue}"`);
               isConstant = true;
+              if (virtualProperty.property.language.csharp?.constantValue === undefined && !virtualProperty.property.readOnly) {
+                this.constructorMethod?.add(`this.${parentField.field.name}.${this.accessor(virtualProperty)} = "${this.schema.discriminatorValue}";`);
+              }
               break;
             }
           }
         }
+
         const vp = this.add(new Property(virtualProperty.name, propertyType, {
           description: virtualProperty.property.language.csharp?.description,
           get: getFunc,
