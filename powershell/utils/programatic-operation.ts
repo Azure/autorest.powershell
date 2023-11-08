@@ -24,7 +24,7 @@ export class IntrinsicOperation extends Extensions implements IntrinsicOperation
   public details: LanguageDetails<ProgramaticOperationDetails>;
 
   public responses = new Dictionary<Dictionary<Schema>>();
-  public operationType: 'IntrinsicOperation' = 'IntrinsicOperation';
+  public operationType: 'IntrinsicOperation' = <const>'IntrinsicOperation';
 
   constructor(name: string, deprecated: boolean, pure: boolean, initializer?: DeepPartial<IntrinsicOperation>) {
     super();
