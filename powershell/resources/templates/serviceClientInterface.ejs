@@ -8,7 +8,7 @@ namespace <%- project.namespace %>
 <% }); -%>
 
     /// <summary>
-    /// <%- project.model.info.description %>
+    /// <%=project.helper.wrapComments('        ', '/// ', project.model.info.description)%>
     /// </summary>
 <% var client = project.model.info.title -%>
     public partial interface I<%- client %> :  System.IDisposable
@@ -30,7 +30,7 @@ namespace <%- project.namespace %>
 
 <% (project.model.globalParameters || []).filter(p => p.language.default.name != '$host').forEach(function(parameter){ -%>
         /// <summary>
-        /// <%- parameter.language.default.description %>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </summary>
 <%# ToDo: need to use fullname instead of namespace + name -%>
 <% var type = parameter.schema.type == 'constant' ? parameter.schema.valueType.language.csharp.fullname : parameter.schema.language.csharp.fullname-%>

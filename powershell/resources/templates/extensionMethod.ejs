@@ -2,7 +2,7 @@
 <% var OperationsName = clientName != '' ? clientName : project.helper.PascalCase(key) + 'Operations'-%>
 <%# ToDo: currently assume the SyncMethodsGenerationMode is Essential type, and need to add support for other types -%>
         /// <summary>
-        /// <%=method.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', method.language.default.description)%>
 <%# ToDo: add support for externaldocsurl -%>
         /// </summary>
 <%# ToDo: add <remarks> if there are both description and summary -%>
@@ -11,7 +11,7 @@
         /// </param>
 <% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.name%>'>
-        /// <%=parameter.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <% });}-%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>
@@ -32,7 +32,7 @@
         }
 
         /// <summary>
-        /// <%=method.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', method.language.default.description)%>
 <%# ToDo: add support for externaldocsurl -%>
         /// </summary>
 <%# ToDo: add <remarks> if there are both description and summary -%>
@@ -41,7 +41,7 @@
         /// </param>
 <% if(method.parameters && !method.language.default.pageable?.nextPageOperation) { method.parameters.filter(p => p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !p.readOnly && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function (parameter) {-%>
         /// <param name='<%-parameter.language.default.name%>'>
-        /// <%=parameter.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <% });}-%>
 <% if(method.language.default.pageable?.nextPageOperation) {-%>

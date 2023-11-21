@@ -10,7 +10,7 @@ namespace <%- project.namespace %>
 
 <% if (project.model.info.description) { -%>
     /// <summary>
-    /// <%- project.model.info.description %>
+    /// <%=project.helper.wrapComments('    ', '/// ', project.model.info.description)%>
     /// </summary>
 <% } -%>
 <% var client = project.model.info.title -%>

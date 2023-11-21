@@ -7,12 +7,12 @@ namespace <%- project.namespace %>.Models
 <%# ToDo: need to populate effectiveDocumentation in the model-%>
 <% if (model.language.default.description) {-%>
     /// <summary>
-    /// <%=wrapComments('    ', '/// ', model.language.default.description)%>
+    /// <%=project.helper.wrapComments('    ', '/// ', model.language.default.description)%>
     /// </summary>
 <% }-%>
 <% if (model.summary && model.language.default.description) { -%>
     /// <remarks>
-    /// <%=wrapComments('    ', '/// ', model.language.default.description)%>
+    /// <%=project.helper.wrapComments('    ', '/// ', model.language.default.description)%>
     /// </remarks>
 <% } -%>
 <%# ToDo: support NeedsPolymorphicConverter-%>
@@ -54,8 +54,8 @@ if (p.property.schema.type == 'sealed-choice' || p.property.schema.type == 'choi
         additionInfo = additionInfo +  choices.join(', ');
 }
 %>
-        /// <param name="<%-project.helper.CamelCase(p.name)%>"><%=wrapComments('        ', '/// ', p.property.language.default.description)%>
-        /// <%-wrapComments('        ', '/// ', additionInfo)%></param>
+        /// <param name="<%-project.helper.CamelCase(p.name)%>"><%=project.helper.wrapComments('        ', '/// ', p.property.language.default.description)%>
+        /// <%=project.helper.wrapComments('        ', '/// ', additionInfo)%></param>
 <%});-%>
         public <%- model.language.default.name%>(<%-model.language.default.constructorParametersDeclaration%>)
 <%# If there is only one direct parent, will implement it as parent%>
@@ -105,7 +105,7 @@ const quote = p.property.schema.choiceType.type !== 'string' ? '' : '"';
         }
 %>
         /// <summary>
-        /// <%=wrapComments('        ', '/// ', p.property.language.csharp.formattedPropertySummary)%><%=additionInfo%>
+        /// <%=project.helper.wrapComments('        ', '/// ', p.property.language.csharp.formattedPropertySummary)%><%=additionInfo%>
         /// </summary>
 <% (p.property.schema.language.csharp.jsonConverters || []).forEach(function(ct) {-%>
         [Newtonsoft.Json.JsonConverter(typeof(<%-ct%>))]
