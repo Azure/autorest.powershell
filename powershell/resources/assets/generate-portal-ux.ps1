@@ -47,7 +47,7 @@ function Test-FunctionSupported()
     }
 
     $cmdletName, $parameterSetName = $FunctionName.Split("_")
-    If ($parameterSetName.Contains("List") -or $parameterSetName.Contains("ViaIdentity")) {
+    If ($parameterSetName.Contains("List") -or $parameterSetName.Contains("ViaIdentity")  -or $parameterSetName.Contains("ViaJson")) {
         return $false
     }
     If ($cmdletName.StartsWith("New") -or $cmdletName.StartsWith("Set") -or $cmdletName.StartsWith("Update")) {
