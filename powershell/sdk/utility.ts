@@ -460,7 +460,7 @@ export class Helper {
   public wrapComments(indentation: string, prefix: string, comments: string): string {
     const defaultMaximumCommentColumns = 80;
 
-    if (comments === null || comments.length === 0) {
+    if (comments === null || comments === undefined || comments.length === 0) {
       return '';
     }
 
