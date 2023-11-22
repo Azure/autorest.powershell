@@ -2,29 +2,29 @@
 <%# ToDo: support for ExcludeFromInterface -%>
 <% if(method.language.default.description) {-%>
         /// <summary>
-        /// <%= method.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', method.language.default.description)%>
 <%# ToDo: support for  ExternalDocsUrl -%>
         /// </summary>
         /// <remarks>
-        /// <%= method.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', method.language.default.description)%>
         /// </remarks>
 <% };-%>
 <% if(!method.language.default.pageable?.nextPageOperation) {-%>
 <% method.parameters.filter(p=>p.implementation != 'Client' && !project.helper.IsConstantParameter(p) && p.protocol.http?.in != 'complexHeader' && !(p.extensions && p.extensions['x-ms-parameter-grouping'])).forEach(function(parameter){-%>
         /// <param name='<%-parameter.language.default.name%>'>
-        /// <%= parameter.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <% }); -%>
 <% (method.requests[0].parameters || []).filter(p=>p.protocol.http.in == 'body' && !project.helper.IsConstantEnumParameter(p)).forEach(function(parameter){-%>
 <%if(parameter.extensions && parameter.extensions['x-ms-client-flatten'] ) {-%>
 <%project.helper.GetAllPublicVirtualProperties(parameter.schema.language.default.virtualProperties).filter(p => !project.helper.IsConstantEnumProperty(p) && !p.readOnly).forEach(function(vp) {-%>
         /// <param name='<%-vp.property.language.default.name%>'>
-        /// <%= vp.property.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', vp.property.language.default.description)%>
         /// </param>
 <%});-%>
 <%} else {-%>
         /// <param name='<%-parameter.language.default.name%>'>
-        /// <%= parameter.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%}-%>
 <% });-%>

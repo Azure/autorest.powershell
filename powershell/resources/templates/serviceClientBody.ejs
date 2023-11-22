@@ -13,7 +13,7 @@
         public Newtonsoft.Json.JsonSerializerSettings DeserializationSettings { get; private set; }
 <% (project.model.globalParameters || []).filter(p=>p.language.default.name != '$host').forEach(function(parameter) {-%>
         /// <summary>
-        /// <%=parameter.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </summary>
 <% var type = parameter.schema.type == 'constant' ? parameter.schema.valueType.language.csharp.fullname : parameter.schema.language.csharp.fullname-%>
 <%type = type.includes('.') || type == 'string' ? type : type + '?'-%>
@@ -120,7 +120,7 @@ if (parameters.length > 0) {-%>
         /// </summary>
 <%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter){-%>
         /// <param name='<%-project.helper.CamelCase(parameter.language.default.name)%>'>
-        /// Required. <%-parameter.language.default.description%>
+        /// Required. <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%});-%>
         /// <param name='handlers'>
@@ -153,7 +153,7 @@ if (parameters.length > 0) {-%>
         /// </summary>
 <%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
-        /// Required. <%-parameter.language.default.description%>
+        /// Required. <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%});-%>
         /// <param name='httpClient'>
@@ -187,7 +187,7 @@ if (parameters.length > 0) {-%>
         /// </summary>
 <%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
-        /// Required. <%-parameter.language.default.description%>
+        /// Required. <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%});-%>
         /// <param name='rootHandler'>
@@ -227,7 +227,7 @@ if (parameters.length > 0) {-%>
         /// </param>
 <%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
-        /// Required. <%-parameter.language.default.description%>
+        /// Required. <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%});-%>
         /// <param name='handlers'>
@@ -267,7 +267,7 @@ if (parameters.length > 0) {-%>
         /// </param>
 <%parameters.filter(p => !project.helper.IsConstantParameter(p)).forEach(function(parameter) {-%>
         /// <param name="<%-project.helper.CamelCase(parameter.language.default.name)%>">
-        /// Required. <%-parameter.language.default.description%>
+        /// Required. <%=project.helper.wrapComments('        ', '/// ', parameter.language.default.description)%>
         /// </param>
 <%});-%>
         /// <param name='rootHandler'>

@@ -17,7 +17,7 @@ namespace <%- project.namespace %>.Models
 if (item.language.default.description) {
 -%>
         /// <summary>
-        /// <%-item.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', item.language.default.description)%>
         /// </summary>
 <% } -%>
         [System.Runtime.Serialization.EnumMember(Value = "<%-item.value%>")]
@@ -63,7 +63,7 @@ if (item.language.default.description) {
 <%model.choices.forEach(function(choice){-%>
 <%if(choice.language.default.description){-%>
         /// <summary>
-        /// <%-choice.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', choice.language.default.description)%>
         /// </summary>
 <%}-%>
         public const string <%-project.helper.GetValidCsharpName(choice.language.default.name)%> = "<%-choice.value%>";

@@ -15,7 +15,7 @@ import { VirtualProperty, getAllProperties, getAllPublicVirtualProperties, getMu
 import { resolveParameterNames } from '../utils/resolve-conflicts';
 import { OperationType } from '../utils/command-operation';
 import { Header, HeaderPropertyType } from '@azure-tools/codemodel-v3';
-import { getEscapedReservedName } from '../utils/code-namer';
+import { getEscapedReservedName, isReserved } from '../utils/code-namer';
 import { Helper } from '../sdk/utility';
 
 function getPluralizationService(): EnglishPluralizationService {
@@ -163,6 +163,9 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
   // run thru the properties in this class.
   // dolauli handle properties in this class
   for (const property of objectProperties) {
+    if (isReserved(property.language.default.name)) {
+      property.language.default.name = camelCase(getEscapedReservedName(property.language.default.name, 'Property'));
+    }
     const mutability = getMutability(property);
     const propertyName = property.language.default.name;
 
@@ -292,6 +295,9 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, con
   }
 
   for (const property of nonObjectProperties) {
+    if (isReserved(property.language.default.name)) {
+      property.language.default.name = camelCase(getEscapedReservedName(property.language.default.name, 'Property'));
+    }
     const name = getEscapedReservedName(getPascalIdentifier(<string>property.language.default.name), 'Property');
     // this is not something that has properties,
     // so we don't need to do any inlining
