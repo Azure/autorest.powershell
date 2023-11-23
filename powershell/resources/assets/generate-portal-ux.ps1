@@ -31,8 +31,6 @@ $instance = [${$project.serviceNamespace.moduleClass.declaration}]::Instance
 $moduleInfo = Get-Module -Name $moduleName
 $parameterSetsInfo = Get-Module -Name "$moduleName.private"
 
-$buildinFunctions = @("Export-CmdletSurface", "Export-ExampleStub", "Export-FormatPs1xml", "Export-HelpMarkdown", "Export-ModelSurface", "Export-ProxyCmdlet", "Export-Psd1", "Export-TestStub", "Get-CommonParameter", "Get-ModuleGuid", "Get-ScriptCmdlet")
-
 function Test-FunctionSupported()
 {
     [CmdletBinding()]
@@ -42,7 +40,7 @@ function Test-FunctionSupported()
         $FunctionName
     )
 
-    If ($buildinfunctions.Contains($FunctionName)) {
+    If (-not $FunctionName.Contains("_")) {
         return $false
     }
 
@@ -300,7 +298,7 @@ function New-MetadataForCmdlet()
     return $result
 }
 
-$parameterSets = $parameterSetsInfo.ExportedCmdlets.Keys | Where-Object { Test-functionSupported($_) }
+$parameterSets = $parameterSetsInfo.ExportedCmdlets.Keys | Where-Object { Test-FunctionSupported($_) }
 $resourceTypes = @{}
 foreach ($parameterSetName in $parameterSets)
 {
