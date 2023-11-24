@@ -95,6 +95,7 @@ The following directives cover the most common tweaking scenarios for cmdlet gen
 - [Parameter Hiding](#Parameter-Hiding)
 - [Parameter Description](#Parameter-Description)
 - [Model Rename](#Model-Rename)
+- [Model Cmdlet](#Model-Cmdlet)
 - [Alias Removal](#Alias-Removal)
 - [Table Formatting](#Table-Formatting)
 - [Argument Completers](#Argument-Completers)
@@ -309,6 +310,20 @@ directive:
       model-name: VM$1
 ```
 
+### Model Cmdlet
+To generate a cmdlet for a model facilitating users in constructing complex objects, you can choose the model using `model-name``. The default cmdlet name generated will be New-Az[subject-prefix][model-name]Object, and you can customize it using `cmdlet-name``. For example:
+```yaml $false
+- model-cmdlet:
+  - model-name: Workspace
+    cmdlet-name: New-AzWorkspaceObject
+```
+
+**Note: If you're working with autorest.powershell v3, the syntax differs, and the cmdlet name cannot be customized. For example:**
+```yaml $false
+- model-cmdlet
+    - model-name: Workspace
+```
+
 ### Property Rename
 To select a property you need to provide the `property-name`. Furthermore, if you want to target a specific model property, you can provide the `model-name`. For example:
 ```yaml $false
@@ -421,8 +436,8 @@ We will use two directives to support polymorphism:
 
 # Create Model Cmdlets for ChildClasses
 - model-cmdlet:
-  - ChildClassA
-  - ChildClassB
+  - model-name: ChildClassA
+  - model-name: ChildClassB
 ```
 
 As a result, there will be three cmdlets generated:
