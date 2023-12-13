@@ -90,6 +90,8 @@ function csharpForDict(dictSchema: DictionarySchema, helper: Helper): string {
   let valueType = helper.GetCsharpType(elementType) ? helper.GetCsharpType(elementType) : (rawElementType.type === SchemaType.Array ? csharpForArray((<ArraySchema>rawElementType).elementType, helper) : rawElementType.language.default.name);
   if (rawElementType.type === 'any') {
     valueType = 'object';
+  } else if (rawElementType.type === SchemaType.Dictionary) {
+    valueType = csharpForDict(<DictionarySchema>rawElementType, helper);
   }
   if (((helper.GetCsharpType(elementType) && valueType !== 'string') || helper.IsEnum(rawElementType)) && dictSchema.nullableItems != false) {
     valueType += '?';
