@@ -226,7 +226,10 @@ export class Helper {
     }
     if (schema && this.isArraySchema(schema) && this.ShouldValidateChain(schema)) {
       // ToDo: Should try to get a unique name instead of element
-      const elementVar = 'element';
+      let elementVar = 'element';
+      if (valueReference.startsWith(elementVar)) {
+        elementVar = valueReference + '1';
+      }
       const innerValidation = this.ValidateType((<ArraySchema>schema).elementType, scope, elementVar, true, 1);
       if (innerValidation) {
         sb.push(`foreach (var ${elementVar} in ${valueReference})`);
@@ -236,7 +239,10 @@ export class Helper {
       }
     } else if (schema && this.isDictionarySchema(schema) && this.ShouldValidateChain(schema)) {
       // ToDo: Should try to get a unique name instead of valueElement
-      const valueVar = 'valueElement';
+      let valueVar = 'valueElement';
+      if (valueReference.startsWith(valueVar)) {
+        valueVar = valueReference + '1';
+      }
       const innerValidation = this.ValidateType((<DictionarySchema>schema).elementType, scope, valueVar, true, 1);
       if (innerValidation) {
         sb.push(`foreach (var ${valueVar} in ${valueReference}.Values)`);
