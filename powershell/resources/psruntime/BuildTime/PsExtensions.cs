@@ -172,5 +172,21 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             return parameter.Attributes.Any(attr => attr is DoNotExportAttribute);
         }
+
+        public static bool IsIdentityTypeParameterGroup(this ParameterGroup parameterGroup)
+        {
+            const string IdentityTypeParameterName = "IdentityType";
+            const string IdentityTypeParameterType = "System.String";
+            return parameterGroup.ParameterName.Equals(IdentityTypeParameterName, StringComparison.InvariantCultureIgnoreCase) &&
+                parameterGroup.ParameterType.FullName.Equals(IdentityTypeParameterType, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool IsUserAssignedIdentityParameterGroup(this ParameterGroup parameterGroup)
+        {
+            const string UserAssignedIdentityParameterName = "UserAssignedIdentity";
+            const string UserAssignedIdentityParameterType = "System.Collections.Hashtable";
+            return parameterGroup.ParameterName.EndsWith(UserAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
+                parameterGroup.ParameterType.FullName.Equals(UserAssignedIdentityParameterType, StringComparison.InvariantCultureIgnoreCase);
+        }
     }
 }

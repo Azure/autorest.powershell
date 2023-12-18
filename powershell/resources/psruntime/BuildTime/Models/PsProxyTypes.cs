@@ -31,7 +31,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     {
         public string ModuleName { get; }
 
-        public string RootModuleName {get => @"${$project.rootModuleName}";}
+        public string RootModuleName { get => @"${$project.rootModuleName}"; }
         public string CmdletName { get; }
         public string CmdletVerb { get; }
         public string CmdletNoun { get; }
@@ -175,13 +175,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class ParameterGroup
     {
-        public string ParameterName { get; }
+        public string ParameterName { get; internal set; }
         public Parameter[] Parameters { get; }
 
         public string[] VariantNames { get; }
         public string[] AllVariantNames { get; }
         public bool HasAllVariants { get; }
-        public Type ParameterType { get; }
+        public Type ParameterType { get; internal set; }
         public string Description { get; }
 
         public string[] Aliases { get; }
@@ -191,7 +191,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public DefaultInfo DefaultInfo { get; }
         public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }
-        public bool DontShow { get; }
+        public bool DontShow { get; internal set; }
         public bool IsMandatory { get; }
         public bool SupportsWildcards { get; }
         public bool IsComplexInterface { get; }
@@ -249,6 +249,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             ValueFromPipelineByPropertyName = Parameters.Any(p => p.ValueFromPipelineByPropertyName);
             IsInputType = ValueFromPipeline || ValueFromPipelineByPropertyName;
         }
+
+        internal ParameterGroup SallowCopy()
+        {
+            return (ParameterGroup)this.MemberwiseClone();
+        }
     }
 
     internal class Parameter
@@ -257,7 +262,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string ParameterName { get; }
         public ParameterMetadata Metadata { get; }
         public PsParameterHelpInfo HelpInfo { get; }
-        public Type ParameterType { get; }
+        public Type ParameterType { get; internal set; }
 
         public Attribute[] Attributes { get; }
         public ParameterCategory[] Categories { get; }
@@ -273,7 +278,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
         public int? Position { get; }
-        public bool DontShow { get; }
+        public bool DontShow { get; internal set; }
         public bool IsMandatory { get; set; }
 
         public InfoAttribute InfoAttribute { get; }
@@ -323,6 +328,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsComplexInterface = ComplexInterfaceInfo.IsComplexInterface;
             Description = $"{description}{(IsComplexInterface ? complexMessage : String.Empty)}";
         }
+
     }
 
     internal class ComplexInterfaceInfo
@@ -334,7 +340,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool Required { get; }
         public bool ReadOnly { get; }
         public string Description { get; }
-        
+
         public ComplexInterfaceInfo[] NestedInfos { get; }
         public bool IsComplexInterface { get; }
 
@@ -351,7 +357,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             var unwrappedType = Type.Unwrap();
             var hasBeenSeen = seenTypes?.Contains(unwrappedType) ?? false;
             (seenTypes ?? (seenTypes = new List<Type>())).Add(unwrappedType);
-            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[]{} :
+            NestedInfos = hasBeenSeen ? new ComplexInterfaceInfo[] { } :
                 unwrappedType.GetInterfaces()
                 .Concat(InfoAttribute.PossibleTypes)
                 .SelectMany(pt => pt.GetProperties()
@@ -440,7 +446,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         }
     }
 
-    internal class PSArgumentCompleterInfo: CompleterInfo
+    internal class PSArgumentCompleterInfo : CompleterInfo
     {
         public string[] ResourceTypes { get; }
 
@@ -511,7 +517,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 parameterHelp = parameterHelp.Where(ph => (!ph.ParameterSetNames.Any() || ph.ParameterSetNames.Any(psn => psn == variant.VariantName || psn == AllParameterSets)) && ph.Name != "IncludeTotalCount");
             }
             var result = parameters.Select(p => new Parameter(variant.VariantName, p.Key, p.Value, parameterHelp.FirstOrDefault(ph => ph.Name == p.Key)));
-            if (variant.SupportsPaging) {
+            if (variant.SupportsPaging)
+            {
                 // If supportsPaging is set, we will need to add First and Skip parameters since they are treated as common parameters which as not contained on Metadata>parameters
                 variant.Info.Parameters["First"].Attributes.OfType<ParameterAttribute>().FirstOrDefault(pa => pa.ParameterSetName == variant.VariantName || pa.ParameterSetName == AllParameterSets).HelpMessage = "Gets only the first 'n' objects.";
                 variant.Info.Parameters["Skip"].Attributes.OfType<ParameterAttribute>().FirstOrDefault(pa => pa.ParameterSetName == variant.VariantName || pa.ParameterSetName == AllParameterSets).HelpMessage = "Ignores the first 'n' objects and then gets the remaining objects.";
