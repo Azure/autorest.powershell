@@ -173,7 +173,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return parameter.Attributes.Any(attr => attr is DoNotExportAttribute);
         }
 
-        public static bool IsIdentityTypeParameterGroup(this ParameterGroup parameterGroup)
+        public static bool IsIdentityTypeParameter(this Parameter parameterGroup)
         {
             const string IdentityTypeParameterName = "IdentityType";
             const string IdentityTypeParameterType = "System.String";
@@ -181,7 +181,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 parameterGroup.ParameterType.FullName.Equals(IdentityTypeParameterType, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsUserAssignedIdentityParameterGroup(this ParameterGroup parameterGroup)
+        public static bool IsUserAssignedIdentityParameter(this Parameter parameterGroup)
         {
             const string UserAssignedIdentityParameterName = "UserAssignedIdentity";
             const string UserAssignedIdentityParameterType = "System.Collections.Hashtable";

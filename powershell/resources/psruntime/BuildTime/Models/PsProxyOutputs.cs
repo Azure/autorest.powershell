@@ -298,21 +298,72 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private string GetManagedIdentityMappingStatements()
         {
+            if (!VariantGroup.IsInternal && IsAzure &&
+             (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
+            {
+                return $@"
+{Indent}{Indent}$IdentityType = 'None'
+{GetUserAssignedIdentityMappingStatements()}
+{GetSystemAssignedIdentityMappingStatements()}
+";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private string GetUserAssignedIdentityMappingStatements()
+        {
             var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine($"{Indent}{Indent}$IdentityType = \"None\"");
             sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('UserAssignedIdentity')) {{");
             sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] | foreach {{$UserAssignedIdentityHashTable[$_] = @{{}} }}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] = $UserAssignedIdentityHashTable");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$IdentityType = \"UserAssigned\"");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$IdentityType = 'UserAssigned'");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
             sb.AppendLine($"{Indent}{Indent}}}");
-            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity')) {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq \"None\") {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = \"SystemAssigned\"");
+            return sb.ToString();
+        }
+
+        private string GetSystemAssignedIdentityMappingStatements()
+        {
+            if (VariantGroup.CmdletVerb.Equals("New"))
+            {
+                return GetSystemAssignedIdentityMappingStatementsForNewVerbCmdlet();
+            }
+            else if (VariantGroup.CmdletVerb.Equals("Update"))
+            {
+                return GetSystemAssignedIdentityMappingStatementsForUpdateVerbCmdlet();
+            }
+            return "";
+        }
+
+        private string GetSystemAssignedIdentityMappingStatementsForNewVerbCmdlet()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity') && $PSBoundParameters['EnableSystemAssignedIdentity'].IsPresent) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq 'None') {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned'");
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}else {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = \"SystemAssigned,UserAssigned\"");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned,UserAssigned'");
+            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
+            sb.Append($"{Indent}{Indent}}}");
+            return sb.ToString();
+        }
+
+        private string GetSystemAssignedIdentityMappingStatementsForUpdateVerbCmdlet()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity')) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq 'None' && $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned'");
+            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}elseif($IdentityType -eq 'UserAssigned' && $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned,UserAssigned'");
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
             sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");

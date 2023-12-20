@@ -104,28 +104,6 @@ ${$project.pwshCommentHeaderForCsharp}
                     sb.Append("param(");
                     sb.Append($"{(parameterGroups.Any() ? Environment.NewLine : String.Empty)}");
 
-
-                    var identityTypeParameterGroup = parameterGroups.Where(pg => pg.IsIdentityTypeParameterGroup()).FirstOrDefault();
-                    if (identityTypeParameterGroup != null)
-                    {
-                        if (identityTypeParameterGroup.CompleterInfo is PSArgumentCompleterInfo psArgInfo &&
-                            (psArgInfo.ResourceTypes.Contains("SystemAssigned") || psArgInfo.ResourceTypes.Contains("SystemAssigned,UserAssigned")))
-                        {
-                            var enableSystemAssignedIdentityParameterGroup = identityTypeParameterGroup.SallowCopy();
-                            enableSystemAssignedIdentityParameterGroup.ParameterName = "EnableSystemAssignedIdentity";
-                            enableSystemAssignedIdentityParameterGroup.ParameterType = typeof(SwitchParameter);
-                            enableSystemAssignedIdentityParameterGroup.CompleterInfo = null;
-                            parameterGroups.Remove(identityTypeParameterGroup);
-                            parameterGroups.Add(enableSystemAssignedIdentityParameterGroup);
-                        };
-                    }
-
-                    var userAssignedIdentityParameter = parameterGroups.Where(p => p.IsUserAssignedIdentityParameterGroup()).FirstOrDefault();
-                    if (userAssignedIdentityParameter != null)
-                    {
-                        userAssignedIdentityParameter.ParameterType = typeof(string[]);
-                    }
-
                     foreach (var parameterGroup in parameterGroups)
                     {
                         var parameters = parameterGroup.HasAllVariants ? parameterGroup.Parameters.Take(1) : parameterGroup.Parameters;
