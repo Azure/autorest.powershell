@@ -148,6 +148,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     };
                     enableSystemAssignedIdentityParameter.ParameterName = "EnableSystemAssignedIdentity";
                     enableSystemAssignedIdentityParameter.ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?);
+                    enableSystemAssignedIdentityParameter.Description = "Decides if enable a system assigned identity for the resource.";
+                    enableSystemAssignedIdentityParameter.PSArgumentCompleterAttribute = null;
                     variantParametersList.Add(enableSystemAssignedIdentityParameter);
                 }
 
@@ -155,7 +157,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 var userAssignedIdentityParameter = variantParametersList.Where(p => p.IsUserAssignedIdentityParameter()).FirstOrDefault();
                 if (userAssignedIdentityParameter != null)
                 {
+                    userAssignedIdentityParameter.ParameterName = "UserAssignedIdentity";
                     userAssignedIdentityParameter.ParameterType = typeof(string[]);
+                    userAssignedIdentityParameter.Description = "The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.";
                 }
 
                 variant.Parameters = variantParametersList?.ToArray();
@@ -308,7 +312,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
-        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; }
+        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; internal set; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -319,7 +323,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public InfoAttribute InfoAttribute { get; }
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
         public bool IsComplexInterface { get; }
-        public string Description { get; }
+        public string Description { get; internal set; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata, PsParameterHelpInfo helpInfo = null)
         {

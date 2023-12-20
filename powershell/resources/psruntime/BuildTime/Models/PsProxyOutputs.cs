@@ -359,10 +359,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var sb = new StringBuilder();
             sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity')) {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq 'None' && $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq 'None' -and $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
             sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned'");
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
-            sb.AppendLine($"{Indent}{Indent}{Indent}elseif($IdentityType -eq 'UserAssigned' && $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}elseif($IdentityType -eq 'UserAssigned' -and $PSBoundParameters['EnableSystemAssignedIdentity']) {{");
             sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned,UserAssigned'");
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
