@@ -215,19 +215,19 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
     internal class ParameterGroup
     {
-        public string ParameterName { get; internal set; }
-        public Parameter[] Parameters { get; internal set; }
+        public string ParameterName { get; }
+        public Parameter[] Parameters { get; }
 
         public string[] VariantNames { get; }
         public string[] AllVariantNames { get; }
         public bool HasAllVariants { get; }
-        public Type ParameterType { get; internal set; }
+        public Type ParameterType { get; }
         public string Description { get; }
 
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public bool HasAllowEmptyArray { get; }
-        public CompleterInfo CompleterInfo { get; internal set; }
+        public CompleterInfo CompleterInfo { get; }
         public DefaultInfo DefaultInfo { get; }
         public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }
@@ -313,7 +313,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
         public int? Position { get; }
-        public bool DontShow { get; internal set; }
+        public bool DontShow { get; }
         public bool IsMandatory { get; set; }
 
         public InfoAttribute InfoAttribute { get; }
