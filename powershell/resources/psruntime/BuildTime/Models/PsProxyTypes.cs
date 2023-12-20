@@ -176,7 +176,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class ParameterGroup
     {
         public string ParameterName { get; internal set; }
-        public Parameter[] Parameters { get; }
+        public Parameter[] Parameters { get; internal set; }
 
         public string[] VariantNames { get; }
         public string[] AllVariantNames { get; }
@@ -187,7 +187,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public string[] Aliases { get; }
         public bool HasValidateNotNull { get; }
         public bool HasAllowEmptyArray { get; }
-        public CompleterInfo CompleterInfo { get; }
+        public CompleterInfo CompleterInfo { get; internal set; }
         public DefaultInfo DefaultInfo { get; }
         public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }

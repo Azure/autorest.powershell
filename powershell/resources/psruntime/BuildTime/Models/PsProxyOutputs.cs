@@ -248,7 +248,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
 {GetTelemetry()}
-{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
+{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}{GetManagedIdentityMappingStatements()}
 {GetProcessCustomAttributesAtRuntime()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
@@ -293,6 +293,30 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
                 sb.Append($"{Indent}{Indent}}}");
             }
+            return sb.ToString();
+        }
+
+        private string GetManagedIdentityMappingStatements()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"{Indent}{Indent}$IdentityType = \"None\"");
+            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('UserAssignedIdentity')) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] | foreach {{$UserAssignedIdentityHashTable[$_] = @{{}} }}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] = $UserAssignedIdentityHashTable");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$IdentityType = \"UserAssigned\"");
+            sb.AppendLine($"{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity')) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq \"None\") {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = \"SystemAssigned\"");
+            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}else {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = \"SystemAssigned,UserAssigned\"");
+            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
+            sb.Append($"{Indent}{Indent}}}");
             return sb.ToString();
         }
     }

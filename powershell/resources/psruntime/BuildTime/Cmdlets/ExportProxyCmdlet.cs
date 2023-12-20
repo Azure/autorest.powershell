@@ -115,10 +115,9 @@ ${$project.pwshCommentHeaderForCsharp}
                             enableSystemAssignedIdentityParameterGroup.ParameterName = "EnableSystemAssignedIdentity";
                             enableSystemAssignedIdentityParameterGroup.ParameterType = typeof(SwitchParameter);
                             enableSystemAssignedIdentityParameterGroup.CompleterInfo = null;
+                            parameterGroups.Remove(identityTypeParameterGroup);
                             parameterGroups.Add(enableSystemAssignedIdentityParameterGroup);
                         };
-                        identityTypeParameterGroup.Parameters[0].DontShow = true;
-                        identityTypeParameterGroup.DontShow = true;
                     }
 
                     var userAssignedIdentityParameter = parameterGroups.Where(p => p.IsUserAssignedIdentityParameterGroup()).FirstOrDefault();
