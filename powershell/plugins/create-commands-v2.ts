@@ -168,6 +168,8 @@ export /* @internal */ class Inferrer {
       parameters: new Dictionary<any>(),
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
+    const keepIdentityType = await this.state.getValue('keep-identitytype', false);
+    const flattenUserAssignedIdentity = await this.state.getValue('flatten-userassignedidentity', false);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
@@ -192,12 +194,12 @@ export /* @internal */ class Inferrer {
         - there is a get operation
         - there is a put operation
         - get operation path is the same as put operation path
-        - there is only one put reqeust schema
+        - there is only one put request schema
         - get operation response schema type is the same as put operation request schema type
       */
       if (this.isAzure
         && !disableGetPut
-        && !hasPatch
+        && (!hasPatch || true)
         && getOperations
         && putOperation
         && putOperation.requests?.length == 1) {

@@ -1069,6 +1069,26 @@ export class CmdletClass extends Class {
     }
   }
 
+  private * ManagedIdentityParameterPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean) {
+    const $this = cmdlet;
+    return function* () {
+      const bodyParameters = $this.properties.filter(each => {
+        for (const attribute of each.attributes) {
+          for (const parameter of attribute.parameters) {
+            if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+      for (const param of bodyParameters) {
+        yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))`,
+          ``);
+      }
+    };
+  }
+
   private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
     const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}`, dotnet.Void, {
@@ -1095,6 +1115,11 @@ export class CmdletClass extends Class {
     }
     const getPut = function* () {
       yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation}`;
+      const isManagedIdentityFeature = true;
+      const alignManagedIdentityDesign = true;
+      if (isManagedIdentityFeature && alignManagedIdentityDesign) {
+        //yield `this.ManagedIdentityParameterPreProcess();`;
+      }
       yield `this.${updateBodyMethod.name}();`;
     };
     return new Statements(getPut);
@@ -2110,7 +2135,7 @@ export class CmdletClass extends Class {
     if (operation.details.default.externalDocs) {
       this.add(new Attribute(ExternalDocsAttribute, {
         parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
-          `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
+        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
       }));
     }
 

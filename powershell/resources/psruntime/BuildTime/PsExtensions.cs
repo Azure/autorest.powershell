@@ -185,7 +185,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             const string UserAssignedIdentityParameterName = "UserAssignedIdentity";
             const string UserAssignedIdentityParameterType = "System.Collections.Hashtable";
-            return parameterGroup.ParameterName.EndsWith(UserAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
+            return parameterGroup.ParameterName.Equals(UserAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
                 parameterGroup.ParameterType.FullName.Equals(UserAssignedIdentityParameterType, StringComparison.InvariantCultureIgnoreCase);
         }
     }
