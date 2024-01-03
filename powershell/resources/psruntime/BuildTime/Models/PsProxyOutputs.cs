@@ -302,7 +302,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
              (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
             {
                 return $@"
-{Indent}{Indent}$IdentityType = 'None'
 {GetUserAssignedIdentityMappingStatements()}
 {GetSystemAssignedIdentityMappingStatements()}
 ";
@@ -320,8 +319,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] | foreach {{$UserAssignedIdentityHashTable[$_] = @{{}} }}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] = $UserAssignedIdentityHashTable");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$IdentityType = 'UserAssigned'");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
             sb.AppendLine($"{Indent}{Indent}}}");
             return sb.ToString();
         }
@@ -342,16 +339,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private string GetSystemAssignedIdentityMappingStatementsForNewVerbCmdlet()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity') && $PSBoundParameters['EnableSystemAssignedIdentity'].IsPresent) {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}if ($IdentityType -eq 'None') {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned'");
-            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
-            sb.AppendLine($"{Indent}{Indent}{Indent}else {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned,UserAssigned'");
-            sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('EnableSystemAssignedIdentity') -and $PSBoundParameters['EnableSystemAssignedIdentity'].IsPresent) {{");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$IdentityType = 'SystemAssigned'");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
-            sb.Append($"{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
             return sb.ToString();
         }
 
@@ -368,6 +360,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($"{Indent}{Indent}{Indent}else{{");
             sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$IdentityType = 'None'");
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
             sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
             sb.Append($"{Indent}{Indent}}}");
             return sb.ToString();
