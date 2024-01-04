@@ -1184,14 +1184,28 @@ export class CmdletClass extends Class {
   }
 
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
-    const preProcessManagedIdentity = function* () {
+    const $this = cmdlet;
+
+    const preProcessManagedIdentityParametersMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
+      access: Access.Private
+    });
+
+    const preProcessManagedIdentityType = function* () {
       yield If(`this.UserAssignedIdentity?.Count > 0`,
         function* () {
           yield If(`"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `this.IdentityType = "SystemAssigned,UserAssigned";`);
           yield Else(`this.IdentityType = "UserAssigned";`);
         })
     };
-    return new Statements(preProcessManagedIdentity);
+
+    if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityParametersMethod)) {
+      preProcessManagedIdentityParametersMethod.add(preProcessManagedIdentityType);
+      $this.add(preProcessManagedIdentityParametersMethod);
+    }
+
+    return new Statements(function* () {
+      yield `this.${preProcessManagedIdentityParametersMethod.name}();`;
+    });
   }
 
   private NewImplementResponseMethod() {
