@@ -188,6 +188,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public VariantGroup VariantGroup { get; }
 
         protected static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
+        protected static readonly bool keepIdentityType = Convert.ToBoolean(@"${$project.keepIdentityType}");
+        protected static readonly bool flattenUserAssignedIdentity = Convert.ToBoolean(@"${$project.flattenUserAssignedIdentity}");
+
         public BaseOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
@@ -315,23 +318,29 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private string GetUserAssignedIdentityMappingStatements()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('UserAssignedIdentity')) {{");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] | foreach {{$UserAssignedIdentityHashTable[$_] = @{{}} }}");
-            sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] = $UserAssignedIdentityHashTable");
-            sb.AppendLine($"{Indent}{Indent}}}");
+            if (flattenUserAssignedIdentity)
+            {
+                sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('UserAssignedIdentity')) {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] | foreach {{$UserAssignedIdentityHashTable[$_] = @{{}} }}");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['UserAssignedIdentity'] = $UserAssignedIdentityHashTable");
+                sb.AppendLine($"{Indent}{Indent}}}");
+            }
             return sb.ToString();
         }
 
         private string GetSystemAssignedIdentityMappingStatements()
         {
-            if (VariantGroup.CmdletVerb.Equals("New"))
+            if (!keepIdentityType)
             {
-                return GetSystemAssignedIdentityMappingStatementsForNewVerbCmdlet();
-            }
-            else if (VariantGroup.CmdletVerb.Equals("Update"))
-            {
-                return GetSystemAssignedIdentityMappingStatementsForUpdateVerbCmdlet();
+                if (VariantGroup.CmdletVerb.Equals("New"))
+                {
+                    return GetSystemAssignedIdentityMappingStatementsForNewVerbCmdlet();
+                }
+                else if (VariantGroup.CmdletVerb.Equals("Update"))
+                {
+                    return GetSystemAssignedIdentityMappingStatementsForUpdateVerbCmdlet();
+                }
             }
             return "";
         }

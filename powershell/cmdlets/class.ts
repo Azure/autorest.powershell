@@ -861,7 +861,8 @@ export class CmdletClass extends Class {
             break;
           case CommandType.Atomic:
           default:
-            if ($this.operation.details.csharp.verb.toLowerCase() === 'new'
+            if (!$this.state.project.keepIdentityType &&
+              $this.operation.details.csharp.verb.toLowerCase() === 'new'
               && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes("IdentityType")
               && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes("UserAssignedIdentity")) {
               preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
@@ -1162,17 +1163,21 @@ export class CmdletClass extends Class {
       });
       $this.add(updateBodyMethod);
     }
-    const preProcessManagedIdentityMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
-      access: Access.Private
-    });
-    if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityMethod)) {
-      preProcessManagedIdentityMethod.add($this.ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet));
-      $this.add(preProcessManagedIdentityMethod);
+    if (!$this.state.project.keepIdentityType) {
+      const preProcessManagedIdentityMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
+        access: Access.Private
+      });
+      if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityMethod)) {
+        preProcessManagedIdentityMethod.add($this.ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet));
+        $this.add(preProcessManagedIdentityMethod);
+      }
     }
     const getPut = function* () {
       yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation}`;
       // PreProcess body parameter
-      yield `this.${preProcessManagedIdentityMethod.name}();`;
+      if (!$this.state.project.keepIdentityType) {
+        yield `this.PreProcessManagedIdentityParameters();`;
+      }
       yield `this.${updateBodyMethod.name}();`;
       /** Instance:
        * _requestBodyParametersBody = await this.Client.GrafanaGetWithResult(SubscriptionId, ResourceGroupName, Name, this, Pipeline);

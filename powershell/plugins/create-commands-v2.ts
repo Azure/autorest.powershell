@@ -169,7 +169,7 @@ export /* @internal */ class Inferrer {
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
     const keepIdentityType = await this.state.getValue('keep-identitytype', false);
-    const flattenUserAssignedIdentity = await this.state.getValue('flatten-userassignedidentity', false);
+    const flattenUserAssignedIdentity = await this.state.getValue('flatten-userassignedidentity', true);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
@@ -199,7 +199,7 @@ export /* @internal */ class Inferrer {
       */
       if (this.isAzure
         && !disableGetPut
-        && (!hasPatch || true)
+        && (!hasPatch || !keepIdentityType)
         && getOperations
         && putOperation
         && putOperation.requests?.length == 1) {

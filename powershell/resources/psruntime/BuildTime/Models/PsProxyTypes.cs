@@ -44,6 +44,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PSTypeName[] OutputTypes { get; }
         public bool SupportsShouldProcess { get; }
         public bool SupportsPaging { get; }
+
+        private static readonly bool keepIdentityType = Convert.ToBoolean(@"${$project.keepIdentityType}");
+        private static readonly bool flattenUserAssignedIdentity = Convert.ToBoolean(@"${$project.flattenUserAssignedIdentity}");
+
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
         public PsHelpInfo HelpInfo { get; }
@@ -128,7 +132,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private Variant[] MapManagedIdentityVariant(Variant[] variants)
         {
-            if (!CmdletVerb.Equals("New") && !CmdletVerb.Equals("Update"))
+            if (!CmdletVerb.Equals("New") && !CmdletVerb.Equals("Update") || keepIdentityType && !flattenUserAssignedIdentity)
             {
                 return variants;
             }
@@ -136,30 +140,14 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             foreach (var variant in variants)
             {
                 var variantParametersList = variant.Parameters?.ToList();
-                var identityTypeParameter = variantParametersList.Where(p => p.IsIdentityTypeParameter()).FirstOrDefault();
-                if (identityTypeParameter != null && identityTypeParameter.PSArgumentCompleterAttribute != null
-                    && (identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned")
-                    || identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned,UserAssigned")))
+                if (!keepIdentityType)
                 {
-                    variantParametersList?.Remove(identityTypeParameter);
-                    var enableSystemAssignedIdentityParameter = new Parameter(identityTypeParameter.VariantName, "", identityTypeParameter.Metadata, identityTypeParameter.HelpInfo)
-                    {
-                        ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?)
-                    };
-                    enableSystemAssignedIdentityParameter.ParameterName = "EnableSystemAssignedIdentity";
-                    enableSystemAssignedIdentityParameter.ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?);
-                    enableSystemAssignedIdentityParameter.Description = "Decides if enable a system assigned identity for the resource.";
-                    enableSystemAssignedIdentityParameter.PSArgumentCompleterAttribute = null;
-                    variantParametersList.Add(enableSystemAssignedIdentityParameter);
+                    MapIdentityTypeToEnableSystemAssignedIdentity(variantParametersList);
                 }
 
-
-                var userAssignedIdentityParameter = variantParametersList.Where(p => p.IsUserAssignedIdentityParameter()).FirstOrDefault();
-                if (userAssignedIdentityParameter != null)
+                if (flattenUserAssignedIdentity)
                 {
-                    userAssignedIdentityParameter.ParameterName = "UserAssignedIdentity";
-                    userAssignedIdentityParameter.ParameterType = typeof(string[]);
-                    userAssignedIdentityParameter.Description = "The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.";
+                    FlattenUserAssignedIdentity(variantParametersList);
                 }
 
                 variant.Parameters = variantParametersList?.ToArray();
@@ -167,9 +155,40 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             }
             return mappedManagedIdentityVariant.ToArray();
         }
+
+        private void MapIdentityTypeToEnableSystemAssignedIdentity(List<Parameter> variantParametersList)
+        {
+            var identityTypeParameter = variantParametersList.Where(p => p.IsIdentityTypeParameter()).FirstOrDefault();
+            if (identityTypeParameter != null && identityTypeParameter.PSArgumentCompleterAttribute != null
+                && (identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned")
+                || identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned,UserAssigned")))
+            {
+                variantParametersList?.Remove(identityTypeParameter);
+                var enableSystemAssignedIdentityParameter = new Parameter(identityTypeParameter.VariantName, "", identityTypeParameter.Metadata, identityTypeParameter.HelpInfo)
+                {
+                    ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?)
+                };
+                enableSystemAssignedIdentityParameter.ParameterName = "EnableSystemAssignedIdentity";
+                enableSystemAssignedIdentityParameter.ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?);
+                enableSystemAssignedIdentityParameter.Description = "Decides if enable a system assigned identity for the resource.";
+                enableSystemAssignedIdentityParameter.PSArgumentCompleterAttribute = null;
+                variantParametersList.Add(enableSystemAssignedIdentityParameter);
+            }
+
+
+        }
+
+        private void FlattenUserAssignedIdentity(List<Parameter> variantParametersList)
+        {
+            var userAssignedIdentityParameter = variantParametersList.Where(p => p.IsUserAssignedIdentityParameter()).FirstOrDefault();
+            if (userAssignedIdentityParameter != null)
+            {
+                userAssignedIdentityParameter.ParameterName = "UserAssignedIdentity";
+                userAssignedIdentityParameter.ParameterType = typeof(string[]);
+                userAssignedIdentityParameter.Description = "The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.";
+            }
+        }
     }
-
-
 
     internal class Variant
     {

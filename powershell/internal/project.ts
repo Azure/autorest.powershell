@@ -156,6 +156,8 @@ export class Project extends codeDomProject {
   public psm1Internal!: string;
   public formatPs1xml!: string;
   public autoSwitchView!: boolean;
+  public keepIdentityType!: boolean;
+  public flattenUserAssignedIdentity!: boolean;
   public apiFolder!: string;
   public baseFolder!: string;
   public moduleFolder!: string;
@@ -323,6 +325,8 @@ export class Project extends codeDomProject {
     this.psm1Internal = await this.state.getValue('psm1-internal');
     this.formatPs1xml = await this.state.getValue('format-ps1xml');
     this.autoSwitchView = await this.state.getValue('auto-switch-view', true);
+    this.flattenUserAssignedIdentity = await this.state.getValue('flatten-userassignedidentity', true);
+    this.keepIdentityType = await this.state.getValue('keep-identitytype', false);
     this.nuspec = await this.state.getValue('nuspec');
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
