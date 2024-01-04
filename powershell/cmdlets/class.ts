@@ -1130,7 +1130,7 @@ export class CmdletClass extends Class {
           yield `this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");`;
         });
       yield Else(function* () {
-        yield `this.MyInvocation?.BoundParameters.Add("IdentityType", null);`;
+        yield `this.MyInvocation?.BoundParameters.Add("IdentityType", "None");`;
         yield `this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");`;
         yield `this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);`;
       });
