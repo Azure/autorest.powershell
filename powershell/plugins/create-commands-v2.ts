@@ -169,16 +169,20 @@ export /* @internal */ class Inferrer {
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
     const keepIdentityType = await this.state.getValue('keep-identitytype', false);
-    const flattenUserAssignedIdentity = await this.state.getValue('flatten-userassignedidentity', true);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
       const getOperations: Array<Operation> = [];
       let putOperation: Operation | undefined;
+      let patchOperation: Operation | undefined;
       for (const operation of values(operationGroup.operations)) {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
+          // skip adding variants for patch operation to avoid conflicts with getput
+          if (!keepIdentityType) {
+            continue;
+          }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
           getOperations.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
@@ -198,11 +202,11 @@ export /* @internal */ class Inferrer {
         - get operation response schema type is the same as put operation request schema type
       */
       if (this.isAzure
-        && !disableGetPut
-        && (!hasPatch || !keepIdentityType)
+        && (!disableGetPut && !hasPatch || !keepIdentityType)
         && getOperations
         && putOperation
         && putOperation.requests?.length == 1) {
+
         const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
         const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
         //parameter.protocal.http.in === 'body' probably only applies to open api 2.0

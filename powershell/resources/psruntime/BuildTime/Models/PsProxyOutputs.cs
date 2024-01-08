@@ -314,7 +314,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
              (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
             {
                 var statement1 = GetUserAssignedIdentityMappingStatements();
-                if (!string.IsNullOrWhiteSpace(statement1)) sb.AppendLine(statement1);
+                if (!string.IsNullOrWhiteSpace(statement1)) sb.Append(statement1);
                 var statement2 = GetSystemAssignedIdentityMappingStatements();
                 if (!string.IsNullOrWhiteSpace(statement2)) sb.Append(statement2);
             }
@@ -377,7 +377,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             sb.AppendLine($"{Indent}{Indent}{Indent}}}");
             sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['IdentityType'] = $IdentityType");
             sb.AppendLine($"{Indent}{Indent}{Indent}$null = $PSBoundParameters.Remove('EnableSystemAssignedIdentity')");
-            sb.Append($"{Indent}{Indent}}}");
+            sb.AppendLine($"{Indent}{Indent}}}");
             return sb.ToString();
         }
     }

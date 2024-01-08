@@ -193,9 +193,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static bool IsEnableSystemAssignedIdentityParameter(this Parameter parameter)
         {
             const string EnableSystemAssignedIdentityParameterName = "EnableSystemAssignedIdentity";
-            const string EnableSystemAssignedIdentityParameterType = "System.Management.Automation.SwitchParameter";
+            const string EnableSystemAssignedIdentityParameterType1 = "System.Management.Automation.SwitchParameter";
+            const string EnableSystemAssignedIdentityParameterType2 = "System.Nullable`1[[System.Boolean";
             return parameter.ParameterName.Equals(EnableSystemAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
-                parameter.ParameterType.FullName.Equals(EnableSystemAssignedIdentityParameterType, StringComparison.InvariantCultureIgnoreCase);
+                (parameter.ParameterType.FullName.Equals(EnableSystemAssignedIdentityParameterType1, StringComparison.InvariantCultureIgnoreCase) ||
+                parameter.ParameterType.FullName.StartsWith(EnableSystemAssignedIdentityParameterType2, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public static bool ContainsEnableSystemAssignedIdentityParameter(this Parameter[] parameters)
