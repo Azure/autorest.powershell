@@ -186,6 +186,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class BaseOutput
     {
         public VariantGroup VariantGroup { get; }
+        protected Parameter[] Parameters { get; }
 
         protected static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
         protected static readonly bool keepIdentityType = Convert.ToBoolean(@"${$project.keepIdentityType}");
@@ -194,6 +195,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public BaseOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
+            var parameterList = new List<Parameter>();
+            foreach (var variant in VariantGroup.Variants)
+            {
+                parameterList.AddRange(variant.Parameters);
+            }
+            Parameters = parameterList.ToArray();
         }
         public string ClearTelemetryContext()
         {
@@ -251,7 +258,8 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
 {GetTelemetry()}
-{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}{GetManagedIdentityMappingStatements()}
+{GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
+{GetManagedIdentityMappingStatements()}
 {GetProcessCustomAttributesAtRuntime()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
 {Indent}{Indent}$scriptCmd = {{& $wrappedCmd @PSBoundParameters}}
@@ -301,24 +309,22 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private string GetManagedIdentityMappingStatements()
         {
+            var sb = new StringBuilder();
             if (!VariantGroup.IsInternal && IsAzure &&
              (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
             {
-                return $@"
-{GetUserAssignedIdentityMappingStatements()}
-{GetSystemAssignedIdentityMappingStatements()}
-";
+                var statement1 = GetUserAssignedIdentityMappingStatements();
+                if (!string.IsNullOrWhiteSpace(statement1)) sb.AppendLine(statement1);
+                var statement2 = GetSystemAssignedIdentityMappingStatements();
+                if (!string.IsNullOrWhiteSpace(statement2)) sb.Append(statement2);
             }
-            else
-            {
-                return "";
-            }
+            return sb.ToString();
         }
 
         private string GetUserAssignedIdentityMappingStatements()
         {
             var sb = new StringBuilder();
-            if (flattenUserAssignedIdentity)
+            if (flattenUserAssignedIdentity && this.Parameters.ContainsUserAssignedIdentityParameter())
             {
                 sb.AppendLine($"{Indent}{Indent}if ($PSBoundParameters.ContainsKey('UserAssignedIdentity')) {{");
                 sb.AppendLine($"{Indent}{Indent}{Indent}$UserAssignedIdentityHashTable = @{{}}");
@@ -331,7 +337,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private string GetSystemAssignedIdentityMappingStatements()
         {
-            if (!keepIdentityType)
+            if (!keepIdentityType && this.Parameters.ContainsEnableSystemAssignedIdentityParameter())
             {
                 if (VariantGroup.CmdletVerb.Equals("New"))
                 {
