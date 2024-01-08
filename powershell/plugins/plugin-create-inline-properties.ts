@@ -381,7 +381,7 @@ function createVirtualParameters(operation: CommandOperation) {
             name: virtualProperty.name,
             description: virtualProperty.property.language.default.description,
             nameOptions: virtualProperty.nameOptions,
-            required: shouldBeRequired(operation, virtualProperty),
+            required: parameter.required ? shouldBeRequired(operation, virtualProperty) : false,
             schema: virtualProperty.property.schema,
             origin: virtualProperty,
             alias: []
