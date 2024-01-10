@@ -83,10 +83,19 @@ export class NewModuleClass extends Class {
 
     const $this = this;
 
-    // static instance property
-    this.add(new LazyProperty('Instance', this, new LiteralExpression(`new ${this.declaration}()`), {
-      instanceAccess: this.declaration,
+    // Lock for the singleton
+    const singletonLock = new Field('_singletonLock', System.Object, { readonly: Modifier.ReadOnly, access: Access.Private, static: Modifier.Static, initialValue: System.Object.new() });
+    this.add(singletonLock);
+    const initLock = new Field('_initLock', System.Object, { readonly: Modifier.ReadOnly, access: Access.Private, static: Modifier.Static, initialValue: System.Object.new() });
+    this.add(initLock);
+    const fInstance = new Field('_instance', this, { access: Access.Private, static: Modifier.Static });
+    const getInstanceFunc = `if (${fInstance.name} == null) { lock (${singletonLock.name}) { if (${fInstance.name} == null) { ${fInstance.name} = new Module(); }}} return ${fInstance.name};`;
+    this.add(fInstance);
+    this.add(new Field('_init', dotnet.Bool, { access: Access.Private, static: Modifier.Static, initialValue: dotnet.False }));
+    this.add(new Property('Instance', this, {
+      getAccess: Access.Public,
       static: Modifier.Static,
+      get: getInstanceFunc,
       description: 'the singleton of this module class'
     }));
 
@@ -163,7 +172,12 @@ export class NewModuleClass extends Class {
     // non-azure init method
     this.initMethod.add(function* () {
       yield '// called at module init time...';
-      yield 'CustomInit();';
+      yield If('_init == false', function* () {
+        yield `lock (_initLock) {
+    CustomInit();
+    _init = true;
+}`;
+      });
     });
 
     this.createPipelineMethod = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
@@ -331,9 +345,14 @@ export class NewModuleClass extends Class {
 
     /* init method */
     this.initMethod.add(function* () {
-      yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipeline.value}.Prepend(step); } , (step)=> { ${$this.fPipeline.value}.Append(step); } );`;
-      yield `${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipelineWithProxy.value}.Prepend(step); } , (step)=> { ${$this.fPipelineWithProxy.value}.Append(step); } );`;
-      yield 'CustomInit();';
+      yield If('_init == false', function* () {
+        yield `lock (_initLock) {
+    ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipeline.value}.Prepend(step); } , (step)=> { ${$this.fPipeline.value}.Append(step); } );
+    ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipelineWithProxy.value}.Prepend(step); } , (step)=> { ${$this.fPipelineWithProxy.value}.Append(step); } );
+    CustomInit();
+    _init = true;
+}`;
+      });
     });
 
     this.createPipelineMethod = this.add(new Method('CreatePipeline', ClientRuntime.HttpPipeline, {
