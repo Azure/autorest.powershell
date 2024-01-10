@@ -174,8 +174,10 @@ export class NewModuleClass extends Class {
       yield '// called at module init time...';
       yield If('_init == false', function* () {
         yield `lock (_initLock) {
-    CustomInit();
-    _init = true;
+    if (_init == false) {
+        CustomInit();
+        _init = true;
+    }
 }`;
       });
     });
@@ -347,10 +349,12 @@ export class NewModuleClass extends Class {
     this.initMethod.add(function* () {
       yield If('_init == false', function* () {
         yield `lock (_initLock) {
-    ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipeline.value}.Prepend(step); } , (step)=> { ${$this.fPipeline.value}.Append(step); } );
-    ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipelineWithProxy.value}.Prepend(step); } , (step)=> { ${$this.fPipelineWithProxy.value}.Append(step); } );
-    CustomInit();
-    _init = true;
+    if (_init == false) {
+        ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipeline.value}.Prepend(step); } , (step)=> { ${$this.fPipeline.value}.Append(step); } );
+        ${OnModuleLoad.value}?.Invoke( ${moduleResourceId.value}, ${moduleIdentity.value} ,(step)=> { ${$this.fPipelineWithProxy.value}.Prepend(step); } , (step)=> { ${$this.fPipelineWithProxy.value}.Append(step); } );
+        CustomInit();
+        _init = true;
+    }
 }`;
       });
     });
