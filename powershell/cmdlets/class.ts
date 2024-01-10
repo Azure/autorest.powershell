@@ -1123,16 +1123,16 @@ export class CmdletClass extends Class {
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
 
-    const preProcessManagedIdentityParametersMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
+    const preProcessManagedIdentityParametersMethod = new Method('PreProcessManagedIdentityParameters', dotnet.Void, {
       access: Access.Private
     });
 
     const preProcessManagedIdentityType = function* () {
-      yield If(`this.UserAssignedIdentity?.Count > 0`,
+      yield If('this.UserAssignedIdentity?.Count > 0',
         function* () {
-          yield If(`"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `this.IdentityType = "SystemAssigned,UserAssigned";`);
-          yield Else(`this.IdentityType = "UserAssigned";`);
-        })
+          yield If('"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)', 'this.IdentityType = "SystemAssigned,UserAssigned";');
+          yield Else('this.IdentityType = "UserAssigned";');
+        });
     };
 
     if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityParametersMethod)) {
@@ -1147,20 +1147,20 @@ export class CmdletClass extends Class {
 
   private ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet: CmdletClass): Statements {
     const $this = cmdlet;
-    const doesSupportUserAssignedIdentityMethod = new Method(`DoesSupportUserAssignedIdentity`, dotnet.Bool, {
+    const doesSupportUserAssignedIdentityMethod = new Method('DoesSupportUserAssignedIdentity', dotnet.Bool, {
       access: Access.Private,
       parameters: [new Parameter('identityType', dotnet.String)]
     });
     if (!$this.hasMethodWithSameDeclaration(doesSupportUserAssignedIdentityMethod)) {
-      doesSupportUserAssignedIdentityMethod.add(Return(`new System.Collections.Generic.List<string> { "UserAssigned", "SystemAssigned,UserAssigned", "SystemAssigned, UserAssigned"}.Contains(identityType)`));
+      doesSupportUserAssignedIdentityMethod.add(Return('new System.Collections.Generic.List<string> { "UserAssigned", "SystemAssigned,UserAssigned", "SystemAssigned, UserAssigned"}.Contains(identityType)'));
       $this.add(doesSupportUserAssignedIdentityMethod);
     }
-    const doesSupportSystemAssignedIdentityMethod = new Method(`DoesSupportSystemAssignedIdentityMethod`, dotnet.Bool, {
+    const doesSupportSystemAssignedIdentityMethod = new Method('DoesSupportSystemAssignedIdentityMethod', dotnet.Bool, {
       access: Access.Private,
       parameters: [new Parameter('identityType', dotnet.String)]
     });
     if (!$this.hasMethodWithSameDeclaration(doesSupportSystemAssignedIdentityMethod)) {
-      doesSupportSystemAssignedIdentityMethod.add(Return(`new System.Collections.Generic.List<string> { "SystemAssigned", "SystemAssigned,UserAssigned", "SystemAssigned, UserAssigned"}.Contains(identityType)`));
+      doesSupportSystemAssignedIdentityMethod.add(Return('new System.Collections.Generic.List<string> { "SystemAssigned", "SystemAssigned,UserAssigned", "SystemAssigned, UserAssigned"}.Contains(identityType)'));
       $this.add(doesSupportSystemAssignedIdentityMethod);
     }
     const preProcessManagedIdentity = function* () {
@@ -1169,30 +1169,29 @@ export class CmdletClass extends Class {
       yield supportsUserAssignedIdentity;
       yield supportsSystemAssignedIdentity;
       yield If(Or(
-        And(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))`,
+        And('(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))',
           `((${$this.GetUserAssignedIdentityTypeDeclaration(cmdlet)})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count > 0`),
-        And(`!(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))`,
-          `DoesSupportUserAssignedIdentity(${$this.bodyParameter?.value}.IdentityType)`)), `supportsUserAssignedIdentity = true;`)
-
+        And('!(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))',
+          `DoesSupportUserAssignedIdentity(${$this.bodyParameter?.value}.IdentityType)`)), 'supportsUserAssignedIdentity = true;');
       yield If(Or(
-        And(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))`,
-          `"SystemAssigned".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])`),
-        And(And(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))`,
-          `"None".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])`),
-          `DoesSupportSystemAssignedIdentityMethod(${$this.bodyParameter?.value}.IdentityType)`)), `supportsSystemAssignedIdentity = true;`);
-      yield `this.MyInvocation?.BoundParameters.Remove("IdentityType");`;
-      yield If(And(`supportsUserAssignedIdentity`, `supportsSystemAssignedIdentity`), `this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned,UserAssigned");`);
-      yield ElseIf(And(`supportsUserAssignedIdentity`, `!supportsSystemAssignedIdentity`), `this.MyInvocation?.BoundParameters.Add("IdentityType", "UserAssigned");`);
-      yield ElseIf(And(`!supportsUserAssignedIdentity`, `supportsSystemAssignedIdentity`),
+        And('(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))',
+          '"SystemAssigned".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])'),
+        And(And('(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))',
+          '"None".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])'),
+          `DoesSupportSystemAssignedIdentityMethod(${$this.bodyParameter?.value}.IdentityType)`)), 'supportsSystemAssignedIdentity = true;');
+      yield 'this.MyInvocation?.BoundParameters.Remove("IdentityType");';
+      yield If(And('supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'), 'this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned,UserAssigned");');
+      yield ElseIf(And('supportsUserAssignedIdentity', '!supportsSystemAssignedIdentity'), 'this.MyInvocation?.BoundParameters.Add("IdentityType", "UserAssigned");');
+      yield ElseIf(And('!supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'),
         function* () {
-          yield `this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned");`;
-          yield `this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");`;
-          yield `this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);`;
+          yield 'this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned");';
+          yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");';
+          yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
         });
       yield Else(function* () {
-        yield `this.MyInvocation?.BoundParameters.Add("IdentityType", "None");`;
-        yield `this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");`;
-        yield `this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);`;
+        yield 'this.MyInvocation?.BoundParameters.Add("IdentityType", "None");';
+        yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity"); ';
+        yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
       });
     };
     return new Statements(preProcessManagedIdentity);
@@ -1200,10 +1199,10 @@ export class CmdletClass extends Class {
 
   private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
-    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}`, dotnet.Void, {
+    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value} `, dotnet.Void, {
       access: Access.Private
     });
-    const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''}WithResult`;
+    const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''} WithResult`;
     if (!$this.hasMethodWithSameDeclaration(updateBodyMethod)) {
       updateBodyMethod.add(function* () {
         const bodyParameters = $this.properties.filter(each => {
@@ -1217,13 +1216,13 @@ export class CmdletClass extends Class {
           return false;
         });
         for (const param of bodyParameters) {
-          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
+          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]); `);
         }
       });
       $this.add(updateBodyMethod);
     }
     if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
-      const preProcessManagedIdentityMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
+      const preProcessManagedIdentityMethod = new Method('PreProcessManagedIdentityParameters', dotnet.Void, {
         access: Access.Private
       });
       if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityMethod)) {
@@ -1232,12 +1231,12 @@ export class CmdletClass extends Class {
       }
     }
     const getPut = function* () {
-      yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation}`;
+      yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation} `;
       // PreProcess body parameter
       if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
-        yield `this.PreProcessManagedIdentityParameters();`;
+        yield 'this.PreProcessManagedIdentityParameters();';
       }
-      yield `this.${updateBodyMethod.name}();`;
+      yield `this.${updateBodyMethod.name} (); `;
       /** Instance:
        * _requestBodyParametersBody = await this.Client.GrafanaGetWithResult(SubscriptionId, ResourceGroupName, Name, this, Pipeline);
        * this.Update_requestBodyParametersBody();
@@ -1262,7 +1261,7 @@ export class CmdletClass extends Class {
 
       if (each.language.csharp?.responseType) {
         parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
-          description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
+          description: `the body result as a<see cref = "${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}" > ${each.language.csharp?.responseType} </see> from the remote call`
         }));
       }
       if (each.language.csharp?.headerType) {
