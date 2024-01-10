@@ -1086,6 +1086,49 @@ export class CmdletClass extends Class {
       yield `await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...parameters).implementation}`;
     }
   }
+
+  private ContainsIdentityTypeParameter(cmdlet: CmdletClass): boolean {
+    const $this = cmdlet;
+    const identityTypeParameter = $this.properties.filter(each => {
+      for (const attribute of each.attributes) {
+        for (const parameter of attribute.parameters) {
+          if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)
+            && 'IdentityType' === each.name
+            && 'string' === each.type.declaration) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+    return identityTypeParameter.length > 0;
+  }
+
+  private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
+    const $this = cmdlet;
+
+    const preProcessManagedIdentityParametersMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
+      access: Access.Private
+    });
+
+    const preProcessManagedIdentityType = function* () {
+      yield If(`this.UserAssignedIdentity?.Count > 0`,
+        function* () {
+          yield If(`"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `this.IdentityType = "SystemAssigned,UserAssigned";`);
+          yield Else(`this.IdentityType = "UserAssigned";`);
+        })
+    };
+
+    if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityParametersMethod)) {
+      preProcessManagedIdentityParametersMethod.add(preProcessManagedIdentityType);
+      $this.add(preProcessManagedIdentityParametersMethod);
+    }
+
+    return new Statements(function* () {
+      yield `this.${preProcessManagedIdentityParametersMethod.name}();`;
+    });
+  }
+
   private ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet: CmdletClass): Statements {
     const $this = cmdlet;
     const doesSupportUserAssignedIdentityMethod = new Method(`DoesSupportUserAssignedIdentity`, dotnet.Bool, {
@@ -1163,7 +1206,7 @@ export class CmdletClass extends Class {
       });
       $this.add(updateBodyMethod);
     }
-    if (!$this.state.project.keepIdentityType) {
+    if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
       const preProcessManagedIdentityMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
         access: Access.Private
       });
@@ -1175,7 +1218,7 @@ export class CmdletClass extends Class {
     const getPut = function* () {
       yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation}`;
       // PreProcess body parameter
-      if (!$this.state.project.keepIdentityType) {
+      if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
         yield `this.PreProcessManagedIdentityParameters();`;
       }
       yield `this.${updateBodyMethod.name}();`;
@@ -1186,31 +1229,6 @@ export class CmdletClass extends Class {
 
     };
     return new Statements(getPut);
-  }
-
-  private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
-    const $this = cmdlet;
-
-    const preProcessManagedIdentityParametersMethod = new Method(`PreProcessManagedIdentityParameters`, dotnet.Void, {
-      access: Access.Private
-    });
-
-    const preProcessManagedIdentityType = function* () {
-      yield If(`this.UserAssignedIdentity?.Count > 0`,
-        function* () {
-          yield If(`"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `this.IdentityType = "SystemAssigned,UserAssigned";`);
-          yield Else(`this.IdentityType = "UserAssigned";`);
-        })
-    };
-
-    if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityParametersMethod)) {
-      preProcessManagedIdentityParametersMethod.add(preProcessManagedIdentityType);
-      $this.add(preProcessManagedIdentityParametersMethod);
-    }
-
-    return new Statements(function* () {
-      yield `this.${preProcessManagedIdentityParametersMethod.name}();`;
-    });
   }
 
   private NewImplementResponseMethod() {
