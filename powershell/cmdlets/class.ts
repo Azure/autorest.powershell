@@ -854,7 +854,7 @@ export class CmdletClass extends Class {
 
       yield Try(function* () {
         // make the call.
-        let preProcesses: PreProcess[] = [];
+        const preProcesses: Array<PreProcess> = [];
         switch ($this.operation.commandType) {
           case CommandType.GetPut:
             preProcesses.push($this.GetPutPreProcess);
@@ -863,8 +863,8 @@ export class CmdletClass extends Class {
           default:
             if (!$this.state.project.keepIdentityType &&
               $this.operation.details.csharp.verb.toLowerCase() === 'new'
-              && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes("IdentityType")
-              && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes("UserAssignedIdentity")) {
+              && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes('IdentityType')
+              && $this.operation.details.csharp.virtualParameters?.body.map(p => p.name).includes('UserAssignedIdentity')) {
               preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
             }
             preProcesses.push(undefined);
@@ -896,7 +896,7 @@ export class CmdletClass extends Class {
     });
   }
 
-  private * ImplementCall(preProcesses: PreProcess[]) {
+  private * ImplementCall(preProcesses: Array<PreProcess>) {
     const $this = this;
     const operation = $this.operation;
     const apiCall = $this.apiCall;
@@ -1179,8 +1179,7 @@ export class CmdletClass extends Class {
           `"SystemAssigned".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])`),
         And(And(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("IdentityType"))`,
           `"None".Equals((string)this.MyInvocation?.BoundParameters["IdentityType"])`),
-          `DoesSupportSystemAssignedIdentityMethod(${$this.bodyParameter?.value}.IdentityType)`)), `supportsSystemAssignedIdentity = true;`)
-
+          `DoesSupportSystemAssignedIdentityMethod(${$this.bodyParameter?.value}.IdentityType)`)), `supportsSystemAssignedIdentity = true;`);
       yield `this.MyInvocation?.BoundParameters.Remove("IdentityType");`;
       yield If(And(`supportsUserAssignedIdentity`, `supportsSystemAssignedIdentity`), `this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned,UserAssigned");`);
       yield ElseIf(And(`supportsUserAssignedIdentity`, `!supportsSystemAssignedIdentity`), `this.MyInvocation?.BoundParameters.Add("IdentityType", "UserAssigned");`);
