@@ -179,8 +179,9 @@ export /* @internal */ class Inferrer {
       for (const operation of values(operationGroup.operations)) {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
+          patchOperation = operation;
           // skip adding variants for patch operation to avoid conflicts with getput
-          if (!keepIdentityType) {
+          if (!keepIdentityType && this.containsIdentityType(operation)) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
@@ -202,7 +203,8 @@ export /* @internal */ class Inferrer {
         - get operation response schema type is the same as put operation request schema type
       */
       if (this.isAzure
-        && (!disableGetPut && !hasPatch || !keepIdentityType)
+        && (!disableGetPut && !hasPatch ||
+          hasPatch && !keepIdentityType && patchOperation && this.containsIdentityType(patchOperation))
         && getOperations
         && putOperation
         && putOperation.requests?.length == 1) {
@@ -223,6 +225,14 @@ export /* @internal */ class Inferrer {
     //   }
     // }
     return model;
+  }
+
+  containsIdentityType(op: Operation): boolean {
+    const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
+    // property identity in the body parameter
+    const identityProperty = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly && isObjectSchema(property.schema) && property.language.default.name === 'identity')?.toArray()?.[0] : null;
+    const identityTypeProperty = (identityProperty && identityProperty.schema && isObjectSchema(identityProperty.schema)) ? values(getAllProperties(identityProperty.schema)).where(property => !property.language.default.readOnly && property.language.default.name === 'type')?.toArray()?.[0] : null;
+    return identityTypeProperty !== null && identityTypeProperty !== undefined;
   }
 
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {
