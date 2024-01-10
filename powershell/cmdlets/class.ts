@@ -1104,6 +1104,22 @@ export class CmdletClass extends Class {
     return identityTypeParameter.length > 0;
   }
 
+  private GetUserAssignedIdentityTypeDeclaration(cmdlet: CmdletClass): string {
+    const $this = cmdlet;
+    const userAssignedIdentityParameter = $this.properties.filter(each => {
+      for (const attribute of each.attributes) {
+        for (const parameter of attribute.parameters) {
+          if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)
+            && 'UserAssignedIdentity' === each.name) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+    return userAssignedIdentityParameter?.[0].type.declaration ?? `${$this.state.project.serviceNamespace.fullName}.Models.IUserAssignedIdentities`;
+  }
+
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
 
@@ -1154,7 +1170,7 @@ export class CmdletClass extends Class {
       yield supportsSystemAssignedIdentity;
       yield If(Or(
         And(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))`,
-          `((${$this.state.project.serviceNamespace.fullName}.Models.IUserAssignedIdentities)this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count > 0`),
+          `((${$this.GetUserAssignedIdentityTypeDeclaration(cmdlet)})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count > 0`),
         And(`!(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserAssignedIdentity"))`,
           `DoesSupportUserAssignedIdentity(${$this.bodyParameter?.value}.IdentityType)`)), `supportsUserAssignedIdentity = true;`)
 
