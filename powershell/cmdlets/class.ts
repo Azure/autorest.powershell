@@ -1199,10 +1199,10 @@ export class CmdletClass extends Class {
 
   private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
     const $this = cmdlet;
-    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value} `, dotnet.Void, {
+    const updateBodyMethod = new Method(`Update${$this.bodyParameter?.value}`, dotnet.Void, {
       access: Access.Private
     });
-    const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''} WithResult`;
+    const httpOperationName = `${$this.operation.callGraph[0].language.csharp?.name}${viaIdentity ? 'ViaIdentity' : ''}WithResult`;
     if (!$this.hasMethodWithSameDeclaration(updateBodyMethod)) {
       updateBodyMethod.add(function* () {
         const bodyParameters = $this.properties.filter(each => {
@@ -1216,7 +1216,7 @@ export class CmdletClass extends Class {
           return false;
         });
         for (const param of bodyParameters) {
-          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]); `);
+          yield If(`(bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("${param.name}"))`, `this.${param.name} = (${param.type.declaration})(this.MyInvocation?.BoundParameters["${param.name}"]);`);
         }
       });
       $this.add(updateBodyMethod);
@@ -1236,7 +1236,7 @@ export class CmdletClass extends Class {
       if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
         yield 'this.PreProcessManagedIdentityParameters();';
       }
-      yield `this.${updateBodyMethod.name} (); `;
+      yield `this.${updateBodyMethod.name}();`;
       /** Instance:
        * _requestBodyParametersBody = await this.Client.GrafanaGetWithResult(SubscriptionId, ResourceGroupName, Name, this, Pipeline);
        * this.Update_requestBodyParametersBody();
@@ -1261,7 +1261,7 @@ export class CmdletClass extends Class {
 
       if (each.language.csharp?.responseType) {
         parameters.push(new Parameter('response', System.Threading.Tasks.Task({ declaration: each.language.csharp?.responseType }), {
-          description: `the body result as a<see cref = "${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}" > ${each.language.csharp?.responseType} </see> from the remote call`
+          description: `the body result as a <see cref="${each.language.csharp?.responseType.replace(/\[|\]|\?/g, '')}">${each.language.csharp?.responseType}</see> from the remote call`
         }));
       }
       if (each.language.csharp?.headerType) {
