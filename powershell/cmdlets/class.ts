@@ -1088,19 +1088,7 @@ export class CmdletClass extends Class {
   }
 
   private ContainsSpecifiedParameter(cmdlet: CmdletClass, parameterName: string): boolean {
-    const $this = cmdlet;
-    const parameter = $this.properties.filter(each => {
-      for (const attribute of each.attributes) {
-        for (const parameter of attribute.parameters) {
-          if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)
-            && parameterName === each.name) {
-            return true;
-          }
-        }
-      }
-      return false;
-    });
-    return parameter.length > 0;
+    return cmdlet.operation.details.csharp.virtualParameters?.body?.map(p => p.name)?.includes(parameterName) ?? false;
   }
 
   private ContainsIdentityTypeParameter(cmdlet: CmdletClass): boolean {
