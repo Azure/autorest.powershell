@@ -166,7 +166,7 @@ export class FixedArrayOf implements EnhancedTypeDeclaration {
         case KnownMediaType.Cookie:
         case KnownMediaType.QueryParameter: {
           const formatSerializedName = serializedName ? `${serializedName}=` : '';
-          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${formatSerializedName}" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( ${this.encode}(null == each ? ${System.String.Empty} : each.ToString()) ))) : ${System.String.Empty})`);
+          return toExpression(`(null != ${value}  && ${value}.Length > 0 ? "${formatSerializedName}" + ${this.encode}(global::System.Linq.Enumerable.Aggregate(${value}, (current, each) => current + "," + ( null == each ? ${System.String.Empty} : each.ToString()) )) : ${System.String.Empty})`);
         }
         case KnownMediaType.Header:
         case KnownMediaType.Text:
