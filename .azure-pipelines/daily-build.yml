@@ -16,9 +16,9 @@ pool:
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use Node 14.15.5'
+  displayName: 'Use Node 18'
   inputs:
-    versionSpec: 14.15.5
+    versionSpec: 18.x
 
 - task: Npm@1
   displayName: 'Install autorest@latest'
@@ -32,7 +32,7 @@ steps:
   inputs:
     command: custom
     verbose: false
-    customCommand: 'install -g @microsoft/rush@5.12.0'
+    customCommand: 'install -g @microsoft/rush@5.63.1'
 
 - task: CmdLine@2
   displayName: 'Rush sync-versions'
