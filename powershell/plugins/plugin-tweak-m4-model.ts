@@ -27,9 +27,20 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
   removeM4DefaultDescription(model);
 
+  removeExceptionResponse(model);
+
   handleNoinlineDirective(state);
 
   return model;
+}
+
+//remove error responses except default
+function removeExceptionResponse(model: CodeModel) {
+  model.operationGroups.forEach(group => {
+    group.operations?.forEach(operation => {
+      operation.exceptions = operation.exceptions?.filter(exception => exception.protocol.http?.statusCodes[0] === 'default');
+    });
+  });
 }
 
 //sort path parameters to follow the order in path for each operation
