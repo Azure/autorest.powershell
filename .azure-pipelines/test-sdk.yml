@@ -2,9 +2,9 @@ pool: pool-windows-2019
 
 steps:
 - task: NodeTool@0
-  displayName: 'Use Node 14.15.5'
+  displayName: 'Use Node 18'
   inputs:
-    versionSpec: 14.15.5
+    versionSpec: 18.x
 
 - task: Npm@1
   displayName: 'Install autorest@latest'
