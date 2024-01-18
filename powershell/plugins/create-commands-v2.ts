@@ -216,6 +216,12 @@ export /* @internal */ class Inferrer {
         const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
         if (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses)].filter(each => (<SchemaResponse>each).schema !== schema).length === 0) {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
+        } else if (hasPatch && patchOperation && this.shouldReplacePatchByGetPut(patchOperation)) {
+          // bez: patch operation can't be replaced by Get+PUT, add patch operation back and keep identity type
+          for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
+            await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
+          }
+          this.state.setValue('keep-identitytype', true);
         }
       }
     }
