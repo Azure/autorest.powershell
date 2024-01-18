@@ -311,6 +311,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             var sb = new StringBuilder();
             if (IsAzure &&
+             !VariantGroup.ContainsInternalCmdlet &&
              (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
             {
                 var statement1 = GetUserAssignedIdentityMappingStatements();

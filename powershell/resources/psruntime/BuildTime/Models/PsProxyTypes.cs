@@ -53,6 +53,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PsHelpInfo HelpInfo { get; }
         public bool IsGenerated { get; }
         public bool IsInternal { get; }
+        public bool ContainsInternalCmdlet { get; }
 
         public string OutputFolder { get; }
         public string FileName { get; }
@@ -60,7 +61,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         public CommentInfo CommentInfo { get; }
 
-        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false)
+        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false, bool containsInternalCmdlet = false)
         {
             ModuleName = moduleName;
             CmdletName = cmdletName;
@@ -88,7 +89,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             IsInternal = isInternal;
-
+            ContainsInternalCmdlet = containsInternalCmdlet;
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
             FilePath = Path.Combine(OutputFolder, FileName);
