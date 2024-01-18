@@ -116,6 +116,7 @@ export /* @internal */ class Inferrer {
   subjectPrefix!: string;
   isAzure!: boolean;
   supportJsonInput!: boolean;
+  keepIdentityType!: boolean;
 
   constructor(private state: State) {
   }
@@ -143,6 +144,7 @@ export /* @internal */ class Inferrer {
     this.state.setValue('prefix', this.prefix);
 
     const model = this.state.model;
+    this.keepIdentityType = await this.state.getValue('keep-identitytype', false);
 
     this.state.message({
       Channel: Channel.Debug, Text: `[CMDLET-PREFIX] => '${model.language.default.prefix}'`
@@ -168,7 +170,6 @@ export /* @internal */ class Inferrer {
       parameters: new Dictionary<any>(),
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
-    const keepIdentityType = await this.state.getValue('keep-identitytype', false);
 
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
@@ -181,7 +182,7 @@ export /* @internal */ class Inferrer {
           hasPatch = true;
           patchOperation = operation;
           // skip adding variants for patch operation to avoid conflicts with getput
-          if (!keepIdentityType && this.containsIdentityType(operation)) {
+          if (this.shouldReplacePatchByGetPut(operation) && putOperation) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
@@ -204,7 +205,7 @@ export /* @internal */ class Inferrer {
       */
       if (this.isAzure
         && (!disableGetPut && !hasPatch ||
-          hasPatch && !keepIdentityType && patchOperation && this.containsIdentityType(patchOperation))
+          hasPatch && patchOperation && this.shouldReplacePatchByGetPut(patchOperation))
         && getOperations
         && putOperation
         && putOperation.requests?.length == 1) {
@@ -227,12 +228,24 @@ export /* @internal */ class Inferrer {
     return model;
   }
 
-  containsIdentityType(op: Operation): boolean {
+  private containsUserAssignedIdentity(op: Operation): boolean {
+    const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
+    // property identity in the body parameter
+    const identityProperty = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly && isObjectSchema(property.schema) && property.language.default.name === 'identity')?.toArray()?.[0] : null;
+    const userAssignedIdentityProperty = (identityProperty && identityProperty.schema && isObjectSchema(identityProperty.schema)) ? values(getAllProperties(identityProperty.schema)).where(property => !property.language.default.readOnly && property.language.default.name === 'userAssignedIdentities')?.toArray()?.[0] : null;
+    return userAssignedIdentityProperty !== null && userAssignedIdentityProperty !== undefined;
+  }
+
+  private containsIdentityType(op: Operation): boolean {
     const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
     // property identity in the body parameter
     const identityProperty = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly && isObjectSchema(property.schema) && property.language.default.name === 'identity')?.toArray()?.[0] : null;
     const identityTypeProperty = (identityProperty && identityProperty.schema && isObjectSchema(identityProperty.schema)) ? values(getAllProperties(identityProperty.schema)).where(property => !property.language.default.readOnly && property.language.default.name === 'type')?.toArray()?.[0] : null;
     return identityTypeProperty !== null && identityTypeProperty !== undefined;
+  }
+
+  private shouldReplacePatchByGetPut(op: Operation): boolean {
+    return !this.keepIdentityType && op && this.containsIdentityType(op) && this.containsUserAssignedIdentity(op);
   }
 
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {

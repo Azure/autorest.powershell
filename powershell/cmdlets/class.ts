@@ -861,11 +861,13 @@ export class CmdletClass extends Class {
             break;
           case CommandType.Atomic:
           default:
-            if (!$this.state.project.keepIdentityType &&
-              $this.operation.details.csharp.verb.toLowerCase() === 'new'
-              && $this.ContainsIdentityTypeParameter($this)
-              && $this.ContainsUserAssignedIdentityParameter($this)) {
-              preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
+            if (!$this.state.project.keepIdentityType
+              && $this.ContainsIdentityTypeParameter($this)) {
+              if ($this.operation.details.csharp.verb.toLowerCase() === 'new' && $this.ContainsUserAssignedIdentityParameter($this)) {
+                preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
+              } else if ($this.operation.details.csharp.verb.toLowerCase() === 'update') {
+                preProcesses.push($this.ManagedIdentityPreProcessForUpdateVerbCmdlet);
+              }
             }
             preProcesses.push(undefined);
             break;
@@ -1184,16 +1186,31 @@ export class CmdletClass extends Class {
       yield ElseIf(And('!supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'),
         function* () {
           yield 'this.MyInvocation?.BoundParameters.Add("IdentityType", "SystemAssigned");';
-          yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");';
-          yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
+          if (containsUserAssignedIdentity) {
+            yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity");';
+            yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
+          }
         });
       yield Else(function* () {
         yield 'this.MyInvocation?.BoundParameters.Add("IdentityType", "None");';
-        yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity"); ';
-        yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
+        if (containsUserAssignedIdentity) {
+          yield 'this.MyInvocation?.BoundParameters.Remove("UserAssignedIdentity"); ';
+          yield 'this.MyInvocation?.BoundParameters.Add("UserAssignedIdentity", null);';
+        }
       });
     };
-    return new Statements(preProcessManagedIdentity);
+
+    const preProcessManagedIdentityMethod = new Method('PreProcessManagedIdentityParameters', dotnet.Void, {
+      access: Access.Private
+    });
+
+    if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityMethod)) {
+      preProcessManagedIdentityMethod.add(preProcessManagedIdentity);
+      $this.add(preProcessManagedIdentityMethod);
+    }
+    return new Statements(function* () {
+      yield `this.${preProcessManagedIdentityMethod.name}();`;
+    });
   }
 
   private GetPutPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
@@ -1220,20 +1237,12 @@ export class CmdletClass extends Class {
       });
       $this.add(updateBodyMethod);
     }
-    if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
-      const preProcessManagedIdentityMethod = new Method('PreProcessManagedIdentityParameters', dotnet.Void, {
-        access: Access.Private
-      });
-      if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityMethod)) {
-        preProcessManagedIdentityMethod.add($this.ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet));
-        $this.add(preProcessManagedIdentityMethod);
-      }
-    }
+
     const getPut = function* () {
       yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation} `;
       // PreProcess body parameter
       if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
-        yield 'this.PreProcessManagedIdentityParameters();';
+        yield $this.ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet);
       }
       yield `this.${updateBodyMethod.name}();`;
       /** Instance:

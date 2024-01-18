@@ -310,7 +310,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         private string GetManagedIdentityMappingStatements()
         {
             var sb = new StringBuilder();
-            if (!VariantGroup.IsInternal && IsAzure &&
+            if (IsAzure &&
              (VariantGroup.CmdletVerb.Equals("New") || VariantGroup.CmdletVerb.Equals("Update")))
             {
                 var statement1 = GetUserAssignedIdentityMappingStatements();
