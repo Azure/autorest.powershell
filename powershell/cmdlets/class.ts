@@ -861,13 +861,11 @@ export class CmdletClass extends Class {
             break;
           case CommandType.Atomic:
           default:
-            if (!$this.state.project.keepIdentityType
-              && $this.ContainsIdentityTypeParameter($this)) {
-              if ($this.operation.details.csharp.verb.toLowerCase() === 'new' && $this.ContainsUserAssignedIdentityParameter($this)) {
-                preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
-              } else if ($this.operation.details.csharp.verb.toLowerCase() === 'update') {
-                preProcesses.push($this.ManagedIdentityPreProcessForUpdateVerbCmdlet);
-              }
+            if (!$this.state.project.keepIdentityType &&
+              $this.operation.details.csharp.verb.toLowerCase() === 'new' &&
+              $this.ContainsIdentityTypeParameter($this) &&
+              $this.ContainsUserAssignedIdentityParameter($this)) {
+              preProcesses.push($this.ManagedIdentityPreProcessForNewVerbCmdlet);
             }
             preProcesses.push(undefined);
             break;
@@ -1141,7 +1139,7 @@ export class CmdletClass extends Class {
     });
   }
 
-  private ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet: CmdletClass): Statements {
+  private ManagedIdentityPreProcessForUpdateVerbCmdletWithGetResult(cmdlet: CmdletClass): Statements {
     const $this = cmdlet;
     const containsUserAssignedIdentity = $this.ContainsUserAssignedIdentityParameter($this);
     const doesSupportSystemAssignedIdentityMethod = new Method('DoesSupportSystemAssignedIdentityMethod', dotnet.Bool, {
@@ -1200,7 +1198,7 @@ export class CmdletClass extends Class {
       });
     };
 
-    const preProcessManagedIdentityMethod = new Method('PreProcessManagedIdentityParameters', dotnet.Void, {
+    const preProcessManagedIdentityMethod = new Method('PreProcessManagedIdentityParametersWithGetResult', dotnet.Void, {
       access: Access.Private
     });
 
@@ -1242,7 +1240,7 @@ export class CmdletClass extends Class {
       yield `${$this.bodyParameter?.value} = await this.${$this.$<Property>('Client').invokeMethod(httpOperationName, ...[...pathParams, ...nonPathParams]).implementation} `;
       // PreProcess body parameter
       if (!$this.state.project.keepIdentityType && $this.ContainsIdentityTypeParameter(cmdlet)) {
-        yield $this.ManagedIdentityPreProcessForUpdateVerbCmdlet(cmdlet);
+        yield $this.ManagedIdentityPreProcessForUpdateVerbCmdletWithGetResult(cmdlet);
       }
       yield `this.${updateBodyMethod.name}();`;
       /** Instance:

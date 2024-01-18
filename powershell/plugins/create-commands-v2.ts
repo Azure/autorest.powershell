@@ -181,8 +181,8 @@ export /* @internal */ class Inferrer {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
           patchOperation = operation;
-          // skip adding variants for patch operation to avoid conflicts with getput
-          if (this.shouldReplacePatchByGetPut(operation) && putOperation) {
+          // bez: remove/hide patch operation to avoid conflicts with replacements
+          if (this.shouldReplacePatchByGetPut(operation)) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
@@ -228,14 +228,6 @@ export /* @internal */ class Inferrer {
     return model;
   }
 
-  private containsUserAssignedIdentity(op: Operation): boolean {
-    const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
-    // property identity in the body parameter
-    const identityProperty = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly && isObjectSchema(property.schema) && property.language.default.name === 'identity')?.toArray()?.[0] : null;
-    const userAssignedIdentityProperty = (identityProperty && identityProperty.schema && isObjectSchema(identityProperty.schema)) ? values(getAllProperties(identityProperty.schema)).where(property => !property.language.default.readOnly && property.language.default.name === 'userAssignedIdentities')?.toArray()?.[0] : null;
-    return userAssignedIdentityProperty !== null && userAssignedIdentityProperty !== undefined;
-  }
-
   private containsIdentityType(op: Operation): boolean {
     const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
     // property identity in the body parameter
@@ -245,7 +237,8 @@ export /* @internal */ class Inferrer {
   }
 
   private shouldReplacePatchByGetPut(op: Operation): boolean {
-    return !this.keepIdentityType && op && this.containsIdentityType(op) && this.containsUserAssignedIdentity(op);
+    // bez: we are assuming patch and put both exist at the same time
+    return !this.keepIdentityType && op && this.containsIdentityType(op);
   }
 
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {
