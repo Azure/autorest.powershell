@@ -858,6 +858,7 @@ export class CmdletClass extends Class {
         switch ($this.operation.commandType) {
           case CommandType.ManagedIdentityUpdate:
             preProcess = $this.ManagedIdentityUpdateCmdletPreProcess;
+            break;
           case CommandType.GetPut:
             preProcess = $this.GetPutPreProcess;
             break;
