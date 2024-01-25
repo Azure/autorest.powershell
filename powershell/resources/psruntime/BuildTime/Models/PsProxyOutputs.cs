@@ -186,19 +186,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class BaseOutput
     {
         public VariantGroup VariantGroup { get; }
-        protected Parameter[] Parameters { get; }
 
         protected static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
 
         public BaseOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
-            var parameterList = new List<Parameter>();
-            foreach (var variant in VariantGroup.Variants)
-            {
-                parameterList.AddRange(variant.Parameters);
-            }
-            Parameters = parameterList.ToArray();
         }
         public string ClearTelemetryContext()
         {
