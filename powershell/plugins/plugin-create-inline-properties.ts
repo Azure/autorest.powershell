@@ -53,14 +53,7 @@ function getNameOptions(typeName: string, components: Array<string>) {
   return [...result.values()];
 }
 
-function getProposedNameForObjectInlinedProperty(propertyName: string, inlinedPropertyName: string, flattenUserAssignedIdentity: boolean): string {
-  const proposedName = getPascalIdentifier(`${propertyName === 'properties'
-    || propertyName === 'error'
-    || (flattenUserAssignedIdentity && propertyName === 'identity' && inlinedPropertyName === 'UserAssignedIdentities') ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedPropertyName}`);
-  return proposedName;
-}
-
-function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, threshold: number, conflicts: Array<string>, flattenUserAssignedIdentity: boolean) {
+function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, threshold: number, conflicts: Array<string>) {
   // Some properties should be removed are wrongly kept as null and need to clean them
   if (schema.properties) {
     schema.properties = schema.properties.filter(each => each);
@@ -122,7 +115,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     if (!isObjectSchema(parentSchema))
       continue;
 
-    createVirtualProperties(parentSchema, [...stack, `${schema.language.default.name}`], threshold, conflicts, flattenUserAssignedIdentity);
+    createVirtualProperties(parentSchema, [...stack, `${schema.language.default.name}`], threshold, conflicts);
 
     const parentProperties = parentSchema.language.default.virtualProperties || {
       owned: [],
@@ -178,7 +171,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
     const propertyName = property.language.default.name;
 
     // for each object member, make sure that it's inlined it's children that it can.
-    createVirtualProperties(<ObjectSchema>property.schema, [...stack, `${schema.language.default.name}`], threshold, conflicts, flattenUserAssignedIdentity);
+    createVirtualProperties(<ObjectSchema>property.schema, [...stack, `${schema.language.default.name}`], threshold, conflicts);
 
     // this happens if there is a circular reference.
     // this means that this class should not attempt any inlining of that property at all .
@@ -228,7 +221,9 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         // deeper child properties should be inlined with their parent's name 
         // ie, this.[properties].owner.name should be this.ownerName 
 
-        const proposedName = getProposedNameForObjectInlinedProperty(propertyName, inlinedProperty.name, flattenUserAssignedIdentity);
+        const proposedName = getPascalIdentifier(`${propertyName === 'properties'
+          || propertyName === 'error'
+          || propertyName === 'identity' && inlinedProperty.Name === 'UserAssignedIdentities' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         let readonly = inlinedProperty.readOnly || property.readOnly;
@@ -416,7 +411,6 @@ function createVirtualParameters(operation: CommandOperation) {
   operation.details.default.virtualParameters = virtualParameters;
 }
 
-
 async function createVirtuals(state: State): Promise<PwshModel> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
@@ -434,7 +428,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
     }
     // we have an object, let's process it.
 
-    createVirtualProperties(schema, new Array<string>(), threshold, conflicts, await state.getValue('flatten-userassignedidentity', true));
+    createVirtualProperties(schema, new Array<string>(), threshold, conflicts);
 
   }
   if (length(conflicts) > 0) {

@@ -116,7 +116,6 @@ export /* @internal */ class Inferrer {
   subjectPrefix!: string;
   isAzure!: boolean;
   supportJsonInput!: boolean;
-  keepIdentityType!: boolean;
 
   constructor(private state: State) {
   }
@@ -144,7 +143,6 @@ export /* @internal */ class Inferrer {
     this.state.setValue('prefix', this.prefix);
 
     const model = this.state.model;
-    this.keepIdentityType = await this.state.getValue('keep-identitytype', false);
 
     this.state.message({
       Channel: Channel.Debug, Text: `[CMDLET-PREFIX] => '${model.language.default.prefix}'`
@@ -170,7 +168,7 @@ export /* @internal */ class Inferrer {
       parameters: new Dictionary<any>(),
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
-
+    const disableTransformIdentityType = await this.state.getValue('disable-transform-identity-type', false);
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
@@ -181,8 +179,8 @@ export /* @internal */ class Inferrer {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
           patchOperation = operation;
-          // bez: remove/hide patch operation to avoid conflicts with replacements
-          if (this.shouldReplacePatchByGetPut(operation)) {
+          // bez: remove patch operation to avoid conflicts with replacements
+          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
@@ -194,36 +192,32 @@ export /* @internal */ class Inferrer {
           await this.addVariants(operation.parameters, operation, variant, '', this.state);
         }
       }
-      /*
-        generate variants for Update(Get+Put) for subjects only if:
-        - there is no patch operation
-        - there is a get operation
-        - there is a put operation
-        - get operation path is the same as put operation path
-        - there is only one put request schema
-        - get operation response schema type is the same as put operation request schema type
-      */
-      if (this.isAzure
-        && (!disableGetPut && !hasPatch ||
-          hasPatch && patchOperation && this.shouldReplacePatchByGetPut(patchOperation))
-        && getOperations
-        && putOperation
-        && putOperation.requests?.length == 1) {
 
+      if (this.isAzure && getOperations && putOperation && putOperation.requests?.length == 1) {
         const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
-        const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
-        //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
-        const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
-        if (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses)].filter(each => (<SchemaResponse>each).schema !== schema).length === 0) {
-          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
-        } else if (hasPatch && patchOperation && this.shouldReplacePatchByGetPut(patchOperation)) {
-          // bez: patch operation can't be replaced by Get+PUT, add patch operation back and keep identity type
+        const supportsCombineGetPutOperation = getOperation && this.supportsGetPut(getOperation, putOperation);
+        if (!disableTransformIdentityType && supportsCombineGetPutOperation &&
+          (hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)
+            || !hasPatch && putOperation && this.IsManagedIdentityOperation(putOperation))) {
+          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
+        } else if (!disableTransformIdentityType && !supportsCombineGetPutOperation && hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
+          // bez: add patch operation back and disable transforming identity type
           for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
             await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
           }
-          this.state.setValue('keep-identitytype', true);
+          await this.state.setValue('disable-transform-identity-type', true);
+        } else if (!disableGetPut && !hasPatch && supportsCombineGetPutOperation) {
+          /* generate variants for Update(Get+Put) for subjects only if: 
+           - there is a get operation 
+           - there is a put operation
+           - get operation path is the same as put operation path
+           - there is only one put request schema
+           - get operation response schema type is the same as put operation request schema type
+           */
+          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       }
+
     }
     // for (const operation of values(model.http.operations)) {
     //   for (const variant of await this.inferCommandNames(operation, this.state)) {
@@ -234,6 +228,18 @@ export /* @internal */ class Inferrer {
     return model;
   }
 
+  /**
+   * Judge if the response of get operation can be piped as the input of put operation 
+   * 1. there is only one put request schema 
+   * 2. get operation response schema type is the same as put operation request schema type
+   */
+  private supportsGetPut(getOperation: Operation, putOperation: Operation): boolean {
+    const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
+    //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
+    const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
+    return (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses)].filter(each => (<SchemaResponse>each).schema !== schema).length === 0) ?? false;
+  }
+
   private containsIdentityType(op: Operation): boolean {
     const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
     // property identity in the body parameter
@@ -242,9 +248,8 @@ export /* @internal */ class Inferrer {
     return identityTypeProperty !== null && identityTypeProperty !== undefined;
   }
 
-  private shouldReplacePatchByGetPut(op: Operation): boolean {
-    // bez: we are assuming patch and put both exist at the same time
-    return !this.keepIdentityType && op && this.containsIdentityType(op);
+  private IsManagedIdentityOperation(op: Operation): boolean {
+    return this.containsIdentityType(op);
   }
 
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {

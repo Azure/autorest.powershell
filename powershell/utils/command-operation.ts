@@ -62,7 +62,8 @@ export interface VirtualParameter {
 
 export enum CommandType {
   Atomic,
-  GetPut
+  GetPut,
+  ManagedIdentityUpdate,
 }
 
 export class CommandOperation extends Extensions implements CommandOperation {
