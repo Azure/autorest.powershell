@@ -1085,23 +1085,7 @@ export class CmdletClass extends Class {
   }
 
   private ContainsUserAssignedIdentityParameter(): boolean {
-    return this.GetSpecifiedParameter('UserAssignedIdentity');
-  }
-
-  private GetUserAssignedIdentityTypeDeclaration(cmdlet: CmdletClass): string {
-    const $this = cmdlet;
-    const userAssignedIdentityParameter = $this.properties.filter(each => {
-      for (const attribute of each.attributes) {
-        for (const parameter of attribute.parameters) {
-          if ('global::Microsoft.Rest.ParameterCategory.Body' === valueOf(parameter)
-            && 'UserAssignedIdentity' === each.name) {
-            return true;
-          }
-        }
-      }
-      return false;
-    });
-    return userAssignedIdentityParameter?.[0]?.type?.declaration ?? undefined;
+    return this.GetSpecifiedParameter('IdentityUserAssignedIdentity');
   }
 
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
@@ -1111,10 +1095,14 @@ export class CmdletClass extends Class {
     });
 
     const preProcessManagedIdentityType = function* () {
-      yield If('this.UserAssignedIdentity?.Count > 0',
+      yield If('this.UserAssignedIdentity?.Length > 0',
         function* () {
-          yield If('"SystemAssigned".Equals(this.IdentityType, StringComparison.InvariantCultureIgnoreCase)', 'this.IdentityType = "SystemAssigned,UserAssigned";');
-          yield Else('this.IdentityType = "UserAssigned";');
+          yield '// calculate UserAssignedIdentity';
+          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.AdditionalProperties.Add(id, default);`);
+          yield '';
+          yield '// calculate IdentityType';
+          yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
+          yield Else(`${$this.bodyParameter?.value}.IdentityType = "UserAssigned";`);
         });
     };
 
@@ -1135,22 +1123,14 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsSystemAssignedIdentity', dotnet.Bool, { initializer: Or('true == this.EnableSystemAssignedIdentity', `null == this.EnableSystemAssignedIdentity && true == ${$this.bodyParameter?.value}?.IdentityType?.Contains("SystemAssigned")`) });
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
-        yield If(Or(
-          And('(bool)(true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity"))',
-            `((${$this.GetUserAssignedIdentityTypeDeclaration(cmdlet)})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count > 0`),
-          And('!(bool)(true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity"))',
-            `true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned")`)), 'supportsUserAssignedIdentity = true;');
-
         yield '// calculate UserAssignedIdentity';
-        yield If(`supportsUserAssignedIdentity`, function* () {
-          yield new LocalVariable('UserAssignedIdentityHashTable', System.Collections.Hashtable);
-          yield 'this.MyInvocation?.BoundParameters?.Remove("UserAssignedIdentity");';
-          yield 'this.MyInvocation?.BoundParameters?.Add("UserAssignedIdentity", UserAssignedIdentityHashTable);';
+        yield If('this.UserAssignedIdentity?.Length > 0', yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.AdditionalProperties.Add(id, default);`));
+        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.Length > 0 ||
+        true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
+        yield If(`!supportsUserAssignedIdentity`, function* () {
+          yield `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity = null;`;
         });
-        yield Else(function* () {
-          yield 'this.MyInvocation?.BoundParameters?.Remove("UserAssignedIdentity");';
-          yield 'this.MyInvocation?.BoundParameters?.Add("UserAssignedIdentity", null);';
-        });
+        yield '';
       }
 
       yield '// calculate IdentityType';
@@ -1778,7 +1758,7 @@ export class CmdletClass extends Class {
               continue;
             }
 
-            if (vParam.name === 'UserAssignedIdentity') {
+            if (vParam.name === 'IdentityUserAssignedIdentity') {
               var userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
               userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
               userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
