@@ -172,42 +172,5 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         {
             return parameter.Attributes.Any(attr => attr is DoNotExportAttribute);
         }
-
-        public static bool IsIdentityTypeParameter(this Parameter parameter)
-        {
-            const string IdentityTypeParameterName = "IdentityType";
-            const string IdentityTypeParameterType = "System.String";
-            return parameter.ParameterName.Equals(IdentityTypeParameterName, StringComparison.InvariantCultureIgnoreCase) &&
-                parameter.ParameterType.FullName.Equals(IdentityTypeParameterType, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public static bool IsUserAssignedIdentityParameter(this Parameter parameter)
-        {
-            const string UserAssignedIdentityParameterName = "UserAssignedIdentity";
-            const string UserAssignedIdentityParameterType1 = "System.Collections.Hashtable";
-            const string UserAssignedIdentityParameterType2 = "System.String[]";
-            return parameter.ParameterName.Equals(UserAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
-                (parameter.ParameterType.FullName.Equals(UserAssignedIdentityParameterType1, StringComparison.InvariantCultureIgnoreCase) ||
-                parameter.ParameterType.FullName.Equals(UserAssignedIdentityParameterType2, StringComparison.InvariantCultureIgnoreCase));
-        }
-        public static bool IsEnableSystemAssignedIdentityParameter(this Parameter parameter)
-        {
-            const string EnableSystemAssignedIdentityParameterName = "EnableSystemAssignedIdentity";
-            const string EnableSystemAssignedIdentityParameterType1 = "System.Management.Automation.SwitchParameter";
-            const string EnableSystemAssignedIdentityParameterType2 = "System.Nullable`1[[System.Boolean";
-            return parameter.ParameterName.Equals(EnableSystemAssignedIdentityParameterName, StringComparison.InvariantCultureIgnoreCase) &&
-                (parameter.ParameterType.FullName.Equals(EnableSystemAssignedIdentityParameterType1, StringComparison.InvariantCultureIgnoreCase) ||
-                parameter.ParameterType.FullName.StartsWith(EnableSystemAssignedIdentityParameterType2, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        public static bool ContainsEnableSystemAssignedIdentityParameter(this Parameter[] parameters)
-        {
-            return (bool)(parameters?.Where(parameter => parameter.IsEnableSystemAssignedIdentityParameter())?.Any());
-        }
-
-        public static bool ContainsUserAssignedIdentityParameter(this Parameter[] parameters)
-        {
-            return (bool)(parameters?.Where(parameter => parameter.IsUserAssignedIdentityParameter())?.Any());
-        }
     }
 }

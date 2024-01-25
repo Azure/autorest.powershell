@@ -172,6 +172,7 @@ export /* @internal */ class Inferrer {
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
+      let commandType!: CommandType;
       const getOperations: Array<Operation> = [];
       let putOperation: Operation | undefined;
       let patchOperation: Operation | undefined;
@@ -187,9 +188,12 @@ export /* @internal */ class Inferrer {
           getOperations.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
           putOperation = operation;
+          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+            commandType = CommandType.ManagedIdentityNew;
+          }
         }
         for (const variant of await this.inferCommandNames(operation, operationGroup.$key, this.state)) {
-          await this.addVariants(operation.parameters, operation, variant, '', this.state);
+          await this.addVariants(operation.parameters, operation, variant, '', this.state, undefined, commandType);
         }
       }
 
@@ -600,7 +604,8 @@ export /* @internal */ class Inferrer {
       await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state, preOperations, commandType);
     }
 
-    if (this.supportJsonInput && hasValidBodyParameters(operation) && !commandType) {
+    if (this.supportJsonInput && hasValidBodyParameters(operation) &&
+      commandType != CommandType.GetPut && commandType != CommandType.ManagedIdentityUpdate) {
       const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
         const schema = new SchemaModel(name, description, SchemaType.String);
         const language = {

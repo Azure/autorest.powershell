@@ -64,6 +64,7 @@ export enum CommandType {
   Atomic,
   GetPut,
   ManagedIdentityUpdate,
+  ManagedIdentityNew
 }
 
 export class CommandOperation extends Extensions implements CommandOperation {

@@ -44,24 +44,18 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public PSTypeName[] OutputTypes { get; }
         public bool SupportsShouldProcess { get; }
         public bool SupportsPaging { get; }
-
-        private static readonly bool keepIdentityType = Convert.ToBoolean(@"${$project.keepIdentityType}");
-        private static readonly bool flattenUserAssignedIdentity = Convert.ToBoolean(@"${$project.flattenUserAssignedIdentity}");
-
         public string DefaultParameterSetName { get; }
         public bool HasMultipleVariants { get; }
         public PsHelpInfo HelpInfo { get; }
         public bool IsGenerated { get; }
         public bool IsInternal { get; }
-        public bool ContainsInternalCmdlet { get; }
-
         public string OutputFolder { get; }
         public string FileName { get; }
         public string FilePath { get; }
 
         public CommentInfo CommentInfo { get; }
 
-        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false, bool containsInternalCmdlet = false)
+        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false)
         {
             ModuleName = moduleName;
             CmdletName = cmdletName;
@@ -69,7 +63,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             CmdletVerb = cmdletNameParts.First();
             CmdletNoun = cmdletNameParts.Last();
             ProfileName = profileName;
-            Variants = MapManagedIdentityVariant(variants);
+            Variants = variants;
             ParameterGroups = Variants.ToParameterGroups().OrderBy(pg => pg.OrderCategory).ThenByDescending(pg => pg.IsMandatory).ToArray();
             var aliasDuplicates = ParameterGroups.SelectMany(pg => pg.Aliases)
                 //https://stackoverflow.com/a/18547390/294804
@@ -89,7 +83,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             IsInternal = isInternal;
-            ContainsInternalCmdlet = containsInternalCmdlet;
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
             FilePath = Path.Combine(OutputFolder, FileName);
@@ -130,65 +123,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
             return defaultParameterSet;
         }
-
-        private Variant[] MapManagedIdentityVariant(Variant[] variants)
-        {
-            if (!CmdletVerb.Equals("New") && !CmdletVerb.Equals("Update") || keepIdentityType && !flattenUserAssignedIdentity)
-            {
-                return variants;
-            }
-            var mappedManagedIdentityVariant = new List<Variant>();
-            foreach (var variant in variants)
-            {
-                var variantParametersList = variant.Parameters?.ToList();
-                if (!keepIdentityType)
-                {
-                    MapIdentityTypeToEnableSystemAssignedIdentity(variantParametersList);
-                }
-
-                if (flattenUserAssignedIdentity)
-                {
-                    FlattenUserAssignedIdentity(variantParametersList);
-                }
-
-                variant.Parameters = variantParametersList?.ToArray();
-                mappedManagedIdentityVariant.Add(variant);
-            }
-            return mappedManagedIdentityVariant.ToArray();
-        }
-
-        private void MapIdentityTypeToEnableSystemAssignedIdentity(List<Parameter> variantParametersList)
-        {
-            var identityTypeParameter = variantParametersList.Where(p => p.IsIdentityTypeParameter()).FirstOrDefault();
-            if (identityTypeParameter != null && identityTypeParameter.PSArgumentCompleterAttribute != null
-                && (identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned")
-                || identityTypeParameter.PSArgumentCompleterAttribute.ResourceTypes.Contains("SystemAssigned,UserAssigned")))
-            {
-                variantParametersList?.Remove(identityTypeParameter);
-                var enableSystemAssignedIdentityParameter = new Parameter(identityTypeParameter.VariantName, "", identityTypeParameter.Metadata, identityTypeParameter.HelpInfo)
-                {
-                    ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?)
-                };
-                enableSystemAssignedIdentityParameter.ParameterName = "EnableSystemAssignedIdentity";
-                enableSystemAssignedIdentityParameter.ParameterType = CmdletVerb.Equals("New") ? typeof(SwitchParameter) : typeof(bool?);
-                enableSystemAssignedIdentityParameter.Description = "Decides if enable a system assigned identity for the resource.";
-                enableSystemAssignedIdentityParameter.PSArgumentCompleterAttribute = null;
-                variantParametersList.Add(enableSystemAssignedIdentityParameter);
-            }
-
-
-        }
-
-        private void FlattenUserAssignedIdentity(List<Parameter> variantParametersList)
-        {
-            var userAssignedIdentityParameter = variantParametersList.Where(p => p.IsUserAssignedIdentityParameter()).FirstOrDefault();
-            if (userAssignedIdentityParameter != null)
-            {
-                userAssignedIdentityParameter.ParameterName = "UserAssignedIdentity";
-                userAssignedIdentityParameter.ParameterType = typeof(string[]);
-                userAssignedIdentityParameter.Description = "The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.";
-            }
-        }
     }
 
     internal class Variant
@@ -206,7 +140,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsPaging { get; }
 
         public Attribute[] Attributes { get; }
-        public Parameter[] Parameters { get; internal set; }
+        public Parameter[] Parameters { get; }
         public Parameter[] CmdletOnlyParameters { get; }
         public bool IsInternal { get; }
         public bool IsDoNotExport { get; }
@@ -255,7 +189,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public DefaultInfo DefaultInfo { get; }
         public bool HasDefaultInfo { get; }
         public ParameterCategory OrderCategory { get; }
-        public bool DontShow { get; internal set; }
+        public bool DontShow { get; }
         public bool IsMandatory { get; }
         public bool SupportsWildcards { get; }
         public bool IsComplexInterface { get; }
@@ -318,11 +252,10 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class Parameter
     {
         public string VariantName { get; }
-        public string ParameterName { get; internal set; }
+        public string ParameterName { get; }
         public ParameterMetadata Metadata { get; }
         public PsParameterHelpInfo HelpInfo { get; }
-        public Type ParameterType { get; internal set; }
-
+        public Type ParameterType { get; }
         public Attribute[] Attributes { get; }
         public ParameterCategory[] Categories { get; }
         public ParameterCategory OrderCategory { get; }
@@ -332,7 +265,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public bool SupportsWildcards { get; }
         public CompleterInfoAttribute CompleterInfoAttribute { get; }
         public ArgumentCompleterAttribute ArgumentCompleterAttribute { get; }
-        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; internal set; }
+        public PSArgumentCompleterAttribute PSArgumentCompleterAttribute { get; }
 
         public bool ValueFromPipeline { get; }
         public bool ValueFromPipelineByPropertyName { get; }
@@ -343,7 +276,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public InfoAttribute InfoAttribute { get; }
         public ComplexInterfaceInfo ComplexInterfaceInfo { get; }
         public bool IsComplexInterface { get; }
-        public string Description { get; internal set; }
+        public string Description { get; }
 
         public Parameter(string variantName, string parameterName, ParameterMetadata metadata, PsParameterHelpInfo helpInfo = null)
         {
@@ -387,11 +320,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsComplexInterface = ComplexInterfaceInfo.IsComplexInterface;
             Description = $"{description}{(IsComplexInterface ? complexMessage : String.Empty)}";
         }
-        internal Parameter SallowCopy()
-        {
-            return (Parameter)this.MemberwiseClone();
-        }
-
     }
 
     internal class ComplexInterfaceInfo
