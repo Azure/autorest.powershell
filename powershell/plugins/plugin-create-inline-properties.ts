@@ -223,7 +223,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
 
         const proposedName = getPascalIdentifier(`${propertyName === 'properties'
           || propertyName === 'error'
-          || propertyName === 'identity' && inlinedProperty.Name === 'UserAssignedIdentities' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
+          || propertyName === 'identity' && inlinedProperty.name === 'UserAssignedIdentities' ? '' : pascalCase(fixLeadingNumber(deconstruct(propertyName)).map(each => singularize(each)))} ${inlinedProperty.name}`);
 
         const components = [...removeSequentialDuplicates([propertyName, ...inlinedProperty.nameComponents])];
         let readonly = inlinedProperty.readOnly || property.readOnly;
