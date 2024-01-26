@@ -1118,7 +1118,7 @@ export class CmdletClass extends Class {
 
   private ProcessGetResponseForManagedIdentityUpdateCmdlet(cmdlet: CmdletClass): Statements {
     const $this = cmdlet;
-    var containsUserAssignedIdentity = $this.ContainsUserAssignedIdentityParameter();
+    const containsUserAssignedIdentity = $this.ContainsUserAssignedIdentityParameter();
     const preProcessManagedIdentity = function* () {
       yield new LocalVariable('supportsSystemAssignedIdentity', dotnet.Bool, { initializer: Or('true == this.EnableSystemAssignedIdentity', `null == this.EnableSystemAssignedIdentity && true == ${$this.bodyParameter?.value}?.IdentityType?.Contains("SystemAssigned")`) });
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
@@ -1127,7 +1127,7 @@ export class CmdletClass extends Class {
         yield If('this.UserAssignedIdentity?.Length > 0', yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.AdditionalProperties.Add(id, default);`));
         yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.Length > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
-        yield If(`!supportsUserAssignedIdentity`, function* () {
+        yield If('!supportsUserAssignedIdentity', function* () {
           yield `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity = null;`;
         });
         yield '';
@@ -1136,7 +1136,7 @@ export class CmdletClass extends Class {
       yield '// calculate IdentityType';
       yield If(And('supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'), `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
       yield ElseIf(And('supportsUserAssignedIdentity', '!supportsSystemAssignedIdentity'), `${$this.bodyParameter?.value}.IdentityType = "UserAssigned";`);
-      yield ElseIf(And('!supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'), `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned";`)
+      yield ElseIf(And('!supportsUserAssignedIdentity', 'supportsSystemAssignedIdentity'), `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned";`);
       yield Else(`${$this.bodyParameter?.value}.IdentityType = "None";`);
     };
 
@@ -1749,7 +1749,7 @@ export class CmdletClass extends Class {
           let cmdletParameter: Property;
           if (propertyType.schema.type !== SchemaType.Array) {
             if (vParam.name === 'IdentityType') {
-              var enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
+              const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
               enableSystemAssignedIdentity.description = 'Decides if enable a system assigned identity for the resource.';
@@ -1759,7 +1759,7 @@ export class CmdletClass extends Class {
             }
 
             if (vParam.name === 'IdentityUserAssignedIdentity') {
-              var userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
+              const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
               userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
               userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
               userAssignedIdentity.add(new Attribute(AllowEmptyCollectionAttribute));
