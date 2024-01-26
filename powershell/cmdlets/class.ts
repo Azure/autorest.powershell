@@ -857,13 +857,13 @@ export class CmdletClass extends Class {
         let preProcess: PreProcess;
         switch ($this.operation.commandType) {
           case CommandType.ManagedIdentityUpdate:
-            preProcess = $this.ManagedIdentityUpdateCmdletPreProcess;
+            preProcess = $this.ContainsIdentityTypeParameter() ? $this.ManagedIdentityUpdateCmdletPreProcess : undefined;
             break;
           case CommandType.GetPut:
             preProcess = $this.GetPutPreProcess;
             break;
           case CommandType.ManagedIdentityNew:
-            preProcess = $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
+            preProcess = $this.ContainsIdentityTypeParameter() && $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
             break;
           case CommandType.Atomic:
           default:
@@ -1094,7 +1094,7 @@ export class CmdletClass extends Class {
       access: Access.Private
     });
 
-    const preProcessManagedIdentityType = function* () {
+    const preProcessManagedIdentityParameters = function* () {
       yield If('this.UserAssignedIdentity?.Length > 0',
         function* () {
           yield '// calculate UserAssignedIdentity';
@@ -1107,7 +1107,7 @@ export class CmdletClass extends Class {
     };
 
     if (!$this.hasMethodWithSameDeclaration(preProcessManagedIdentityParametersMethod)) {
-      preProcessManagedIdentityParametersMethod.add(preProcessManagedIdentityType);
+      preProcessManagedIdentityParametersMethod.add(preProcessManagedIdentityParameters);
       $this.add(preProcessManagedIdentityParametersMethod);
     }
 
