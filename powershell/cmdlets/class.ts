@@ -1096,7 +1096,7 @@ export class CmdletClass extends Class {
     return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.elementType?.language?.csharp?.fullname;
   }
 
-  private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression> = [], nonPathParams: Array<Expression> = [], viaIdentity: boolean = false): Statements {
+  private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression> = [], nonPathParams: Array<Expression> = [], viaIdentity = false): Statements {
     const $this = cmdlet;
     if ($this.ContainsUserAssignedIdentityParameter() && $this.flattenUserAssignedIdentity) {
       return If('this.UserAssignedIdentity?.Length > 0',
