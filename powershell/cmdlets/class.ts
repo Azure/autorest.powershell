@@ -385,6 +385,8 @@ export class CmdletClass extends Class {
   private responses: Array<Response>;
   private callbackMethods: Array<LiteralExpression>;
   private serializationMode: LiteralExpression | undefined;
+  private disableTransformIdentityType?: boolean;
+  private flattenUserAssignedIdentity?: boolean;
 
   constructor(namespace: Namespace, operation: CommandOperation, state: State, objectInitializer?: DeepPartial<CmdletClass>) {
     // generate the 'variant'  part of the name
@@ -422,6 +424,8 @@ export class CmdletClass extends Class {
     this.addCommonStuff();
     this.description = escapeString(this.operation.details.csharp.description);
     const $this = this;
+    this.disableTransformIdentityType = await $this.state.getValue('disable-transform-identity-type', false);
+    this.flattenUserAssignedIdentity = await $this.state.getValue('flatten-userassignedidentity', true);
 
     this.add(new Method('BeginProcessing', dotnet.Void, {
       override: Modifier.Override,
@@ -1076,16 +1080,34 @@ export class CmdletClass extends Class {
     }
   }
 
-  private GetSpecifiedParameter(parameterName: string): boolean {
+  private ContainsSpecifiedParameter(parameterName: string): boolean {
     return this.operation.details.csharp.virtualParameters?.body?.map(p => p.name)?.includes(parameterName) ?? false;
   }
 
   private ContainsIdentityTypeParameter(): boolean {
-    return this.GetSpecifiedParameter('IdentityType');
+    return this.ContainsSpecifiedParameter('IdentityType');
   }
 
   private ContainsUserAssignedIdentityParameter(): boolean {
-    return this.GetSpecifiedParameter('IdentityUserAssignedIdentity');
+    return this.ContainsSpecifiedParameter('IdentityUserAssignedIdentity') || this.ContainsSpecifiedParameter('UserAssignedIdentity');
+  }
+
+  private GetUserAssignedIdentityParameterElementType(): string | undefined {
+    return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.elementType?.language?.csharp?.fullname;
+  }
+
+  private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass): Statements | undefined {
+    const $this = cmdlet;
+    if ($this.ContainsUserAssignedIdentityParameter() && $this.flattenUserAssignedIdentity) {
+      return If('this.UserAssignedIdentity?.Length > 0',
+        function* () {
+          yield '// calculate UserAssignedIdentity';
+          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
+          yield '';
+        }
+      );
+    }
+    return undefined;
   }
 
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
@@ -1095,11 +1117,9 @@ export class CmdletClass extends Class {
     });
 
     const preProcessManagedIdentityParameters = function* () {
+      yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
       yield If('this.UserAssignedIdentity?.Length > 0',
         function* () {
-          yield '// calculate UserAssignedIdentity';
-          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.AdditionalProperties.Add(id, default);`);
-          yield '';
           yield '// calculate IdentityType';
           yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
           yield Else(`${$this.bodyParameter?.value}.IdentityType = "UserAssigned";`);
@@ -1123,8 +1143,7 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsSystemAssignedIdentity', dotnet.Bool, { initializer: Or('true == this.EnableSystemAssignedIdentity', `null == this.EnableSystemAssignedIdentity && true == ${$this.bodyParameter?.value}?.IdentityType?.Contains("SystemAssigned")`) });
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
-        yield '// calculate UserAssignedIdentity';
-        yield If('this.UserAssignedIdentity?.Length > 0', yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.AdditionalProperties.Add(id, default);`));
+        yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
         yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.Length > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
         yield If('!supportsUserAssignedIdentity', function* () {
@@ -1748,7 +1767,7 @@ export class CmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
           let cmdletParameter: Property;
           if (propertyType.schema.type !== SchemaType.Array) {
-            if (vParam.name === 'IdentityType') {
+            if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType) {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
@@ -1758,13 +1777,17 @@ export class CmdletClass extends Class {
               continue;
             }
 
-            if (vParam.name === 'IdentityUserAssignedIdentity') {
-              const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
-              userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
-              userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
-              userAssignedIdentity.add(new Attribute(AllowEmptyCollectionAttribute));
-              this.add(userAssignedIdentity);
-              continue;
+            if (vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity') {
+              if (this.flattenUserAssignedIdentity) {
+                const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
+                userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
+                userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
+                userAssignedIdentity.add(new Attribute(AllowEmptyCollectionAttribute));
+                this.add(userAssignedIdentity);
+                continue;
+              } else {
+                vParam.name = 'UserAssignedIdentity';
+              }
             }
             cmdletParameter = new Property(vParam.name, propertyType, {
               get: toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name}${!nullable ? '' : ` ?? ${propertyType.defaultOfType}`}`), // /* ${inspect(vParam.origin)} */
