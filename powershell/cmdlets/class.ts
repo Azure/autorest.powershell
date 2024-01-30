@@ -871,7 +871,7 @@ export class CmdletClass extends Class {
             break;
           case CommandType.Atomic:
           default:
-            preProcess = undefined;
+            preProcess = $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedUserAssignedIdentityPreProcess : undefined;
             break;
         }
         const actualCall = function* () {
@@ -1096,7 +1096,7 @@ export class CmdletClass extends Class {
     return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.elementType?.language?.csharp?.fullname;
   }
 
-  private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass): Statements | undefined {
+  private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression> = [], nonPathParams: Array<Expression> = [], viaIdentity: boolean = false): Statements {
     const $this = cmdlet;
     if ($this.ContainsUserAssignedIdentityParameter() && $this.flattenUserAssignedIdentity) {
       return If('this.UserAssignedIdentity?.Length > 0',
@@ -1107,7 +1107,7 @@ export class CmdletClass extends Class {
         }
       );
     }
-    return undefined;
+    return new Statements();
   }
 
   private ManagedIdentityPreProcessForNewVerbCmdlet(cmdlet: CmdletClass, pathParams: Array<Expression>, nonPathParams: Array<Expression>, viaIdentity: boolean): Statements {
@@ -1117,7 +1117,7 @@ export class CmdletClass extends Class {
     });
 
     const preProcessManagedIdentityParameters = function* () {
-      yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
+      yield $this.ManagedUserAssignedIdentityPreProcess($this);
       // if UserAssignedIdentity is a string array, use Length. Otherwise, use Count
       yield If(`this.UserAssignedIdentity?.${$this.flattenUserAssignedIdentity ? 'Length' : 'Count'} > 0`,
         function* () {
@@ -1144,7 +1144,7 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsSystemAssignedIdentity', dotnet.Bool, { initializer: Or('true == this.EnableSystemAssignedIdentity', `null == this.EnableSystemAssignedIdentity && true == ${$this.bodyParameter?.value}?.IdentityType?.Contains("SystemAssigned")`) });
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
-        yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
+        yield $this.ManagedUserAssignedIdentityPreProcess($this);
         yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.${$this.flattenUserAssignedIdentity ? 'Length' : 'Count'} > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
         yield If('!supportsUserAssignedIdentity', function* () {
