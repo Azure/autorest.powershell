@@ -1102,7 +1102,9 @@ export class CmdletClass extends Class {
   }
 
   private GetUserAssignedIdentityPropertyName(): string {
-    const userAssignedIdentityParameter = this.properties.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity');
+    const response = this.responses.filter(re => (<SchemaResponse>re)?.schema?.extensions?.['is-return-object'])?.[0];
+    const props = NewGetAllPublicVirtualProperties((<SchemaResponse>response).schema.language.csharp?.virtualProperties);
+    const userAssignedIdentityParameter = props?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity');
     return userAssignedIdentityParameter?.[0]?.name ?? undefined;
   }
 
