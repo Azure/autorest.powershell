@@ -1096,9 +1096,14 @@ export class CmdletClass extends Class {
     return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.elementType?.language?.csharp?.fullname;
   }
 
-  private GetUserAssignedIdentityTypeDeclaration(): string {
+  private GetUserAssignedIdentityPropertyTypeDeclaration(): string {
     const userAssignedIdentityParameter = this.properties.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity');
     return userAssignedIdentityParameter?.[0]?.type?.declaration ?? undefined;
+  }
+
+  private GetUserAssignedIdentityPropertyName(): string {
+    const userAssignedIdentityParameter = this.properties.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity');
+    return userAssignedIdentityParameter?.[0]?.name ?? undefined;
   }
 
   private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression> = [], nonPathParams: Array<Expression> = [], viaIdentity = false): Statements {
@@ -1107,7 +1112,7 @@ export class CmdletClass extends Class {
       return If('this.UserAssignedIdentity?.Length > 0',
         function* () {
           yield '// calculate UserAssignedIdentity';
-          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
+          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.${$this.GetUserAssignedIdentityPropertyName()}.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
           yield '';
         }
       );
@@ -1150,10 +1155,10 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
         yield $this.ManagedUserAssignedIdentityPreProcess($this);
-        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && ${$this.flattenUserAssignedIdentity ? 'this.UserAssignedIdentity?.Length' : `((${$this.GetUserAssignedIdentityTypeDeclaration()})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count`} > 0 ||
+        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && ${$this.flattenUserAssignedIdentity ? 'this.UserAssignedIdentity?.Length' : `((${$this.GetUserAssignedIdentityPropertyTypeDeclaration()})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count`} > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
         yield If('!supportsUserAssignedIdentity', function* () {
-          yield `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity = null;`;
+          yield `${$this.bodyParameter?.value}.${$this.GetUserAssignedIdentityPropertyName()} = null;`;
         });
         yield '';
       }
