@@ -1118,7 +1118,8 @@ export class CmdletClass extends Class {
 
     const preProcessManagedIdentityParameters = function* () {
       yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
-      yield If('this.UserAssignedIdentity?.Length > 0',
+      // if UserAssignedIdentity is a string array, use Length. Otherwise, use Count
+      yield If(`this.UserAssignedIdentity?.${$this.flattenUserAssignedIdentity ? 'Length' : 'Count'} > 0`,
         function* () {
           yield '// calculate IdentityType';
           yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
@@ -1144,7 +1145,7 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
         yield $this.ManagedUserAssignedIdentityPreProcess(cmdlet) ?? '';
-        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.Length > 0 ||
+        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && this.UserAssignedIdentity?.${$this.flattenUserAssignedIdentity ? 'Length' : 'Count'} > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
         yield If('!supportsUserAssignedIdentity', function* () {
           yield `${$this.bodyParameter?.value}.IdentityUserAssignedIdentity = null;`;
