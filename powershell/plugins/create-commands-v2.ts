@@ -478,9 +478,11 @@ export /* @internal */ class Inferrer {
     // Add operation type to support x-ms-mutability
     let operationType = OperationType.Other;
     if (operation.requests) {
-      if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
+      if (operation.requests[0].protocol.http?.method === 'put' && (variant.action.toLowerCase() === 'create' || variant.action.toLowerCase() === 'update' && variant.verb.toLowerCase() === 'set')) {
+        // put create and put set
         operationType = OperationType.Create;
       } else if ((operation.requests[0].protocol.http?.method === 'patch' || operation.requests[0].protocol.http?.method === 'put') && variant.action.toLowerCase() === 'update') {
+        // patch update, get+put update and exclude set update 
         operationType = OperationType.Update;
       }
     }
