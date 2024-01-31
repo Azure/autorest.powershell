@@ -379,6 +379,7 @@ export /* @internal */ class Inferrer {
     if (body && body.schema) {
       op.details.default.hasBody = true;
       op.parameters.push(new IParameter(bodyParameterName, body.schema, {
+        required: body.required,
         details: {
           default: {
             description: body.schema.language.default.description,
@@ -394,6 +395,7 @@ export /* @internal */ class Inferrer {
         const opExpanded = await this.addCommandOperation(`${vname}Expanded`, parameters, operation, variant, state, preOperations, commandType);
         opExpanded.details.default.dropBodyParameter = true;
         opExpanded.parameters.push(new IParameter(`${bodyParameterName}Body`, body.schema, {
+          required: body.required,
           details: {
             default: {
               description: body.schema.language.default.description,
