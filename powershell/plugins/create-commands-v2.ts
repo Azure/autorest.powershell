@@ -480,7 +480,7 @@ export /* @internal */ class Inferrer {
     if (operation.requests) {
       if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
         operationType = OperationType.Create;
-      } else if (operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
+      } else if ((operation.requests[0].protocol.http?.method === 'patch' || operation.requests[0].protocol.http?.method === 'put') && variant.action.toLowerCase() === 'update') {
         operationType = OperationType.Update;
       }
     }
