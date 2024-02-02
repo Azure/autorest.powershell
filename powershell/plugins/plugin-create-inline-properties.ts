@@ -446,7 +446,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
 }
 
 function shouldBeRequired(operation: CommandOperation, virtualProperty: VirtualProperty): boolean {
-  const shouldBeOptional = operation.commandType === CommandType.GetPut;
+  const shouldBeOptional = operation.commandType === CommandType.GetPut || operation.commandType === CommandType.ManagedIdentityUpdate;
   if (!shouldBeOptional) {
     return virtualProperty.required;
   }
