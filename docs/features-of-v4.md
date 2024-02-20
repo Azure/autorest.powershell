@@ -153,7 +153,7 @@ To determine whether a cmdlet is intended for creation or update, we follow the 
 
 In autorest.powershell v4, IdentityType and UserAssignedIdentity are generated to align our best practice design. As a result, generated cmdlets will have changes as below.
 
-- For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet.
+- For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet. Please notice that this change in update-* cmdlet will use GET+PUT operation instead of PATCH operation to update object and can't be disabled by `disable-getput: true`.
 - For UserAssignedIdentity, it will be changed from UserAssignedIdentity\<HashTable\> to UserAssignedIdentity\<string\[\]\>.
 
 ## Implemented retry policy
