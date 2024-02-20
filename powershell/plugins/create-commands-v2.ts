@@ -168,47 +168,60 @@ export /* @internal */ class Inferrer {
       parameters: new Dictionary<any>(),
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
-
+    const disableTransformIdentityType = await this.state.getValue('disable-transform-identity-type', false);
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
+      let commandType!: CommandType;
       const getOperations: Array<Operation> = [];
       let putOperation: Operation | undefined;
+      let patchOperation: Operation | undefined;
       for (const operation of values(operationGroup.operations)) {
         if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'patch') {
           hasPatch = true;
+          patchOperation = operation;
+          // bez: remove patch operation to avoid conflicts with replacements
+          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+            continue;
+          }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
           getOperations.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
           putOperation = operation;
+          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+            commandType = CommandType.ManagedIdentityNew;
+          }
         }
         for (const variant of await this.inferCommandNames(operation, operationGroup.$key, this.state)) {
-          await this.addVariants(operation.parameters, operation, variant, '', this.state);
+          await this.addVariants(operation.parameters, operation, variant, '', this.state, undefined, commandType);
         }
       }
-      /*
-        generate variants for Update(Get+Put) for subjects only if:
-        - there is no patch operation
-        - there is a get operation
-        - there is a put operation
-        - get operation path is the same as put operation path
-        - there is only one put reqeust schema
-        - get operation response schema type is the same as put operation request schema type
-      */
-      if (this.isAzure
-        && !disableGetPut
-        && !hasPatch
-        && getOperations
-        && putOperation
-        && putOperation.requests?.length == 1) {
+
+      if (this.isAzure && getOperations && putOperation && putOperation.requests?.length == 1) {
         const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
-        const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
-        //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
-        const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
-        if (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses)].filter(each => (<SchemaResponse>each).schema !== schema).length === 0) {
+        const supportsCombineGetPutOperation = getOperation && this.supportsGetPut(getOperation, putOperation);
+        if (!disableTransformIdentityType && supportsCombineGetPutOperation &&
+          (hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)
+            || !hasPatch && putOperation && this.IsManagedIdentityOperation(putOperation))) {
+          await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
+        } else if (!disableTransformIdentityType && !supportsCombineGetPutOperation && hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
+          // bez: add patch operation back and disable transforming identity type
+          for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
+            await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
+          }
+          await this.state.setValue('disable-transform-identity-type', true);
+        } else if (!disableGetPut && !hasPatch && supportsCombineGetPutOperation) {
+          /* generate variants for Update(Get+Put) for subjects only if: 
+           - there is a get operation 
+           - there is a put operation
+           - get operation path is the same as put operation path
+           - there is only one put request schema
+           - get operation response schema type is the same as put operation request schema type
+           */
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       }
+
     }
     // for (const operation of values(model.http.operations)) {
     //   for (const variant of await this.inferCommandNames(operation, this.state)) {
@@ -217,6 +230,30 @@ export /* @internal */ class Inferrer {
     //   }
     // }
     return model;
+  }
+
+  /**
+   * Judge if the response of get operation can be piped as the input of put operation 
+   * 1. there is only one put request schema 
+   * 2. get operation response schema type is the same as put operation request schema type
+   */
+  private supportsGetPut(getOperation: Operation, putOperation: Operation): boolean {
+    const hasQueryParameter = getOperation?.parameters?.find(p => p.protocol.http?.in === 'query' && p.language.default.name !== 'apiVersion');
+    //parameter.protocal.http.in === 'body' probably only applies to open api 2.0
+    const schema = putOperation?.requests?.[0]?.parameters?.find(p => p.protocol.http?.in === 'body')?.schema;
+    return (getOperation && !hasQueryParameter && schema && [...values(getOperation?.responses)].filter(each => (<SchemaResponse>each).schema !== schema).length === 0) ?? false;
+  }
+
+  private containsIdentityType(op: Operation): boolean {
+    const body = op.requests?.[0].parameters?.find((p) => !p.origin || p.origin.indexOf('modelerfour:synthesized') < 0) || null;
+    // property identity in the body parameter
+    const identityProperty = (body && body.schema && isObjectSchema(body.schema)) ? values(getAllProperties(body.schema)).where(property => !property.language.default.readOnly && isObjectSchema(property.schema) && property.language.default.name === 'identity')?.toArray()?.[0] : null;
+    const identityTypeProperty = (identityProperty && identityProperty.schema && isObjectSchema(identityProperty.schema)) ? values(getAllProperties(identityProperty.schema)).where(property => !property.language.default.readOnly && property.language.default.name === 'type')?.toArray()?.[0] : null;
+    return identityTypeProperty !== null && identityTypeProperty !== undefined;
+  }
+
+  private IsManagedIdentityOperation(op: Operation): boolean {
+    return this.containsIdentityType(op);
   }
 
   inferCommand(operation: Array<string>, group: string, suffix: Array<string> = []): Array<CommandVariant> {
@@ -441,9 +478,11 @@ export /* @internal */ class Inferrer {
     // Add operation type to support x-ms-mutability
     let operationType = OperationType.Other;
     if (operation.requests) {
-      if (operation.requests[0].protocol.http?.method === 'put' && variant.action.toLowerCase() === 'create') {
+      if (operation.requests[0].protocol.http?.method === 'put' && (variant.action.toLowerCase() === 'create' || variant.action.toLowerCase() === 'update' && variant.verb.toLowerCase() === 'set')) {
+        // put create and put set
         operationType = OperationType.Create;
-      } else if (operation.requests[0].protocol.http?.method === 'patch' && variant.action.toLowerCase() === 'update') {
+      } else if ((operation.requests[0].protocol.http?.method === 'patch' || operation.requests[0].protocol.http?.method === 'put') && variant.action.toLowerCase() === 'update') {
+        // patch update, get+put update and exclude set update 
         operationType = OperationType.Update;
       }
     }
@@ -569,7 +608,8 @@ export /* @internal */ class Inferrer {
       await this.addVariant(pascalCase([variant.action, vname, `via-identity${resourceName}`]), body, bodyParameterName, [...constants, ...otherParams, ...pathParams.slice(i + 1)], operation, variant, state, preOperations, commandType);
     }
 
-    if (this.supportJsonInput && hasValidBodyParameters(operation) && !commandType) {
+    if (this.supportJsonInput && hasValidBodyParameters(operation) &&
+      commandType != CommandType.GetPut && commandType != CommandType.ManagedIdentityUpdate) {
       const createStringParameter = (name: string, description: string, serializedName: string): IParameter => {
         const schema = new SchemaModel(name, description, SchemaType.String);
         const language = {

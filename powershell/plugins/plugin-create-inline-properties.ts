@@ -213,7 +213,6 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
         required: property.required || property.language.default.required,
       };
       virtualProperties.owned.push(privateProperty);
-
       for (const inlinedProperty of [...virtualChildProperties.inherited, ...virtualChildProperties.owned]) {
         // child properties are be inlined without prefixing the name with the property name
         // unless there is a collision, in which case, we have to resolve 
@@ -376,7 +375,6 @@ function createVirtualParameters(operation: CommandOperation) {
           } else if (operation.operationType === OperationType.Update && !(<VirtualProperty>virtualProperty).update) {
             continue;
           }
-
           virtualParameters.body.push({
             name: virtualProperty.name,
             description: virtualProperty.property.language.default.description,
@@ -411,7 +409,6 @@ function createVirtualParameters(operation: CommandOperation) {
   operation.details.default.virtualParameters = virtualParameters;
 }
 
-
 async function createVirtuals(state: State): Promise<PwshModel> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
@@ -422,7 +419,6 @@ async function createVirtuals(state: State): Promise<PwshModel> {
   */
   const threshold = await state.getValue('inlining-threshold', 24);
   const conflicts = new Array<string>();
-
   for (const schema of values(state.model.schemas.objects)) {
     // did we already inline this objecct
     if (schema.language.default.inlined) {
@@ -450,7 +446,7 @@ async function createVirtuals(state: State): Promise<PwshModel> {
 }
 
 function shouldBeRequired(operation: CommandOperation, virtualProperty: VirtualProperty): boolean {
-  const shouldBeOptional = operation.commandType === CommandType.GetPut;
+  const shouldBeOptional = operation.commandType === CommandType.GetPut || operation.commandType === CommandType.ManagedIdentityUpdate;
   if (!shouldBeOptional) {
     return virtualProperty.required;
   }
