@@ -308,7 +308,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             IsMandatory = ParameterAttribute.Mandatory;
 
             var complexParameterName = ParameterName.ToUpperInvariant();
-            var complexMessage = $"{Environment.NewLine}To construct, see NOTES section for {complexParameterName} properties and create a hash table.";
+            var complexMessage = $"{Environment.NewLine}.";
             var description = ParameterAttribute.HelpMessage.NullIfEmpty() ?? HelpInfo.Description.NullIfEmpty() ?? InfoAttribute?.Description.NullIfEmpty() ?? String.Empty;
             // Remove the complex type message as it will be reinserted if this is a complex type
             description = description.NormalizeNewLines().Replace(complexMessage, String.Empty).Replace(complexMessage.ToPsSingleLine(), String.Empty);
