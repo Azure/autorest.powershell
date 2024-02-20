@@ -195,7 +195,7 @@ This is a design change and we do not provide a way to generate fixed array anym
 
 In v3, IdentityType and UserAssignedIdentity are generated and totally matches with swagger definition. In v4, we generate them to align our best practice design. As a result, generated cmdlets will have changes as below.
 
-- For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet.
+- For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet. Please notice that this change in update-* cmdlet will use GET+PUT operation instead of PATCH operation to update object and can't be disabled by `disable-getput: true`.
 - For UserAssignedIdentity, it will be changed from UserAssignedIdentity\<HashTable\> to UserAssignedIdentity\<string\[\]\>.
 
 
