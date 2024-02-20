@@ -149,6 +149,13 @@ To determine whether a cmdlet is intended for creation or update, we follow the 
 - If a cmdlet is associated with a PUT API and its verb is "New," it will be identified as a cmdlet for creation.
 - If a cmdlet is associated with a PATCH API and its verb is "Update," it will be identified as a cmdlet for update.
 
+## Managed Identity Best Practice Alignment
+
+In autorest.powershell v4, IdentityType and UserAssignedIdentity are generated to align our best practice design. As a result, generated cmdlets will have changes as below.
+
+- For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet.
+- For UserAssignedIdentity, it will be changed from UserAssignedIdentity\<HashTable\> to UserAssignedIdentity\<string\[\]\>.
+
 ## Implemented retry policy
 
 We have introduced two retry policies with the following details:
