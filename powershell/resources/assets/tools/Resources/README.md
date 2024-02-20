@@ -3,9 +3,6 @@
 This directory contains the PowerShell module for the Resources service.
 
 ---
-## Status
-[![Az.Resources.TestSupport](https://img.shields.io/powershellgallery/v/Az.Resources.TestSupport.svg?style=flat-square&label=Az.Resources.TestSupport "Az.Resources.TestSupport")](https://www.powershellgallery.com/packages/Az.Resources.TestSupport/)
-
 ## Info
 - Modifiable: yes
 - Generated: all
