@@ -188,7 +188,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public VariantGroup VariantGroup { get; }
 
         protected static readonly bool IsAzure = Convert.ToBoolean(@"${$project.azure}");
-
         public BaseOutput(VariantGroup variantGroup)
         {
             VariantGroup = variantGroup;
@@ -296,7 +295,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             }
             return sb.ToString();
         }
-
     }
 
     internal class ProcessOutput : BaseOutput

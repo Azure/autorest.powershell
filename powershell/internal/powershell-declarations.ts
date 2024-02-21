@@ -30,7 +30,6 @@ export const ResourceGroupCompleter: TypeDeclaration = new ClassType(sma, 'Resou
 export const OutputTypeAttribute: TypeDeclaration = new ClassType(sma, 'OutputType');
 export const ErrorRecord: TypeDeclaration = new ClassType(sma, 'ErrorRecord');
 export const SwitchParameter: TypeDeclaration = new ClassType(sma, 'SwitchParameter');
-export const NullableBoolean: TypeDeclaration = new ClassType(new Namespace('System'), 'Boolean?');
 export const IArgumentCompleter: IInterface = { allProperties: [], declaration: 'System.Management.Automation.IArgumentCompleter' };
 export const CompletionResult: TypeDeclaration = new ClassType(sma, 'CompletionResult');
 export const CommandAst: TypeDeclaration = new ClassType(`${sma}.Language`, 'CommandAst');
