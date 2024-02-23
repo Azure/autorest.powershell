@@ -1780,7 +1780,8 @@ export class CmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
           let cmdletParameter: Property;
           if (propertyType.schema.type !== SchemaType.Array) {
-            if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType) {
+            if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType &&
+              (this.operation.commandType === CommandType.ManagedIdentityNew || this.operation.commandType === CommandType.ManagedIdentityUpdate)) {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
@@ -1793,7 +1794,8 @@ export class CmdletClass extends Class {
               continue;
             }
 
-            if (vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity') {
+            if ((vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity') &&
+              (this.operation.commandType === CommandType.ManagedIdentityNew || this.operation.commandType === CommandType.ManagedIdentityUpdate)) {
               if (this.flattenUserAssignedIdentity) {
                 const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
                 userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
