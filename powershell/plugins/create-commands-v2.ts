@@ -181,14 +181,14 @@ export /* @internal */ class Inferrer {
           hasPatch = true;
           patchOperation = operation;
           // bez: remove patch operation to avoid conflicts with replacements
-          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+          if (this.isAzure && !disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
           getOperations.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
           putOperation = operation;
-          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+          if (this.isAzure && !disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
             commandType = CommandType.ManagedIdentityNew;
           }
         }
@@ -197,6 +197,7 @@ export /* @internal */ class Inferrer {
         }
       }
 
+      // bez: if we have get+put, try to replace
       if (this.isAzure && getOperations && putOperation && putOperation.requests?.length == 1) {
         const getOperation = getOperations.find(getOperation => getOperation.requests?.[0]?.protocol?.http?.path === putOperation?.requests?.[0]?.protocol?.http?.path);
         const supportsCombineGetPutOperation = getOperation && this.supportsGetPut(getOperation, putOperation);
@@ -220,8 +221,13 @@ export /* @internal */ class Inferrer {
            */
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
+      } else if (this.isAzure && !disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
+        // bez: add variants back and disable transforming identity type as no put or get
+        for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
+          await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
+        }
+        await this.state.setValue('disable-transform-identity-type', true);
       }
-
     }
     // for (const operation of values(model.http.operations)) {
     //   for (const variant of await this.inferCommandNames(operation, this.state)) {
