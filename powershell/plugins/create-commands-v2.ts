@@ -181,14 +181,14 @@ export /* @internal */ class Inferrer {
           hasPatch = true;
           patchOperation = operation;
           // bez: remove patch operation to avoid conflicts with replacements
-          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+          if (this.isAzure && !disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
             continue;
           }
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'get') {
           getOperations.push(operation);
         } else if (operation.requests?.[0]?.protocol?.http?.method.toLowerCase() === 'put') {
           putOperation = operation;
-          if (!disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
+          if (this.isAzure && !disableTransformIdentityType && this.IsManagedIdentityOperation(operation)) {
             commandType = CommandType.ManagedIdentityNew;
           }
         }
@@ -221,7 +221,7 @@ export /* @internal */ class Inferrer {
            */
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
-      } else if (!disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
+      } else if (this.isAzure && !disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
         // bez: add variants back and disable transforming identity type as no put or get
         for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
           await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
