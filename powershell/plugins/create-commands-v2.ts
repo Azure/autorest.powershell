@@ -210,6 +210,7 @@ export /* @internal */ class Inferrer {
           for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
             await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
           }
+          await this.state.setValue('disable-transform-identity-type', true);
         } else if (!disableGetPut && !hasPatch && supportsCombineGetPutOperation) {
           /* generate variants for Update(Get+Put) for subjects only if: 
            - there is a get operation 
@@ -225,6 +226,7 @@ export /* @internal */ class Inferrer {
         for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
           await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
         }
+        await this.state.setValue('disable-transform-identity-type', true);
       }
     }
     // for (const operation of values(model.http.operations)) {

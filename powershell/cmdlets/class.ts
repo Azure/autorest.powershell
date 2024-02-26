@@ -861,13 +861,13 @@ export class CmdletClass extends Class {
         let preProcess: PreProcess;
         switch ($this.operation.commandType) {
           case CommandType.ManagedIdentityUpdate:
-            preProcess = $this.ContainsIdentityTypeParameter() ? $this.ManagedIdentityUpdateCmdletPreProcess : undefined;
+            preProcess = !$this.disableTransformIdentityType && $this.ContainsIdentityTypeParameter() ? $this.ManagedIdentityUpdateCmdletPreProcess : undefined;
             break;
           case CommandType.GetPut:
             preProcess = $this.GetPutPreProcess;
             break;
           case CommandType.ManagedIdentityNew:
-            preProcess = $this.ContainsIdentityTypeParameter() && $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
+            preProcess = !$this.disableTransformIdentityType && $this.ContainsIdentityTypeParameter() && $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
             break;
           case CommandType.Atomic:
           default:
