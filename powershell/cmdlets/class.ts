@@ -861,13 +861,13 @@ export class CmdletClass extends Class {
         let preProcess: PreProcess;
         switch ($this.operation.commandType) {
           case CommandType.ManagedIdentityUpdate:
-            preProcess = $this.ContainsIdentityTypeParameter() ? $this.ManagedIdentityUpdateCmdletPreProcess : undefined;
+            preProcess = !$this.disableTransformIdentityType && $this.ContainsIdentityTypeParameter() ? $this.ManagedIdentityUpdateCmdletPreProcess : undefined;
             break;
           case CommandType.GetPut:
             preProcess = $this.GetPutPreProcess;
             break;
           case CommandType.ManagedIdentityNew:
-            preProcess = $this.ContainsIdentityTypeParameter() && $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
+            preProcess = !$this.disableTransformIdentityType && $this.ContainsIdentityTypeParameter() && $this.ContainsUserAssignedIdentityParameter() ? $this.ManagedIdentityPreProcessForNewVerbCmdlet : undefined;
             break;
           case CommandType.Atomic:
           default:
@@ -1780,7 +1780,8 @@ export class CmdletClass extends Class {
           const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
           let cmdletParameter: Property;
           if (propertyType.schema.type !== SchemaType.Array) {
-            if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType) {
+            if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType &&
+              (this.operation.commandType === CommandType.ManagedIdentityNew || this.operation.commandType === CommandType.ManagedIdentityUpdate)) {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
