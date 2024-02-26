@@ -1794,7 +1794,7 @@ export class CmdletClass extends Class {
               continue;
             }
 
-            if ((vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity')) {
+            if (vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity') {
               if (this.flattenUserAssignedIdentity) {
                 const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
                 userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
