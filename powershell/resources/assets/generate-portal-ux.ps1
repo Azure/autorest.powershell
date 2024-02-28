@@ -32,7 +32,7 @@ $moduleInfo = Get-Module -Name $moduleName
 $parameterSetsInfo = Get-Module -Name "$moduleName.private"
 
 $buildinFunctions = @("Export-CmdletSurface", "Export-ExampleStub", "Export-FormatPs1xml", "Export-HelpMarkdown", "Export-ModelSurface", "Export-ProxyCmdlet", "Export-Psd1", "Export-TestStub", "Get-CommonParameter", "Get-ModuleGuid", "Get-ScriptCmdlet")
-$skipParameterList = ("Confirm", "Verbose", "Debug", "ErrorAction", "WarningAction", "InformationAction", "ErrorVariable", "WarningVariable", "InformationVariable", "OutVariable", "OutBuffer", "PipelineVariable", "WhatIf")
+$skipParameterList = @("Confirm", "Verbose", "Debug", "ErrorAction", "WarningAction", "InformationAction", "ErrorVariable", "WarningVariable", "InformationVariable", "OutVariable", "OutBuffer", "PipelineVariable", "WhatIf")
 
 function Test-FunctionSupported()
 {
