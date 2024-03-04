@@ -1897,9 +1897,9 @@ export class CmdletClass extends Class {
             this.addDoNotExport(cmdletParameter, vParam);
           }
 
-          const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+          const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation((<ArraySchema>propertyType.schema).elementType);
           if (addArgumentCompleter) {
-            addPSArgumentCompleterAttribute(cmdletParameter, vParam.schema);
+            propertyType instanceof ArrayOf ? addPSArgumentCompleterAttribute(cmdletParameter, (<ArraySchema>propertyType?.schema)?.elementType) : addPSArgumentCompleterAttribute(cmdletParameter, vParam.schema);
           }
 
           // add aliases if there is any
@@ -2058,9 +2058,9 @@ export class CmdletClass extends Class {
         }
       }
 
-      const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation(propertyType.elementType.schema);
+      const addArgumentCompleter = isEnumImplementation(vParam.schema) || propertyType instanceof ArrayOf && isEnumImplementation((<ArraySchema>propertyType.schema).elementType);
       if (addArgumentCompleter) {
-        addPSArgumentCompleterAttribute(regularCmdletParameter, vParam.schema);
+        propertyType instanceof ArrayOf ? addPSArgumentCompleterAttribute(regularCmdletParameter, (<ArraySchema>propertyType?.schema)?.elementType) : addPSArgumentCompleterAttribute(regularCmdletParameter, vParam.schema);
       }
 
     }
