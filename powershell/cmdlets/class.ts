@@ -1092,6 +1092,10 @@ export class CmdletClass extends Class {
     return this.ContainsSpecifiedParameter('IdentityUserAssignedIdentity') || this.ContainsSpecifiedParameter('UserAssignedIdentity');
   }
 
+  private GetUserAssignedIdentityParameterTypeDefinition(): string | undefined {
+    return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.type;
+  }
+
   private GetUserAssignedIdentityParameterElementType(): string | undefined {
     return (<DictionarySchema>this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'UserAssignedIdentity' || p.name === 'IdentityUserAssignedIdentity')?.[0]?.schema)?.elementType?.language?.csharp?.fullname;
   }
@@ -1110,7 +1114,7 @@ export class CmdletClass extends Class {
 
   private ManagedUserAssignedIdentityPreProcess(cmdlet: CmdletClass, pathParams: Array<Expression> = [], nonPathParams: Array<Expression> = [], viaIdentity = false): Statements {
     const $this = cmdlet;
-    if ($this.ContainsUserAssignedIdentityParameter() && $this.flattenUserAssignedIdentity) {
+    if ($this.ContainsUserAssignedIdentityParameter() && $this.flattenUserAssignedIdentity && $this.GetUserAssignedIdentityParameterTypeDefinition() === 'dictionary') {
       return If('this.UserAssignedIdentity?.Length > 0',
         function* () {
           yield '// calculate UserAssignedIdentity';
@@ -1130,8 +1134,8 @@ export class CmdletClass extends Class {
 
     const preProcessManagedIdentityParameters = function* () {
       yield $this.ManagedUserAssignedIdentityPreProcess($this);
-      // if UserAssignedIdentity is a string array, use Length. Otherwise, use Count
-      yield If(`this.UserAssignedIdentity?.${$this.flattenUserAssignedIdentity ? 'Length' : 'Count'} > 0`,
+      // if UserAssignedIdentity is a string array or string, use Length. Otherwise, use Count
+      yield If(`this.UserAssignedIdentity?.${!$this.flattenUserAssignedIdentity && $this.GetUserAssignedIdentityParameterTypeDefinition() === 'dictionary' ? 'Count' : 'Length'} > 0`,
         function* () {
           yield '// calculate IdentityType';
           yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
@@ -1157,7 +1161,7 @@ export class CmdletClass extends Class {
       yield new LocalVariable('supportsUserAssignedIdentity', dotnet.Bool, { initializer: `${dotnet.False}` });
       if (containsUserAssignedIdentity) {
         yield $this.ManagedUserAssignedIdentityPreProcess($this);
-        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && ${$this.flattenUserAssignedIdentity ? 'this.UserAssignedIdentity?.Length' : `((${$this.GetUserAssignedIdentityPropertyTypeDeclaration()})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count`} > 0 ||
+        yield `supportsUserAssignedIdentity = true == this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && ${!$this.flattenUserAssignedIdentity && $this.GetUserAssignedIdentityParameterTypeDefinition() === 'dictionary' ? `((${$this.GetUserAssignedIdentityPropertyTypeDeclaration()})this.MyInvocation?.BoundParameters["UserAssignedIdentity"])?.Count` : 'this.UserAssignedIdentity?.Length'} > 0 ||
         true != this.MyInvocation?.BoundParameters?.ContainsKey("UserAssignedIdentity") && true == ${$this.bodyParameter?.value}.IdentityType?.Contains("UserAssigned");`;
         yield If('!supportsUserAssignedIdentity', function* () {
           yield `${$this.bodyParameter?.value}.${$this.GetUserAssignedIdentityPropertyName()} = null;`;
@@ -1795,7 +1799,7 @@ export class CmdletClass extends Class {
             }
 
             if (vParam.name === 'IdentityUserAssignedIdentity' || vParam.name === 'UserAssignedIdentity') {
-              if (this.flattenUserAssignedIdentity) {
+              if (this.flattenUserAssignedIdentity && vParam.schema.type === 'dictionary') {
                 const userAssignedIdentity = new Property('UserAssignedIdentity', dotnet.StringArray);
                 userAssignedIdentity.description = 'The array of user assigned identities associated with the resource. The elements in array will be ARM resource ids in the form: \'/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}.\'';
                 userAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(userAssignedIdentity.description || '.')}"`)] }));
