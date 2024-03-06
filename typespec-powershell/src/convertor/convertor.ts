@@ -1,25 +1,81 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { SdkClient, SdkContext } from "@azure-tools/typespec-client-generator-core";
-
-import { getDoc, Program } from "@typespec/compiler";
+import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
+import { HttpOperation, getHttpOperation } from "@typespec/http";
+import { getDoc, getService, ignoreDiagnostics, Program } from "@typespec/compiler";
 import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
 import { getDefaultService } from "../utils/modelUtils.js";
-import { Info } from "@autorest/codemodel";
+import { Info, Language } from "@autorest/codemodel";
+import { deconstruct, pascalCase, } from "@azure-tools/codegen";
+import { PSOptions } from "../types/interfaces.js";
+import { OperationGroup, Operation } from "@autorest/codemodel";
 
 export async function transformPwshModel(
   client: SdkClient,
-  psContext: SdkContext
+  psContext: SdkContext,
+  emitterOptions: PSOptions
 ): Promise<PwshModel> {
   const model = new PwshModel(client.name);
   model.info = getServiceInfo(psContext.program);
+  model.language.default = getLanguageDefault(psContext.program, emitterOptions);
+  model.operationGroups = getOperationGroups(psContext.program, client, psContext);
   return model;
 }
 
+function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext): OperationGroup[] {
+  const operationGroups: OperationGroup[] = [];
+  // list all the operations in the client
+  const clientOperations = listOperationsInOperationGroup(psContext, client);
+  const newGroup = new OperationGroup("");
+  if (clientOperations.length > 0) {
+    newGroup.$key = "";
+    operationGroups.push(newGroup);
+  }
+  for (const clientOperation of clientOperations) {
+    const op = ignoreDiagnostics(getHttpOperation(program, clientOperation));
+    if (op.overloads && op.overloads.length > 0) {
+      continue
+    }
+    addOperation(psContext, op, newGroup);
+    // const operationGroup = new OperationGroup(operation.name);
+    // operationGroup.language.default.name = operation.name;
+    // operationGroup.language.default.description = operation.description;
+    // operationGroup.operations.push(operation);
+    // operationGroups.push(operationGroup);
+  }
+  const opGroups = listOperationGroups(psContext, client, true);
+  for (const operationGroup of opGroups) {
+    const newGroup = new OperationGroup("");
+    newGroup.$key = operationGroup.type.name;
+    operationGroups.push(newGroup);
+    const operations = listOperationsInOperationGroup(
+      psContext,
+      operationGroup
+    );
+    for (const operation of operations) {
+      const op = ignoreDiagnostics(getHttpOperation(program, operation));
+      // ignore overload base operation
+      if (op.overloads && op.overloads?.length > 0) {
+        continue;
+      }
+      addOperation(psContext, op, newGroup);
+    }
+  }
+  return operationGroups;
+}
+
+function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup) {
+  {
+    const newOperation = new Operation(pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
+    newOperation.operationId = operationGroup.$key + "_" + pascalCase(op.operation.name);
+
+    operationGroup.addOperation(newOperation);
+  }
+}
 function getServiceInfo(program: Program): Info {
   const defaultService = getDefaultService(program);
   const info = new Info(defaultService?.title || "");
@@ -27,6 +83,16 @@ function getServiceInfo(program: Program): Info {
   return info;
 }
 
+function getLanguageDefault(program: Program, emitterOptions: PSOptions): Language {
+  const defaultLanguage: Language = {
+    name:
+      emitterOptions.packageDetails?.name ??
+      // Todo: may need to normalize the name
+      pascalCase(deconstruct(emitterOptions?.title ?? getDefaultService(program)?.title ?? "")),
+    description: ''
+  };
+  return defaultLanguage;
+}
 // export function transformUrlInfo(dpgContext: SdkContext): UrlInfo | undefined {
 //   const program = dpgContext.program;
 //   const serviceNs = getDefaultService(program)?.type;

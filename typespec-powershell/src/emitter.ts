@@ -6,13 +6,14 @@ import { createSdkContext } from "@azure-tools/typespec-client-generator-core";
 // import { PwshModel } from "./powershell/utils/PwshModel.js";
 import { getClients } from "./utils/clientUtils.js";
 import { transformPwshModel } from "./convertor/convertor.js";
-
+import { PSOptions } from "./types/interfaces.js";
 
 export async function $onEmit(context: EmitContext) {
   const program: Program = context.program;
   // Emitter options from tspconfig.json
   // ToDo: need to implement a configuration class for AzPS
-  const emitterOptions = context.options;
+  const emitterOptions: PSOptions = context.options;
+
   const PsContext = createSdkContext(
     context,
     "@azure-tools/typespec-powershell"
@@ -30,9 +31,9 @@ export async function $onEmit(context: EmitContext) {
   async function generatePwshModel() {
     const clients = getClients(PsContext);
     for (const client of clients) {
-      const model = await transformPwshModel(client, PsContext);
+      const model = await transformPwshModel(client, PsContext, emitterOptions);
       await emitFile(context.program, {
-        path: resolvePath(context.emitterOutputDir, `${client.name}.ps1`),
+        path: resolvePath(context.emitterOutputDir, `${client.name}.yaml`),
         content: serialize(model),
       });
     }
