@@ -324,7 +324,8 @@ async function tweakOperation(state: State) {
         respCountWithBody = schemas.size + specialBinaryResponse;
         const isHead = operation.requests && operation.requests[0].protocol.http?.method === 'head';
         if (isHead) {
-          initializeResponseBody = '_result.Body = (_statusCode == System.Net.HttpStatusCode.OK);';
+          const succeedCode = operation.responses.filter(r => (<string>r.protocol.http?.statusCodes[0]).startsWith('2'))[0].protocol.http?.statusCodes[0];
+          initializeResponseBody = `_result.Body = (_statusCode == System.Net.HttpStatusCode.${(<any>StatusCodes)[succeedCode]});`;
         }
         const responses = operation.responses.filter(r => (<any>r).schema);
         const hasHeaderResponse = operation.responses.some(r => (<any>r).protocol.http.headers);
