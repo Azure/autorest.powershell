@@ -2,17 +2,19 @@
 // Licensed under the MIT License.
 
 import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
-import { HttpOperation, getHttpOperation } from "@typespec/http";
+import { HttpOperation, HttpOperationParameter, getHttpOperation } from "@typespec/http";
 import { getDoc, getService, ignoreDiagnostics, Program } from "@typespec/compiler";
 import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { getDefaultService } from "../utils/modelUtils.js";
+import { getDefaultService, getSchemaForType } from "../utils/modelUtils.js";
 import { Info, Language } from "@autorest/codemodel";
 import { deconstruct, pascalCase, } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
-import { OperationGroup, Operation } from "@autorest/codemodel";
+import { ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol } from "@autorest/codemodel";
+
+const GlobalParameter = "global-parameter";
 
 export async function transformPwshModel(
   client: SdkClient,
@@ -22,11 +24,11 @@ export async function transformPwshModel(
   const model = new PwshModel(client.name);
   model.info = getServiceInfo(psContext.program);
   model.language.default = getLanguageDefault(psContext.program, emitterOptions);
-  model.operationGroups = getOperationGroups(psContext.program, client, psContext);
+  model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
   return model;
 }
 
-function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext): OperationGroup[] {
+function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): OperationGroup[] {
   const operationGroups: OperationGroup[] = [];
   // list all the operations in the client
   const clientOperations = listOperationsInOperationGroup(psContext, client);
@@ -40,7 +42,7 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
     if (op.overloads && op.overloads.length > 0) {
       continue
     }
-    addOperation(psContext, op, newGroup);
+    addOperation(psContext, op, newGroup, model);
     // const operationGroup = new OperationGroup(operation.name);
     // operationGroup.language.default.name = operation.name;
     // operationGroup.language.default.description = operation.description;
@@ -62,20 +64,66 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
       if (op.overloads && op.overloads?.length > 0) {
         continue;
       }
-      addOperation(psContext, op, newGroup);
+      addOperation(psContext, op, newGroup, model);
     }
   }
   return operationGroups;
 }
 
-function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup) {
-  {
-    const newOperation = new Operation(pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
-    newOperation.operationId = operationGroup.$key + "_" + pascalCase(op.operation.name);
+function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel) {
+  const newOperation = new Operation(pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
+  newOperation.operationId = operationGroup.$key + "_" + pascalCase(op.operation.name);
+  // Add query and path parameters
+  const parameters = op.parameters.parameters.filter(p => p.type === "path" || p.type === "query");
+  for (const parameter of parameters) {
+    const newParameter = createParameter(psContext, parameter, model);
+    newOperation.parameters = newOperation.parameters || [];
+    newOperation.parameters.push(newParameter);
+  }
+  operationGroup.addOperation(newOperation);
+}
 
-    operationGroup.addOperation(newOperation);
+function createParameter(psContext: SdkContext, parameter: HttpOperationParameter, model: PwshModel): Parameter {
+  if (parameter.type === "query" && parameter.name === "api-version"
+    || parameter.type === "path" && parameter.name === "subscriptionId") {
+    const matchParameters = (model.globalParameters || []).filter(p => p.language.default.name === parameter.name);
+    if (matchParameters.length > 0) {
+      return matchParameters[0];
+    } else {
+      const paramSchema = parameter.param.sourceProperty
+        ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
+        : getSchemaForType(psContext, parameter.param.type)
+      const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
+      newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
+      newParameter.protocol.http.in = parameter.type;
+      newParameter.implementation = ImplementationLocation.Client;
+      newParameter.required = !parameter.param.optional;
+      model.globalParameters = model.globalParameters || [];
+      model.globalParameters.push(newParameter);
+      return newParameter;
+    }
+  } else {
+    // always create the parameter
+    const paramSchema = parameter.param.sourceProperty
+      ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
+      : getSchemaForType(psContext, parameter.param.type)
+    const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
+    newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
+    newParameter.protocol.http.in = parameter.type;
+    // ToDo, we need to support x-ms-client is specified.
+    newParameter.implementation = ImplementationLocation.Method;
+    newParameter.required = !parameter.param.optional;
+    return newParameter;
   }
 }
+
+// function addGlobalParameter(parameter: Parameter, model: PwshModel) {
+//   if ((parameter.protocol?.http?.in == "query" && parameter.language.default.name === "api-version")
+//     || (parameter.protocol?.http?.in == "path" && parameter.language.default.name === "subscriptionId")) {
+//     model.globalParameters = model.globalParameters || [];
+//     model.globalParameters.push(parameter);
+//   }
+// }
 function getServiceInfo(program: Program): Info {
   const defaultService = getDefaultService(program);
   const info = new Info(defaultService?.title || "");
