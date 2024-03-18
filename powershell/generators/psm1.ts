@@ -63,7 +63,7 @@ export async function generatePsm1(project: Project) {
     `;
     }
 
-    getLocalSubscriptionId = `function Get-LocalSubscription {
+    getLocalSubscriptionId = `function Get-LocalSubscriptionId {
   [CmdletBinding()]
   param()
   if ($env:AzPSIgnoreLocalContext) {
