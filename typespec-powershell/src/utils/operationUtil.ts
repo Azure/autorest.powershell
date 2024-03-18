@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import {
-  NameType,
-  Paths,
-  ResponseMetadata,
-  ResponseTypes,
-  getLroLogicalResponseName,
-  getResponseTypeName,
-  normalizeName
-} from "@azure-tools/rlc-common";
+// import {
+//   NameType,
+//   Paths,
+//   ResponseMetadata,
+//   ResponseTypes,
+//   getLroLogicalResponseName,
+//   getResponseTypeName,
+//   normalizeName
+// } from "@azure-tools/rlc-common";
 import {
   getProjectedName,
   ignoreDiagnostics,
@@ -161,15 +161,15 @@ export function getOperationStatuscode(
 //     .join("");
 // }
 
-export function getOperationName(program: Program, operation: Operation) {
-  const projectedOperationName = getProjectedName(program, operation, "json");
+// export function getOperationName(program: Program, operation: Operation) {
+//   const projectedOperationName = getProjectedName(program, operation, "json");
 
-  return normalizeName(
-    projectedOperationName ?? operation.name,
-    NameType.Interface,
-    true
-  );
-}
+//   return normalizeName(
+//     projectedOperationName ?? operation.name,
+//     NameType.Interface,
+//     true
+//   );
+// }
 
 export function isDefaultStatusCode(statusCodes: HttpStatusCodesEntry) {
   return statusCodes === "*";
@@ -207,24 +207,24 @@ export function isLongRunningOperation(
  * @param pathDictionary
  * @returns
  */
-export function getClientLroOverload(pathDictionary: Paths) {
-  let lroCounts = 0,
-    allowCounts = 0;
-  for (const details of Object.values(pathDictionary)) {
-    for (const methodDetails of Object.values(details.methods)) {
-      const lroDetail = methodDetails[0].operationHelperDetail?.lroDetails;
-      if (lroDetail?.isLongRunning) {
-        lroCounts++;
-        if (!lroDetail.operationLroOverload) {
-          return false;
-        }
-        allowCounts++;
-      }
-    }
-  }
+// export function getClientLroOverload(pathDictionary: Paths) {
+//   let lroCounts = 0,
+//     allowCounts = 0;
+//   for (const details of Object.values(pathDictionary)) {
+//     for (const methodDetails of Object.values(details.methods)) {
+//       const lroDetail = methodDetails[0].operationHelperDetail?.lroDetails;
+//       if (lroDetail?.isLongRunning) {
+//         lroCounts++;
+//         if (!lroDetail.operationLroOverload) {
+//           return false;
+//         }
+//         allowCounts++;
+//       }
+//     }
+//   }
 
-  return Boolean(lroCounts > 0 && lroCounts === allowCounts);
-}
+//   return Boolean(lroCounts > 0 && lroCounts === allowCounts);
+// }
 
 /**
  * Check if we have an operation-level overloading
@@ -234,24 +234,24 @@ export function getClientLroOverload(pathDictionary: Paths) {
  * @param existingResponses auxilary param for raw response data
  * @returns
  */
-export function getOperationLroOverload(
-  program: Program,
-  operation: HttpOperation,
-  existingResponseTypes?: ResponseTypes,
-  existingResponses?: ResponseMetadata[]
-) {
-  const metadata = getLroMetadata(program, operation.operation);
-  if (!metadata) {
-    return false;
-  }
-  const hasSuccessReturn = existingResponses?.filter((r) =>
-    r.statusCode.startsWith("20")
-  );
-  if (existingResponseTypes?.success || hasSuccessReturn) {
-    return true;
-  }
-  return false;
-}
+// export function getOperationLroOverload(
+//   program: Program,
+//   operation: HttpOperation,
+//   existingResponseTypes?: ResponseTypes,
+//   existingResponses?: ResponseMetadata[]
+// ) {
+//   const metadata = getLroMetadata(program, operation.operation);
+//   if (!metadata) {
+//     return false;
+//   }
+//   const hasSuccessReturn = existingResponses?.filter((r) =>
+//     r.statusCode.startsWith("20")
+//   );
+//   if (existingResponseTypes?.success || hasSuccessReturn) {
+//     return true;
+//   }
+//   return false;
+// }
 
 /**
  * Extract the operation LRO details

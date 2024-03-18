@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
-import { HttpOperation, HttpOperationParameter, getHttpOperation } from "@typespec/http";
+import { HttpOperation, HttpOperationParameter, HttpOperationRequestBody, getHttpOperation } from "@typespec/http";
 import { getDoc, getService, ignoreDiagnostics, Program } from "@typespec/compiler";
 import { getServers } from "@typespec/http";
 import { join } from "path";
@@ -12,7 +12,7 @@ import { getDefaultService, getSchemaForType } from "../utils/modelUtils.js";
 import { Info, Language } from "@autorest/codemodel";
 import { deconstruct, pascalCase, } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
-import { ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol } from "@autorest/codemodel";
+import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol } from "@autorest/codemodel";
 
 const GlobalParameter = "global-parameter";
 
@@ -80,9 +80,44 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
     newOperation.parameters = newOperation.parameters || [];
     newOperation.parameters.push(newParameter);
   }
+  // Add request
+  const headerParameters = op.parameters.parameters.filter(p => p.type === "header");
+  for (const parameter of headerParameters) {
+    const newParameter = createParameter(psContext, parameter, model);
+    newOperation.requests = newOperation.requests || [];
+    if (newOperation.requests.length === 0) {
+      const newRequest = new Request();
+      newRequest.parameters = [];
+      newOperation.requests.push(newRequest);
+    }
+    newOperation.requests[0].parameters?.push(newParameter);
+  }
+  // Add request body if it exists
+  if (op.parameters.body) {
+    const newParameter = createBodyParameter(psContext, op.parameters.body, model);
+    newOperation.requests = newOperation.requests || [];
+    if (newOperation.requests.length === 0) {
+      const newRequest = new Request();
+      newRequest.parameters = [];
+      newOperation.requests.push(newRequest);
+    }
+    newOperation.requests[0].parameters?.push(newParameter);
+  }
   operationGroup.addOperation(newOperation);
 }
 
+function createBodyParameter(psContext: SdkContext, parameter: HttpOperationRequestBody, model: PwshModel): Parameter {
+  const paramSchema = parameter.parameter?.sourceProperty
+    ? getSchemaForType(psContext, parameter.parameter?.sourceProperty?.type)
+    : getSchemaForType(psContext, parameter.type)
+  const newParameter = new Parameter(parameter.parameter?.name || "", parameter.parameter ? getDoc(psContext.program, parameter.parameter) || "" : "", paramSchema);
+  newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
+  newParameter.protocol.http.in = "body";
+  // ToDo, we need to support x-ms-client is specified.
+  newParameter.implementation = ImplementationLocation.Method;
+  newParameter.required = !parameter.parameter?.optional;
+  return newParameter;
+}
 function createParameter(psContext: SdkContext, parameter: HttpOperationParameter, model: PwshModel): Parameter {
   if (parameter.type === "query" && parameter.name === "api-version"
     || parameter.type === "path" && parameter.name === "subscriptionId") {

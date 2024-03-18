@@ -802,21 +802,23 @@ function getSchemaForModel(
     // Should the property be marked as readOnly?
     const vis = getVisibility(program, prop);
     if (vis && vis.includes("read")) {
-      const mutability = [];
+      //const mutability = [];
       if (vis.includes("read")) {
         if (vis.length > 1) {
-          mutability.push(SchemaContext.Output);
+          // ToDo: by xiaogang, skip it since it is not required by autorest.powershell
+          //mutability.push(SchemaContext.Output);
         } else {
           newPropSchema["readOnly"] = true;
         }
       }
       if (vis.includes("write") || vis.includes("create")) {
-        mutability.push(SchemaContext.Input);
+        // ToDo: by xiaogang
+        //mutability.push(SchemaContext.Input);
       }
 
-      if (mutability.length > 0) {
-        newPropSchema["usage"] = mutability;
-      }
+      // if (mutability.length > 0) {
+      //   newPropSchema["usage"] = mutability;
+      // }
     }
     // ToDo: need to confirm, now remove the odd and add a new
     modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
