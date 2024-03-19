@@ -45,7 +45,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 {
                     exportDirectories = new[] { ExportsFolder };
                 }
-                var loadEnvFile = Path.Combine(OutputFolder, "loadEnv.ps1");
+                /*var loadEnvFile = Path.Combine(OutputFolder, "loadEnv.ps1");
                 if (!File.Exists(loadEnvFile))
                 {
                     var sc = new StringBuilder();
@@ -65,7 +65,7 @@ if (Test-Path -Path $envFilePath) {
     $env = Get-Content (Join-Path $PSScriptRoot $envFile) | ConvertFrom-Json
 }");
                     File.WriteAllText(loadEnvFile, sc.ToString());
-                }
+                }*/
                 var utilFile = Path.Combine(OutputFolder, "utils.ps1");
                 if (!File.Exists(utilFile))
                 {
