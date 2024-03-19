@@ -43,7 +43,6 @@ export function getProfileExportScript(exportFolderScript: string, isAzure: bool
 export async function generatePsm1(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
   let azureInitialize = '';
-  let getSubscriptionIdTestSafe = '';
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     let requestHandler = `
@@ -62,18 +61,6 @@ export async function generatePsm1(project: Project) {
   $instance.AddAuthorizeRequestHandler = $VTable.AddAuthorizeRequestHandler
     `;
     }
-
-    getSubscriptionIdTestSafe = `function Get-SubscriptionIdTestSafe {
-  [CmdletBinding()]
-  param()
-  if ($env:AzPSAutorestTestPlaybackMode) {
-    $loadEnvPath = Join-Path $PSScriptRoot 'test' 'loadEnv.ps1'
-    . ($loadEnvPath)
-    return $env.SubscriptionId
-  }
-  return (Get-AzContext).Subscription.Id
-}`;
-
     azureInitialize = `
   # ----------------------------------------------------------------------------------
   ${project.pwshCommentHeader}
@@ -159,10 +146,7 @@ ${azureInitialize}
 ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, project.azure)}
   # Finalize initialization of this module
   $instance.Init();
-  Write-Information "Loaded Module '$($instance.Name)'"
-
-  ${getSubscriptionIdTestSafe}
-  `);
+  Write-Information "Loaded Module '$($instance.Name)'"`);
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
