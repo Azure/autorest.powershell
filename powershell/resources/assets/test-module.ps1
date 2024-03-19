@@ -80,7 +80,7 @@ try
     cleanupEnv
   }
   else {
-    $env:AzPSAutorestTestPlaybackMode = $false
+    $env:AzPSAutorestTestPlaybackMode = ''
   }
 }
 
