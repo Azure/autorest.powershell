@@ -161,7 +161,7 @@ ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, p
   $instance.Init();
   Write-Information "Loaded Module '$($instance.Name)'"
 
-  ${getLocalSubscriptionId}
+  ${getSubscriptionIdTestSafe}
   `);
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
