@@ -64,7 +64,7 @@ try
   {
     setupEnv
   } else {
-    $env:AzPSIgnoreLocalContext = $true
+    $env:AzPSAutorestTestPlaybackMode = $true
   }
   $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
   if ($null -ne $TestName)
@@ -80,7 +80,7 @@ try
     cleanupEnv
   }
   else {
-    $env:AzPSIgnoreLocalContext = $false
+    $env:AzPSAutorestTestPlaybackMode = $false
   }
 }
 

@@ -43,7 +43,7 @@ export function getProfileExportScript(exportFolderScript: string, isAzure: bool
 export async function generatePsm1(project: Project) {
   const psm1 = new PSScriptFile(await project.state.readFile(project.psm1) || '');
   let azureInitialize = '';
-  let getLocalSubscriptionId = '';
+  let getSubscriptionIdTestSafe = '';
   if (project.azure) {
     const localModulesPath = relative(project.baseFolder, project.dependencyModuleFolder);
     let requestHandler = `
@@ -63,10 +63,10 @@ export async function generatePsm1(project: Project) {
     `;
     }
 
-    getLocalSubscriptionId = `function Get-LocalSubscriptionId {
+    getSubscriptionIdTestSafe = `function Get-SubscriptionIdTestSafe {
   [CmdletBinding()]
   param()
-  if ($env:AzPSIgnoreLocalContext) {
+  if ($env:AzPSAutorestTestPlaybackMode) {
     $loadEnvPath = Join-Path $PSScriptRoot 'test' 'loadEnv.ps1'
     . ($loadEnvPath)
     return $env.SubscriptionId

@@ -291,7 +291,13 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     setCondition = $" -and {defaultInfo.SetCondition}";
                 }
                 sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
-                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$testPlayback = $false");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['HttpPipelinePrepend'] | Foreach-Object {{ $testPlayback = $testPlayback -or ($_ -is [Microsoft.Message.ClientRuntime.PipelineMock]) }}");
+                sb.AppendLine($"{Indent}{Indent}{Indent}if ($testPlayback) {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = Get-SubscriptionIdTestSafe");
+                sb.AppendLine($"{Indent}{Indent}{Indent}}} else {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
+                sb.AppendLine($"{Indent}{Indent}{Indent}}}");
                 sb.Append($"{Indent}{Indent}}}");
             }
             return sb.ToString();
