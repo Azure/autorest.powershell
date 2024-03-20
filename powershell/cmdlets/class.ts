@@ -417,7 +417,9 @@ export class CmdletClass extends Class {
 
     this.NewImplementProcessRecordAsync(this.operation);
 
-    this.NewImplementWriteObject();
+    if (this.state.project.azure) {
+      this.NewImplementWriteObject();
+    }
 
     this.debugMode = await this.state.getValue('debug', false);
 
@@ -496,13 +498,14 @@ export class CmdletClass extends Class {
       if (!$this.state.project.azure) {
         yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
       }
-
-      yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
-      yield If('telemetryInfo != null', function* () {
-        yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
-        yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
-        yield If('!string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName ?? "Unknown"} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
-      });
+      else {
+        yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
+        yield If('telemetryInfo != null', function* () {
+          yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
+          yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
+          yield If('!string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName ?? "Unknown"} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+        });
+      }
     });
 
     // debugging
