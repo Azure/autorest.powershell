@@ -290,27 +290,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                 {
                     setCondition = $" -and {defaultInfo.SetCondition}";
                 }
-                //Yabo: this is bad to hard code the subscription id, but autorest load input README.md reversely (entry readme -> required readme), there are no other way to 
-                //override default value set in required readme
-                if ("SubscriptionId".Equals(parameterName))
-                {
-                    sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}$testPlayback = $false");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['HttpPipelinePrepend'] | Foreach-Object {{ $testPlayback = $testPlayback -or ('Microsoft.Message.ClientRuntime.PipelineMock' -eq $_.Target.GetType().FullName) }}");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}if ($testPlayback) {{");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = . (Join-Path $PSScriptRoot '..' 'utils' 'Get-SubscriptionIdTestSafe.ps1')");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}}} else {{");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}}}");
-                    sb.Append($"{Indent}{Indent}}}");
-                }
-                else
-                {
-                    sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
-                    sb.Append($"{Indent}{Indent}}}");
-                }
-
+                sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
+                sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = {defaultInfo.Script}");
+                sb.Append($"{Indent}{Indent}}}");
             }
             return sb.ToString();
         }

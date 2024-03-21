@@ -63,14 +63,13 @@ try
   if ($TestMode -ne 'playback')
   {
     setupEnv
-  } else {
-    $env:AzPSAutorestTestPlaybackMode = $true
   }
   $testFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.testFolder)}'
   if ($null -ne $TestName)
   {
     Invoke-Pester -Script @{ Path = $testFolder } -TestName $TestName -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
-  } else {
+  } else
+  {
     Invoke-Pester -Script @{ Path = $testFolder } -ExcludeTag $ExcludeTag -EnableExit -OutputFile (Join-Path $testFolder "$moduleName-TestResults.xml")
   }
 } Finally
@@ -78,9 +77,6 @@ try
   if ($TestMode -ne 'playback')
   {
     cleanupEnv
-  }
-  else {
-    $env:AzPSAutorestTestPlaybackMode = ''
   }
 }
 
