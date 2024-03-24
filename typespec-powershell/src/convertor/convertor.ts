@@ -3,16 +3,20 @@
 
 import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
 import { HttpOperation, HttpOperationParameter, HttpOperationRequestBody, getHttpOperation } from "@typespec/http";
-import { getDoc, getService, ignoreDiagnostics, Program } from "@typespec/compiler";
+import { getDoc, getService, ignoreDiagnostics, Program, Model } from "@typespec/compiler";
 import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { getDefaultService, getSchemaForType } from "../utils/modelUtils.js";
-import { Info, Language } from "@autorest/codemodel";
-import { deconstruct, pascalCase, } from "@azure-tools/codegen";
+import { getDefaultService, getSchemaForType, schemaCache } from "../utils/modelUtils.js";
+import { Info, Language, Schemas, AllSchemaTypes } from "@autorest/codemodel";
+import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
-import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol } from "@autorest/codemodel";
+import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response } from "@autorest/codemodel";
+import { stat } from "fs";
+import { extractPagedMetadataNested } from "../utils/operationUtil.js";
+import { parseNextLinkName } from "../utils/operationUtil.js";
+import { getLroMetadata } from "@azure-tools/typespec-azure-core";
 
 const GlobalParameter = "global-parameter";
 
@@ -25,9 +29,17 @@ export async function transformPwshModel(
   model.info = getServiceInfo(psContext.program);
   model.language.default = getLanguageDefault(psContext.program, emitterOptions);
   model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
+  model.schemas = gethSchemas(psContext.program, client, psContext, model);
   return model;
 }
 
+function gethSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
+  const schemas = new Schemas();
+  for (const schema of schemaCache.values()) {
+    schemas.add(schema);
+  }
+  return schemas;
+}
 function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): OperationGroup[] {
   const operationGroups: OperationGroup[] = [];
   // list all the operations in the client
@@ -102,8 +114,70 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
       newOperation.requests.push(newRequest);
     }
     newOperation.requests[0].parameters?.push(newParameter);
+    const httpProtocol = new Protocol();
+    httpProtocol.method = op.verb;
+    httpProtocol.path = op.path;
+    // hard code the media type to json for the time being by xiaogang.
+    httpProtocol.knownMediaType = "json";
+    httpProtocol.mediaTypes = ["application/json"];
+    httpProtocol.uri = "{$host}";
+    newOperation.requests[0].protocol.http = httpProtocol;
   }
+  // Add responses include exceptions
+  addResponses(psContext, op, newOperation, model);
+  // Add extensions
+  addExtensions(psContext, op, newOperation, model);
   operationGroup.addOperation(newOperation);
+}
+
+function addExtensions(psContext: SdkContext, op: HttpOperation, newOperation: Operation, model: PwshModel) {
+  // Add extensions for pageable
+  const paged = extractPagedMetadataNested(psContext.program, op.responses[0].type as Model);
+  if (paged) {
+    newOperation.extensions = newOperation.extensions || {};
+    //ToDo: add value if it is specified by xiaogang
+    newOperation.extensions['x-ms-pageable'] = newOperation.extensions['x-ms-pageable'] || {};
+    newOperation.extensions['x-ms-pageable']['nextLinkName'] = parseNextLinkName(paged) ?? "nextLink";
+    newOperation.language.default.paging = newOperation.language.default.paging || {};
+    newOperation.language.default.paging.nextLinkName = parseNextLinkName(paged) ?? "nextLink";
+  }
+  // Add extensions for long running operation
+  const lro = getLroMetadata(psContext.program, op.operation);
+  if (lro) {
+    newOperation.extensions = newOperation.extensions || {};
+    newOperation.extensions['x-ms-long-running-operation'] = true;
+    newOperation.extensions['x-ms-long-running-operation-options'] = newOperation.extensions['x-ms-long-running-operation-options'] || {};
+    newOperation.extensions['x-ms-long-running-operation-options']['final-state-via'] = lro.finalStateVia;
+  }
+}
+
+function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Operation, model: PwshModel) {
+  const responses = op.responses;
+  newOperation.responses = newOperation.responses || [];
+  newOperation.exceptions = newOperation.exceptions || [];
+  if (responses) {
+    for (const response of responses) {
+      const newResponse = new Response();
+      // newOperation.responses[response.statusCode] || newOperation.responses.default;
+      // if (!newResponse) {
+      //   newOperation.responses[response.statusCode] = newResponse;
+      // }
+      newResponse.language.default.name = '';
+      newResponse.language.default.description = response.description || "";
+      const schema = getSchemaForType(psContext, response.type);
+      const statusCode = response.statusCode;
+      newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
+      newResponse.protocol.http.statusCodes = statusCode === "*" ? ["default"] : [statusCode];
+      newResponse.protocol.http.knownMediaType = "json";
+      newResponse.protocol.http.mediaTypes = ["application/json"];
+      (<any>newResponse).schema = schema;
+      if (statusCode.startsWith("2")) {
+        newOperation.responses.push(newResponse);
+      } else {
+        newOperation.exceptions.push(newResponse);
+      }
+    }
+  }
 }
 
 function createBodyParameter(psContext: SdkContext, parameter: HttpOperationRequestBody, model: PwshModel): Parameter {

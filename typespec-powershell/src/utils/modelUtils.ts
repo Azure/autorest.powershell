@@ -67,6 +67,7 @@ import {
 } from "@azure-tools/typespec-client-generator-core";
 // import { GetSchemaOptions, SdkContext } from "./interfaces.js";
 import { getModelNamespaceName } from "./namespaceUtils.js";
+import { s } from "vitest/dist/reporters-rzC174PQ.js";
 // import { KnownMediaType, hasMediaType } from "./mediaTypes.js";
 
 export const BINARY_TYPE_UNION =
@@ -74,7 +75,7 @@ export const BINARY_TYPE_UNION =
 
 export const BINARY_AND_FILE_TYPE_UNION = `${BINARY_TYPE_UNION} | File`;
 
-export declare enum SchemaContext {
+export enum SchemaContext {
   /** Schema is used as an input to an operation. */
   Input = "input",
   /** Schema is used as an output from an operation. */
@@ -168,12 +169,17 @@ function isBytesType(schema: any) {
 //   }
 //   return schema;
 // }
-
+export const schemaCache = new Map<Type, Schema>();
+// Add this to the modelSet to avoid circular reference
+export const modelSet = new Set<Type>();
 export function getSchemaForType(
   dpgContext: SdkContext,
   typeInput: Type,
   options?: GetSchemaOptions
 ) {
+  if (schemaCache.has(typeInput)) {
+    return schemaCache.get(typeInput);
+  }
   const program = dpgContext.program;
   const { usage } = options ?? {};
   const type = getEffectiveModelFromType(program, typeInput);
@@ -185,6 +191,7 @@ export function getSchemaForType(
     if (doc) {
       builtinType.description = doc;
     }
+    schemaCache.set(typeInput, builtinType);
     return builtinType;
   }
 
@@ -193,6 +200,11 @@ export function getSchemaForType(
   }
 
   if (type.kind === "Model") {
+    if (modelSet.has(type)) {
+      return undefined;
+    } else {
+      modelSet.add(type);
+    }
     const schema = getSchemaForModel(dpgContext, type, options) as any;
     if (isAnonymousObjectSchema(schema)) {
       if (Object.keys(schema.properties ?? {}).length === 0) {
@@ -226,16 +238,26 @@ export function getSchemaForType(
       schema.typeName = `${schema.name}`;
     }
     schema.usage = usage;
+    schemaCache.set(typeInput, schema);
     return schema;
   } else if (type.kind === "Union") {
-    return getSchemaForUnion(dpgContext, type, options);
+    const schema = getSchemaForUnion(dpgContext, type, options);
+    schemaCache.set(typeInput, schema);
+    return schema;
   } else if (type.kind === "UnionVariant") {
-    return getSchemaForUnionVariant(dpgContext, type, options);
+    const schema = getSchemaForUnionVariant(dpgContext, type, options);
+    schemaCache.set(typeInput, schema);
+    return schema;
   } else if (type.kind === "Enum") {
-    return getSchemaForEnum(dpgContext, type);
+    const schema = getSchemaForEnum(dpgContext, type);
+    schemaCache.set(typeInput, schema);
+    return schema;
   } else if (type.kind === "Scalar") {
-    return getSchemaForScalar(dpgContext, type, options);
+    const schema = getSchemaForScalar(dpgContext, type, options);
+    schemaCache.set(typeInput, schema);
+    return schema;
   } else if (type.kind === "EnumMember") {
+    //ToDo: by xiaogang, need to confirm
     return getSchemaForEnumMember(program, type);
   }
   if (isUnknownType(type)) {
@@ -738,9 +760,10 @@ function getSchemaForModel(
   }
 
   // applyExternalDocs(model, modelSchema);
-  if (needRef) {
-    return modelSchema;
-  }
+  // by xiaogang, skip needRef
+  // if (needRef) {
+  //   return modelSchema;
+  // }
   if (isRecordModelType(program, model)) {
     modelSchema.parents = {
       all: [getSchemaForRecordModel(dpgContext, model, { usage })],
@@ -778,7 +801,7 @@ function getSchemaForModel(
     // Use the description from ModelProperty not derived from Model Type
     propSchema.description = propertyDescription;
     // ToDo: need to confirm there is no duplicated properties.
-    modelSchema.properties.push(propSchema);
+    modelSchema.properties.push(new Property(name, "", propSchema));
     // if this property is a discriminator property, remove it to keep autorest validation happy
     //const { propertyName } = getDiscriminator(program, model) || {};
     // ToDo: by xiaoang, skip polymorphism for the time being.
@@ -820,9 +843,9 @@ function getSchemaForModel(
       //   newPropSchema["usage"] = mutability;
       // }
     }
-    // ToDo: need to confirm, now remove the odd and add a new
-    modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
-    modelSchema.properties.push(newPropSchema);
+    // ToDo: skip for the time being, we need to use newPropSchema finally.
+    // modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
+    // modelSchema.properties.push(newPropSchema);
   }
 
   if (model.baseModel) {
@@ -1415,7 +1438,7 @@ function getPriorityName(schema: Schema, usage?: string[]): string {
   //   !usage.includes(SchemaContext.Output)
   //   ? schema.typeName ?? schema.name
   //   : schema.outputTypeName ?? schema.typeName ?? schema.name;
-  return schema.language.default.name;
+  return schema.language?.default.name ?? "need-to-be-implemented";
 }
 
 function getEnumStringDescription(type: any) {
@@ -1615,7 +1638,7 @@ export function isAzureCoreErrorType(t?: Type): boolean {
 
 // Check if the schema is an anonymous object
 export function isAnonymousObjectSchema(schema: Schema) {
-  return schema.language.default.name === "" && schema.type === "object";
+  return (schema.language?.default.name || "" === "") && schema.type === "object";
 }
 
 // Check if the type is an anonymous model
