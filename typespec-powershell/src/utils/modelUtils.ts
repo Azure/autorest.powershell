@@ -1030,7 +1030,7 @@ function getSchemaForArrayModel(
       !program.checker.isStdType(indexer.value) &&
       !isUnknownType(indexer.value!) &&
       indexer.value?.kind &&
-      schema.items.name &&
+      schema.items?.name &&
       !schema.items.enum
     ) {
       schema.typeName = `Array<${schema.items.name}>`;
@@ -1038,7 +1038,7 @@ function getSchemaForArrayModel(
         schema.outputTypeName = `Array<${schema.items.name}Output>`;
       }
     } else {
-      if (schema.items.typeName) {
+      if (schema.items?.typeName) {
         if (schema.items.type === "dictionary") {
           schema.typeName = `${schema.items.typeName}[]`;
         } else if (schema.items.type === "union") {
@@ -1076,10 +1076,10 @@ function getSchemaForArrayModel(
               .join(" | ");
           }
         }
-      } else if (schema.items.type.includes("|")) {
+      } else if ((schema.items?.type || []).includes("|")) {
         schema.typeName = `(${schema.items.type})[]`;
       } else {
-        schema.typeName = `${schema.items.type}[]`;
+        schema.typeName = `${schema.items?.type}[]`;
       }
     }
     schema.usage = usage;
