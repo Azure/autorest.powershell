@@ -1850,8 +1850,6 @@ export class CmdletClass extends Class {
                 }
                 this.add(userAssignedIdentity);
                 continue;
-              } else {
-                vParam.name = 'UserAssignedIdentity';
               }
             }
             cmdletParameter = new Property(vParam.name, propertyType, {
