@@ -48,7 +48,7 @@ import {
 import { SdkContext } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { SealedChoiceSchema, ChoiceSchema, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property } from "@autorest/codemodel";
+import { SealedChoiceSchema, ChoiceSchema, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
@@ -67,7 +67,6 @@ import {
 } from "@azure-tools/typespec-client-generator-core";
 // import { GetSchemaOptions, SdkContext } from "./interfaces.js";
 import { getModelNamespaceName } from "./namespaceUtils.js";
-import { s } from "vitest/dist/reporters-rzC174PQ.js";
 // import { KnownMediaType, hasMediaType } from "./mediaTypes.js";
 
 export const BINARY_TYPE_UNION =
@@ -169,6 +168,8 @@ function isBytesType(schema: any) {
 //   }
 //   return schema;
 // }
+export let stringSchemaForEnum: StringSchema | undefined;
+export let numberSchemaForEnum: NumberSchema | undefined;
 export const schemaCache = new Map<Type, Schema>();
 // Add this to the modelSet to avoid circular reference
 export const modelSet = new Set<Type>();
@@ -210,6 +211,7 @@ export function getSchemaForType(
       if (Object.keys(schema.properties ?? {}).length === 0) {
         // Handle empty anonymous model as Record
         schema.typeName =
+          // schema.type === "object" ? SchemaType.Dictionary : SchemaType.Any;
           schema.type === "object" ? "Record<string, unknown>" : "unknown";
         if (usage && usage.includes(SchemaContext.Output)) {
           schema.outputTypeName =
@@ -397,9 +399,21 @@ function getSchemaForScalar(
       withDecorators.typeName = BINARY_TYPE_UNION;
       withDecorators.outputTypeName = "Uint8Array";
     }
+    if (withDecorators.type === "string") {
+      handleFormat(withDecorators);
+    }
     return withDecorators;
   }
 
+  function handleFormat(schema: any) {
+    switch (schema.format) {
+      case "uri":
+        schema.type = SchemaType.Uri;
+        break;
+      case "date-time":
+        schema.type = SchemaType.DateTime;
+    }
+  }
   function isBinaryAsRequestBody() {
     return false;
     // ToDO: by xiaogang
@@ -661,7 +675,7 @@ function getSchemaForModel(
   //   true /** shouldGuard */
   // );
   modelSchema.language.default.name = pascalCase(deconstruct(modelSchema.language.default.name));
-  if (modelSchema.language.default.name === "Record" && isRecordModelType(program, model)) {
+  if (isRecordModelType(program, model)) {
     return getSchemaForRecordModel(dpgContext, model, { usage });
   }
   // ToDo: by xiaogang
@@ -764,6 +778,7 @@ function getSchemaForModel(
   // if (needRef) {
   //   return modelSchema;
   // }
+  // by xiagang, seems no need to inherit a dictionary
   if (isRecordModelType(program, model)) {
     modelSchema.parents = {
       all: [getSchemaForRecordModel(dpgContext, model, { usage })],
@@ -951,7 +966,7 @@ function applyIntrinsicDecorators(
 function getSchemaForEnumMember(program: Program, e: EnumMember) {
   const value = e.value ?? e.name;
   const type = enumMemberType(e) === "string" ? `"${value}"` : `${value}`;
-  return { type, description: getDoc(program, e), isConstant: true };
+  return { type, description: getDoc(program, e) };
 }
 
 function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
@@ -969,16 +984,28 @@ function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
     values.push(getSchemaForType(dpgContext, option));
   }
 
-  const schema: any = { type, description: getDoc(dpgContext.program, e) };
+  const schema: any = { type: SchemaType.SealedChoice, description: getDoc(dpgContext.program, e) };
   if (values.length > 0) {
-    schema.enum = values;
-    schema.type = values
-      .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
-      .join(" | ");
-    if (!isFixed(dpgContext.program, e)) {
-      schema.name = "string";
-      schema.typeName = "string";
+    schema.choices = values;
+    // schema.type = values
+    //   .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
+    //   .join(" | ");
+    // if (!isFixed(dpgContext.program, e)) {
+    //   schema.name = "string";
+    //   schema.typeName = "string";
+    // };
+  }
+
+  if (type === "string") {
+    if (stringSchemaForEnum === undefined) {
+      stringSchemaForEnum = new StringSchema("enum", "string schema for enum");
     }
+    schema.choiceType = stringSchemaForEnum;
+  } else {
+    if (numberSchemaForEnum === undefined) {
+      numberSchemaForEnum = new NumberSchema("enum", "number schema for enum", SchemaType.Number, 64);
+    }
+    schema.choiceType = numberSchemaForEnum;
   }
   return schema;
 }
@@ -1011,7 +1038,7 @@ function getSchemaForArrayModel(
   if (isArrayModelType(program, type)) {
     schema = {
       type: "array",
-      items: getSchemaForType(dpgContext, indexer.value!, {
+      elementType: getSchemaForType(dpgContext, indexer.value!, {
         usage,
         isRequestBody: false,
         mediaTypes: contentTypes,
@@ -1106,7 +1133,7 @@ function getSchemaForRecordModel(
     });
     schema = {
       type: "dictionary",
-      additionalProperties: valueType,
+      elementType: valueType,
       description: getDoc(program, type)
     };
     if (
@@ -1280,7 +1307,7 @@ function getSchemaForStdScalar(
     case "plainDate":
       return {
         type: "string",
-        format,
+        format: "date-time",
         description,
         typeName: "Date | string",
         outputTypeName: "string"
@@ -1288,7 +1315,7 @@ function getSchemaForStdScalar(
     case "utcDateTime":
       return {
         type: "string",
-        format,
+        format: "date-time",
         description,
         typeName: "Date | string",
         outputTypeName: "string"

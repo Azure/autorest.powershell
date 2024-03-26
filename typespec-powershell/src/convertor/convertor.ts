@@ -8,7 +8,7 @@ import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { getDefaultService, getSchemaForType, schemaCache } from "../utils/modelUtils.js";
+import { getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum } from "../utils/modelUtils.js";
 import { Info, Language, Schemas, AllSchemaTypes } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
@@ -37,6 +37,12 @@ function gethSchemas(program: Program, client: SdkClient, psContext: SdkContext,
   const schemas = new Schemas();
   for (const schema of schemaCache.values()) {
     schemas.add(schema);
+  }
+  if (stringSchemaForEnum) {
+    schemas.add(stringSchemaForEnum);
+  }
+  if (numberSchemaForEnum) {
+    schemas.add(numberSchemaForEnum);
   }
   return schemas;
 }
