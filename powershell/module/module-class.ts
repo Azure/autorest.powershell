@@ -254,6 +254,15 @@ export class NewModuleClass extends Class {
       PSCmdlet, /* pscmdlet */
     )));
 
+    const sanitizerDelegate = new Alias('SanitizerDelegate', System.Action(
+      dotnet.Object, /* sendToPipeline */
+      dotnet.String  /* telemetryId */
+    ));
+    const getTelemetryInfoDelegate = new Alias('GetTelemetryInfoDelegate', System.Func(
+      dotnet.String /* telemetryId */,
+      /* returns */ System.Collections.Generic.Dictionary(System.String, System.String)
+    ));
+
     const tokenAudienceConverterDelegate = new Alias('TokenAudienceConverterDelegate',
       System.Func(
         dotnet.String,
@@ -293,6 +302,10 @@ export class NewModuleClass extends Class {
     const AddAuthorizeRequestHandler = new Property('AddAuthorizeRequestHandler', authorizeRequestDelegate, { description: 'The delegate to call before each new request to add authorization.' });
     this.add(new Property('GetTelemetryId', getTelemetryIdDelegate, { description: 'The delegate to get the telemetry Id.' }));
     this.add(new Property('Telemetry', telemetryDelegate, { description: 'The delegate for creating a telemetry.' }));
+    const SanitizeOutput = this.add(new Property('SanitizeOutput', sanitizerDelegate, { description: 'The delegate to call in WriteObject to sanitize the output object.' }));
+    namespace.add(sanitizerDelegate);
+    const GetTelemetryInfo = this.add(new Property('GetTelemetryInfo', getTelemetryInfoDelegate, { description: 'The delegate to get the telemetry info.' }));
+    namespace.add(getTelemetryInfoDelegate);
     if (isDataPlane) {
       this.add(AddRequestUserAgentHandler);
       this.add(AddPatchRequestUriHandler);
