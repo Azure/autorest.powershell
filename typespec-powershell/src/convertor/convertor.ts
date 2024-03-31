@@ -8,8 +8,8 @@ import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum } from "../utils/modelUtils.js";
-import { Info, Language, Schemas, AllSchemaTypes } from "@autorest/codemodel";
+import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion } from "../utils/modelUtils.js";
+import { Info, Language, Schemas, AllSchemaTypes, SchemaType } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
 import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response } from "@autorest/codemodel";
@@ -36,13 +36,21 @@ export async function transformPwshModel(
 function gethSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
   const schemas = new Schemas();
   for (const schema of schemaCache.values()) {
-    schemas.add(schema);
+    if (schema.type === SchemaType.Any) {
+      schemas["any"] = schemas["any"] || [];
+      schemas["any"].push(schema);
+    } else
+      schemas.add(schema);
   }
+
   if (stringSchemaForEnum) {
     schemas.add(stringSchemaForEnum);
   }
   if (numberSchemaForEnum) {
     schemas.add(numberSchemaForEnum);
+  }
+  if (constantSchemaForApiVersion) {
+    schemas.add(constantSchemaForApiVersion);
   }
   return schemas;
 }
@@ -170,13 +178,15 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       // }
       newResponse.language.default.name = '';
       newResponse.language.default.description = response.description || "";
-      const schema = getSchemaForType(psContext, response.type);
       const statusCode = response.statusCode;
+      if (!['204', '202'].includes(statusCode)) {
+        const schema = getSchemaForType(psContext, response.type);
+        (<any>newResponse).schema = schema;
+      }
       newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
       newResponse.protocol.http.statusCodes = statusCode === "*" ? ["default"] : [statusCode];
       newResponse.protocol.http.knownMediaType = "json";
       newResponse.protocol.http.mediaTypes = ["application/json"];
-      (<any>newResponse).schema = schema;
       if (statusCode.startsWith("2")) {
         newOperation.responses.push(newResponse);
       } else {
@@ -205,9 +215,9 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
     if (matchParameters.length > 0) {
       return matchParameters[0];
     } else {
-      const paramSchema = parameter.param.sourceProperty
+      const paramSchema = parameter.name === "api-version" ? getSchemaForApiVersion(psContext) : (parameter.param.sourceProperty
         ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
-        : getSchemaForType(psContext, parameter.param.type)
+        : getSchemaForType(psContext, parameter.param.type));
       const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
       newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
       newParameter.protocol.http.in = parameter.type;

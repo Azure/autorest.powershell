@@ -48,7 +48,7 @@ import {
 import { SdkContext } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { SealedChoiceSchema, ChoiceSchema, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema } from "@autorest/codemodel";
+import { SealedChoiceSchema, ChoiceSchema, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
@@ -67,6 +67,7 @@ import {
 } from "@azure-tools/typespec-client-generator-core";
 // import { GetSchemaOptions, SdkContext } from "./interfaces.js";
 import { getModelNamespaceName } from "./namespaceUtils.js";
+import { get } from "http";
 // import { KnownMediaType, hasMediaType } from "./mediaTypes.js";
 
 export const BINARY_TYPE_UNION =
@@ -170,9 +171,18 @@ function isBytesType(schema: any) {
 // }
 export let stringSchemaForEnum: StringSchema | undefined;
 export let numberSchemaForEnum: NumberSchema | undefined;
+export let constantSchemaForApiVersion: ConstantSchema | undefined;
 export const schemaCache = new Map<Type, Schema>();
 // Add this to the modelSet to avoid circular reference
 export const modelSet = new Set<Type>();
+export function getSchemaForApiVersion(dpgContext: SdkContext) {
+  if (constantSchemaForApiVersion) {
+    return constantSchemaForApiVersion;
+  }
+  constantSchemaForApiVersion = new ConstantSchema("apiVersion", "The version of the API.");
+  constantSchemaForApiVersion.value = new ConstantValue(getEnrichedDefaultApiVersion(dpgContext.program, dpgContext));
+  return constantSchemaForApiVersion;
+}
 export function getSchemaForType(
   dpgContext: SdkContext,
   typeInput: Type,
@@ -210,14 +220,14 @@ export function getSchemaForType(
     if (isAnonymousObjectSchema(schema)) {
       if (Object.keys(schema.properties ?? {}).length === 0) {
         // Handle empty anonymous model as Record
-        schema.typeName =
-          // schema.type === "object" ? SchemaType.Dictionary : SchemaType.Any;
-          schema.type === "object" ? "Record<string, unknown>" : "unknown";
-        if (usage && usage.includes(SchemaContext.Output)) {
-          schema.outputTypeName =
-            schema.type === "object" ? "Record<string, any>" : "any";
-        }
-        schema.type = "unknown";
+        // schema.typeName =
+        //   // schema.type === "object" ? SchemaType.Dictionary : SchemaType.Any;
+        //   schema.type === "object" ? "Record<string, unknown>" : "unknown";
+        // if (usage && usage.includes(SchemaContext.Output)) {
+        //   schema.outputTypeName =
+        //     schema.type === "object" ? "Record<string, any>" : "any";
+        // }
+        schema.type = SchemaType.Any;
       } else {
         // Handle non-empty anonymous model as inline model
         if (usage && usage.includes(SchemaContext.Output)) {
@@ -412,6 +422,10 @@ function getSchemaForScalar(
         break;
       case "date-time":
         schema.type = SchemaType.DateTime;
+        break;
+      case "base64url":
+        schema.type = SchemaType.ByteArray;
+        break;
     }
   }
   function isBinaryAsRequestBody() {
@@ -862,8 +876,8 @@ function getSchemaForModel(
     // modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
     // modelSchema.properties.push(newPropSchema);
   }
-
-  if (model.baseModel) {
+  // by xiaogang, skip ArmResourceBase
+  if (model.baseModel && model.baseModel.name !== "ArmResourceBase") {
     modelSchema.parents = {
       all: [
         getSchemaForType(dpgContext, model.baseModel, {
@@ -1300,7 +1314,8 @@ function getSchemaForStdScalar(
         };
       }
       return applyIntrinsicDecorators(program, type, {
-        type: "string"
+        type: "string",
+        format
       });
     case "boolean":
       return { type: "boolean", description };
