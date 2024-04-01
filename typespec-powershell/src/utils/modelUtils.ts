@@ -45,10 +45,10 @@ import {
   isRecordModelType,
   isArrayModelType,
 } from "@typespec/compiler";
-import { SdkContext } from "@azure-tools/typespec-client-generator-core";
+import { SdkContext, isReadOnly } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { SealedChoiceSchema, ChoiceSchema, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
+import { SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
@@ -175,11 +175,12 @@ export let constantSchemaForApiVersion: ConstantSchema | undefined;
 export const schemaCache = new Map<Type, Schema>();
 // Add this to the modelSet to avoid circular reference
 export const modelSet = new Set<Type>();
-export function getSchemaForApiVersion(dpgContext: SdkContext) {
+export function getSchemaForApiVersion(dpgContext: SdkContext, typeInput: Type) {
   if (constantSchemaForApiVersion) {
     return constantSchemaForApiVersion;
   }
   constantSchemaForApiVersion = new ConstantSchema("apiVersion", "The version of the API.");
+  constantSchemaForApiVersion.valueType = getSchemaForType(dpgContext, typeInput);
   constantSchemaForApiVersion.value = new ConstantValue(getEnrichedDefaultApiVersion(dpgContext.program, dpgContext));
   return constantSchemaForApiVersion;
 }
@@ -658,7 +659,7 @@ function getSchemaForModel(
   // let name = dpgContext.rlcOptions?.enableModelNamespace
   // ? fullNamespaceName
   // : model.name;
-  let name = fullNamespaceName;
+  let name = model.name;
   if (
     !overridedModelName &&
     model.templateMapper &&
@@ -801,7 +802,7 @@ function getSchemaForModel(
   }
   for (const [propName, prop] of model.properties) {
     const restApiName = getProjectedName(program, prop, "json");
-    const name = `"${restApiName ?? propName}"`;
+    const name = restApiName ?? propName;
     if (!isSchemaProperty(program, prop)) {
       continue;
     }
@@ -818,9 +819,7 @@ function getSchemaForModel(
     if (propSchema === undefined) {
       continue;
     }
-    if (!prop.optional) {
-      propSchema.required = true;
-    }
+
     const propertyDescription = getFormattedPropertyDoc(
       program,
       prop,
@@ -830,7 +829,24 @@ function getSchemaForModel(
     // Use the description from ModelProperty not derived from Model Type
     propSchema.description = propertyDescription;
     // ToDo: need to confirm there is no duplicated properties.
-    modelSchema.properties.push(new Property(name, "", propSchema));
+    const property = new Property(name, "", propSchema);
+    if (!prop.optional) {
+      property.required = true;
+    }
+    const vis = getVisibility(program, prop);
+    if (vis && vis.includes("read")) {
+      if (vis.includes("read")) {
+        if (vis.length === 1) {
+          property.readOnly = true;
+        }
+      }
+      if (vis.length > 0) {
+        property.extensions = property.extensions || {};
+        property.extensions['x-ms-mutability'] = vis;
+      }
+    }
+
+    modelSchema.properties.push(property);
     // if this property is a discriminator property, remove it to keep autorest validation happy
     //const { propertyName } = getDiscriminator(program, model) || {};
     // ToDo: by xiaoang, skip polymorphism for the time being.
@@ -852,26 +868,26 @@ function getSchemaForModel(
     newPropSchema.description = propertyDescription;
 
     // Should the property be marked as readOnly?
-    const vis = getVisibility(program, prop);
-    if (vis && vis.includes("read")) {
-      //const mutability = [];
-      if (vis.includes("read")) {
-        if (vis.length > 1) {
-          // ToDo: by xiaogang, skip it since it is not required by autorest.powershell
-          //mutability.push(SchemaContext.Output);
-        } else {
-          newPropSchema["readOnly"] = true;
-        }
-      }
-      if (vis.includes("write") || vis.includes("create")) {
-        // ToDo: by xiaogang
-        //mutability.push(SchemaContext.Input);
-      }
+    // const vis = getVisibility(program, prop);
+    // if (vis && vis.includes("read")) {
+    //   //const mutability = [];
+    //   if (vis.includes("read")) {
+    //     if (vis.length > 1) {
+    //       // ToDo: by xiaogang, skip it since it is not required by autorest.powershell
+    //       //mutability.push(SchemaContext.Output);
+    //     } else {
+    //       newPropSchema["readOnly"] = true;
+    //     }
+    //   }
+    //   if (vis.includes("write") || vis.includes("create")) {
+    //     // ToDo: by xiaogang
+    //     //mutability.push(SchemaContext.Input);
+    //   }
 
-      // if (mutability.length > 0) {
-      //   newPropSchema["usage"] = mutability;
-      // }
-    }
+    //   // if (mutability.length > 0) {
+    //   //   newPropSchema["usage"] = mutability;
+    //   // }
+    // }
     // ToDo: skip for the time being, we need to use newPropSchema finally.
     // modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
     // modelSchema.properties.push(newPropSchema);
@@ -979,8 +995,9 @@ function applyIntrinsicDecorators(
 
 function getSchemaForEnumMember(program: Program, e: EnumMember) {
   const value = e.value ?? e.name;
-  const type = enumMemberType(e) === "string" ? `"${value}"` : `${value}`;
-  return { type, description: getDoc(program, e) };
+  //const type = enumMemberType(e) === "string" ? `"${value}"` : `${value}`;
+  const enumType = new ChoiceValue(pascalCase(deconstruct(value.toString())), getDoc(program, e) || "", value);
+  return enumType;
 }
 
 function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
@@ -1215,33 +1232,34 @@ function getSchemaForStdScalar(
       return { type: "string", format: "bytes", description };
     case "integer":
       return applyIntrinsicDecorators(program, type, {
-        type: "number"
+        type: "integer"
       });
     case "int8":
       return applyIntrinsicDecorators(program, type, {
-        type: "number",
-        format: "int8"
+        type: "integer",
+        precision: 8
       });
     case "int16":
       return applyIntrinsicDecorators(program, type, {
-        type: "number",
-        format: "int16"
+        type: "integer",
+        precision: 16
       });
     case "int32":
       return applyIntrinsicDecorators(program, type, {
-        type: "number",
-        format: "int32"
+        type: "integer",
+        precision: 32
       });
     case "int64":
       return applyIntrinsicDecorators(program, type, {
-        type: "number",
-        format: "int64"
+        type: "integer",
+        precision: 64
       });
     case "safeint":
       return applyIntrinsicDecorators(program, type, {
-        type: "number",
+        type: "integer",
         format: "safeint"
       });
+    // ToDo: by xiaogang, need handle the following number types
     case "uint8":
       return applyIntrinsicDecorators(program, type, {
         type: "number",

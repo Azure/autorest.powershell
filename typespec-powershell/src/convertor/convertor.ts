@@ -215,7 +215,7 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
     if (matchParameters.length > 0) {
       return matchParameters[0];
     } else {
-      const paramSchema = parameter.name === "api-version" ? getSchemaForApiVersion(psContext) : (parameter.param.sourceProperty
+      const paramSchema = parameter.name === "api-version" ? getSchemaForApiVersion(psContext, parameter.param.type) : (parameter.param.sourceProperty
         ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
         : getSchemaForType(psContext, parameter.param.type));
       const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
