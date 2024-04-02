@@ -827,7 +827,10 @@ function getSchemaForModel(
     );
     propSchema.usage = usage;
     // Use the description from ModelProperty not derived from Model Type
-    propSchema.description = propertyDescription;
+    (<Schema>propSchema).language = (<Schema>propSchema).language || {};
+    (<Schema>propSchema).language.default = (<Schema>propSchema).language.default || {};
+    (<Schema>propSchema).language.default.description = propertyDescription || "";
+    (<Schema>propSchema).language.default.name = name;
     // ToDo: need to confirm there is no duplicated properties.
     const property = new Property(name, "", propSchema);
     if (!prop.optional) {
@@ -1067,23 +1070,28 @@ function getSchemaForArrayModel(
     return schema;
   }
   if (isArrayModelType(program, type)) {
-    schema = {
-      type: "array",
-      elementType: getSchemaForType(dpgContext, indexer.value!, {
-        usage,
-        isRequestBody: false,
-        mediaTypes: contentTypes,
-        // special handling for array in formdata
-        // isParentRequestBody: hasMediaType(
-        //   KnownMediaType.MultipartFormData,
-        //   contentTypes
-        // )
-        //   ? isParentRequestBody
-        //   : false,
-        needRef: !isAnonymousModelType(indexer.value!)
-      }),
-      description: getDoc(program, type)
-    };
+    // schema = {
+    //   type: "array",
+    //   elementType: getSchemaForType(dpgContext, indexer.value!, {
+    //     usage,
+    //     isRequestBody: false,
+    //     mediaTypes: contentTypes,
+    //     // special handling for array in formdata
+    //     // isParentRequestBody: hasMediaType(
+    //     //   KnownMediaType.MultipartFormData,
+    //     //   contentTypes
+    //     // )
+    //     //   ? isParentRequestBody
+    //     //   : false,
+    //     needRef: !isAnonymousModelType(indexer.value!)
+    //   }),
+    //   description: getDoc(program, type)
+    // };
+    schema = new ArraySchema("", "", getSchemaForType(dpgContext, indexer.value!));
+    // circle reference, resolve it later
+    if (!getSchemaForType(dpgContext, indexer.value!)) {
+      schema.delayType = indexer.value!;
+    }
     if (
       !program.checker.isStdType(indexer.value) &&
       !isUnknownType(indexer.value!) &&
