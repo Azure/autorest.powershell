@@ -194,8 +194,9 @@ export function getSchemaForType(
   }
   const program = dpgContext.program;
   const { usage } = options ?? {};
-  const type = getEffectiveModelFromType(program, typeInput);
-
+  //ToDo: by xiaogang, need to confirm whether need to add this
+  // const type = getEffectiveModelFromType(program, typeInput);
+  const type = typeInput;
   const builtinType = getSchemaForLiteral(type);
   if (builtinType !== undefined) {
     // add in description elements for types derived from primitive types (SecureString, etc.)
@@ -832,7 +833,7 @@ function getSchemaForModel(
     (<Schema>propSchema).language.default.description = propertyDescription || "";
     (<Schema>propSchema).language.default.name = name;
     // ToDo: need to confirm there is no duplicated properties.
-    const property = new Property(name, "", propSchema);
+    const property = new Property(name, getDoc(program, prop) || "", propSchema);
     if (!prop.optional) {
       property.required = true;
     }

@@ -9,7 +9,7 @@ import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
 import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion } from "../utils/modelUtils.js";
-import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema } from "@autorest/codemodel";
+import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
 import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response } from "@autorest/codemodel";
@@ -37,6 +37,9 @@ function gethSchemas(program: Program, client: SdkClient, psContext: SdkContext,
   const schemas = new Schemas();
   for (const schema of schemaCache.values()) {
     if (schema.type === SchemaType.Any) {
+      // set name and description for any schema
+      schema.language.default.name = "any";
+      schema.language.default.description = "Anything";
       schemas["any"] = schemas["any"] || [];
       schemas["any"].push(schema);
     } else {
@@ -112,36 +115,34 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
     newOperation.parameters.push(newParameter);
   }
   // Add request
+  newOperation.requests = newOperation.requests || [];
+  const newRequest = new Request();
+  newOperation.requests.push(newRequest);
   const headerParameters = op.parameters.parameters.filter(p => p.type === "header");
   for (const parameter of headerParameters) {
     const newParameter = createParameter(psContext, parameter, model);
-    newOperation.requests = newOperation.requests || [];
-    if (newOperation.requests.length === 0) {
-      const newRequest = new Request();
-      newRequest.parameters = [];
-      newOperation.requests.push(newRequest);
-    }
+    newRequest.parameters = newRequest.parameters || [];
     newOperation.requests[0].parameters?.push(newParameter);
   }
+  // Add host parameter
+  const hostParameter = createHostParameter(psContext, model);
+  newOperation.parameters = newOperation.parameters || [];
+  newOperation.parameters.push(hostParameter);
   // Add request body if it exists
   if (op.parameters.body) {
     const newParameter = createBodyParameter(psContext, op.parameters.body, model);
-    newOperation.requests = newOperation.requests || [];
-    if (newOperation.requests.length === 0) {
-      const newRequest = new Request();
-      newRequest.parameters = [];
-      newOperation.requests.push(newRequest);
-    }
+    newRequest.parameters = newRequest.parameters || [];
     newOperation.requests[0].parameters?.push(newParameter);
-    const httpProtocol = new Protocol();
-    httpProtocol.method = op.verb;
-    httpProtocol.path = op.path;
-    // hard code the media type to json for the time being by xiaogang.
-    httpProtocol.knownMediaType = "json";
-    httpProtocol.mediaTypes = ["application/json"];
-    httpProtocol.uri = "{$host}";
-    newOperation.requests[0].protocol.http = httpProtocol;
   }
+  const httpProtocol = new Protocol();
+  httpProtocol.method = op.verb;
+  httpProtocol.path = op.path;
+  // hard code the media type to json for the time being by xiaogang.
+  httpProtocol.knownMediaType = "json";
+  httpProtocol.mediaTypes = ["application/json"];
+  httpProtocol.uri = "{$host}";
+  newOperation.requests[0].protocol.http = httpProtocol;
+
   // Add responses include exceptions
   addResponses(psContext, op, newOperation, model);
   // Add extensions
@@ -215,10 +216,30 @@ function createBodyParameter(psContext: SdkContext, parameter: HttpOperationRequ
   newParameter.required = !parameter.parameter?.optional;
   return newParameter;
 }
+
+function createHostParameter(psContext: SdkContext, model: PwshModel): Parameter {
+  const matchParameters = (model.globalParameters || []).filter(p => p.language.default.serializedName === '$host');
+  if (matchParameters.length > 0) {
+    return matchParameters[0];
+  } else {
+    const newParameter = new Parameter('$host', "server parameter", new StringSchema("", "")); //getSchemaForType(psContext, "string")
+    newParameter.language.default.serializedName = '$host';
+    newParameter.clientDefaultValue = "https://management.azure.com";
+    newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
+    newParameter.protocol.http.in = "uri";
+    newParameter.implementation = ImplementationLocation.Client;
+    newParameter.required = true;
+    newParameter.extensions = newParameter.extensions || {};
+    newParameter.extensions["x-ms-skip-url-encoding"] = true;
+    model.globalParameters = model.globalParameters || [];
+    model.globalParameters.push(newParameter);
+    return newParameter;
+  }
+}
 function createParameter(psContext: SdkContext, parameter: HttpOperationParameter, model: PwshModel): Parameter {
   if (parameter.type === "query" && parameter.name === "api-version"
     || parameter.type === "path" && parameter.name === "subscriptionId") {
-    const matchParameters = (model.globalParameters || []).filter(p => p.language.default.name === parameter.name);
+    const matchParameters = (model.globalParameters || []).filter(p => p.language.default.serializedName === parameter.name);
     if (matchParameters.length > 0) {
       return matchParameters[0];
     } else {
