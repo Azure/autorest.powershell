@@ -501,9 +501,13 @@ export class CmdletClass extends Class {
       else {
         yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
         yield If('telemetryInfo != null', function* () {
+          yield 'telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);';
           yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
           yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
-          yield If('!string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName ?? "Unknown"} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+          yield If('showSecretsWarning == "true"', function* () {
+            yield If('string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+            yield Else('WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+          });
         });
       }
     });
