@@ -1,0 +1,77 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.ADO_SP_ClientID }}
+        tenant-id: ${{ secrets.ADO_SP_TenantID }}
+        allow-no-subscriptions: true
+        enable-AzPSSession: true
+
+    - name: Call Azure Pipeline to Publish
+      uses: azure/powershell@v2
+      env: 
+        AdoOrg: ${{secrets.ADO_ORGANIZATION}}
+        AdoProject: ${{secrets.ADO_PROJECT}}
+        AdoPipelineId: ${{secrets.ADO_PIPELINE_ID}}
+        CheckInterval: 60
+        CheckTimes: 60
+      with:
+        azPSVersion: "latest"
+        inlineScript: |
+          $organization = $env:AdoOrg
+          $project = $env:AdoProject
+          $pipelineId = $env:AdoPipelineId
+          $checkInterval = $env:CheckInterval
+          $checkTimes = $env:CheckTimes
+
+          $BranchName = $env:GITHUB_REF_NAME
+
+          $personalAccessToken = (Get-AzAccessToken).Token
+          $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($personalAccessToken)"))
+          $header = @{authorization = "Basic $token"}
+          
+          $queueUrl = "https://dev.azure.com/$organization/$project/_apis/pipelines/$pipelineId/runs?api-version=7.0"
+          $body = @{
+            "templateParameters"=@{"BranchName"=$BranchName}
+          }
+          $body = $body | ConvertTo-Json
+          $queueResp = Invoke-RestMethod -Uri $queueUrl -Method Post -ContentType "application/json" -Headers $header -Body $body
+          
+          $buildStatusUrl = $queueResp._links.self.href
+          $buildStatusWebUrl = $queueResp._links.web.href
+          for ($i = 0; $i -lt $checkTimes; $i++) {
+            $statusResp = Invoke-RestMethod -Uri $buildStatusUrl -Method Get -ContentType "application/json" -Headers $header
+            if($statusResp.state -eq "completed"){
+              if($statusResp.result -eq "succeeded"){
+                Write-Host "The Azure Pipeline build $buildStatusWebUrl is completed successfully."
+                break
+              }elseif (($statusResp.result -eq "canceled") -or ($statusResp.result -eq "failed")) {
+                $result = $statusResp.result
+                throw "The Azure Pipeline build $buildStatusWebUrl is $result."
+              }else{
+                $result = $statusResp.result
+                throw "The Azure Pipeline build $buildStatusWebUrl return status as $result. It should not happen!"
+              }
+            }else{
+              $now = [DateTime]::Now
+              Write-Host "[$now] Sleep $checkInterval seconds."
+              Start-Sleep $checkInterval
+            }
+          }
+          if($statusResp.state -ne "completed"){
+            $totalWaitingSeconds = $checkInterval * $checkTimes
+            throw "Have waited $totalWaitingSeconds seconds for the Azure Pipeline $buildStatusWebUrl but it's not completed yet."
+          }
