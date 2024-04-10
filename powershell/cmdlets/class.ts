@@ -416,6 +416,11 @@ export class CmdletClass extends Class {
     this.NewImplementProcessRecord(this.operation);
 
     this.NewImplementProcessRecordAsync(this.operation);
+
+    if (this.state.project.azure) {
+      this.NewImplementWriteObject();
+    }
+
     this.debugMode = await this.state.getValue('debug', false);
 
     // json serialization
@@ -492,6 +497,18 @@ export class CmdletClass extends Class {
       yield '';
       if (!$this.state.project.azure) {
         yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+      }
+      else {
+        yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
+        yield If('telemetryInfo != null', function* () {
+          yield 'telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);';
+          yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
+          yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
+          yield If('showSecretsWarning == "true"', function* () {
+            yield If('string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+            yield Else('WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+          });
+        });
       }
     });
 
@@ -1094,6 +1111,33 @@ export class CmdletClass extends Class {
     });
   }
 
+  private NewImplementWriteObject() {
+    const $this = this;
+    const sendToPipeline = new Parameter('sendToPipeline', dotnet.Object);
+    const enumerateCollection = new Parameter('enumerateCollection', dotnet.Bool);
+    const snglWriteObject = new Method('WriteObject', dotnet.Void, {
+      access: Access.Protected,
+      new: Modifier.New,
+      parameters: [sendToPipeline]
+    });
+    snglWriteObject.add(function* () {
+      yield `${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);`;
+      yield 'base.WriteObject(sendToPipeline);';
+    });
+
+    const collWriteObject = new Method('WriteObject', dotnet.Void, {
+      access: Access.Protected,
+      new: Modifier.New,
+      parameters: [sendToPipeline, enumerateCollection]
+    });
+    collWriteObject.add(function* () {
+      yield `${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);`;
+      yield 'base.WriteObject(sendToPipeline, enumerateCollection);';
+    });
+
+    $this.add(snglWriteObject);
+    $this.add(collWriteObject);
+  }
 
   private NewImplementSerialization(operation: CommandOperation) {
     const $this = this;
@@ -1775,4 +1819,3 @@ export class CmdletClass extends Class {
     });
   }
 }
-
