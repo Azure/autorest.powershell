@@ -1159,7 +1159,9 @@ export class CmdletClass extends Class {
       return If('this.UserAssignedIdentity?.Length > 0',
         function* () {
           yield '// calculate UserAssignedIdentity';
-          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.${$this.GetUserAssignedIdentityPropertyName()}.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
+          const userAssignedIdentityPropertyName = $this.GetUserAssignedIdentityPropertyName();
+          yield `${$this.bodyParameter?.value}.${userAssignedIdentityPropertyName}.Clear();`;
+          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.${userAssignedIdentityPropertyName}.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
           yield '';
         }
       );
