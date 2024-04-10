@@ -1181,10 +1181,13 @@ export class CmdletClass extends Class {
 
     const preProcessManagedIdentityParameters = function* () {
       yield $this.ManagedUserAssignedIdentityPreProcess($this);
+      yield '// calculate IdentityType';
+      if ($this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === "IdentityType")[0]?.required) {
+        yield If(`null == ${$this.bodyParameter?.value}.IdentityType`, `${$this.bodyParameter?.value}.IdentityType = "None";`);
+      }
       // if UserAssignedIdentity is a string array or string, use Length. Otherwise, use Count
       yield If(`this.UserAssignedIdentity?.${!$this.flattenUserAssignedIdentity && $this.GetUserAssignedIdentityParameterTypeDefinition() === 'dictionary' ? 'Count' : 'Length'} > 0`,
         function* () {
-          yield '// calculate IdentityType';
           yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
           yield Else(`${$this.bodyParameter?.value}.IdentityType = "UserAssigned";`);
         });
@@ -1837,7 +1840,7 @@ export class CmdletClass extends Class {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
               enableSystemAssignedIdentity.description = 'Decides if enable a system assigned identity for the resource.';
-              enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
+              enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
               if (length(vParam.alias) > 0) {
                 enableSystemAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
               }
