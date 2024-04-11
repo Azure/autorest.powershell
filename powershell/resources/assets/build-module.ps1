@@ -166,4 +166,12 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
   . (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
 }
 
+$afterBuildTasks = '${$project.afterBuildTasks}'
+if($afterBuildTasks){
+  Write-Host -ForegroundColor Green 'Running after build tasks...'
+  foreach ($task in $afterBuildTasks) {
+    . $task
+  }
+}
+
 Write-Host -ForegroundColor Green '-------------Done-------------'
