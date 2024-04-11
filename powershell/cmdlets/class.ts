@@ -1182,7 +1182,7 @@ export class CmdletClass extends Class {
     const preProcessManagedIdentityParameters = function* () {
       yield $this.ManagedUserAssignedIdentityPreProcess($this);
       yield '// calculate IdentityType';
-      if ($this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === "IdentityType")[0]?.required) {
+      if ($this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'IdentityType')[0]?.required) {
         yield If(`null == ${$this.bodyParameter?.value}.IdentityType`, `${$this.bodyParameter?.value}.IdentityType = "None";`);
       }
       // if UserAssignedIdentity is a string array or string, use Length. Otherwise, use Count
