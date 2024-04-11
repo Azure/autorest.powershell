@@ -100,7 +100,7 @@ async function copyRequiredFiles(project: Project) {
 }
 
 export async function powershellV2(service: Host) {
-  const debug = (await service.getValue('debug')) || false;
+  let debug = false;
 
   try {
     const project = await new Project(service).init();
@@ -113,15 +113,15 @@ export async function powershellV2(service: Host) {
         sourceFileCSharp
       )
     );
-
-    await service.protectFiles(project.psd1);
-    await service.protectFiles(project.readme);
-    await service.protectFiles(project.customFolder);
-    await service.protectFiles(project.testFolder);
-    await service.protectFiles(project.docsFolder);
-    await service.protectFiles(project.examplesFolder);
-    await service.protectFiles(project.resourcesFolder);
-    await service.protectFiles(project.uxFolder);
+    debug = (await project.state.getValue('debug')) || false;
+    await project.state.protectFiles(project.psd1);
+    await project.state.protectFiles(project.readme);
+    await project.state.protectFiles(project.customFolder);
+    await project.state.protectFiles(project.testFolder);
+    await project.state.protectFiles(project.docsFolder);
+    await project.state.protectFiles(project.examplesFolder);
+    await project.state.protectFiles(project.resourcesFolder);
+    await project.state.protectFiles(project.uxFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);

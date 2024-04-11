@@ -14,6 +14,7 @@ import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './enums/namespace';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PropertyFormat } from '../utils/schema';
+import { TspHost } from '../utils/tsp-host';
 
 export class Project extends codeDomProject {
 
@@ -36,7 +37,7 @@ export class Project extends codeDomProject {
   supportJsonInput!: boolean;
   formats!: Dictionary<PropertyFormat>;
 
-  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
+  constructor(protected service: Host | TspHost, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }
