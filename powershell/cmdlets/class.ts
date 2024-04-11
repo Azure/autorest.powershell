@@ -658,24 +658,13 @@ export class CmdletClass extends Class {
     });
 
     const $this = this;
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
-      function* () {
-        // gs01: remember what you were doing here to make it so these can be parallelized...
-        if ($this.state.project.autoSwitchView) {
-          yield $this.FlushResponse();
-        }
-        if (!$this.state.project.azure) {
-          yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
-        }
-        else {
-          yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
-          yield If('telemetryInfo != null', function* () {
-            yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
-            yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
-            yield If('!string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName ?? "Unknown"} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
-          });
-        }
-      });
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(function* () {
+      // gs01: remember what you were doing here to make it so these can be parallelized...
+      yield '';
+      if (!$this.state.project.azure) {
+        yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+      }
+    });
 
     // debugging
     const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
