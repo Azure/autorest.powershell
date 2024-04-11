@@ -658,13 +658,28 @@ export class CmdletClass extends Class {
     });
 
     const $this = this;
-    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(function* () {
-      // gs01: remember what you were doing here to make it so these can be parallelized...
-      yield '';
-      if (!$this.state.project.azure) {
-        yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
-      }
-    });
+    this.add(new Method('EndProcessing', dotnet.Void, { access: Access.Protected, override: Modifier.Override, description: 'Performs clean-up after the command execution' })).add(
+      function* () {
+        // gs01: remember what you were doing here to make it so these can be parallelized...
+        if ($this.state.project.autoSwitchView) {
+          yield $this.FlushResponse();
+        }
+        if (!$this.state.project.azure) {
+          yield $this.eventListener.syncSignal(Events.CmdletEndProcessing);
+        }
+        else {
+          yield `var telemetryInfo = ${$this.state.project.serviceNamespace.moduleClass.declaration}.Instance.GetTelemetryInfo?.Invoke(__correlationId);`;
+          yield If('telemetryInfo != null', function* () {
+            yield 'telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);';
+            yield 'telemetryInfo.TryGetValue("SanitizedProperties", out var sanitizedProperties);';
+            yield 'telemetryInfo.TryGetValue("InvocationName", out var invocationName);';
+            yield If('showSecretsWarning == "true"', function* () {
+              yield If('string.IsNullOrEmpty(sanitizedProperties)', 'WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing secrets. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+              yield Else('WriteWarning($"The output of cmdlet {invocationName} may compromise security by showing the following secrets: {sanitizedProperties}. Learn more at https://go.microsoft.com/fwlink/?linkid=2258844");');
+            });
+          });
+        }
+      });
 
     // debugging
     const brk = this.add(new Property('Break', SwitchParameter, { attributes: [], description: 'Wait for .NET debugger to attach' }));
@@ -1148,7 +1163,9 @@ export class CmdletClass extends Class {
       return If('this.UserAssignedIdentity?.Length > 0',
         function* () {
           yield '// calculate UserAssignedIdentity';
-          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.${$this.GetUserAssignedIdentityPropertyName()}.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
+          const userAssignedIdentityPropertyName = $this.GetUserAssignedIdentityPropertyName();
+          yield `${$this.bodyParameter?.value}.${userAssignedIdentityPropertyName}.Clear();`;
+          yield ForEach('id', 'this.UserAssignedIdentity', `${$this.bodyParameter?.value}.${userAssignedIdentityPropertyName}.Add(id, new ${$this.GetUserAssignedIdentityParameterElementType()}());`);
           yield '';
         }
       );
@@ -1164,10 +1181,13 @@ export class CmdletClass extends Class {
 
     const preProcessManagedIdentityParameters = function* () {
       yield $this.ManagedUserAssignedIdentityPreProcess($this);
+      yield '// calculate IdentityType';
+      if ($this.operation.details.csharp.virtualParameters?.body?.filter(p => p.name === 'IdentityType')[0]?.required) {
+        yield If(`null == ${$this.bodyParameter?.value}.IdentityType`, `${$this.bodyParameter?.value}.IdentityType = "None";`);
+      }
       // if UserAssignedIdentity is a string array or string, use Length. Otherwise, use Count
       yield If(`this.UserAssignedIdentity?.${!$this.flattenUserAssignedIdentity && $this.GetUserAssignedIdentityParameterTypeDefinition() === 'dictionary' ? 'Count' : 'Length'} > 0`,
         function* () {
-          yield '// calculate IdentityType';
           yield If(`"SystemAssigned".Equals(${$this.bodyParameter?.value}.IdentityType, StringComparison.InvariantCultureIgnoreCase)`, `${$this.bodyParameter?.value}.IdentityType = "SystemAssigned,UserAssigned";`);
           yield Else(`${$this.bodyParameter?.value}.IdentityType = "UserAssigned";`);
         });
@@ -1820,7 +1840,7 @@ export class CmdletClass extends Class {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
               enableSystemAssignedIdentity.description = 'Decides if enable a system assigned identity for the resource.';
-              enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
+              enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
               if (length(vParam.alias) > 0) {
                 enableSystemAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
               }
