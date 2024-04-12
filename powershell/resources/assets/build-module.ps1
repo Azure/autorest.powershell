@@ -167,7 +167,7 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
 }
 
 $afterBuildTasksPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.afterBuildTasks)}'
-if($afterBuildTasksPath){
+if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
   Write-Host -ForegroundColor Green 'Running after build tasks...'
   . $afterBuildTasksPath
 }
