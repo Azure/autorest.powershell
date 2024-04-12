@@ -148,6 +148,7 @@ export class Project extends codeDomProject {
   public gitAttributes!: string;
   public propertiesExcludedForTableview!: string;
   public readme!: string;
+  public afterBuildTasks!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -327,6 +328,7 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
+    this.afterBuildTasks = await this.state.getValue('after-build-tasks');
 
     // excluded properties in table view
     const excludedList = <Array<string>>(
