@@ -24,6 +24,10 @@ import { generateGitIgnore } from '../generators/gitignore';
 import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
+import { TspHost } from '../utils/tsp-host';
+import { State } from '../internal/state';
+import { ModelState } from '../utils/model-state';
+import { PwshModel } from '../utils/pwshModel';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
@@ -99,11 +103,11 @@ async function copyRequiredFiles(project: Project) {
   }
 }
 
-export async function powershellV2(service: Host) {
+export async function powershellV2(service: Host | TspHost, state?: ModelState<PwshModel>) {
   let debug = false;
 
   try {
-    const project = await new Project(service).init();
+    const project = await new Project(service).init(state);
 
     await project.writeFiles(async (filename, content) =>
       project.state.writeFile(
@@ -113,7 +117,7 @@ export async function powershellV2(service: Host) {
         sourceFileCSharp
       )
     );
-    debug = (await project.state.getValue('debug')) || false;
+    debug = (await project.state.service.getValue('debug')) || false;
     await project.state.protectFiles(project.psd1);
     await project.state.protectFiles(project.readme);
     await project.state.protectFiles(project.customFolder);

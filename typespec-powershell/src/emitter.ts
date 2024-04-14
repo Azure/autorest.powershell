@@ -7,6 +7,7 @@ import { createSdkContext } from "@azure-tools/typespec-client-generator-core";
 import { getClients } from "./utils/clientUtils.js";
 import { transformPwshModel } from "./convertor/convertor.js";
 import { PSOptions } from "./types/interfaces.js";
+import { generatePwshModule } from "@autorest/powershell";
 
 export async function $onEmit(context: EmitContext) {
   const program: Program = context.program;
@@ -32,6 +33,7 @@ export async function $onEmit(context: EmitContext) {
     const clients = getClients(PsContext);
     for (const client of clients) {
       const model = await transformPwshModel(client, PsContext, emitterOptions);
+      generatePwshModule(model, emitterOptions);
       await emitFile(context.program, {
         path: resolvePath(context.emitterOutputDir, `${client.name}.yaml`),
         content: serialize(model),

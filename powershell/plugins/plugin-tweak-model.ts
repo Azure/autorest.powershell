@@ -68,7 +68,7 @@ function dropDuplicatePropertiesInChildSchemas(schema: ObjectSchema, state: Stat
   return success;
 }
 
-async function tweakModelV2(state: State): Promise<PwshModel> {
+export async function tweakModelV2(state: State): Promise<PwshModel> {
   const title = pascalCase(fixLeadingNumber(deconstruct(await state.getValue('title', state.model.info.title))));
   state.setValue('title', title);
 
@@ -645,6 +645,6 @@ export async function tweakModelPlugin(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   const state = await new ModelState<PwshModel>(service).init();
   //const result = tweakModelV2(session);
-  await service.writeFile({ filename: 'code-model-v4-tweakcodemodel-v2.yaml', content: serialize(await tweakModelV2(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-tweakcodemodel-v2.yaml', content: serialize(await tweakModelV2(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
   //return processCodeModel(tweakModelV2, service, 'tweakcodemodel-v2');
 }

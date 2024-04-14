@@ -15,7 +15,7 @@ type State = ModelState<PwshModel>;
 
 const xmsPageable = 'x-ms-pageable';
 
-async function tweakModel(state: State): Promise<PwshModel> {
+export async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
 
   // service.message{ Channel: Channel.Debug, Text: "THIS IS THE AZURE TWEAKER" });
@@ -198,5 +198,5 @@ function getSchema(response: Response): Schema {
 
 export async function tweakModelAzurePluginV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-tweakcodemodelazure-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-tweakcodemodelazure-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }

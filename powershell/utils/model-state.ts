@@ -6,7 +6,7 @@
 import { Channel, AutorestExtensionHost as Host, JsonPointerSegments as JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
-import { TspHost } from './tsp-host';
+import { TspHost, TspHostImpl } from './tsp-host';
 
 export class ModelState<T extends Dictionary<any>> extends Initializer {
   public model!: T;
@@ -16,12 +16,17 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   private _debug = false;
   private _verbose = false;
 
-  public constructor(protected service: TspHost | Host, objectInitializer?: DeepPartial<ModelState<T>>) {
+  public constructor(public service: TspHost | Host, objectInitializer?: DeepPartial<ModelState<T>>) {
     super();
     this.apply(objectInitializer);
   }
 
   async init(project?: any) {
+    if (this.service instanceof TspHostImpl) {
+      // skip init for tsp
+      this.initContext(project);
+      return this;
+    }
     const m = await ModelState.getModel<T>(this.service);
     this.model = m.model;
     this.documentName = m.filename;
@@ -147,7 +152,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
 
   async resolveVariables(input: string): Promise<string> {
     let output = input;
-    for (const rx of [/\$\((.*?) \) /g, /\$\{ (.*?) \ } /g]) {
+    for (const rx of [/\$\((.*?)\)/g, /\$\{(.*?)\}/g]) {
       /* eslint-disable */
       for (let match; match = rx.exec(input);) {
         const text = match[0];

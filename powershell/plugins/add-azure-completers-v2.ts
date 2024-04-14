@@ -22,7 +22,7 @@ const locationNames = new Set<string>([
   'location',
 ]);
 
-async function tweakModel(state: State): Promise<PwshModel> {
+export async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
   for (const operation of values(model.commands.operations)) {
     for (const parameter of values(operation.parameters)) {
@@ -46,5 +46,5 @@ async function tweakModel(state: State): Promise<PwshModel> {
 
 export async function addCompleterV2(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({filename: 'code-model-v4-add-azure-completers-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-add-azure-completers-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }

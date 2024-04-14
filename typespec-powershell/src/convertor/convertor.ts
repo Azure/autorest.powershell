@@ -8,7 +8,7 @@ import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion } from "../utils/modelUtils.js";
+import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion } from "../utils/modelUtils.js";
 import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
@@ -107,6 +107,9 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
 function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel) {
   const newOperation = new Operation(pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
   newOperation.operationId = operationGroup.$key + "_" + pascalCase(op.operation.name);
+  // Add Api versions
+  newOperation.apiVersions = newOperation.apiVersions || [];
+  newOperation.apiVersions.push({ version: getEnrichedDefaultApiVersion(psContext.program, psContext) || "" });
   // Add query and path parameters
   const parameters = op.parameters.parameters.filter(p => p.type === "path" || p.type === "query");
   for (const parameter of parameters) {

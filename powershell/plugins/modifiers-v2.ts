@@ -336,6 +336,14 @@ function isWhereEnumDirective(it: any): it is WhereEnumDirective {
   return false;
 }
 
+export async function tweakModelForTsp(state: State): Promise<PwshModel> {
+  const allDirectives = await state.service.getValue<any>('directive');
+  directives = values(allDirectives)
+    .where(directive => isWhereCommandDirective(directive) || isWhereModelDirective(directive) || isWhereEnumDirective(directive) || isRemoveCommandDirective(directive))
+    .toArray();
+  return await tweakModel(state);
+}
+
 async function tweakModel(state: State): Promise<PwshModel> {
 
   const isAzure = await state.getValue('azure', false) || await state.getValue('azure-arm', false);

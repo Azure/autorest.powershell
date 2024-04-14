@@ -9,12 +9,14 @@ import { join } from 'path';
 import { Model } from '../llcsharp/code-model';
 import { Project } from '../llcsharp/project';
 import { TspHost } from '../utils/tsp-host';
+import { ModelState } from '../utils/model-state';
+import { PwshModel } from '../utils/pwshModel';
 
 const resources = `${__dirname}/../../resources`;
 
-export async function llcsharpV2(service: Host | TspHost) {
+export async function llcsharpV2(service: Host | TspHost, state?: ModelState<PwshModel>) {
   try {
-    const project = await new Project(service).init();
+    const project = await new Project(service).init(state);
     const transformOutput = async (input: string) => {
       return await project.state.resolveVariables(input);
     };

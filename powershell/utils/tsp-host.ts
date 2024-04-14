@@ -1,5 +1,6 @@
 import { Message } from '@autorest/extension-base';
-
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { dirname } from 'path';
 export interface TspWriteFileOptions {
   /**
    * @param filename Name of the file.
@@ -37,30 +38,42 @@ export interface TspHost {
 }
 
 export class TspHostImpl implements TspHost {
-  configurations: (key: string) => any;
-  constructor(configurations: (key: string) => any) {
+  configurations: Record<string, any>;
+  constructor(configurations: Record<string, any>) {
     this.configurations = configurations;
   }
   protectFiles(path: string): Promise<void> {
-    throw new Error('Method not implemented');
+    // ToDo by xiaogang, skip this for now
+    return Promise.resolve();
   }
   readFile(filename: string): Promise<string> {
-    throw new Error('Method not implemented');
+    // ToDo by xiaogang, skip this for now
+    return Promise.resolve('');
   }
   getValue<T>(key: string): Promise<T | undefined> {
-    throw new Error('Method not implemented');
+    return this.configurations[key];
   }
   listInputs(artifactType?: string): Promise<string[]> {
-    throw new Error('Method not implemented');
+    // Shall not be called, so throw an exception
+    throw new Error('Method listInputs not implemented');
   }
   writeFile({ filename, content, sourceMap, artifactType }: TspWriteFileOptions): void {
-    throw new Error('Method not implemented');
+    const directoryPath = dirname(filename);
+    if (!existsSync(directoryPath)) {
+      mkdirSync(directoryPath, { recursive: true });
+    }
+    if (artifactType === 'binary-file') {
+      writeFileSync(filename, Buffer.from(content, 'base64'));
+    } else {
+      writeFileSync(filename, content);
+    }
   }
   UpdateConfigurationFile(filename: string, content: string): void {
-    throw new Error('Method not implemented');
+    // Shall not be called 
+    throw new Error('Method UpdateConfigurationFile not implemented');
   }
   GetConfigurationFile(filename: string): Promise<string> {
-    throw new Error('Method not implemented');
+    throw new Error('Method GetConfigurationFile not implemented');
   }
   // WriteFile(filename: string, content: string): void {
   //   throw new Error('Method not implemented');
@@ -69,6 +82,7 @@ export class TspHostImpl implements TspHost {
   //   throw new Error('Method not implemented');
   // }
   message(message: Message): void {
-    throw new Error('Method not implemented');
+    // ToDo by xiaogang, skip this for now
+    return;
   }
 }
