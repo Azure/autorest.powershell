@@ -808,6 +808,9 @@ export class CmdletClass extends Class {
     const operationParameters = $this.operationParameters;
     const pipeline = $this.$<Property>('Pipeline');
     this.serializationMode = this.bodyParameter ? (this.operation.operationType === OperationType.Create ? ClientRuntime.SerializationMode.IncludeCreate : (this.operation.operationType === OperationType.Update ? ClientRuntime.SerializationMode.IncludeUpdate : undefined)) : undefined;
+    if (this.operation.commandType === CommandType.GetPut || this.operation.commandType === CommandType.ManagedIdentityUpdate) {
+      this.serializationMode = ClientRuntime.SerializationMode.IncludeCreateOrUpdate;
+    }
 
     const PRA = this.add(new Method('ProcessRecordAsync', System.Threading.Tasks.Task(), {
       access: Access.Protected, async: Modifier.Async,
