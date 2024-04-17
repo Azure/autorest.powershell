@@ -830,8 +830,8 @@ function getSchemaForModel(
     // Use the description from ModelProperty not derived from Model Type
     (<Schema>propSchema).language = (<Schema>propSchema).language || {};
     (<Schema>propSchema).language.default = (<Schema>propSchema).language.default || {};
-    (<Schema>propSchema).language.default.description = propertyDescription || "";
-    (<Schema>propSchema).language.default.name = name;
+    (<Schema>propSchema).language.default.description = (<Schema>propSchema).language.default.description || propertyDescription || "";
+    (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || name;
     // ToDo: need to confirm there is no duplicated properties.
     const property = new Property(name, getDoc(program, prop) || "", propSchema);
     if (!prop.optional) {

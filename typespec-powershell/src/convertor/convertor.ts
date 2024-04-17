@@ -29,11 +29,11 @@ export async function transformPwshModel(
   model.info = getServiceInfo(psContext.program);
   model.language.default = getLanguageDefault(psContext.program, emitterOptions);
   model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
-  model.schemas = gethSchemas(psContext.program, client, psContext, model);
+  model.schemas = getSchemas(psContext.program, client, psContext, model);
   return model;
 }
 
-function gethSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
+function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
   const schemas = new Schemas();
   for (const schema of schemaCache.values()) {
     if (schema.type === SchemaType.Any) {
