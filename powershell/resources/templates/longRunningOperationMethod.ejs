@@ -1,6 +1,6 @@
 <% if (method.language.default.description) {-%>
         /// <summary>
-        /// <%= method.language.default.description%>
+        /// <%=project.helper.wrapComments('        ', '/// ', method.language.default.description)%>
 <%# ToDo: add externaldocsurl -%>
         /// </summary>
 <% };-%>
