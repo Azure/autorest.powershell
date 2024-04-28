@@ -169,14 +169,12 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     internal class PsModuleHelpInfo
     {
         public string Name { get; }
-        public string RootModuleName { get; }
         public Guid Guid { get; }
         public string Description { get; }
 
         public PsModuleHelpInfo(PSModuleInfo moduleInfo)
             : this(moduleInfo?.Name ?? String.Empty, moduleInfo?.Guid ?? Guid.NewGuid(), moduleInfo?.Description ?? String.Empty)
         {
-            RootModuleName = moduleInfo?.RootModule ?? String.Empty;
         }
 
         public PsModuleHelpInfo(string name, Guid guid, string description)

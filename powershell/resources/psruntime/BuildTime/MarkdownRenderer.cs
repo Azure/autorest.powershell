@@ -17,7 +17,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
         public static void WriteMarkdowns(IEnumerable<VariantGroup> variantGroups, PsModuleHelpInfo moduleHelpInfo, string docsFolder, string examplesFolder, bool AddComplexInterfaceInfo = true)
         {
             Directory.CreateDirectory(docsFolder);
-            var markdownInfos = variantGroups.Where(vg => !vg.IsInternal).Select(vg => new MarkdownHelpInfo(vg, examplesFolder, moduleHelpInfo.RootModuleName)).OrderBy(mhi => mhi.CmdletName).ToArray();
+            var markdownInfos = variantGroups.Where(vg => !vg.IsInternal).Select(vg => new MarkdownHelpInfo(vg, examplesFolder)).OrderBy(mhi => mhi.CmdletName).ToArray();
 
             foreach (var markdownInfo in markdownInfos)
             {
