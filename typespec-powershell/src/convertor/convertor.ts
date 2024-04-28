@@ -9,10 +9,10 @@ import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
 import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion } from "../utils/modelUtils.js";
-import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema } from "@autorest/codemodel";
+import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
-import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response } from "@autorest/codemodel";
+import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response, HttpHeader } from "@autorest/codemodel";
 import { stat } from "fs";
 import { extractPagedMetadataNested } from "../utils/operationUtil.js";
 import { parseNextLinkName } from "../utils/operationUtil.js";
@@ -68,7 +68,7 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
   const clientOperations = listOperationsInOperationGroup(psContext, client);
   const newGroup = new OperationGroup("");
   if (clientOperations.length > 0) {
-    newGroup.$key = "";
+    newGroup.language.default.name = newGroup.$key = "";
     operationGroups.push(newGroup);
   }
   for (const clientOperation of clientOperations) {
@@ -86,7 +86,7 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
   const opGroups = listOperationGroups(psContext, client, true);
   for (const operationGroup of opGroups) {
     const newGroup = new OperationGroup("");
-    newGroup.$key = operationGroup.type.name;
+    newGroup.language.default.name = newGroup.$key = operationGroup.type.name;
     operationGroups.push(newGroup);
     const operations = listOperationsInOperationGroup(
       psContext,
@@ -188,13 +188,26 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       newResponse.language.default.name = '';
       newResponse.language.default.description = response.description || "";
       const statusCode = response.statusCode;
-      //if (!['204', '202'].includes(statusCode)) {
+      // Add schema for response body
       if (response.responses[0].body) {
         const schema = getSchemaForType(psContext, response.responses[0].body.type);
         (<any>newResponse).schema = schema;
       }
-      //}
+      // Add headers
       newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
+      if (response.responses[0].headers) {
+        for (const key in response.responses[0].headers) {
+          newResponse.protocol.http.headers = newResponse.protocol.http.headers || [];
+          const header = response.responses[0].headers[key];
+          const headerSchema = getSchemaForType(psContext, header.type);
+          const headerResponse = new HttpHeader(key, headerSchema);
+          headerResponse.language = new Languages();
+          headerResponse.language.default = new Language();
+          headerResponse.language.default.description = getDoc(psContext.program, header) || "";
+          headerResponse.language.default.name = pascalCase(deconstruct(key));
+          newResponse.protocol.http.headers.push(headerResponse);
+        }
+      }
       newResponse.protocol.http.statusCodes = statusCode === "*" ? ["default"] : [statusCode];
       newResponse.protocol.http.knownMediaType = "json";
       newResponse.protocol.http.mediaTypes = ["application/json"];
