@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$NotIsolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX)
+param([switch]$NotIsolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX, [Switch]$DisableAfterBuildTasks)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -166,11 +166,14 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
   . (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
 }
 
-$afterBuildTasksPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.afterBuildTasks)}'
-$afterBuildTasksArgs = ConvertFrom-Json '${$project.afterBuildTasksArgs}' -AsHashtable
-if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
-  Write-Host -ForegroundColor Green 'Running after build tasks...'
-  . $afterBuildTasksPath @afterBuildTasksArgs
+if (-not $DisableAfterBuildTasks){
+  $afterBuildTasksPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.afterBuildTasks)}'
+  $afterBuildTasksArgs = ConvertFrom-Json '${$project.afterBuildTasksArgs}' -AsHashtable
+  if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
+    Write-Host -ForegroundColor Green 'Running after build tasks...'
+    . $afterBuildTasksPath @afterBuildTasksArgs
+  }
 }
+
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
