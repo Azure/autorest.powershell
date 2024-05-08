@@ -28,7 +28,7 @@ export function getProfileExportScript(exportFolderScript: string, isAzure: bool
   }
 
   if($profileDirectory) {
-    Write-Information "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
+    Write-Verbose -Message "Loaded Azure profile '$($profileDirectory.Name)' for module '$($instance.Name)'"
     $exportsPath = $profileDirectory.FullName
   }
 
@@ -89,7 +89,7 @@ export async function generatePsm1(project: Project) {
   } elseif (($accountsModule.Version -lt [System.Version]'${project.accountsVersionMinimum}') -and (-not $localAccounts)) {
     Write-Error "\`nThis module requires $accountsName version ${project.accountsVersionMinimum} or greater. An earlier version of Az.Accounts is imported in the current PowerShell session. If you are running test, please try to add the switch '-RegenerateSupportModule' when executing 'test-module.ps1'. Otherwise please open a new PowerShell session and import this module again.\`nAdditionally, this error could indicate that multiple incompatible versions of Azure PowerShell modules are installed on your system. For troubleshooting information, please see: https://aka.ms/azps-version-error" -ErrorAction Stop
   }
-  Write-Information "Loaded Module '$($accountsModule.Name)'"
+  Write-Verbose -Message "Loaded Module '$($accountsModule.Name)'"
 
   # Load the private module dll
   $null = Import-Module -Name (Join-Path $PSScriptRoot '${project.dll}')
@@ -152,7 +152,7 @@ ${azureInitialize}
 ${getProfileExportScript(`Join-Path $PSScriptRoot '${project.exportsFolder}'`, project.azure)}
   # Finalize initialization of this module
   $instance.Init();
-  Write-Information "Loaded Module '$($instance.Name)'"`);
+  Write-Verbose -Message "Loaded Module '$($instance.Name)'"`);
   psm1.trim();
   project.state.writeFile(project.psm1, `${psm1}`, undefined, 'source-file-powershell');
 }
