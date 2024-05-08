@@ -167,7 +167,7 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
 }
 
 if (-not $DisableAfterBuildTasks){
-  $afterBuildTasksPath = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.afterBuildTasks)}'
+  $afterBuildTasksPath = Join-Path $PSScriptRoot '${$project.afterBuildTasksPath}'
   $afterBuildTasksArgs = ConvertFrom-Json '${$project.afterBuildTasksArgs}' -AsHashtable
   if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
     Write-Host -ForegroundColor Green 'Running after build tasks...'

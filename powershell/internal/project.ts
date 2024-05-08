@@ -148,7 +148,7 @@ export class Project extends codeDomProject {
   public gitAttributes!: string;
   public propertiesExcludedForTableview!: string;
   public readme!: string;
-  public afterBuildTasks!: string;
+  public afterBuildTasksPath!: string;
   public afterBuildTasksArgs!: string;
   public dllName!: string;
   public dll!: string;
@@ -329,7 +329,7 @@ export class Project extends codeDomProject {
     this.gitIgnore = `${this.baseFolder}/.gitignore`;
     this.gitAttributes = `${this.baseFolder}/.gitattributes`;
     this.readme = `${this.baseFolder}/README.md`;
-    this.afterBuildTasks = await this.state.getValue('after-build-tasks', '');
+    this.afterBuildTasksPath = await this.state.getValue('after-build-tasks-path', '');
 
     let afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
     this.afterBuildTasksArgs = JSON.stringify(afterBuildTasksArgsDictionary);
