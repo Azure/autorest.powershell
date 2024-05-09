@@ -331,7 +331,7 @@ export class Project extends codeDomProject {
     this.readme = `${this.baseFolder}/README.md`;
     this.afterBuildTasksPath = await this.state.getValue('after-build-tasks-path', '');
 
-    let afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
+    const afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
     this.afterBuildTasksArgs = JSON.stringify(afterBuildTasksArgsDictionary);
 
     // excluded properties in table view
