@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX)
+param([switch]$NotIsolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX, [Switch]$DisableAfterBuildTasks)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
@@ -154,5 +154,21 @@ Export-TestStub -ModuleName $moduleName -ExportsFolder $exportsFolder -OutputFol
 
 Write-Host -ForegroundColor Green 'Creating example stubs...'
 Export-ExampleStub -ExportsFolder $exportsFolder -OutputFolder $examplesFolder
+
+if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
+{
+  Write-Host -ForegroundColor Green 'Creating ux metadata...'
+  . (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
+}
+
+if (-not $DisableAfterBuildTasks){
+  $afterBuildTasksPath = Join-Path $PSScriptRoot '${$project.afterBuildTasksPath}'
+  $afterBuildTasksArgs = ConvertFrom-Json '${$project.afterBuildTasksArgs}' -AsHashtable
+  if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
+    Write-Host -ForegroundColor Green 'Running after build tasks...'
+    . $afterBuildTasksPath @afterBuildTasksArgs
+  }
+}
+
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
