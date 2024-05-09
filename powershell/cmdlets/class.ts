@@ -1797,14 +1797,6 @@ export class CmdletClass extends Class {
 
     this.add(new Attribute(DescriptionAttribute, { parameters: [new StringExpression(this.description)] }));
 
-    // If defines externalDocs for operation
-    if (operation.details.default.externalDocs) {
-      this.add(new Attribute(ExternalDocsAttribute, {
-        parameters: [`${new StringExpression(this.operation.details.default.externalDocs?.url ?? '')}`,
-        `${new StringExpression(this.operation.details.default.externalDocs?.description ?? '')}`]
-      }));
-    }
-
     this.add(new Attribute(GeneratedAttribute));
     if (operation.extensions && operation.extensions['x-ms-metadata'] && operation.extensions['x-ms-metadata'].profiles) {
       const profileNames = Object.keys(operation.extensions && operation.extensions['x-ms-metadata'].profiles);
