@@ -33,11 +33,11 @@ export async function $onEmit(context: EmitContext) {
     const clients = getClients(PsContext);
     for (const client of clients) {
       const model = await transformPwshModel(client, PsContext, emitterOptions);
-      generatePwshModule(model, emitterOptions);
       await emitFile(context.program, {
         path: resolvePath(context.emitterOutputDir, `${client.name}.yaml`),
         content: serialize(model),
       });
+      generatePwshModule(model, emitterOptions);
     }
 
   }

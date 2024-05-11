@@ -384,7 +384,10 @@ function getSchemaForScalar(
   } else if (scalar.baseScalar) {
     result = getSchemaForScalar(dpgContext, scalar.baseScalar);
   }
-
+  result.language = {};
+  result.language.default = {};
+  result.language.default.description = getDoc(dpgContext.program, scalar) || "";
+  result.language.default.name = scalar.name;
   if (isBinaryAsRequestBody()) {
     // bytes in the body of application/octet-stream is the raw binary payload/file
     result.typeName = BINARY_TYPE_UNION;
@@ -451,6 +454,30 @@ function getSchemaForScalar(
   }
 }
 
+function isExtensibleEnum(union: Union) {
+  const variants = Array.from(union.variants.values());
+  // if there is only one symbol in the union, it is extensible
+  let count = 0;
+  for (const variant of variants) {
+    if (typeof (variant.name) === "symbol") {
+      count++;
+    }
+  }
+  if (count === 1 && variants.length > 1) {
+    return true;
+  }
+  return false;
+}
+
+function getChoiceValueForUnionVariant(
+  dpgContext: SdkContext,
+  variant: UnionVariant
+): ChoiceValue {
+  const value = variant.name.toString();
+  const enumType = new ChoiceValue(pascalCase(deconstruct(value.toString())), getDoc(dpgContext.program, variant.type) || "", value);
+  return enumType;
+}
+
 function getSchemaForUnion(
   dpgContext: SdkContext,
   union: Union,
@@ -459,40 +486,58 @@ function getSchemaForUnion(
   const variants = Array.from(union.variants.values());
   const values = [];
 
-  for (const variant of variants) {
-    // We already know it's not a model type
-    values.push(
-      getSchemaForType(dpgContext, variant.type, { ...options, needRef: false })
-    );
-  }
-
-  const schema: any = {};
-  if (values.length > 0) {
-    schema.enum = values;
-    const unionAlias = values
-      .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
-      .join(" | ");
-    const outputUnionAlias = values
-      .map((item) => `${getTypeName(item, [SchemaContext.Output]) ?? item}`)
-      .join(" | ");
-    if (!union.expression) {
-      schema.name = union.name;
-      schema.type = "object";
-      schema.typeName = union.name;
-      schema.outputTypeName = union.name + "Output";
-      schema.alias = unionAlias;
-      schema.outputAlias = outputUnionAlias;
-    } else if (union.expression && !union.name) {
-      schema.type = "union";
-      schema.typeName = unionAlias;
-      schema.outputTypeName = outputUnionAlias;
-    } else {
-      schema.type = "union";
-      schema.typeName = union.name ?? unionAlias;
+  if (isExtensibleEnum(union)) {
+    const schema: any = { type: SchemaType.SealedChoice, description: getDoc(dpgContext.program, union) };
+    for (const variant of variants) {
+      if (typeof (variant.name) === "symbol") {
+        continue;
+      }
+      values.push(getChoiceValueForUnionVariant(dpgContext, variant));
     }
+    schema.choices = values;
+    // ToDo: by xiaogang, add support for other types of enum except string
+    if (stringSchemaForEnum === undefined) {
+      stringSchemaForEnum = new StringSchema("enum", "string schema for enum");
+    }
+    schema.choiceType = stringSchemaForEnum;
+    return schema;
   }
 
-  return schema;
+  // ToDo: by xiaogang, add support for union of non-extensible enum
+  // for (const variant of variants) {
+  //   // We already know it's not a model type
+  //   values.push(
+  //     getSchemaForType(dpgContext, variant.type, { ...options, needRef: false })
+  //   );
+  // }
+
+  // const schema: any = {};
+  // if (values.length > 0) {
+  //   schema.enum = values;
+  //   const unionAlias = values
+  //     .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
+  //     .join(" | ");
+  //   const outputUnionAlias = values
+  //     .map((item) => `${getTypeName(item, [SchemaContext.Output]) ?? item}`)
+  //     .join(" | ");
+  //   if (!union.expression) {
+  //     schema.name = union.name;
+  //     schema.type = "object";
+  //     schema.typeName = union.name;
+  //     schema.outputTypeName = union.name + "Output";
+  //     schema.alias = unionAlias;
+  //     schema.outputAlias = outputUnionAlias;
+  //   } else if (union.expression && !union.name) {
+  //     schema.type = "union";
+  //     schema.typeName = unionAlias;
+  //     schema.outputTypeName = outputUnionAlias;
+  //   } else {
+  //     schema.type = "union";
+  //     schema.typeName = union.name ?? unionAlias;
+  //   }
+  // }
+
+  // return schema;
 }
 
 function getSchemaForUnionVariant(
