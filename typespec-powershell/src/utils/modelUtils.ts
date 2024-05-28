@@ -288,11 +288,11 @@ export function getSchemaForType(
   if (isNullType(type)) {
     return { type: "null" };
   }
-  reportDiagnostic(program, {
-    code: "invalid-schema",
-    format: { type: type.kind },
-    target: type
-  });
+  // reportDiagnostic(program, {
+  //   code: "invalid-schema",
+  //   format: { type: type.kind },
+  //   target: type
+  // });
   return undefined;
 }
 export function getEffectiveModelFromType(program: Program, type: Type): Type {
@@ -487,7 +487,7 @@ function getSchemaForUnion(
   const values = [];
 
   if (isExtensibleEnum(union)) {
-    const schema: any = { type: SchemaType.SealedChoice, description: getDoc(dpgContext.program, union) };
+    const schema = new SealedChoiceSchema(union.name || "", getDoc(dpgContext.program, union) || "");
     for (const variant of variants) {
       if (typeof (variant.name) === "symbol") {
         continue;
@@ -1064,7 +1064,7 @@ function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
     values.push(getSchemaForType(dpgContext, option));
   }
 
-  const schema: any = { type: SchemaType.SealedChoice, description: getDoc(dpgContext.program, e) };
+  const schema = new SealedChoiceSchema(e.name, getDoc(dpgContext.program, e) || "");
   if (values.length > 0) {
     schema.choices = values;
     // schema.type = values
