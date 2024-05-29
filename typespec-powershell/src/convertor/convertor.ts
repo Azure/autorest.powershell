@@ -263,6 +263,10 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
         ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
         : getSchemaForType(psContext, parameter.param.type));
       const newParameter = new Parameter(pascalCase(deconstruct(parameter.name)), getDoc(psContext.program, parameter.param) || "", paramSchema);
+      if (newParameter.language.default.name === "ApiVersion") {
+        //to align with modelerfour
+        newParameter.language.default.name = "apiVersion";
+      }
       newParameter.language.default.serializedName = parameter.name;
       newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
       newParameter.protocol.http.in = parameter.type;

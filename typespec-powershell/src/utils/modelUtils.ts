@@ -256,7 +256,9 @@ export function getSchemaForType(
     return schema;
   } else if (type.kind === "Union") {
     const schema = getSchemaForUnion(dpgContext, type, options);
-    schemaCache.set(typeInput, schema);
+    if (schema) {
+      schemaCache.set(typeInput, schema);
+    }
     return schema;
   } else if (type.kind === "UnionVariant") {
     const schema = getSchemaForUnionVariant(dpgContext, type, options);
@@ -1064,30 +1066,38 @@ function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
     values.push(getSchemaForType(dpgContext, option));
   }
 
-  const schema = new SealedChoiceSchema(e.name, getDoc(dpgContext.program, e) || "");
-  if (values.length > 0) {
-    schema.choices = values;
-    // schema.type = values
-    //   .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
-    //   .join(" | ");
-    // if (!isFixed(dpgContext.program, e)) {
-    //   schema.name = "string";
-    //   schema.typeName = "string";
-    // };
-  }
+  // if (values.length > 0) {
+  //   schema.choices = values;
+  //   // schema.type = values
+  //   //   .map((item) => `${getTypeName(item, [SchemaContext.Input]) ?? item}`)
+  //   //   .join(" | ");
+  //   // if (!isFixed(dpgContext.program, e)) {
+  //     //   schema.name = "string";
+  //     //   schema.typeName = "string";
+  //     // };
+  //   }
 
   if (type === "string") {
+    const schema = new SealedChoiceSchema(e.name, getDoc(dpgContext.program, e) || "");
+    if (values.length > 0) {
+      schema.choices = values;
+    }
     if (stringSchemaForEnum === undefined) {
       stringSchemaForEnum = new StringSchema("enum", "string schema for enum");
     }
     schema.choiceType = stringSchemaForEnum;
+    return schema;
   } else {
+    const schema = new SealedChoiceSchema<NumberSchema>(e.name, getDoc(dpgContext.program, e) || "");
+    if (values.length > 0) {
+      schema.choices = values;
+    }
     if (numberSchemaForEnum === undefined) {
       numberSchemaForEnum = new NumberSchema("enum", "number schema for enum", SchemaType.Number, 64);
     }
     schema.choiceType = numberSchemaForEnum;
+    return schema;
   }
-  return schema;
 }
 
 function enumMemberType(member: EnumMember) {
