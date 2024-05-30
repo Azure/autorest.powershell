@@ -1762,7 +1762,7 @@ export function isAzureCoreErrorType(t?: Type): boolean {
 
 // Check if the schema is an anonymous object
 export function isAnonymousObjectSchema(schema: Schema) {
-  return (schema.language?.default.name || "" === "") && schema.type === "object";
+  return ((schema.language?.default.name || "") === "") && schema.type === "object";
 }
 
 // Check if the type is an anonymous model
