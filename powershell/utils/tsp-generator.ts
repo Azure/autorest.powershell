@@ -13,6 +13,7 @@ import { tweakModelForTsp as tweakM4Model } from '../plugins/plugin-tweak-m4-mod
 import { ModelState } from './model-state';
 import { TspHostImpl } from './tsp-host';
 import { stat } from 'fs';
+import { serialize } from '@azure-tools/codegen';
 
 export async function generatePwshModule(pwshModel: PwshModel, emitterOptions: any) {
   const tspService = new TspHostImpl(emitterOptions);
@@ -24,7 +25,6 @@ export async function generatePwshModule(pwshModel: PwshModel, emitterOptions: a
   await (await new Inferrer(state).init()).createCommands();
   await createVirtuals(state);
   await nameStuffRight(state);
-  await psNamer(state);
   await psNamer(state);
   await modifier(state);
   await llcsharpV2(tspService, state);
