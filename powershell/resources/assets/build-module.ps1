@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeader}
 # ----------------------------------------------------------------------------------
-param([switch]$NotIsolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX, [Switch]$DisableAfterBuildTasks)
+param([switch]$Isolated, [switch]$Run, [switch]$Test, [switch]$Docs, [switch]$Pack, [switch]$Code, [switch]$Release, [switch]$Debugger, [switch]$NoDocs, [switch]$UX, [Switch]$DisableAfterBuildTasks)
 $ErrorActionPreference = 'Stop'
 
 if($PSEdition -ne 'Core') {
