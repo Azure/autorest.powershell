@@ -209,7 +209,19 @@ export function getSchemaForType(
   }
 
   if (type.kind === "ModelProperty") {
-    return getSchemaForType(dpgContext, type.type, options);
+    const typeSchema: Schema = getSchemaForType(dpgContext, type.type, options);
+    if (isStringType(program, type.type) || isNumericType(program, type.type)) {
+      // add in validation elements for string and numeric types
+      // unlike m4, min/max length and pattern are not part of the schema
+      const propertySchema = { ...typeSchema };
+      addValidation(<Schema>propertySchema, type);
+      propertySchema.language.default.name = type.name;
+      propertySchema.language.default.description = getDoc(program, type) || "";
+      schemaCache.set(typeInput, <Schema>propertySchema);
+      return propertySchema;
+    } else {
+      return typeSchema;
+    }
   }
 
   if (type.kind === "Model") {
@@ -295,6 +307,16 @@ export function getSchemaForType(
   //   format: { type: type.kind },
   //   target: type
   // });
+  function addValidation(schema: Schema, type: ModelProperty) {
+    if (isStringType(program, type.type)) {
+      (<any>schema).minLength = getMinLength(program, type);
+      (<any>schema).maxLength = getMaxLength(program, type);
+      (<any>schema).pattern = getPattern(program, type);
+    } else if (isNumericType(program, type.type)) {
+      (<any>schema).minimum = getMinValue(program, type);
+      (<any>schema).maximum = getMaxValue(program, type);
+    }
+  }
   return undefined;
 }
 export function getEffectiveModelFromType(program: Program, type: Type): Type {
@@ -855,7 +877,7 @@ function getSchemaForModel(
       continue;
     }
 
-    const propSchema = getSchemaForType(dpgContext, prop.type, {
+    const propSchema = getSchemaForType(dpgContext, prop, {
       usage,
       needRef: isAnonymousModelType(prop.type) ? false : true,
       relevantProperty: prop,

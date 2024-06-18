@@ -259,9 +259,7 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
     if (matchParameters.length > 0) {
       return matchParameters[0];
     } else {
-      const paramSchema = parameter.name === "api-version" ? getSchemaForApiVersion(psContext, parameter.param.type) : (parameter.param.sourceProperty
-        ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
-        : getSchemaForType(psContext, parameter.param.type));
+      const paramSchema = parameter.name === "api-version" ? getSchemaForApiVersion(psContext, parameter.param.type) : (parameter.param.sourceProperty ? getSchemaForType(psContext, parameter.param.sourceProperty) : getSchemaForType(psContext, parameter.param));
       const newParameter = new Parameter(pascalCase(deconstruct(parameter.name)), getDoc(psContext.program, parameter.param) || "", paramSchema);
       if (newParameter.language.default.name === "ApiVersion") {
         //to align with modelerfour
@@ -278,9 +276,7 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
     }
   } else {
     // always create the parameter
-    const paramSchema = parameter.param.sourceProperty
-      ? getSchemaForType(psContext, parameter.param.sourceProperty?.type)
-      : getSchemaForType(psContext, parameter.param.type)
+    const paramSchema = parameter.param.sourceProperty ? getSchemaForType(psContext, parameter.param.sourceProperty) : getSchemaForType(psContext, parameter.param);
     const newParameter = new Parameter(parameter.name, getDoc(psContext.program, parameter.param) || "", paramSchema);
     newParameter.language.default.serializedName = parameter.name;
     newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
