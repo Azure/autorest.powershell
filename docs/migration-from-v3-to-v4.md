@@ -180,17 +180,6 @@ For model cmdlet, a parameter is required only if it is marked as required, both
 
 There is no mitigation since it is actually a fix for existing issues.
 
-## None-fixed array
-
-In v3, if a response contained a property with an array type, it was generated as a fixed-size C# array that couldn't support adding new elements through functions like Add. In v4, we generate a list instead of an array to support the Add function in such cases.
-
-### How to mitigate the breaking changes of non-fixed array
-
-This is a design change and we do not provide a way to generate fixed array anymore. From users' perspective, the following modifications should be made in scripts that utilize PowerShell modules generated with v4:
-
-- Use Count instead of Length to retrieve the number of elements
-- Use the ToArray function if conversion to a fixed-size array is needed
-
 ## Managed Identity Best Practice Alignment
 
 In v3, IdentityType and UserAssignedIdentity are generated and totally matches with swagger definition. In v4, we generate them to align our best practice design. As a result, generated cmdlets will have changes as below.
