@@ -493,6 +493,13 @@ export class CallMethod extends Method {
               finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
               yield finalUri;
               break;
+
+            case 'operation-location':
+              // perform a final GET on the uri in Operation-Location header
+              finalUri = Local('_finalUri', response.invokeMethod('GetFirstHeader', new StringExpression('Operation-Location')));
+              yield finalUri;
+              break;
+
             case 'azure-asyncoperation':
             case 'azure-async-operation':
               //depending on the type of request, do the appropriate behavior
@@ -534,6 +541,8 @@ export class CallMethod extends Method {
           yield asyncOperation;
           const location = Local('location', response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
           yield location;
+          const operationLocation = Local('operationLocation', response.invokeMethod('GetFirstHeader', new StringExpression('Operation-Location')));
+          yield operationLocation;
 
           yield While(new LiteralExpression(`${reqParameter.use}.Method == System.Net.Http.HttpMethod.Put && ${response.value}.StatusCode == ${System.Net.HttpStatusCode[200].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[201].value} || ${response.value}.StatusCode == ${System.Net.HttpStatusCode[202].value} `), function* () {
             yield '// delay before making the next polling request';
@@ -547,10 +556,16 @@ export class CallMethod extends Method {
             yield 'if (!global::System.String.IsNullOrEmpty(_response.GetFirstHeader(@"Location"))) {';
             yield '    ' + location.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Location')));
             yield '}';
+            yield 'if (!global::System.String.IsNullOrEmpty(_response.GetFirstHeader(@"Operation-Location"))) {';
+            yield '    ' + operationLocation.assign(response.invokeMethod('GetFirstHeader', new StringExpression('Operation-Location')));
+            yield '}';
             const uriLocal = Local('_uri', Ternery(
               System.String.IsNullOrEmpty(asyncOperation),
               Ternery(System.String.IsNullOrEmpty(location),
-                originalUri,
+                Ternery(System.String.IsNullOrEmpty(operationLocation),
+                  originalUri,
+                  operationLocation
+                ),
                 location),
               asyncOperation));
             yield uriLocal;
@@ -623,6 +638,7 @@ export class CallMethod extends Method {
               case 'azure-asyncoperation':
               case 'azure-async-operation':
               case 'location':
+              case 'operation-location':
                 // perform a final GET on the specified final URI.
                 yield $this.finalGet(eventListener, finalUri, reqParameter, response);
                 break;
