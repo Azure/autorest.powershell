@@ -44,6 +44,7 @@ import {
   EncodeData,
   isRecordModelType,
   isArrayModelType,
+  isType,
 } from "@typespec/compiler";
 import { SdkContext, isReadOnly } from "@azure-tools/typespec-client-generator-core";
 
@@ -737,8 +738,11 @@ function getSchemaForModel(
     model.templateMapper.args.length > 0 &&
     getPagedResult(program, model)
   ) {
+    const templateTypes = model.templateMapper.args.filter((it) =>
+      isType(it)
+    ) as Type[];
     name =
-      model.templateMapper.args
+      templateTypes
         .map((it) => {
           switch (it.kind) {
             case "Model":
@@ -778,7 +782,10 @@ function getSchemaForModel(
     if (paged && paged.itemsProperty) {
       const items = paged.itemsProperty as unknown as Model;
       if (items && items.templateMapper && items.templateMapper.args) {
-        const templateName = items.templateMapper.args
+        const templateTypes = items.templateMapper.args.filter((it) =>
+          isType(it)
+        ) as Type[];
+        const templateName = templateTypes
           ?.map((it) => {
             switch (it.kind) {
               case "Model":

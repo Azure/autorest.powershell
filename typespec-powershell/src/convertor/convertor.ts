@@ -132,7 +132,7 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
   newOperation.parameters = newOperation.parameters || [];
   newOperation.parameters.push(hostParameter);
   // Add request body if it exists
-  if (op.parameters.body && !(op.parameters.body.type.kind === "Intrinsic" && op.parameters.body.type.name === "void")) {
+  if (op.parameters.body && op.parameters.body.bodyKind === "single" && !(op.parameters.body.type.kind === "Intrinsic" && op.parameters.body.type.name === "void")) {
     const newParameter = createBodyParameter(psContext, op.parameters.body, model);
     newRequest.parameters = newRequest.parameters || [];
     newOperation.requests[0].parameters?.push(newParameter);
