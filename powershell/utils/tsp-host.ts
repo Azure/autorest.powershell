@@ -53,7 +53,7 @@ export class TspHostImpl implements TspHost {
   getValue<T>(key: string): Promise<T | undefined> {
     return this.configurations[key];
   }
-  listInputs(artifactType?: string): Promise<string[]> {
+  listInputs(artifactType?: string): Promise<Array<string>> {
     // Shall not be called, so throw an exception
     throw new Error('Method listInputs not implemented');
   }
