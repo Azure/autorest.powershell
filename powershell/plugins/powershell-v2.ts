@@ -27,7 +27,7 @@ import { generateScriptCmdlets } from '../generators/script-cmdlet';
 import { TspHost } from '../utils/tsp-host';
 import { State } from '../internal/state';
 import { ModelState } from '../utils/model-state';
-import { PwshModel } from '../utils/pwshModel';
+import { PwshModel } from '../utils/PwshModel';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
