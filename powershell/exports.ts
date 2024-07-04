@@ -1,2 +1,2 @@
-export * from './utils/pwshModel';
+export * from './utils/PwshModel';
 export * from './utils/tsp-generator';

@@ -16,7 +16,7 @@ import { DeepPartial } from '@azure-tools/codegen';
 import { PropertyFormat } from '../utils/schema';
 import { TspHost } from '../utils/tsp-host';
 import { ModelState } from '../utils/model-state';
-import { PwshModel } from '../utils/pwshModel';
+import { PwshModel } from '../utils/PwshModel';
 
 export class Project extends codeDomProject {
 

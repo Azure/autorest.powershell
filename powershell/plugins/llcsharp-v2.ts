@@ -10,7 +10,7 @@ import { Model } from '../llcsharp/code-model';
 import { Project } from '../llcsharp/project';
 import { TspHost } from '../utils/tsp-host';
 import { ModelState } from '../utils/model-state';
-import { PwshModel } from '../utils/pwshModel';
+import { PwshModel } from '../utils/PwshModel';
 
 const resources = `${__dirname}/../../resources`;
 
