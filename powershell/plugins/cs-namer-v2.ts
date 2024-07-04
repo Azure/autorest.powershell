@@ -237,7 +237,7 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
   }
 }
 
-async function nameStuffRight(state: State): Promise<PwshModel> {
+export async function nameStuffRight(state: State): Promise<PwshModel> {
   const resolver = new SchemaDefinitionResolver();
   const model = state.model;
 
@@ -271,6 +271,6 @@ export async function csnamerV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-csnamer-v2.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-csnamer-v2.yaml', content: serialize(await nameStuffRight(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }
 

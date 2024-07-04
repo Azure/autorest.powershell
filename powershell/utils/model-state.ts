@@ -6,6 +6,7 @@
 import { Channel, AutorestExtensionHost as Host, JsonPointerSegments as JsonPath, Mapping, RawSourceMap, Message } from '@autorest/extension-base';
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
+import { TspHost, TspHostImpl } from './tsp-host';
 
 export class ModelState<T extends Dictionary<any>> extends Initializer {
   public model!: T;
@@ -15,12 +16,17 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   private _debug = false;
   private _verbose = false;
 
-  public constructor(protected service: Host, objectInitializer?: DeepPartial<ModelState<T>>) {
+  public constructor(public service: TspHost | Host, objectInitializer?: DeepPartial<ModelState<T>>) {
     super();
     this.apply(objectInitializer);
   }
 
   async init(project?: any) {
+    if (this.service instanceof TspHostImpl) {
+      // skip init for tsp
+      this.initContext(project);
+      return this;
+    }
     const m = await ModelState.getModel<T>(this.service);
     this.model = m.model;
     this.documentName = m.filename;
@@ -88,8 +94,8 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   async protectFiles(path: string): Promise<void> {
     return this.service.protectFiles(path);
   }
-  writeFile(filename: string, content: string, sourceMap?: Array<Mapping> | RawSourceMap | undefined, artifactType?: string | undefined): void {
-    return this.service.writeFile({ filename: filename, content: content, sourceMap: sourceMap, artifactType: artifactType});
+  writeFile(filename: string, content: string, sourceMap?: undefined, artifactType?: string | undefined): void {
+    return this.service.writeFile({ filename: filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
   }
 
   message(message: Message): void {
@@ -110,7 +116,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   }
   protected errorCount = 0;
 
-  protected static async getModel<T>(service: Host) {
+  protected static async getModel<T>(service: Host | TspHost) {
     const files = await service.listInputs();
     const filename = files[0];
     if (files.length === 0) {

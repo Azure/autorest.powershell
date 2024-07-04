@@ -12,11 +12,12 @@ import { Dictionary } from '@azure-tools/linq';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PwshModel } from '../utils/PwshModel';
 import { ModelState } from '../utils/model-state';
+import { TspHost } from '../utils/tsp-host';
 
 export class State extends ModelState<PwshModel> {
   project!: Project;
 
-  public constructor(service: Host, objectInitializer?: DeepPartial<State>) {
+  public constructor(service: Host | TspHost, objectInitializer?: DeepPartial<State>) {
     super(service);
     this.apply(objectInitializer);
   }

@@ -14,6 +14,9 @@ import { ServiceNamespace } from './operation/namespace';
 import { SupportNamespace } from './enums/namespace';
 import { DeepPartial } from '@azure-tools/codegen';
 import { PropertyFormat } from '../utils/schema';
+import { TspHost } from '../utils/tsp-host';
+import { ModelState } from '../utils/model-state';
+import { PwshModel } from '../utils/pwshModel';
 
 export class Project extends codeDomProject {
 
@@ -36,15 +39,18 @@ export class Project extends codeDomProject {
   supportJsonInput!: boolean;
   formats!: Dictionary<PropertyFormat>;
 
-  constructor(protected service: Host, objectInitializer?: DeepPartial<Project>) {
+  constructor(protected service: Host | TspHost, objectInitializer?: DeepPartial<Project>) {
     super();
     this.apply(objectInitializer);
   }
 
-  public async init(): Promise<this> {
+  public async init(state?: ModelState<PwshModel>): Promise<this> {
     await super.init();
-
     this.state = await new State(this.service).init(this);
+    if (state) {
+      this.state.model = state.model;
+    }
+
     this.apifolder = await this.state.getValue('api-folder', '');
     this.runtimefolder = await this.state.getValue('runtime-folder', 'runtime');
     this.azure = await this.state.getValue('azure', false) || await this.state.getValue('azure-arm', false);

@@ -34,6 +34,7 @@ import {
   Schema as NewSchema,
   SchemaType,
 } from '@autorest/codemodel';
+import { TspHost } from '../utils/tsp-host';
 
 export type Schema = T.SchemaT<
   LanguageDetails<SchemaDetails>,
@@ -186,16 +187,21 @@ export class Project extends codeDomProject {
   }
 
   constructor(
-    protected service: Host,
+    protected service: Host | TspHost,
     objectInitializer?: DeepPartial<Project>
   ) {
     super();
     this.apply(objectInitializer);
   }
 
-  public async init(): Promise<this> {
+  public async init(state?: ModelState<PwshModel>): Promise<this> {
     await super.init();
+
     this.state = await new State(this.service).init(this);
+
+    if (state) {
+      this.state.model = state.model;
+    }
 
     this.schemaDefinitionResolver = new PSSchemaResolver();
 
@@ -260,7 +266,7 @@ export class Project extends codeDomProject {
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
     let directives: Array<any> = [];
-    const allDirectives = await this.state.getValue('directive');
+    const allDirectives = await this.state.service.getValue('directive');
     directives = values(<any>allDirectives).toArray();
     for (const directive of directives.filter((each) => each['model-cmdlet'])) {
       this.modelCmdlets = this.modelCmdlets.concat(

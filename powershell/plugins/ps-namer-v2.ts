@@ -47,7 +47,7 @@ export function getDeduplicatedNoun(subjectPrefix: string, subject: string): { s
   return { subjectPrefix: pascalCase(finalPrefix), subject: pascalCase(reversedFinalSubject.reverse()) };
 }
 
-async function tweakModel(state: State): Promise<PwshModel> {
+export async function tweakModel(state: State): Promise<PwshModel> {
   // get the value 
   const isAzure = await state.getValue('azure', false);
   // without setting snitize-names, isAzure is applied
@@ -209,5 +209,5 @@ export async function namerV2(service: Host) {
   //const session = await startSession<PwshModel>(service, {}, codeModelSchema);
   //const result = tweakModelV2(session);
   const state = await new ModelState<PwshModel>(service).init();
-  await service.writeFile({ filename: 'code-model-v4-psnamer-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4'});
+  await service.writeFile({ filename: 'code-model-v4-psnamer-v2.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }

@@ -14,7 +14,13 @@ import { AutorestExtensionHost as Host } from '@autorest/extension-base';
 
 type State = ModelState<PwshModel>;
 
-let directives: Array<any> = [];
+export let directives: Array<any> = [];
+
+export async function tweakModelForTsp(state: State): Promise<PwshModel> {
+  const allDirectives = await state.service.getValue<any>('directive');
+  directives = values(allDirectives).toArray();
+  return await tweakModel(state);
+}
 
 async function tweakModel(state: State): Promise<PwshModel> {
   const model = state.model;
@@ -208,3 +214,4 @@ export async function tweakM4ModelPlugin(service: Host) {
   const state = await new ModelState<PwshModel>(service).init();
   service.writeFile({ filename: 'code-model-v4-tweakm4codemodel.yaml', content: serialize(await tweakModel(state)), sourceMap: undefined, artifactType: 'code-model-v4' });
 }
+

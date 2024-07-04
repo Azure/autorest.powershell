@@ -409,7 +409,7 @@ function createVirtualParameters(operation: CommandOperation) {
   operation.details.default.virtualParameters = virtualParameters;
 }
 
-async function createVirtuals(state: State): Promise<PwshModel> {
+export async function createVirtuals(state: State): Promise<PwshModel> {
   /* 
     A model class should provide inlined properties for anything in a property called properties
     

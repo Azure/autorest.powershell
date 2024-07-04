@@ -48,12 +48,12 @@ export class CmdletNamespace extends Namespace {
         operation.parameters = operation.parameters.filter(element => element.required === true);
       }
       const newClass = await new CmdletClass(this, operation, this.state.path('commands', 'operations', index)).init();
-
+      const refCopyPropertyNames = ['parameters', 'requests', 'responses', 'exceptions', 'requestMediaTypes'];
       if (operation.variant.includes('ViaJsonString')) {
         const name = 'JsonString';
         operation.details.csharp.name = `${operation.variant}Via${name}`;
 
-        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1]);
+        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
         operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
       }
       if (operation.variant.includes('ViaJsonFilePath')) {
@@ -67,7 +67,7 @@ export class CmdletNamespace extends Namespace {
         const jsonStringField = new Field('_jsonString', System.String);
         newClass.add(jsonStringField);
 
-        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1]);
+        operation.callGraph[operation.callGraph.length - 1] = clone(operation.callGraph[operation.callGraph.length - 1], false, undefined, undefined, refCopyPropertyNames);
         operation.callGraph[operation.callGraph.length - 1].language.csharp!.name = `${(<any>operation.callGraph[operation.callGraph.length - 1]).language.csharp!.name}ViaJsonString`;
       }
       this.addClass(newClass);

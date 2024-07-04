@@ -24,6 +24,10 @@ import { generateGitIgnore } from '../generators/gitignore';
 import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
+import { TspHost } from '../utils/tsp-host';
+import { State } from '../internal/state';
+import { ModelState } from '../utils/model-state';
+import { PwshModel } from '../utils/pwshModel';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
@@ -99,11 +103,11 @@ async function copyRequiredFiles(project: Project) {
   }
 }
 
-export async function powershellV2(service: Host) {
-  const debug = (await service.getValue('debug')) || false;
+export async function powershellV2(service: Host | TspHost, state?: ModelState<PwshModel>) {
+  let debug = false;
 
   try {
-    const project = await new Project(service).init();
+    const project = await new Project(service).init(state);
 
     await project.writeFiles(async (filename, content) =>
       project.state.writeFile(
@@ -113,15 +117,15 @@ export async function powershellV2(service: Host) {
         sourceFileCSharp
       )
     );
-
-    await service.protectFiles(project.psd1);
-    await service.protectFiles(project.readme);
-    await service.protectFiles(project.customFolder);
-    await service.protectFiles(project.testFolder);
-    await service.protectFiles(project.docsFolder);
-    await service.protectFiles(project.examplesFolder);
-    await service.protectFiles(project.resourcesFolder);
-    await service.protectFiles(project.uxFolder);
+    debug = (await project.state.service.getValue('debug')) || false;
+    await project.state.protectFiles(project.psd1);
+    await project.state.protectFiles(project.readme);
+    await project.state.protectFiles(project.customFolder);
+    await project.state.protectFiles(project.testFolder);
+    await project.state.protectFiles(project.docsFolder);
+    await project.state.protectFiles(project.examplesFolder);
+    await project.state.protectFiles(project.resourcesFolder);
+    await project.state.protectFiles(project.uxFolder);
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
