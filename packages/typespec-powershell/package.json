@@ -1,6 +1,7 @@
 {
   "name": "@azure-tools/typespec-powershell",
-  "version": "0.1.0",
+  "version": "0.0.1",
+  "description": "An experimental TypeSpec emitter for PowerShell codegen",
   "type": "module",
   "main": "dist/src/index.js",
   "exports": {
@@ -14,6 +15,7 @@
     }
   },
   "dependencies": {
+    "@autorest/powershell": "~4.0.700",
     "@autorest/codemodel": "~4.19.3",
     "@autorest/extension-base": "~3.5.2",
     "@azure-tools/async-io": "~3.0.0",
@@ -58,5 +60,17 @@
     "lint:fix": "eslint . --report-unused-disable-directives --fix",
     "format": "prettier .  --write",
     "format:check": "prettier --check ."
-  }
+  },
+  "license": "MIT",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/Azure/autorest.powershell/issues"
+  },
+  "homepage": "https://github.com/Azure/autorest.powershell/packages/typespec-powershell",
+  "readme": "https://github.com/Azure/autorest.powershell/blob/main/packages/typespec-powershell/README.md",
+  "keywords": [
+    "TypeSpec",
+    "PowerShell",
+    "Cmdlet"
+  ]
 }
