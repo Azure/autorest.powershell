@@ -9,7 +9,7 @@ import { keys, length, values } from '@azure-tools/linq';
 import { Channel, AutorestExtensionHost as Host } from '@autorest/extension-base';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
-import { getAllProperties, ObjectSchema, Response, SchemaType, Schema } from '@autorest/codemodel';
+import { getAllProperties, ObjectSchema, Response, SchemaType, Schema, Protocols, Protocol } from '@autorest/codemodel';
 import { serialize } from '@azure-tools/codegen';
 type State = ModelState<PwshModel>;
 
@@ -117,6 +117,16 @@ export async function tweakModel(state: State): Promise<PwshModel> {
         operation.responses = (<Array<Response>>(operation.responses)).filter(each => each.protocol.http?.statusCodes[0] !== '201' && each.protocol.http?.statusCodes[0] !== '202');
         //delete operation.responses['201'];
         //delete operation.responses['202'];
+
+        // for lro deletion, we need to add the 200 response if it's not already there.
+        if (operation.requests && operation.requests[0].protocol.http?.method === 'delete') {
+          if (!operation.responses.find(each => each.protocol.http?.statusCodes[0] === '200')) {
+            const response = new Response();
+            response.protocol.http = response.protocol.http ?? new Protocol();
+            response.protocol.http.statusCodes = ['200'];
+            operation.responses.push(response);
+          }
+        }
       }
     }
   }
