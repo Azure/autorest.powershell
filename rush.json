@@ -99,6 +99,12 @@
       "projectFolder": "powershell",
       "reviewCategory": "production",
       "shouldPublish": true
+    },
+    {
+      "packageName": "@azure-tools/typespec-powershell",
+      "projectFolder": "packages/typespec-powershell",
+      "reviewCategory": "production",
+      "shouldPublish": true
     }
   ]
 }
