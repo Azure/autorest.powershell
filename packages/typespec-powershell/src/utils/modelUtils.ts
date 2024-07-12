@@ -190,14 +190,12 @@ export function getSchemaForType(
   typeInput: Type,
   options?: GetSchemaOptions
 ) {
-  if (schemaCache.has(typeInput)) {
-    return schemaCache.get(typeInput);
-  }
   const program = dpgContext.program;
   const { usage } = options ?? {};
-  //ToDo: by xiaogang, need to confirm whether need to add this
-  // const type = getEffectiveModelFromType(program, typeInput);
-  const type = typeInput;
+  const type = getEffectiveModelFromType(program, typeInput);
+  if (schemaCache.has(type)) {
+    return schemaCache.get(type);
+  }
   const builtinType = getSchemaForLiteral(type);
   if (builtinType !== undefined) {
     // add in description elements for types derived from primitive types (SecureString, etc.)
@@ -205,7 +203,7 @@ export function getSchemaForType(
     if (doc) {
       builtinType.description = doc;
     }
-    schemaCache.set(typeInput, builtinType);
+    schemaCache.set(type, builtinType);
     return builtinType;
   }
 
@@ -218,7 +216,7 @@ export function getSchemaForType(
       addValidation(<Schema>propertySchema, type);
       propertySchema.language.default.name = type.name;
       propertySchema.language.default.description = getDoc(program, type) || "";
-      schemaCache.set(typeInput, <Schema>propertySchema);
+      schemaCache.set(type, <Schema>propertySchema);
       return propertySchema;
     } else {
       return typeSchema;
@@ -265,25 +263,25 @@ export function getSchemaForType(
       schema.typeName = `${schema.name}`;
     }
     schema.usage = usage;
-    schemaCache.set(typeInput, schema);
+    schemaCache.set(type, schema);
     return schema;
   } else if (type.kind === "Union") {
     const schema = getSchemaForUnion(dpgContext, type, options);
     if (schema) {
-      schemaCache.set(typeInput, schema);
+      schemaCache.set(type, schema);
     }
     return schema;
   } else if (type.kind === "UnionVariant") {
     const schema = getSchemaForUnionVariant(dpgContext, type, options);
-    schemaCache.set(typeInput, schema);
+    schemaCache.set(type, schema);
     return schema;
   } else if (type.kind === "Enum") {
     const schema = getSchemaForEnum(dpgContext, type);
-    schemaCache.set(typeInput, schema);
+    schemaCache.set(type, schema);
     return schema;
   } else if (type.kind === "Scalar") {
     const schema = getSchemaForScalar(dpgContext, type, options);
-    schemaCache.set(typeInput, schema);
+    schemaCache.set(type, schema);
     return schema;
   } else if (type.kind === "EnumMember") {
     //ToDo: by xiaogang, need to confirm
@@ -321,7 +319,7 @@ export function getSchemaForType(
   return undefined;
 }
 export function getEffectiveModelFromType(program: Program, type: Type): Type {
-  if (type.kind === "Model") {
+  if (type.kind === "Model" && type.name === "") {
     const effective = getEffectiveModelType(program, type, isSchemaProperty);
     if (effective.name) {
       return effective;
