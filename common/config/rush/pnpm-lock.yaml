@@ -12,8 +12,8 @@ dependencies:
     specifier: ~3.5.2
     version: 3.5.2
   '@autorest/powershell':
-    specifier: ~4.0.700
-    version: 4.0.701
+    specifier: ~4.0.702
+    version: 4.0.702
   '@azure-tools/async-io':
     specifier: ~3.0.0
     version: 3.0.254
@@ -120,8 +120,8 @@ packages:
       vscode-jsonrpc: 3.6.2
     dev: false
 
-  /@autorest/powershell@4.0.701:
-    resolution: {integrity: sha512-qOQTu4H0SRh4vjy0PjPS21EDEydpPakHqzqWL04mPGuKjAClpzymprCBU4W7HOPoq4exkCduo9QsPtjQG+TJGg==}
+  /@autorest/powershell@4.0.702:
+    resolution: {integrity: sha512-xdRReopyjBbfKDip7Zd2MkXhm4NJsDRo+SbV30ij07/ELa9E63T5EopLSzHOwJlllq2KmGjnfn4xYU4GVySu3w==}
     engines: {node: '>=10.12.0'}
     dependencies:
       '@autorest/codemodel': 4.19.3
@@ -4366,13 +4366,13 @@ packages:
     dev: false
 
   file:projects/typespec-powershell.tgz:
-    resolution: {integrity: sha512-U1LnNGIt3E9vGwKpOxWABq+kcLYtqVWf4fx+QS/Vjvi4nglsAKIfLKgbfw8N3lCtgYIvm/GlH0/Nrzuc4EbEog==, tarball: file:projects/typespec-powershell.tgz}
+    resolution: {integrity: sha512-Ftc5CWBvHQo1T6WdjoQXqaB22R6Jvyf1/lNXu3r3+o9o4lCJECKUWoeD7lmDxCIYJMibjBXwFrW8lhD3aKYHlw==, tarball: file:projects/typespec-powershell.tgz}
     name: '@rush-temp/typespec-powershell'
     version: 0.0.0
     dependencies:
       '@autorest/codemodel': 4.19.3
       '@autorest/extension-base': 3.5.2
-      '@autorest/powershell': 4.0.701
+      '@autorest/powershell': 4.0.702
       '@azure-tools/async-io': 3.0.254
       '@azure-tools/codegen': 2.5.294
       '@azure-tools/codegen-csharp': 3.0.264
