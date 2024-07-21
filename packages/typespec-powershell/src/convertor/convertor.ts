@@ -9,7 +9,7 @@ import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
 import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion } from "../utils/modelUtils.js";
-import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages } from "@autorest/codemodel";
+import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages, ObjectSchema } from "@autorest/codemodel";
 import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
 import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response, HttpHeader } from "@autorest/codemodel";
@@ -31,6 +31,22 @@ export async function transformPwshModel(
   model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
   model.schemas = getSchemas(psContext.program, client, psContext, model);
   return model;
+}
+
+function handleCircleReference(schemas: Schemas) {
+  for (const schema of schemas.objects || []) {
+    if (schema.properties) {
+      for (const property of schema.properties) {
+        if (property.extensions && property.extensions['circle-ref']) {
+          const refSchema = (schemas.objects || []).filter(s => property.extensions && s.language.default.name === <string>property.extensions['circle-ref']);
+          if (refSchema.length > 0) {
+            property.schema = refSchema[0];
+          }
+        }
+      }
+    }
+  }
+  return schemas;
 }
 
 function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
@@ -60,6 +76,7 @@ function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, 
   if (constantSchemaForApiVersion) {
     schemas.add(constantSchemaForApiVersion);
   }
+  handleCircleReference(schemas);
   return schemas;
 }
 function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): OperationGroup[] {

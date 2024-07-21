@@ -891,23 +891,22 @@ function getSchemaForModel(
       mediaTypes: contentTypes
     });
 
-    if (propSchema === undefined) {
-      continue;
+    let propertyDescription;
+    if (propSchema) {
+      propertyDescription = getFormattedPropertyDoc(
+        program,
+        prop,
+        propSchema
+      );
+      propSchema.usage = usage;
+      // Use the description from ModelProperty not derived from Model Type
+      (<Schema>propSchema).language = (<Schema>propSchema).language || {};
+      (<Schema>propSchema).language.default = (<Schema>propSchema).language.default || {};
+      (<Schema>propSchema).language.default.description = (<Schema>propSchema).language.default.description || propertyDescription || "";
+      (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || name;
     }
-
-    const propertyDescription = getFormattedPropertyDoc(
-      program,
-      prop,
-      propSchema
-    );
-    propSchema.usage = usage;
-    // Use the description from ModelProperty not derived from Model Type
-    (<Schema>propSchema).language = (<Schema>propSchema).language || {};
-    (<Schema>propSchema).language.default = (<Schema>propSchema).language.default || {};
-    (<Schema>propSchema).language.default.description = (<Schema>propSchema).language.default.description || propertyDescription || "";
-    (<Schema>propSchema).language.default.name = (<Schema>propSchema).language.default.name || name;
     // ToDo: need to confirm there is no duplicated properties.
-    const property = new Property(name, getDoc(program, prop) || "", propSchema);
+    const property = new Property(name, getDoc(program, prop) || "", propSchema || new ObjectSchema(name, ""));
     if (!prop.optional) {
       property.required = true;
     }
@@ -922,6 +921,10 @@ function getSchemaForModel(
         property.extensions = property.extensions || {};
         property.extensions['x-ms-mutability'] = vis;
       }
+    }
+    if (propSchema === undefined && prop.type.kind === "Model") {
+      property.extensions = property.extensions || {};
+      property.extensions['circle-ref'] = pascalCase(deconstruct(prop.type.name));
     }
 
     modelSchema.properties.push(property);
