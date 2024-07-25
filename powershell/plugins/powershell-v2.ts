@@ -41,7 +41,7 @@ async function copyRequiredFiles(project: Project) {
   await copyResources(
     join(resources, 'assets'),
     async (fname, content) =>
-      project.state.writeFile(fname, content, undefined, 'source-file-other'),
+      project.state.writeFile(join(project.baseFolder, fname), content, undefined, 'source-file-other'),
     undefined,
     transformOutput
   );
