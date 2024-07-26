@@ -15,7 +15,7 @@ export async function $onEmit(context: EmitContext) {
   // ToDo: need to implement a configuration class for AzPS
   const emitterOptions: PSOptions = context.options;
 
-  const PsContext = createSdkContext(
+  const PsContext = await createSdkContext(
     context,
     "@azure-tools/typespec-powershell"
   );
