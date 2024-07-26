@@ -9,8 +9,8 @@ import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
 import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion } from "../utils/modelUtils.js";
-import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages } from "@autorest/codemodel";
-import { deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
+import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages, ObjectSchema } from "@autorest/codemodel";
+import { camelCase, deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
 import { Request, ImplementationLocation, OperationGroup, Operation, Parameter, Schema, Protocol, Response, HttpHeader } from "@autorest/codemodel";
 import { stat } from "fs";
@@ -20,17 +20,37 @@ import { getLroMetadata } from "@azure-tools/typespec-azure-core";
 
 const GlobalParameter = "global-parameter";
 
+const urlParameters: Parameter[] = [];
+let endpoint = '{$host}';
+
 export async function transformPwshModel(
   client: SdkClient,
   psContext: SdkContext,
   emitterOptions: PSOptions
 ): Promise<PwshModel> {
   const model = new PwshModel(client.name);
+  getUrlParameters(psContext.program, psContext);
   model.info = getServiceInfo(psContext.program);
   model.language.default = getLanguageDefault(psContext.program, emitterOptions);
   model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
   model.schemas = getSchemas(psContext.program, client, psContext, model);
   return model;
+}
+
+function handleCircleReference(schemas: Schemas) {
+  for (const schema of schemas.objects || []) {
+    if (schema.properties) {
+      for (const property of schema.properties) {
+        if (property.extensions && property.extensions['circle-ref']) {
+          const refSchema = (schemas.objects || []).filter(s => property.extensions && s.language.default.name === <string>property.extensions['circle-ref']);
+          if (refSchema.length > 0) {
+            property.schema = refSchema[0];
+          }
+        }
+      }
+    }
+  }
+  return schemas;
 }
 
 function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
@@ -60,8 +80,40 @@ function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, 
   if (constantSchemaForApiVersion) {
     schemas.add(constantSchemaForApiVersion);
   }
+  handleCircleReference(schemas);
   return schemas;
 }
+
+function getUrlParameters(program: Program, psContext: SdkContext) {
+  const serviceNs = getDefaultService(program)?.type;
+  if (serviceNs) {
+    const host = getServers(program, serviceNs);
+    if (host?.[0]?.url) {
+      endpoint = host[0].url;
+    }
+    if (host && host?.[0] && host?.[0]?.parameters) {
+      for (const key of host[0].parameters.keys()) {
+        const property = host?.[0]?.parameters.get(key);
+        const type = property?.type;
+
+        if (!property || !type) {
+          continue;
+        }
+
+        const schema = getSchemaForType(psContext, type);
+        const newParameter = new Parameter(camelCase(deconstruct(key)), getDoc(program, property) || "", schema)
+        newParameter.language.default.serializedName = key;
+        newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
+        newParameter.protocol.http.in = "uri";
+        // ToDo, we need to support x-ms-client is specified.
+        newParameter.implementation = ImplementationLocation.Method;
+        newParameter.required = true;
+        urlParameters.push(newParameter);
+      }
+    }
+  }
+}
+
 function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): OperationGroup[] {
   const operationGroups: OperationGroup[] = [];
   // list all the operations in the client
@@ -110,6 +162,11 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
   // Add Api versions
   newOperation.apiVersions = newOperation.apiVersions || [];
   newOperation.apiVersions.push({ version: getEnrichedDefaultApiVersion(psContext.program, psContext) || "" });
+  // Add URl parameters
+  if (urlParameters.length > 0) {
+    newOperation.parameters = newOperation.parameters || [];
+    newOperation.parameters.push(...urlParameters);
+  }
   // Add query and path parameters
   const parameters = op.parameters.parameters.filter(p => p.type === "path" || p.type === "query");
   for (const parameter of parameters) {
@@ -128,9 +185,11 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
     newOperation.requests[0].parameters?.push(newParameter);
   }
   // Add host parameter
-  const hostParameter = createHostParameter(psContext, model);
-  newOperation.parameters = newOperation.parameters || [];
-  newOperation.parameters.push(hostParameter);
+  if (endpoint === '{$host}') {
+    const hostParameter = createHostParameter(psContext, model);
+    newOperation.parameters = newOperation.parameters || [];
+    newOperation.parameters.push(hostParameter);
+  }
   // Add request body if it exists
   if (op.parameters.body && op.parameters.body.bodyKind === "single" && !(op.parameters.body.type.kind === "Intrinsic" && op.parameters.body.type.name === "void")) {
     const newParameter = createBodyParameter(psContext, op.parameters.body, model);
@@ -143,7 +202,7 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
   // hard code the media type to json for the time being by xiaogang.
   httpProtocol.knownMediaType = "json";
   httpProtocol.mediaTypes = ["application/json"];
-  httpProtocol.uri = "{$host}";
+  httpProtocol.uri = endpoint;
   newOperation.requests[0].protocol.http = httpProtocol;
 
   // Add responses include exceptions
