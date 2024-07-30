@@ -7,11 +7,13 @@ import { Channel, AutorestExtensionHost as Host, JsonPointerSegments as JsonPath
 import { safeEval, deserialize, Initializer, DeepPartial } from '@azure-tools/codegen';
 import { Dictionary } from '@azure-tools/linq';
 import { TspHost, TspHostImpl } from './tsp-host';
+import { join } from 'path';
 
 export class ModelState<T extends Dictionary<any>> extends Initializer {
   public model!: T;
   protected documentName!: string;
   protected currentPath: JsonPath = new Array<string>();
+  protected outputFolder!: string;
   private context!: any;
   private _debug = false;
   private _verbose = false;
@@ -24,6 +26,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
   async init(project?: any) {
     if (this.service instanceof TspHostImpl) {
       // skip init for tsp
+      this.outputFolder = await this.getValue('output-folder', './generated');
       this.initContext(project);
       return this;
     }
@@ -95,7 +98,7 @@ export class ModelState<T extends Dictionary<any>> extends Initializer {
     return this.service.protectFiles(path);
   }
   writeFile(filename: string, content: string, sourceMap?: undefined, artifactType?: string | undefined): void {
-    return this.service.writeFile({ filename: filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
+    return this.service.writeFile({ filename: this.outputFolder ? join(this.outputFolder, filename) : filename, content: content, sourceMap: sourceMap, artifactType: artifactType });
   }
 
   message(message: Message): void {
