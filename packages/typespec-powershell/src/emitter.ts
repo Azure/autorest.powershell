@@ -50,7 +50,7 @@ export async function $onEmit(context: EmitContext) {
         path: resolvePath(context.emitterOutputDir, `${client.name}.yaml`),
         content: serialize(model),
       });
-      generatePwshModule(model, loadConfiguration(emitterOptions));
+      await generatePwshModule(model, loadConfiguration(emitterOptions));
     }
 
   }
