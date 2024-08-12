@@ -14,10 +14,40 @@ import { ModelState } from './model-state';
 import { TspHostImpl } from './tsp-host';
 import { stat } from 'fs';
 import { serialize } from '@azure-tools/codegen';
+import { clearFolder, resolveUri, createFolderUri } from '@azure-tools/uri';
+import { join, resolve as currentDirectory } from 'path';
 
+async function clearOutputFiles(state: ModelState<PwshModel>) {
+  if (await state.getValue('clear-output-folder', false)) {
+    const outputFolder = createFolderUri(join(currentDirectory(), await state.getValue('output-folder', './generated')));
+    const psd1: string = await state.getValue('psd1');
+    const customFolder: string = await state.getValue('custom-cmdlet-folder');
+    const testFolder: string = await state.getValue('test-folder');
+    const docsFolder: string = await state.getValue('docs-folder');
+    const examplesFolder: string = await state.getValue('examples-folder');
+    const resourcesFolder: string = await state.getValue('resources-folder');
+    const uxFolder: string = await state.getValue('ux-folder');
+    const readme = './README.md';
+
+    const protectFiles = new Set<string>();
+    protectFiles.add(psd1);
+    protectFiles.add(customFolder);
+    protectFiles.add(testFolder);
+    protectFiles.add(docsFolder);
+    protectFiles.add(examplesFolder);
+    protectFiles.add(resourcesFolder);
+    protectFiles.add(uxFolder);
+    protectFiles.add(readme);
+    await clearFolder(outputFolder, [...protectFiles].map((each) => resolveUri(outputFolder, each)));
+  }
+  return;
+
+}
 export async function generatePwshModule(pwshModel: PwshModel, emitterOptions: any) {
   const tspService = new TspHostImpl(emitterOptions);
   const state = await new ModelState<PwshModel>(tspService);
+  // clear output folder if set, but protect certain files
+  await clearOutputFiles(state);
   state.model = pwshModel;
   await tweakM4Model(state);
   await tweakModelV2(state);
