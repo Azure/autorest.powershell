@@ -28,6 +28,8 @@ async function clearOutputFiles(state: ModelState<PwshModel>) {
     const resourcesFolder: string = await state.getValue('resources-folder');
     const uxFolder: string = await state.getValue('ux-folder');
     const readme = './README.md';
+    const tempTypeSpecFiles = './TempTypeSpecFiles';
+    const tspLocation = './tsp-location.yaml';
 
     const protectFiles = new Set<string>();
     protectFiles.add(psd1);
@@ -38,6 +40,8 @@ async function clearOutputFiles(state: ModelState<PwshModel>) {
     protectFiles.add(resourcesFolder);
     protectFiles.add(uxFolder);
     protectFiles.add(readme);
+    protectFiles.add(tempTypeSpecFiles);
+    protectFiles.add(tspLocation);
     await clearFolder(outputFolder, [...protectFiles].map((each) => resolveUri(outputFolder, each)));
   }
   return;
