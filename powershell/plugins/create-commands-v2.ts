@@ -207,13 +207,14 @@ export /* @internal */ class Inferrer {
             || !hasPatch && putOperation && this.IsManagedIdentityOperation(putOperation))) {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
         } else if (!disableTransformIdentityType && !supportsCombineGetPutOperation && hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
-          // bez: add patch operation back and disable transforming identity type
-          for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
-            await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
-          }
           if (!suppressReplacePatchByGetPutError) {
             const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
             this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
+            throw new Error(replacePatchByGetPutErrorMessage);
+          }
+          // bez: add patch operation back and disable transforming identity type
+          for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
+            await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
           }
         } else if (!disableGetPut && !hasPatch && supportsCombineGetPutOperation) {
           /* generate variants for Update(Get+Put) for subjects only if: 
@@ -226,14 +227,15 @@ export /* @internal */ class Inferrer {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       } else if (this.isAzure && !disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
-        // bez: add variants back and disable transforming identity type as no put or get
-        for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
-          await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
-        }
-
         if (!suppressReplacePatchByGetPutError) {
           const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
           this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
+          throw new Error(replacePatchByGetPutErrorMessage);
+        }
+
+        // bez: add variants back and disable transforming identity type as no put or get
+        for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
+          await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
         }
       }
     }
