@@ -12,12 +12,28 @@ import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// Function to recursively interpolate placeholders in an object
+function interpolatePlaceholders(obj: any, values: any) {
+  for (const key in obj) {
+    if (typeof obj[key] === 'string') {
+      obj[key] = obj[key].replace(/{([^}]+)}/g, (match: string, placeholder: string) => values[placeholder]);
+    } else if (typeof obj[key] === 'object') {
+      interpolatePlaceholders(obj[key], values);
+    }
+  }
+}
+
 //load configuration from configuration.md
 function loadConfiguration(emitterOptions: Record<string, any>): Record<string, any> {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const configPath = path.join(__dirname, '../../configuration.yaml');
   const configuration = deserialize<Record<string, any>>(readFileSync(configPath, 'utf8'), configPath);
+  // Define the values for interpolation
+  const interpolationValues = {
+    'module-name': emitterOptions['module-name']
+  };
+  interpolatePlaceholders(configuration, interpolationValues);
   // If there is overlap between the configuration and the emitter options, the emitter options will take precedence
   return { ...configuration, ...emitterOptions };
 }
