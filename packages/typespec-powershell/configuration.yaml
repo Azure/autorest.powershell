@@ -211,3 +211,35 @@ verb-mapping:
   Wipe: Clear
   Write: Write
 
+# Folder configurations
+current-folder: "./"
+module-folder: "./generated"
+cmdlet-folder: "./generated/cmdlets"
+model-cmdlet-folder: "./custom/autogen-model-cmdlets"
+custom-cmdlet-folder: "./custom"
+utils-cmdlet-folder: "./utils"
+internal-cmdlet-folder: "./internal"
+test-folder: "./test"
+runtime-folder: "./generated/runtime"
+api-folder: "./generated/api"
+bin-folder: "./bin"
+obj-folder: "./obj"
+exports-folder: "./exports"
+docs-folder: "./docs"
+dependency-module-folder: "./generated/modules"
+examples-folder: "./examples"
+resources-folder: "./resources"
+ux-folder: "./UX"
+csproj: "./{module-name}.csproj"
+dll-name: "{module-name}.private"
+dll: "./bin/{module-name}.private.dll"
+psd1: "./{module-name}.psd1"
+psm1: "./{module-name}.psm1"
+psm1-custom: "./custom/{module-name}.custom.psm1"
+psm1-internal: "./internal/{module-name}.internal.psm1"
+format-ps1xml: "./{module-name}.format.ps1xml"
+nuspec: "./{module-name}.nuspec"
+
+# misc configurations
+skip-model-cmdlets: false
+module-version: 0.1.0

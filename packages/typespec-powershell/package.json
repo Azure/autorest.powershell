@@ -15,7 +15,7 @@
     }
   },
   "dependencies": {
-    "@autorest/powershell": "~4.0.702",
+    "@autorest/powershell": "~4.0.708",
     "@autorest/codemodel": "~4.19.3",
     "@autorest/extension-base": "~3.5.2",
     "@azure-tools/async-io": "~3.0.0",
