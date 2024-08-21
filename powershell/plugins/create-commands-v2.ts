@@ -169,6 +169,7 @@ export /* @internal */ class Inferrer {
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
     const disableTransformIdentityType = await this.state.getValue('disable-transform-identity-type', false);
+    const suppressReplacePatchByGetPutError = await this.state.getValue('suppress-replace-patch-by-getput-error', false);
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
@@ -210,7 +211,10 @@ export /* @internal */ class Inferrer {
           for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
             await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
           }
-          await this.state.setValue('disable-transform-identity-type', true);
+          if (!suppressReplacePatchByGetPutError) {
+            const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
+            this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
+          }
         } else if (!disableGetPut && !hasPatch && supportsCombineGetPutOperation) {
           /* generate variants for Update(Get+Put) for subjects only if: 
            - there is a get operation 
@@ -226,7 +230,11 @@ export /* @internal */ class Inferrer {
         for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
           await this.addVariants(patchOperation.parameters, patchOperation, variant, '', this.state);
         }
-        await this.state.setValue('disable-transform-identity-type', true);
+
+        if (!suppressReplacePatchByGetPutError) {
+          const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
+          this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
+        }
       }
     }
     // for (const operation of values(model.http.operations)) {
