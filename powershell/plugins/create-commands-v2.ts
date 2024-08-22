@@ -169,7 +169,13 @@ export /* @internal */ class Inferrer {
     };
     const disableGetPut = await this.state.getValue('disable-getput', false);
     const disableTransformIdentityType = await this.state.getValue('disable-transform-identity-type', false);
-    const suppressReplacePatchByGetPutError = await this.state.getValue('suppress-replace-patch-by-getput-error', false);
+    const disableTransformIdentityTypeForOperation = await this.state.getValue('disable-transform-identity-type-for-operation', []);
+    const optsToExclude = new Array<string>();
+    if (disableTransformIdentityTypeForOperation) {
+      for (const item of values(disableTransformIdentityTypeForOperation)) {
+        optsToExclude.push(item);
+      }
+    }
     this.state.message({ Channel: Channel.Debug, Text: 'detecting high level commands...' });
     for (const operationGroup of values(model.operationGroups)) {
       let hasPatch = false;
@@ -207,10 +213,10 @@ export /* @internal */ class Inferrer {
             || !hasPatch && putOperation && this.IsManagedIdentityOperation(putOperation))) {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.ManagedIdentityUpdate);
         } else if (!disableTransformIdentityType && !supportsCombineGetPutOperation && hasPatch && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
-          if (!suppressReplacePatchByGetPutError) {
-            const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
-            this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
-            throw new Error(replacePatchByGetPutErrorMessage);
+          if (!optsToExclude.includes(patchOperation.operationId ?? '')) {
+            const transformIdentityTypeErrorMessage = `Parameter IdentityType in operation '${patchOperation.operationId}' can not be transformed as the best practice design. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
+            this.state.message({ Channel: Channel.Error, Text: transformIdentityTypeErrorMessage });
+            throw new Error(transformIdentityTypeErrorMessage);
           }
           // bez: add patch operation back and disable transforming identity type
           for (const variant of await this.inferCommandNames(patchOperation, operationGroup.$key, this.state)) {
@@ -227,10 +233,10 @@ export /* @internal */ class Inferrer {
           await this.addVariants(putOperation.parameters, putOperation, this.createCommandVariant('create', [operationGroup.$key], [], this.state.model), '', this.state, [getOperation], CommandType.GetPut);
         }
       } else if (this.isAzure && !disableTransformIdentityType && patchOperation && this.IsManagedIdentityOperation(patchOperation)) {
-        if (!suppressReplacePatchByGetPutError) {
-          const replacePatchByGetPutErrorMessage = `operation ${patchOperation.operationId} can not be replaced by its get+put operations for support transforming IdentityType. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
-          this.state.message({ Channel: Channel.Error, Text: replacePatchByGetPutErrorMessage });
-          throw new Error(replacePatchByGetPutErrorMessage);
+        if (!optsToExclude.includes(patchOperation.operationId ?? '')) {
+          const transformIdentityTypeErrorMessage = `Parameter IdentityType in operation '${patchOperation.operationId}' can not be transformed as the best practice design. See https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md#frequently-asked-question to mitigate this issue.`;
+          this.state.message({ Channel: Channel.Error, Text: transformIdentityTypeErrorMessage });
+          throw new Error(transformIdentityTypeErrorMessage);
         }
 
         // bez: add variants back and disable transforming identity type as no put or get

@@ -4453,7 +4453,7 @@ packages:
     dev: false
 
   file:projects/powershell.tgz:
-    resolution: {integrity: sha512-/cTXzGUZTDhTv00X96g/ev5R8DhTdsQMIKOfHnwTU5XV+VHjonfZkNAE/F4J6Nx+PlUMQDOpu2l8WODdTfbxZQ==, tarball: file:projects/powershell.tgz}
+    resolution: {integrity: sha512-g+2G98k1uy6WYWIz2YpqovxGt8rcL0RxWA6Zx8iROMAxurDEnhto1UzalzXAuGu7QSqy7suBvPQGATb0Y77W9A==, tarball: file:projects/powershell.tgz}
     name: '@rush-temp/powershell'
     version: 0.0.0
     dependencies:
@@ -4489,7 +4489,7 @@ packages:
     dev: false
 
   file:projects/typespec-powershell.tgz:
-    resolution: {integrity: sha512-faeQhGWL+GN07n8p4riwDBWlZLNc36hqf6Gu5LVK1mJow5IiBe+mgUSDkrOn48dfTPRY1mJx7jn52w1HE4O5Tg==, tarball: file:projects/typespec-powershell.tgz}
+    resolution: {integrity: sha512-FEyIs94S0ytHp2gxuA2ZcEN7YOzvAPKpxNgNDEOEb3aK5brakvfUK/qW8UZaFgd2zA6+pPehphG/XlHsvshnDw==, tarball: file:projects/typespec-powershell.tgz}
     name: '@rush-temp/typespec-powershell'
     version: 0.0.0
     dependencies:
