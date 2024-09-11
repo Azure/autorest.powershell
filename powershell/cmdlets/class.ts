@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 const ejs = require('ejs');
-import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema, Response, Operation } from '@autorest/codemodel';
+import { Schema as NewSchema, SchemaType, ArraySchema, SchemaResponse, HttpParameter, ObjectSchema, BinaryResponse, DictionarySchema, ChoiceSchema, SealedChoiceSchema, Response, Operation, isObjectSchema } from '@autorest/codemodel';
 import { command, getAllProperties, JsonType, http, getAllPublicVirtualProperties, getVirtualPropertyFromPropertyName, ParameterLocation, getAllVirtualProperties, VirtualParameter, VirtualProperty } from '@azure-tools/codemodel-v3';
 import { CommandOperation, isWritableCmdlet, OperationType, VirtualParameter as NewVirtualParameter, CommandType } from '../utils/command-operation';
 import { getAllProperties as NewGetAllProperties, getAllPublicVirtualProperties as NewGetAllPublicVirtualProperties, getVirtualPropertyFromPropertyName as NewGetVirtualPropertyFromPropertyName, VirtualProperty as NewVirtualProperty } from '../utils/schema';
@@ -2211,12 +2211,14 @@ export class CmdletClass extends Class {
             if (typeDeclaration instanceof ArrayOf) {
               type = typeDeclaration.elementTypeDeclaration;
             } else if (pageableInfo && pageableInfo.responseType === 'pageable') {
-              if (typeDeclaration === undefined || (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined) {
+              if (typeDeclaration === undefined || ((<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName) === undefined
+                && (<ObjectSchema>typeDeclaration.schema).parents?.all.find(s => isObjectSchema(s) && s.properties?.find((p => p.serializedName === pageableInfo.itemName)) === undefined))) {
                 //skip-for-time-being, since operationId does not support in m4 any more
                 //throw new Error(`\n\nOn operation:\n  '${httpOperation.operationId}' at '${httpOperation.path}'\n  -- you have used 'x-ms-pageable' and there is no property name '${pageableInfo.itemName}' that is an array.\n\n`);
                 throw new Error('An error needs to be more specific');
               }
-              const nestedSchema = (<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)?.schema;
+              const nestedSchema = ((<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)
+                || (<ObjectSchema>(<ObjectSchema>typeDeclaration.schema).parents?.all.find(s => isObjectSchema(s) && s.properties?.find((p => p.serializedName === pageableInfo.itemName)))).properties?.find((p => p.serializedName === pageableInfo.itemName)))?.schema;
               const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
               type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
             } else {
