@@ -311,7 +311,7 @@ directive:
 ```
 
 ### Model Cmdlet
-To generate a cmdlet for a model facilitating users in constructing complex objects, you can choose the model using `model-name``. The default cmdlet name generated will be New-Az[subject-prefix][model-name]Object, and you can customize it using `cmdlet-name``. For example:
+To generate a cmdlet for a model facilitating users in constructing complex objects, you can choose the model using `model-name`. The default cmdlet name generated will be New-Az[subject-prefix][model-name]Object, and you can customize it using `cmdlet-name`. For example:
 ```yaml $false
 - model-cmdlet:
   - model-name: Workspace
@@ -321,7 +321,7 @@ To generate a cmdlet for a model facilitating users in constructing complex obje
 **Note: If you're working with autorest.powershell v3, the syntax differs, and the cmdlet name cannot be customized. For example:**
 ```yaml $false
 - model-cmdlet
-    - model-name: Workspace
+    - Workspace
 ```
 
 ### Property Rename
