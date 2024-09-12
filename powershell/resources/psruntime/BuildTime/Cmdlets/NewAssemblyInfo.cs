@@ -40,9 +40,9 @@ ${$project.pwshCommentHeaderForCsharp}
                 sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.Append($"{Environment.NewLine}");
                 sb.AppendLine($"[assembly: AssemblyTitle(\"Microsoft Azure Powershell - {assemblyName}\")]");
-                sb.AppendLine($"[assembly: AssemblyCompany({assemblyCompanyName})]");
-                sb.AppendLine($"[assembly: AssemblyProduct({assemblyProduct})]");
-                sb.AppendLine($"[assembly: AssemblyCopyright({assemblyCopyright})]");
+                sb.AppendLine($"[assembly: AssemblyCompany(\"{assemblyCompanyName}\")]");
+                sb.AppendLine($"[assembly: AssemblyProduct(\"{assemblyProduct}\")]");
+                sb.AppendLine($"[assembly: AssemblyCopyright(\"{assemblyCopyright}\")]");
                 sb.Append($"{Environment.NewLine}");
                 sb.AppendLine("[assembly: ComVisible(false)]");
                 sb.AppendLine("[assembly: CLSCompliant(false)]");
