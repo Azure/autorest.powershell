@@ -14,12 +14,9 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     [DoNotExport]
     public class NewAssemblyInfo : PSCmdlet
     {
-        private const string baseFolder = "${project.baseFolder}";
-        private const string propertiesFolderName = "Properties";
-        private const string assemblyInfoFileName = "AssemblyInfo.cs";
-        private const string assemblyInfoPath = Path.Combine(baseFolder, propertiesFolderName, assemblyInfoFileName);
-        private const string assemblyName = "${project.moduleName}";
-        private const string assemblyVersion = "${project.moduleVersion}";
+        private readonly string assemblyInfoPath = Path.Combine("${$project.baseFolder}", "Properties", "AssemblyInfo.cs");
+        private const string assemblyName = "${$project.moduleName}";
+        private const string assemblyVersion = "${$project.moduleVersion}";
 
         protected override void ProcessRecord()
         {
@@ -30,26 +27,26 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.Append(@"
+                sb.AppendLine(@"
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeaderForCsharp}
 # ----------------------------------------------------------------------------------
 ");
                 sb.Append($"{Environment.NewLine}");
-                sb.Append("using System;");
-                sb.Append("using System.Reflection;");
-                sb.Append("using System.Runtime.InteropServices;");
+                sb.AppendLine("using System;");
+                sb.AppendLine("using System.Reflection;");
+                sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.Append($"{Environment.NewLine}");
-                sb.Append($"[assembly: AssemblyTitle(\"Microsoft Azure Powershell - ${assemblyName}\")]");
-                sb.Append("[assembly: AssemblyCompany(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCompany)]");
-                sb.Append("[assembly: AssemblyProduct(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyProduct)]");
-                sb.Append("[assembly: AssemblyCopyright(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCopyright)]");
+                sb.AppendLine($"[assembly: AssemblyTitle(\"Microsoft Azure Powershell - {assemblyName}\")]");
+                sb.AppendLine("[assembly: AssemblyCompany(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCompany)]");
+                sb.AppendLine("[assembly: AssemblyProduct(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyProduct)]");
+                sb.AppendLine("[assembly: AssemblyCopyright(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCopyright)]");
                 sb.Append($"{Environment.NewLine}");
-                sb.Append("[assembly: ComVisible(false)]");
-                sb.Append("[assembly: CLSCompliant(false)]");
-                sb.Append($"[assembly: Guid(\"${Guid.NewGuid()}\")]");
-                sb.Append($"[assembly: AssemblyVersion(\"${assemblyVersion}\")]");
-                sb.Append($"[assembly: AssemblyFileVersion(\"${assemblyVersion}\")]");
+                sb.AppendLine("[assembly: ComVisible(false)]");
+                sb.AppendLine("[assembly: CLSCompliant(false)]");
+                sb.AppendLine($"[assembly: Guid(\"{Guid.NewGuid()}\")]");
+                sb.AppendLine($"[assembly: AssemblyVersion(\"{assemblyVersion}\")]");
+                sb.Append($"[assembly: AssemblyFileVersion(\"{assemblyVersion}\")]");
 
                 FileInfo assemblyInfo = new FileInfo(assemblyInfoPath);
                 assemblyInfo.Directory.Create();
