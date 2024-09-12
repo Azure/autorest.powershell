@@ -151,6 +151,7 @@ export class Project extends codeDomProject {
   public readme!: string;
   public afterBuildTasksPath!: string;
   public afterBuildTasksArgs!: string;
+  public assemblyInfoFolder!: string;
   public assemblyCompany!: string;
   public assemblyProduct!: string;
   public assemblyCopyright!: string;
@@ -343,6 +344,7 @@ export class Project extends codeDomProject {
     const afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
     this.afterBuildTasksArgs = JSON.stringify(afterBuildTasksArgsDictionary);
 
+    this.assemblyInfoFolder = await this.state.getValue('assemblyInfo-folder');
     this.assemblyCompany = await this.state.getValue('assembly-company');
     this.assemblyProduct = await this.state.getValue('assembly-product');
     this.assemblyCopyright = await this.state.getValue('assembly-copyright');
