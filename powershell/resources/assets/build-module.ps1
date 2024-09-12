@@ -166,6 +166,11 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
   . (Join-Path $PSScriptRoot 'generate-portal-ux.ps1')
 }
 
+$assemblyInfoPath = Join-Path $PSScriptRoot 'Properties' 'AssemblyInfo.cs'
+if (-not (Test-Path $assemblyInfoPath)) {
+  New-AssemblyInfo
+}
+
 if (-not $DisableAfterBuildTasks){
   $afterBuildTasksPath = Join-Path $PSScriptRoot '${$project.afterBuildTasksPath}'
   $afterBuildTasksArgs = ConvertFrom-Json '${$project.afterBuildTasksArgs}' -AsHashtable
