@@ -15,9 +15,11 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
     public class NewAssemblyInfo : PSCmdlet
     {
         private readonly string assemblyInfoPath = Path.Combine("${$project.baseFolder}", "Properties", "AssemblyInfo.cs");
-        private const string assemblyName = "${$project.moduleName}";
+        private const string assemblyName = "${$project.title}";
         private const string assemblyVersion = "${$project.moduleVersion}";
-
+        private const string assemblyCompanyName = "${$project.assemblyCompany}";
+        private const string assemblyProduct = "${$project.assemblyProduct}";
+        private const string assemblyCopyright = "${$project.assemblyCopyright}";
         protected override void ProcessRecord()
         {
             try
@@ -38,9 +40,9 @@ ${$project.pwshCommentHeaderForCsharp}
                 sb.AppendLine("using System.Runtime.InteropServices;");
                 sb.Append($"{Environment.NewLine}");
                 sb.AppendLine($"[assembly: AssemblyTitle(\"Microsoft Azure Powershell - {assemblyName}\")]");
-                sb.AppendLine("[assembly: AssemblyCompany(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCompany)]");
-                sb.AppendLine("[assembly: AssemblyProduct(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyProduct)]");
-                sb.AppendLine("[assembly: AssemblyCopyright(Microsoft.WindowsAzure.Commands.Common.AzurePowerShell.AssemblyCopyright)]");
+                sb.AppendLine($"[assembly: AssemblyCompany({assemblyCompanyName})]");
+                sb.AppendLine($"[assembly: AssemblyProduct({assemblyProduct})]");
+                sb.AppendLine($"[assembly: AssemblyCopyright({assemblyCopyright})]");
                 sb.Append($"{Environment.NewLine}");
                 sb.AppendLine("[assembly: ComVisible(false)]");
                 sb.AppendLine("[assembly: CLSCompliant(false)]");
