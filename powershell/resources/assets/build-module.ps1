@@ -167,7 +167,7 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
 }
 
 $assemblyInfoPath = Join-Path $PSScriptRoot 'Properties' 'AssemblyInfo.cs'
-if (-not (Test-Path $assemblyInfoPath)) {
+if (-not (Test-Path $assemblyInfoPath) -And [System.Convert]::ToBoolean('${$project.azure}')) {
   Write-Host -ForegroundColor Green 'Creating assembly info...'
   New-AssemblyInfo
 }
