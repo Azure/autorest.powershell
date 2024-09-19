@@ -126,6 +126,9 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
     await project.state.protectFiles(project.examplesFolder);
     await project.state.protectFiles(project.resourcesFolder);
     await project.state.protectFiles(project.uxFolder);
+    if (project.azure) {
+      await project.state.protectFiles(project.assemblyInfoFolder);
+    }
 
     // wait for all the generation to be done
     await copyRequiredFiles(project);
