@@ -15,11 +15,12 @@ import { TspHostImpl } from './tsp-host';
 import { stat } from 'fs';
 import { serialize } from '@azure-tools/codegen';
 import { clearFolder, resolveUri, createFolderUri } from '@azure-tools/uri';
-import { join, resolve as currentDirectory } from 'path';
+import { join, resolve as currentDirectory, isAbsolute } from 'path';
 
 async function clearOutputFiles(state: ModelState<PwshModel>) {
   if (await state.getValue('clear-output-folder', false)) {
-    const outputFolder = createFolderUri(join(currentDirectory(), await state.getValue('output-folder', './generated')));
+    const outputFolderConfig = await state.getValue('output-folder', './generated');
+    const outputFolder = createFolderUri(isAbsolute(outputFolderConfig) ? outputFolderConfig : join(currentDirectory(), outputFolderConfig));
     const psd1: string = await state.getValue('psd1');
     const customFolder: string = await state.getValue('custom-cmdlet-folder');
     const testFolder: string = await state.getValue('test-folder');
