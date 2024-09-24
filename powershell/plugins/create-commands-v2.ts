@@ -393,7 +393,9 @@ export /* @internal */ class Inferrer {
 
   async addVariant(vname: string, body: Parameter | null, bodyParameterName: string, parameters: Array<Parameter>, operation: Operation, variant: CommandVariant, state: State, preOperations: Array<Operation> | undefined, commandType?: CommandType): Promise<CommandOperation> {
     // beth: filter command description for New/Update command
-    const createOrUpdateRegex = /^(creates? or updates?)|^(creates?)|^(updates?)/i;
+    // positive test case: The operation to create or update the extension.
+    // negative test case: Starts an UpdateRun 
+    const createOrUpdateRegex = /((create or update)|(creates or updates)|(create)|(update)|(creates)|(updates))([^a-zA-Z0-9])/gi;
     operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
     const op = await this.addCommandOperation(vname, parameters, operation, variant, state, preOperations, commandType);
 
