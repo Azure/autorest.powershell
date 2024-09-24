@@ -396,7 +396,7 @@ export /* @internal */ class Inferrer {
     // positive test case: The operation to create or update the extension.
     // negative test case: Starts an UpdateRun 
     const createOrUpdateRegex = /((create or update)|(creates or updates)|(create)|(update)|(creates)|(updates))([^a-zA-Z0-9])/gi;
-    operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.capitalize()}`);
+    operation.language.default.description = operation.language.default.description.replace(createOrUpdateRegex, `${variant.action.toLowerCase()} `);
     const op = await this.addCommandOperation(vname, parameters, operation, variant, state, preOperations, commandType);
 
     // if this has a body with it, let's add that parameter
