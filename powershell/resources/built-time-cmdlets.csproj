@@ -20,7 +20,6 @@
     <Compile Include="psruntime\BuildTime\Cmdlets\ExportExampleStub.cs" />
     <Compile Include="psruntime\BuildTime\Cmdlets\GetModuleGuid.cs" />
     <Compile Include="psruntime\BuildTime\Cmdlets\ExportPsd1.cs" />
-    <Compile Include="psruntime\BuildTime\Cmdlets\NewAssemblyInfo.cs" />
     <Compile Include="psruntime\BuildTime\Cmdlets\GetCommonParameter.cs" />
     <Compile Include="psruntime\BuildTime\Models\PsHelpMarkdownOutputs.cs" />
     <Compile Include="psruntime\BuildTime\Models\PsMarkdownTypes.cs" />

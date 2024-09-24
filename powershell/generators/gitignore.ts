@@ -17,9 +17,7 @@ tools
 custom/*.psm1
 custom/autogen-model-cmdlets
 test/*-TestResults.xml
-license.txt
 /*.ps1
-/*.psd1
 /*.ps1xml
 /*.psm1
 /*.snk
