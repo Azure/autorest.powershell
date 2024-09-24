@@ -142,7 +142,6 @@ export class Project extends codeDomProject {
   public uxFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
-  public title!: string;
   public rootModuleName!: string;
   public csproj!: string;
   public nuspec!: string;
@@ -152,10 +151,6 @@ export class Project extends codeDomProject {
   public readme!: string;
   public afterBuildTasksPath!: string;
   public afterBuildTasksArgs!: string;
-  public assemblyInfoFolder!: string;
-  public assemblyCompany!: string;
-  public assemblyProduct!: string;
-  public assemblyCopyright!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -289,7 +284,6 @@ export class Project extends codeDomProject {
     this.serviceName = this.model.language.default.serviceName;
     this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
-    this.title = await this.state.getValue('title');
     this.rootModuleName = await this.state.getValue('root-module-name', '');
     this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
@@ -345,11 +339,6 @@ export class Project extends codeDomProject {
 
     const afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
     this.afterBuildTasksArgs = JSON.stringify(afterBuildTasksArgsDictionary);
-
-    this.assemblyInfoFolder = await this.state.getValue('assemblyInfo-folder', '');
-    this.assemblyCompany = await this.state.getValue('assembly-company', '');
-    this.assemblyProduct = await this.state.getValue('assembly-product', '');
-    this.assemblyCopyright = await this.state.getValue('assembly-copyright', '');
 
     // excluded properties in table view
     const excludedList = <Array<string>>(
