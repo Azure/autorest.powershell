@@ -1,4 +1,5 @@
 import { Message } from '@autorest/extension-base';
+import { comment } from '@azure-tools/codegen';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 export interface TspWriteFileOptions {
@@ -65,6 +66,10 @@ export class TspHostImpl implements TspHost {
     if (artifactType === 'binary-file') {
       writeFileSync(filename, Buffer.from(content, 'base64'));
     } else {
+      if (artifactType === 'source-file-csharp' && filename.endsWith('.cs')) {
+        const header = comment('Copyright (c) Microsoft Corporation. All rights reserved.\nLicensed under the MIT License. See License.txt in the project root for license information.\nChanges may cause incorrect behavior and will be lost if the code is regenerated.', '//');
+        content = header + '\n' + content;
+      }
       writeFileSync(filename, content);
     }
   }

@@ -54,7 +54,7 @@ async function copyRequiredFiles(project: Project) {
         join(project.runtimeFolder, fname),
         content,
         undefined,
-        sourceFileCSharp
+        'source-file-other'
       ),
     project.overrides,
     transformOutput
@@ -68,7 +68,7 @@ async function copyRequiredFiles(project: Project) {
         join(project.utilsFolder, fname),
         content,
         undefined,
-        sourceFileCSharp
+        'source-file-other'
       ),
     project.overrides,
     transformOutput

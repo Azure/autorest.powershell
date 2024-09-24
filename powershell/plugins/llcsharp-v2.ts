@@ -24,14 +24,14 @@ export async function llcsharpV2(service: Host | TspHost, state?: ModelState<Pws
     await project.writeFiles(async (fname, content) => project.state.writeFile(join(project.apifolder, fname), applyOverrides(content, project.overrides), undefined, 'source-file-csharp'));
 
     // recursive copy resources
-    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
-    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides, transformOutput);
+    await copyResources(join(resources, 'runtime', 'csharp', 'client'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), project.overrides);
+    await copyResources(join(resources, 'runtime', 'csharp', 'pipeline'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), project.overrides, transformOutput);
     // Note:
     // we are using the Carbon.Json library, but we don't *really* want to expose that as public members where we don't have to
     // and I don't want to make code changes in the source repository, so I can keep merging from upstream as simple as possible.
     // so, we're converting as much as possible to internal, and exposing only what must be exposed to make the code compile.
 
-    await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), {
+    await copyResources(join(resources, 'runtime', 'csharp', 'json'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), {
       ...project.overrides,
       'public': 'internal',
       'internal (.*) class JsonNumber': 'public $1 class JsonNumber',
@@ -68,11 +68,11 @@ export async function llcsharpV2(service: Host | TspHost, state?: ModelState<Pws
     });
 
     if (project.xmlSerialization) {
-      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp', 'xml'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), project.overrides);
     }
 
     if (project.azure) {
-      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-csharp'), project.overrides);
+      await copyResources(join(resources, 'runtime', 'csharp.azure'), async (fname, content) => project.state.writeFile(join(project.runtimefolder, fname), content, undefined, 'source-file-other'), project.overrides);
     }
 
   } catch (E) {
