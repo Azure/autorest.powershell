@@ -9,6 +9,7 @@ function removeCd(path: string): string {
   return path.startsWith('./') ? path.replace('./', '') : path;
 }
 export async function generateCsproj(project: Project) {
+  const generateAssemblyInfo = project.azure ? 'false': 'true';
   const release = project.azure ? `    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
@@ -25,6 +26,7 @@ export async function generateCsproj(project: Project) {
     <AssemblyName>${project.dllName}</AssemblyName>
     <RootNamespace>${project.projectNamespace}</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <GenerateAssemblyInfo>${generateAssemblyInfo}</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>${project.binFolder}</OutputPath>
     <PublishDir>$(OutputPath)</PublishDir>

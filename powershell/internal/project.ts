@@ -123,6 +123,7 @@ export class Project extends codeDomProject {
   public pwshCommentHeader!: string;
   public pwshCommentHeaderForCsharp!: string;
   public csharpCommentHeader!: string;
+  public csharpCommentHeaderForCsharp!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
@@ -267,6 +268,7 @@ export class Project extends codeDomProject {
         : this.license,
       '//'
     );
+    this.csharpCommentHeaderForCsharp = this.csharpCommentHeader.replace(/"/g, '""');
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];

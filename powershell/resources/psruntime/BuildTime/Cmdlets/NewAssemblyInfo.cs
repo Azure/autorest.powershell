@@ -29,11 +29,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
                     return;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine(@"
-# ----------------------------------------------------------------------------------
-${$project.pwshCommentHeaderForCsharp}
-# ----------------------------------------------------------------------------------
-");
+                sb.AppendLine(@"${$project.csharpCommentHeaderForCsharp}");
                 sb.Append($"{Environment.NewLine}");
                 sb.AppendLine("using System;");
                 sb.AppendLine("using System.Reflection;");
