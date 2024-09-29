@@ -89,7 +89,6 @@ if(-not $Debugger) {
 }
 
 if ($isAzure -And '${$project.assemblyInfoPath}') {
-  Write-Host -ForegroundColor Green 'Adding license for assemblyinfo ...'
   $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
   $header = '${$project.csharpCommentHeaderForCsharp}'
   $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
