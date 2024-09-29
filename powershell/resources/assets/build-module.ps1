@@ -88,9 +88,9 @@ if(-not $Debugger) {
   $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 }
 
-$assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
-if ($isAzure -And $assemblyInfoPath) {
+if ($isAzure -And '${$project.assemblyInfoPath}') {
   Write-Host -ForegroundColor Green 'Adding license for assemblyinfo ...'
+  $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
   $header = '${$project.csharpCommentHeaderForCsharp}'
   $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
   $content | Set-Content $assemblyInfoPath -Force
