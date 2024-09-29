@@ -32,11 +32,15 @@ import { Password } from './password';
 
 export class SchemaDefinitionResolver {
   private readonly cache = new Map<string, EnhancedTypeDeclaration>();
+  private fixedArrayConfig: boolean;
   private add(schema: NewSchema, value: EnhancedTypeDeclaration): EnhancedTypeDeclaration {
     this.cache.set(schema.language?.csharp?.fullname || '', value);
     return value;
   }
 
+  constructor(fixedArrayConfig: boolean) {
+    this.fixedArrayConfig = fixedArrayConfig;
+  }
   // isFixedArray is used to determine if we want to use a fixed array or not
   resolveTypeDeclaration(schema: NewSchema | undefined, required: boolean, state: ModelState<CodeModel>, isFixedArray?: boolean): EnhancedTypeDeclaration {
     if (!schema) {
@@ -49,7 +53,7 @@ export class SchemaDefinitionResolver {
         // can be recursive!
         // handle boolean arrays as booleans (powershell will try to turn it into switches!)
         const ar = <ArraySchema>schema;
-        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'));
+        const elementType = (ar.elementType.type === SchemaType.Boolean) ? new Boolean(<BooleanSchema>schema, true) : this.resolveTypeDeclaration(ar.elementType, true, state.path('items'), this.fixedArrayConfig);
         if (isFixedArray) {
           return new FixedArrayOf(schema, required, elementType, ar.minItems, ar.maxItems, ar.uniqueItems);
         } else {

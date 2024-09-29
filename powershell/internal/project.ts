@@ -182,6 +182,7 @@ export class Project extends codeDomProject {
   public metadata!: Metadata;
   public state!: State;
   public helpLinkPrefix!: string;
+  public fixedArray!: boolean;
   get model() {
     return <PwshModel>this.state.model;
   }
@@ -203,7 +204,7 @@ export class Project extends codeDomProject {
       this.state.model = state.model;
     }
 
-    this.schemaDefinitionResolver = new PSSchemaResolver();
+    this.schemaDefinitionResolver = new PSSchemaResolver(this.state.project.fixedArray);
 
     this.projectNamespace = this.state.model.language.csharp?.namespace || '';
 
@@ -321,6 +322,9 @@ export class Project extends codeDomProject {
     this.examplesFolder = await this.state.getValue('examples-folder');
     this.resourcesFolder = await this.state.getValue('resources-folder');
     this.uxFolder = await this.state.getValue('ux-folder');
+
+    // configuration for whether to use fixed array in generated code of model, default is false
+    this.fixedArray = await this.state.getValue('fixed-array', false);
 
     // File paths
     this.csproj = await this.state.getValue('csproj');

@@ -496,7 +496,7 @@ export class CmdletClass extends Class {
               };
             }
 
-            const httpParamTD = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, this.state);
+            const httpParamTD = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<NewSchema>httpParam.schema), httpParam.required, this.state, this.state.project.fixedArray);
             return {
               name: each.param,
               expression: toExpression(`this.InvocationInformation.BoundParameters.ContainsKey("${each.param.value}") ? ${each.param.value} : ${httpParamTD.defaultOfType}`),
@@ -586,11 +586,13 @@ export class CmdletClass extends Class {
 
   private WriteObjectWithViewControl(valueName: string, isEnumerable = false) {
     const $this = this;
+    const lengthFunc = $this.state.project.fixedArray ? 'Length' : 'Count';
+    const listToArrayFunc = $this.state.project.fixedArray ? '.ToArray()' : '';
     if ($this.state.project.autoSwitchView) {
       if (isEnumerable) {
         return function* () {
           yield If(`null != ${valueName}`, function* () {
-            yield If(`0 == _responseSize && 1 == ${valueName}.Count`, function* () {
+            yield If(`0 == _responseSize && 1 == ${valueName}.${lengthFunc}`, function* () {
               yield `_firstResponse = ${valueName}[0];`;
               yield '_responseSize = 1;';
             });
@@ -600,7 +602,7 @@ export class CmdletClass extends Class {
               yield ForEach('value', valueName, function* () {
                 yield 'values.Add(value.AddMultipleTypeNameIntoPSObject());';
               });
-              yield 'WriteObject(values, true); ';
+              yield `WriteObject(values${listToArrayFunc}, true); `;
               yield '_responseSize = 2;';
             });
           });
@@ -993,7 +995,7 @@ export class CmdletClass extends Class {
           const match = props.find(p => pascalCase(p.serializedName) === pascalName);
           if (match) {
 
-            const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state).defaultOfType;
+            const defaultOfType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(match.schema, true, $this.state, $this.state.project.fixedArray).defaultOfType;
             // match up vp name
             const vp = allVPs.find(pp => pascalCase(pp.property.serializedName) === pascalName);
             //push path parameters that form current identity into allParams, idOpParamsFromIdentity and idOpParamsFromIdentityserializedName
@@ -1404,7 +1406,7 @@ export class CmdletClass extends Class {
         if ('schema' in each) {
           const schema = (<SchemaResponse>each).schema;
           const props = NewGetAllPublicVirtualProperties(schema.language.csharp?.virtualProperties);
-          const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state);
+          const rType = $this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>schema, true, $this.state, $this.state.project.fixedArray);
 
           const result = new LocalVariable('result', dotnet.Var, { initializer: new LiteralExpression('(await response)') });
           yield `// (await response) // should be ${rType.declaration}`;
@@ -1428,13 +1430,15 @@ export class CmdletClass extends Class {
                   // write out the current contents
                   const vp = NewGetVirtualPropertyFromPropertyName(schema.language.csharp?.virtualProperties, valueProperty.serializedName);
                   if (vp) {
+                    const lengthFunc = $this.state.project.fixedArray ? 'Length' : 'Count';
+                    const subArrayFunc = $this.state.project.fixedArray ? 'SubArray' : 'GetRange';
                     if ($this.clientsidePagination) {
-                      yield (If('(ulong)result.Value.Count <= this.PagingParameters.Skip', function* () {
-                        yield ('this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.Count;');
+                      yield (If(`(ulong)result.Value.${lengthFunc} <= this.PagingParameters.Skip`, function* () {
+                        yield (`this.PagingParameters.Skip = this.PagingParameters.Skip - (ulong)result.Value.${lengthFunc};`);
                       }));
                       yield Else(function* () {
-                        yield ('ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.Count - this.PagingParameters.Skip);');
-                        yield ('var requiredResult = result.Value.GetRange((int)this.PagingParameters.Skip, (int)toRead);');
+                        yield (`ulong toRead = Math.Min(this.PagingParameters.First, (ulong)result.Value.${lengthFunc} - this.PagingParameters.Skip);`);
+                        yield (`var requiredResult = result.Value.${subArrayFunc}((int)this.PagingParameters.Skip, (int)toRead);`);
                         yield $this.WriteObjectWithViewControl('requiredResult', true);
                         yield ('this.PagingParameters.Skip = 0;');
                         yield ('this.PagingParameters.First = this.PagingParameters.First <= toRead ? 0 : this.PagingParameters.First - toRead;');
@@ -1772,7 +1776,7 @@ export class CmdletClass extends Class {
     for (const parameter of values(operation.parameters)) {
       // these are the parameters that this command expects
       parameter.schema;
-      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>parameter.schema, true, this.state);
+      const td = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(<NewSchema>parameter.schema, true, this.state, this.state.project.fixedArray);
 
       if (parameter.details.csharp.constantValue) {
         // this parameter has a constant value -- SKIP IT
@@ -1831,12 +1835,12 @@ export class CmdletClass extends Class {
         for (const vParam of vps.body) {
           const vSchema = vParam.schema;
           vParam.origin;
-          const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
+          const propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, this.state.project.fixedArray);
 
           // we need to know if the actual underlying property is actually nullable.
-          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state).isNullable;
+          const nullable = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, !!(<NewVirtualProperty>vParam.origin).required, this.state, this.state.project.fixedArray).isNullable;
           let cmdletParameter: Property;
-          if (propertyType.schema.type !== SchemaType.Array) {
+          if (propertyType.schema.type !== SchemaType.Array || this.state.project.fixedArray) {
             if (vParam.name === 'IdentityType' && !this.disableTransformIdentityType &&
               (this.operation.commandType === CommandType.ManagedIdentityNew || this.operation.commandType === CommandType.ManagedIdentityUpdate)) {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
@@ -1988,7 +1992,7 @@ export class CmdletClass extends Class {
               declaration: parameter.schema.language.csharp?.fullname
             },
             valueType: (<DictionarySchema>paramDictSchema).elementType.type === SchemaType.Any ? System.Object :
-              this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<DictionarySchema>paramDictSchema).elementType, true, this.state)
+              this.state.project.schemaDefinitionResolver.resolveTypeDeclaration((<DictionarySchema>paramDictSchema).elementType, true, this.state, this.state.project.fixedArray)
           };
         }
 
@@ -2002,7 +2006,7 @@ export class CmdletClass extends Class {
       this.inputObjectParameterName = `${this.name.split(viaIdentityRegex)[1].split('Expanded')[0]}InputObject`;
       // add in the pipeline parameter for the identity
       const idschema = values(this.state.project.model.schemas.objects).first(each => each.language.default.uid === 'universal-parameter-type');
-      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state);
+      const idtd = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(idschema, true, this.state, this.state.project.fixedArray);
       const idParam = this.add(new BackedProperty(this.inputObjectParameterName, idtd, {
         description: 'Identity Parameter'
       }));
@@ -2025,7 +2029,7 @@ export class CmdletClass extends Class {
         }));
       } else {
         const vSchema = vParam.schema;
-        propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state);
+        propertyType = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(vSchema, true, this.state, this.state.project.fixedArray);
 
 
         origin = <NewIParameter>vParam.origin;
@@ -2198,7 +2202,7 @@ export class CmdletClass extends Class {
           (resultSchema.type === SchemaType.SealedChoice && (<any>resultSchema).choiceType.type === SchemaType.Boolean && (<SealedChoiceSchema>resultSchema).choices.length === 1)) {
           outputTypes.add(`typeof(${dotnet.Bool})`);
         } else {
-          const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state);
+          const typeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(resultSchema, true, this.state, this.state.project.fixedArray);
 
           if (typeDeclaration.declaration === System.IO.Stream.declaration || typeDeclaration.declaration === dotnet.Binary.declaration) {
             // if this is a stream, skip the output type.
@@ -2219,7 +2223,7 @@ export class CmdletClass extends Class {
               }
               const nestedSchema = ((<ObjectSchema>typeDeclaration.schema).properties?.find(p => p.serializedName === pageableInfo.itemName)
                 || (<ObjectSchema>(<ObjectSchema>typeDeclaration.schema).parents?.all.find(s => isObjectSchema(s) && s.properties?.find((p => p.serializedName === pageableInfo.itemName)))).properties?.find((p => p.serializedName === pageableInfo.itemName)))?.schema;
-              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state);
+              const nestedTypeDeclaration = this.state.project.schemaDefinitionResolver.resolveTypeDeclaration(nestedSchema, true, this.state, this.state.project.fixedArray);
               type = (<ArrayOf>nestedTypeDeclaration).elementTypeDeclaration;
             } else {
               type = typeDeclaration.declaration;

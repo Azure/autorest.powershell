@@ -6,7 +6,7 @@
 import { codeModelSchema, SchemaResponse, CodeModel, Schema, ObjectSchema, GroupSchema, isObjectSchema, SchemaType, GroupProperty, ParameterLocation, Operation, Parameter, VirtualParameter, getAllProperties, ImplementationLocation, OperationGroup, Request, SchemaContext, StringSchema, ChoiceSchema, SealedChoiceSchema } from '@autorest/codemodel';
 import { camelCase, deconstruct, excludeXDash, fixLeadingNumber, pascalCase, lowest, maximum, minimum, getPascalIdentifier, serialize } from '@azure-tools/codegen';
 import { items, values, keys, Dictionary, length } from '@azure-tools/linq';
-import { System } from '@azure-tools/codegen-csharp';
+import { Project, System } from '@azure-tools/codegen-csharp';
 
 import { Channel, AutorestExtensionHost as Host, Session, startSession } from '@autorest/extension-base';
 import { SchemaDetails } from '../llcsharp/code-model';
@@ -210,9 +210,9 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
       for (const rsp of responses) {
         // per responseCode
         const response = <SchemaResponse>rsp;
-        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state) : undefined;
+        const responseTypeDefinition = response.schema ? resolver.resolveTypeDeclaration(<any>response.schema, true, state, await state.getValue('fixed-array', false)) : undefined;
         const headerSchema = response.language.default.headerSchema;
-        const headerTypeDefinition = headerSchema ? resolver.resolveTypeDeclaration(<any>headerSchema, true, state.path('schemas', headerSchema.language.default.name)) : undefined;
+        const headerTypeDefinition = headerSchema ? resolver.resolveTypeDeclaration(<any>headerSchema, true, state.path('schemas', headerSchema.language.default.name), await state.getValue('fixed-array', false)) : undefined;
         let code = (System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]] ? System.Net.HttpStatusCode[response.protocol.http?.statusCodes[0]].value : (response.protocol.http?.statusCodes[0] || '')).replace('global::System.Net.HttpStatusCode', '');
         let rawValue = code.replace(/\./, '');
         if (response.protocol.http?.statusCodes[0] === 'default' || rawValue === 'default' || '') {
@@ -238,7 +238,7 @@ async function setOperationNames(state: State, resolver: SchemaDefinitionResolve
 }
 
 export async function nameStuffRight(state: State): Promise<PwshModel> {
-  const resolver = new SchemaDefinitionResolver();
+  const resolver = new SchemaDefinitionResolver(await state.getValue('fixed-array', false));
   const model = state.model;
 
   // set the namespace for the service
