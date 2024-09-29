@@ -64,6 +64,8 @@ if(-not $NotIsolated -and -not $Debugger) {
 $binFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}'
 $objFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}'
 
+$isAzure = [System.Convert]::ToBoolean('${$project.azure}')
+
 if(-not $Debugger) {
   Write-Host -ForegroundColor Green 'Cleaning build folders...'
   $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
@@ -71,6 +73,14 @@ if(-not $Debugger) {
   if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
     Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
     Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
+  }
+
+  if ($isAzure) {
+    Write-Host -ForegroundColor Green 'Adding license for assemblyinfo ...'
+    $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
+    $header = '${$project.csharpCommentHeaderForCsharp}'
+    $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
+    $content | Set-Content $assemblyInfoPath -Force
   }
 
   Write-Host -ForegroundColor Green 'Compiling module...'
@@ -140,7 +150,7 @@ if($NoDocs) {
     $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
-  $addComplexInterfaceInfo = ![System.Convert]::ToBoolean('${$project.azure}')
+  $addComplexInterfaceInfo = !$isAzure
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid -AddComplexInterfaceInfo:$addComplexInterfaceInfo
 }
 
@@ -174,6 +184,5 @@ if (-not $DisableAfterBuildTasks){
     . $afterBuildTasksPath @afterBuildTasksArgs
   }
 }
-
 
 Write-Host -ForegroundColor Green '-------------Done-------------'
