@@ -75,14 +75,6 @@ if(-not $Debugger) {
     Write-Error 'Unable to clean ''bin'' or ''obj'' folder. A process may have an open handle.'
   }
 
-  if ($isAzure) {
-    Write-Host -ForegroundColor Green 'Adding license for assemblyinfo ...'
-    $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
-    $header = '${$project.csharpCommentHeaderForCsharp}'
-    $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
-    $content | Set-Content $assemblyInfoPath -Force
-  }
-
   Write-Host -ForegroundColor Green 'Compiling module...'
   $buildConfig = 'Debug'
   if($Release) {
@@ -94,6 +86,14 @@ if(-not $Debugger) {
   }
 
   $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
+}
+
+if ($isAzure) {
+  Write-Host -ForegroundColor Green 'Adding license for assemblyinfo ...'
+  $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
+  $header = '${$project.csharpCommentHeaderForCsharp}'
+  $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
+  $content | Set-Content $assemblyInfoPath -Force
 }
 
 $dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
