@@ -37,6 +37,7 @@ export class Project extends codeDomProject {
   identityCorrection!: boolean;
   resourceGroupAppend!: boolean;
   supportJsonInput!: boolean;
+  fixedArray!: boolean;
   formats!: Dictionary<PropertyFormat>;
 
   constructor(protected service: Host | TspHost, objectInitializer?: DeepPartial<Project>) {
@@ -67,6 +68,8 @@ export class Project extends codeDomProject {
     }
     this.enableApiRetry = await this.state.getValue('enable-api-retry', true);
 
+    // configuration for whether to use fixed array in generated code of model, default is false
+    this.fixedArray = await this.state.getValue('fixed-array', false);
 
     // add project namespace
     this.projectNamespace = this.state.model.language.csharp?.namespace;

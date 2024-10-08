@@ -36,8 +36,8 @@ class ApiVersionNamespace extends Namespace {
 export class ModelsNamespace extends Namespace {
   private subNamespaces = new Dictionary<Namespace>();
 
-  resolver = new SchemaDefinitionResolver();
-  newResolver = new SchemaDefinitionResolver();
+  resolver = new SchemaDefinitionResolver(this.state.project.fixedArray);
+  newResolver = new SchemaDefinitionResolver(this.state.project.fixedArray);
   constructor(parent: Namespace, private schemas: NewSchemas, private state: State, objectInitializer?: DeepPartial<ModelsNamespace>) {
     super('Models', parent);
     this.subNamespaces[this.fullName] = this;
@@ -89,7 +89,7 @@ export class ModelsNamespace extends Namespace {
       throw new Error('SCHEMA MISSING?');
     }
 
-    const td = this.newResolver.resolveTypeDeclaration(schema, required, state);
+    const td = this.newResolver.resolveTypeDeclaration(schema, required, state, state.project.fixedArray);
 
     if (!schema.language.csharp?.skip) {
       if (td instanceof ObjectImplementation) {

@@ -165,7 +165,6 @@ function addNormalMethodParameterDeclaration(operation: Operation, state: State)
   const requiredDeclarations: Array<string> = [];
   const requiredArgs: Array<string> = [];
   const optionalArgs: Array<string> = [];
-  const schemaDefinitionResolver = new SchemaDefinitionResolver();
   const args: Array<string> = [];
   let bodyParameters: Array<Parameter> = [];
   if (operation.requests && operation.requests.length > 0) {

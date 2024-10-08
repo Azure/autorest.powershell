@@ -419,7 +419,6 @@ function correctParameterNames(model: SdkModel) {
 async function nameStuffRight(state: State): Promise<SdkModel> {
   const useDateTimeOffset = await state.getValue('useDateTimeOffset', false);
   const helper = new Helper(useDateTimeOffset);
-  const resolver = new SchemaDefinitionResolver();
   const model = state.model;
 
   // set the namespace for the service

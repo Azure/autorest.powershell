@@ -34,7 +34,7 @@ export class ModelExtensionsNamespace extends Namespace {
   public get outputFolder(): string {
     return join(this.state.project.apiFolder, 'Models');
   }
-  resolver = new SchemaDefinitionResolver();
+  resolver = new SchemaDefinitionResolver(this.state.project.fixedArray);
 
   constructor(parent: Namespace, private schemas: Dictionary<Array<NewSchema>>, private state: State, objectInitializer?: DeepPartial<ModelExtensionsNamespace>) {
     super('Models', parent);
@@ -44,7 +44,7 @@ export class ModelExtensionsNamespace extends Namespace {
 
 
     const $this = this;
-    const resolver = (s: NewSchema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state);
+    const resolver = (s: NewSchema, req: boolean) => this.resolver.resolveTypeDeclaration(s, req, state, state.project.fixedArray);
 
     // Add typeconverters to model classes (partial)
     for (const schemaGroup of values(schemas)) {
@@ -53,7 +53,7 @@ export class ModelExtensionsNamespace extends Namespace {
           continue;
         }
 
-        const td = this.resolver.resolveTypeDeclaration(schema, true, state);
+        const td = this.resolver.resolveTypeDeclaration(schema, true, state, state.project.fixedArray);
         if (td instanceof ObjectImplementation) {
 
           // it's a class object.
