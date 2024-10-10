@@ -80,13 +80,6 @@ if(-not $Debugger) {
   $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 }
 
-if ($isAzure -And '${$project.assemblyInfoPath}') {
-  $assemblyInfoPath = Join-Path $PSScriptRoot '${$project.assemblyInfoPath}'
-  $header = '${$project.csharpCommentHeaderForCsharp}'
-  $content = $header + [Environment]::NewLine + [Environment]::NewLine + (Get-Content $assemblyInfoPath -Raw)
-  $content | Set-Content $assemblyInfoPath -Force
-}
-
 $dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
