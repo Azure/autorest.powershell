@@ -23,7 +23,7 @@ export async function generateCsproj(project: Project) {
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>${project.dllName}</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo >
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>${project.projectNamespace}</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

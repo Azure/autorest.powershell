@@ -6,6 +6,10 @@
 import { Project } from '../internal/project';
 
 export async function generateAssemblyInfo(project: Project) {
+  if (!project.azure || !project.assemblyInfoPath) {
+    return;
+  }
+
   const info = `${project.csharpCommentHeaderForCsharp}
 
 using System;

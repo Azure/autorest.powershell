@@ -138,9 +138,7 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
     await generateGitIgnore(project);
     await generateGitAttributes(project);
     await generateReadme(project);
-    if (project.azure) {
-      await generateAssemblyInfo(project);
-    }
+    await generateAssemblyInfo(project);
 
     await generateScriptCmdlets(project);
   } catch (E) {
