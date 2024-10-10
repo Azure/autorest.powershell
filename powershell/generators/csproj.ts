@@ -15,22 +15,6 @@ export async function generateCsproj(project: Project) {
     <DefineConstants>TRACE;RELEASE;NETSTANDARD;SIGN</DefineConstants>` :
     '    <DefineConstants>TRACE;RELEASE;NETSTANDARD</DefineConstants>';
 
-  const assemblyinfo = project.azure ? `  <PropertyGroup>
-    <GeneratedAssemblyInfoFile>${project.assemblyInfoPath}</GeneratedAssemblyInfoFile>
-    <Company>${project.assemblyCompany}</Company>
-    <Product>${project.assemblyProduct}</Product>
-    <CopyRight>${project.assemblyCopyright}</CopyRight>
-    <AssemblyTitle>${project.assemblyProduct} - ${project.title}</AssemblyTitle>
-  </PropertyGroup>
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.InteropServices.ComVisibleAttribute">
-      <_Parameter1>false</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.CLSCompliantAttribute">
-      <_Parameter1>false</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>` : '';
-
   project.state.writeFile(project.csproj, `<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -39,6 +23,7 @@ export async function generateCsproj(project: Project) {
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>${project.dllName}</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>${project.projectNamespace}</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -52,7 +37,6 @@ export async function generateCsproj(project: Project) {
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-  ${assemblyinfo}
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DelaySign>false</DelaySign>
     <DefineConstants>TRACE;DEBUG;NETSTANDARD</DefineConstants>
