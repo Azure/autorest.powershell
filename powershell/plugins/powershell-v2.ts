@@ -25,9 +25,9 @@ import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
 import { TspHost } from '../utils/tsp-host';
-import { State } from '../internal/state';
 import { ModelState } from '../utils/model-state';
 import { PwshModel } from '../utils/PwshModel';
+import { generateAssemblyInfo } from '../generators/AssemblyInfo';
 
 const sourceFileCSharp = 'source-file-csharp';
 const resources = `${__dirname}/../../resources`;
@@ -138,6 +138,9 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
     await generateGitIgnore(project);
     await generateGitAttributes(project);
     await generateReadme(project);
+    if (project.azure) {
+      generateAssemblyInfo(project);
+    }
 
     await generateScriptCmdlets(project);
   } catch (E) {
