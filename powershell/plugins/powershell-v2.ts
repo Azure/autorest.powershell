@@ -139,7 +139,7 @@ export async function powershellV2(service: Host | TspHost, state?: ModelState<P
     await generateGitAttributes(project);
     await generateReadme(project);
     if (project.azure) {
-      generateAssemblyInfo(project);
+      await generateAssemblyInfo(project);
     }
 
     await generateScriptCmdlets(project);
