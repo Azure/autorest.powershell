@@ -24,9 +24,6 @@ import { generateGitIgnore } from '../generators/gitignore';
 import { generateGitAttributes } from '../generators/gitattributes';
 import { generateReadme } from '../generators/readme';
 import { generateScriptCmdlets } from '../generators/script-cmdlet';
-import { TspHost } from '../utils/tsp-host';
-import { ModelState } from '../utils/model-state';
-import { PwshModel } from '../utils/PwshModel';
 import { generateAssemblyInfo } from '../generators/AssemblyInfo';
 
 const sourceFileCSharp = 'source-file-csharp';
