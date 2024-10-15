@@ -363,7 +363,7 @@ function applyEncoding(
     // If the target already has a format it takes priority. (e.g. int32)
     newTarget["format"] = mergeFormatAndEncoding(
       newTarget.format,
-      encodeData.encoding,
+      encodeData.encoding || '',
       newType["format"]
     );
     return newTarget;
