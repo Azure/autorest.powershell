@@ -56,6 +56,8 @@ if(-not $Isolated -and -not $Debugger) {
 $binFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.binFolder)}'
 $objFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.objFolder)}'
 
+$isAzure = [System.Convert]::ToBoolean('${$project.azure}')
+
 if(-not $Debugger) {
   Write-Host -ForegroundColor Green 'Cleaning build folders...'
   $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
@@ -132,7 +134,7 @@ if($NoDocs) {
     $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
-  $addComplexInterfaceInfo = ![System.Convert]::ToBoolean('${$project.azure}')
+  $addComplexInterfaceInfo = !$isAzure
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ModuleDescription $moduleDescription -DocsFolder $docsFolder -ExamplesFolder $examplesFolder -ModuleGuid $guid -AddComplexInterfaceInfo:$addComplexInterfaceInfo
 }
 
@@ -166,6 +168,5 @@ if (-not $DisableAfterBuildTasks){
     . $afterBuildTasksPath @afterBuildTasksArgs
   }
 }
-
 
 Write-Host -ForegroundColor Green '-------------Done-------------'

@@ -91,6 +91,8 @@ export class Project extends codeDomProject {
   public license!: string;
   public pwshCommentHeader!: string;
   public pwshCommentHeaderForCsharp!: string;
+  public csharpCommentHeader!: string;
+  public csharpCommentHeaderForCsharp!: string;
   public cmdletFolder!: string;
   public modelCmdletFolder!: string;
   public endpointResourceIdKeyName!: string;
@@ -110,6 +112,7 @@ export class Project extends codeDomProject {
   public uxFolder!: string;
   public serviceName!: string;
   public moduleName!: string;
+  public title!: string;
   public rootModuleName!: string;
   public csproj!: string;
   public nuspec!: string;
@@ -119,6 +122,10 @@ export class Project extends codeDomProject {
   public readme!: string;
   public afterBuildTasksPath!: string;
   public afterBuildTasksArgs!: string;
+  public assemblyInfoPath!: string;
+  public assemblyCompany!: string;
+  public assemblyProduct!: string;
+  public assemblyCopyright!: string;
   public dllName!: string;
   public dll!: string;
   public psd1!: string;
@@ -195,8 +202,29 @@ export class Project extends codeDomProject {
     this.license = await this.state.getValue('header-text', '');
     var pwshLicenseHeader = await this.state.getValue('pwsh-license-header', '');
     // if pwsh license header is not set, use the license set by license-header
-    this.pwshCommentHeader = comment(!!pwshLicenseHeader ? pwshHeaderText(pwshLicenseHeader, await this.service.GetValue('header-definitions')) : this.license, '#');
-    this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(/"/g, '""');
+    this.pwshCommentHeader = comment(
+      pwshLicenseHeader
+        ? pwshHeaderText(
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
+        : this.license,
+      '#'
+    );
+    this.pwshCommentHeaderForCsharp = this.pwshCommentHeader.replace(
+      /"/g,
+      '""'
+    );
+    this.csharpCommentHeader = comment(
+      pwshLicenseHeader
+        ? pwshHeaderText(
+          pwshLicenseHeader,
+          await this.service.GetValue('header-definitions')
+        )
+        : this.license,
+      '//'
+    );
+    this.csharpCommentHeaderForCsharp = this.csharpCommentHeader.replace(/"/g, '""');
 
     // modelcmdlets are models that we will create cmdlets for.
     this.modelCmdlets = [];
@@ -214,6 +242,7 @@ export class Project extends codeDomProject {
     this.serviceName = this.model.language.default.serviceName;
     this.subjectPrefix = this.model.language.default.subjectPrefix;
     this.moduleName = await this.state.getValue('module-name');
+    this.title = await this.state.getValue('title');
     this.rootModuleName = await this.state.getValue('root-module-name', '');
     this.dllName = await this.state.getValue('dll-name');
     // Azure PowerShell data plane configuration
@@ -260,6 +289,11 @@ export class Project extends codeDomProject {
 
     const afterBuildTasksArgsDictionary: Dictionary<string> = await this.state.getValue<Dictionary<string>>('after-build-tasks-args', {});
     this.afterBuildTasksArgs = JSON.stringify(afterBuildTasksArgsDictionary);
+
+    this.assemblyInfoPath = await this.state.getValue('assemblyInfo-path', '');
+    this.assemblyCompany = await this.state.getValue('assembly-company', '');
+    this.assemblyProduct = await this.state.getValue('assembly-product', '');
+    this.assemblyCopyright = await this.state.getValue('assembly-copyright', '');
 
     // excluded properties in table view
     const excludedList = <Array<string>>values(<any>(await this.state.getValue('exclude-tableview-properties', []))).toArray();

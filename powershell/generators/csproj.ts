@@ -23,6 +23,7 @@ export async function generateCsproj(project: Project) {
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>${project.dllName}</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>${project.projectNamespace}</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -36,7 +37,6 @@ export async function generateCsproj(project: Project) {
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DelaySign>false</DelaySign>
     <DefineConstants>TRACE;DEBUG;NETSTANDARD</DefineConstants>
