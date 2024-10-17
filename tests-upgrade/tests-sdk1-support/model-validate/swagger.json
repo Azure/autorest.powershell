@@ -148,6 +148,21 @@
           "type": "number",
           "description": "This is number"
         },
+        "typeNumber32": {
+          "type": "number",
+          "format": "float",
+          "description": "This is number"
+        },
+        "typeNumber64": {
+          "type": "number",
+          "format": "double",
+          "description": "This is number"
+        },
+        "typeNumber128": {
+          "type": "number",
+          "format": "decimal",
+          "description": "This is number"
+        },
         "typeConstant": {
           "type": "string",
           "description": "This is constant",

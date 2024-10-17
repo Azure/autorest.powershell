@@ -30,7 +30,7 @@ export class Helper {
 
   public GetCsharpType(schema: Schema): string {
     let type = <string>schema.type;
-    if (schema.type === SchemaType.Integer) {
+    if (schema.type === SchemaType.Integer || schema.type === SchemaType.Number) {
       type = type + (<NumberSchema>schema).precision;
     }
     const offset = this.useDateTimeOffset ? 'Offset' : '';
@@ -38,7 +38,9 @@ export class Helper {
       ['integer', 'int'],
       ['integer32', 'int'],
       ['integer64', 'long'],
-      ['number', 'double'],
+      ['number32', 'double'],
+      ['number64', 'double'],
+      ['number128', 'decimal'],
       ['boolean', 'bool'],
       ['string', 'string'],
       ['unixtime', 'System.DateTime'],
