@@ -45,13 +45,16 @@ namespace Microsoft.Azure.Sample.Models
         /// <param name="typeByteArray">This is byte array</param>
         /// <param name="typeBoolean">This is boolean</param>
         /// <param name="typeNumber">This is number</param>
+        /// <param name="typeNumber32">This is number</param>
+        /// <param name="typeNumber64">This is number</param>
+        /// <param name="typeNumber128">This is number</param>
         /// <param name="typeConstant">This is constant. Possible values
         /// include: 'const'</param>
         /// <param name="typeChoice">This is choice. Possible values include:
         /// 'choice1', 'choice2'</param>
         /// <param name="typeSealedChoice">This is sealed choice. Possible
         /// values include: 'sealedchoice1', 'sealedchoice2'</param>
-        public Operation(string typeString, int typeInteger, System.Collections.Generic.IList<string> typeArray, object typeAny = default(object), System.Collections.Generic.IDictionary<string, string> typeDictionary = default(System.Collections.Generic.IDictionary<string, string>), OperationTypeObject typeObject = default(OperationTypeObject), System.DateTime? typeTime = default(System.DateTime?), string typeCredential = default(string), byte[] typeBinary = default(byte[]), System.TimeSpan? typeDuration = default(System.TimeSpan?), string typeUri = default(string), System.Guid? typeUuid = default(System.Guid?), System.DateTime? typeDateTime = default(System.DateTime?), System.DateTime? typeDate = default(System.DateTime?), byte[] typeByteArray = default(byte[]), bool? typeBoolean = default(bool?), double? typeNumber = default(double?), string typeConstant = default(string), string typeChoice = default(string), string typeSealedChoice = default(string))
+        public Operation(string typeString, int typeInteger, System.Collections.Generic.IList<string> typeArray, object typeAny = default(object), System.Collections.Generic.IDictionary<string, string> typeDictionary = default(System.Collections.Generic.IDictionary<string, string>), OperationTypeObject typeObject = default(OperationTypeObject), System.DateTime? typeTime = default(System.DateTime?), string typeCredential = default(string), byte[] typeBinary = default(byte[]), System.TimeSpan? typeDuration = default(System.TimeSpan?), string typeUri = default(string), System.Guid? typeUuid = default(System.Guid?), System.DateTime? typeDateTime = default(System.DateTime?), System.DateTime? typeDate = default(System.DateTime?), byte[] typeByteArray = default(byte[]), bool? typeBoolean = default(bool?), double? typeNumber = default(double?), double? typeNumber32 = default(double?), double? typeNumber64 = default(double?), decimal? typeNumber128 = default(decimal?), string typeConstant = default(string), string typeChoice = default(string), string typeSealedChoice = default(string))
         {
             this.TypeAny = typeAny;
             this.TypeDictionary = typeDictionary;
@@ -69,6 +72,9 @@ namespace Microsoft.Azure.Sample.Models
             this.TypeBoolean = typeBoolean;
             this.TypeInteger = typeInteger;
             this.TypeNumber = typeNumber;
+            this.TypeNumber32 = typeNumber32;
+            this.TypeNumber64 = typeNumber64;
+            this.TypeNumber128 = typeNumber128;
             this.TypeConstant = typeConstant;
             this.TypeChoice = typeChoice;
             this.TypeSealedChoice = typeSealedChoice;
@@ -178,6 +184,24 @@ namespace Microsoft.Azure.Sample.Models
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "typeNumber")]
         public double? TypeNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets this is number
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "typeNumber32")]
+        public double? TypeNumber32 { get; set; }
+
+        /// <summary>
+        /// Gets or sets this is number
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "typeNumber64")]
+        public double? TypeNumber64 { get; set; }
+
+        /// <summary>
+        /// Gets or sets this is number
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty(PropertyName = "typeNumber128")]
+        public decimal? TypeNumber128 { get; set; }
 
         /// <summary>
         /// Gets or sets this is constant. Possible values include: 'const'
