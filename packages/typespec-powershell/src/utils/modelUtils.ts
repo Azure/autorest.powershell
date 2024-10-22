@@ -176,6 +176,8 @@ export let constantSchemaForApiVersion: ConstantSchema | undefined;
 export const schemaCache = new Map<Type, Schema>();
 // Add this to the modelSet to avoid circular reference
 export const modelSet = new Set<Type>();
+// For the models that are delayed to be set, currently the only case is the model that is derived from the model with discriminator
+export const delayedModelSet = new Set<Type>();
 export function getSchemaForApiVersion(dpgContext: SdkContext, typeInput: Type) {
   if (constantSchemaForApiVersion) {
     return constantSchemaForApiVersion;
@@ -568,7 +570,10 @@ function getSchemaForUnionVariant(
   variant: UnionVariant,
   options?: GetSchemaOptions
 ): Schema {
-  return getSchemaForType(dpgContext, variant, options);
+  const schema = new ConstantSchema(variant.name.toString(), getDoc(dpgContext.program, variant) || "");
+  schema.valueType = getSchemaForType(dpgContext, variant.type, options);
+  schema.value = new ConstantValue(variant.name.toString());
+  return schema;
 }
 
 // An openapi "string" can be defined in several different ways in typespec
@@ -582,6 +587,9 @@ function isOasString(type: Type): boolean {
   } else if (type.kind === "Union") {
     // A union where all variants are an OasString
     return type.options.every((o) => isOasString(o));
+  } else if (type.kind === "UnionVariant") {
+    // A union variant where the type is an OasString
+    return isOasString(type.type);
   }
   return false;
 }
@@ -591,7 +599,8 @@ function isStringLiteral(type: Type): boolean {
     type.kind === "String" ||
     (type.kind === "Union" && type.options.every((o) => o.kind === "String")) ||
     (type.kind === "EnumMember" &&
-      typeof (type.value ?? type.name) === "string")
+      typeof (type.value ?? type.name) === "string") ||
+    (type.kind === "UnionVariant" && type.type.kind === "String")
   );
 }
 
@@ -761,6 +770,23 @@ function getSchemaForModel(
   //   NameType.Interface,
   //   true /** shouldGuard */
   // );
+  // by xiaogang, skip ArmResourceBase
+  if (model.baseModel && model.baseModel.name !== "ArmResourceBase") {
+    modelSchema.parents = {
+      all: [
+        getSchemaForType(dpgContext, model.baseModel, {
+          usage,
+          needRef: true
+        })
+      ],
+      immediate: [
+        getSchemaForType(dpgContext, model.baseModel, {
+          usage,
+          needRef: true
+        })
+      ]
+    };
+  }
   modelSchema.language.default.name = pascalCase(deconstruct(modelSchema.language.default.name));
   if (isRecordModelType(program, model)) {
     return getSchemaForRecordModel(dpgContext, model, { usage });
@@ -814,37 +840,34 @@ function getSchemaForModel(
   const derivedModels = model.derivedModels.filter((dm) => {
     return includeDerivedModel(dm, discriminator ? false : needRef);
   });
-  if (derivedModels.length > 0) {
-    modelSchema.children = {
-      all: [],
-      immediate: []
-    };
-  }
+
   for (const child of derivedModels) {
-    const childSchema = getSchemaForType(dpgContext, child, {
-      usage,
-      needRef: true
-    });
-    for (const [name, prop] of child.properties) {
-      if (name === discriminator?.propertyName) {
-        const propSchema = getSchemaForType(dpgContext, prop.type, {
-          usage,
-          needRef: !isAnonymousModelType(prop.type),
-          relevantProperty: prop
-        });
-        childSchema.discriminatorValue = propSchema.type.replace(/"/g, "");
-        break;
-      }
-    }
-    modelSchema.children?.all?.push(childSchema);
-    modelSchema.children?.immediate?.push(childSchema);
+    // Delay schema generation of those models to avoiding circular reference
+    delayedModelSet.add(child);
+    // const childSchema = getSchemaForType(dpgContext, child, {
+    //   usage,
+    //   needRef: true
+    // });
+    // for (const [name, prop] of child.properties) {
+    //   if (name === discriminator?.propertyName) {
+    //     const propSchema = getSchemaForType(dpgContext, prop.type, {
+    //       usage,
+    //       needRef: !isAnonymousModelType(prop.type),
+    //       relevantProperty: prop
+    //     });
+    //     childSchema.discriminatorValue = propSchema.type.replace(/"/g, "");
+    //     break;
+    //   }
+    // }
+    // modelSchema.children?.all?.push(childSchema);
+    // modelSchema.children?.immediate?.push(childSchema);
   }
 
   // Enable option `isPolyParent` and discriminator only when it has valid children
   if (
     discriminator &&
-    modelSchema?.children?.all?.length &&
-    modelSchema?.children?.all?.length > 0
+    derivedModels &&
+    derivedModels.length > 0
   ) {
     if (!validateDiscriminator(program, discriminator, derivedModels)) {
       // appropriate diagnostic is generated in the validate function
@@ -852,12 +875,6 @@ function getSchemaForModel(
     }
 
     const { propertyName } = discriminator;
-    // ToDo polymorphism by xiaogang
-    // modelSchema.discriminator =  {
-    //   name: propertyName,
-    //   type: "string",
-    //   description: `Discriminator property for ${model.name}.`
-    // };
     modelSchema.discriminatorValue = propertyName;
     // ToDo: need to confirm whether still need this.
     // modelSchema.isPolyParent = true;
@@ -926,8 +943,23 @@ function getSchemaForModel(
       property.extensions = property.extensions || {};
       property.extensions['circle-ref'] = pascalCase(deconstruct(prop.type.name));
     }
-
-    modelSchema.properties.push(property);
+    let isDiscriminatorInChild = false;
+    if (modelSchema.parents && modelSchema.parents.all) {
+      modelSchema.parents.all.forEach((parent) => {
+        if (parent.type === "object" && (<ObjectSchema>parent).discriminator?.property.serializedName === propName) {
+          isDiscriminatorInChild = true;
+        }
+      });
+    }
+    if (!isDiscriminatorInChild) {
+      modelSchema.properties.push(property);
+    } else {
+      modelSchema.discriminatorValue = (<ConstantSchema>propSchema).value.value;
+    }
+    if (discriminator && propName === discriminator.propertyName) {
+      property.isDiscriminator = true;
+      modelSchema.discriminator = new M4Discriminator(property);
+    }
     // if this property is a discriminator property, remove it to keep autorest validation happy
     //const { propertyName } = getDiscriminator(program, model) || {};
     // ToDo: by xiaoang, skip polymorphism for the time being.
@@ -973,33 +1005,20 @@ function getSchemaForModel(
     // modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
     // modelSchema.properties.push(newPropSchema);
   }
-  // by xiaogang, skip ArmResourceBase
-  if (model.baseModel && model.baseModel.name !== "ArmResourceBase") {
-    modelSchema.parents = {
-      all: [
-        getSchemaForType(dpgContext, model.baseModel, {
-          usage,
-          needRef: true
-        })
-      ],
-      immediate: [
-        getSchemaForType(dpgContext, model.baseModel, {
-          usage,
-          needRef: true
-        })
-      ]
-    };
-  }
+
   return modelSchema;
 }
 // Map an typespec type to an OA schema. Returns undefined when the resulting
 // OA schema is just a regular object schema.
 function getSchemaForLiteral(type: Type): any {
+  // ToDo: by xiaogang, need to implement other kinds as String
   switch (type.kind) {
     case "Number":
       return { type: `${type.value}`, isConstant: true };
-    case "String":
-      return { type: `"${type.value}"`, isConstant: true };
+    case "String": {
+      const schema = new StringSchema(type.value, "");
+      return schema;
+    }
     case "Boolean":
       return { type: `${type.value}`, isConstant: true };
   }
