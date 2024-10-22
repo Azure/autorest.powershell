@@ -8,7 +8,7 @@ import { getServers } from "@typespec/http";
 import { join } from "path";
 import { PwshModel } from "@autorest/powershell";
 // import { CodeModel as PwshModel } from "@autorest/codemodel";
-import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion } from "../utils/modelUtils.js";
+import { constantSchemaForApiVersion, getDefaultService, getSchemaForType, schemaCache, stringSchemaForEnum, numberSchemaForEnum, getSchemaForApiVersion, getEnrichedDefaultApiVersion, delayedModelSet } from "../utils/modelUtils.js";
 import { Info, Language, Schemas, AllSchemaTypes, SchemaType, ArraySchema, StringSchema, Languages, ObjectSchema } from "@autorest/codemodel";
 import { camelCase, deconstruct, pascalCase, serialize } from "@azure-tools/codegen";
 import { PSOptions } from "../types/interfaces.js";
@@ -54,6 +54,9 @@ function handleCircleReference(schemas: Schemas) {
 }
 
 function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): Schemas {
+  for (const eachModel of delayedModelSet) {
+    getSchemaForType(psContext, eachModel);
+  }
   const schemas = new Schemas();
   for (const schema of schemaCache.values()) {
     if (schema.type === SchemaType.Any) {
