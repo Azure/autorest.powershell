@@ -1,0 +1,71 @@
+parameters:
+  "service-dir":
+    default: "sdk/ai"
+emit:
+  - "@azure-tools/typespec-autorest"
+options:
+  "@azure-tools/typespec-autorest":
+    emitter-output-dir: "{project-root}/.."
+    azure-resource-provider-folder: "data-plane"
+    emit-lro-options: "none"
+    output-file: "{azure-resource-provider-folder}/{service-name}/{version-status}/{version}/azure-ai-assets.json"
+    examples-directory: "{project-root}/examples"
+  "@azure-tools/typespec-python":
+    package-mode: "dataplane"
+    package-dir: "azure-ai-resources-autogen"
+    package-name: "{package-dir}"
+    flavor: azure
+  '@azure-tools/typespec-powershell':
+    service-dir: "src"
+    package-dir: "MachineLearningServices/MachineLearningServicesdata.Autorest"
+    clear-output-folder: true
+    azure: true
+    module-version: 0.1.0
+    skip-model-cmdlets: false
+    help-link-prefix: https://learn.microsoft.com/powershell/module/
+    metadata:
+      authors: Microsoft Corporation
+      owners: Microsoft Corporation
+      description: 'Microsoft Azure PowerShell: MachineLearningServices cmdlets'
+      copyright: Microsoft Corporation. All rights reserved.
+      tags: Azure ResourceManager ARM PSModule MachineLearningServices
+      companyName: Microsoft Corporation
+      requireLicenseAcceptance: true
+      licenseUri: https://aka.ms/azps-license
+      projectUri: https://github.com/Azure/azure-powershell
+    prefix: 'Az'
+    subject-prefix: 'MLWorkspace'
+    title: MachineLearningServices
+    service-name: MachineLearningServices
+    module-name: "{prefix}.{service-name}"
+    namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+    endpoint-resource-id-key-name: AzureMachineLearningServicesEndpointResourceId
+    use-namespace-folders: false
+    # output-folder: "{output-dir}"
+    exclude-tableview-properties:
+      - Id
+      - Type
+    directive:
+      - where:
+          subject: Operation
+        hide: true
+      - where:
+          parameter-name: SubscriptionId
+        set:
+          default:
+            script: '(Get-AzContext).Subscription.Id'
+      - where:
+          variant: ^(Create|Update)(?!.*?Expanded|ViaJsonString|ViaJsonFilePath)
+        remove: true
+      - where:
+          verb: Set
+        hide: true
+      - no-inline:
+          - InnerError
+      - where:
+          model-name: ErrorResponse
+        set:
+          model-name: AzureCoreFoundationsErrorResponse
+linter:
+  extends:
+    - "@azure-tools/typespec-azure-rulesets/data-plane"

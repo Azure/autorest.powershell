@@ -1,0 +1,20 @@
+{
+  "name": "demo",
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@typespec/compiler": "0.61",
+    "@azure-tools/typespec-powershell": "0.0.x",
+    "@azure-tools/typespec-autorest": "0.47.0",
+    "@azure-tools/typespec-azure-core": "0.47.0",
+    "@azure-tools/typespec-azure-resource-manager": "0.47.0",
+    "@azure-tools/typespec-client-generator-core": "0.47.1",
+    "@azure-tools/typespec-providerhub": "0.47.0",
+    "@azure-tools/typespec-azure-rulesets": "0.47.0",
+    "@typespec/http": "0.61",
+    "@typespec/openapi": "0.61",
+    "@typespec/rest": "0.61",
+    "@typespec/versioning": "0.61"
+  },
+  "private": true
+}

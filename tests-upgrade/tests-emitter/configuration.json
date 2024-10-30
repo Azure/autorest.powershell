@@ -1,0 +1,22 @@
+{
+  "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
+  "whiteTestList": [
+    "Sphere.Management"
+  ],
+  "whiteTestListFull": [
+    "AzureAI.Assets",
+    "CodeSigning.Management",
+    "Sphere.Management"
+  ],
+  "blackTestList": [
+    "AzureAI.Assets",
+    "CodeSigning.Management"
+  ],
+  "ignoreFolder": [
+    "examples",
+    "CompareResult"
+  ],
+  "ignoreCompareFile": [
+    "generated\\modules"
+  ]
+}
