@@ -1846,7 +1846,7 @@ export class CmdletClass extends Class {
               const enableSystemAssignedIdentity = new Property('EnableSystemAssignedIdentity', operation.details.csharp.verb.toLowerCase() === 'new' ? SwitchParameter : NullableBoolean, {
                 set: operation.details.csharp.verb.toLowerCase() === 'new' ? toExpression(`${expandedBodyParameter.value}.${getVirtualPropertyName((<any>vParam.origin)) || vParam.origin.name} = value.IsPresent ? "SystemAssigned": null `) : undefined
               });
-              enableSystemAssignedIdentity.description = 'Decides if enable a system assigned identity for the resource.';
+              enableSystemAssignedIdentity.description = 'Determines whether to enable a system-assigned identity for the resource.';
               enableSystemAssignedIdentity.add(new Attribute(ParameterAttribute, { parameters: [new LiteralExpression(`Mandatory = ${vParam.required && operation.details.csharp.verb.toLowerCase() !== 'new' ? 'true' : 'false'}`), new LiteralExpression(`HelpMessage = "${escapeString(enableSystemAssignedIdentity.description || '.')}"`)] }));
               if (length(vParam.alias) > 0) {
                 enableSystemAssignedIdentity.add(new Attribute(Alias, { parameters: vParam.alias.map(x => '"' + x + '"') }));
