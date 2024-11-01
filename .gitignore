@@ -383,3 +383,12 @@ package-deps.json
 !/tests/**/test/*
 
 .vscode/
+
+# Ignore generated files for tests-emitter
+tests-upgrade/tests-emitter/*/generated/
+tests-upgrade/tests-emitter/*/target/generated/modules/
+tests-upgrade/tests-emitter/*/tsp-output/
+tests-upgrade/tests-emitter/CompareResult
+
+# Ignore the node_modules directory for tests-emitter
+tests-upgrade/tests-emitter/node_modules/
