@@ -40,7 +40,7 @@ steps:
   workingDirectory: 'tests-upgrade/tests-emitter'
 
 - pwsh: |
-   ./EmitterTest.ps1 -AllowList
+   ./EmitterTest.ps1 -AllowList -SaveResult
   workingDirectory: 'tests-upgrade/tests-emitter'
   displayName: 'Verify Typespec emitter'
 
