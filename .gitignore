@@ -386,6 +386,7 @@ package-deps.json
 
 # Ignore generated files for tests-emitter
 tests-upgrade/tests-emitter/*/generated/
+tests-upgrade/tests-emitter/*/target/generated/modules/
 tests-upgrade/tests-emitter/*/tsp-output/
 tests-upgrade/tests-emitter/CompareResult
 
