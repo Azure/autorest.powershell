@@ -404,7 +404,9 @@ function correctParameterNames(model: SdkModel) {
   for (const operationGroup of model.operationGroups) {
     for (const operation of operationGroup.operations) {
       for (const parameter of values(operation.parameters)) {
-        parameter.language.default.name = getEscapedReservedName(parameter.language.default.name, 'Parameter');
+        // Use suffix 'property' for parameters in parameter group since we use 'property' for schema names
+        const suffix = parameter.extensions && parameter.extensions['x-ms-parameter-grouping'] ? 'Property' : 'Parameter';
+        parameter.language.default.name = getEscapedReservedName(parameter.language.default.name, suffix);
       }
       if (operation.requests) {
         // body parameters
