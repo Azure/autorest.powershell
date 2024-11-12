@@ -59,7 +59,7 @@ import {
   createMetadataInfo,
   Visibility
 } from "@typespec/http";
-import { getPagedResult, getUnionAsEnum, isFixed } from "@azure-tools/typespec-azure-core";
+import { getPagedResult, isFixed, getUnionAsEnum } from "@azure-tools/typespec-azure-core";
 import { extractPagedMetadataNested } from "./operationUtil.js";
 import { pascalCase, deconstruct } from "@azure-tools/codegen";
 import {
@@ -191,7 +191,7 @@ export function getSchemaForType(
   dpgContext: SdkContext,
   typeInput: Type,
   options?: GetSchemaOptions
-) {
+): any {
   const program = dpgContext.program;
   const { usage } = options ?? {};
   const type = getEffectiveModelFromType(program, typeInput);
@@ -262,7 +262,7 @@ export function getSchemaForType(
       if (usage && usage.includes(SchemaContext.Output)) {
         schema.outputTypeName = `${schema.name}Output`;
       }
-      schema.typeName = `${schema.name}`;
+      schema.typeName = `${schema.language.default.name}`;
     }
     schema.usage = usage;
     schemaCache.set(type, schema);
@@ -481,10 +481,10 @@ function getSchemaForScalar(
 
 function getChoiceValueForUnionVariant(
   dpgContext: SdkContext,
-  variant: UnionVariant
+  variant: UnionVariant | EnumMember,
+  value: string | number
 ): ChoiceValue {
-  const value = variant.name.toString();
-  const enumType = new ChoiceValue(pascalCase(deconstruct(value.toString())), getDoc(dpgContext.program, variant.type) || "", value);
+  const enumType = new ChoiceValue(pascalCase(deconstruct(value.toString())), getDoc(dpgContext.program, variant) || "", value);
   return enumType;
 }
 
@@ -493,24 +493,31 @@ function getSchemaForUnion(
   union: Union,
   options?: GetSchemaOptions
 ) {
-  const [asEnum, _] = getUnionAsEnum(union);
-  const variants = Array.from(union.variants.values());
-  const values = [];
-
-  const schema = new SealedChoiceSchema(union.name || "", getDoc(dpgContext.program, union) || "");
-  //Yabo: asEnum.open means union has a scalar type declared means is extensible enum
-  if (asEnum?.open && asEnum.members.size > 0) {
-    for (const [_, member] of asEnum.members.entries()) {
-      const memberType = getSchemaForType(dpgContext, member.type, {
-        ...options,
-        needRef: false
-      });
-      values.push(memberType);
-    }
-    schema.choices = values;
-    schema.choiceType = new StringSchema("enum", "string schema for enum");
+  const nonNullOptions = [...union.variants.values()]
+    .map((x) => x.type)
+    .filter((t) => !isNullType(t));
+  if (nonNullOptions.length === 0) {
+    return {};
+  }
+  let schema = null;
+  //Yabo: when union contains only one schema, return the schema, otherwise treat it as enum
+  if (nonNullOptions.length === 1) {
+    //Yabo: how to deal with x-nullable?
+    const nullable = union.variants.size !== nonNullOptions.length;
+    schema = getSchemaForType(dpgContext, nonNullOptions[0], options);
   } else {
-    //Yabo: support non-extensible enum and object union
+    const values = [];
+    const [asEnum, _] = getUnionAsEnum(union);
+    if (asEnum) {
+      schema = new SealedChoiceSchema(union.name || "", getDoc(dpgContext.program, union) || "");
+      for (const [name, member] of asEnum.flattenedMembers.entries()) {
+        values.push(getChoiceValueForUnionVariant(dpgContext, member.type, member.value));
+      }
+      schema.choices = values;
+      // ToDo: by xiaogang, add support for other types of enum except string
+      schema.choiceType = new StringSchema("enum", "string schema for enum");
+    }
+    //Yabo: if not able to flatten as enum, return empty
   }
   return schema;
 }
