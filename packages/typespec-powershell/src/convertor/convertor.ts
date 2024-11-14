@@ -58,6 +58,7 @@ function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, 
     getSchemaForType(psContext, eachModel);
   }
   const schemas = new Schemas();
+  const visited = new Set<Schema>;
   for (const schema of schemaCache.values()) {
     if (schema.type === SchemaType.Any) {
       // set name and description for any schema
@@ -70,7 +71,10 @@ function getSchemas(program: Program, client: SdkClient, psContext: SdkContext, 
         (<ArraySchema>schema).elementType = getSchemaForType(psContext, (<any>schema).delayType as Type);
         (<any>schema).delayType = undefined;
       }
-      schemas.add(schema);
+      if (!visited.has(schema)) {
+        visited.add(schema);
+        schemas.add(schema);
+      }
     }
   }
 
