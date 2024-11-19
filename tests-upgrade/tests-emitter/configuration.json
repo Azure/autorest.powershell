@@ -1,16 +1,23 @@
 {
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
   "whiteTestList": [
+    "Astronomer.Astro.Management",
+    "AzureAI.Assets",
+    "CodeSigning.Management",
+    "Neon.Postgres.Management",
+    "Qumulo.Storage.Management",
     "Sphere.Management"
   ],
   "whiteTestListFull": [
+    "Astronomer.Astro.Management",
     "AzureAI.Assets",
     "CodeSigning.Management",
+    "Neon.Postgres.Management",
+    "Qumulo.Storage.Management",
     "Sphere.Management"
   ],
   "blackTestList": [
-    "AzureAI.Assets",
-    "CodeSigning.Management"
+
   ],
   "ignoreFolder": [
     "examples",

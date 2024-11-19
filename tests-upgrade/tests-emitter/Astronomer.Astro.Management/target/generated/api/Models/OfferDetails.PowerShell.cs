@@ -1,0 +1,218 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
+namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
+{
+    using Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.PowerShell;
+
+    /// <summary>Offer details for the marketplace that is selected by the user</summary>
+    [System.ComponentModel.TypeConverter(typeof(OfferDetailsTypeConverter))]
+    public partial class OfferDetails
+    {
+
+        /// <summary>
+        /// <c>AfterDeserializeDictionary</c> will be called after the deserialization has finished, allowing customization of the
+        /// object before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+
+        partial void AfterDeserializeDictionary(global::System.Collections.IDictionary content);
+
+        /// <summary>
+        /// <c>AfterDeserializePSObject</c> will be called after the deserialization has finished, allowing customization of the object
+        /// before it is returned. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+
+        partial void AfterDeserializePSObject(global::System.Management.Automation.PSObject content);
+
+        /// <summary>
+        /// <c>BeforeDeserializeDictionary</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializeDictionary(global::System.Collections.IDictionary content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>BeforeDeserializePSObject</c> will be called before the deserialization has commenced, allowing complete customization
+        /// of the object before it is deserialized.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
+        /// Implement this method in a partial class to enable this behavior.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
+        /// instantly.</param>
+
+        partial void BeforeDeserializePSObject(global::System.Management.Automation.PSObject content, ref bool returnNow);
+
+        /// <summary>
+        /// <c>OverrideToString</c> will be called if it is implemented. Implement this method in a partial class to enable this behavior
+        /// </summary>
+        /// <param name="stringResult">/// instance serialized to a string, normally it is a Json</param>
+        /// <param name="returnNow">/// set returnNow to true if you provide a customized OverrideToString function</param>
+
+        partial void OverrideToString(ref string stringResult, ref bool returnNow);
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OfferDetails"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        {
+            return new OfferDetails(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OfferDetails"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        /// <returns>
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails" />.
+        /// </returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        {
+            return new OfferDetails(content);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="OfferDetails" />, deserializing the content from a json string.
+        /// </summary>
+        /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
+        /// <returns>an instance of the <see cref="OfferDetails" /> model class.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetails FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.Json.JsonNode.Parse(jsonText));
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OfferDetails"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
+        internal OfferDetails(global::System.Collections.IDictionary content)
+        {
+            bool returnNow = false;
+            BeforeDeserializeDictionary(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("PublisherId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PublisherId = (string) content.GetValueForProperty("PublisherId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PublisherId, global::System.Convert.ToString);
+            }
+            if (content.Contains("OfferId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).OfferId = (string) content.GetValueForProperty("OfferId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).OfferId, global::System.Convert.ToString);
+            }
+            if (content.Contains("PlanId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanId = (string) content.GetValueForProperty("PlanId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanId, global::System.Convert.ToString);
+            }
+            if (content.Contains("PlanName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanName = (string) content.GetValueForProperty("PlanName",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanName, global::System.Convert.ToString);
+            }
+            if (content.Contains("TermUnit"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermUnit = (string) content.GetValueForProperty("TermUnit",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermUnit, global::System.Convert.ToString);
+            }
+            if (content.Contains("TermId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermId = (string) content.GetValueForProperty("TermId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermId, global::System.Convert.ToString);
+            }
+            if (content.Contains("RenewalMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).RenewalMode = (string) content.GetValueForProperty("RenewalMode",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).RenewalMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("EndDate"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).EndDate = (global::System.DateTime?) content.GetValueForProperty("EndDate",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).EndDate, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            AfterDeserializeDictionary(content);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.OfferDetails"
+        /// />.
+        /// </summary>
+        /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
+        internal OfferDetails(global::System.Management.Automation.PSObject content)
+        {
+            bool returnNow = false;
+            BeforeDeserializePSObject(content, ref returnNow);
+            if (returnNow)
+            {
+                return;
+            }
+            // actually deserialize
+            if (content.Contains("PublisherId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PublisherId = (string) content.GetValueForProperty("PublisherId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PublisherId, global::System.Convert.ToString);
+            }
+            if (content.Contains("OfferId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).OfferId = (string) content.GetValueForProperty("OfferId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).OfferId, global::System.Convert.ToString);
+            }
+            if (content.Contains("PlanId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanId = (string) content.GetValueForProperty("PlanId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanId, global::System.Convert.ToString);
+            }
+            if (content.Contains("PlanName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanName = (string) content.GetValueForProperty("PlanName",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).PlanName, global::System.Convert.ToString);
+            }
+            if (content.Contains("TermUnit"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermUnit = (string) content.GetValueForProperty("TermUnit",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermUnit, global::System.Convert.ToString);
+            }
+            if (content.Contains("TermId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermId = (string) content.GetValueForProperty("TermId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).TermId, global::System.Convert.ToString);
+            }
+            if (content.Contains("RenewalMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).RenewalMode = (string) content.GetValueForProperty("RenewalMode",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).RenewalMode, global::System.Convert.ToString);
+            }
+            if (content.Contains("EndDate"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).EndDate = (global::System.DateTime?) content.GetValueForProperty("EndDate",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOfferDetailsInternal)this).EndDate, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+            }
+            AfterDeserializePSObject(content);
+        }
+
+        /// <summary>Serializes this instance to a json string.</summary>
+
+        /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.SerializationMode.IncludeAll)?.ToString();
+
+        public override string ToString()
+        {
+            var returnNow = false;
+            var result = global::System.String.Empty;
+            OverrideToString(ref result, ref returnNow);
+            if (returnNow)
+            {
+                return result;
+            }
+            return ToJsonString();
+        }
+    }
+    /// Offer details for the marketplace that is selected by the user
+    [System.ComponentModel.TypeConverter(typeof(OfferDetailsTypeConverter))]
+    public partial interface IOfferDetails
+
+    {
+
+    }
+}

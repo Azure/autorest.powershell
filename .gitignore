@@ -299,7 +299,7 @@ package/*
 generated*/*
 petstore*/*
 
-**/generated*/*
+# **/generated*/*
 powershell/resources/bin
 powershell/resources/obj
 
