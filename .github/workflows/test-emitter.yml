@@ -1,0 +1,46 @@
+name: test-emitter
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+   test-emitter:
+     runs-on: windows-latest
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v4
+       - name: Install Node.js 18
+         uses: actions/setup-node@v4
+         with:
+           node-version: 18.x
+       - name: Install typespec & rush
+         run: |
+           npm install -g "@typespec/compiler"
+           npm install -g @microsoft/rush@5.63.1
+       - name: Rush sync-versions
+         run: |
+           rush sync-versions
+       - name: Rush Update
+         run: |
+           rush update
+       - name: Rush Rebuild
+         run: |
+           rush rebuild
+       - name: Run npm install in tests-emitter
+         working-directory: tests-upgrade/tests-emitter
+         run: |
+           npm install
+       - name: Verify Typespec emitter
+         shell: pwsh
+         working-directory: tests-upgrade/tests-emitter
+         run: |
+           ./EmitterTest.ps1 -AllowList -SaveResult
+       - name: Save artifacts
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: CompareResult
+           path: tests-upgrade/tests-emitter/CompareResult
+           if-no-files-found: warn
+           retention-days: 7 
