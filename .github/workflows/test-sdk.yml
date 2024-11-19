@@ -1,0 +1,42 @@
+name: pr-check
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+   pr-check:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v4
+       - name: Install Node.js 18
+         uses: actions/setup-node@v4
+         with:
+           node-version: 18.x
+       - name: Install autorest & rush
+         run: |
+           npm install -g "autorest"
+           npm install -g @microsoft/rush@5.63.1
+       - name: Rush sync-versions
+         run: |
+           rush sync-versions
+       - name: Rush Update
+         run: |
+           rush update
+       - name: Rush Rebuild
+         run: |
+           rush rebuild
+       - name: Verify SDK generator
+         shell: pwsh
+         working-directory: tests-upgrade/tests-sdk1-support
+         run: |
+           ./AutoRestSupportSdkTest.ps1 -AllowList -SkipCsharp
+       - name: Save artifacts
+         if: always()
+         uses: actions/upload-artifact@v4
+         with:
+           name: CompareResult
+           path: tests-upgrade/tests-sdk1-support/CompareResult
+           if-no-files-found: warn
+           retention-days: 7 
