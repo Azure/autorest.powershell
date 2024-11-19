@@ -1,4 +1,4 @@
-name: pr-check
+name: test-sdk
 
 on:
   pull_request:
