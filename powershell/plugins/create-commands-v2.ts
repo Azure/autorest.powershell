@@ -19,6 +19,7 @@ import { CommandOperation } from '../utils/command-operation';
 
 type State = ModelState<PwshModel>;
 
+
 const specialWords : { [key: string]: Array<string> } = {in: <Array<string>>['sign']};
 
 // UNUSED: Moved to plugin-tweak-model.ts in remodeler
