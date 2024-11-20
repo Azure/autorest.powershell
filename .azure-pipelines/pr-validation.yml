@@ -1,0 +1,106 @@
+trigger:
+- main
+- modelerfour
+- develop
+- v3
+
+pr:
+- main
+- modelerfour
+- develop
+- v3
+
+jobs:
+- job: prepare
+  displayName: generate matrix
+  pool: pool-ubuntu-2004
+  steps:
+  - powershell: |
+      $ServiceNames = $env:ServiceNames -split ',' | ForEach-Object {$_.Trim()}
+        foreach ($ServiceName in $ServiceNames){
+          $MatrixStr="$MatrixStr,'" + $ServiceName + "':{'ServiceName':'$ServiceName'}"
+        }
+        $MatrixStr=$MatrixStr.Substring(1)
+        Write-Host "##vso[task.setVariable variable=ServiceNames;isOutput=true]{$MatrixStr}"
+    name: mtrx
+    displayName: generate matrix
+    env:
+      ServiceNames: $(ServiceNames)
+- job:
+  displayName: "Service:"
+  dependsOn: prepare
+  timeoutInMinutes: 120
+  pool: 
+    vmImage: windows-2022
+  strategy:
+    matrix: $[ dependencies.prepare.outputs['mtrx.ServiceNames'] ]
+    maxParallel: 10
+  steps:
+  - checkout: self
+    fetchTags: false
+  - script: 'git clone -b autorest/v3 --single-branch https://github.com/Azure/azure-powershell.git azure-powershell'
+    displayName: 'Clone azure-powershell autorest/v3'
+    condition: or(eq(variables['Build.SourceBranchName'], 'v3'), eq(variables['System.PullRequest.TargetBranch'], 'v3'))
+  - script: 'git clone -b autorest/developer --single-branch https://github.com/Azure/azure-powershell.git azure-powershell'
+    displayName: 'Clone azure-powershell autorest/developer'
+    condition: or(eq(variables['Build.SourceBranchName'], 'main'), eq(variables['System.PullRequest.TargetBranch'], 'main'))
+  - task: NodeTool@0
+    displayName: 'Use Node 18'
+    inputs:
+      versionSpec: 18.x
+  - task: Npm@1
+    displayName: 'Install autorest'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'install -g  autorest@latest'
+  - task: Npm@1
+    displayName: 'Install @microsoft/rush'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: 'install -g @microsoft/rush@5.63.1'
+  - pwsh: |
+     # Write your PowerShell commands here.
+     Install-Module -Name Az.Accounts -Force -Repository PSGallery
+    displayName: 'Install latest Az.Accounts'
+  - script: |
+     rush sync-versions
+    displayName: 'Rush sync-versions'
+  - script: |
+     Rush update
+    displayName: 'Rush update'
+  - script: |
+     Rush lint
+    displayName: 'Rush lint'
+    condition: or(eq(variables['Build.SourceBranchName'], 'main'), eq(variables['System.PullRequest.TargetBranch'], 'main'))
+  - script: |
+     Rush rebuild
+    displayName: 'Rush rebuild'
+  - powershell: |
+     $ServicePath = Get-ChildItem -Directory -Filter $(ServiceName) -Recurse | % {$_.FullName}
+     Write-Host $ServicePath
+     Write-Host "##vso[task.setvariable variable=ServicePath;]$ServicePath" 
+    workingDirectory: 'azure-powershell/src/'
+    displayName: 'Setup Variable: ServicePath'
+  - powershell: |
+     autorest --use:$(System.DefaultWorkingDirectory) --max-memory-size=8192 --debug --verbose
+    workingDirectory: '$(ServicePath)'
+    displayName: Generate
+  - pwsh: |
+     ./build-module.ps1 -Docs
+     # remove the integrated Az Accounts so that the installed latest one could be used for test
+     rm -r -force ./generated/modules/Az.Accounts
+    workingDirectory: '$(ServicePath)'
+    displayName: Build
+  - pwsh: |
+     Install-Module -Name Pester -RequiredVersion 4.10.1 -Force -SkipPublisherCheck
+     ./test-module.ps1
+    workingDirectory: '$(ServicePath)'
+    displayName: Test
+    condition: and(succeeded(), notIn(variables['ServiceName'],'ConfidentialLedger'))
+  - task: PublishPipelineArtifact@1
+    displayName: 'Save artifacts'
+    inputs:
+      targetPath: '$(ServicePath)'
+      artifact: 'service-$(ServiceName)'
