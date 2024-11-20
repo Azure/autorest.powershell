@@ -11,6 +11,9 @@ See [Using AutoRest PowerShell ](docs/readme.md) for examples, etc.
 For instructions on cloning/building/etc, see [Development](docs/development.md)
 
 
+add a test line.
+
+
 ## Contributor License Agreement Requirements
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
