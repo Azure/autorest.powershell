@@ -49,7 +49,7 @@ import {
 import { SdkContext, isReadOnly } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
+import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
@@ -290,11 +290,9 @@ export function getSchemaForType(
     return getSchemaForEnumMember(program, type);
   }
   if (isUnknownType(type)) {
-    const returnType: any = { type: "unknown" };
-    if (usage && usage.includes(SchemaContext.Output)) {
-      returnType.outputTypeName = "any";
-      returnType.typeName = "unknown";
-    }
+    // Unknown type, return any schema
+    const returnType = new AnySchema("any");
+    schemaCache.set(type, returnType);
     return returnType;
   }
   if (isNeverType(type)) {
