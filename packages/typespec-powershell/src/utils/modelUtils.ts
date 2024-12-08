@@ -49,7 +49,7 @@ import {
 import { SdkContext, isReadOnly } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
-import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue } from "@autorest/codemodel";
+import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema } from "@autorest/codemodel";
 import {
   getHeaderFieldName,
   getPathParamName,
@@ -967,15 +967,22 @@ function getSchemaForModel(
 // OA schema is just a regular object schema.
 function getSchemaForLiteral(type: Type): any {
   // ToDo: by xiaogang, need to implement other kinds as String
-  switch (type.kind) {
-    case "Number":
-      return { type: `${type.value}`, isConstant: true };
-    case "String": {
-      const schema = new StringSchema(type.value, "");
-      return schema;
+  if (type.kind) {
+    const schema = new ConstantSchema("", "");
+    switch (type.kind) {
+      case "Number":
+        schema.valueType = new NumberSchema("Constant", "Constant number", SchemaType.Number, 64);
+        schema.value = new ConstantValue(type.value);
+        return schema;
+      case "String":
+        schema.valueType = new StringSchema("Constant", "Constant string");
+        schema.value = new ConstantValue(type.value);
+        return schema;
+      case "Boolean":
+        schema.valueType = new BooleanSchema("Constant", "Constant boolean");
+        schema.value = new ConstantValue(type.value);
+        return schema;
     }
-    case "Boolean":
-      return { type: `${type.value}`, isConstant: true };
   }
   if (type.kind === undefined) {
     if (typeof type === "string") {
