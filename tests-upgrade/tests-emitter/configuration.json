@@ -1,20 +1,48 @@
 {
   "description": "whiteTestList is the list we want to test and whiteTestListFull includes those that currently fail but we want to support",
   "whiteTestList": [
+    "AppComplianceAutomation.Management",
     "Astronomer.Astro.Management",
     "AzureAI.Assets",
+    "AzureFleet.Management",
     "CodeSigning.Management",
+    "ComputeSchedule.Management",
+    "DeviceRegistry.Management",
+    "DocumentDB.MongoCluster.Management",
+    "EdgeZones.Management",
+    "HealthDataAIServices.Management",
+    "Informatica.DataManagement.Management",
+    "KubernetesRuntime.Management",
+    "LambdaTest.HyperExecute.Management",
+    "Liftr.WeightsAndBiases.Management",
+    "Microsoft.DevOpsInfrastructure.Management",
     "Neon.Postgres.Management",
+    "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
-    "Sphere.Management"
+    "Sphere.Management",
+    "StandbyPool.Management"
   ],
   "whiteTestListFull": [
+    "AppComplianceAutomation.Management",
     "Astronomer.Astro.Management",
     "AzureAI.Assets",
+    "AzureFleet.Management",
     "CodeSigning.Management",
+    "ComputeSchedule.Management",
+    "DeviceRegistry.Management",
+    "DocumentDB.MongoCluster.Management",
+    "EdgeZones.Management",
+    "HealthDataAIServices.Management",
+    "Informatica.DataManagement.Management",
+    "KubernetesRuntime.Management",
+    "LambdaTest.HyperExecute.Management",
+    "Liftr.WeightsAndBiases.Management",
+    "Microsoft.DevOpsInfrastructure.Management",
     "Neon.Postgres.Management",
+    "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
-    "Sphere.Management"
+    "Sphere.Management",
+    "StandbyPool.Management"
   ],
   "blackTestList": [
 
