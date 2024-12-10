@@ -1,0 +1,83 @@
+parameters:
+  "service-dir":
+    default: "sdk/computeschedule"
+emit:
+  - "@azure-tools/typespec-autorest"
+options:
+  "@azure-tools/typespec-autorest":
+    emitter-output-dir: "{project-root}/.."
+    azure-resource-provider-folder: "resource-manager"
+    output-file: "{azure-resource-provider-folder}/{service-name}/{version-status}/{version}/computeschedule.json"
+  "@azure-tools/typespec-python":
+    package-dir: "azure-mgmt-computeschedule"
+    package-name: "{package-dir}"
+    flavor: "azure"
+    generate-test: true
+    generate-sample: true
+  "@azure-tools/typespec-ts":
+    azureSdkForJs: true
+    isModularLibrary: true
+    generateMetadata: true
+    hierarchyClient: false
+    experimentalExtensibleEnums: true
+    enableOperationGroup: true
+    package-dir: "arm-computeschedule"
+    flavor: "azure"
+    packageDetails:
+      name: "@azure/arm-computeschedule"
+  "@azure-tools/typespec-csharp":
+    package-dir: "Azure.ResourceManager.ComputeSchedule"
+    flavor: azure
+    clear-output-folder: true
+    namespace: "{package-dir}"
+  "@azure-tools/typespec-java":
+    package-dir: "azure-resourcemanager-computeschedule"
+    flavor: "azure"
+    namespace: "com.azure.resourcemanager.computeschedule"
+    service-name: "Compute Schedule"
+  "@azure-tools/typespec-powershell":
+    service-dir: "src"
+    package-dir: "ComputeSchedule/ComputeSchedule.Autorest"
+    clear-output-folder: true
+    azure: true
+    module-version: 0.1.0
+    skip-model-cmdlets: false
+    help-link-prefix: https://learn.microsoft.com/powershell/module/
+    metadata:
+      authors: Microsoft Corporation
+      owners: Microsoft Corporation
+      description: 'Microsoft Azure PowerShell: ComputeSchedule cmdlets'
+      copyright: Microsoft Corporation. All rights reserved.
+      tags: Azure ResourceManager ARM PSModule Sphere
+      companyName: Microsoft Corporation
+      requireLicenseAcceptance: true
+      licenseUri: https://aka.ms/azps-license
+      projectUri: https://github.com/Azure/azure-powershell
+    prefix: 'Az'
+    subject-prefix: 'ComputeSchedule'
+    service-name: ComputeSchedule
+    module-name: "{prefix}.{service-name}"
+    namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+    use-namespace-folders: false
+    # output-folder: "{output-dir}"
+    exclude-tableview-properties:
+      - Id
+      - Type
+    directive:
+      - where:
+          subject: Operation
+        hide: true
+      - where:
+          parameter-name: SubscriptionId
+        set:
+          default:
+            script: '(Get-AzContext).Subscription.Id'
+      - where:
+          variant: ^(Create|Update)(?!.*?Expanded|ViaJsonString|ViaJsonFilePath)
+        remove: true
+      - where:
+          verb: Set
+        hide: true
+linter:
+  extends:
+    - "@azure-tools/typespec-azure-rulesets/resource-manager"

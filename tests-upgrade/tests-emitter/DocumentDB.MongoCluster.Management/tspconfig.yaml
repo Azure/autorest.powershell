@@ -1,0 +1,95 @@
+parameters:
+  "service-dir":
+    default: "sdk/mongocluster"
+emit:
+  - "@azure-tools/typespec-autorest"
+options:
+  "@azure-tools/typespec-autorest":
+    use-read-only-status-schema: true
+    emitter-output-dir: "{project-root}/.."
+    azure-resource-provider-folder: "resource-manager"
+    output-file: "{azure-resource-provider-folder}/{service-name}/{version-status}/{version}/mongoCluster.json"
+  "@azure-tools/typespec-python":
+    package-dir: "azure-mgmt-mongocluster"
+    package-name: "{package-dir}"
+    flavor: "azure"
+    generate-test: true
+    generate-sample: true
+  "@azure-tools/typespec-java":
+    package-dir: "azure-resourcemanager-mongocluster"
+    flavor: "azure"
+    namespace: "com.azure.resourcemanager.mongocluster"
+    service-name: "Mongo Cluster"
+  "@azure-tools/typespec-go":
+    service-dir: "sdk/resourcemanager/mongocluster"
+    package-dir: "armmongocluster"
+    module: "github.com/Azure/azure-sdk-for-go/{service-dir}/{package-dir}"
+    fix-const-stuttering: true
+    flavor: "azure"
+    generate-examples: true
+    generate-fakes: true
+    head-as-boolean: true
+    inject-spans: true
+    remove-unreferenced-types: true
+  "@azure-tools/typespec-csharp":
+    package-dir: "Azure.ResourceManager.MongoCluster"
+    flavor: azure
+    clear-output-folder: true
+    namespace: "{package-dir}"
+  "@azure-tools/typespec-ts":
+    azureSdkForJs: true
+    isModularLibrary: true
+    generateMetadata: true
+    hierarchyClient: false
+    experimentalExtensibleEnums: true
+    enableOperationGroup: true
+    package-dir: "arm-mongocluster"
+    flavor: "azure"
+    packageDetails:
+      name: "@azure/arm-mongocluster"
+  "@azure-tools/typespec-powershell":
+    service-dir: "src"
+    package-dir: "MongoCluster/MongoCluster.Autorest"
+    clear-output-folder: true
+    azure: true
+    module-version: 0.1.0
+    skip-model-cmdlets: false
+    help-link-prefix: https://learn.microsoft.com/powershell/module/
+    metadata:
+      authors: Microsoft Corporation
+      owners: Microsoft Corporation
+      description: 'Microsoft Azure PowerShell: MongoCluster cmdlets'
+      copyright: Microsoft Corporation. All rights reserved.
+      tags: Azure ResourceManager ARM PSModule Sphere
+      companyName: Microsoft Corporation
+      requireLicenseAcceptance: true
+      licenseUri: https://aka.ms/azps-license
+      projectUri: https://github.com/Azure/azure-powershell
+    prefix: 'Az'
+    subject-prefix: 'MongoCluster'
+    service-name: MongoCluster
+    module-name: "{prefix}.{service-name}"
+    namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+    use-namespace-folders: false
+    # output-folder: "{output-dir}"
+    exclude-tableview-properties:
+      - Id
+      - Type
+    directive:
+      - where:
+          subject: Operation
+        hide: true
+      - where:
+          parameter-name: SubscriptionId
+        set:
+          default:
+            script: '(Get-AzContext).Subscription.Id'
+      - where:
+          variant: ^(Create|Update)(?!.*?Expanded|ViaJsonString|ViaJsonFilePath)
+        remove: true
+      - where:
+          verb: Set
+        hide: true
+linter:
+  extends:
+    - "@azure-tools/typespec-azure-rulesets/resource-manager"
