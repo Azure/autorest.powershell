@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@typespec/compiler": ">=0.61.0 <1.0.0",
-    "@typespec/openapi": ">=0.61.0, <1.0.0",
+    "@typespec/openapi": ">=0.61.0 <1.0.0",
     "@testdeck/mocha": "0.3.3",
     "@types/js-yaml": "3.12.1",
     "@types/mocha": "5.2.5",
