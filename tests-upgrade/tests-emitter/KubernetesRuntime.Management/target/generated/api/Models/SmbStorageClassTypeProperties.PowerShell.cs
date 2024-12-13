@@ -123,7 +123,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("Password"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password = (string) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password = (System.Security.SecureString) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Domain"))
             {
@@ -164,7 +164,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("Password"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password = (string) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password = (System.Security.SecureString) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.ISmbStorageClassTypePropertiesInternal)this).Password, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Domain"))
             {

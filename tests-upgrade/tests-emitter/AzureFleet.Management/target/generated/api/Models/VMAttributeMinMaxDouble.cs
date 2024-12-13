@@ -12,18 +12,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     {
 
         /// <summary>Backing field for <see cref="Max" /> property.</summary>
-        private float? _max;
+        private double? _max;
 
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public float? Max { get => this._max; set => this._max = value; }
+        public double? Max { get => this._max; set => this._max = value; }
 
         /// <summary>Backing field for <see cref="Min" /> property.</summary>
-        private float? _min;
+        private double? _min;
 
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public float? Min { get => this._min; set => this._min = value; }
+        public double? Min { get => this._min; set => this._min = value; }
 
         /// <summary>Creates an new <see cref="VMAttributeMinMaxDouble" /> instance.</summary>
         public VMAttributeMinMaxDouble()
@@ -44,8 +44,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Maximum value. Double.MaxValue(1.7976931348623157E+308)",
         SerializedName = @"max",
-        PossibleTypes = new [] { typeof(float) })]
-        float? Max { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? Max { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -55,8 +55,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Minimum value. default 0. Double.MinValue()",
         SerializedName = @"min",
-        PossibleTypes = new [] { typeof(float) })]
-        float? Min { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? Min { get; set; }
 
     }
     /// VMAttributes using double values.
@@ -64,9 +64,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
     {
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
-        float? Max { get; set; }
+        double? Max { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
-        float? Min { get; set; }
+        double? Min { get; set; }
 
     }
 }

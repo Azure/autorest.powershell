@@ -125,7 +125,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("PercentComplete"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete = (float?) content.GetValueForProperty("PercentComplete",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete = (double?) content.GetValueForProperty("PercentComplete",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("StartTime"))
             {
@@ -194,7 +194,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (content.Contains("PercentComplete"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete = (float?) content.GetValueForProperty("PercentComplete",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete = (double?) content.GetValueForProperty("PercentComplete",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).PercentComplete, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("StartTime"))
             {

@@ -212,10 +212,10 @@ export function getSchemaForType(
   if (type.kind === "ModelProperty") {
     const typeSchema: Schema = getSchemaForType(dpgContext, type.type, options);
     if (isStringType(program, type.type) || isNumericType(program, type.type)) {
-      // add in validation elements for string and numeric types
-      // unlike m4, min/max length and pattern are not part of the schema
-      const propertySchema = { ...typeSchema };
-      addValidation(<Schema>propertySchema, type);
+      // applyIntrinsicDecorators for string and numeric types
+      // unlike m4, min/max length and pattern, secrets, etc. are not part of the schema
+      let propertySchema = { ...typeSchema };
+      propertySchema = applyIntrinsicDecorators(program, type, propertySchema);
       propertySchema.language.default.name = type.name;
       propertySchema.language.default.description = getDoc(program, type) || "";
       schemaCache.set(type, <Schema>propertySchema);
@@ -928,12 +928,12 @@ function getSchemaForModel(
     // }
 
     // Apply decorators on the property to the type's schema
-    const newPropSchema = applyIntrinsicDecorators(program, prop, propSchema);
-    if (newPropSchema === undefined) {
-      continue;
-    }
+    // const newPropSchema = applyIntrinsicDecorators(program, prop, propSchema);
+    // if (newPropSchema === undefined) {
+    //   continue;
+    // }
     // Use the description from ModelProperty not devired from Model Type
-    newPropSchema.description = propertyDescription;
+    // newPropSchema.description = propertyDescription;
 
     // Should the property be marked as readOnly?
     // const vis = getVisibility(program, prop);
@@ -1048,8 +1048,9 @@ function applyIntrinsicDecorators(
   }
 
   if (isSecret(program, type)) {
-    newTarget.format = "password";
-    newTarget["x-ms-secret"] = true;
+    newTarget.type = "credential";
+    newTarget["extensions"] = newTarget["extensions"] || {};
+    newTarget["extensions"]["x-ms-secret"] = true;
   }
 
   return newTarget;
@@ -1360,17 +1361,17 @@ function getSchemaForStdScalar(
     case "float64":
       return applyIntrinsicDecorators(program, type, {
         type: "number",
-        format: "float64"
+        precision: 64
       });
     case "float32":
       return applyIntrinsicDecorators(program, type, {
         type: "number",
-        format: "float32"
+        precision: 32
       });
     case "float":
       return applyIntrinsicDecorators(program, type, {
         type: "number",
-        format: "float"
+        precision: 32
       });
     case "decimal":
       reportDiagnostic(program, {

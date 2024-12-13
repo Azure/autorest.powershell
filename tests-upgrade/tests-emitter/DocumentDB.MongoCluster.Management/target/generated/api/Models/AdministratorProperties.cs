@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
     {
 
         /// <summary>Backing field for <see cref="Password" /> property.</summary>
-        private string _password;
+        private System.Security.SecureString _password;
 
         /// <summary>The administrator password.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Owned)]
-        public string Password { get => this._password; set => this._password = value; }
+        public System.Security.SecureString Password { get => this._password; set => this._password = value; }
 
         /// <summary>Backing field for <see cref="UserName" /> property.</summary>
         private string _userName;
@@ -44,8 +44,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Update = true,
         Description = @"The administrator password.",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        string Password { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString Password { get; set; }
         /// <summary>The administrator user name.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
 
     {
         /// <summary>The administrator password.</summary>
-        string Password { get; set; }
+        System.Security.SecureString Password { get; set; }
         /// <summary>The administrator user name.</summary>
         string UserName { get; set; }
 

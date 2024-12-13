@@ -64,7 +64,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
                 return;
             }
             {_userName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("userName"), out var __jsonUserName) ? (string)__jsonUserName : (string)_userName;}
-            {_password = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("password"), out var __jsonPassword) ? (string)__jsonPassword : (string)_password;}
+            {_password = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("password"), out var __jsonPassword) ? new System.Net.NetworkCredential("",(string)__jsonPassword).SecurePassword : _password;}
             AfterFromJson(json);
         }
 
@@ -100,7 +100,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
                 return container;
             }
             AddIf( null != (((object)this._userName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(this._userName.ToString()) : null, "userName" ,container.Add );
-            AddIf( null != (((object)this._password)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(this._password.ToString()) : null, "password" ,container.Add );
+            AddIf( null != (((object)this._password)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(System.Runtime.InteropServices.Marshal.PtrToStringBSTR(System.Runtime.InteropServices.Marshal.SecureStringToBSTR(this._password))) : null, "password" ,container.Add );
             AfterToJson(ref container);
             return container;
         }

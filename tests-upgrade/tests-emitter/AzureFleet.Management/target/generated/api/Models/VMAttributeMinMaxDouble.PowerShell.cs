@@ -126,11 +126,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             // actually deserialize
             if (content.Contains("Min"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min = (float?) content.GetValueForProperty("Min",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min = (double?) content.GetValueForProperty("Min",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("Max"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max = (float?) content.GetValueForProperty("Max",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max = (double?) content.GetValueForProperty("Max",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             AfterDeserializeDictionary(content);
         }
@@ -151,11 +151,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             // actually deserialize
             if (content.Contains("Min"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min = (float?) content.GetValueForProperty("Min",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min = (double?) content.GetValueForProperty("Min",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Min, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("Max"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max = (float?) content.GetValueForProperty("Max",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max = (double?) content.GetValueForProperty("Max",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)this).Max, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             AfterDeserializePSObject(content);
         }

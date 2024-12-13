@@ -119,7 +119,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("AzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey = (string) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Server"))
             {
@@ -151,7 +151,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("Password"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password = (string) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password = (System.Security.SecureString) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Domain"))
             {
@@ -184,7 +184,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("AzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey = (string) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).AzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Server"))
             {
@@ -216,7 +216,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("Password"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password = (string) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password = (System.Security.SecureString) content.GetValueForProperty("Password",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdateInternal)this).Password, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Domain"))
             {

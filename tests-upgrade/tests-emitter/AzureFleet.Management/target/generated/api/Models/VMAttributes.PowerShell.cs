@@ -208,19 +208,19 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("MemoryInGiBMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax = (float?) content.GetValueForProperty("MemoryInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax = (double?) content.GetValueForProperty("MemoryInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("MemoryInGiBPerVcpuMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax = (float?) content.GetValueForProperty("MemoryInGiBPerVcpuMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax = (double?) content.GetValueForProperty("MemoryInGiBPerVcpuMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("LocalStorageInGiBMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax = (float?) content.GetValueForProperty("LocalStorageInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax = (double?) content.GetValueForProperty("LocalStorageInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("NetworkBandwidthInMbpsMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax = (float?) content.GetValueForProperty("NetworkBandwidthInMbpsMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax = (double?) content.GetValueForProperty("NetworkBandwidthInMbpsMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("VCpuCountMin"))
             {
@@ -232,15 +232,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("MemoryInGiBMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin = (float?) content.GetValueForProperty("MemoryInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin = (double?) content.GetValueForProperty("MemoryInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("MemoryInGiBPerVcpuMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin = (float?) content.GetValueForProperty("MemoryInGiBPerVcpuMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin = (double?) content.GetValueForProperty("MemoryInGiBPerVcpuMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("LocalStorageInGiBMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin = (float?) content.GetValueForProperty("LocalStorageInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin = (double?) content.GetValueForProperty("LocalStorageInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("DataDiskCountMin"))
             {
@@ -260,7 +260,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("NetworkBandwidthInMbpsMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin = (float?) content.GetValueForProperty("NetworkBandwidthInMbpsMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin = (double?) content.GetValueForProperty("NetworkBandwidthInMbpsMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("RdmaNetworkInterfaceCountMin"))
             {
@@ -377,19 +377,19 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("MemoryInGiBMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax = (float?) content.GetValueForProperty("MemoryInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax = (double?) content.GetValueForProperty("MemoryInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("MemoryInGiBPerVcpuMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax = (float?) content.GetValueForProperty("MemoryInGiBPerVcpuMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax = (double?) content.GetValueForProperty("MemoryInGiBPerVcpuMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("LocalStorageInGiBMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax = (float?) content.GetValueForProperty("LocalStorageInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax = (double?) content.GetValueForProperty("LocalStorageInGiBMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("NetworkBandwidthInMbpsMax"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax = (float?) content.GetValueForProperty("NetworkBandwidthInMbpsMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax = (double?) content.GetValueForProperty("NetworkBandwidthInMbpsMax",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMax, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("VCpuCountMin"))
             {
@@ -401,15 +401,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("MemoryInGiBMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin = (float?) content.GetValueForProperty("MemoryInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin = (double?) content.GetValueForProperty("MemoryInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("MemoryInGiBPerVcpuMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin = (float?) content.GetValueForProperty("MemoryInGiBPerVcpuMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin = (double?) content.GetValueForProperty("MemoryInGiBPerVcpuMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).MemoryInGiBPerVcpuMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("LocalStorageInGiBMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin = (float?) content.GetValueForProperty("LocalStorageInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin = (double?) content.GetValueForProperty("LocalStorageInGiBMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).LocalStorageInGiBMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("DataDiskCountMin"))
             {
@@ -429,7 +429,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("NetworkBandwidthInMbpsMin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin = (float?) content.GetValueForProperty("NetworkBandwidthInMbpsMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin, (__y)=> (float) global::System.Convert.ChangeType(__y, typeof(float)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin = (double?) content.GetValueForProperty("NetworkBandwidthInMbpsMin",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal)this).NetworkBandwidthInMbpsMin, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
             }
             if (content.Contains("RdmaNetworkInterfaceCountMin"))
             {

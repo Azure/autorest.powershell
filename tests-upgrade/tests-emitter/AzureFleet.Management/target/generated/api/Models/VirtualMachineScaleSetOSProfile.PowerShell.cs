@@ -142,11 +142,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("AdminPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword = (string) content.GetValueForProperty("AdminPassword",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword = (System.Security.SecureString) content.GetValueForProperty("AdminPassword",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("CustomData"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData = (string) content.GetValueForProperty("CustomData",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData = (System.Security.SecureString) content.GetValueForProperty("CustomData",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Secret"))
             {
@@ -295,11 +295,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             }
             if (content.Contains("AdminPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword = (string) content.GetValueForProperty("AdminPassword",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword = (System.Security.SecureString) content.GetValueForProperty("AdminPassword",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).AdminPassword, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("CustomData"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData = (string) content.GetValueForProperty("CustomData",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData = (System.Security.SecureString) content.GetValueForProperty("CustomData",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVirtualMachineScaleSetOSProfileInternal)this).CustomData, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Secret"))
             {

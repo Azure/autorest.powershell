@@ -82,8 +82,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 return container;
             }
-            AddIf( null != this._min ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber((float)this._min) : null, "min" ,container.Add );
-            AddIf( null != this._max ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber((float)this._max) : null, "max" ,container.Add );
+            AddIf( null != this._min ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber((double)this._min) : null, "min" ,container.Add );
+            AddIf( null != this._max ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber((double)this._max) : null, "max" ,container.Add );
             AfterToJson(ref container);
             return container;
         }
@@ -100,8 +100,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 return;
             }
-            {_min = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber>("min"), out var __jsonMin) ? (float?)__jsonMin : _min;}
-            {_max = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber>("max"), out var __jsonMax) ? (float?)__jsonMax : _max;}
+            {_min = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber>("min"), out var __jsonMin) ? (double?)__jsonMin : _min;}
+            {_max = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNumber>("max"), out var __jsonMax) ? (double?)__jsonMax : _max;}
             AfterFromJson(json);
         }
     }

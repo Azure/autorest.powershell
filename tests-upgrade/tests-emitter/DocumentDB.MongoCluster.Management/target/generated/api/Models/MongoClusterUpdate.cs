@@ -13,7 +13,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
 
         /// <summary>The administrator password.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
-        public string AdministratorPassword { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).AdministratorPassword; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).AdministratorPassword = value ?? null; }
+        public System.Security.SecureString AdministratorPassword { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).AdministratorPassword; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)Property).AdministratorPassword = value ?? null; }
 
         /// <summary>The administrator user name.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
@@ -113,8 +113,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         Update = true,
         Description = @"The administrator password.",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        string AdministratorPassword { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString AdministratorPassword { get; set; }
         /// <summary>The administrator user name.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
@@ -242,7 +242,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// <summary>The local administrator properties for the mongo cluster.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IAdministratorProperties Administrator { get; set; }
         /// <summary>The administrator password.</summary>
-        string AdministratorPassword { get; set; }
+        System.Security.SecureString AdministratorPassword { get; set; }
         /// <summary>The administrator user name.</summary>
         string AdministratorUserName { get; set; }
         /// <summary>The backup properties of the mongo cluster.</summary>

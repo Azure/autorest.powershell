@@ -70,7 +70,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {_passName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString>("passName"), out var __jsonPassName) ? (string)__jsonPassName : (string)_passName;}
             {_componentName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString>("componentName"), out var __jsonComponentName) ? (string)__jsonComponentName : (string)_componentName;}
             {_settingName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString>("settingName"), out var __jsonSettingName) ? (string)__jsonSettingName : (string)_settingName;}
-            {_content = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString>("content"), out var __jsonContent) ? (string)__jsonContent : (string)_content;}
+            {_content = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString>("content"), out var __jsonContent) ? new System.Net.NetworkCredential("",(string)__jsonContent).SecurePassword : _content;}
             AfterFromJson(json);
         }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             AddIf( null != (((object)this._passName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString(this._passName.ToString()) : null, "passName" ,container.Add );
             AddIf( null != (((object)this._componentName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString(this._componentName.ToString()) : null, "componentName" ,container.Add );
             AddIf( null != (((object)this._settingName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString(this._settingName.ToString()) : null, "settingName" ,container.Add );
-            AddIf( null != (((object)this._content)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString(this._content.ToString()) : null, "content" ,container.Add );
+            AddIf( null != (((object)this._content)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Json.JsonString(System.Runtime.InteropServices.Marshal.PtrToStringBSTR(System.Runtime.InteropServices.Marshal.SecureStringToBSTR(this._content))) : null, "content" ,container.Add );
             AfterToJson(ref container);
             return container;
         }

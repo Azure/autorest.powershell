@@ -65,7 +65,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             __storageClassTypeProperties = new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.StorageClassTypeProperties(json);
             {_azureStorageAccountName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString>("azureStorageAccountName"), out var __jsonAzureStorageAccountName) ? (string)__jsonAzureStorageAccountName : (string)_azureStorageAccountName;}
-            {_azureStorageAccountKey = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString>("azureStorageAccountKey"), out var __jsonAzureStorageAccountKey) ? (string)__jsonAzureStorageAccountKey : (string)_azureStorageAccountKey;}
+            {_azureStorageAccountKey = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString>("azureStorageAccountKey"), out var __jsonAzureStorageAccountKey) ? new System.Net.NetworkCredential("",(string)__jsonAzureStorageAccountKey).SecurePassword : _azureStorageAccountKey;}
             AfterFromJson(json);
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             __storageClassTypeProperties?.ToJson(container, serializationMode);
             AddIf( null != (((object)this._azureStorageAccountName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString(this._azureStorageAccountName.ToString()) : null, "azureStorageAccountName" ,container.Add );
-            AddIf( null != (((object)this._azureStorageAccountKey)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString(this._azureStorageAccountKey.ToString()) : null, "azureStorageAccountKey" ,container.Add );
+            AddIf( null != (((object)this._azureStorageAccountKey)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Json.JsonString(System.Runtime.InteropServices.Marshal.PtrToStringBSTR(System.Runtime.InteropServices.Marshal.SecureStringToBSTR(this._azureStorageAccountKey))) : null, "azureStorageAccountKey" ,container.Add );
             AfterToJson(ref container);
             return container;
         }
