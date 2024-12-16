@@ -81,11 +81,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult> Operation { get => this._operation; set => this._operation = value; }
 
         /// <summary>Backing field for <see cref="PercentComplete" /> property.</summary>
-        private float? _percentComplete;
+        private double? _percentComplete;
 
         /// <summary>Percent of the operation that is complete.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
-        public float? PercentComplete { get => this._percentComplete; set => this._percentComplete = value; }
+        public double? PercentComplete { get => this._percentComplete; set => this._percentComplete = value; }
 
         /// <summary>Gets the resource group name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
@@ -216,8 +216,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = true,
         Description = @"Percent of the operation that is complete.",
         SerializedName = @"percentComplete",
-        PossibleTypes = new [] { typeof(float) })]
-        float? PercentComplete { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? PercentComplete { get; set; }
         /// <summary>The start time of the operation.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
         Required = false,
@@ -276,7 +276,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>The operations list.</summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult> Operation { get; set; }
         /// <summary>Percent of the operation that is complete.</summary>
-        float? PercentComplete { get; set; }
+        double? PercentComplete { get; set; }
         /// <summary>The start time of the operation.</summary>
         global::System.DateTime? StartTime { get; set; }
         /// <summary>Operation status.</summary>

@@ -25,11 +25,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         public string Domain { get => this._domain; set => this._domain = value; }
 
         /// <summary>Backing field for <see cref="Password" /> property.</summary>
-        private string _password;
+        private System.Security.SecureString _password;
 
         /// <summary>Server password</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Owned)]
-        public string Password { get => this._password; set => this._password = value; }
+        public System.Security.SecureString Password { get => this._password; set => this._password = value; }
 
         /// <summary>Backing field for <see cref="Source" /> property.</summary>
         private string _source;
@@ -102,8 +102,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"Server password",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        string Password { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString Password { get; set; }
         /// <summary>SMB Source</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Info(
         Required = true,
@@ -148,7 +148,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         /// <summary>Server domain</summary>
         string Domain { get; set; }
         /// <summary>Server password</summary>
-        string Password { get; set; }
+        System.Security.SecureString Password { get; set; }
         /// <summary>SMB Source</summary>
         string Source { get; set; }
         /// <summary>

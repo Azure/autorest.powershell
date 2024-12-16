@@ -257,7 +257,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             }
             if (content.Contains("AdministratorPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword = (string) content.GetValueForProperty("AdministratorPassword",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword = (System.Security.SecureString) content.GetValueForProperty("AdministratorPassword",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("HighAvailabilityTargetMode"))
             {
@@ -446,7 +446,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             }
             if (content.Contains("AdministratorPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword = (string) content.GetValueForProperty("AdministratorPassword",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword = (System.Security.SecureString) content.GetValueForProperty("AdministratorPassword",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).AdministratorPassword, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("HighAvailabilityTargetMode"))
             {

@@ -26,7 +26,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         public string ComponentName { get => this._componentName; set => this._componentName = value; }
 
         /// <summary>Backing field for <see cref="Content" /> property.</summary>
-        private string _content;
+        private System.Security.SecureString _content;
 
         /// <summary>
         /// Specifies the XML formatted content that is added to the unattend.xml file for
@@ -34,7 +34,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// include the root element for the setting or feature that is being inserted.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public string Content { get => this._content; set => this._content = value; }
+        public System.Security.SecureString Content { get => this._content; set => this._content = value; }
 
         /// <summary>Backing field for <see cref="PassName" /> property.</summary>
         private string _passName;
@@ -95,8 +95,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         the specified path and component. The XML must be less than 4KB and must
         include the root element for the setting or feature that is being inserted.",
         SerializedName = @"content",
-        PossibleTypes = new [] { typeof(string) })]
-        string Content { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString Content { get; set; }
         /// <summary>The pass name. Currently, the only allowable value is OobeSystem.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -142,7 +142,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// the specified path and component. The XML must be less than 4KB and must
         /// include the root element for the setting or feature that is being inserted.
         /// </summary>
-        string Content { get; set; }
+        System.Security.SecureString Content { get; set; }
         /// <summary>The pass name. Currently, the only allowable value is OobeSystem.</summary>
         string PassName { get; set; }
         /// <summary>

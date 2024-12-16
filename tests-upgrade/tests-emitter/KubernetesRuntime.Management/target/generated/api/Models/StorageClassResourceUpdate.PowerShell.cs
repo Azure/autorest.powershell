@@ -163,7 +163,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("TypePropertyAzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey = (string) content.GetValueForProperty("TypePropertyAzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("TypePropertyAzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("TypePropertyServer"))
             {
@@ -195,7 +195,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("TypePropertyPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword = (string) content.GetValueForProperty("TypePropertyPassword",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword = (System.Security.SecureString) content.GetValueForProperty("TypePropertyPassword",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword, (object ss) => (System.Security.SecureString)ss);
             }
             AfterDeserializeDictionary(content);
         }
@@ -268,7 +268,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("TypePropertyAzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey = (string) content.GetValueForProperty("TypePropertyAzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("TypePropertyAzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyAzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("TypePropertyServer"))
             {
@@ -300,7 +300,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("TypePropertyPassword"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword = (string) content.GetValueForProperty("TypePropertyPassword",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword = (System.Security.SecureString) content.GetValueForProperty("TypePropertyPassword",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassResourceUpdateInternal)this).TypePropertyPassword, (object ss) => (System.Security.SecureString)ss);
             }
             AfterDeserializePSObject(content);
         }

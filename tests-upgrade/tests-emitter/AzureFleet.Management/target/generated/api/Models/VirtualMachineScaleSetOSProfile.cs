@@ -12,7 +12,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     {
 
         /// <summary>Backing field for <see cref="AdminPassword" /> property.</summary>
-        private string _adminPassword;
+        private System.Security.SecureString _adminPassword;
 
         /// <summary>
         /// Specifies the password of the administrator account. <br><br> **Minimum-length
@@ -31,7 +31,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public string AdminPassword { get => this._adminPassword; set => this._adminPassword = value; }
+        public System.Security.SecureString AdminPassword { get => this._adminPassword; set => this._adminPassword = value; }
 
         /// <summary>Backing field for <see cref="AdminUsername" /> property.</summary>
         private string _adminUsername;
@@ -71,7 +71,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         public string ComputerNamePrefix { get => this._computerNamePrefix; set => this._computerNamePrefix = value; }
 
         /// <summary>Backing field for <see cref="CustomData" /> property.</summary>
-        private string _customData;
+        private System.Security.SecureString _customData;
 
         /// <summary>
         /// Specifies a base-64 encoded string of custom data. The base-64 encoded string
@@ -81,7 +81,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public string CustomData { get => this._customData; set => this._customData = value; }
+        public System.Security.SecureString CustomData { get => this._customData; set => this._customData = value; }
 
         /// <summary>Backing field for <see cref="LinuxConfiguration" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILinuxConfiguration _linuxConfiguration;
@@ -341,8 +341,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         repair disks on Azure Linux VMs using the VMAccess
         Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)",
         SerializedName = @"adminPassword",
-        PossibleTypes = new [] { typeof(string) })]
-        string AdminPassword { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString AdminPassword { get; set; }
         /// <summary>
         /// Specifies the name of the administrator account. <br><br> **Windows-only
         /// restriction:** Cannot end in "." <br><br> **Disallowed values:**
@@ -421,8 +421,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         your VM, see [Using cloud-init to customize a Linux VM during
         creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)",
         SerializedName = @"customData",
-        PossibleTypes = new [] { typeof(string) })]
-        string CustomData { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString CustomData { get; set; }
         /// <summary>Specifies whether password authentication should be disabled.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -806,7 +806,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// repair disks on Azure Linux VMs using the VMAccess
         /// Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)
         /// </summary>
-        string AdminPassword { get; set; }
+        System.Security.SecureString AdminPassword { get; set; }
         /// <summary>
         /// Specifies the name of the administrator account. <br><br> **Windows-only
         /// restriction:** Cannot end in "." <br><br> **Disallowed values:**
@@ -836,7 +836,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// your VM, see [Using cloud-init to customize a Linux VM during
         /// creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)
         /// </summary>
-        string CustomData { get; set; }
+        System.Security.SecureString CustomData { get; set; }
         /// <summary>
         /// Specifies the Linux operating system settings on the virtual machine. For a
         /// list of supported Linux distributions, see [Linux on Azure-Endorsed

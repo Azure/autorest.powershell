@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("AzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey = (string) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Type"))
             {
@@ -109,7 +109,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
             }
             if (content.Contains("AzureStorageAccountKey"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey = (string) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey = (System.Security.SecureString) content.GetValueForProperty("AzureStorageAccountKey",((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IBlobStorageClassTypePropertiesInternal)this).AzureStorageAccountKey, (object ss) => (System.Security.SecureString)ss);
             }
             if (content.Contains("Type"))
             {

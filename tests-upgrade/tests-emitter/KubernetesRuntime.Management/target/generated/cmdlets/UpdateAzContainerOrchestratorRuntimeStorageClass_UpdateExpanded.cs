@@ -266,8 +266,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Cmdlet
         ReadOnly = false,
         Description = @"Azure Storage Account Key",
         SerializedName = @"azureStorageAccountKey",
-        PossibleTypes = new [] { typeof(string) })]
-        public string TypePropertyAzureStorageAccountKey { get => _propertiesBody.TypePropertyAzureStorageAccountKey ?? null; set => _propertiesBody.TypePropertyAzureStorageAccountKey = value; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        public System.Security.SecureString TypePropertyAzureStorageAccountKey { get => _propertiesBody.TypePropertyAzureStorageAccountKey ?? null; set => _propertiesBody.TypePropertyAzureStorageAccountKey = value; }
 
         /// <summary>Azure Storage Account Name</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Azure Storage Account Name")]
@@ -335,8 +335,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Cmdlet
         ReadOnly = false,
         Description = @"Server password",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        public string TypePropertyPassword { get => _propertiesBody.TypePropertyPassword ?? null; set => _propertiesBody.TypePropertyPassword = value; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        public System.Security.SecureString TypePropertyPassword { get => _propertiesBody.TypePropertyPassword ?? null; set => _propertiesBody.TypePropertyPassword = value; }
 
         /// <summary>NFS Server</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "NFS Server")]

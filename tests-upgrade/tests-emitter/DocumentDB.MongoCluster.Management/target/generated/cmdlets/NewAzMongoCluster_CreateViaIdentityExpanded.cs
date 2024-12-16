@@ -61,8 +61,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
         ReadOnly = false,
         Description = @"The administrator password.",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        public string AdministratorPassword { get => _resourceBody.AdministratorPassword ?? null; set => _resourceBody.AdministratorPassword = value; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        public System.Security.SecureString AdministratorPassword { get => _resourceBody.AdministratorPassword ?? null; set => _resourceBody.AdministratorPassword = value; }
 
         /// <summary>The administrator user name.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The administrator user name.")]

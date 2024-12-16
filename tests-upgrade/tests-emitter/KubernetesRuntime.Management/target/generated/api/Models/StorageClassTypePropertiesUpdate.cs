@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
     {
 
         /// <summary>Backing field for <see cref="AzureStorageAccountKey" /> property.</summary>
-        private string _azureStorageAccountKey;
+        private System.Security.SecureString _azureStorageAccountKey;
 
         /// <summary>Azure Storage Account Key</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Owned)]
-        public string AzureStorageAccountKey { get => this._azureStorageAccountKey; set => this._azureStorageAccountKey = value; }
+        public System.Security.SecureString AzureStorageAccountKey { get => this._azureStorageAccountKey; set => this._azureStorageAccountKey = value; }
 
         /// <summary>Backing field for <see cref="AzureStorageAccountName" /> property.</summary>
         private string _azureStorageAccountName;
@@ -56,11 +56,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         public string OnDelete { get => this._onDelete; set => this._onDelete = value; }
 
         /// <summary>Backing field for <see cref="Password" /> property.</summary>
-        private string _password;
+        private System.Security.SecureString _password;
 
         /// <summary>Server password</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Owned)]
-        public string Password { get => this._password; set => this._password = value; }
+        public System.Security.SecureString Password { get => this._password; set => this._password = value; }
 
         /// <summary>Backing field for <see cref="Server" /> property.</summary>
         private string _server;
@@ -118,8 +118,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"Azure Storage Account Key",
         SerializedName = @"azureStorageAccountKey",
-        PossibleTypes = new [] { typeof(string) })]
-        string AzureStorageAccountKey { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString AzureStorageAccountKey { get; set; }
         /// <summary>Azure Storage Account Name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Info(
         Required = false,
@@ -187,8 +187,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"Server password",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        string Password { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString Password { get; set; }
         /// <summary>NFS Server</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Info(
         Required = false,
@@ -253,7 +253,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
 
     {
         /// <summary>Azure Storage Account Key</summary>
-        string AzureStorageAccountKey { get; set; }
+        System.Security.SecureString AzureStorageAccountKey { get; set; }
         /// <summary>Azure Storage Account Name</summary>
         string AzureStorageAccountName { get; set; }
         /// <summary>The backing storageclass used to create new storageclass</summary>
@@ -268,7 +268,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PSArgumentCompleterAttribute("Delete", "Retain")]
         string OnDelete { get; set; }
         /// <summary>Server password</summary>
-        string Password { get; set; }
+        System.Security.SecureString Password { get; set; }
         /// <summary>NFS Server</summary>
         string Server { get; set; }
         /// <summary>NFS share</summary>

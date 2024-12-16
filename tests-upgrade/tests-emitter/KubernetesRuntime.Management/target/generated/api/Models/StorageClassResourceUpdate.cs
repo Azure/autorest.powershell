@@ -60,7 +60,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
 
         /// <summary>Azure Storage Account Key</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Inlined)]
-        public string TypePropertyAzureStorageAccountKey { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyAzureStorageAccountKey; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyAzureStorageAccountKey = value ?? null; }
+        public System.Security.SecureString TypePropertyAzureStorageAccountKey { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyAzureStorageAccountKey; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyAzureStorageAccountKey = value ?? null; }
 
         /// <summary>Azure Storage Account Name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Inlined)]
@@ -86,7 +86,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
 
         /// <summary>Server password</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Inlined)]
-        public string TypePropertyPassword { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyPassword; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyPassword = value ?? null; }
+        public System.Security.SecureString TypePropertyPassword { get => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyPassword; set => ((Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassPropertiesUpdateInternal)Property).TypePropertyPassword = value ?? null; }
 
         /// <summary>NFS Server</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Origin(Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PropertyOrigin.Inlined)]
@@ -224,8 +224,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"Azure Storage Account Key",
         SerializedName = @"azureStorageAccountKey",
-        PossibleTypes = new [] { typeof(string) })]
-        string TypePropertyAzureStorageAccountKey { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString TypePropertyAzureStorageAccountKey { get; set; }
         /// <summary>Azure Storage Account Name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Info(
         Required = false,
@@ -293,8 +293,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         Update = true,
         Description = @"Server password",
         SerializedName = @"password",
-        PossibleTypes = new [] { typeof(string) })]
-        string TypePropertyPassword { get; set; }
+        PossibleTypes = new [] { typeof(System.Security.SecureString) })]
+        System.Security.SecureString TypePropertyPassword { get; set; }
         /// <summary>NFS Server</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Runtime.Info(
         Required = false,
@@ -386,7 +386,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         /// <summary>New storage class type of storageClass</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models.IStorageClassTypePropertiesUpdate TypeProperty { get; set; }
         /// <summary>Azure Storage Account Key</summary>
-        string TypePropertyAzureStorageAccountKey { get; set; }
+        System.Security.SecureString TypePropertyAzureStorageAccountKey { get; set; }
         /// <summary>Azure Storage Account Name</summary>
         string TypePropertyAzureStorageAccountName { get; set; }
         /// <summary>The backing storageclass used to create new storageclass</summary>
@@ -401,7 +401,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.Models
         [global::Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime.PSArgumentCompleterAttribute("Delete", "Retain")]
         string TypePropertyOnDelete { get; set; }
         /// <summary>Server password</summary>
-        string TypePropertyPassword { get; set; }
+        System.Security.SecureString TypePropertyPassword { get; set; }
         /// <summary>NFS Server</summary>
         string TypePropertyServer { get; set; }
         /// <summary>NFS share</summary>

@@ -136,11 +136,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? LocalStorageInGiBMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Max = value ?? default(float); }
+        public double? LocalStorageInGiBMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Max = value ?? default(double); }
 
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? LocalStorageInGiBMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Min = value ?? default(float); }
+        public double? LocalStorageInGiBMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)LocalStorageInGiB).Min = value ?? default(double); }
 
         /// <summary>Backing field for <see cref="LocalStorageSupport" /> property.</summary>
         private string _localStorageSupport;
@@ -164,11 +164,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? MemoryInGiBMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Max = value ?? default(float); }
+        public double? MemoryInGiBMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Max = value ?? default(double); }
 
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? MemoryInGiBMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Min = value ?? default(float); }
+        public double? MemoryInGiBMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiB).Min = value ?? default(double); }
 
         /// <summary>Backing field for <see cref="MemoryInGiBPerVcpu" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDouble _memoryInGiBPerVcpu;
@@ -181,11 +181,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? MemoryInGiBPerVcpuMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Max = value ?? default(float); }
+        public double? MemoryInGiBPerVcpuMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Max = value ?? default(double); }
 
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? MemoryInGiBPerVcpuMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Min = value ?? default(float); }
+        public double? MemoryInGiBPerVcpuMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)MemoryInGiBPerVcpu).Min = value ?? default(double); }
 
         /// <summary>Internal Acessors for AcceleratorCount</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxInteger Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributesInternal.AcceleratorCount { get => (this._acceleratorCount = this._acceleratorCount ?? new Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMAttributeMinMaxInteger()); set { {_acceleratorCount = value;} } }
@@ -226,11 +226,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
 
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? NetworkBandwidthInMbpsMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Max = value ?? default(float); }
+        public double? NetworkBandwidthInMbpsMax { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Max; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Max = value ?? default(double); }
 
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Inlined)]
-        public float? NetworkBandwidthInMbpsMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Min = value ?? default(float); }
+        public double? NetworkBandwidthInMbpsMin { get => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Min; set => ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDoubleInternal)NetworkBandwidthInMbps).Min = value ?? default(double); }
 
         /// <summary>Backing field for <see cref="NetworkInterfaceCount" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxInteger _networkInterfaceCount;
@@ -486,8 +486,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Maximum value. Double.MaxValue(1.7976931348623157E+308)",
         SerializedName = @"max",
-        PossibleTypes = new [] { typeof(float) })]
-        float? LocalStorageInGiBMax { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? LocalStorageInGiBMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -497,8 +497,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Minimum value. default 0. Double.MinValue()",
         SerializedName = @"min",
-        PossibleTypes = new [] { typeof(float) })]
-        float? LocalStorageInGiBMin { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? LocalStorageInGiBMin { get; set; }
         /// <summary>
         /// Specifies whether the VMSize supporting local storage should be used to build Fleet or not.
         /// Included - Default if not specified as most Azure VMs support local storage.
@@ -524,8 +524,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Maximum value. Double.MaxValue(1.7976931348623157E+308)",
         SerializedName = @"max",
-        PossibleTypes = new [] { typeof(float) })]
-        float? MemoryInGiBMax { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? MemoryInGiBMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -535,8 +535,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Minimum value. default 0. Double.MinValue()",
         SerializedName = @"min",
-        PossibleTypes = new [] { typeof(float) })]
-        float? MemoryInGiBMin { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? MemoryInGiBMin { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -546,8 +546,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Maximum value. Double.MaxValue(1.7976931348623157E+308)",
         SerializedName = @"max",
-        PossibleTypes = new [] { typeof(float) })]
-        float? MemoryInGiBPerVcpuMax { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? MemoryInGiBPerVcpuMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -557,8 +557,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Minimum value. default 0. Double.MinValue()",
         SerializedName = @"min",
-        PossibleTypes = new [] { typeof(float) })]
-        float? MemoryInGiBPerVcpuMin { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? MemoryInGiBPerVcpuMin { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -568,8 +568,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Maximum value. Double.MaxValue(1.7976931348623157E+308)",
         SerializedName = @"max",
-        PossibleTypes = new [] { typeof(float) })]
-        float? NetworkBandwidthInMbpsMax { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? NetworkBandwidthInMbpsMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -579,8 +579,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Update = true,
         Description = @"Minimum value. default 0. Double.MinValue()",
         SerializedName = @"min",
-        PossibleTypes = new [] { typeof(float) })]
-        float? NetworkBandwidthInMbpsMin { get; set; }
+        PossibleTypes = new [] { typeof(double) })]
+        double? NetworkBandwidthInMbpsMin { get; set; }
         /// <summary>Max VMSize from CRS, Max = 4294967295 (uint.MaxValue) if not specified.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
@@ -745,9 +745,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDouble LocalStorageInGiB { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
-        float? LocalStorageInGiBMax { get; set; }
+        double? LocalStorageInGiBMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
-        float? LocalStorageInGiBMin { get; set; }
+        double? LocalStorageInGiBMin { get; set; }
         /// <summary>
         /// Specifies whether the VMSize supporting local storage should be used to build Fleet or not.
         /// Included - Default if not specified as most Azure VMs support local storage.
@@ -760,26 +760,26 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDouble MemoryInGiB { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
-        float? MemoryInGiBMax { get; set; }
+        double? MemoryInGiBMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
-        float? MemoryInGiBMin { get; set; }
+        double? MemoryInGiBMin { get; set; }
         /// <summary>
         /// The range of memory in GiB per vCPU specified from min to max. Optional parameter. Either Min or Max is required if specified.
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDouble MemoryInGiBPerVcpu { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
-        float? MemoryInGiBPerVcpuMax { get; set; }
+        double? MemoryInGiBPerVcpuMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
-        float? MemoryInGiBPerVcpuMin { get; set; }
+        double? MemoryInGiBPerVcpuMin { get; set; }
         /// <summary>
         /// The range of network bandwidth in Mbps specified from Min to Max. Optional parameter. Either Min or Max is required if
         /// specified.
         /// </summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributeMinMaxDouble NetworkBandwidthInMbps { get; set; }
         /// <summary>Maximum value. Double.MaxValue(1.7976931348623157E+308)</summary>
-        float? NetworkBandwidthInMbpsMax { get; set; }
+        double? NetworkBandwidthInMbpsMax { get; set; }
         /// <summary>Minimum value. default 0. Double.MinValue()</summary>
-        float? NetworkBandwidthInMbpsMin { get; set; }
+        double? NetworkBandwidthInMbpsMin { get; set; }
         /// <summary>
         /// The range of network interface count specified from Min to Max. Optional parameter. Either Min or Max is required if specified.
         /// </summary>
