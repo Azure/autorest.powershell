@@ -139,6 +139,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Operation = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult>) content.GetValueForProperty("Operation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Operation, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.OperationStatusResultTypeConverter.ConvertFrom));
             }
+            if (content.Contains("ResourceId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId = (string) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId, global::System.Convert.ToString);
+            }
             if (content.Contains("Detail"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
@@ -207,6 +211,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             if (content.Contains("Operation"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Operation = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult>) content.GetValueForProperty("Operation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).Operation, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.OperationStatusResultTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("ResourceId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId = (string) content.GetValueForProperty("ResourceId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal)this).ResourceId, global::System.Convert.ToString);
             }
             if (content.Contains("Detail"))
             {

@@ -102,10 +102,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 return container;
             }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != this._display ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) this._display.ToJson(null,serializationMode) : null, "display" ,container.Add );
-            }
+            AddIf( null != this._display ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) this._display.ToJson(null,serializationMode) : null, "display" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.SerializationMode.IncludeRead))
             {
                 AddIf( null != (((object)this._name)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonString(this._name.ToString()) : null, "name" ,container.Add );
@@ -118,7 +115,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 AddIf( null != (((object)this._origin)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonString(this._origin.ToString()) : null, "origin" ,container.Add );
             }
-            AddIf( null != (((object)this._actionType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonString(this._actionType.ToString()) : null, "actionType" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != (((object)this._actionType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.Json.JsonString(this._actionType.ToString()) : null, "actionType" ,container.Add );
+            }
             AfterToJson(ref container);
             return container;
         }

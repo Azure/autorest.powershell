@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -99,10 +102,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 return container;
             }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != this._display ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) this._display.ToJson(null,serializationMode) : null, "display" ,container.Add );
-            }
+            AddIf( null != this._display ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) this._display.ToJson(null,serializationMode) : null, "display" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeRead))
             {
                 AddIf( null != (((object)this._name)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonString(this._name.ToString()) : null, "name" ,container.Add );
@@ -115,7 +115,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 AddIf( null != (((object)this._origin)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonString(this._origin.ToString()) : null, "origin" ,container.Add );
             }
-            AddIf( null != (((object)this._actionType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonString(this._actionType.ToString()) : null, "actionType" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.SerializationMode.IncludeRead))
+            {
+                AddIf( null != (((object)this._actionType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Json.JsonString(this._actionType.ToString()) : null, "actionType" ,container.Add );
+            }
             AfterToJson(ref container);
             return container;
         }

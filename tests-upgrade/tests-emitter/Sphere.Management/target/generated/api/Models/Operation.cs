@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -17,14 +20,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
-        public string ActionType { get => this._actionType; set => this._actionType = value; }
+        public string ActionType { get => this._actionType; }
 
         /// <summary>Backing field for <see cref="Display" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationDisplay _display;
 
         /// <summary>Localized display information for this particular operation.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
-        internal Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationDisplay Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.OperationDisplay()); }
+        internal Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationDisplay Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.OperationDisplay()); set => this._display = value; }
 
         /// <summary>
         /// The short, localized friendly description of the operation; suitable for tool tips and detailed views.
@@ -60,6 +63,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
         public bool? IsDataAction { get => this._isDataAction; }
+
+        /// <summary>Internal Acessors for ActionType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationInternal.ActionType { get => this._actionType; set { {_actionType = value;} } }
 
         /// <summary>Internal Acessors for Display</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationDisplay Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IOperationInternal.Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.OperationDisplay()); set { {_display = value;} } }
@@ -120,15 +126,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Info(
         Required = false,
-        ReadOnly = false,
+        ReadOnly = true,
         Read = true,
-        Create = true,
-        Update = true,
+        Create = false,
+        Update = false,
         Description = @"Extensible enum. Indicates the action type. ""Internal"" refers to actions that are for internal only APIs.",
         SerializedName = @"actionType",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.PSArgumentCompleterAttribute("Internal")]
-        string ActionType { get; set; }
+        string ActionType { get;  }
         /// <summary>
         /// The short, localized friendly description of the operation; suitable for tool tips and detailed views.
         /// </summary>

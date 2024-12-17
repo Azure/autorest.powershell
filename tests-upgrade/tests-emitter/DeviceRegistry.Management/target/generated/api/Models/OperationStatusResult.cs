@@ -63,6 +63,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>Internal Acessors for Message</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal.Message { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetailInternal)Error).Message; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetailInternal)Error).Message = value; }
 
+        /// <summary>Internal Acessors for ResourceId</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal.ResourceId { get => this._resourceId; set { {_resourceId = value;} } }
+
         /// <summary>Internal Acessors for Target</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResultInternal.Target { get => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetailInternal)Error).Target; set => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetailInternal)Error).Target = value; }
 
@@ -90,6 +93,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>Gets the resource group name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
         public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>Backing field for <see cref="ResourceId" /> property.</summary>
+        private string _resourceId;
+
+        /// <summary>
+        /// Fully qualified ID of the resource against which the original async operation was started.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
+        public string ResourceId { get => this._resourceId; }
 
         /// <summary>Backing field for <see cref="StartTime" /> property.</summary>
         private global::System.DateTime? _startTime;
@@ -218,6 +230,19 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         SerializedName = @"percentComplete",
         PossibleTypes = new [] { typeof(double) })]
         double? PercentComplete { get; set; }
+        /// <summary>
+        /// Fully qualified ID of the resource against which the original async operation was started.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Fully qualified ID of the resource against which the original async operation was started.",
+        SerializedName = @"resourceId",
+        PossibleTypes = new [] { typeof(string) })]
+        string ResourceId { get;  }
         /// <summary>The start time of the operation.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
         Required = false,
@@ -277,6 +302,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationStatusResult> Operation { get; set; }
         /// <summary>Percent of the operation that is complete.</summary>
         double? PercentComplete { get; set; }
+        /// <summary>
+        /// Fully qualified ID of the resource against which the original async operation was started.
+        /// </summary>
+        string ResourceId { get; set; }
         /// <summary>The start time of the operation.</summary>
         global::System.DateTime? StartTime { get; set; }
         /// <summary>Operation status.</summary>
