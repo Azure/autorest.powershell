@@ -266,7 +266,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
         Update = true,
         Description = @"The administrator password.",
@@ -336,9 +336,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
-        Update = true,
+        Update = false,
         Description = @"The mode to create a mongo cluster.",
         SerializedName = @"createMode",
         PossibleTypes = new [] { typeof(string) })]
@@ -418,9 +418,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
-        Update = true,
+        Update = false,
         Description = @"The location of the source cluster",
         SerializedName = @"sourceLocation",
         PossibleTypes = new [] { typeof(string) })]
@@ -429,9 +429,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
-        Update = true,
+        Update = false,
         Description = @"The id of the replication source cluster.",
         SerializedName = @"sourceResourceId",
         PossibleTypes = new [] { typeof(string) })]
@@ -475,9 +475,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
-        Update = true,
+        Update = false,
         Description = @"UTC point in time to restore a mongo cluster",
         SerializedName = @"pointInTimeUTC",
         PossibleTypes = new [] { typeof(global::System.DateTime) })]
@@ -486,9 +486,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
-        Update = true,
+        Update = false,
         Description = @"Resource ID to locate the source cluster to restore",
         SerializedName = @"sourceResourceId",
         PossibleTypes = new [] { typeof(string) })]

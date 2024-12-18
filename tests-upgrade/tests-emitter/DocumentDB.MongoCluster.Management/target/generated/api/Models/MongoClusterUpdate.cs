@@ -108,7 +108,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
         Update = true,
         Description = @"The administrator password.",

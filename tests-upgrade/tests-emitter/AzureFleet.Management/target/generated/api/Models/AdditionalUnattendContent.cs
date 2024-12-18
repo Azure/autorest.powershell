@@ -88,7 +88,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
         Update = true,
         Description = @"Specifies the XML formatted content that is added to the unattend.xml file for
