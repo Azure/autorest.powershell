@@ -108,6 +108,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Cmdlets
         /// <summary>Accessor for our copy of the InvocationInfo.</summary>
         public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
 
+        /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Azure subscription id for the the marketplace offer is purchased from")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Azure subscription id for the the marketplace offer is purchased from",
+        SerializedName = @"subscriptionId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string MarketplaceSubscriptionId { get => _resourceBody.MarketplaceSubscriptionId ?? null; set => _resourceBody.MarketplaceSubscriptionId = value; }
+
         /// <summary>
         /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
         /// </summary>
@@ -123,6 +134,72 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Cmdlets
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Run the command asynchronously")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter NoWait { get; set; }
+
+        /// <summary>Offer Id for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Offer Id for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Offer Id for the marketplace offer",
+        SerializedName = @"offerId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailOfferId { get => _resourceBody.OfferDetailOfferId ?? null; set => _resourceBody.OfferDetailOfferId = value; }
+
+        /// <summary>Plan Id for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Plan Id for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Plan Id for the marketplace offer",
+        SerializedName = @"planId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailPlanId { get => _resourceBody.OfferDetailPlanId ?? null; set => _resourceBody.OfferDetailPlanId = value; }
+
+        /// <summary>Plan Name for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Plan Name for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Plan Name for the marketplace offer",
+        SerializedName = @"planName",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailPlanName { get => _resourceBody.OfferDetailPlanName ?? null; set => _resourceBody.OfferDetailPlanName = value; }
+
+        /// <summary>Publisher Id for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Publisher Id for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Publisher Id for the marketplace offer",
+        SerializedName = @"publisherId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailPublisherId { get => _resourceBody.OfferDetailPublisherId ?? null; set => _resourceBody.OfferDetailPublisherId = value; }
+
+        /// <summary>Plan Display Name for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Plan Display Name for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Plan Display Name for the marketplace offer",
+        SerializedName = @"termId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailTermId { get => _resourceBody.OfferDetailTermId ?? null; set => _resourceBody.OfferDetailTermId = value; }
+
+        /// <summary>Plan Display Name for the marketplace offer</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Plan Display Name for the marketplace offer")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Category(global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Plan Display Name for the marketplace offer",
+        SerializedName = @"termUnit",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OfferDetailTermUnit { get => _resourceBody.OfferDetailTermUnit ?? null; set => _resourceBody.OfferDetailTermUnit = value; }
 
         /// <summary>The region of the instance</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The region of the instance")]
@@ -629,6 +706,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Cmdlets
             {
                 this.PartnerPropertyRegion = (string)(this.MyInvocation?.BoundParameters["PartnerPropertyRegion"]);
             }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("MarketplaceSubscriptionId")))
+            {
+                this.MarketplaceSubscriptionId = (string)(this.MyInvocation?.BoundParameters["MarketplaceSubscriptionId"]);
+            }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("UserFirstName")))
             {
                 this.UserFirstName = (string)(this.MyInvocation?.BoundParameters["UserFirstName"]);
@@ -648,6 +729,30 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Cmdlets
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("PartnerPropertySubdomain")))
             {
                 this.PartnerPropertySubdomain = (string)(this.MyInvocation?.BoundParameters["PartnerPropertySubdomain"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailPublisherId")))
+            {
+                this.OfferDetailPublisherId = (string)(this.MyInvocation?.BoundParameters["OfferDetailPublisherId"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailOfferId")))
+            {
+                this.OfferDetailOfferId = (string)(this.MyInvocation?.BoundParameters["OfferDetailOfferId"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailPlanId")))
+            {
+                this.OfferDetailPlanId = (string)(this.MyInvocation?.BoundParameters["OfferDetailPlanId"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailPlanName")))
+            {
+                this.OfferDetailPlanName = (string)(this.MyInvocation?.BoundParameters["OfferDetailPlanName"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailTermUnit")))
+            {
+                this.OfferDetailTermUnit = (string)(this.MyInvocation?.BoundParameters["OfferDetailTermUnit"]);
+            }
+            if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("OfferDetailTermId")))
+            {
+                this.OfferDetailTermId = (string)(this.MyInvocation?.BoundParameters["OfferDetailTermId"]);
             }
         }
 

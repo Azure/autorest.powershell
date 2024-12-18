@@ -20,14 +20,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Owned)]
-        public string ActionType { get => this._actionType; set => this._actionType = value; }
+        public string ActionType { get => this._actionType; }
 
         /// <summary>Backing field for <see cref="Display" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationDisplay _display;
 
         /// <summary>Localized display information for this particular operation.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Owned)]
-        internal Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationDisplay Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.OperationDisplay()); }
+        internal Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationDisplay Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.OperationDisplay()); set => this._display = value; }
 
         /// <summary>
         /// The short, localized friendly description of the operation; suitable for tool tips and detailed views.
@@ -63,6 +63,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Owned)]
         public bool? IsDataAction { get => this._isDataAction; }
+
+        /// <summary>Internal Acessors for ActionType</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationInternal.ActionType { get => this._actionType; set { {_actionType = value;} } }
 
         /// <summary>Internal Acessors for Display</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationDisplay Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationInternal.Display { get => (this._display = this._display ?? new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.OperationDisplay()); set { {_display = value;} } }
@@ -123,15 +126,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
-        ReadOnly = false,
+        ReadOnly = true,
         Read = true,
-        Create = true,
-        Update = true,
+        Create = false,
+        Update = false,
         Description = @"Extensible enum. Indicates the action type. ""Internal"" refers to actions that are for internal only APIs.",
         SerializedName = @"actionType",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Internal")]
-        string ActionType { get; set; }
+        string ActionType { get;  }
         /// <summary>
         /// The short, localized friendly description of the operation; suitable for tool tips and detailed views.
         /// </summary>

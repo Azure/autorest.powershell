@@ -102,10 +102,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             {
                 return container;
             }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.SerializationMode.IncludeRead)||serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.SerializationMode.IncludeCreate))
-            {
-                AddIf( null != this._marketplace ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) this._marketplace.ToJson(null,serializationMode) : null, "marketplace" ,container.Add );
-            }
+            AddIf( null != this._marketplace ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) this._marketplace.ToJson(null,serializationMode) : null, "marketplace" ,container.Add );
             AddIf( null != this._user ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) this._user.ToJson(null,serializationMode) : null, "user" ,container.Add );
             AddIf( null != this._partnerProperty ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) this._partnerProperty.ToJson(null,serializationMode) : null, "partnerProperties" ,container.Add );
             AddIf( null != this._singleSignOnProperty ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) this._singleSignOnProperty.ToJson(null,serializationMode) : null, "singleSignOnProperties" ,container.Add );
