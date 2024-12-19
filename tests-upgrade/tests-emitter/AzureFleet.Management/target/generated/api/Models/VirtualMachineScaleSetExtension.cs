@@ -229,7 +229,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Read = true,
+        Read = false,
         Create = true,
         Update = true,
         Description = @"The extension can contain either protectedSettings or

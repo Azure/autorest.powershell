@@ -75,8 +75,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 return;
             }
-            {_restoreParameter = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("restoreParameters"), out var __jsonRestoreParameters) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterRestoreParameters.FromJson(__jsonRestoreParameters) : _restoreParameter;}
-            {_replicaParameter = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("replicaParameters"), out var __jsonReplicaParameters) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.MongoClusterReplicaParameters.FromJson(__jsonReplicaParameters) : _replicaParameter;}
             {_administrator = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("administrator"), out var __jsonAdministrator) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.AdministratorProperties.FromJson(__jsonAdministrator) : _administrator;}
             {_highAvailability = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("highAvailability"), out var __jsonHighAvailability) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.HighAvailabilityProperties.FromJson(__jsonHighAvailability) : _highAvailability;}
             {_storage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("storage"), out var __jsonStorage) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.StorageProperties.FromJson(__jsonStorage) : _storage;}
@@ -84,7 +82,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {_compute = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("compute"), out var __jsonCompute) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ComputeProperties.FromJson(__jsonCompute) : _compute;}
             {_backup = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("backup"), out var __jsonBackup) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupProperties.FromJson(__jsonBackup) : _backup;}
             {_replica = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("replica"), out var __jsonReplica) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ReplicationProperties.FromJson(__jsonReplica) : _replica;}
-            {_createMode = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("createMode"), out var __jsonCreateMode) ? (string)__jsonCreateMode : (string)_createMode;}
             {_serverVersion = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("serverVersion"), out var __jsonServerVersion) ? (string)__jsonServerVersion : (string)_serverVersion;}
             {_connectionString = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("connectionString"), out var __jsonConnectionString) ? (string)__jsonConnectionString : (string)_connectionString;}
             {_provisioningState = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("provisioningState"), out var __jsonProvisioningState) ? (string)__jsonProvisioningState : (string)_provisioningState;}
@@ -115,8 +112,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 return container;
             }
-            AddIf( null != this._restoreParameter ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._restoreParameter.ToJson(null,serializationMode) : null, "restoreParameters" ,container.Add );
-            AddIf( null != this._replicaParameter ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._replicaParameter.ToJson(null,serializationMode) : null, "replicaParameters" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate))
+            {
+                AddIf( null != this._restoreParameter ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._restoreParameter.ToJson(null,serializationMode) : null, "restoreParameters" ,container.Add );
+            }
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate))
+            {
+                AddIf( null != this._replicaParameter ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._replicaParameter.ToJson(null,serializationMode) : null, "replicaParameters" ,container.Add );
+            }
             AddIf( null != this._administrator ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._administrator.ToJson(null,serializationMode) : null, "administrator" ,container.Add );
             AddIf( null != this._highAvailability ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._highAvailability.ToJson(null,serializationMode) : null, "highAvailability" ,container.Add );
             AddIf( null != this._storage ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._storage.ToJson(null,serializationMode) : null, "storage" ,container.Add );
@@ -127,7 +130,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 AddIf( null != this._replica ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._replica.ToJson(null,serializationMode) : null, "replica" ,container.Add );
             }
-            AddIf( null != (((object)this._createMode)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(this._createMode.ToString()) : null, "createMode" ,container.Add );
+            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate))
+            {
+                AddIf( null != (((object)this._createMode)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(this._createMode.ToString()) : null, "createMode" ,container.Add );
+            }
             AddIf( null != (((object)this._serverVersion)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString(this._serverVersion.ToString()) : null, "serverVersion" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeRead))
             {

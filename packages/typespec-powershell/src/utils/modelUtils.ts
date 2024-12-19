@@ -883,7 +883,7 @@ function getSchemaForModel(
       property.required = true;
     }
     const vis = getVisibility(program, prop);
-    if (vis && vis.includes("read")) {
+    if (vis) {
       if (vis.includes("read")) {
         if (vis.length === 1) {
           property.readOnly = true;
