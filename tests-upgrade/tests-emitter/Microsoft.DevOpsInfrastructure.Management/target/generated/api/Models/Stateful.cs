@@ -29,14 +29,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
         public string GracePeriodTimeSpan { get => this._gracePeriodTimeSpan; set => this._gracePeriodTimeSpan = value; }
 
-        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
-        private string _kind= @"Stateful";
-
-        /// <summary>
-        /// Stateful profile meaning that the machines will be returned to the pool after running a job.
-        /// </summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
-        public string Kind { get => this._kind; }
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
+        public string Kind { get => "Stateful"; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).Kind = "Stateful"; }
 
         /// <summary>Backing field for <see cref="MaxAgentLifetime" /> property.</summary>
         private string _maxAgentLifetime;
@@ -47,9 +43,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
 
         /// <summary>Internal Acessors for ResourcePredictionsProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictionsProfile Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal.ResourcePredictionsProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).ResourcePredictionsProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).ResourcePredictionsProfile = value; }
-
-        /// <summary>Internal Acessors for Kind</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IStatefulInternal.Kind { get => this._kind; set { {_kind = value;} } }
 
         /// <summary>Defines pool buffer/stand-by agents.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
@@ -66,7 +59,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>Creates an new <see cref="Stateful" /> instance.</summary>
         public Stateful()
         {
-
+            this.__agentProfile.Kind = "Stateful";
         }
 
         /// <summary>Validates that this object meets the validation criteria.</summary>
@@ -100,19 +93,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         SerializedName = @"gracePeriodTimeSpan",
         PossibleTypes = new [] { typeof(string) })]
         string GracePeriodTimeSpan { get; set; }
-        /// <summary>
-        /// Stateful profile meaning that the machines will be returned to the pool after running a job.
-        /// </summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
-        Required = true,
-        ReadOnly = true,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"Stateful profile meaning that the machines will be returned to the pool after running a job.",
-        SerializedName = @"kind",
-        PossibleTypes = new [] { typeof(string) })]
-        string Kind { get;  }
         /// <summary>How long should stateful machines be kept around. The maximum is one week.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -135,10 +115,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// week.
         /// </summary>
         string GracePeriodTimeSpan { get; set; }
-        /// <summary>
-        /// Stateful profile meaning that the machines will be returned to the pool after running a job.
-        /// </summary>
-        string Kind { get; set; }
         /// <summary>How long should stateful machines be kept around. The maximum is one week.</summary>
         string MaxAgentLifetime { get; set; }
 

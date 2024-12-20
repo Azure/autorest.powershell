@@ -140,13 +140,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).NetworkProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.INetworkProfile) content.GetValueForProperty("NetworkProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).NetworkProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.NetworkProfileTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Kind"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Kind, global::System.Convert.ToString);
-            }
             if (content.Contains("Image"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Image = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage>) content.GetValueForProperty("Image",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Image, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.PoolImageTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Kind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal)this).Kind, global::System.Convert.ToString);
             }
             if (content.Contains("OSProfileLogonType"))
             {
@@ -217,13 +217,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).NetworkProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.INetworkProfile) content.GetValueForProperty("NetworkProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).NetworkProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.NetworkProfileTypeConverter.ConvertFrom);
             }
-            if (content.Contains("Kind"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Kind, global::System.Convert.ToString);
-            }
             if (content.Contains("Image"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Image = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage>) content.GetValueForProperty("Image",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).Image, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage>(__y, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.PoolImageTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Kind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal)this).Kind, global::System.Convert.ToString);
             }
             if (content.Contains("OSProfileLogonType"))
             {

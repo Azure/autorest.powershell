@@ -17,15 +17,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// </summary>
         private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile __organizationProfile = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfile();
 
-        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
-        private string _kind= @"AzureDevOps";
-
-        /// <summary>Azure DevOps organization profile</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
-        public string Kind { get => this._kind; }
-
-        /// <summary>Internal Acessors for Kind</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAzureDevOpsOrganizationProfileInternal.Kind { get => this._kind; set { {_kind = value;} } }
+        /// <summary>Discriminator property for OrganizationProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
+        public string Kind { get => "AzureDevOps"; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal)__organizationProfile).Kind = "AzureDevOps"; }
 
         /// <summary>Internal Acessors for PermissionProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAzureDevOpsPermissionProfile Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAzureDevOpsOrganizationProfileInternal.PermissionProfile { get => (this._permissionProfile = this._permissionProfile ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AzureDevOpsPermissionProfile()); set { {_permissionProfile = value;} } }
@@ -61,7 +56,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>Creates an new <see cref="AzureDevOpsOrganizationProfile" /> instance.</summary>
         public AzureDevOpsOrganizationProfile()
         {
-
+            this.__organizationProfile.Kind = "AzureDevOps";
         }
 
         /// <summary>Validates that this object meets the validation criteria.</summary>
@@ -81,17 +76,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IJsonSerializable,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile
     {
-        /// <summary>Azure DevOps organization profile</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
-        Required = true,
-        ReadOnly = true,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"Azure DevOps organization profile",
-        SerializedName = @"kind",
-        PossibleTypes = new [] { typeof(string) })]
-        string Kind { get;  }
         /// <summary>The list of Azure DevOps organizations the pool should be present in.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = true,
@@ -143,8 +127,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     internal partial interface IAzureDevOpsOrganizationProfileInternal :
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal
     {
-        /// <summary>Azure DevOps organization profile</summary>
-        string Kind { get; set; }
         /// <summary>The list of Azure DevOps organizations the pool should be present in.</summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganization> Organization { get; set; }
         /// <summary>

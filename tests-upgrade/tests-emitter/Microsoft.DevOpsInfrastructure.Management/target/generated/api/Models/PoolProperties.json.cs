@@ -75,11 +75,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 return;
             }
+            {_organizationProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("organizationProfile"), out var __jsonOrganizationProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfile.FromJson(__jsonOrganizationProfile) : _organizationProfile;}
             {_agentProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("agentProfile"), out var __jsonAgentProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfile.FromJson(__jsonAgentProfile) : _agentProfile;}
+            {_fabricProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("fabricProfile"), out var __jsonFabricProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.FabricProfile.FromJson(__jsonFabricProfile) : _fabricProfile;}
             {_provisioningState = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("provisioningState"), out var __jsonProvisioningState) ? (string)__jsonProvisioningState : (string)_provisioningState;}
             {_maximumConcurrency = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNumber>("maximumConcurrency"), out var __jsonMaximumConcurrency) ? (int)__jsonMaximumConcurrency : _maximumConcurrency;}
-            {_organizationProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("organizationProfile"), out var __jsonOrganizationProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfile.FromJson(__jsonOrganizationProfile) : _organizationProfile;}
-            {_fabricProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("fabricProfile"), out var __jsonFabricProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.FabricProfile.FromJson(__jsonFabricProfile) : _fabricProfile;}
             {_devCenterProjectResourceId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("devCenterProjectResourceId"), out var __jsonDevCenterProjectResourceId) ? (string)__jsonDevCenterProjectResourceId : (string)_devCenterProjectResourceId;}
             AfterFromJson(json);
         }
@@ -103,11 +103,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 return container;
             }
+            AddIf( null != this._organizationProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._organizationProfile.ToJson(null,serializationMode) : null, "organizationProfile" ,container.Add );
             AddIf( null != this._agentProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._agentProfile.ToJson(null,serializationMode) : null, "agentProfile" ,container.Add );
+            AddIf( null != this._fabricProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._fabricProfile.ToJson(null,serializationMode) : null, "fabricProfile" ,container.Add );
             AddIf( null != (((object)this._provisioningState)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._provisioningState.ToString()) : null, "provisioningState" ,container.Add );
             AddIf( (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNumber(this._maximumConcurrency), "maximumConcurrency" ,container.Add );
-            AddIf( null != this._organizationProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._organizationProfile.ToJson(null,serializationMode) : null, "organizationProfile" ,container.Add );
-            AddIf( null != this._fabricProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._fabricProfile.ToJson(null,serializationMode) : null, "fabricProfile" ,container.Add );
             AddIf( null != (((object)this._devCenterProjectResourceId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._devCenterProjectResourceId.ToString()) : null, "devCenterProjectResourceId" ,container.Add );
             AfterToJson(ref container);
             return container;

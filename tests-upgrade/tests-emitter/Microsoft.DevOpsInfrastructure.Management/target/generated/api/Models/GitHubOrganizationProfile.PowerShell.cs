@@ -107,13 +107,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return;
             }
             // actually deserialize
-            if (content.Contains("Kind"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Kind, global::System.Convert.ToString);
-            }
             if (content.Contains("Organization"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Organization = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganization>) content.GetValueForProperty("Organization",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Organization, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganization>(__y, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.GitHubOrganizationTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Kind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal)this).Kind, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
@@ -132,13 +132,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return;
             }
             // actually deserialize
-            if (content.Contains("Kind"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Kind, global::System.Convert.ToString);
-            }
             if (content.Contains("Organization"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Organization = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganization>) content.GetValueForProperty("Organization",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganizationProfileInternal)this).Organization, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IGitHubOrganization>(__y, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.GitHubOrganizationTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("Kind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal)this).Kind = (string) content.GetValueForProperty("Kind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfileInternal)this).Kind, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }

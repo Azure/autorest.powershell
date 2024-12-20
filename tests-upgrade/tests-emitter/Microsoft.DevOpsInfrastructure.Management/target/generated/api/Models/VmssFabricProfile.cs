@@ -24,15 +24,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
         public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage> Image { get => this._image; set => this._image = value; }
 
-        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
-        private string _kind= @"Vmss";
-
-        /// <summary>Virtual Machine Scale Sets</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
-        public string Kind { get => this._kind; }
-
-        /// <summary>Internal Acessors for Kind</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal.Kind { get => this._kind; set { {_kind = value;} } }
+        /// <summary>Discriminator property for FabricProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
+        public string Kind { get => "Vmss"; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal)__fabricProfile).Kind = "Vmss"; }
 
         /// <summary>Internal Acessors for NetworkProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.INetworkProfile Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal.NetworkProfile { get => (this._networkProfile = this._networkProfile ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.NetworkProfile()); set { {_networkProfile = value;} } }
@@ -126,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>Creates an new <see cref="VmssFabricProfile" /> instance.</summary>
         public VmssFabricProfile()
         {
-
+            this.__fabricProfile.Kind = "Vmss";
         }
     }
     /// The agents will run on Virtual Machine Scale Sets.
@@ -145,17 +140,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         SerializedName = @"images",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage) })]
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage> Image { get; set; }
-        /// <summary>Virtual Machine Scale Sets</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
-        Required = true,
-        ReadOnly = true,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"Virtual Machine Scale Sets",
-        SerializedName = @"kind",
-        PossibleTypes = new [] { typeof(string) })]
-        string Kind { get;  }
         /// <summary>The subnet id on which to put all machines created in the pool.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -256,8 +240,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     {
         /// <summary>The VM images of the machines in the pool.</summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage> Image { get; set; }
-        /// <summary>Virtual Machine Scale Sets</summary>
-        string Kind { get; set; }
         /// <summary>The network profile of the machines in the pool.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.INetworkProfile NetworkProfile { get; set; }
         /// <summary>The subnet id on which to put all machines created in the pool.</summary>

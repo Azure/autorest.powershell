@@ -65,7 +65,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             __organizationProfile = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfile(json);
             {_permissionProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("permissionProfile"), out var __jsonPermissionProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AzureDevOpsPermissionProfile.FromJson(__jsonPermissionProfile) : _permissionProfile;}
-            {_kind = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("kind"), out var __jsonKind) ? (string)__jsonKind : (string)_kind;}
             {_organization = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray>("organizations"), out var __jsonOrganizations) ? If( __jsonOrganizations as Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganization>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganization) (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.Organization.FromJson(__u) )) ))() : null : _organization;}
             AfterFromJson(json);
         }
@@ -103,7 +102,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             __organizationProfile?.ToJson(container, serializationMode);
             AddIf( null != this._permissionProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._permissionProfile.ToJson(null,serializationMode) : null, "permissionProfile" ,container.Add );
-            AddIf( null != (((object)this._kind)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._kind.ToString()) : null, "kind" ,container.Add );
             if (null != this._organization)
             {
                 var __w = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.XNodeArray();

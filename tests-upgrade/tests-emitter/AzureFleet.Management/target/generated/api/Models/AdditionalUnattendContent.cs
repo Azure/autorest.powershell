@@ -79,6 +79,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Microsoft-Windows-Shell-Setup.",
         SerializedName = @"componentName",
         PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("Microsoft-Windows-Shell-Setup")]
         string ComponentName { get; set; }
         /// <summary>
         /// Specifies the XML formatted content that is added to the unattend.xml file for
@@ -107,6 +108,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         Description = @"The pass name. Currently, the only allowable value is OobeSystem.",
         SerializedName = @"passName",
         PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("OobeSystem")]
         string PassName { get; set; }
         /// <summary>
         /// Specifies the name of the setting to which the content applies. Possible values
@@ -136,6 +138,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// The component name. Currently, the only allowable value is
         /// Microsoft-Windows-Shell-Setup.
         /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("Microsoft-Windows-Shell-Setup")]
         string ComponentName { get; set; }
         /// <summary>
         /// Specifies the XML formatted content that is added to the unattend.xml file for
@@ -144,6 +147,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// </summary>
         System.Security.SecureString Content { get; set; }
         /// <summary>The pass name. Currently, the only allowable value is OobeSystem.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PSArgumentCompleterAttribute("OobeSystem")]
         string PassName { get; set; }
         /// <summary>
         /// Specifies the name of the setting to which the content applies. Possible values
