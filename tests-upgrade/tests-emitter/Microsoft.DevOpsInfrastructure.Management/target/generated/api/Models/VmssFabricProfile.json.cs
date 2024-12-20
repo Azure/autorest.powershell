@@ -87,7 +87,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             AddIf( null != this._oSProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._oSProfile.ToJson(null,serializationMode) : null, "osProfile" ,container.Add );
             AddIf( null != this._storageProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._storageProfile.ToJson(null,serializationMode) : null, "storageProfile" ,container.Add );
             AddIf( null != this._networkProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._networkProfile.ToJson(null,serializationMode) : null, "networkProfile" ,container.Add );
-            AddIf( null != (((object)this._kind)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._kind.ToString()) : null, "kind" ,container.Add );
             if (null != this._image)
             {
                 var __w = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.XNodeArray();
@@ -118,7 +117,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {_oSProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("osProfile"), out var __jsonOSProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OSProfile.FromJson(__jsonOSProfile) : _oSProfile;}
             {_storageProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("storageProfile"), out var __jsonStorageProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.StorageProfile.FromJson(__jsonStorageProfile) : _storageProfile;}
             {_networkProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("networkProfile"), out var __jsonNetworkProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.NetworkProfile.FromJson(__jsonNetworkProfile) : _networkProfile;}
-            {_kind = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("kind"), out var __jsonKind) ? (string)__jsonKind : (string)_kind;}
             {_image = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray>("images"), out var __jsonImages) ? If( __jsonImages as Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImage) (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.PoolImage.FromJson(__u) )) ))() : null : _image;}
             AfterFromJson(json);
         }

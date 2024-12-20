@@ -19,20 +19,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// </summary>
         private Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile __agentProfile = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfile();
 
-        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
-        private string _kind= @"Stateless";
-
-        /// <summary>
-        /// Stateless profile meaning that the machines will be cleaned up after running a job.
-        /// </summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
-        public string Kind { get => this._kind; }
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Constant]
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
+        public string Kind { get => "Stateless"; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).Kind = "Stateless"; }
 
         /// <summary>Internal Acessors for ResourcePredictionsProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictionsProfile Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal.ResourcePredictionsProfile { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).ResourcePredictionsProfile; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal)__agentProfile).ResourcePredictionsProfile = value; }
-
-        /// <summary>Internal Acessors for Kind</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IStatelessAgentProfileInternal.Kind { get => this._kind; set { {_kind = value;} } }
 
         /// <summary>Defines pool buffer/stand-by agents.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inherited)]
@@ -49,7 +42,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// <summary>Creates an new <see cref="StatelessAgentProfile" /> instance.</summary>
         public StatelessAgentProfile()
         {
-
+            this.__agentProfile.Kind = "Stateless";
         }
 
         /// <summary>Validates that this object meets the validation criteria.</summary>
@@ -69,29 +62,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IJsonSerializable,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile
     {
-        /// <summary>
-        /// Stateless profile meaning that the machines will be cleaned up after running a job.
-        /// </summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
-        Required = true,
-        ReadOnly = true,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"Stateless profile meaning that the machines will be cleaned up after running a job.",
-        SerializedName = @"kind",
-        PossibleTypes = new [] { typeof(string) })]
-        string Kind { get;  }
 
     }
     /// Stateless profile meaning that the machines will be cleaned up after running a job.
     internal partial interface IStatelessAgentProfileInternal :
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal
     {
-        /// <summary>
-        /// Stateless profile meaning that the machines will be cleaned up after running a job.
-        /// </summary>
-        string Kind { get; set; }
 
     }
 }

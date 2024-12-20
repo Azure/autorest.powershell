@@ -52,6 +52,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
         /// </summary>
         private int _responseSize = 0;
 
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Discriminator property for AgentProfile.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Discriminator property for AgentProfile.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        public string AgentProfileKind { get => _resourceBody.AgentProfileKind ?? null; set => _resourceBody.AgentProfileKind = value; }
+
         /// <summary>Defines pool buffer/stand-by agents.</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Defines pool buffer/stand-by agents.")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.ParameterCategory.Body)]
@@ -107,16 +118,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
         /// <summary>Accessor for extensibleParameters.</summary>
         public global::System.Collections.Generic.IDictionary<global::System.String,global::System.Object> ExtensibleParameters { get => _extensibleParameters ; }
 
-        /// <summary>Defines the type of fabric the agent will run on.</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Defines the type of fabric the agent will run on.")]
+        /// <summary>Discriminator property for FabricProfile.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Discriminator property for FabricProfile.")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.ParameterCategory.Body)]
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Description = @"Defines the type of fabric the agent will run on.",
-        SerializedName = @"fabricProfile",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfile) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfile FabricProfile { get => _resourceBody.FabricProfile ?? null /* object */; set => _resourceBody.FabricProfile = value; }
+        Description = @"Discriminator property for FabricProfile.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        public string FabricProfileKind { get => _resourceBody.FabricProfileKind ?? null; set => _resourceBody.FabricProfileKind = value; }
 
         /// <summary>SendAsync Pipeline Steps to be appended to the front of the pipeline</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline")]
@@ -179,16 +190,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
         [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter NoWait { get; set; }
 
-        /// <summary>Defines the organization in which the pool will be used.</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Defines the organization in which the pool will be used.")]
+        /// <summary>Discriminator property for OrganizationProfile.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Discriminator property for OrganizationProfile.")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.ParameterCategory.Body)]
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Description = @"Defines the organization in which the pool will be used.",
-        SerializedName = @"organizationProfile",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile) })]
-        public Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile OrganizationProfile { get => _resourceBody.OrganizationProfile ?? null /* object */; set => _resourceBody.OrganizationProfile = value; }
+        Description = @"Discriminator property for OrganizationProfile.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        public string OrganizationProfileKind { get => _resourceBody.OrganizationProfileKind ?? null; set => _resourceBody.OrganizationProfileKind = value; }
 
         /// <summary>
         /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.HttpPipeline" /> that the remote call will use.

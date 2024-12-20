@@ -78,7 +78,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return;
             }
             __agentProfile = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfile(json);
-            {_kind = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("kind"), out var __jsonKind) ? (string)__jsonKind : (string)_kind;}
             {_maxAgentLifetime = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("maxAgentLifetime"), out var __jsonMaxAgentLifetime) ? (string)__jsonMaxAgentLifetime : (string)_maxAgentLifetime;}
             {_gracePeriodTimeSpan = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("gracePeriodTimeSpan"), out var __jsonGracePeriodTimeSpan) ? (string)__jsonGracePeriodTimeSpan : (string)_gracePeriodTimeSpan;}
             AfterFromJson(json);
@@ -104,7 +103,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return container;
             }
             __agentProfile?.ToJson(container, serializationMode);
-            AddIf( null != (((object)this._kind)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._kind.ToString()) : null, "kind" ,container.Add );
             AddIf( null != (((object)this._maxAgentLifetime)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._maxAgentLifetime.ToString()) : null, "maxAgentLifetime" ,container.Add );
             AddIf( null != (((object)this._gracePeriodTimeSpan)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._gracePeriodTimeSpan.ToString()) : null, "gracePeriodTimeSpan" ,container.Add );
             AfterToJson(ref container);

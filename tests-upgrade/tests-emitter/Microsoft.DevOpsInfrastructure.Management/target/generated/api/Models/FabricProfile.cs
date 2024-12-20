@@ -11,6 +11,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfileInternal
     {
 
+        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
+        private string _kind;
+
+        /// <summary>Discriminator property for FabricProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
+        public string Kind { get => this._kind; set => this._kind = value; }
+
         /// <summary>Creates an new <see cref="FabricProfile" /> instance.</summary>
         public FabricProfile()
         {
@@ -21,12 +28,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     public partial interface IFabricProfile :
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IJsonSerializable
     {
+        /// <summary>Discriminator property for FabricProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Discriminator property for FabricProfile.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        string Kind { get; set; }
 
     }
     /// Defines the type of fabric the agent will run on.
     internal partial interface IFabricProfileInternal
 
     {
+        /// <summary>Discriminator property for FabricProfile.</summary>
+        string Kind { get; set; }
 
     }
 }

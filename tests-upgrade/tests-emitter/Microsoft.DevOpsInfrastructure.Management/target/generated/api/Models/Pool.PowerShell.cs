@@ -169,21 +169,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)this).Location, global::System.Convert.ToString);
             }
-            if (content.Contains("AgentProfile"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile) content.GetValueForProperty("AgentProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfileTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("ProvisioningState"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState, global::System.Convert.ToString);
-            }
             if (content.Contains("OrganizationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile) content.GetValueForProperty("OrganizationProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfileTypeConverter.ConvertFrom);
             }
+            if (content.Contains("AgentProfile"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile) content.GetValueForProperty("AgentProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfileTypeConverter.ConvertFrom);
+            }
             if (content.Contains("FabricProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfile) content.GetValueForProperty("FabricProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.FabricProfileTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("ProvisioningState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
             if (content.Contains("MaximumConcurrency"))
             {
@@ -213,9 +213,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("OrganizationProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfileKind = (string) content.GetValueForProperty("OrganizationProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfileKind, global::System.Convert.ToString);
+            }
             if (content.Contains("AgentProfileResourcePredictionsProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileResourcePredictionsProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictionsProfile) content.GetValueForProperty("AgentProfileResourcePredictionsProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileResourcePredictionsProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ResourcePredictionsProfileTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("AgentProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileKind = (string) content.GetValueForProperty("AgentProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileKind, global::System.Convert.ToString);
+            }
+            if (content.Contains("FabricProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfileKind = (string) content.GetValueForProperty("FabricProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfileKind, global::System.Convert.ToString);
             }
             if (content.Contains("ResourcePredictionProfileKind"))
             {
@@ -298,21 +310,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ITrackedResourceInternal)this).Location, global::System.Convert.ToString);
             }
-            if (content.Contains("AgentProfile"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile) content.GetValueForProperty("AgentProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfileTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("ProvisioningState"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState, global::System.Convert.ToString);
-            }
             if (content.Contains("OrganizationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationProfile) content.GetValueForProperty("OrganizationProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.OrganizationProfileTypeConverter.ConvertFrom);
             }
+            if (content.Contains("AgentProfile"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile) content.GetValueForProperty("AgentProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.AgentProfileTypeConverter.ConvertFrom);
+            }
             if (content.Contains("FabricProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IFabricProfile) content.GetValueForProperty("FabricProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.FabricProfileTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("ProvisioningState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
             if (content.Contains("MaximumConcurrency"))
             {
@@ -342,9 +354,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).IdentityUserAssignedIdentity = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IUserAssignedIdentities) content.GetValueForProperty("IdentityUserAssignedIdentity",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).IdentityUserAssignedIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.UserAssignedIdentitiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("OrganizationProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfileKind = (string) content.GetValueForProperty("OrganizationProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).OrganizationProfileKind, global::System.Convert.ToString);
+            }
             if (content.Contains("AgentProfileResourcePredictionsProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileResourcePredictionsProfile = (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictionsProfile) content.GetValueForProperty("AgentProfileResourcePredictionsProfile",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileResourcePredictionsProfile, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ResourcePredictionsProfileTypeConverter.ConvertFrom);
+            }
+            if (content.Contains("AgentProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileKind = (string) content.GetValueForProperty("AgentProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).AgentProfileKind, global::System.Convert.ToString);
+            }
+            if (content.Contains("FabricProfileKind"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfileKind = (string) content.GetValueForProperty("FabricProfileKind",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolInternal)this).FabricProfileKind, global::System.Convert.ToString);
             }
             if (content.Contains("ResourcePredictionProfileKind"))
             {

@@ -909,7 +909,9 @@ function getSchemaForModel(
     if (!isDiscriminatorInChild) {
       modelSchema.properties.push(property);
     } else {
-      modelSchema.discriminatorValue = (<ConstantSchema>propSchema).value.value;
+      // If discriminator value is union variant, it will be constant type
+      // Otherwise, it will be sealed choice type
+      modelSchema.discriminatorValue = propSchema.type === 'constant' ? (<ConstantSchema>propSchema).value.value : (<SealedChoiceSchema>propSchema).choices[0].value.toString();
     }
     if (discriminator && propName === discriminator.propertyName) {
       property.isDiscriminator = true;
@@ -960,7 +962,14 @@ function getSchemaForModel(
     // modelSchema.properties = modelSchema.properties?.filter(p => p.language.default.name != name);
     // modelSchema.properties.push(newPropSchema);
   }
-
+  // Add discriminator property if it is not already present
+  if (discriminator && !modelSchema.discriminator) {
+    const discriminatorProperty = new Property(discriminator.propertyName, `Discriminator property for ${modelSchema.language.default.name}.`, new StringSchema("string", ""));
+    discriminatorProperty.isDiscriminator = true;
+    discriminatorProperty.required = true;
+    modelSchema.discriminator = new M4Discriminator(discriminatorProperty);
+    modelSchema.properties.push(discriminatorProperty);
+  }
   return modelSchema;
 }
 // Map an typespec type to an OA schema. Returns undefined when the resulting
@@ -968,17 +977,21 @@ function getSchemaForModel(
 function getSchemaForLiteral(type: Type): any {
   // ToDo: by xiaogang, need to implement other kinds as String
   if (type.kind) {
-    const schema = new ConstantSchema("", "");
+    let schema;
     switch (type.kind) {
       case "Number":
+        schema = new ConstantSchema("", "");
         schema.valueType = new NumberSchema("Constant", "Constant number", SchemaType.Number, 64);
         schema.value = new ConstantValue(type.value);
         return schema;
       case "String":
-        schema.valueType = new StringSchema("Constant", "Constant string");
-        schema.value = new ConstantValue(type.value);
+        // generate a sealed choice schema for string literals
+        schema = new SealedChoiceSchema("", "");
+        schema.choiceType = new StringSchema("Constant", "Constant string");
+        schema.choices = [new ChoiceValue(type.value, "", type.value)];
         return schema;
       case "Boolean":
+        schema = new ConstantSchema("", "");
         schema.valueType = new BooleanSchema("Constant", "Constant boolean");
         schema.value = new ConstantValue(type.value);
         return schema;

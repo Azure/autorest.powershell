@@ -65,11 +65,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             {_resourcePredictionsProfile = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("resourcePredictionsProfile"), out var __jsonResourcePredictionsProfile) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ResourcePredictionsProfile.FromJson(__jsonResourcePredictionsProfile) : _resourcePredictionsProfile;}
             {_resourcePrediction = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject>("resourcePredictions"), out var __jsonResourcePredictions) ? Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ResourcePredictions.FromJson(__jsonResourcePredictions) : _resourcePrediction;}
+            {_kind = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("kind"), out var __jsonKind) ? (string)__jsonKind : (string)_kind;}
             AfterFromJson(json);
         }
 
         /// <summary>
         /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile.
+        /// Note: the Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile interface is polymorphic, and the
+        /// precise model class that will get deserialized is determined at runtime based on the payload.
         /// </summary>
         /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode" /> to deserialize from.</param>
         /// <returns>
@@ -77,7 +80,24 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         /// </returns>
         public static Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfile FromJson(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode node)
         {
-            return node is Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject json ? new AgentProfile(json) : null;
+            if (!(node is Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonObject json))
+            {
+                return null;
+            }
+            // Polymorphic type -- select the appropriate constructor using the discriminator
+
+            switch ( json.StringProperty("kind") )
+            {
+                case "Stateless":
+                {
+                    return new StatelessAgentProfile(json);
+                }
+                case "Stateful":
+                {
+                    return new Stateful(json);
+                }
+            }
+            return new AgentProfile(json);
         }
 
         /// <summary>
@@ -101,6 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             }
             AddIf( null != this._resourcePredictionsProfile ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._resourcePredictionsProfile.ToJson(null,serializationMode) : null, "resourcePredictionsProfile" ,container.Add );
             AddIf( null != this._resourcePrediction ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) this._resourcePrediction.ToJson(null,serializationMode) : null, "resourcePredictions" ,container.Add );
+            AddIf( null != (((object)this._kind)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._kind.ToString()) : null, "kind" ,container.Add );
             AfterToJson(ref container);
             return container;
         }
