@@ -260,18 +260,28 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
         (<any>newResponse).schema = schema;
       }
       // Add headers
+      // we merge headers here, if the same header is defined in multiple responses, we only add it once.
+      // This is aligned with the behavior of typescript emitter and typespec-autorest emitter.
       newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
-      if (response.responses[0].headers) {
-        for (const key in response.responses[0].headers) {
-          newResponse.protocol.http.headers = newResponse.protocol.http.headers || [];
-          const header = response.responses[0].headers[key];
-          const headerSchema = getSchemaForType(psContext, header.type);
-          const headerResponse = new HttpHeader(key, headerSchema);
-          headerResponse.language = new Languages();
-          headerResponse.language.default = new Language();
-          headerResponse.language.default.description = getDoc(psContext.program, header) || "";
-          headerResponse.language.default.name = pascalCase(deconstruct(key));
-          newResponse.protocol.http.headers.push(headerResponse);
+      const addedKeys: string[] = [];
+      for (const innerResponse of response.responses) {
+        if (innerResponse.headers) {
+          for (const key in innerResponse.headers) {
+            if (addedKeys.includes(key)) {
+              continue;
+            } else {
+              addedKeys.push(key);
+            }
+            newResponse.protocol.http.headers = newResponse.protocol.http.headers || [];
+            const header = innerResponse.headers[key];
+            const headerSchema = getSchemaForType(psContext, header.type);
+            const headerResponse = new HttpHeader(key, headerSchema);
+            headerResponse.language = new Languages();
+            headerResponse.language.default = new Language();
+            headerResponse.language.default.description = getDoc(psContext.program, header) || "";
+            headerResponse.language.default.name = pascalCase(deconstruct(key));
+            newResponse.protocol.http.headers.push(headerResponse);
+          }
         }
       }
       newResponse.protocol.http.statusCodes = statusCode === "*" ? ["default"] : [statusCode];
