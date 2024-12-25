@@ -28,7 +28,7 @@ function CreateModelCmdlet {
     if (''.length -gt 0) {
         $ModuleName = ''
     } else {
-        $ModuleName = 'Az.DeviceRegistry'
+        $ModuleName = 'Az.EdgeZones'
     }
     $CsFiles = Get-ChildItem -Path $ModelCsPath -Recurse -Filter *.cs
     $Content = ''
@@ -86,10 +86,10 @@ function CreateModelCmdlet {
         $ObjectType = $ModelName
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
         # remove duplicated module name
-        if ($ObjectType.StartsWith('DeviceRegistry')) {
+        if ($ObjectType.StartsWith('EdgeZones')) {
             $ModulePrefix = ''
         } else {
-            $ModulePrefix = 'DeviceRegistry'
+            $ModulePrefix = 'EdgeZones'
         }
         $OutputPath = Join-Path -ChildPath "New-Az${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
 

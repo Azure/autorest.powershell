@@ -88,7 +88,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("PublicNetworkAccess"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess = (double?) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
@@ -121,7 +121,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
             }
             if (content.Contains("PublicNetworkAccess"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess = (double?) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess, (__y)=> (double) global::System.Convert.ChangeType(__y, typeof(double)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess = (string) content.GetValueForProperty("PublicNetworkAccess",((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)this).PublicNetworkAccess, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }

@@ -25,7 +25,7 @@ if(-not $NotIsolated) {
   return
 }
 
-$moduleName = 'Az.DeviceRegistry'
+$moduleName = 'Az.EdgeZones'
 $rootModuleName = ''
 if ($rootModuleName -eq "")
 {
@@ -37,7 +37,7 @@ $modulePath = $modulePsd1.FullName
 # Load DLL to use build-time cmdlets
 Import-Module -Name $modulePath
 Import-Module -Name (Join-Path $PSScriptRoot "./bin/$moduleName.private.dll")
-$instance = [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module]::Instance
+$instance = [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module]::Instance
 # Module info is shared per profile
 $moduleInfo = Get-Module -Name $moduleName
 $parameterSetsInfo = Get-Module -Name "$moduleName.private"

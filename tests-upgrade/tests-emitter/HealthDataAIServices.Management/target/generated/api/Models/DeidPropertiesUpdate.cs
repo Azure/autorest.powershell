@@ -12,11 +12,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
     {
 
         /// <summary>Backing field for <see cref="PublicNetworkAccess" /> property.</summary>
-        private double? _publicNetworkAccess;
+        private string _publicNetworkAccess;
 
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
-        public double? PublicNetworkAccess { get => this._publicNetworkAccess; set => this._publicNetworkAccess = value; }
+        public string PublicNetworkAccess { get => this._publicNetworkAccess; set => this._publicNetworkAccess = value; }
 
         /// <summary>Creates an new <see cref="DeidPropertiesUpdate" /> instance.</summary>
         public DeidPropertiesUpdate()
@@ -37,9 +37,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"Gets or sets allow or disallow public network access to resource",
         SerializedName = @"publicNetworkAccess",
-        PossibleTypes = new [] { typeof(double) })]
+        PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
 
     }
     /// The template for adding optional properties.
@@ -48,7 +48,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
     {
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
 
     }
 }

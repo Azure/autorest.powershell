@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>
     /// Details of a REST API operation, returned from the Resource Provider Operations API
@@ -63,27 +63,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Operation"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Operation"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
             return new Operation(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Operation"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Operation"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
             return new Operation(content);
         }
@@ -93,10 +93,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>an instance of the <see cref="Operation" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Operation"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Operation"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -111,45 +111,45 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Display"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Display = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationDisplay) content.GetValueForProperty("Display",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Display, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.OperationDisplayTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Display = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationDisplay) content.GetValueForProperty("Display",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Display, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.OperationDisplayTypeConverter.ConvertFrom);
             }
             if (content.Contains("Name"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Name, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Name, global::System.Convert.ToString);
             }
             if (content.Contains("IsDataAction"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).IsDataAction = (bool?) content.GetValueForProperty("IsDataAction",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).IsDataAction, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).IsDataAction = (bool?) content.GetValueForProperty("IsDataAction",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).IsDataAction, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
             if (content.Contains("Origin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Origin = (string) content.GetValueForProperty("Origin",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Origin, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Origin = (string) content.GetValueForProperty("Origin",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Origin, global::System.Convert.ToString);
             }
             if (content.Contains("ActionType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).ActionType = (string) content.GetValueForProperty("ActionType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).ActionType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).ActionType = (string) content.GetValueForProperty("ActionType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).ActionType, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayProvider"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayProvider = (string) content.GetValueForProperty("DisplayProvider",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayProvider, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayProvider = (string) content.GetValueForProperty("DisplayProvider",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayProvider, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayResource"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayResource = (string) content.GetValueForProperty("DisplayResource",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayResource, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayResource = (string) content.GetValueForProperty("DisplayResource",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayResource, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayOperation"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayOperation = (string) content.GetValueForProperty("DisplayOperation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayOperation, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayOperation = (string) content.GetValueForProperty("DisplayOperation",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayOperation, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayDescription"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayDescription = (string) content.GetValueForProperty("DisplayDescription",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayDescription, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayDescription = (string) content.GetValueForProperty("DisplayDescription",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayDescription, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Operation"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Operation"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -164,39 +164,39 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Display"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Display = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationDisplay) content.GetValueForProperty("Display",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Display, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.OperationDisplayTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Display = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationDisplay) content.GetValueForProperty("Display",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Display, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.OperationDisplayTypeConverter.ConvertFrom);
             }
             if (content.Contains("Name"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Name, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Name, global::System.Convert.ToString);
             }
             if (content.Contains("IsDataAction"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).IsDataAction = (bool?) content.GetValueForProperty("IsDataAction",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).IsDataAction, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).IsDataAction = (bool?) content.GetValueForProperty("IsDataAction",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).IsDataAction, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
             if (content.Contains("Origin"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Origin = (string) content.GetValueForProperty("Origin",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).Origin, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Origin = (string) content.GetValueForProperty("Origin",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).Origin, global::System.Convert.ToString);
             }
             if (content.Contains("ActionType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).ActionType = (string) content.GetValueForProperty("ActionType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).ActionType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).ActionType = (string) content.GetValueForProperty("ActionType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).ActionType, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayProvider"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayProvider = (string) content.GetValueForProperty("DisplayProvider",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayProvider, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayProvider = (string) content.GetValueForProperty("DisplayProvider",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayProvider, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayResource"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayResource = (string) content.GetValueForProperty("DisplayResource",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayResource, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayResource = (string) content.GetValueForProperty("DisplayResource",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayResource, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayOperation"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayOperation = (string) content.GetValueForProperty("DisplayOperation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayOperation, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayOperation = (string) content.GetValueForProperty("DisplayOperation",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayOperation, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayDescription"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayDescription = (string) content.GetValueForProperty("DisplayDescription",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationInternal)this).DisplayDescription, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayDescription = (string) content.GetValueForProperty("DisplayDescription",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationInternal)this).DisplayDescription, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }
@@ -204,7 +204,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {

@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>
     /// Common error response for all Azure Resource Manager APIs to return error details for failed operations.
@@ -63,33 +63,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorResponse"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorResponse"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
             return new ErrorResponse(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorResponse"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorResponse"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
             return new ErrorResponse(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorResponse"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorResponse"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -104,33 +104,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Error"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Error = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Error, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Error = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Error, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorDetailTypeConverter.ConvertFrom);
             }
             if (content.Contains("Detail"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorDetailTypeConverter.ConvertFrom));
             }
             if (content.Contains("AdditionalInfo"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
             }
             if (content.Contains("Code"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Code, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Code, global::System.Convert.ToString);
             }
             if (content.Contains("Message"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Message, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Message, global::System.Convert.ToString);
             }
             if (content.Contains("Target"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Target, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Target, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorResponse"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorResponse"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -145,27 +145,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Error"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Error = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Error, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Error = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail) content.GetValueForProperty("Error",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Error, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorDetailTypeConverter.ConvertFrom);
             }
             if (content.Contains("Detail"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorDetailTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Detail = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail>) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Detail, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorDetail>(__y, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorDetailTypeConverter.ConvertFrom));
             }
             if (content.Contains("AdditionalInfo"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).AdditionalInfo = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo>) content.GetValueForProperty("AdditionalInfo",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).AdditionalInfo, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo>(__y, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfoTypeConverter.ConvertFrom));
             }
             if (content.Contains("Code"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Code, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Code = (string) content.GetValueForProperty("Code",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Code, global::System.Convert.ToString);
             }
             if (content.Contains("Message"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Message, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Message = (string) content.GetValueForProperty("Message",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Message, global::System.Convert.ToString);
             }
             if (content.Contains("Target"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponseInternal)this).Target, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Target = (string) content.GetValueForProperty("Target",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponseInternal)this).Target, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }
@@ -175,12 +175,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>an instance of the <see cref="ErrorResponse" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {

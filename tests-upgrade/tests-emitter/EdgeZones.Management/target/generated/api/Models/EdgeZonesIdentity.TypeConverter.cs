@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>
-    /// A PowerShell PSTypeConverter to support converting to an instance of <see cref="DeviceRegistryIdentity" />
+    /// A PowerShell PSTypeConverter to support converting to an instance of <see cref="EdgeZonesIdentity" />
     /// </summary>
-    public partial class DeviceRegistryIdentityTypeConverter : global::System.Management.Automation.PSTypeConverter
+    public partial class EdgeZonesIdentityTypeConverter : global::System.Management.Automation.PSTypeConverter
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         public override bool CanConvertFrom(object sourceValue, global::System.Type destinationType) => CanConvertFrom(sourceValue);
 
         /// <summary>
-        /// Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <see cref="DeviceRegistryIdentity"/>
+        /// Determines if the converter can convert the <paramref name="sourceValue"/> parameter to the <see cref="EdgeZonesIdentity"/>
         /// type.
         /// </summary>
-        /// <param name="sourceValue">the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="DeviceRegistryIdentity"
+        /// <param name="sourceValue">the <see cref="System.Object" /> instance to check if it can be converted to the <see cref="EdgeZonesIdentity"
         /// /> type.</param>
         /// <returns>
-        /// <c>true</c> if the instance could be converted to a <see cref="DeviceRegistryIdentity" /> type, otherwise <c>false</c>
+        /// <c>true</c> if the instance could be converted to a <see cref="EdgeZonesIdentity" /> type, otherwise <c>false</c>
         /// </returns>
         public static bool CanConvertFrom(dynamic sourceValue)
         {
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             try
             {
                 string text = sourceValue.ToString()?.Trim();
-                return true == text?.StartsWith("{") && true == text?.EndsWith("}") && Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(text).Type == Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonType.Object;
+                return true == text?.StartsWith("{") && true == text?.EndsWith("}") && Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(text).Type == Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonType.Object;
             }
             catch
             {
@@ -98,18 +98,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <param name="formatProvider">not used by this TypeConverter.</param>
         /// <param name="ignoreCase">when set to <c>true</c>, will ignore the case when converting.</param>
         /// <returns>
-        /// an instance of <see cref="DeviceRegistryIdentity" />, or <c>null</c> if there is no suitable conversion.
+        /// an instance of <see cref="EdgeZonesIdentity" />, or <c>null</c> if there is no suitable conversion.
         /// </returns>
         public override object ConvertFrom(object sourceValue, global::System.Type destinationType, global::System.IFormatProvider formatProvider, bool ignoreCase) => ConvertFrom(sourceValue);
 
         /// <summary>
-        /// Converts the <paramref name="sourceValue" /> parameter into an instance of <see cref="DeviceRegistryIdentity" />
+        /// Converts the <paramref name="sourceValue" /> parameter into an instance of <see cref="EdgeZonesIdentity" />
         /// </summary>
-        /// <param name="sourceValue">the value to convert into an instance of <see cref="DeviceRegistryIdentity" />.</param>
+        /// <param name="sourceValue">the value to convert into an instance of <see cref="EdgeZonesIdentity" />.</param>
         /// <returns>
-        /// an instance of <see cref="DeviceRegistryIdentity" />, or <c>null</c> if there is no suitable conversion.
+        /// an instance of <see cref="EdgeZonesIdentity" />, or <c>null</c> if there is no suitable conversion.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity ConvertFrom(dynamic sourceValue)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity ConvertFrom(dynamic sourceValue)
         {
             if (null == sourceValue)
             {
@@ -119,15 +119,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // support direct string to id type conversion.
             if (type == typeof(global::System.String))
             {
-                return new DeviceRegistryIdentity { Id = sourceValue };
+                return new EdgeZonesIdentity { Id = sourceValue };
             }
-            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity).IsAssignableFrom(type))
+            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity).IsAssignableFrom(type))
             {
                 return sourceValue;
             }
             try
             {
-                return DeviceRegistryIdentity.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());;
+                return EdgeZonesIdentity.FromJsonString(typeof(string) == sourceValue.GetType() ? sourceValue : sourceValue.ToJsonString());;
             }
             catch
             {
@@ -135,11 +135,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (typeof(global::System.Management.Automation.PSObject).IsAssignableFrom(type))
             {
-                return DeviceRegistryIdentity.DeserializeFromPSObject(sourceValue);
+                return EdgeZonesIdentity.DeserializeFromPSObject(sourceValue);
             }
             if (typeof(global::System.Collections.IDictionary).IsAssignableFrom(type))
             {
-                return DeviceRegistryIdentity.DeserializeFromDictionary(sourceValue);
+                return EdgeZonesIdentity.DeserializeFromDictionary(sourceValue);
             }
             return null;
         }

@@ -5,10 +5,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Extensions;
 
-    /// <summary>
-    /// Resource that represents an Azure Extended Zone available to a subscription for registering and unregistering.
-    /// </summary>
-    public partial class ExtendedZone
+    public partial class EdgeZonesIdentity
     {
 
         /// <summary>
@@ -54,10 +51,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
         partial void BeforeToJson(ref Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject container, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject into a new instance of <see cref="ExtendedZone" />.
+        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject into a new instance of <see cref="EdgeZonesIdentity" />.
         /// </summary>
         /// <param name="json">A Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject instance to deserialize from.</param>
-        internal ExtendedZone(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json)
+        internal EdgeZonesIdentity(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json)
         {
             bool returnNow = false;
             BeforeFromJson(json, ref returnNow);
@@ -65,31 +62,32 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
             {
                 return;
             }
-            __proxyResource = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ProxyResource(json);
-            {_property = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject>("properties"), out var __jsonProperties) ? Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZoneProperties.FromJson(__jsonProperties) : _property;}
+            {_subscriptionId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString>("subscriptionId"), out var __jsonSubscriptionId) ? (string)__jsonSubscriptionId : (string)_subscriptionId;}
+            {_extendedZoneName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString>("extendedZoneName"), out var __jsonExtendedZoneName) ? (string)__jsonExtendedZoneName : (string)_extendedZoneName;}
+            {_id = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString>("id"), out var __jsonId) ? (string)__jsonId : (string)_id;}
             AfterFromJson(json);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone.
+        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity.
         /// </summary>
         /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" /> to deserialize from.</param>
         /// <returns>
-        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone.
+        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode node)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode node)
         {
-            return node is Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json ? new ExtendedZone(json) : null;
+            return node is Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json ? new EdgeZonesIdentity(json) : null;
         }
 
         /// <summary>
-        /// Serializes this instance of <see cref="ExtendedZone" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
+        /// Serializes this instance of <see cref="EdgeZonesIdentity" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
         /// </summary>
         /// <param name="container">The <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject"/> container to serialize this object into. If the caller
         /// passes in <c>null</c>, a new instance will be created and returned to the caller.</param>
         /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode"/>.</param>
         /// <returns>
-        /// a serialized instance of <see cref="ExtendedZone" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
+        /// a serialized instance of <see cref="EdgeZonesIdentity" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
         /// </returns>
         public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode ToJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject container, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode serializationMode)
         {
@@ -101,8 +99,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
             {
                 return container;
             }
-            __proxyResource?.ToJson(container, serializationMode);
-            AddIf( null != this._property ? (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode) this._property.ToJson(null,serializationMode) : null, "properties" ,container.Add );
+            AddIf( null != (((object)this._subscriptionId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString(this._subscriptionId.ToString()) : null, "subscriptionId" ,container.Add );
+            AddIf( null != (((object)this._extendedZoneName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString(this._extendedZoneName.ToString()) : null, "extendedZoneName" ,container.Add );
+            AddIf( null != (((object)this._id)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString(this._id.ToString()) : null, "id" ,container.Add );
             AfterToJson(ref container);
             return container;
         }

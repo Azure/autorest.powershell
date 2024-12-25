@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones
 {
-    using static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Extensions;
+    using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Extensions;
     using SendAsyncStepDelegate = global::System.Func<global::System.Net.Http.HttpRequestMessage, global::System.Threading.CancellationToken, global::System.Action, global::System.Func<string, global::System.Threading.CancellationToken, global::System.Func<global::System.EventArgs>, global::System.Threading.Tasks.Task>, global::System.Func<global::System.Net.Http.HttpRequestMessage, global::System.Threading.CancellationToken, global::System.Action, global::System.Func<string, global::System.Threading.CancellationToken, global::System.Func<global::System.EventArgs>, global::System.Threading.Tasks.Task>, global::System.Threading.Tasks.Task<global::System.Net.Http.HttpResponseMessage>>, global::System.Threading.Tasks.Task<global::System.Net.Http.HttpResponseMessage>>;
     using PipelineChangeDelegate = global::System.Action<global::System.Func<global::System.Net.Http.HttpRequestMessage, global::System.Threading.CancellationToken, global::System.Action, global::System.Func<string, global::System.Threading.CancellationToken, global::System.Func<global::System.EventArgs>, global::System.Threading.Tasks.Task>, global::System.Func<global::System.Net.Http.HttpRequestMessage, global::System.Threading.CancellationToken, global::System.Action, global::System.Func<string, global::System.Threading.CancellationToken, global::System.Func<global::System.EventArgs>, global::System.Threading.Tasks.Task>, global::System.Threading.Tasks.Task<global::System.Net.Http.HttpResponseMessage>>, global::System.Threading.Tasks.Task<global::System.Net.Http.HttpResponseMessage>>>;
     using GetParameterDelegate = global::System.Func<string, string, global::System.Management.Automation.InvocationInfo, string, string, object>;
@@ -30,13 +30,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
 
         private static readonly global::System.Object _initLock = new global::System.Object();
 
-        private static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module _instance;
+        private static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module _instance;
 
         /// <summary>the ISendAsync pipeline instance</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline _pipeline;
+        private Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline _pipeline;
 
         /// <summary>the ISendAsync pipeline instance (when proxy is enabled)</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline _pipelineWithProxy;
+        private Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline _pipelineWithProxy;
 
         private static readonly global::System.Object _singletonLock = new global::System.Object();
 
@@ -48,7 +48,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         public ArgumentCompleterDelegate ArgumentCompleter { get; set; }
 
         /// <summary>The instance of the Client API</summary>
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.MicrosoftEdgeZones ClientAPI { get; set; }
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.MicrosoftEdgeZones ClientAPI { get; set; }
 
         /// <summary>A delegate that gets called for each signalled event</summary>
         public EventListenerDelegate EventListener { get; set; }
@@ -63,10 +63,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         public GetTelemetryInfoDelegate GetTelemetryInfo { get; set; }
 
         /// <summary>the singleton of this module class</summary>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module Instance { get { if (_instance == null) { lock (_singletonLock) { if (_instance == null) { _instance = new Module(); }}} return _instance; } }
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module Instance { get { if (_instance == null) { lock (_singletonLock) { if (_instance == null) { _instance = new Module(); }}} return _instance; } }
 
         /// <summary>The Name of this module</summary>
-        public string Name => @"Az.DeviceRegistry";
+        public string Name => @"Az.EdgeZones";
 
         /// <summary>The delegate to call when this module is loaded (supporting a commmon module).</summary>
         public ModuleLoadPipelineDelegate OnModuleLoad { get; set; }
@@ -78,7 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         public global::System.String ProfileName { get; set; }
 
         /// <summary>The ResourceID for this module (azure arm).</summary>
-        public string ResourceId => @"Az.DeviceRegistry";
+        public string ResourceId => @"Az.EdgeZones";
 
         /// <summary>The delegate to call in WriteObject to sanitize the output object.</summary>
         public SanitizerDelegate SanitizeOutput { get; set; }
@@ -89,12 +89,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         /// <param name="invocationInfo">The <see cref="System.Management.Automation.InvocationInfo" /> from the cmdlet</param>
         /// <param name="pipeline">The HttpPipeline for the request</param>
 
-        partial void AfterCreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, ref Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline pipeline);
+        partial void AfterCreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, ref Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline pipeline);
 
         /// <param name="invocationInfo">The <see cref="System.Management.Automation.InvocationInfo" /> from the cmdlet</param>
         /// <param name="pipeline">The HttpPipeline for the request</param>
 
-        partial void BeforeCreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, ref Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline pipeline);
+        partial void BeforeCreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, ref Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline pipeline);
 
         partial void CustomInit();
 
@@ -104,10 +104,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         /// <param name="processRecordId">the cmdlet's process record correlation id.</param>
         /// <param name="parameterSetName">the cmdlet's parameterset name.</param>
         /// <param name="extensibleParameters">a dict for extensible parameters</param>
-        /// <returns>An instance of Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline for the remote call.</returns>
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline CreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, string correlationId, string processRecordId, string parameterSetName = null, global::System.Collections.Generic.IDictionary<string,object> extensibleParameters = null)
+        /// <returns>An instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline for the remote call.</returns>
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline CreatePipeline(global::System.Management.Automation.InvocationInfo invocationInfo, string correlationId, string processRecordId, string parameterSetName = null, global::System.Collections.Generic.IDictionary<string,object> extensibleParameters = null)
         {
-            Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline pipeline = null;
+            Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline pipeline = null;
             BeforeCreatePipeline(invocationInfo, ref pipeline);
             pipeline = (pipeline ?? (_useProxy ? _pipelineWithProxy : _pipeline)).Clone();
             AfterCreatePipeline(invocationInfo, ref pipeline);
@@ -145,10 +145,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry
         private Module()
         {
             // constructor
-            ClientAPI = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.MicrosoftEdgeZones();
+            ClientAPI = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.MicrosoftEdgeZones();
             _handler.Proxy = _webProxy;
-            _pipeline = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline(new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpClientFactory(new global::System.Net.Http.HttpClient()));
-            _pipelineWithProxy = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline(new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpClientFactory(new global::System.Net.Http.HttpClient(_handler)));
+            _pipeline = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline(new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpClientFactory(new global::System.Net.Http.HttpClient()));
+            _pipelineWithProxy = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline(new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpClientFactory(new global::System.Net.Http.HttpClient(_handler)));
         }
 
         /// <param name="proxy">The HTTP Proxy to use.</param>

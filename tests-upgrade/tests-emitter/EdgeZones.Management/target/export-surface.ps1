@@ -22,13 +22,13 @@ if(-not $NotIsolated) {
   return
 }
 
-$dll = Join-Path $PSScriptRoot 'bin\Az.DeviceRegistry.private.dll'
+$dll = Join-Path $PSScriptRoot 'bin\Az.EdgeZones.private.dll'
 if(-not (Test-Path $dll)) {
   Write-Error "Unable to find output assembly in '$binFolder'."
 }
 $null = Import-Module -Name $dll
 
-$moduleName = 'Az.DeviceRegistry'
+$moduleName = 'Az.EdgeZones'
 $exportsFolder = Join-Path $PSScriptRoot 'exports'
 $resourcesFolder = Join-Path $PSScriptRoot 'resources'
 

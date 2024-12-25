@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>
     /// Resource that represents an Azure Extended Zone available to a subscription for registering and unregistering.
@@ -63,33 +63,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZone"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZone"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
             return new ExtendedZone(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZone"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZone"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
             return new ExtendedZone(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZone"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZone"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -104,97 +104,97 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZonePropertiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZonePropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("SystemDataCreatedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataCreatedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedByType = (string) content.GetValueForProperty("SystemDataCreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedByType = (string) content.GetValueForProperty("SystemDataCreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedByType, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataCreatedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataCreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataCreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("SystemDataLastModifiedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedBy = (string) content.GetValueForProperty("SystemDataLastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedBy = (string) content.GetValueForProperty("SystemDataLastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedBy, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataLastModifiedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedByType = (string) content.GetValueForProperty("SystemDataLastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedByType = (string) content.GetValueForProperty("SystemDataLastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedByType, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataLastModifiedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataLastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataLastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("SystemData"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemData = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData) content.GetValueForProperty("SystemData",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemData, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemDataTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemData = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData) content.GetValueForProperty("SystemData",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemData, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemDataTypeConverter.ConvertFrom);
             }
             if (content.Contains("Id"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Id, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Id, global::System.Convert.ToString);
             }
             if (content.Contains("Name"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Name, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Name, global::System.Convert.ToString);
             }
             if (content.Contains("Type"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
             if (content.Contains("ProvisioningState"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).ProvisioningState, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
             if (content.Contains("RegistrationState"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegistrationState = (string) content.GetValueForProperty("RegistrationState",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegistrationState, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegistrationState = (string) content.GetValueForProperty("RegistrationState",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegistrationState, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).DisplayName = (string) content.GetValueForProperty("DisplayName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).DisplayName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).DisplayName = (string) content.GetValueForProperty("DisplayName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).DisplayName, global::System.Convert.ToString);
             }
             if (content.Contains("RegionalDisplayName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionalDisplayName = (string) content.GetValueForProperty("RegionalDisplayName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionalDisplayName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionalDisplayName = (string) content.GetValueForProperty("RegionalDisplayName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionalDisplayName, global::System.Convert.ToString);
             }
             if (content.Contains("RegionType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionType = (string) content.GetValueForProperty("RegionType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionType = (string) content.GetValueForProperty("RegionType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionType, global::System.Convert.ToString);
             }
             if (content.Contains("RegionCategory"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionCategory = (string) content.GetValueForProperty("RegionCategory",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionCategory, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionCategory = (string) content.GetValueForProperty("RegionCategory",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionCategory, global::System.Convert.ToString);
             }
             if (content.Contains("Geography"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Geography = (string) content.GetValueForProperty("Geography",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Geography, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Geography = (string) content.GetValueForProperty("Geography",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Geography, global::System.Convert.ToString);
             }
             if (content.Contains("GeographyGroup"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).GeographyGroup = (string) content.GetValueForProperty("GeographyGroup",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).GeographyGroup, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).GeographyGroup = (string) content.GetValueForProperty("GeographyGroup",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).GeographyGroup, global::System.Convert.ToString);
             }
             if (content.Contains("Longitude"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Longitude = (string) content.GetValueForProperty("Longitude",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Longitude, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Longitude = (string) content.GetValueForProperty("Longitude",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Longitude, global::System.Convert.ToString);
             }
             if (content.Contains("Latitude"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Latitude = (string) content.GetValueForProperty("Latitude",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Latitude, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Latitude = (string) content.GetValueForProperty("Latitude",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Latitude, global::System.Convert.ToString);
             }
             if (content.Contains("HomeLocation"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).HomeLocation = (string) content.GetValueForProperty("HomeLocation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).HomeLocation, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).HomeLocation = (string) content.GetValueForProperty("HomeLocation",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).HomeLocation, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZone"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZone"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -209,91 +209,91 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Property"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ExtendedZonePropertiesTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ExtendedZonePropertiesTypeConverter.ConvertFrom);
             }
             if (content.Contains("SystemDataCreatedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataCreatedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedByType = (string) content.GetValueForProperty("SystemDataCreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedByType = (string) content.GetValueForProperty("SystemDataCreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedByType, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataCreatedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataCreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataCreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataCreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataCreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("SystemDataLastModifiedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedBy = (string) content.GetValueForProperty("SystemDataLastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedBy = (string) content.GetValueForProperty("SystemDataLastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedBy, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataLastModifiedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedByType = (string) content.GetValueForProperty("SystemDataLastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedByType = (string) content.GetValueForProperty("SystemDataLastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedByType, global::System.Convert.ToString);
             }
             if (content.Contains("SystemDataLastModifiedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataLastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemDataLastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("SystemDataLastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemDataLastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("SystemData"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemData = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData) content.GetValueForProperty("SystemData",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).SystemData, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemDataTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemData = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData) content.GetValueForProperty("SystemData",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).SystemData, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemDataTypeConverter.ConvertFrom);
             }
             if (content.Contains("Id"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Id, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Id, global::System.Convert.ToString);
             }
             if (content.Contains("Name"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Name, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Name = (string) content.GetValueForProperty("Name",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Name, global::System.Convert.ToString);
             }
             if (content.Contains("Type"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IResourceInternal)this).Type, global::System.Convert.ToString);
             }
             if (content.Contains("ProvisioningState"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).ProvisioningState, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).ProvisioningState, global::System.Convert.ToString);
             }
             if (content.Contains("RegistrationState"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegistrationState = (string) content.GetValueForProperty("RegistrationState",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegistrationState, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegistrationState = (string) content.GetValueForProperty("RegistrationState",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegistrationState, global::System.Convert.ToString);
             }
             if (content.Contains("DisplayName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).DisplayName = (string) content.GetValueForProperty("DisplayName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).DisplayName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).DisplayName = (string) content.GetValueForProperty("DisplayName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).DisplayName, global::System.Convert.ToString);
             }
             if (content.Contains("RegionalDisplayName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionalDisplayName = (string) content.GetValueForProperty("RegionalDisplayName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionalDisplayName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionalDisplayName = (string) content.GetValueForProperty("RegionalDisplayName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionalDisplayName, global::System.Convert.ToString);
             }
             if (content.Contains("RegionType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionType = (string) content.GetValueForProperty("RegionType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionType = (string) content.GetValueForProperty("RegionType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionType, global::System.Convert.ToString);
             }
             if (content.Contains("RegionCategory"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionCategory = (string) content.GetValueForProperty("RegionCategory",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).RegionCategory, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionCategory = (string) content.GetValueForProperty("RegionCategory",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).RegionCategory, global::System.Convert.ToString);
             }
             if (content.Contains("Geography"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Geography = (string) content.GetValueForProperty("Geography",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Geography, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Geography = (string) content.GetValueForProperty("Geography",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Geography, global::System.Convert.ToString);
             }
             if (content.Contains("GeographyGroup"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).GeographyGroup = (string) content.GetValueForProperty("GeographyGroup",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).GeographyGroup, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).GeographyGroup = (string) content.GetValueForProperty("GeographyGroup",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).GeographyGroup, global::System.Convert.ToString);
             }
             if (content.Contains("Longitude"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Longitude = (string) content.GetValueForProperty("Longitude",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Longitude, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Longitude = (string) content.GetValueForProperty("Longitude",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Longitude, global::System.Convert.ToString);
             }
             if (content.Contains("Latitude"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Latitude = (string) content.GetValueForProperty("Latitude",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).Latitude, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Latitude = (string) content.GetValueForProperty("Latitude",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).Latitude, global::System.Convert.ToString);
             }
             if (content.Contains("HomeLocation"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).HomeLocation = (string) content.GetValueForProperty("HomeLocation",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZoneInternal)this).HomeLocation, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).HomeLocation = (string) content.GetValueForProperty("HomeLocation",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZoneInternal)this).HomeLocation, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }
@@ -303,12 +303,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>an instance of the <see cref="ExtendedZone" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IExtendedZone FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {

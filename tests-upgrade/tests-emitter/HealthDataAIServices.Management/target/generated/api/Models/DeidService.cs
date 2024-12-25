@@ -115,7 +115,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
 
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Inlined)]
-        public double? PublicNetworkAccess { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)Property).PublicNetworkAccess; set => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)Property).PublicNetworkAccess = value ?? default(double); }
+        public string PublicNetworkAccess { get => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)Property).PublicNetworkAccess; set => ((Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models.IDeidServicePropertiesInternal)Property).PublicNetworkAccess = value ?? null; }
 
         /// <summary>Gets the resource group name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
@@ -298,9 +298,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"Gets or sets allow or disallow public network access to resource",
         SerializedName = @"publicNetworkAccess",
-        PossibleTypes = new [] { typeof(double) })]
+        PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
 
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Info(
         Required = false,
@@ -354,7 +354,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         string ProvisioningState { get; set; }
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
 
         int? RetryAfter { get; set; }
         /// <summary>Deid service url.</summary>
