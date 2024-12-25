@@ -11,6 +11,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal
     {
 
+        /// <summary>Backing field for <see cref="Kind" /> property.</summary>
+        private string _kind;
+
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
+        public string Kind { get => this._kind; set => this._kind = value; }
+
         /// <summary>Internal Acessors for ResourcePredictionsProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictionsProfile Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IAgentProfileInternal.ResourcePredictionsProfile { get => (this._resourcePredictionsProfile = this._resourcePredictionsProfile ?? new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ResourcePredictionsProfile()); set { {_resourcePredictionsProfile = value;} } }
 
@@ -42,6 +49,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     public partial interface IAgentProfile :
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IJsonSerializable
     {
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Discriminator property for AgentProfile.",
+        SerializedName = @"kind",
+        PossibleTypes = new [] { typeof(string) })]
+        string Kind { get; set; }
         /// <summary>Defines pool buffer/stand-by agents.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -71,6 +89,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     internal partial interface IAgentProfileInternal
 
     {
+        /// <summary>Discriminator property for AgentProfile.</summary>
+        string Kind { get; set; }
         /// <summary>Defines pool buffer/stand-by agents.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourcePredictions ResourcePrediction { get; set; }
         /// <summary>Determines how the stand-by scheme should be provided.</summary>
