@@ -5,7 +5,7 @@
 
 using System;
 
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime
 {
     public interface IHeaderSerializable
     {

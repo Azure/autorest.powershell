@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell
 {
     internal class ViewParameters
     {

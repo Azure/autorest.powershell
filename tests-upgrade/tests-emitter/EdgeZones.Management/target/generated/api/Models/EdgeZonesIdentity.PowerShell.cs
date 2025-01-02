@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
-    [System.ComponentModel.TypeConverter(typeof(DeviceRegistryIdentityTypeConverter))]
-    public partial class DeviceRegistryIdentity
+    [System.ComponentModel.TypeConverter(typeof(EdgeZonesIdentityTypeConverter))]
+    public partial class EdgeZonesIdentity
     {
 
         /// <summary>
@@ -60,37 +60,37 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DeviceRegistryIdentity"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.EdgeZonesIdentity"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
-            return new DeviceRegistryIdentity(content);
+            return new EdgeZonesIdentity(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DeviceRegistryIdentity"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.EdgeZonesIdentity"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
-            return new DeviceRegistryIdentity(content);
+            return new EdgeZonesIdentity(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DeviceRegistryIdentity"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.EdgeZonesIdentity"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
-        internal DeviceRegistryIdentity(global::System.Collections.IDictionary content)
+        internal EdgeZonesIdentity(global::System.Collections.IDictionary content)
         {
             bool returnNow = false;
             BeforeDeserializeDictionary(content, ref returnNow);
@@ -101,25 +101,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("SubscriptionId"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
             }
             if (content.Contains("ExtendedZoneName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).ExtendedZoneName = (string) content.GetValueForProperty("ExtendedZoneName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).ExtendedZoneName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).ExtendedZoneName = (string) content.GetValueForProperty("ExtendedZoneName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).ExtendedZoneName, global::System.Convert.ToString);
             }
             if (content.Contains("Id"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).Id, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).Id, global::System.Convert.ToString);
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.DeviceRegistryIdentity"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.EdgeZonesIdentity"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
-        internal DeviceRegistryIdentity(global::System.Management.Automation.PSObject content)
+        internal EdgeZonesIdentity(global::System.Management.Automation.PSObject content)
         {
             bool returnNow = false;
             BeforeDeserializePSObject(content, ref returnNow);
@@ -130,30 +130,30 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("SubscriptionId"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).SubscriptionId = (string) content.GetValueForProperty("SubscriptionId",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).SubscriptionId, global::System.Convert.ToString);
             }
             if (content.Contains("ExtendedZoneName"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).ExtendedZoneName = (string) content.GetValueForProperty("ExtendedZoneName",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).ExtendedZoneName, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).ExtendedZoneName = (string) content.GetValueForProperty("ExtendedZoneName",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).ExtendedZoneName, global::System.Convert.ToString);
             }
             if (content.Contains("Id"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentityInternal)this).Id, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).Id = (string) content.GetValueForProperty("Id",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentityInternal)this).Id, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="DeviceRegistryIdentity" />, deserializing the content from a json string.
+        /// Creates a new instance of <see cref="EdgeZonesIdentity" />, deserializing the content from a json string.
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
-        /// <returns>an instance of the <see cref="DeviceRegistryIdentity" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IDeviceRegistryIdentity FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        /// <returns>an instance of the <see cref="EdgeZonesIdentity" /> model class.</returns>
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IEdgeZonesIdentity FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {
@@ -167,8 +167,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             return ToJsonString();
         }
     }
-    [System.ComponentModel.TypeConverter(typeof(DeviceRegistryIdentityTypeConverter))]
-    public partial interface IDeviceRegistryIdentity
+    [System.ComponentModel.TypeConverter(typeof(EdgeZonesIdentityTypeConverter))]
+    public partial interface IEdgeZonesIdentity
 
     {
 

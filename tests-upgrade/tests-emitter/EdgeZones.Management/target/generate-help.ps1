@@ -40,14 +40,14 @@ if(Test-Path $docsFolder) {
 $null = New-Item -ItemType Directory -Force -Path $docsFolder -ErrorAction SilentlyContinue
 $examplesFolder = Join-Path $PSScriptRoot 'examples'
 
-$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot './Az.DeviceRegistry.psd1')
+$modulePsd1 = Get-Item -Path (Join-Path $PSScriptRoot './Az.EdgeZones.psd1')
 $modulePath = $modulePsd1.FullName
 $moduleName = $modulePsd1.BaseName
 
 # Load DLL to use build-time cmdlets
 Import-Module -Name $modulePath
-Import-Module -Name (Join-Path $PSScriptRoot './bin/Az.DeviceRegistry.private.dll')
-$instance = [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module]::Instance
+Import-Module -Name (Join-Path $PSScriptRoot './bin/Az.EdgeZones.private.dll')
+$instance = [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module]::Instance
 # Module info is shared per profile
 $moduleInfo = Get-Module -Name $moduleName
 

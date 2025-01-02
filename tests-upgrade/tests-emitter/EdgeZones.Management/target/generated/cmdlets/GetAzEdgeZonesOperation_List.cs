@@ -1,25 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Cmdlets
 {
-    using static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Extensions;
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Cmdlets;
+    using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Extensions;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Cmdlets;
     using System;
 
-    /// <summary>Gets an Azure Extended Zone for a subscription</summary>
+    /// <summary>List the operations for the provider</summary>
     /// <remarks>
-    /// [OpenAPI] Get=>GET:"/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones/{extendedZoneName}"
+    /// [OpenAPI] List=>GET:"/providers/Microsoft.EdgeZones/operations"
     /// </remarks>
-    [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.Get, @"AzDeviceRegistryExtendedZone_Get")]
-    [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Description(@"Gets an Azure Extended Zone for a subscription")]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones/{extendedZoneName}", ApiVersion = "2024-04-01-preview")]
-    public partial class GetAzDeviceRegistryExtendedZone_Get : global::System.Management.Automation.PSCmdlet,
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener,
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IContext
+    [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.InternalExport]
+    [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.Get, @"AzEdgeZonesOperation_List")]
+    [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation))]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Description(@"List the operations for the provider")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Generated]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.HttpPath(Path = "/providers/Microsoft.EdgeZones/operations", ApiVersion = "2024-04-01-preview")]
+    public partial class GetAzEdgeZonesOperation_List : global::System.Management.Automation.PSCmdlet,
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener,
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IContext
     {
         /// <summary>A unique id generatd for the this cmdlet when it is instantiated.</summary>
         private string __correlationId = System.Guid.NewGuid().ToString();
@@ -41,6 +42,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <summary>A buffer to record first returned object in response.</summary>
         private object _firstResponse = null;
 
+        /// <summary>A flag to tell whether it is the first onOK call.</summary>
+        private bool _isFirst = true;
+
+        /// <summary>Link to retrieve next page.</summary>
+        private string _nextLink;
+
         /// <summary>
         /// A flag to tell whether it is the first returned object in a call. Zero means no response yet. One means 1 returned object.
         /// Two means multiple returned objects in response.
@@ -49,14 +56,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter Break { get; set; }
 
         /// <summary>Accessor for cancellationTokenSource.</summary>
         public global::System.Threading.CancellationTokenSource CancellationTokenSource { get => _cancellationTokenSource ; set { _cancellationTokenSource = value; } }
 
         /// <summary>The reference to the client API class.</summary>
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.MicrosoftEdgeZones Client => Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.ClientAPI;
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.MicrosoftEdgeZones Client => Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.ClientAPI;
 
         /// <summary>
         /// The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet
@@ -65,7 +72,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet against a different subscription.")]
         [global::System.Management.Automation.ValidateNotNull]
         [global::System.Management.Automation.Alias("AzureRMContext", "AzureCredential")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Azure)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Azure)]
         public global::System.Management.Automation.PSObject DefaultProfile { get; set; }
 
         /// <summary>Accessor for extensibleParameters.</summary>
@@ -74,111 +81,77 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <summary>SendAsync Pipeline Steps to be appended to the front of the pipeline</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be appended to the front of the pipeline")]
         [global::System.Management.Automation.ValidateNotNull]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SendAsyncStep[] HttpPipelineAppend { get; set; }
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SendAsyncStep[] HttpPipelineAppend { get; set; }
 
         /// <summary>SendAsync Pipeline Steps to be prepended to the front of the pipeline</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "SendAsync Pipeline Steps to be prepended to the front of the pipeline")]
         [global::System.Management.Automation.ValidateNotNull]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SendAsyncStep[] HttpPipelinePrepend { get; set; }
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SendAsyncStep[] HttpPipelinePrepend { get; set; }
 
         /// <summary>Accessor for our copy of the InvocationInfo.</summary>
         public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
 
         /// <summary>
-        /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
+        /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
         /// </summary>
-        global::System.Action Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener.Cancel => _cancellationTokenSource.Cancel;
+        global::System.Action Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener.Cancel => _cancellationTokenSource.Cancel;
 
-        /// <summary><see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener" /> cancellation token.</summary>
-        global::System.Threading.CancellationToken Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener.Token => _cancellationTokenSource.Token;
-
-        /// <summary>Backing field for <see cref="Name" /> property.</summary>
-        private string _name;
-
-        /// <summary>The name of the ExtendedZone</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The name of the ExtendedZone")]
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
-        Required = true,
-        ReadOnly = false,
-        Description = @"The name of the ExtendedZone",
-        SerializedName = @"extendedZoneName",
-        PossibleTypes = new [] { typeof(string) })]
-        [global::System.Management.Automation.Alias("ExtendedZoneName")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Path)]
-        public string Name { get => this._name; set => this._name = value; }
+        /// <summary><see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener" /> cancellation token.</summary>
+        global::System.Threading.CancellationToken Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener.Token => _cancellationTokenSource.Token;
 
         /// <summary>
-        /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline" /> that the remote call will use.
+        /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline" /> that the remote call will use.
         /// </summary>
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.HttpPipeline Pipeline { get; set; }
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.HttpPipeline Pipeline { get; set; }
 
         /// <summary>The URI for the proxy server to use</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "The URI for the proxy server to use")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
         public global::System.Uri Proxy { get; set; }
 
         /// <summary>Credentials for a proxy server to use for the remote call</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Credentials for a proxy server to use for the remote call")]
         [global::System.Management.Automation.ValidateNotNull]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
         public global::System.Management.Automation.PSCredential ProxyCredential { get; set; }
 
         /// <summary>Use the default credentials for the proxy</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Use the default credentials for the proxy")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Runtime)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Category(global::Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter ProxyUseDefaultCredentials { get; set; }
-
-        /// <summary>Backing field for <see cref="SubscriptionId" /> property.</summary>
-        private string[] _subscriptionId;
-
-        /// <summary>The ID of the target subscription. The value must be an UUID.</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The ID of the target subscription. The value must be an UUID.")]
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
-        Required = true,
-        ReadOnly = false,
-        Description = @"The ID of the target subscription. The value must be an UUID.",
-        SerializedName = @"subscriptionId",
-        PossibleTypes = new [] { typeof(string) })]
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.DefaultInfo(
-        Name = @"",
-        Description =@"",
-        Script = @"(Get-AzContext).Subscription.Id",
-        SetCondition = @"")]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Category(global::Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.ParameterCategory.Path)]
-        public string[] SubscriptionId { get => this._subscriptionId; set => this._subscriptionId = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what
         /// happens on that response. Implement this method in a partial class to enable this behavior
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse</see>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse</see>
         /// from the remote call</param>
         /// <param name="returnNow">/// Determines if the rest of the onDefault method should be processed, or if the method should
         /// return immediately (set to true to skip further processing )</param>
 
-        partial void overrideOnDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
+        partial void overrideOnDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
 
         /// <summary>
         /// <c>overrideOnOk</c> will be called before the regular onOk has been processed, allowing customization of what happens
         /// on that response. Implement this method in a partial class to enable this behavior
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone">Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone</see>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult">Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult</see>
         /// from the remote call</param>
         /// <param name="returnNow">/// Determines if the rest of the onOk method should be processed, or if the method should return
         /// immediately (set to true to skip further processing )</param>
 
-        partial void overrideOnOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
+        partial void overrideOnOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult> response, ref global::System.Threading.Tasks.Task<bool> returnNow);
 
         /// <summary>
         /// (overrides the default BeginProcessing method in global::System.Management.Automation.PSCmdlet)
         /// </summary>
         protected override void BeginProcessing()
         {
-            var telemetryId = Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.GetTelemetryId.Invoke();
+            var telemetryId = Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.GetTelemetryId.Invoke();
             if (telemetryId != "" && telemetryId != "internal")
             {
                 __correlationId = telemetryId;
@@ -186,9 +159,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
             Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);
             if (Break)
             {
-                Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.AttachDebugger.Break();
+                Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.AttachDebugger.Break();
             }
-            ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletBeginProcessing).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+            ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletBeginProcessing).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
         }
 
         /// <summary>Performs clean-up after the command execution</summary>
@@ -199,7 +172,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                 // Flush buffer
                 WriteObject(_firstResponse);
             }
-            var telemetryInfo = Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.GetTelemetryInfo?.Invoke(__correlationId);
+            var telemetryInfo = Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.GetTelemetryInfo?.Invoke(__correlationId);
             if (telemetryInfo != null)
             {
                 telemetryInfo.TryGetValue("ShowSecretsWarning", out var showSecretsWarning);
@@ -220,9 +193,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetAzDeviceRegistryExtendedZone_Get" /> cmdlet class.
+        /// Initializes a new instance of the <see cref="GetAzEdgeZonesOperation_List" /> cmdlet class.
         /// </summary>
-        public GetAzDeviceRegistryExtendedZone_Get()
+        public GetAzEdgeZonesOperation_List()
         {
 
         }
@@ -234,7 +207,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the message is completed.
         /// </returns>
-         async global::System.Threading.Tasks.Task Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener.Signal(string id, global::System.Threading.CancellationToken token, global::System.Func<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.EventData> messageData)
+         async global::System.Threading.Tasks.Task Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener.Signal(string id, global::System.Threading.CancellationToken token, global::System.Func<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.EventData> messageData)
         {
             using( NoSynchronizationContext )
             {
@@ -245,33 +218,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
 
                 switch ( id )
                 {
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Verbose:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Verbose:
                     {
                         WriteVerbose($"{(messageData().Message ?? global::System.String.Empty)}");
                         return ;
                     }
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Warning:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Warning:
                     {
                         WriteWarning($"{(messageData().Message ?? global::System.String.Empty)}");
                         return ;
                     }
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Information:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Information:
                     {
                         var data = messageData();
                         WriteInformation(data.Message, new string[]{});
                         return ;
                     }
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Debug:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Debug:
                     {
                         WriteDebug($"{(messageData().Message ?? global::System.String.Empty)}");
                         return ;
                     }
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Error:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Error:
                     {
                         WriteError(new global::System.Management.Automation.ErrorRecord( new global::System.Exception(messageData().Message), string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null ) );
                         return ;
                     }
-                    case Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.Progress:
+                    case Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.Progress:
                     {
                         var data = messageData();
                         int progress = (int)data.Value;
@@ -297,7 +270,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                         return ;
                     }
                 }
-                await Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.Signal(id, token, messageData, (i, t, m) => ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(i, t, () => Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.EventDataConverter.ConvertFrom(m()) as Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.EventData), InvocationInformation, this.ParameterSetName, __correlationId, __processRecordId, null );
+                await Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.Signal(id, token, messageData, (i, t, m) => ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(i, t, () => Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.EventDataConverter.ConvertFrom(m()) as Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.EventData), InvocationInformation, this.ParameterSetName, __correlationId, __processRecordId, null );
                 if (token.IsCancellationRequested)
                 {
                     return ;
@@ -309,14 +282,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <summary>Performs execution of the command.</summary>
         protected override void ProcessRecord()
         {
-            ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletProcessRecordStart).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+            ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletProcessRecordStart).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
             __processRecordId = System.Guid.NewGuid().ToString();
             try
             {
                 // work
-                using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token) )
+                using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token) )
                 {
-                    asyncCommandRuntime.Wait( ProcessRecordAsync(),((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token);
+                    asyncCommandRuntime.Wait( ProcessRecordAsync(),((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token);
                 }
             }
             catch (global::System.AggregateException aggregateException)
@@ -324,20 +297,20 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                 // unroll the inner exceptions to get the root cause
                 foreach( var innerException in aggregateException.Flatten().InnerExceptions )
                 {
-                    ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletException, $"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                    ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletException, $"{innerException.GetType().Name} - {innerException.Message} : {innerException.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     // Write exception out to error channel.
                     WriteError( new global::System.Management.Automation.ErrorRecord(innerException,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
                 }
             }
             catch (global::System.Exception exception) when ((exception as System.Management.Automation.PipelineStoppedException)== null || (exception as System.Management.Automation.PipelineStoppedException).InnerException != null)
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletException, $"{exception.GetType().Name} - {exception.Message} : {exception.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletException, $"{exception.GetType().Name} - {exception.Message} : {exception.StackTrace}").Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 // Write exception out to error channel.
                 WriteError( new global::System.Management.Automation.ErrorRecord(exception,string.Empty, global::System.Management.Automation.ErrorCategory.NotSpecified, null) );
             }
             finally
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletProcessRecordEnd).Wait();
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletProcessRecordEnd).Wait();
             }
         }
 
@@ -349,36 +322,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         {
             using( NoSynchronizationContext )
             {
-                await ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletGetPipeline); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                Pipeline = Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.CreatePipeline(InvocationInformation, __correlationId, __processRecordId, this.ParameterSetName, this.ExtensibleParameters);
+                await ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletGetPipeline); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                Pipeline = Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.CreatePipeline(InvocationInformation, __correlationId, __processRecordId, this.ParameterSetName, this.ExtensibleParameters);
                 if (null != HttpPipelinePrepend)
                 {
-                    Pipeline.Prepend((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelinePrepend) ?? HttpPipelinePrepend);
+                    Pipeline.Prepend((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelinePrepend) ?? HttpPipelinePrepend);
                 }
                 if (null != HttpPipelineAppend)
                 {
-                    Pipeline.Append((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelineAppend) ?? HttpPipelineAppend);
+                    Pipeline.Append((this.CommandRuntime as Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell.IAsyncCommandRuntimeExtensions)?.Wrap(HttpPipelineAppend) ?? HttpPipelineAppend);
                 }
                 // get the client instance
                 try
                 {
-                    foreach( var SubscriptionId in this.SubscriptionId )
-                    {
-                        await ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                        await this.Client.ExtendedZonesGet(SubscriptionId, Name, onOk, onDefault, this, Pipeline);
-                        await ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    }
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                    await this.Client.OperationsList(onOk, onDefault, this, Pipeline);
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
-                catch (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.UndeclaredResponseException urexception)
+                catch (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.UndeclaredResponseException urexception)
                 {
-                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { SubscriptionId=SubscriptionId,Name=Name})
+                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { })
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
                     });
                 }
                 finally
                 {
-                    await ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Events.CmdletProcessRecordAsyncEnd);
+                    await ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.CmdletProcessRecordAsyncEnd);
                 }
             }
         }
@@ -386,14 +356,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <summary>Interrupts currently running code within the command.</summary>
         protected override void StopProcessing()
         {
-            ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IEventListener)this).Cancel();
+            ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Cancel();
             base.StopProcessing();
         }
 
         /// <param name="sendToPipeline"></param>
         new protected void WriteObject(object sendToPipeline)
         {
-            Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
+            Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
             base.WriteObject(sendToPipeline);
         }
 
@@ -401,7 +371,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// <param name="enumerateCollection"></param>
         new protected void WriteObject(object sendToPipeline, bool enumerateCollection)
         {
-            Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
+            Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module.Instance.SanitizeOutput?.Invoke(sendToPipeline, __correlationId);
             base.WriteObject(sendToPipeline, enumerateCollection);
         }
 
@@ -409,12 +379,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
         /// a delegate that is called when the remote service returns default (any response code not handled elsewhere).
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse</see>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse">Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse</see>
         /// from the remote call</param>
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
         /// </returns>
-        private async global::System.Threading.Tasks.Task onDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse> response)
+        private async global::System.Threading.Tasks.Task onDefault(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse> response)
         {
             using( NoSynchronizationContext )
             {
@@ -431,7 +401,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                 if ((null == code || null == message))
                 {
                     // Unrecognized Response. Create an error record based on what we have.
-                    var ex = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorResponse>(responseMessage, await response);
+                    var ex = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorResponse>(responseMessage, await response);
                     WriteError( new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  })
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action }
@@ -449,12 +419,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
 
         /// <summary>a delegate that is called when the remote service returns 200 (OK).</summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone">Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone</see>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult">Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult</see>
         /// from the remote call</param>
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
         /// </returns>
-        private async global::System.Threading.Tasks.Task onOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone> response)
+        private async global::System.Threading.Tasks.Task onOk(global::System.Net.Http.HttpResponseMessage responseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult> response)
         {
             using( NoSynchronizationContext )
             {
@@ -466,13 +436,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                     return ;
                 }
                 // onOk - response for 200 / application/json
-                // (await response) // should be Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IExtendedZone
+                // (await response) // should be Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult
                 var result = (await response);
-                if (null != result)
+                // response should be returning an array of some kind. +Pageable
+                // pageable / value / nextLink
+                if (null != result.Value)
                 {
-                    if (0 == _responseSize)
+                    if (0 == _responseSize && 1 == result.Value.Count)
                     {
-                        _firstResponse = result;
+                        _firstResponse = result.Value[0];
                         _responseSize = 1;
                     }
                     else
@@ -482,8 +454,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Cmdlets
                             // Flush buffer
                             WriteObject(_firstResponse.AddMultipleTypeNameIntoPSObject());
                         }
-                        WriteObject(result.AddMultipleTypeNameIntoPSObject());
+                        var values = new System.Collections.Generic.List<System.Management.Automation.PSObject>();
+                        foreach( var value in result.Value )
+                        {
+                            values.Add(value.AddMultipleTypeNameIntoPSObject());
+                        }
+                        WriteObject(values, true);
                         _responseSize = 2;
+                    }
+                }
+                _nextLink = result.NextLink;
+                if (_isFirst)
+                {
+                    _isFirst = false;
+                    while (!String.IsNullOrEmpty(_nextLink))
+                    {
+                        if (responseMessage.RequestMessage is System.Net.Http.HttpRequestMessage requestMessage )
+                        {
+                            requestMessage = requestMessage.Clone(new global::System.Uri( _nextLink ),Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Method.Get );
+                            await ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Events.FollowingNextLink); if( ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+                            await this.Client.OperationsList_Call(requestMessage, onOk, onDefault, this, Pipeline);
+                        }
                     }
                 }
             }

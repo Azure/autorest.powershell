@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Extensions;
+    using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Extensions;
 
     /// <summary>
     /// A list of REST API operations supported by an Azure Resource Provider. It contains an URL link to get the next set of
@@ -18,15 +18,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="json">The JsonNode that should be deserialized into this object.</param>
 
-        partial void AfterFromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject json);
+        partial void AfterFromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json);
 
         /// <summary>
-        /// <c>AfterToJson</c> will be called after the json serialization has finished, allowing customization of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject"
+        /// <c>AfterToJson</c> will be called after the json serialization has finished, allowing customization of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject"
         /// /> before it is returned. Implement this method in a partial class to enable this behavior
         /// </summary>
         /// <param name="container">The JSON container that the serialization result will be placed in.</param>
 
-        partial void AfterToJson(ref Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject container);
+        partial void AfterToJson(ref Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject container);
 
         /// <summary>
         /// <c>BeforeFromJson</c> will be called before the json deserialization has commenced, allowing complete customization of
@@ -39,7 +39,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <param name="returnNow">Determines if the rest of the deserialization should be processed, or if the method should return
         /// instantly.</param>
 
-        partial void BeforeFromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject json, ref bool returnNow);
+        partial void BeforeFromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json, ref bool returnNow);
 
         /// <summary>
         /// <c>BeforeToJson</c> will be called before the json serialization has commenced, allowing complete customization of the
@@ -52,25 +52,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <param name="returnNow">Determines if the rest of the serialization should be processed, or if the method should return
         /// instantly.</param>
 
-        partial void BeforeToJson(ref Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject container, ref bool returnNow);
+        partial void BeforeToJson(ref Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject container, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationListResult.
+        /// Deserializes a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode"/> into an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult.
         /// </summary>
-        /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode" /> to deserialize from.</param>
+        /// <param name="node">a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" /> to deserialize from.</param>
         /// <returns>
-        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationListResult.
+        /// an instance of Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperationListResult FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode node)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperationListResult FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode node)
         {
-            return node is Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject json ? new OperationListResult(json) : null;
+            return node is Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json ? new OperationListResult(json) : null;
         }
 
         /// <summary>
-        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject into a new instance of <see cref="OperationListResult" />.
+        /// Deserializes a Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject into a new instance of <see cref="OperationListResult" />.
         /// </summary>
-        /// <param name="json">A Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject instance to deserialize from.</param>
-        internal OperationListResult(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject json)
+        /// <param name="json">A Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject instance to deserialize from.</param>
+        internal OperationListResult(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject json)
         {
             bool returnNow = false;
             BeforeFromJson(json, ref returnNow);
@@ -78,23 +78,23 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             {
                 return;
             }
-            {_value = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonArray>("value"), out var __jsonValue) ? If( __jsonValue as Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IOperation) (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Operation.FromJson(__u) )) ))() : null : _value;}
-            {_nextLink = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonString>("nextLink"), out var __jsonNextLink) ? (string)__jsonNextLink : (string)_nextLink;}
+            {_value = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonArray>("value"), out var __jsonValue) ? If( __jsonValue as Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IOperation) (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Operation.FromJson(__u) )) ))() : null : _value;}
+            {_nextLink = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString>("nextLink"), out var __jsonNextLink) ? (string)__jsonNextLink : (string)_nextLink;}
             AfterFromJson(json);
         }
 
         /// <summary>
-        /// Serializes this instance of <see cref="OperationListResult" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode" />.
+        /// Serializes this instance of <see cref="OperationListResult" /> into a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
         /// </summary>
-        /// <param name="container">The <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject"/> container to serialize this object into. If the caller
+        /// <param name="container">The <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject"/> container to serialize this object into. If the caller
         /// passes in <c>null</c>, a new instance will be created and returned to the caller.</param>
-        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode"/>.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode"/>.</param>
         /// <returns>
-        /// a serialized instance of <see cref="OperationListResult" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode" />.
+        /// a serialized instance of <see cref="OperationListResult" /> as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode" />.
         /// </returns>
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode ToJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject container, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode serializationMode)
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode ToJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject container, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode serializationMode)
         {
-            container = container ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonObject();
+            container = container ?? new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonObject();
 
             bool returnNow = false;
             BeforeToJson(ref container, ref returnNow);
@@ -104,14 +104,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             }
             if (null != this._value)
             {
-                var __w = new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.XNodeArray();
+                var __w = new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.XNodeArray();
                 foreach( var __x in this._value )
                 {
                     AddIf(__x?.ToJson(null, serializationMode) ,__w.Add);
                 }
                 container.Add("value",__w);
             }
-            AddIf( null != (((object)this._nextLink)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonString(this._nextLink.ToString()) : null, "nextLink" ,container.Add );
+            AddIf( null != (((object)this._nextLink)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonString(this._nextLink.ToString()) : null, "nextLink" ,container.Add );
             AfterToJson(ref container);
             return container;
         }

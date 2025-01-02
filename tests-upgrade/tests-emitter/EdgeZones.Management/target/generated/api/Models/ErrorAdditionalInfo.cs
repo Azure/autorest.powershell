@@ -1,34 +1,34 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Extensions;
+    using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Extensions;
 
     /// <summary>The resource management error additional info.</summary>
     public partial class ErrorAdditionalInfo :
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo,
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo,
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal
     {
 
         /// <summary>Backing field for <see cref="Info" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny _info;
+        private Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny _info;
 
         /// <summary>The additional info.</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
-        public Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny Info { get => (this._info = this._info ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Any()); }
+        [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Origin(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.PropertyOrigin.Owned)]
+        public Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny Info { get => (this._info = this._info ?? new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Any()); }
 
         /// <summary>Internal Acessors for Info</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal.Info { get => (this._info = this._info ?? new Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.Any()); set { {_info = value;} } }
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal.Info { get => (this._info = this._info ?? new Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.Any()); set { {_info = value;} } }
 
         /// <summary>Internal Acessors for Type</summary>
-        string Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal.Type { get => this._type; set { {_type = value;} } }
+        string Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal.Type { get => this._type; set { {_type = value;} } }
 
         /// <summary>Backing field for <see cref="Type" /> property.</summary>
         private string _type;
 
         /// <summary>The additional info type.</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Origin(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.PropertyOrigin.Owned)]
+        [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Origin(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.PropertyOrigin.Owned)]
         public string Type { get => this._type; }
 
         /// <summary>Creates an new <see cref="ErrorAdditionalInfo" /> instance.</summary>
@@ -39,10 +39,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
     }
     /// The resource management error additional info.
     public partial interface IErrorAdditionalInfo :
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.IJsonSerializable
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.IJsonSerializable
     {
         /// <summary>The additional info.</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
+        [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
         Required = false,
         ReadOnly = true,
         Read = true,
@@ -50,10 +50,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         Update = false,
         Description = @"The additional info.",
         SerializedName = @"info",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny) })]
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny Info { get;  }
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny) })]
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny Info { get;  }
         /// <summary>The additional info type.</summary>
-        [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Info(
+        [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Info(
         Required = false,
         ReadOnly = true,
         Read = true,
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
 
     {
         /// <summary>The additional info.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny Info { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny Info { get; set; }
         /// <summary>The additional info type.</summary>
         string Type { get; set; }
 

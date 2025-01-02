@@ -6,7 +6,7 @@
 using System.IO;
 using System.Text;
 
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json
 {
     
 

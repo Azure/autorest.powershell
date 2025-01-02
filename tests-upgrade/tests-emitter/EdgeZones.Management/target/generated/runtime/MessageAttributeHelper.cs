@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ----------------------------------------------------------------------------------
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.generated.runtime.Properties;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.generated.runtime.Properties;
     using System;
     using System.Collections.Generic;
     using System.Linq;

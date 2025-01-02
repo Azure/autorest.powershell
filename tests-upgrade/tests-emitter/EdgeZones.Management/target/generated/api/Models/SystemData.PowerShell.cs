@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>Metadata pertaining to creation and last modification of the resource.</summary>
     [System.ComponentModel.TypeConverter(typeof(SystemDataTypeConverter))]
@@ -61,27 +61,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemData"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemData"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
             return new SystemData(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemData"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemData"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
             return new SystemData(content);
         }
@@ -91,10 +91,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>an instance of the <see cref="SystemData" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemData"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemData"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -109,33 +109,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("CreatedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedBy = (string) content.GetValueForProperty("CreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedBy = (string) content.GetValueForProperty("CreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedBy, global::System.Convert.ToString);
             }
             if (content.Contains("CreatedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedByType = (string) content.GetValueForProperty("CreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedByType = (string) content.GetValueForProperty("CreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedByType, global::System.Convert.ToString);
             }
             if (content.Contains("CreatedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("LastModifiedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedBy = (string) content.GetValueForProperty("LastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedBy = (string) content.GetValueForProperty("LastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedBy, global::System.Convert.ToString);
             }
             if (content.Contains("LastModifiedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedByType = (string) content.GetValueForProperty("LastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedByType = (string) content.GetValueForProperty("LastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedByType, global::System.Convert.ToString);
             }
             if (content.Contains("LastModifiedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("LastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("LastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.SystemData"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.SystemData"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -150,27 +150,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("CreatedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedBy = (string) content.GetValueForProperty("CreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedBy = (string) content.GetValueForProperty("CreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedBy, global::System.Convert.ToString);
             }
             if (content.Contains("CreatedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedByType = (string) content.GetValueForProperty("CreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedByType = (string) content.GetValueForProperty("CreatedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedByType, global::System.Convert.ToString);
             }
             if (content.Contains("CreatedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedAt = (global::System.DateTime?) content.GetValueForProperty("CreatedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).CreatedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             if (content.Contains("LastModifiedBy"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedBy = (string) content.GetValueForProperty("LastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedBy, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedBy = (string) content.GetValueForProperty("LastModifiedBy",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedBy, global::System.Convert.ToString);
             }
             if (content.Contains("LastModifiedByType"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedByType = (string) content.GetValueForProperty("LastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedByType, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedByType = (string) content.GetValueForProperty("LastModifiedByType",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedByType, global::System.Convert.ToString);
             }
             if (content.Contains("LastModifiedAt"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("LastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemDataInternal)this).LastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedAt = (global::System.DateTime?) content.GetValueForProperty("LastModifiedAt",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemDataInternal)this).LastModifiedAt, (v) => v is global::System.DateTime _v ? _v : global::System.Xml.XmlConvert.ToDateTime( v.ToString() , global::System.Xml.XmlDateTimeSerializationMode.Unspecified));
             }
             AfterDeserializePSObject(content);
         }
@@ -178,7 +178,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {

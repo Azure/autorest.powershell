@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>
     /// A PowerShell PSTypeConverter to support converting to an instance of <see cref="SystemData" />
@@ -62,7 +62,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             try
             {
                 string text = sourceValue.ToString()?.Trim();
-                return true == text?.StartsWith("{") && true == text?.EndsWith("}") && Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(text).Type == Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonType.Object;
+                return true == text?.StartsWith("{") && true == text?.EndsWith("}") && Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(text).Type == Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonType.Object;
             }
             catch
             {
@@ -103,14 +103,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// <returns>
         /// an instance of <see cref="SystemData" />, or <c>null</c> if there is no suitable conversion.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData ConvertFrom(dynamic sourceValue)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData ConvertFrom(dynamic sourceValue)
         {
             if (null == sourceValue)
             {
                 return null;
             }
             global::System.Type type = sourceValue.GetType();
-            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ISystemData).IsAssignableFrom(type))
+            if (typeof(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ISystemData).IsAssignableFrom(type))
             {
                 return sourceValue;
             }

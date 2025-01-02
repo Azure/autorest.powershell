@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // Changes may cause incorrect behavior and will be lost if the code is regenerated.
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models
 {
-    using Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell;
+    using Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell;
 
     /// <summary>The resource management error additional info.</summary>
     [System.ComponentModel.TypeConverter(typeof(ErrorAdditionalInfoTypeConverter))]
@@ -61,33 +61,33 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         partial void OverrideToString(ref string stringResult, ref bool returnNow);
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfo"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfo"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo DeserializeFromDictionary(global::System.Collections.IDictionary content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo DeserializeFromDictionary(global::System.Collections.IDictionary content)
         {
             return new ErrorAdditionalInfo(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfo"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfo"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
         /// <returns>
-        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo" />.
+        /// an instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo" />.
         /// </returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo DeserializeFromPSObject(global::System.Management.Automation.PSObject content)
         {
             return new ErrorAdditionalInfo(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfo"
+        /// Deserializes a <see cref="global::System.Collections.IDictionary" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfo"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -102,17 +102,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Type"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Type, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Type, global::System.Convert.ToString);
             }
             if (content.Contains("Info"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Info = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny) content.GetValueForProperty("Info",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Info, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AnyTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Info = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny) content.GetValueForProperty("Info",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Info, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.AnyTypeConverter.ConvertFrom);
             }
             AfterDeserializeDictionary(content);
         }
 
         /// <summary>
-        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.ErrorAdditionalInfo"
+        /// Deserializes a <see cref="global::System.Management.Automation.PSObject" /> into a new instance of <see cref="Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.ErrorAdditionalInfo"
         /// />.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -127,11 +127,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
             // actually deserialize
             if (content.Contains("Type"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Type, global::System.Convert.ToString);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Type = (string) content.GetValueForProperty("Type",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Type, global::System.Convert.ToString);
             }
             if (content.Contains("Info"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Info = (Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IAny) content.GetValueForProperty("Info",((Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfoInternal)this).Info, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.AnyTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Info = (Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IAny) content.GetValueForProperty("Info",((Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfoInternal)this).Info, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.AnyTypeConverter.ConvertFrom);
             }
             AfterDeserializePSObject(content);
         }
@@ -141,12 +141,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
         /// <returns>an instance of the <see cref="ErrorAdditionalInfo" /> model class.</returns>
-        public static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Models.IErrorAdditionalInfo FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.Json.JsonNode.Parse(jsonText));
+        public static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Models.IErrorAdditionalInfo FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>
 
         /// <returns>a <see cref="System.String" /> containing this model serialized to JSON text.</returns>
-        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.SerializationMode.IncludeAll)?.ToString();
+        public string ToJsonString() => ToJson(null, Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.SerializationMode.IncludeAll)?.ToString();
 
         public override string ToString()
         {

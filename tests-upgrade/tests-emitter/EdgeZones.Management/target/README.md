@@ -1,6 +1,6 @@
 <!-- region Generated -->
-# Az.DeviceRegistry
-This directory contains the PowerShell module for the DeviceRegistry service.
+# Az.EdgeZones
+This directory contains the PowerShell module for the EdgeZones service.
 
 ---
 ## Info
@@ -20,5 +20,5 @@ This module was primarily generated via [AutoRest](https://github.com/Azure/auto
 AutoRest does not generate authentication code for the module. Authentication is handled via Az.Accounts by altering the HTTP payload before it is sent.
 
 ## Development
-For information on how to develop for `Az.DeviceRegistry`, see [how-to.md](how-to.md).
+For information on how to develop for `Az.EdgeZones`, see [how-to.md](how-to.md).
 <!-- endregion -->

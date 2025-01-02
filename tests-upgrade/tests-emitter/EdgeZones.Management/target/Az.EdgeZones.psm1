@@ -40,10 +40,10 @@
   Write-Information "Loaded Module '$($accountsModule.Name)'"
 
   # Load the private module dll
-  $null = Import-Module -Name (Join-Path $PSScriptRoot './bin/Az.DeviceRegistry.private.dll')
+  $null = Import-Module -Name (Join-Path $PSScriptRoot './bin/Az.EdgeZones.private.dll')
 
   # Get the private module's instance
-  $instance = [Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Module]::Instance
+  $instance = [Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Module]::Instance
 
   # Ask for the shared functionality table
   $VTable = Register-AzModule
@@ -77,7 +77,7 @@
   $instance.ProfileName = $VTable.ProfileName
 
   # Load the custom module
-  $customModulePath = Join-Path $PSScriptRoot './custom/Az.DeviceRegistry.custom.psm1'
+  $customModulePath = Join-Path $PSScriptRoot './custom/Az.EdgeZones.custom.psm1'
   if(Test-Path $customModulePath) {
     $null = Import-Module -Name $customModulePath
   }

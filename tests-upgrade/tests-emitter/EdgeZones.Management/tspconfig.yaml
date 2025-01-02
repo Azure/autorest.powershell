@@ -50,7 +50,7 @@ options:
       name: "@azure/arm-edgezones"
   "@azure-tools/typespec-powershell":
     service-dir: "src"
-    package-dir: "DeviceRegistry/DeviceRegistry.Autorest"
+    package-dir: "EdgeZones/EdgeZones.Autorest"
     clear-output-folder: true
     azure: true
     module-version: 0.1.0
@@ -59,7 +59,7 @@ options:
     metadata:
       authors: Microsoft Corporation
       owners: Microsoft Corporation
-      description: 'Microsoft Azure PowerShell: DeviceRegistry cmdlets'
+      description: 'Microsoft Azure PowerShell: EdgeZones cmdlets'
       copyright: Microsoft Corporation. All rights reserved.
       tags: Azure ResourceManager ARM PSModule Sphere
       companyName: Microsoft Corporation
@@ -67,8 +67,8 @@ options:
       licenseUri: https://aka.ms/azps-license
       projectUri: https://github.com/Azure/azure-powershell
     prefix: 'Az'
-    subject-prefix: 'DeviceRegistry'
-    service-name: DeviceRegistry
+    subject-prefix: 'EdgeZones'
+    service-name: EdgeZones
     module-name: "{prefix}.{service-name}"
     namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
     use-namespace-folders: false

@@ -158,9 +158,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Cmdlets
         ReadOnly = false,
         Description = @"Gets or sets allow or disallow public network access to resource",
         SerializedName = @"publicNetworkAccess",
-        PossibleTypes = new [] { typeof(double) })]
+        PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        public double PublicNetworkAccess { get => _resourceBody.PublicNetworkAccess ?? default(double); set => _resourceBody.PublicNetworkAccess = value; }
+        public string PublicNetworkAccess { get => _resourceBody.PublicNetworkAccess ?? null; set => _resourceBody.PublicNetworkAccess = value; }
 
         /// <summary>Backing field for <see cref="ResourceGroupName" /> property.</summary>
         private string _resourceGroupName;
@@ -575,7 +575,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Cmdlets
             }
             if ((bool)(true == this.MyInvocation?.BoundParameters.ContainsKey("PublicNetworkAccess")))
             {
-                this.PublicNetworkAccess = (double)(this.MyInvocation?.BoundParameters["PublicNetworkAccess"]);
+                this.PublicNetworkAccess = (string)(this.MyInvocation?.BoundParameters["PublicNetworkAccess"]);
             }
         }
 

@@ -1128,10 +1128,8 @@ function getSchemaForEnum(dpgContext: SdkContext, e: Enum) {
 function enumMemberType(member: EnumMember | undefined) {
   if (typeof member?.value === "number") {
     return "number";
-  } else if (typeof member?.value === "string") {
-    return "string";
   }
-  return undefined;
+  return "string";
 }
 /**
  * Map TypeSpec intrinsic models to open api definitions

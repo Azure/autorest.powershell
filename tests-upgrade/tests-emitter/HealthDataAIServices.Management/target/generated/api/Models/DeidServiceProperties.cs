@@ -35,11 +35,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         public string ProvisioningState { get => this._provisioningState; }
 
         /// <summary>Backing field for <see cref="PublicNetworkAccess" /> property.</summary>
-        private double? _publicNetworkAccess;
+        private string _publicNetworkAccess;
 
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Origin(Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PropertyOrigin.Owned)]
-        public double? PublicNetworkAccess { get => this._publicNetworkAccess; set => this._publicNetworkAccess = value; }
+        public string PublicNetworkAccess { get => this._publicNetworkAccess; set => this._publicNetworkAccess = value; }
 
         /// <summary>Backing field for <see cref="ServiceUrl" /> property.</summary>
         private string _serviceUrl;
@@ -90,9 +90,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         Update = true,
         Description = @"Gets or sets allow or disallow public network access to resource",
         SerializedName = @"publicNetworkAccess",
-        PossibleTypes = new [] { typeof(double) })]
+        PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
         /// <summary>Deid service url.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Runtime.Info(
         Required = false,
@@ -117,7 +117,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.Models
         string ProvisioningState { get; set; }
         /// <summary>Gets or sets allow or disallow public network access to resource</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.PSArgumentCompleterAttribute("Enabled", "Disabled")]
-        double? PublicNetworkAccess { get; set; }
+        string PublicNetworkAccess { get; set; }
         /// <summary>Deid service url.</summary>
         string ServiceUrl { get; set; }
 

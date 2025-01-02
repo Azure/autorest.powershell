@@ -8,9 +8,9 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
-using static Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell.PsHelpers;
+using static Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell.PsHelpers;
 
-namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell
+namespace Microsoft.Azure.PowerShell.Cmdlets.EdgeZones.Runtime.PowerShell
 {
     [Cmdlet(VerbsData.Export, "Psd1")]
     [DoNotExport]
@@ -71,13 +71,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell
                 var sb = new StringBuilder();
                 sb.AppendLine("@{");
                 sb.AppendLine($@"{GuidStart} = '{ModuleGuid}'");
-                sb.AppendLine($@"{Indent}RootModule = '{"./Az.DeviceRegistry.psm1"}'");
+                sb.AppendLine($@"{Indent}RootModule = '{"./Az.EdgeZones.psm1"}'");
                 sb.AppendLine($@"{Indent}ModuleVersion = '{version}'");
                 sb.AppendLine($@"{Indent}CompatiblePSEditions = 'Core', 'Desktop'");
                 sb.AppendLine($@"{Indent}Author = '{"Microsoft Corporation"}'");
                 sb.AppendLine($@"{Indent}CompanyName = '{"Microsoft Corporation"}'");
                 sb.AppendLine($@"{Indent}Copyright = '{"Microsoft Corporation. All rights reserved."}'");
-                sb.AppendLine($@"{Indent}Description = '{"Microsoft Azure PowerShell: DeviceRegistry cmdlets"}'");
+                sb.AppendLine($@"{Indent}Description = '{"Microsoft Azure PowerShell: EdgeZones cmdlets"}'");
                 sb.AppendLine($@"{Indent}PowerShellVersion = '5.1'");
                 sb.AppendLine($@"{Indent}DotNetFrameworkVersion = '4.7.2'");
 
@@ -94,7 +94,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell
                 }
                 else
                 {
-                    sb.AppendLine($@"{Indent}RequiredAssemblies = '{"./bin/Az.DeviceRegistry.private.dll"}'");
+                    sb.AppendLine($@"{Indent}RequiredAssemblies = '{"./bin/Az.EdgeZones.private.dll"}'");
                 }
 
                 // NestedModules
@@ -113,7 +113,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DeviceRegistry.Runtime.PowerShell
                     var customFormatPs1xmlFiles = Directory.GetFiles(CustomFolder)
                         .Where(f => f.EndsWith(".format.ps1xml"))
                         .Select(f => $"{CustomFolderRelative}/{Path.GetFileName(f)}");
-                    var formatList = customFormatPs1xmlFiles.Prepend("./Az.DeviceRegistry.format.ps1xml").ToPsList();
+                    var formatList = customFormatPs1xmlFiles.Prepend("./Az.EdgeZones.format.ps1xml").ToPsList();
                     sb.AppendLine($@"{Indent}FormatsToProcess = {formatList}");
                 }
 
