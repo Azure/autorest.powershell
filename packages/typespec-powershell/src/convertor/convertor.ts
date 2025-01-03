@@ -357,6 +357,10 @@ function createParameter(psContext: SdkContext, parameter: HttpOperationParamete
     newParameter.language.default.serializedName = parameter.name;
     newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
     newParameter.protocol.http.in = parameter.type;
+    if ((<any>parameter).allowReserved) {
+      newParameter.extensions = newParameter.extensions || {};
+      newParameter.extensions["x-ms-skip-url-encoding"] = true;
+    }
     // ToDo, we need to support x-ms-client is specified.
     newParameter.implementation = ImplementationLocation.Method;
     newParameter.required = !parameter.param.optional;

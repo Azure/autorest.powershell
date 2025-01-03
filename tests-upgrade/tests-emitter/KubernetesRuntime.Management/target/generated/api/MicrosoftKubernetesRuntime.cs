@@ -33,7 +33,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -188,7 +188,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -231,7 +231,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -275,7 +275,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -637,7 +637,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -805,7 +805,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -941,7 +941,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers/"
                         + global::System.Uri.EscapeDataString(bgpPeerName)
                         + "?"
@@ -1110,7 +1110,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -1240,7 +1240,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/bgpPeers"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -1408,7 +1408,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -1563,7 +1563,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -1606,7 +1606,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -1650,7 +1650,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -2014,7 +2014,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -2182,7 +2182,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -2318,7 +2318,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers/"
                         + global::System.Uri.EscapeDataString(loadBalancerName)
                         + "?"
@@ -2487,7 +2487,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -2617,7 +2617,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/loadBalancers"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -3068,7 +3068,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3225,7 +3225,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3268,7 +3268,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3312,7 +3312,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3503,7 +3503,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3671,7 +3671,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3807,7 +3807,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services/"
                         + global::System.Uri.EscapeDataString(serviceName)
                         + "?"
@@ -3976,7 +3976,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -4106,7 +4106,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/services"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -4274,7 +4274,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -4429,7 +4429,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -4472,7 +4472,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -4516,7 +4516,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -4880,7 +4880,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5141,7 +5141,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5277,7 +5277,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5446,7 +5446,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -5576,7 +5576,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
@@ -5744,7 +5744,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5899,7 +5899,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5942,7 +5942,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
@@ -5986,7 +5986,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ContainerOrchestratorRuntime
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
                         "/"
-                        + global::System.Uri.EscapeDataString(resourceUri)
+                        + (resourceUri)
                         + "/providers/Microsoft.KubernetesRuntime/storageClasses/"
                         + global::System.Uri.EscapeDataString(storageClassName)
                         + "?"
