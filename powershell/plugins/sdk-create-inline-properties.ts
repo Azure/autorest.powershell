@@ -589,11 +589,13 @@ async function createVirtuals(state: State): Promise<PwshModel> {
     Individual models can change the $THRESHOLD for generate
   */
   const conflicts = new Array<string>();
+  // Move additionalProperties from parent to properties. We need to complete it for all objects before createVirtualProperties
+  for (const schema of values(state.model.schemas.objects)) {
+    moveAdditionalPropertiesFromParentToProperties(schema, state.model.schemas);
+  }
 
   for (const schema of values(state.model.schemas.objects)) {
-
-    moveAdditionalPropertiesFromParentToProperties(schema, state.model.schemas);
-    // did we already inline this objecct
+    // did we already inline this object
     if (schema.language.default.inlined) {
       continue;
     }
