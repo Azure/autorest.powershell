@@ -211,6 +211,9 @@ verb-mapping:
   Wipe: Clear
   Write: Write
 
+# azure configurations
+azure: true
+
 # Folder configurations
 current-folder: "./"
 module-folder: "./generated"
@@ -243,6 +246,19 @@ nuspec: "./{module-name}.nuspec"
 # misc configurations
 skip-model-cmdlets: false
 module-version: 0.1.0
+namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+use-namespace-folders: false
+help-link-prefix: https://learn.microsoft.com/powershell/module/
+metadata:
+  authors: Microsoft Corporation
+  owners: Microsoft Corporation
+  description: 'Microsoft Azure PowerShell: {service-name} cmdlets'
+  copyright: Microsoft Corporation. All rights reserved.
+  tags: Azure ResourceManager ARM PSModule {service-name}
+  companyName: Microsoft Corporation
+  requireLicenseAcceptance: true
+  licenseUri: https://aka.ms/azps-license
+  projectUri: https://github.com/Azure/azure-powershell
 
 # License configurations
 header-definitions:
