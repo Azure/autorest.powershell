@@ -17,6 +17,7 @@
     "Liftr.WeightsAndBiases.Management",
     "Microsoft.DevOpsInfrastructure.Management",
     "Neon.Postgres.Management",
+    "NetworkAnalytics.Management",
     "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
     "Sphere.Management",
@@ -39,19 +40,13 @@
     "Liftr.WeightsAndBiases.Management",
     "Microsoft.DevOpsInfrastructure.Management",
     "Neon.Postgres.Management",
+    "NetworkAnalytics.Management",
     "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
     "Sphere.Management",
     "StandbyPool.Management"
   ],
-  "blackTestList": [
-
-  ],
-  "ignoreFolder": [
-    "examples",
-    "CompareResult"
-  ],
-  "ignoreCompareFile": [
-    "generated\\modules"
-  ]
+  "blackTestList": [],
+  "ignoreFolder": ["examples", "CompareResult"],
+  "ignoreCompareFile": ["generated\\modules"]
 }

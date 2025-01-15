@@ -1,0 +1,87 @@
+parameters:
+  "service-dir":
+    default: "sdk/networkanalytics"
+emit:
+  - "@azure-tools/typespec-autorest"
+linter:
+  extends:
+    - "@azure-tools/typespec-azure-rulesets/resource-manager"
+  disable:
+    "@azure-tools/typespec-azure-resource-manager/arm-common-types-version": "New rule"
+options:
+  "@azure-tools/typespec-autorest":
+    emitter-output-dir: "{project-root}/.."
+    azure-resource-provider-folder: "resource-manager"
+    emit-common-types-schema: "never"
+    # `arm-resource-flattening` is only used for back-compat for specs existed on July 2024. All new service spec should NOT use this flag
+    arm-resource-flattening: true
+    output-file: "{azure-resource-provider-folder}/{service-name}/{version-status}/{version}/networkanalytics.json"
+  "@azure-tools/cadl-python":
+    "basic-setup-py": true
+    "package-version": 1.0.0b1
+    "package-name": azure-mgmt-networkanalytics
+  "@azure-tools/cadl-csharp":
+    save-inputs: false
+    clear-output-folder: true
+    namespace: Microsoft.NetworkAnalytics
+    model-namespace: false
+  "@azure-tools/typespec-ts":
+    azureSdkForJs: true
+    isModularLibrary: true
+    generateMetadata: true
+    hierarchyClient: false
+    experimentalExtensibleEnums: true
+    enableOperationGroup: true
+    package-dir: "arm-networkanalytics"
+    flavor: "azure"
+    packageDetails:
+      name: "@azure/arm-networkanalytics"
+  "@azure-tools/typespec-python":
+    package-dir: "azure-mgmt-networkanalytics"
+    package-name: "{package-dir}"
+    flavor: "azure"
+    generate-test: true
+    generate-sample: true
+  "@azure-tools/typespec-powershell":
+    service-dir: "src"
+    package-dir: "NetworkAnalytics/NetworkAnalytics.Autorest"
+    clear-output-folder: true
+    azure: true
+    module-version: 0.1.0
+    skip-model-cmdlets: false
+    help-link-prefix: https://learn.microsoft.com/powershell/module/
+    metadata:
+      authors: Microsoft Corporation
+      owners: Microsoft Corporation
+      description: 'Microsoft Azure PowerShell: NetworkAnalytics cmdlets'
+      copyright: Microsoft Corporation. All rights reserved.
+      tags: Azure ResourceManager ARM PSModule Sphere
+      companyName: Microsoft Corporation
+      requireLicenseAcceptance: true
+      licenseUri: https://aka.ms/azps-license
+      projectUri: https://github.com/Azure/azure-powershell
+    prefix: 'Az'
+    subject-prefix: 'NetworkAnalytics'
+    service-name: NetworkAnalytics
+    module-name: "{prefix}.{service-name}"
+    namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+    use-namespace-folders: false
+    # output-folder: "{output-dir}"
+    exclude-tableview-properties:
+      - Id
+      - Type
+    directive:
+      - where:
+          subject: Operation
+        hide: true
+      - where:
+          parameter-name: SubscriptionId
+        set:
+          default:
+            script: '(Get-AzContext).Subscription.Id'
+      - where:
+          variant: ^(Create|Update)(?!.*?Expanded|ViaJsonString|ViaJsonFilePath)
+        remove: true
+      - where:
+          verb: Set
+        hide: true
