@@ -12,14 +12,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
     /// Checks the report's nested resource name availability, e.g: Webhooks, Evidences, Snapshots.
     /// </summary>
     /// <remarks>
-    /// [OpenAPI] CheckNameAvailability=>POST:"/providers/Microsoft.AppComplianceAutomation/reports/{reportName}/checkNameAvailability"
+    /// [OpenAPI] NestedResourceCheckNameAvailability=>POST:"/providers/Microsoft.AppComplianceAutomation/reports/{reportName}/checkNameAvailability"
     /// </remarks>
-    [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsDiagnostic.Test, @"AzAppComplianceAutomationReportNameAvailability_Check", SupportsShouldProcess = true)]
+    [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsDiagnostic.Test, @"AzAppComplianceAutomationReport_CheckViaIdentity", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.ICheckNameAvailabilityResponse))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Description(@"Checks the report's nested resource name availability, e.g: Webhooks, Evidences, Snapshots.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.HttpPath(Path = "/providers/Microsoft.AppComplianceAutomation/reports/{reportName}/checkNameAvailability", ApiVersion = "2024-06-27")]
-    public partial class TestAzAppComplianceAutomationReportNameAvailability_Check : global::System.Management.Automation.PSCmdlet,
+    public partial class TestAzAppComplianceAutomationReport_CheckViaIdentity : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IContext
     {
@@ -99,6 +99,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Category(global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.ParameterCategory.Runtime)]
         public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.SendAsyncStep[] HttpPipelinePrepend { get; set; }
 
+        /// <summary>Backing field for <see cref="InputObject" /> property.</summary>
+        private Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IAppComplianceAutomationIdentity _inputObject;
+
+        /// <summary>Identity Parameter</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Identity Parameter", ValueFromPipeline = true)]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Category(global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.ParameterCategory.Path)]
+        public Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Models.IAppComplianceAutomationIdentity InputObject { get => this._inputObject; set => this._inputObject = value; }
+
         /// <summary>Accessor for our copy of the InvocationInfo.</summary>
         public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
 
@@ -130,20 +138,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Use the default credentials for the proxy")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Category(global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter ProxyUseDefaultCredentials { get; set; }
-
-        /// <summary>Backing field for <see cref="ReportName" /> property.</summary>
-        private string _reportName;
-
-        /// <summary>Report Name.</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Report Name.")]
-        [Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Info(
-        Required = true,
-        ReadOnly = false,
-        Description = @"Report Name.",
-        SerializedName = @"reportName",
-        PossibleTypes = new [] { typeof(string) })]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Category(global::Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.ParameterCategory.Path)]
-        public string ReportName { get => this._reportName; set => this._reportName = value; }
 
         /// <summary>
         /// <c>overrideOnDefault</c> will be called before the regular onDefault has been processed, allowing customization of what
@@ -302,7 +296,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
             try
             {
                 // work
-                if (ShouldProcess($"Call remote 'ReportCheckNameAvailability' operation"))
+                if (ShouldProcess($"Call remote 'ReportNestedResourceCheckNameAvailability' operation"))
                 {
                     using( var asyncCommandRuntime = new Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.PowerShell.AsyncCommandRuntime(this, ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token) )
                     {
@@ -354,12 +348,24 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
                 try
                 {
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                    await this.Client.ReportCheckNameAvailability(ReportName, Body, onOk, onDefault, this, Pipeline);
+                    if (InputObject?.Id != null)
+                    {
+                        await this.Client.ReportNestedResourceCheckNameAvailabilityViaIdentity(InputObject.Id, Body, onOk, onDefault, this, Pipeline);
+                    }
+                    else
+                    {
+                        // try to call with PATH parameters from Input Object
+                        if (null == InputObject.ReportName)
+                        {
+                            ThrowTerminatingError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception("InputObject has null value for InputObject.ReportName"),string.Empty, global::System.Management.Automation.ErrorCategory.InvalidArgument, InputObject) );
+                        }
+                        await this.Client.ReportNestedResourceCheckNameAvailability(InputObject.ReportName ?? null, Body, onOk, onDefault, this, Pipeline);
+                    }
                     await ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.UndeclaredResponseException urexception)
                 {
-                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { ReportName=ReportName})
+                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { })
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
                     });
@@ -379,9 +385,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Cmdlets
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestAzAppComplianceAutomationReportNameAvailability_Check" /> cmdlet class.
+        /// Initializes a new instance of the <see cref="TestAzAppComplianceAutomationReport_CheckViaIdentity" /> cmdlet class.
         /// </summary>
-        public TestAzAppComplianceAutomationReportNameAvailability_Check()
+        public TestAzAppComplianceAutomationReport_CheckViaIdentity()
         {
 
         }

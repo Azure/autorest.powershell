@@ -42,14 +42,14 @@ options:
     service-dir: "src"
     package-dir: "AppComplianceAutomation/AppComplianceAutomation.Autorest"
     clear-output-folder: true
-    azure: true
+    # azure: true
     module-version: 0.1.0
-    skip-model-cmdlets: false
-    help-link-prefix: https://learn.microsoft.com/powershell/module/
+    # skip-model-cmdlets: false
+    # help-link-prefix: https://learn.microsoft.com/powershell/module/
     metadata:
       authors: Microsoft Corporation
       owners: Microsoft Corporation
-      description: 'Microsoft Azure PowerShell: AppComplianceAutomation cmdlets'
+      description: 'Microsoft Azure PowerShell: App ComplianceAutomation cmdlets'
       copyright: Microsoft Corporation. All rights reserved.
       tags: Azure ResourceManager ARM PSModule Sphere
       companyName: Microsoft Corporation
@@ -60,8 +60,8 @@ options:
     subject-prefix: 'AppComplianceAutomation'
     service-name: AppComplianceAutomation
     module-name: "{prefix}.{service-name}"
-    namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
-    use-namespace-folders: false
+    # namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"
+    # use-namespace-folders: false
     # output-folder: "{output-dir}"
     exclude-tableview-properties:
       - Id
