@@ -17,6 +17,7 @@ import { stat } from "fs";
 import { extractPagedMetadataNested } from "../utils/operationUtil.js";
 import { parseNextLinkName } from "../utils/operationUtil.js";
 import { getLroMetadata } from "@azure-tools/typespec-azure-core";
+import { getOperationId } from "@typespec/openapi";
 
 const GlobalParameter = "global-parameter";
 
@@ -163,9 +164,18 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
   return operationGroups;
 }
 
+function resolveOperationId(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup): string {
+  const explicitOperationId = getOperationId(psContext.program, op.operation);
+  if (explicitOperationId) {
+    return explicitOperationId;
+  }
+  return operationGroup.$key + "_" + pascalCase(op.operation.name);
+}
+
 function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel) {
-  const newOperation = new Operation(pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
-  newOperation.operationId = operationGroup.$key + "_" + pascalCase(op.operation.name);
+  const operationId = resolveOperationId(psContext, op, operationGroup);
+  const newOperation = new Operation( operationId.split('_')[1] ?? pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
+  newOperation.operationId = operationId;
   // Add Api versions
   newOperation.apiVersions = newOperation.apiVersions || [];
   newOperation.apiVersions.push({ version: getEnrichedDefaultApiVersion(psContext.program, psContext) || "" });
