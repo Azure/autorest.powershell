@@ -1913,7 +1913,7 @@ export class CmdletClass extends Class {
 
           }
 
-          const desc = (vParam.description || '.').replace(/[\r?\n]/gm, '');
+          const desc = (vParam.description || '.').replace(/[\r\n]/gm, '');
           cmdletParameter.description = desc;
 
           // check if this parameter is a byte array, which would indicate that it should really be a file input
