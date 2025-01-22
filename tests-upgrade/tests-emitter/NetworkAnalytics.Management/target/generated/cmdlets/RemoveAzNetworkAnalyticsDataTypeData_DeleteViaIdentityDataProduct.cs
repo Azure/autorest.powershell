@@ -53,7 +53,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Cmdlets
         public global::System.Management.Automation.SwitchParameter AsJob { get; set; }
 
         /// <summary>Backing field for <see cref="Body" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny1 _body;
+        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny _body;
 
         /// <summary>Anything</summary>
         [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "Anything", ValueFromPipeline = true)]
@@ -62,9 +62,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Cmdlets
         ReadOnly = false,
         Description = @"Anything",
         SerializedName = @"body",
-        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny1) })]
+        PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Category(global::Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.ParameterCategory.Body)]
-        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny1 Body { get => this._body; set => this._body = value; }
+        public Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny Body { get => this._body; set => this._body = value; }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]

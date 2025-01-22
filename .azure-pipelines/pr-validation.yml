@@ -62,7 +62,7 @@ jobs:
       customCommand: 'install -g @microsoft/rush@5.63.1'
   - pwsh: |
      # Write your PowerShell commands here.
-     Install-Module -Name Az.Accounts -Force -Repository PSGallery
+     Install-Module -Name Az.Accounts -AllowClobber -Force -Repository PSGallery
     displayName: 'Install latest Az.Accounts'
   - script: |
      rush sync-versions

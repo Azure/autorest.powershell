@@ -31,7 +31,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Cmdlets
         private string __processRecordId;
 
         /// <summary>Anything</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny2 _body = new Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.Any2();
+        private Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IAny _body = new Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.Any();
 
         /// <summary>
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
