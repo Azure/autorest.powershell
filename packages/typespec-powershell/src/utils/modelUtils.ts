@@ -75,6 +75,7 @@ export const BINARY_TYPE_UNION =
   "string | Uint8Array | ReadableStream<Uint8Array> | NodeJS.ReadableStream";
 
 export const BINARY_AND_FILE_TYPE_UNION = `${BINARY_TYPE_UNION} | File`;
+export const ANY_SCHEMA = 'any_schema';
 
 export enum SchemaContext {
   /** Schema is used as an input to an operation. */
@@ -173,7 +174,7 @@ function isBytesType(schema: any) {
 export let stringSchemaForEnum: StringSchema | undefined;
 export let numberSchemaForEnum: NumberSchema | undefined;
 export let constantSchemaForApiVersion: ConstantSchema | undefined;
-export const schemaCache = new Map<Type, Schema>();
+export const schemaCache = new Map<Type|string, Schema>();
 // Add this to the modelSet to avoid circular reference
 export const modelSet = new Set<Type>();
 // For the models that are delayed to be set, currently the only case is the model that is derived from the model with discriminator
@@ -242,7 +243,13 @@ export function getSchemaForType(
         //   schema.outputTypeName =
         //     schema.type === "object" ? "Record<string, any>" : "any";
         // }
+        // by xiaogang, we only need on any schema for empty anonymous model
+        if (schemaCache.has(ANY_SCHEMA)) {
+          return schemaCache.get(ANY_SCHEMA);
+        }
         schema.type = SchemaType.Any;
+        schemaCache.set(ANY_SCHEMA, schema);
+        return schema;
       } else {
         // Handle non-empty anonymous model as inline model
         if (usage && usage.includes(SchemaContext.Output)) {
@@ -291,8 +298,11 @@ export function getSchemaForType(
   }
   if (isUnknownType(type)) {
     // Unknown type, return any schema
+    if (schemaCache.has(ANY_SCHEMA)) {
+      return schemaCache.get(ANY_SCHEMA);
+    }
     const returnType = new AnySchema("any");
-    schemaCache.set(type, returnType);
+    schemaCache.set(ANY_SCHEMA, returnType);
     return returnType;
   }
   if (isNeverType(type)) {
