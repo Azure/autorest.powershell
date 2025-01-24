@@ -22,7 +22,8 @@
     "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
     "Sphere.Management",
-    "StandbyPool.Management"
+    "StandbyPool.Management",
+    "Workloads.SAPVirtualInstance.Management"
   ],
   "whiteTestListFull": [
     "AppComplianceAutomation.Management",
@@ -46,7 +47,8 @@
     "Pinecone.VectorDb.Management",
     "Qumulo.Storage.Management",
     "Sphere.Management",
-    "StandbyPool.Management"
+    "StandbyPool.Management",
+    "Workloads.SAPVirtualInstance.Management"
   ],
   "blackTestList": [],
   "ignoreFolder": ["examples", "CompareResult"],
