@@ -235,7 +235,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
             return "";
         }
 
-
         private string GetTelemetry()
         {
             if (!VariantGroup.IsInternal && IsAzure)
@@ -268,8 +267,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
-{GetLoginVerification()}
-{GetTelemetry()}
+{GetLoginVerification()}{GetTelemetry()}
 {GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {GetProcessCustomAttributesAtRuntime()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
