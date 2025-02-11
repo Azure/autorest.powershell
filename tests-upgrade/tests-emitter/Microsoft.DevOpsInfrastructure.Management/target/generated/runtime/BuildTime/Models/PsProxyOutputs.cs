@@ -222,12 +222,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.PowerS
             {
                 return $@"
 {Indent}{Indent}$context = Get-AzContext
-{Indent}{Indent}if (-not $context -or -not $context.Account) {{
+{Indent}{Indent}if (-not $context) {{
 {Indent}{Indent}{Indent}Write-Error ""No Azure login detected. Please run 'Connect-AzAccount' to log in.""
-{Indent}{Indent}{Indent}exit
-{Indent}{Indent}}}
-{Indent}{Indent}if (-not $context.Subscription -or -not $context.Subscription.Id) {{
-{Indent}{Indent}{Indent}Write-Error ""No subscription selected or subscription ID is empty.Please select a subscription using 'Set-AzSubscription'.""
 {Indent}{Indent}{Indent}exit
 {Indent}{Indent}}}
 ";
