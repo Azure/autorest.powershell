@@ -34,7 +34,7 @@ jobs:
     vmImage: windows-2022
   strategy:
     matrix: $[ dependencies.prepare.outputs['mtrx.ServiceNames'] ]
-    maxParallel: 10
+    maxParallel: 15
   steps:
   - checkout: self
     fetchTags: false
