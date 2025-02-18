@@ -85,13 +85,14 @@ function CreateModelCmdlet {
         $Namespace =  $InterfaceNode.Parent.Name
         $ObjectType = $ModelName
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
+        $Prefix = 'Az'
         # remove duplicated module name
         if ($ObjectType.StartsWith('DeviceRegistry')) {
             $ModulePrefix = ''
         } else {
             $ModulePrefix = 'DeviceRegistry'
         }
-        $OutputPath = Join-Path -ChildPath "New-Az${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
+        $OutputPath = Join-Path -ChildPath "New-${Prefix}${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
 
         $ParameterDefineScriptList = New-Object System.Collections.Generic.List[string]
         $ParameterAssignScriptList = New-Object System.Collections.Generic.List[string]
@@ -180,7 +181,7 @@ function CreateModelCmdlet {
         $ParameterDefineScript = $ParameterDefineScriptList | Join-String -Separator ","
         $ParameterAssignScript = $ParameterAssignScriptList | Join-String -Separator ""
 
-        $cmdletName = "New-Az${ModulePrefix}${ObjectType}Object"
+        $cmdletName = "New-${Prefix}${ModulePrefix}${ObjectType}Object"
         if ('' -ne $Model.cmdletName) {
             $cmdletName = $Model.cmdletName
         }
