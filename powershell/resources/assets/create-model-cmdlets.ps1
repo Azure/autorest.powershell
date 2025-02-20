@@ -130,7 +130,6 @@ function CreateModelCmdlet {
                 }
                 $Identifier = $Member.Identifier.Value
                 $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
-                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
                 if ($Type.StartsWith("System.Collections.Generic.List"))
                 {
                     # if the type is a list, we need to convert it to array
