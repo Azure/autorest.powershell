@@ -216,6 +216,21 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.PowerShell
 {Indent}{Indent}[Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.MessageAttributeHelper]::ProcessPreviewMessageAttributesAtRuntime($cmdInfo, $MyInvocation, $parameterSet, $PSCmdlet)";
         }
 
+        private string GetLoginVerification()
+        {
+            if (!VariantGroup.IsInternal && IsAzure)
+            {
+                return $@"
+{Indent}{Indent}$context = Get-AzContext
+{Indent}{Indent}if (-not $context) {{
+{Indent}{Indent}{Indent}Write-Error ""No Azure login detected. Please run 'Connect-AzAccount' to log in.""
+{Indent}{Indent}{Indent}exit
+{Indent}{Indent}}}
+";
+            }
+            return "";
+        }
+
         private string GetTelemetry()
         {
             if (!VariantGroup.IsInternal && IsAzure)
@@ -248,7 +263,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.PowerShell
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
-{GetTelemetry()}
+{GetLoginVerification()}{GetTelemetry()}
 {GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {GetProcessCustomAttributesAtRuntime()}
 {Indent}{Indent}$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand(($mapping[$parameterSet]), [System.Management.Automation.CommandTypes]::Cmdlet)
