@@ -14,7 +14,8 @@
     "@typespec/openapi": "0.64.0",
     "@typespec/rest": "0.64.0",
     "@typespec/versioning": "0.64.0",
-    "@azure-tools/typespec-liftr-base": "0.6.0",
+    "@typespec/xml": "0.64.0",
+    "@azure-tools/typespec-liftr-base": "0.7.0",
     "@azure-tools/typespec-csharp": "0.2.0-beta.20250116.1"
   },
   "private": true

@@ -74,13 +74,14 @@ function CreateModelCmdlet {
         $Namespace =  $InterfaceNode.Parent.Name
         $ObjectType = $ModelName
         $ObjectTypeWithNamespace = "${Namespace}.${ObjectType}"
+        $Prefix = '${$project.prefix}'
         # remove duplicated module name
         if ($ObjectType.StartsWith('${$project.subjectPrefix}')) {
             $ModulePrefix = ''
         } else {
             $ModulePrefix = '${$project.subjectPrefix}'
         }
-        $OutputPath = Join-Path -ChildPath "New-Az${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
+        $OutputPath = Join-Path -ChildPath "New-${Prefix}${ModulePrefix}${ObjectType}Object.ps1" -Path $OutputDir
 
         $ParameterDefineScriptList = New-Object System.Collections.Generic.List[string]
         $ParameterAssignScriptList = New-Object System.Collections.Generic.List[string]
@@ -130,7 +131,6 @@ function CreateModelCmdlet {
                 }
                 $Identifier = $Member.Identifier.Value
                 $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
-                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
                 if ($Type.StartsWith("System.Collections.Generic.List"))
                 {
                     # if the type is a list, we need to convert it to array
@@ -169,7 +169,7 @@ function CreateModelCmdlet {
         $ParameterDefineScript = $ParameterDefineScriptList | Join-String -Separator ","
         $ParameterAssignScript = $ParameterAssignScriptList | Join-String -Separator ""
 
-        $cmdletName = "New-Az${ModulePrefix}${ObjectType}Object"
+        $cmdletName = "New-${Prefix}${ModulePrefix}${ObjectType}Object"
         if ('' -ne $Model.cmdletName) {
             $cmdletName = $Model.cmdletName
         }
