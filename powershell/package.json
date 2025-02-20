@@ -49,7 +49,6 @@
     "@types/xmlbuilder": "0.0.34",
     "@typescript-eslint/eslint-plugin": "~5.62.0",
     "@typescript-eslint/parser": "~5.62.0",
-    "@microsoft.azure/autorest.testserver": "~2.9.3",
     "autorest": "~3.6.3",
     "eslint": "~8.12.0"
   },
