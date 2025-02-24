@@ -22,6 +22,11 @@ namespace Microsoft.Rest
     {
     }
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
+    public class ModelCmdletAttribute : Attribute
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Class)]
     public class InternalExportAttribute : Attribute
     {

@@ -218,7 +218,7 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 
         private string GetLoginVerification()
         {
-            if (!VariantGroup.IsInternal && IsAzure)
+            if (!VariantGroup.IsInternal && IsAzure && !VariantGroup.IsModelCmdlet)    
             {
                 return $@"
 {Indent}{Indent}$context = Get-AzContext
