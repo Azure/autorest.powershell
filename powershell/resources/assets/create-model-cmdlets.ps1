@@ -175,6 +175,7 @@ function CreateModelCmdlet {
         }
         $OutputPath = Join-Path -ChildPath "${cmdletName}.ps1" -Path $OutputDir
         $cmdletNameInLowerCase = $cmdletName.ToLower()
+        $modelCmdletNamespace = $Namespace -replace '\.Models$', ''
         $Script = "
 # ----------------------------------------------------------------------------------
 ${$project.pwshCommentHeaderForCsharp}
@@ -192,7 +193,7 @@ ${ObjectTypeWithNamespace}
 ${$project.helpLinkPrefix}${ModuleName}/${cmdletNameInLowerCase}
 #>
 function ${cmdletName} {
-    [Microsoft.Azure.PowerShell.Cmdlets.${ModulePrefix}.ModelCmdletAttribute()]
+    [${modelCmdletNamespace}.ModelCmdletAttribute()]
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(
