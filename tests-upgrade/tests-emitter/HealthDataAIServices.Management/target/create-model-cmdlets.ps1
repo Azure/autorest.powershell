@@ -214,6 +214,7 @@ ${ObjectTypeWithNamespace}
 https://learn.microsoft.com/powershell/module/${ModuleName}/${cmdletNameInLowerCase}
 #>
 function ${cmdletName} {
+    [Microsoft.Azure.PowerShell.Cmdlets.HealthDataAIServices.ModelCmdletAttribute()]
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(

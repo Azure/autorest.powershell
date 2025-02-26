@@ -266,7 +266,6 @@ namespace Microsoft.Rest.ClientRuntime.PowerShell
 {Indent}{Indent}
 {Indent}{Indent}$testPlayback = $false
 {Indent}{Indent}$PSBoundParameters['HttpPipelinePrepend'] | Foreach-Object {{ if ($_) {{ $testPlayback = $testPlayback -or ('Microsoft.Message.ClientRuntime.PipelineMock' -eq $_.Target.GetType().FullName -and 'Playback' -eq $_.Target.Mode) }} }}
-{Indent}{Indent}
 {GetLoginVerification()}{GetTelemetry()}
 {GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {GetProcessCustomAttributesAtRuntime()}
