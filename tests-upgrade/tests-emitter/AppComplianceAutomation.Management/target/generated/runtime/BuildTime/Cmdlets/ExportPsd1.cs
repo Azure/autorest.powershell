@@ -77,7 +77,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.AppComplianceAutomation.Runtime.Pow
                 sb.AppendLine($@"{Indent}Author = '{"Microsoft Corporation"}'");
                 sb.AppendLine($@"{Indent}CompanyName = '{"Microsoft Corporation"}'");
                 sb.AppendLine($@"{Indent}Copyright = '{"Microsoft Corporation. All rights reserved."}'");
-                sb.AppendLine($@"{Indent}Description = '{"Microsoft Azure PowerShell: AppComplianceAutomation cmdlets"}'");
+                sb.AppendLine($@"{Indent}Description = '{"Microsoft Azure PowerShell: App ComplianceAutomation cmdlets"}'");
                 sb.AppendLine($@"{Indent}PowerShellVersion = '5.1'");
                 sb.AppendLine($@"{Indent}DotNetFrameworkVersion = '4.7.2'");
 

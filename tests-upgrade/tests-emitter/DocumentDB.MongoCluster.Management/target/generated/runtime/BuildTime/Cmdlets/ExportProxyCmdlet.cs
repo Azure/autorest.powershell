@@ -68,9 +68,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.PowerShell
                         .Select(pvg => new ProfileGroup(pvg.Select(pv => pv.variant).ToArray(), pvg.Key))
                     : new[] { new ProfileGroup(variants) };
                 var variantGroups = profileGroups.SelectMany(pg => pg.Variants
-                    .GroupBy(v => new { v.CmdletName, v.IsInternal })
+                    .GroupBy(v => new { v.CmdletName, v.IsInternal, v.IsModelCmdlet })
                     .Select(vg => new VariantGroup(ModuleName, vg.Key.CmdletName, vg.Select(v => v).ToArray(),
-                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal)))
+                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal, isModelCmdlet: vg.Key.IsModelCmdlet)))
                     .ToArray();
                 var license = new StringBuilder();
                 license.Append(@"

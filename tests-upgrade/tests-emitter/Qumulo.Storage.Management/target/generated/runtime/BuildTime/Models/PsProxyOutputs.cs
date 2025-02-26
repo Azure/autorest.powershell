@@ -218,11 +218,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.PowerShell
 
         private string GetLoginVerification()
         {
-            if (!VariantGroup.IsInternal && IsAzure)
+            if (!VariantGroup.IsInternal && IsAzure && !VariantGroup.IsModelCmdlet)    
             {
                 return $@"
 {Indent}{Indent}$context = Get-AzContext
-{Indent}{Indent}if (-not $context) {{
+{Indent}{Indent}if (-not $context -and -not $testPlayback) {{
 {Indent}{Indent}{Indent}Write-Error ""No Azure login detected. Please run 'Connect-AzAccount' to log in.""
 {Indent}{Indent}{Indent}exit
 {Indent}{Indent}}}
@@ -263,6 +263,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.PowerShell
 {Indent}{Indent}{Indent}$PSBoundParameters['OutBuffer'] = 1
 {Indent}{Indent}}}
 {Indent}{Indent}$parameterSet = $PSCmdlet.ParameterSetName
+{Indent}{Indent}
+{Indent}{Indent}$testPlayback = $false
+{Indent}{Indent}$PSBoundParameters['HttpPipelinePrepend'] | Foreach-Object {{ if ($_) {{ $testPlayback = $testPlayback -or ('Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.PipelineMock' -eq $_.Target.GetType().FullName -and 'Playback' -eq $_.Target.Mode) }} }}
 {GetLoginVerification()}{GetTelemetry()}
 {GetParameterSetToCmdletMapping()}{GetDefaultValuesStatements()}
 {GetProcessCustomAttributesAtRuntime()}
@@ -313,8 +316,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.PowerShell
                 if ("SubscriptionId".Equals(parameterName))
                 {
                     sb.AppendLine($"{Indent}{Indent}if (({variantListString}) -contains $parameterSet -and -not $PSBoundParameters.ContainsKey('{parameterName}'){setCondition}) {{");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}$testPlayback = $false");
-                    sb.AppendLine($"{Indent}{Indent}{Indent}$PSBoundParameters['HttpPipelinePrepend'] | Foreach-Object {{ if ($_) {{ $testPlayback = $testPlayback -or ('Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Runtime.PipelineMock' -eq $_.Target.GetType().FullName -and 'Playback' -eq $_.Target.Mode) }} }}");
                     sb.AppendLine($"{Indent}{Indent}{Indent}if ($testPlayback) {{");
                     sb.AppendLine($"{Indent}{Indent}{Indent}{Indent}$PSBoundParameters['{parameterName}'] = . (Join-Path $PSScriptRoot '..' 'utils' 'Get-SubscriptionIdTestSafe.ps1')");
                     sb.AppendLine($"{Indent}{Indent}{Indent}}} else {{");

@@ -192,7 +192,7 @@ ${ObjectTypeWithNamespace}
 ${$project.helpLinkPrefix}${ModuleName}/${cmdletNameInLowerCase}
 #>
 function ${cmdletName} {
-    [Microsoft.Azure.PowerShell.Cmdlets.${ModulePrefix}.ModelCmdletAttribute()]
+    [${$project.projectNamespace}.ModelCmdletAttribute()]
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(
