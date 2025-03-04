@@ -68,9 +68,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.PowerShell
                         .Select(pvg => new ProfileGroup(pvg.Select(pv => pv.variant).ToArray(), pvg.Key))
                     : new[] { new ProfileGroup(variants) };
                 var variantGroups = profileGroups.SelectMany(pg => pg.Variants
-                    .GroupBy(v => new { v.CmdletName, v.IsInternal, v.IsModelCmdlet })
+                    .GroupBy(v => new { v.CmdletName, v.IsInternal })
                     .Select(vg => new VariantGroup(ModuleName, vg.Key.CmdletName, vg.Select(v => v).ToArray(),
-                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal, isModelCmdlet: vg.Key.IsModelCmdlet)))
+                    Path.Combine(vg.Key.IsInternal ? InternalFolder : ExportsFolder, pg.ProfileFolder), pg.ProfileName, isInternal: vg.Key.IsInternal)))
                     .ToArray();
                 var license = new StringBuilder();
                 license.Append(@"

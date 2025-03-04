@@ -56,7 +56,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Runtime.PowerShell
 
         public CommentInfo CommentInfo { get; }
 
-        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false, bool isModelCmdlet = false)
+        public VariantGroup(string moduleName, string cmdletName, Variant[] variants, string outputFolder, string profileName = NoProfiles, bool isTest = false, bool isInternal = false)
         {
             ModuleName = moduleName;
             CmdletName = cmdletName;
@@ -84,7 +84,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NeonPostgres.Runtime.PowerShell
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             IsInternal = isInternal;
-            IsModelCmdlet = isModelCmdlet;
+            IsModelCmdlet = Variants.Any(v => v.IsModelCmdlet);
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
             FilePath = Path.Combine(OutputFolder, FileName);
