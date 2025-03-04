@@ -84,7 +84,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.PowerShe
             HelpInfo = Variants.Select(v => v.HelpInfo).FirstOrDefault() ?? new PsHelpInfo();
             IsGenerated = Variants.All(v => v.Attributes.OfType<GeneratedAttribute>().Any());
             IsInternal = isInternal;
-            IsModelCmdlet = Variants.Any(v => v.IsModelCmdlet);
+            IsModelCmdlet = Variants.All(v => v.IsModelCmdlet);
             OutputFolder = outputFolder;
             FileName = $"{CmdletName}{(isTest ? ".Tests" : String.Empty)}.ps1";
             FilePath = Path.Combine(OutputFolder, FileName);

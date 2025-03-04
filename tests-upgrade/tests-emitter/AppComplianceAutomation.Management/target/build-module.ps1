@@ -147,7 +147,7 @@ if($NoDocs) {
   Export-ProxyCmdlet -ModuleName $moduleName -ModulePath $modulePaths -ExportsFolder $exportsFolder -InternalFolder $internalFolder -ExcludeDocs -ExamplesFolder $examplesFolder
 } else {
   Write-Host -ForegroundColor Green 'Creating exports and docs...'
-  $moduleDescription = 'Microsoft Azure PowerShell: App ComplianceAutomation cmdlets'
+  $moduleDescription = 'Microsoft Azure PowerShell: AppComplianceAutomation cmdlets'
   $docsFolder = Join-Path $PSScriptRoot 'docs'
   if(Test-Path $docsFolder) {
     $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
