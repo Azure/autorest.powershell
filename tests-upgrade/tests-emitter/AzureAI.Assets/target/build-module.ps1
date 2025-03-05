@@ -180,8 +180,8 @@ if (Test-Path (Join-Path $PSScriptRoot 'generate-portal-ux.ps1'))
 }
 
 if (-not $DisableAfterBuildTasks){
-  $afterBuildTasksPath = Join-Path $PSScriptRoot ''
-  $afterBuildTasksArgs = ConvertFrom-Json 'true' -AsHashtable
+  $afterBuildTasksPath = Join-Path $PSScriptRoot '../../../tools/BuildScripts/AdaptAutorestModule.ps1'
+  $afterBuildTasksArgs = ConvertFrom-Json '{"SubModuleName":"Az.MachineLearningServices","ModuleRootName":"$(root-module-name)"}' -AsHashtable
   if(Test-Path -Path $afterBuildTasksPath -PathType leaf){
     Write-Host -ForegroundColor Green 'Running after build tasks...'
     . $afterBuildTasksPath @afterBuildTasksArgs
