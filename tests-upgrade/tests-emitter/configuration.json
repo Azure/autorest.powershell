@@ -52,5 +52,5 @@
   ],
   "blackTestList": [],
   "ignoreFolder": ["examples", "CompareResult"],
-  "ignoreCompareFile": ["generated\\modules"]
+  "ignoreCompareFile": ["generated\\modules", "Properties\\AssemblyInfo.cs"]
 }
