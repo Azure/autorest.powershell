@@ -49,7 +49,7 @@ options:
     metadata:
       authors: Microsoft Corporation
       owners: Microsoft Corporation
-      description: 'Microsoft Azure PowerShell: App ComplianceAutomation cmdlets'
+      description: 'Microsoft Azure PowerShell: AppComplianceAutomation cmdlets'
       copyright: Microsoft Corporation. All rights reserved.
       tags: Azure ResourceManager ARM PSModule Sphere
       companyName: Microsoft Corporation

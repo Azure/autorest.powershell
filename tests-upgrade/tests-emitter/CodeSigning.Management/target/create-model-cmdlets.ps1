@@ -142,7 +142,6 @@ function CreateModelCmdlet {
                 }
                 $Identifier = $Member.Identifier.Value
                 $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
-                $Type = $Member.Type.ToString().replace('?', '').Split("::")[-1]
                 if ($Type.StartsWith("System.Collections.Generic.List"))
                 {
                     # if the type is a list, we need to convert it to array
@@ -215,6 +214,7 @@ ${ObjectTypeWithNamespace}
 https://learn.microsoft.com/powershell/module/${ModuleName}/${cmdletNameInLowerCase}
 #>
 function ${cmdletName} {
+    [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.ModelCmdletAttribute()]
     [OutputType('${ObjectTypeWithNamespace}')]
     [CmdletBinding(PositionalBinding=`$false)]
     Param(
