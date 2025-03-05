@@ -454,6 +454,11 @@ export class CallMethod extends Method {
           });
         };
 
+        const originalUri = Local('_originalUri', new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`));
+        if ($this.opMethod.operation.language.csharp?.lro) {
+          yield '// this operation supports x-ms-long-running-operation';
+          yield originalUri;
+        }
         // try statements
         const sendTask = Local(
           'sendTask',
@@ -474,9 +479,6 @@ export class CallMethod extends Method {
         const EOL = 'EOL';
         // LRO processing (if appropriate)
         if ($this.opMethod.operation.language.csharp?.lro) {
-          yield '// this operation supports x-ms-long-running-operation';
-          const originalUri = Local('_originalUri', new LiteralExpression(`${reqParameter.use}.RequestUri.AbsoluteUri`));
-          yield originalUri;
 
           yield `// declared final-state-via: ${$this.opMethod.operation.language.csharp.lro['final-state-via']}`;
           const fsv = $this.opMethod.operation.language.csharp.lro['final-state-via'];
