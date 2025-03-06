@@ -112,6 +112,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("MarketplaceDetail"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).MarketplaceDetail = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetails) content.GetValueForProperty("MarketplaceDetail",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).MarketplaceDetail, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -119,10 +123,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             if (content.Contains("UserDetail"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).UserDetail = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserDetails) content.GetValueForProperty("UserDetail",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).UserDetail, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.UserDetailsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -197,6 +197,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.ITags) content.GetValueForProperty("Tag",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).Tag, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.TagsTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("MarketplaceDetail"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).MarketplaceDetail = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IMarketplaceDetails) content.GetValueForProperty("MarketplaceDetail",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).MarketplaceDetail, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -204,10 +208,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models
             if (content.Contains("UserDetail"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).UserDetail = (Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IUserDetails) content.GetValueForProperty("UserDetail",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).UserDetail, Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.UserDetailsTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Qumulo.Models.IFileSystemResourceUpdateInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

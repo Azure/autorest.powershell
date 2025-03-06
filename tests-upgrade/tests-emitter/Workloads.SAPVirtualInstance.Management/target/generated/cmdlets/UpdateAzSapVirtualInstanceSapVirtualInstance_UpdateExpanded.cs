@@ -126,14 +126,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Cmdlets
         /// options to choose from are Public and Private. If 'Private' is chosen, the Storage Account service tag should be enabled
         /// on the subnets in which the SAP VMs exist. This is required for establishing connectivity between VM extensions and the
         /// managed resource group storage account. This setting is currently applicable only to Storage Account. Learn more here
-        /// https://go.microsoft.com/fwlink/linkid=2247228
+        /// https://go.microsoft.com/fwlink/?linkid=2247228
         /// </summary>
-        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Specifies the network access configuration for the resources that will be deployed in the Managed Resource Group. The options to choose from are Public and Private. If 'Private' is chosen, the Storage Account service tag should be enabled on the subnets in which the SAP VMs exist. This is required for establishing connectivity between VM extensions and the managed resource group storage account. This setting is currently applicable only to Storage Account. Learn more here https://go.microsoft.com/fwlink/linkid=2247228")]
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Specifies the network access configuration for the resources that will be deployed in the Managed Resource Group. The options to choose from are Public and Private. If 'Private' is chosen, the Storage Account service tag should be enabled on the subnets in which the SAP VMs exist. This is required for establishing connectivity between VM extensions and the managed resource group storage account. This setting is currently applicable only to Storage Account. Learn more here https://go.microsoft.com/fwlink/?linkid=2247228")]
         [global::Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Category(global::Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.ParameterCategory.Body)]
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Info(
         Required = false,
         ReadOnly = false,
-        Description = @"Specifies the network access configuration for the resources that will be deployed in the Managed Resource Group. The options to choose from are Public and Private. If 'Private' is chosen, the Storage Account service tag should be enabled on the subnets in which the SAP VMs exist. This is required for establishing connectivity between VM extensions and the managed resource group storage account. This setting is currently applicable only to Storage Account. Learn more here https://go.microsoft.com/fwlink/linkid=2247228",
+        Description = @"Specifies the network access configuration for the resources that will be deployed in the Managed Resource Group. The options to choose from are Public and Private. If 'Private' is chosen, the Storage Account service tag should be enabled on the subnets in which the SAP VMs exist. This is required for establishing connectivity between VM extensions and the managed resource group storage account. This setting is currently applicable only to Storage Account. Learn more here https://go.microsoft.com/fwlink/?linkid=2247228",
         SerializedName = @"managedResourcesNetworkAccessType",
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.PSArgumentCompleterAttribute("Public", "Private")]

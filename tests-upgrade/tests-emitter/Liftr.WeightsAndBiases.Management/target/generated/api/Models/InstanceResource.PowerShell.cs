@@ -177,6 +177,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -204,10 +208,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             if (content.Contains("PartnerPropertyRegion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerPropertyRegion = (string) content.GetValueForProperty("PartnerPropertyRegion",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerPropertyRegion, global::System.Convert.ToString);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -354,6 +354,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -381,10 +385,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             if (content.Contains("PartnerPropertyRegion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerPropertyRegion = (string) content.GetValueForProperty("PartnerPropertyRegion",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).PartnerPropertyRegion, global::System.Convert.ToString);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

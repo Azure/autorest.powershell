@@ -177,6 +177,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -204,10 +208,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -350,6 +350,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerProperty = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IPartnerProperties) content.GetValueForProperty("PartnerProperty",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerProperty, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.PartnerPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -377,10 +381,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

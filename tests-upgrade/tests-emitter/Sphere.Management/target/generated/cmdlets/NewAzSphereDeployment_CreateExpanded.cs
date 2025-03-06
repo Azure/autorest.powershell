@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -6,7 +9,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
     using System;
 
     /// <summary>
-    /// Create a Deployment. '.default' and '.unassigned' are system defined values and cannot be used for product or device group
+    /// create a Deployment. '.default' and '.unassigned' are system defined values and cannot be used for product or device group
     /// name.
     /// </summary>
     /// <remarks>
@@ -14,7 +17,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Cmdlets
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.New, @"AzSphereDeployment_CreateExpanded", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeployment))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.Description(@"Create a Deployment. '.default' and '.unassigned' are system defined values and cannot be used for product or device group name.")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.Description(@"create a Deployment. '.default' and '.unassigned' are system defined values and cannot be used for product or device group name.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureSphere/catalogs/{catalogName}/products/{productName}/deviceGroups/{deviceGroupName}/deployments/{deploymentName}", ApiVersion = "2024-04-01")]
     public partial class NewAzSphereDeployment_CreateExpanded : global::System.Management.Automation.PSCmdlet,

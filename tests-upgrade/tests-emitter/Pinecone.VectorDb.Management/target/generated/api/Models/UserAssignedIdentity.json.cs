@@ -84,11 +84,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             }
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.SerializationMode.IncludeRead))
             {
-                AddIf( null != (((object)this._principalId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString(this._principalId.ToString()) : null, "principalId" ,container.Add );
+                AddIf( null != (((object)this._clientId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString(this._clientId.ToString()) : null, "clientId" ,container.Add );
             }
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.SerializationMode.IncludeRead))
             {
-                AddIf( null != (((object)this._clientId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString(this._clientId.ToString()) : null, "clientId" ,container.Add );
+                AddIf( null != (((object)this._principalId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString(this._principalId.ToString()) : null, "principalId" ,container.Add );
             }
             AfterToJson(ref container);
             return container;
@@ -106,8 +106,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
             {
                 return;
             }
-            {_principalId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString>("principalId"), out var __jsonPrincipalId) ? (string)__jsonPrincipalId : (string)_principalId;}
             {_clientId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString>("clientId"), out var __jsonClientId) ? (string)__jsonClientId : (string)_clientId;}
+            {_principalId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Json.JsonString>("principalId"), out var __jsonPrincipalId) ? (string)__jsonPrincipalId : (string)_principalId;}
             AfterFromJson(json);
         }
     }

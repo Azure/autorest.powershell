@@ -142,6 +142,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("CustomerEncryptionKey"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).CustomerEncryptionKey = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IEncryptionKeyDetails) content.GetValueForProperty("CustomerEncryptionKey",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).CustomerEncryptionKey, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.EncryptionKeyDetailsTypeConverter.ConvertFrom);
@@ -221,10 +225,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             if (content.Contains("NetworkaclDefaultAction"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).NetworkaclDefaultAction = (string) content.GetValueForProperty("NetworkaclDefaultAction",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).NetworkaclDefaultAction, global::System.Convert.ToString);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -375,6 +375,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).Owner = (System.Collections.Generic.List<string>) content.GetValueForProperty("Owner",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).Owner, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
+            }
             if (content.Contains("CustomerEncryptionKey"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).CustomerEncryptionKey = (Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IEncryptionKeyDetails) content.GetValueForProperty("CustomerEncryptionKey",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).CustomerEncryptionKey, Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.EncryptionKeyDetailsTypeConverter.ConvertFrom);
@@ -454,10 +458,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models
             if (content.Contains("NetworkaclDefaultAction"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).NetworkaclDefaultAction = (string) content.GetValueForProperty("NetworkaclDefaultAction",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).NetworkaclDefaultAction, global::System.Convert.ToString);
-            }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.NetworkAnalytics.Models.IDataProductInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
