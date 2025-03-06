@@ -326,7 +326,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Azure subscription id for the the marketplace offer is purchased from",
         SerializedName = @"subscriptionId",
         PossibleTypes = new [] { typeof(string) })]
@@ -349,7 +349,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Offer Id for the marketplace offer",
         SerializedName = @"offerId",
         PossibleTypes = new [] { typeof(string) })]
@@ -360,7 +360,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Plan Id for the marketplace offer",
         SerializedName = @"planId",
         PossibleTypes = new [] { typeof(string) })]
@@ -371,7 +371,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Plan Name for the marketplace offer",
         SerializedName = @"planName",
         PossibleTypes = new [] { typeof(string) })]
@@ -382,7 +382,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Publisher Id for the marketplace offer",
         SerializedName = @"publisherId",
         PossibleTypes = new [] { typeof(string) })]
@@ -393,7 +393,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Plan Display Name for the marketplace offer",
         SerializedName = @"termId",
         PossibleTypes = new [] { typeof(string) })]
@@ -404,7 +404,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
         ReadOnly = false,
         Read = true,
         Create = true,
-        Update = false,
+        Update = true,
         Description = @"Plan Display Name for the marketplace offer",
         SerializedName = @"termUnit",
         PossibleTypes = new [] { typeof(string) })]
