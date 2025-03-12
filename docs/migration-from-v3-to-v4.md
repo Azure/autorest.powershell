@@ -109,6 +109,9 @@ You'll need to customize it through a PowerShell script by adding the redundant 
 
 In v3, autorest.poweshell defines an enum type for parameter with x-ms-enum. In v4, autorest.powershell keeps the type of parameter as it is, like string, integer and adds an auto completer for this parameter, which means parameter uses primary type as its type to simplify parameter definition and customer still can fill enum values by **Tab**.
 
+e.g. 👇
+![alt text](migrate-from-v3-to-v4/image-1.png)
+
 ### Steps need to be taken for AutoCompleter change
 
 Developers need to change parameter type to its primary type in custom folder and customized codes accordingly. No breaking change is expected from user side.
@@ -119,7 +122,8 @@ In v4, we introduced a switch to control whether to include the API version in t
 
 ### Steps need to be taken with API version dropped
 
-Remove API version from files in custom folder
+Remove API version from files in custom folder, e.g.👇
+![alt text](migrate-from-v3-to-v4/image.png)
 
 ### How to mitigate the breaking changes by adding the version back
 
@@ -192,9 +196,15 @@ In v3, IdentityType and UserAssignedIdentity are generated and totally matches w
 - For IdentityType, it will be changed to EnableSystemAssignedIdentity\<SwitchParameter\> for new-* cmdlet and EnableSystemAssignedIdentity\<bool\> for update-* cmdlet. Please notice that this change in update-* cmdlet will use GET+PUT operation instead of PATCH operation to update object and can't be disabled by `disable-getput: true`.
 - For UserAssignedIdentity, it will be changed from UserAssignedIdentity\<HashTable\> to UserAssignedIdentity\<string\[\]\>.
 
+Check [here](https://github.com/Azure/azure-powershell/blob/main/documentation/development-docs/design-guidelines/managed-identity-best-practices.md) for more managed identity best practice details. 
 
 ### How to mitigate the breaking changes of Managed Identity Best Practice Alignment
 
 It's recommended to migrate to best practice design for managed identity features. To avoid breaking changes in regular release, 
 - For IdentityType, configure `disable-transform-identity-type` as `true` in README.md.
 - For UserAssignedIdentity, configure `flatten-userassignedidentity` as `false` in README.md.
+
+
+### Autorest Powershell model cmdlet breaking change
+Add model cmdlet attribute for custom model cmdlets. e.g.👇
+![alt text](migrate-from-v3-to-v4/image-2.png)
