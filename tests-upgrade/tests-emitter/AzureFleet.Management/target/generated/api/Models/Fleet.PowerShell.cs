@@ -116,10 +116,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
-            if (content.Contains("RetryAfter"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
             if (content.Contains("SystemDataCreatedBy"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
@@ -180,10 +176,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributes) content.GetValueForProperty("VMAttribute",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMAttributesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("SpotPriorityProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISpotPriorityProfile) content.GetValueForProperty("SpotPriorityProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SpotPriorityProfileTypeConverter.ConvertFrom);
@@ -215,6 +207,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("AdditionalLocationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>) content.GetValueForProperty("AdditionalLocationProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.LocationProfileTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -337,10 +333,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).Zone = (System.Collections.Generic.List<string>) content.GetValueForProperty("Zone",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).Zone, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
-            if (content.Contains("RetryAfter"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
             if (content.Contains("SystemDataCreatedBy"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
@@ -401,10 +393,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IVMAttributes) content.GetValueForProperty("VMAttribute",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).VMAttribute, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.VMAttributesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("SpotPriorityProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile = (Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISpotPriorityProfile) content.GetValueForProperty("SpotPriorityProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).SpotPriorityProfile, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.SpotPriorityProfileTypeConverter.ConvertFrom);
@@ -436,6 +424,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
             if (content.Contains("AdditionalLocationProfile"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>) content.GetValueForProperty("AdditionalLocationProfile",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).AdditionalLocationProfile, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ILocationProfile>(__y, Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.LocationProfileTypeConverter.ConvertFrom));
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {

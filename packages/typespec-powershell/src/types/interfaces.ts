@@ -1,4 +1,4 @@
-export interface PSOptions {
+export interface PSOptions extends Record<string, any> {
   packageDetails?: PackageDetails;
   title?: string;
 }

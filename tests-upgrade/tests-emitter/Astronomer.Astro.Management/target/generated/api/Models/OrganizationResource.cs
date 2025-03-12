@@ -9,8 +9,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
     public partial class OrganizationResource :
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResource,
         Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal,
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.IValidates,
-        Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.IHeaderSerializable
+        Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.IValidates
     {
         /// <summary>
         /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITrackedResource" />
@@ -177,12 +176,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Owned)]
         public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
 
-        /// <summary>Backing field for <see cref="RetryAfter" /> property.</summary>
-        private int? _retryAfter;
-
-        [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Owned)]
-        public int? RetryAfter { get => this._retryAfter; set => this._retryAfter = value; }
-
         /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Inlined)]
         public System.Collections.Generic.List<string> SingleSignOnPropertyAadDomain { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationPropertiesInternal)Property).SingleSignOnPropertyAadDomain; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationPropertiesInternal)Property).SingleSignOnPropertyAadDomain = value ?? null /* arrayOf */; }
@@ -262,15 +255,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         /// <summary>User's principal name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Origin(Microsoft.Azure.PowerShell.Cmdlets.Astro.PropertyOrigin.Inlined)]
         public string UserUpn { get => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationPropertiesInternal)Property).UserUpn; set => ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationPropertiesInternal)Property).UserUpn = value ?? null; }
-
-        /// <param name="headers"></param>
-        void Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
-        {
-            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader0))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader0) is string __headerRetryAfterHeader0 ? int.TryParse( __headerRetryAfterHeader0, out int __headerRetryAfterHeader0Value ) ? __headerRetryAfterHeader0Value : default(int?) : default(int?);
-            }
-        }
 
         /// <summary>Creates an new <see cref="OrganizationResource" /> instance.</summary>
         public OrganizationResource()
@@ -512,17 +496,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.Astro.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled")]
         string ProvisioningState { get;  }
-
-        [Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.Info(
-        Required = false,
-        ReadOnly = false,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"",
-        SerializedName = @"Retry-After",
-        PossibleTypes = new [] { typeof(int) })]
-        int? RetryAfter { get; set; }
         /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Astro.Runtime.Info(
         Required = false,
@@ -699,8 +672,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
         /// <summary>Provisioning state of the resource.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.Astro.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled")]
         string ProvisioningState { get; set; }
-
-        int? RetryAfter { get; set; }
         /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
         System.Collections.Generic.List<string> SingleSignOnPropertyAadDomain { get; set; }
         /// <summary>AAD enterprise application Id used to setup SSO</summary>

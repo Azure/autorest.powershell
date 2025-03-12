@@ -244,6 +244,8 @@ format-ps1xml: "./{module-name}.format.ps1xml"
 nuspec: "./{module-name}.nuspec"
 
 # misc configurations
+# if set, lro headers(Location, Retry-After, Azure-AsyncOperation) will be removed from the response
+remove-lro-headers: true
 skip-model-cmdlets: false
 module-version: 0.1.0
 namespace: "Microsoft.Azure.PowerShell.Cmdlets.{service-name}"

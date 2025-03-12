@@ -11,6 +11,7 @@ options:
     service-dir: "src"
     package-dir: "WeightsBiases/WeightsBiases.Autorest"
     clear-output-folder: true
+    remove-lro-headers: false
     azure: true
     module-version: 0.1.0
     skip-model-cmdlets: false
