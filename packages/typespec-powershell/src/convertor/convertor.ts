@@ -33,7 +33,7 @@ export async function transformPwshModel(
   getUrlParameters(psContext.program, psContext);
   model.info = getServiceInfo(psContext.program);
   model.language.default = getLanguageDefault(psContext.program, emitterOptions);
-  model.operationGroups = getOperationGroups(psContext.program, client, psContext, model);
+  model.operationGroups = getOperationGroups(psContext.program, client, psContext, model, emitterOptions);
   model.schemas = getSchemas(psContext.program, client, psContext, model);
   return model;
 }
@@ -122,7 +122,7 @@ function getUrlParameters(program: Program, psContext: SdkContext) {
   }
 }
 
-function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel): OperationGroup[] {
+function getOperationGroups(program: Program, client: SdkClient, psContext: SdkContext, model: PwshModel, emitterOptions: PSOptions): OperationGroup[] {
   const operationGroups: OperationGroup[] = [];
   // list all the operations in the client
   const clientOperations = listOperationsInOperationGroup(psContext, client);
@@ -136,7 +136,7 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
     if (op.overloads && op.overloads.length > 0) {
       continue
     }
-    addOperation(psContext, op, newGroup, model);
+    addOperation(psContext, op, newGroup, model, emitterOptions);
     // const operationGroup = new OperationGroup(operation.name);
     // operationGroup.language.default.name = operation.name;
     // operationGroup.language.default.description = operation.description;
@@ -158,7 +158,7 @@ function getOperationGroups(program: Program, client: SdkClient, psContext: SdkC
       if (op.overloads && op.overloads?.length > 0) {
         continue;
       }
-      addOperation(psContext, op, newGroup, model);
+      addOperation(psContext, op, newGroup, model, emitterOptions);
     }
   }
   return operationGroups;
@@ -172,7 +172,7 @@ function resolveOperationId(psContext: SdkContext, op: HttpOperation, operationG
   return operationGroup.$key + "_" + pascalCase(op.operation.name);
 }
 
-function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel) {
+function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: OperationGroup, model: PwshModel, emitterOptions: PSOptions) {
   const operationId = resolveOperationId(psContext, op, operationGroup);
   const newOperation = new Operation( operationId.split('_')[1] ?? pascalCase(op.operation.name), getDoc(psContext.program, op.operation) ?? "");
   newOperation.operationId = operationId;
@@ -223,7 +223,7 @@ function addOperation(psContext: SdkContext, op: HttpOperation, operationGroup: 
   newOperation.requests[0].protocol.http = httpProtocol;
 
   // Add responses include exceptions
-  addResponses(psContext, op, newOperation, model);
+  addResponses(psContext, op, newOperation, model, emitterOptions);
   // Add extensions
   addExtensions(psContext, op, newOperation, model);
   operationGroup.addOperation(newOperation);
@@ -250,7 +250,7 @@ function addExtensions(psContext: SdkContext, op: HttpOperation, newOperation: O
   }
 }
 
-function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Operation, model: PwshModel) {
+function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Operation, model: PwshModel, emitterOptions: PSOptions) {
   const responses = op.responses;
   newOperation.responses = newOperation.responses || [];
   newOperation.exceptions = newOperation.exceptions || [];
@@ -273,11 +273,12 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       // we merge headers here, if the same header is defined in multiple responses, we only add it once.
       // This is aligned with the behavior of typescript emitter and typespec-autorest emitter.
       newResponse.protocol.http = newResponse.protocol.http ?? new Protocol();
+      const lroHeaders = ["location", "retry-after", "azure-asyncoperation"];
       const addedKeys: string[] = [];
       for (const innerResponse of response.responses) {
         if (innerResponse.headers) {
           for (const key in innerResponse.headers) {
-            if (addedKeys.includes(key)) {
+            if (addedKeys.includes(key) || (emitterOptions["remove-lro-headers"] && lroHeaders.includes(key.toLowerCase()))) {
               continue;
             } else {
               addedKeys.push(key);

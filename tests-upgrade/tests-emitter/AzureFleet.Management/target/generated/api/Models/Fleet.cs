@@ -9,8 +9,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
     public partial class Fleet :
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleet,
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal,
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.IValidates,
-        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.IHeaderSerializable
+        Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.IValidates
     {
         /// <summary>
         /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ITrackedResource"
@@ -214,12 +213,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
         public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
 
-        /// <summary>Backing field for <see cref="RetryAfter" /> property.</summary>
-        private int? _retryAfter;
-
-        [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Origin(Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.PropertyOrigin.Owned)]
-        public int? RetryAfter { get => this._retryAfter; set => this._retryAfter = value; }
-
         /// <summary>
         /// Allocation strategy to follow when determining the VM sizes distribution for Spot VMs.
         /// </summary>
@@ -322,15 +315,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         public Fleet()
         {
 
-        }
-
-        /// <param name="headers"></param>
-        void Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
-        {
-            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader0))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.IFleetInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader0) is string __headerRetryAfterHeader0 ? int.TryParse( __headerRetryAfterHeader0, out int __headerRetryAfterHeader0Value ) ? __headerRetryAfterHeader0Value : default(int?) : default(int?);
-            }
         }
 
         /// <summary>Validates that this object meets the validation criteria.</summary>
@@ -598,17 +582,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         SerializedName = @"minCapacity",
         PossibleTypes = new [] { typeof(int) })]
         int? RegularPriorityProfileMinCapacity { get; set; }
-
-        [Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Runtime.Info(
-        Required = false,
-        ReadOnly = false,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"",
-        SerializedName = @"Retry-After",
-        PossibleTypes = new [] { typeof(int) })]
-        int? RetryAfter { get; set; }
         /// <summary>
         /// Allocation strategy to follow when determining the VM sizes distribution for Spot VMs.
         /// </summary>
@@ -844,8 +817,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models
         /// the request in the sync path itself.
         /// </summary>
         int? RegularPriorityProfileMinCapacity { get; set; }
-
-        int? RetryAfter { get; set; }
         /// <summary>Configuration Options for Spot instances in Compute Fleet.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.ComputeFleet.Models.ISpotPriorityProfile SpotPriorityProfile { get; set; }
         /// <summary>

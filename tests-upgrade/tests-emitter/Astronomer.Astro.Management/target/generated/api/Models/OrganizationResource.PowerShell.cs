@@ -115,10 +115,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Identity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4) content.GetValueForProperty("Identity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Identity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4TypeConverter.ConvertFrom);
             }
-            if (content.Contains("RetryAfter"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
             if (content.Contains("SystemDataCreatedBy"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
@@ -167,10 +163,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITrackedResourceInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITrackedResourceInternal)this).Location, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -198,6 +190,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             if (content.Contains("UserEmailAddress"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).UserEmailAddress = (string) content.GetValueForProperty("UserEmailAddress",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).UserEmailAddress, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -328,10 +324,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Identity = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IManagedServiceIdentityV4) content.GetValueForProperty("Identity",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Identity, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ManagedServiceIdentityV4TypeConverter.ConvertFrom);
             }
-            if (content.Contains("RetryAfter"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
-            }
             if (content.Contains("SystemDataCreatedBy"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IResourceInternal)this).SystemDataCreatedBy = (string) content.GetValueForProperty("SystemDataCreatedBy",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IResourceInternal)this).SystemDataCreatedBy, global::System.Convert.ToString);
@@ -380,10 +372,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITrackedResourceInternal)this).Location = (string) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.ITrackedResourceInternal)this).Location, global::System.Convert.ToString);
             }
-            if (content.Contains("IdentityPrincipalId"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
-            }
             if (content.Contains("Marketplace"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Marketplace = (Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IMarketplaceDetails) content.GetValueForProperty("Marketplace",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).Marketplace, Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.MarketplaceDetailsTypeConverter.ConvertFrom);
@@ -411,6 +399,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Astro.Models
             if (content.Contains("UserEmailAddress"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).UserEmailAddress = (string) content.GetValueForProperty("UserEmailAddress",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).UserEmailAddress, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityPrincipalId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId = (string) content.GetValueForProperty("IdentityPrincipalId",((Microsoft.Azure.PowerShell.Cmdlets.Astro.Models.IOrganizationResourceInternal)this).IdentityPrincipalId, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityTenantId"))
             {
