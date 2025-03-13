@@ -1,0 +1,69 @@
+parameters:
+  "service-dir":
+    default: "sdk/scvmm"
+    output-dir: "{project-root}/"
+emit:
+  - "@azure-tools/typespec-autorest"
+options:
+  "@azure-tools/typespec-autorest":
+    use-read-only-status-schema: true
+    omit-unreachable-types: true
+    emitter-output-dir: "{project-root}/.."
+    azure-resource-provider-folder: "resource-manager"
+    emit-common-types-schema: "never"
+    # `arm-resource-flattening` is only used for back-compat for specs existed on July 2024. All new service spec should NOT use this flag
+    arm-resource-flattening: true
+    output-file: "{azure-resource-provider-folder}/{service-name}/{version-status}/{version}/scvmm.json"
+  "@azure-tools/typespec-ts":
+    azureSdkForJs: true
+    isModularLibrary: true
+    generateMetadata: true
+    hierarchyClient: false
+    experimentalExtensibleEnums: true
+    enableOperationGroup: true
+    package-dir: "arm-scvmm"
+    flavor: "azure"
+    packageDetails:
+      name: "@azure/arm-scvmm"
+  "@azure-tools/typespec-python":
+    package-dir: "azure-mgmt-scvmm"
+    package-name: "{package-dir}"
+    flavor: "azure"
+    generate-test: true
+    generate-sample: true
+  "@azure-tools/typespec-powershell":
+    service-dir: "src"
+    package-dir: "ScVmm/ScVmm.Autorest"
+    clear-output-folder: true
+    azure: true
+    module-version: 0.1.0
+    prefix: 'Az'
+    subject-prefix: 'ScVmm'
+    service-name: ScVmm
+    module-name: "{prefix}.{service-name}"
+    # output-folder: "{output-dir}"
+    exclude-tableview-properties:
+      - Id
+      - Type
+    directive:
+      - where:
+          subject: Operation
+        hide: true
+      - where:
+          parameter-name: SubscriptionId
+        set:
+          default:
+            script: '(Get-AzContext).Subscription.Id'
+  # Following are common directives which are normally required in all the RPs
+  # 1. Remove the unexpanded parameter set
+  # 2. For New-* cmdlets, ViaIdentity is not required
+      - where:
+          variant: ^(Create|Update)(?!.*?Expanded|ViaJsonString|ViaJsonFilePath)
+        remove: true
+      - where:
+          variant: ^CreateViaIdentity.*$
+        remove: true
+linter:
+  disable:
+  extends:
+    - "@azure-tools/typespec-azure-rulesets/resource-manager"
