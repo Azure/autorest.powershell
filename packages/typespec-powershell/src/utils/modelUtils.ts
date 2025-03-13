@@ -33,6 +33,7 @@ import {
   Scalar,
   UnionVariant,
   getProjectedName,
+  resolveEncodedName,
   StringLiteral,
   BooleanLiteral,
   NoTarget,
@@ -858,8 +859,9 @@ function getSchemaForModel(
     };
   }
   for (const [propName, prop] of model.properties) {
+    const encodedName = resolveEncodedName(program, prop, "application/json");
     const restApiName = getProjectedName(program, prop, "json");
-    const name = restApiName ?? propName;
+    const name = encodedName ?? restApiName ?? propName;
     if (!isSchemaProperty(program, prop)) {
       continue;
     }

@@ -57,6 +57,7 @@ options:
     service-dir: "src"
     package-dir: "SAPVirtualInstance/SAPVirtualInstance.Autorest"
     clear-output-folder: true
+    remove-lro-headers: false
     module-version: 0.1.0
     prefix: 'Az'
     subject-prefix: 'SAPVirtualInstance'

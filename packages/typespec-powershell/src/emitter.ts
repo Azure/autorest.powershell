@@ -62,8 +62,8 @@ export async function $onEmit(context: EmitContext) {
   async function generatePwshModel() {
     const clients = getClients(PsContext);
     for (const client of clients) {
-      const model = await transformPwshModel(client, PsContext, emitterOptions);
       const configurations = loadConfiguration(emitterOptions);
+      const model = await transformPwshModel(client, PsContext, configurations);
       if (configurations['emit-modeler-output']) {
         await emitFile(context.program, {
           path: resolvePath(context.emitterOutputDir, `${client.name}.yaml`),
