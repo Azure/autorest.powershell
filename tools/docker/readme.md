@@ -9,7 +9,7 @@ Packages contained in the image.
 `docker build -t autorest ./`
 
 # Launch the Image
-`docker run -it -v <path-to-your-source>:/src autorest`
+`docker run -it -v <path-to-local-azure-powershell>:/azure-powershell autorest`
 
 # Code Generation vs Build vs Run
 ## Code Generation

@@ -13,10 +13,11 @@ RUN apt-get update \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && locale-gen $LANG && update-locale
+    && locale-gen $LANG && update-locale \
+    && pwsh -Command Install-Module -Name platyPS -Force -AllowClobber -Repository PSGallery
 
-RUN mkdir -p /src
+RUN mkdir -p /azure-powershell
 
-WORKDIR /src
+WORKDIR /azure-powershell
 
 CMD [ "bash" ]
