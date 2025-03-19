@@ -14,7 +14,6 @@ generated
 internal
 exports
 tools
-custom/*.psm1
 custom/autogen-model-cmdlets
 test/*-TestResults.xml
 license.txt
