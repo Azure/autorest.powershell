@@ -14,7 +14,6 @@ generated
 internal
 exports
 tools
-custom/autogen-model-cmdlets
 test/*-TestResults.xml
 license.txt
 /*.ps1
