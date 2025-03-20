@@ -68,7 +68,7 @@ $isAzure = [System.Convert]::ToBoolean('${$project.azure}')
 
 if(-not $Debugger) {
   Write-Host -ForegroundColor Green 'Cleaning build folders...'
-  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path $binFolder, $objFolder
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Force -Path $binFolder, $objFolder
 
   if((Test-Path $binFolder) -or (Test-Path $objFolder)) {
     Write-Host -ForegroundColor Cyan 'Did you forget to exit your isolated module session before rebuilding?'
@@ -85,7 +85,7 @@ if(-not $Debugger) {
     Write-Error 'Compilation failed.'
   }
 
-  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
+  $null = Remove-Item -Recurse -ErrorAction SilentlyContinue -Force -Path (Join-Path $binFolder 'Debug'), (Join-Path $binFolder 'Release')
 }
 
 $dll = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.dll)}'
@@ -104,13 +104,13 @@ if(Test-Path $customPsm1) {
 
 $exportsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.exportsFolder)}'
 if(Test-Path $exportsFolder) {
-  $null = Get-ChildItem -Path $exportsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+  $null = Get-ChildItem -Path $exportsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue -Force
 }
 $null = New-Item -ItemType Directory -Force -Path $exportsFolder
 
 $internalFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.internalFolder)}'
 if(Test-Path $internalFolder) {
-  $null = Get-ChildItem -Path $internalFolder -Recurse -Exclude '*.psm1', 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+  $null = Get-ChildItem -Path $internalFolder -Recurse -Exclude '*.psm1', 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue -Force
 }
 $null = New-Item -ItemType Directory -Force -Path $internalFolder
 
@@ -139,7 +139,7 @@ if($NoDocs) {
   $moduleDescription = '${$project.metadata.description}'
   $docsFolder = Join-Path $PSScriptRoot '${$lib.path.relative($project.baseFolder, $project.docsFolder)}'
   if(Test-Path $docsFolder) {
-    $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue
+    $null = Get-ChildItem -Path $docsFolder -Recurse -Exclude 'README.md' | Remove-Item -Recurse -ErrorAction SilentlyContinue -Force
   }
   $null = New-Item -ItemType Directory -Force -Path $docsFolder
   $addComplexInterfaceInfo = !$isAzure
