@@ -18,7 +18,6 @@ import {
   getProperty,
   getPropertyType,
   getSummary,
-  getVisibility,
   isNeverType,
   isNumericType,
   isSecret,
@@ -32,7 +31,6 @@ import {
   isNullType,
   Scalar,
   UnionVariant,
-  getProjectedName,
   resolveEncodedName,
   StringLiteral,
   BooleanLiteral,
@@ -46,8 +44,10 @@ import {
   isRecordModelType,
   isArrayModelType,
   isType,
+  getLifecycleVisibilityEnum,
+  getVisibilityForClass,
 } from "@typespec/compiler";
-import { SdkContext, isReadOnly } from "@azure-tools/typespec-client-generator-core";
+import { SdkContext, isReadOnly, getWireName } from "@azure-tools/typespec-client-generator-core";
 
 import { reportDiagnostic } from "../lib.js";
 import { AnySchema, SealedChoiceSchema, ChoiceSchema, ChoiceValue, SchemaType, ArraySchema, Schema, DictionarySchema, ObjectSchema, Discriminator as M4Discriminator, Property, StringSchema, NumberSchema, ConstantSchema, ConstantValue, BooleanSchema } from "@autorest/codemodel";
@@ -217,7 +217,7 @@ export function getSchemaForType(
       // applyIntrinsicDecorators for string and numeric types
       // unlike m4, min/max length and pattern, secrets, etc. are not part of the schema
       let propertySchema = { ...typeSchema };
-      propertySchema = applyIntrinsicDecorators(program, type, propertySchema);
+      propertySchema = applyIntrinsicDecorators(dpgContext, type, propertySchema);
       propertySchema.language.default.name = type.name;
       propertySchema.language.default.description = getDoc(program, type) || "";
       schemaCache.set(type, <Schema>propertySchema);
@@ -412,7 +412,7 @@ function getSchemaForScalar(
     mediaTypes: contentTypes
   } = options ?? {};
   if (isStd) {
-    result = getSchemaForStdScalar(dpgContext.program, scalar, {
+    result = getSchemaForStdScalar(dpgContext, scalar, {
       relevantProperty
     });
   } else if (scalar.baseScalar) {
@@ -438,7 +438,7 @@ function getSchemaForScalar(
       dpgContext,
       scalar,
       result
-        ? applyIntrinsicDecorators(dpgContext.program, scalar, result)
+        ? applyIntrinsicDecorators(dpgContext, scalar, result)
         : undefined
     );
     if (
@@ -552,7 +552,7 @@ function isOasString(type: Type): boolean {
     return true;
   } else if (type.kind === "Union") {
     // A union where all variants are an OasString
-    return type.options.every((o) => isOasString(o));
+    return [...type.variants.values()].every((o) => isOasString(o));
   } else if (type.kind === "UnionVariant") {
     // A union variant where the type is an OasString
     return isOasString(type.type);
@@ -563,7 +563,7 @@ function isOasString(type: Type): boolean {
 function isStringLiteral(type: Type): boolean {
   return (
     type.kind === "String" ||
-    (type.kind === "Union" && type.options.every((o) => o.kind === "String")) ||
+    (type.kind === "Union" && [...type.variants.values()].every((o) => isOasString(o))) ||
     (type.kind === "EnumMember" &&
       typeof (type.value ?? type.name) === "string") ||
     (type.kind === "UnionVariant" && type.type.kind === "String")
@@ -674,6 +674,49 @@ function isSchemaProperty(program: Program, property: ModelProperty) {
   return !(headerInfo || queryInfo || pathInfo || statusCodeinfo);
 }
 
+function getSdkVisibility(
+  program: Program,
+  type: ModelProperty
+): Visibility[] | undefined {
+  const lifecycle = getLifecycleVisibilityEnum(program);
+  const visibility = getVisibilityForClass(program, type, lifecycle);
+  if (visibility) {
+    const result: Visibility[] = [];
+    if (
+      lifecycle.members.get("Read") &&
+      visibility.has(lifecycle.members.get("Read")!)
+    ) {
+      result.push(Visibility.Read);
+    }
+    if (
+      lifecycle.members.get("Create") &&
+      visibility.has(lifecycle.members.get("Create")!)
+    ) {
+      result.push(Visibility.Create);
+    }
+    if (
+      lifecycle.members.get("Update") &&
+      visibility.has(lifecycle.members.get("Update")!)
+    ) {
+      result.push(Visibility.Update);
+    }
+    if (
+      lifecycle.members.get("Delete") &&
+      visibility.has(lifecycle.members.get("Delete")!)
+    ) {
+      result.push(Visibility.Delete);
+    }
+    if (
+      lifecycle.members.get("Query") &&
+      visibility.has(lifecycle.members.get("Query")!)
+    ) {
+      result.push(Visibility.Query);
+    }
+    return result;
+  }
+  return undefined;
+}
+
 function getSchemaForModel(
   dpgContext: SdkContext,
   model: Model,
@@ -691,7 +734,7 @@ function getSchemaForModel(
 
   const program = dpgContext.program;
   const overridedModelName =
-    getFriendlyName(program, model) ?? getProjectedName(program, model, "json");
+    getFriendlyName(program, model) ?? getWireName(dpgContext, model);
   const fullNamespaceName =
     overridedModelName ??
     getModelNamespaceName(dpgContext, model.namespace!)
@@ -860,7 +903,7 @@ function getSchemaForModel(
   }
   for (const [propName, prop] of model.properties) {
     const encodedName = resolveEncodedName(program, prop, "application/json");
-    const restApiName = getProjectedName(program, prop, "json");
+    const restApiName = getWireName(dpgContext, prop);
     const name = encodedName ?? restApiName ?? propName;
     if (!isSchemaProperty(program, prop)) {
       continue;
@@ -894,16 +937,16 @@ function getSchemaForModel(
     if (!prop.optional) {
       property.required = true;
     }
-    const vis = getVisibility(program, prop);
+    const vis = getSdkVisibility(program, prop);
     if (vis) {
-      if (vis.includes("read")) {
+      if (vis.includes(Visibility.Read)) {
         if (vis.length === 1) {
           property.readOnly = true;
         }
       }
       if (vis.length > 0) {
         property.extensions = property.extensions || {};
-        property.extensions['x-ms-mutability'] = vis;
+        property.extensions['x-ms-mutability'] = vis.map(v => Visibility[v].toLowerCase());
       }
     }
     if (propSchema === undefined && prop.type.kind === "Model") {
@@ -1019,60 +1062,61 @@ function getSchemaForLiteral(type: Type): any {
   return undefined;
 }
 function applyIntrinsicDecorators(
-  program: Program,
+  dpgContext: SdkContext,
   type: Scalar | ModelProperty,
   target: any
 ): any {
   const newTarget = { ...target };
-  const docStr = getDoc(program, type);
-  const isString = isStringType(program, getPropertyType(type));
-  const isNumeric = isNumericType(program, getPropertyType(type));
+  const docStr = getDoc(dpgContext.program, type);
+  const isString = isStringType(dpgContext.program, getPropertyType(type));
+  const isNumeric = isNumericType(dpgContext.program, getPropertyType(type));
 
   if (isString && !target?.documentation && docStr) {
     newTarget.description = docStr;
   }
 
-  const restApiName = getProjectedName(program, type, "json");
-  if (restApiName) {
-    newTarget.name = restApiName;
+  if (type.kind === "ModelProperty") {
+    const wireName = getWireName(dpgContext, type);
+    if (wireName) {
+      newTarget.name = wireName;
+    }
   }
-
-  const summaryStr = getSummary(program, type);
+  const summaryStr = getSummary(dpgContext.program, type);
   if (isString && !target.summary && summaryStr) {
     newTarget.summary = summaryStr;
   }
 
-  const formatStr = getFormat(program, type);
+  const formatStr = getFormat(dpgContext.program, type);
   if (isString && !target.format && formatStr) {
     newTarget.format = formatStr;
   }
 
-  const pattern = getPattern(program, type);
+  const pattern = getPattern(dpgContext.program, type);
   if (isString && !target.pattern && pattern) {
     newTarget.pattern = pattern;
   }
 
-  const minLength = getMinLength(program, type);
+  const minLength = getMinLength(dpgContext.program, type);
   if (isString && !target.minLength && minLength !== undefined) {
     newTarget.minLength = minLength;
   }
 
-  const maxLength = getMaxLength(program, type);
+  const maxLength = getMaxLength(dpgContext.program, type);
   if (isString && !target.maxLength && maxLength !== undefined) {
     newTarget.maxLength = maxLength;
   }
 
-  const minValue = getMinValue(program, type);
+  const minValue = getMinValue(dpgContext.program, type);
   if (isNumeric && !target.minimum && minValue !== undefined) {
     newTarget.minimum = minValue;
   }
 
-  const maxValue = getMaxValue(program, type);
+  const maxValue = getMaxValue(dpgContext.program, type);
   if (isNumeric && !target.maximum && maxValue !== undefined) {
     newTarget.maximum = maxValue;
   }
 
-  if (isSecret(program, type)) {
+  if (isSecret(dpgContext.program, type)) {
     newTarget.type = "credential";
     newTarget["extensions"] = newTarget["extensions"] || {};
     newTarget["extensions"]["x-ms-secret"] = true;
@@ -1304,12 +1348,12 @@ function isUnionType(type: Type) {
 }
 
 function getSchemaForStdScalar(
-  program: Program,
+  dpgContext: SdkContext,
   type: Scalar,
   options?: GetSchemaOptions
 ) {
   const { relevantProperty } = options ?? {};
-  if (!program.checker.isStdType(type)) {
+  if (!dpgContext.program.checker.isStdType(type)) {
     return undefined;
   }
 
@@ -1320,104 +1364,104 @@ function getSchemaForStdScalar(
    */
   let format = undefined;
   if (relevantProperty) {
-    const encodeData = getEncode(program, relevantProperty);
+    const encodeData = getEncode(dpgContext.program, relevantProperty);
     if (encodeData && isEncodeTypeEffective(type, encodeData)) {
       type = encodeData.type;
       format = encodeData.encoding;
     }
   }
   const name = type.name;
-  const description = getSummary(program, type);
+  const description = getSummary(dpgContext.program, type);
   switch (name) {
     case "bytes":
       return { type: "string", format: "bytes", description };
     case "integer":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer"
       });
     case "int8":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer",
         precision: 8
       });
     case "int16":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer",
         precision: 16
       });
     case "int32":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer",
         precision: 32
       });
     case "int64":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer",
         precision: 64
       });
     case "safeint":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "integer",
         format: "safeint"
       });
     // ToDo: by xiaogang, need handle the following number types
     case "uint8":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "uint8"
       });
     case "uint16":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "uint16"
       });
     case "uint32":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "uint32"
       });
     case "uint64":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "uint64"
       });
     case "float64":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         precision: 64
       });
     case "float32":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         precision: 32
       });
     case "float":
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         precision: 32
       });
     case "decimal":
-      reportDiagnostic(program, {
+      reportDiagnostic(dpgContext.program, {
         code: "decimal-to-number",
         format: {
           propertyName: relevantProperty?.name ?? ""
         },
         target: relevantProperty ?? type
       });
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "decimal",
         description: "decimal"
       });
     case "decimal128":
-      reportDiagnostic(program, {
+      reportDiagnostic(dpgContext.program, {
         code: "decimal-to-number",
         format: {
           propertyName: relevantProperty?.name ?? ""
         },
         target: relevantProperty ?? type
       });
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "number",
         format: "decimal128",
         description: "decimal128"
@@ -1432,7 +1476,7 @@ function getSchemaForStdScalar(
           outputTypeName: "Uint8Array"
         };
       }
-      return applyIntrinsicDecorators(program, type, {
+      return applyIntrinsicDecorators(dpgContext, type, {
         type: "string",
         format
       });
@@ -1672,56 +1716,6 @@ export function getBodyType(
   return bodyModel;
 }
 
-/**
- * Predict if the default value exists in param, we would follow the rules:
- * 1. If we have specific default literal in param
- * 2. If we take the default api-version value into considerations
- * @param program
- * @param dpgContext
- * @param param The param to predict
- * @returns
- */
-export function predictDefaultValue(
-  dpgContext: SdkContext,
-  param?: ModelProperty
-) {
-  if (!param) {
-    return;
-  }
-  const program = dpgContext.program;
-  const specificDefault = param?.default;
-  if (isLiteralValue(specificDefault)) {
-    return specificDefault.value;
-  }
-  const serviceNamespace = getDefaultService(program)?.type;
-  if (!serviceNamespace) {
-    return;
-  }
-  const defaultApiVersion = getEnrichedDefaultApiVersion(program, dpgContext);
-  if (param && isApiVersion(dpgContext, param) && defaultApiVersion) {
-    return defaultApiVersion;
-  }
-  return;
-}
-
-function isLiteralValue(
-  type?: Type
-): type is StringLiteral | NumericLiteral | BooleanLiteral {
-  if (!type) {
-    return false;
-  }
-
-  if (
-    type.kind === "Boolean" ||
-    type.kind === "String" ||
-    type.kind === "Number"
-  ) {
-    return type.value !== undefined;
-  }
-
-  return false;
-}
-
 export function getDefaultService(program: Program): Service | undefined {
   const services = listServices(program);
   if (!services || services.length === 0) {
@@ -1730,13 +1724,13 @@ export function getDefaultService(program: Program): Service | undefined {
       target: NoTarget
     });
   }
-  if (services.length > 1) {
-    reportDiagnostic(program, {
-      code: "more-than-one-service",
-      target: NoTarget
-    });
-  }
-  return services[0];
+  // if (services.length > 1) {
+  //   reportDiagnostic(program, {
+  //     code: "more-than-one-service",
+  //     target: NoTarget
+  //   });
+  // }
+  return services[services.length - 1];
 }
 
 /**
@@ -1762,7 +1756,6 @@ export function getEnrichedDefaultApiVersion(
   if (defaultVersion) {
     return defaultVersion.value;
   }
-  return serviceNamespace.version;
 }
 
 export function trimUsage(model: any) {
@@ -1843,3 +1836,5 @@ export function getModelInlineSigniture(
   schemaSignature += `}`;
   return schemaSignature;
 }
+
+

@@ -11,7 +11,6 @@
 //   normalizeName
 // } from "@azure-tools/rlc-common";
 import {
-  getProjectedName,
   ignoreDiagnostics,
   Model,
   Operation,
@@ -31,6 +30,7 @@ import {
   PagedResultMetadata
 } from "@azure-tools/typespec-azure-core";
 import {
+  getWireName,
   SdkClient,
   listOperationGroups,
   listOperationsInOperationGroup,
