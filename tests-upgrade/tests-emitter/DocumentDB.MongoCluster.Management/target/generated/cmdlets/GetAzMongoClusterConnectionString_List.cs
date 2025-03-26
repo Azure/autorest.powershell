@@ -19,7 +19,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IListConnectionStringsResult))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Description(@"List mongo cluster connection strings. This includes the default connection string using SCRAM-SHA-256, as well as other connection strings supported by the cluster.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/listConnectionStrings", ApiVersion = "2024-07-01")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/listConnectionStrings", ApiVersion = "2024-10-01-preview")]
     public partial class GetAzMongoClusterConnectionString_List : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IContext

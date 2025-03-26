@@ -244,6 +244,64 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Cmdlets
         [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Runtime)]
         public global::System.Management.Automation.SwitchParameter ProxyUseDefaultCredentials { get; set; }
 
+        /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
+        [global::System.Management.Automation.AllowEmptyCollection]
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "List of AAD domains fetched from Microsoft Graph for user.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"List of AAD domains fetched from Microsoft Graph for user.",
+        SerializedName = @"aadDomains",
+        PossibleTypes = new [] { typeof(string) })]
+        public string[] SingleSignOnPropertyAadDomain { get => _resourceBody.SingleSignOnPropertyAadDomain?.ToArray() ?? null /* fixedArrayOf */; set => _resourceBody.SingleSignOnPropertyAadDomain = (value != null ? new System.Collections.Generic.List<string>(value) : null); }
+
+        /// <summary>AAD enterprise application Id used to setup SSO</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "AAD enterprise application Id used to setup SSO")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"AAD enterprise application Id used to setup SSO",
+        SerializedName = @"enterpriseAppId",
+        PossibleTypes = new [] { typeof(string) })]
+        public string SingleSignOnPropertyEnterpriseAppId { get => _resourceBody.SingleSignOnPropertyEnterpriseAppId ?? null; set => _resourceBody.SingleSignOnPropertyEnterpriseAppId = value; }
+
+        /// <summary>State of the Single Sign On for the resource</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "State of the Single Sign On for the resource")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"State of the Single Sign On for the resource",
+        SerializedName = @"state",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PSArgumentCompleterAttribute("Initial", "Enable", "Disable")]
+        public string SingleSignOnPropertyState { get => _resourceBody.SingleSignOnPropertyState ?? null; set => _resourceBody.SingleSignOnPropertyState = value; }
+
+        /// <summary>Type of Single Sign-On mechanism being used</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Type of Single Sign-On mechanism being used")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"Type of Single Sign-On mechanism being used",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.PSArgumentCompleterAttribute("Saml", "OpenId")]
+        public string SingleSignOnPropertyType { get => _resourceBody.SingleSignOnPropertyType ?? null; set => _resourceBody.SingleSignOnPropertyType = value; }
+
+        /// <summary>URL for SSO to be used by the partner to redirect the user to their system</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "URL for SSO to be used by the partner to redirect the user to their system")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Category(global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"URL for SSO to be used by the partner to redirect the user to their system",
+        SerializedName = @"url",
+        PossibleTypes = new [] { typeof(string) })]
+        public string SingleSignOnPropertyUrl { get => _resourceBody.SingleSignOnPropertyUrl ?? null; set => _resourceBody.SingleSignOnPropertyUrl = value; }
+
         /// <summary>Resource tags.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.ExportAs(typeof(global::System.Collections.Hashtable))]
         [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "Resource tags.")]

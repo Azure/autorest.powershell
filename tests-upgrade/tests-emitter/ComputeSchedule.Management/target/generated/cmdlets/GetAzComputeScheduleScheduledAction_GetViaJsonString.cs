@@ -8,13 +8,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.Cmdlets;
     using System;
 
-    /// <summary>virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine</summary>
+    /// <summary>
+    /// VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines
+    /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesGetOperationStatus=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesGetOperationStatus"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.Get, @"AzComputeScheduleScheduledAction_GetViaJsonString", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.IGetOperationStatusResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesGetOperationStatus: getOperationStatus for a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesGetOperationStatus: Polling endpoint to read status of operations performed on virtual machines")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesGetOperationStatus", ApiVersion = "2024-10-01")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.NotSuggestDefaultParameterSet]

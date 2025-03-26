@@ -29,7 +29,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesCreate(string subscriptionId, string resourceGroupName, string accountName, string profileName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -78,7 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesCreateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -138,7 +138,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile> CertificateProfilesCreateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -202,7 +202,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesCreateViaJsonString(string subscriptionId, string resourceGroupName, string accountName, string profileName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -251,7 +251,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile> CertificateProfilesCreateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string accountName, string profileName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -301,7 +301,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile> CertificateProfilesCreateWithResult(string subscriptionId, string resourceGroupName, string accountName, string profileName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -679,7 +679,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesDelete(string subscriptionId, string resourceGroupName, string accountName, string profileName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -723,7 +723,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -960,7 +960,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesGet(string subscriptionId, string resourceGroupName, string accountName, string profileName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1003,7 +1003,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1057,7 +1057,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile> CertificateProfilesGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1114,7 +1114,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile> CertificateProfilesGetWithResult(string subscriptionId, string resourceGroupName, string accountName, string profileName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1297,7 +1297,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesListByCodeSigningAccount(string subscriptionId, string resourceGroupName, string accountName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1339,7 +1339,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesListByCodeSigningAccountViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1391,7 +1391,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileListResult> CertificateProfilesListByCodeSigningAccountViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1445,7 +1445,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileListResult> CertificateProfilesListByCodeSigningAccountWithResult(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1631,7 +1631,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesRevokeCertificate(string subscriptionId, string resourceGroupName, string accountName, string profileName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IRevokeCertificate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1681,7 +1681,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesRevokeCertificateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IRevokeCertificate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1746,7 +1746,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CertificateProfilesRevokeCertificateViaJsonString(string subscriptionId, string resourceGroupName, string accountName, string profileName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1881,7 +1881,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCheckNameAvailability(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailability body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1927,7 +1927,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCheckNameAvailabilityViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailability body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1981,7 +1981,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult> CodeSigningAccountsCheckNameAvailabilityViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailability body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2036,7 +2036,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCheckNameAvailabilityViaJsonString(string subscriptionId, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2079,7 +2079,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult> CodeSigningAccountsCheckNameAvailabilityViaJsonStringWithResult(string subscriptionId, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2123,7 +2123,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailabilityResult> CodeSigningAccountsCheckNameAvailabilityWithResult(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICheckNameAvailability body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2303,7 +2303,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCreate(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2350,7 +2350,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCreateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2407,7 +2407,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsCreateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2467,7 +2467,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsCreateViaJsonString(string subscriptionId, string resourceGroupName, string accountName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2513,7 +2513,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsCreateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string accountName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2560,7 +2560,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsCreateWithResult(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2932,7 +2932,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsDelete(string subscriptionId, string resourceGroupName, string accountName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2974,7 +2974,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3204,7 +3204,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsGet(string subscriptionId, string resourceGroupName, string accountName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3245,7 +3245,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3296,7 +3296,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3349,7 +3349,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsGetWithResult(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3526,7 +3526,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsListByResourceGroup(string subscriptionId, string resourceGroupName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3566,7 +3566,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsListByResourceGroupViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3615,7 +3615,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult> CodeSigningAccountsListByResourceGroupViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3665,7 +3665,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult> CodeSigningAccountsListByResourceGroupWithResult(string subscriptionId, string resourceGroupName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3841,7 +3841,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsListBySubscription(string subscriptionId, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3879,7 +3879,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsListBySubscriptionViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3925,7 +3925,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult> CodeSigningAccountsListBySubscriptionViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3971,7 +3971,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountListResult> CodeSigningAccountsListBySubscriptionWithResult(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4144,7 +4144,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsUpdate(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatch body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4191,7 +4191,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatch body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4248,7 +4248,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatch body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4308,7 +4308,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task CodeSigningAccountsUpdateViaJsonString(string subscriptionId, string resourceGroupName, string accountName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4354,7 +4354,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string accountName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4401,7 +4401,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccount> CodeSigningAccountsUpdateWithResult(string subscriptionId, string resourceGroupName, string accountName, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatch body, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4771,7 +4771,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsList(global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4807,7 +4807,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsListViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4850,7 +4850,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IOperationListResult> OperationsListViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4892,7 +4892,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IOperationListResult> OperationsListWithResult(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-02-05-preview";
+            var apiVersion = @"2024-09-30-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {

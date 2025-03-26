@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfile))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Description(@"Get details of a certificate profile.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CodeSigning/codeSigningAccounts/{accountName}/certificateProfiles/{profileName}", ApiVersion = "2024-02-05-preview")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CodeSigning/codeSigningAccounts/{accountName}/certificateProfiles/{profileName}", ApiVersion = "2024-09-30-preview")]
     public partial class GetAzCodeSigningCertificateProfile_GetViaIdentityCodeSigningAccount : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IContext

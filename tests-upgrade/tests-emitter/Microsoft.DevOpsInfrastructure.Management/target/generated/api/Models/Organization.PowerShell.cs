@@ -119,6 +119,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).Parallelism = (int?) content.GetValueForProperty("Parallelism",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).Parallelism, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
             }
+            if (content.Contains("OpenAccess"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).OpenAccess = (bool?) content.GetValueForProperty("OpenAccess",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).OpenAccess, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
+            }
             AfterDeserializeDictionary(content);
         }
 
@@ -147,6 +151,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             if (content.Contains("Parallelism"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).Parallelism = (int?) content.GetValueForProperty("Parallelism",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).Parallelism, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("OpenAccess"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).OpenAccess = (bool?) content.GetValueForProperty("OpenAccess",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal)this).OpenAccess, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
             AfterDeserializePSObject(content);
         }

@@ -72,6 +72,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
         public string SecretManagementSettingCertificateStoreLocation { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingCertificateStoreLocation; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingCertificateStoreLocation = value ?? null; }
 
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
+        public string SecretManagementSettingCertificateStoreName { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingCertificateStoreName; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingCertificateStoreName = value ?? null; }
+
         /// <summary>Defines if the key of the certificates should be exportable.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Inlined)]
         public bool? SecretManagementSettingKeyExportable { get => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingKeyExportable; set => ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOSProfileInternal)OSProfile).SecretManagementSettingKeyExportable = value ?? default(bool); }
@@ -176,6 +182,20 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         SerializedName = @"certificateStoreLocation",
         PossibleTypes = new [] { typeof(string) })]
         string SecretManagementSettingCertificateStoreLocation { get; set; }
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.",
+        SerializedName = @"certificateStoreName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("My", "Root")]
+        string SecretManagementSettingCertificateStoreName { get; set; }
         /// <summary>Defines if the key of the certificates should be exportable.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -255,6 +275,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettings OSProfileSecretsManagementSetting { get; set; }
         /// <summary>Where to store certificates on the machine.</summary>
         string SecretManagementSettingCertificateStoreLocation { get; set; }
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("My", "Root")]
+        string SecretManagementSettingCertificateStoreName { get; set; }
         /// <summary>Defines if the key of the certificates should be exportable.</summary>
         bool? SecretManagementSettingKeyExportable { get; set; }
         /// <summary>The list of certificates to install on all machines in the pool.</summary>

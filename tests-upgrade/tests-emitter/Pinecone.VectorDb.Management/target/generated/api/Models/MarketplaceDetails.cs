@@ -140,7 +140,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         string OfferDetailTermUnit { get; set; }
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,

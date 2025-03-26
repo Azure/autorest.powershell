@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -13,12 +16,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// Backing field for Inherited model <see cref= "Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITrackedResource" />
         /// </summary>
         private Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITrackedResource __trackedResource = new Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.TrackedResource();
-
-        /// <summary>Backing field for <see cref="AzureAsyncOperation" /> property.</summary>
-        private string _azureAsyncOperation;
-
-        [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
-        public string AzureAsyncOperation { get => this._azureAsyncOperation; set => this._azureAsyncOperation = value; }
 
         /// <summary>
         /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
@@ -129,13 +126,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// <param name="headers"></param>
         void Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
         {
-            if (headers.TryGetValues("Azure-AsyncOperation", out var __azureAsyncOperationHeader0))
+            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader0))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogInternal)this).AzureAsyncOperation = System.Linq.Enumerable.FirstOrDefault(__azureAsyncOperationHeader0) is string __headerAzureAsyncOperationHeader0 ? __headerAzureAsyncOperationHeader0 : (string)null;
-            }
-            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader1))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader1) is string __headerRetryAfterHeader1 ? int.TryParse( __headerRetryAfterHeader1, out int __headerRetryAfterHeader1Value ) ? __headerRetryAfterHeader1Value : default(int?) : default(int?);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader0) is string __headerRetryAfterHeader0 ? int.TryParse( __headerRetryAfterHeader0, out int __headerRetryAfterHeader0Value ) ? __headerRetryAfterHeader0Value : default(int?) : default(int?);
             }
         }
 
@@ -156,16 +149,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IJsonSerializable,
         Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITrackedResource
     {
-        [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Info(
-        Required = false,
-        ReadOnly = false,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"",
-        SerializedName = @"Azure-AsyncOperation",
-        PossibleTypes = new [] { typeof(string) })]
-        string AzureAsyncOperation { get; set; }
         /// <summary>The status of the last operation.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Info(
         Required = false,
@@ -206,7 +189,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
     internal partial interface ICatalogInternal :
         Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ITrackedResourceInternal
     {
-        string AzureAsyncOperation { get; set; }
         /// <summary>The resource-specific properties for this resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ICatalogProperties Property { get; set; }
         /// <summary>The status of the last operation.</summary>

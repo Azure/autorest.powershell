@@ -47,7 +47,7 @@ export async function $onEmit(context: EmitContext) {
 
   const PsContext = await createSdkContext(
     context,
-    "@azure-tools/typespec-powershell"
+    "@azure-tools/typespec-powershell",
   );
 
   // const pwshModel = new PwshModel("");

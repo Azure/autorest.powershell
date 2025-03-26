@@ -11,6 +11,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOrganizationInternal
     {
 
+        /// <summary>Backing field for <see cref="OpenAccess" /> property.</summary>
+        private bool? _openAccess;
+
+        /// <summary>
+        /// Determines if the pool should have open access to all projects in this organization.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
+        public bool? OpenAccess { get => this._openAccess; set => this._openAccess = value; }
+
         /// <summary>Backing field for <see cref="Parallelism" /> property.</summary>
         private int? _parallelism;
 
@@ -44,6 +53,19 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     public partial interface IOrganization :
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IJsonSerializable
     {
+        /// <summary>
+        /// Determines if the pool should have open access to all projects in this organization.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Determines if the pool should have open access to all projects in this organization.",
+        SerializedName = @"openAccess",
+        PossibleTypes = new [] { typeof(bool) })]
+        bool? OpenAccess { get; set; }
         /// <summary>
         /// How many machines can be created at maximum in this organization out of the maximumConcurrency of the pool.
         /// </summary>
@@ -85,6 +107,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     internal partial interface IOrganizationInternal
 
     {
+        /// <summary>
+        /// Determines if the pool should have open access to all projects in this organization.
+        /// </summary>
+        bool? OpenAccess { get; set; }
         /// <summary>
         /// How many machines can be created at maximum in this organization out of the maximumConcurrency of the pool.
         /// </summary>

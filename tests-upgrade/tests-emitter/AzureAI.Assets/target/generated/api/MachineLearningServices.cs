@@ -1564,7 +1564,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/indexes/"
+                        "/indexes"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -1615,16 +1615,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // verify that Identity format is an exact match for uri
 
-                var _match = new global::System.Text.RegularExpressions.Regex("^/indexes/$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                var _match = new global::System.Text.RegularExpressions.Regex("^/indexes$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
                 if (!_match.Success)
                 {
-                    throw new global::System.Exception("Invalid identity for URI '/indexes/'");
+                    throw new global::System.Exception("Invalid identity for URI '/indexes'");
                 }
 
                 // replace URI parameters with values from identity
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/indexes/"
+                        "/indexes"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -1673,16 +1673,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // verify that Identity format is an exact match for uri
 
-                var _match = new global::System.Text.RegularExpressions.Regex("^/indexes/$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                var _match = new global::System.Text.RegularExpressions.Regex("^/indexes$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
                 if (!_match.Success)
                 {
-                    throw new global::System.Exception("Invalid identity for URI '/indexes/'");
+                    throw new global::System.Exception("Invalid identity for URI '/indexes'");
                 }
 
                 // replace URI parameters with values from identity
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/indexes/"
+                        "/indexes"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -1730,7 +1730,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/indexes/"
+                        "/indexes"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -3787,7 +3787,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/prompts/"
+                        "/prompts"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -3838,16 +3838,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // verify that Identity format is an exact match for uri
 
-                var _match = new global::System.Text.RegularExpressions.Regex("^/prompts/$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                var _match = new global::System.Text.RegularExpressions.Regex("^/prompts$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
                 if (!_match.Success)
                 {
-                    throw new global::System.Exception("Invalid identity for URI '/prompts/'");
+                    throw new global::System.Exception("Invalid identity for URI '/prompts'");
                 }
 
                 // replace URI parameters with values from identity
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/prompts/"
+                        "/prompts"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -3896,16 +3896,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // verify that Identity format is an exact match for uri
 
-                var _match = new global::System.Text.RegularExpressions.Regex("^/prompts/$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                var _match = new global::System.Text.RegularExpressions.Regex("^/prompts$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
                 if (!_match.Success)
                 {
-                    throw new global::System.Exception("Invalid identity for URI '/prompts/'");
+                    throw new global::System.Exception("Invalid identity for URI '/prompts'");
                 }
 
                 // replace URI parameters with values from identity
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/prompts/"
+                        "/prompts"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"
@@ -3953,7 +3953,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices
             {
                 // construct URL
                 var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
-                        "/prompts/"
+                        "/prompts"
                         + "?"
                         + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
                         + "&"

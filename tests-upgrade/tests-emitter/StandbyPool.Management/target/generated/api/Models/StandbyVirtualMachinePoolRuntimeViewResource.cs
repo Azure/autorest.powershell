@@ -19,6 +19,12 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         private Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IProxyResource __proxyResource = new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.ProxyResource();
 
         /// <summary>
+        /// Displays the predicted count of instances to be requested from the standby pool.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<long> ForecastValueInstancesRequestedCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).ForecastValueInstancesRequestedCount; }
+
+        /// <summary>
         /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inherited)]
@@ -26,10 +32,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
 
         /// <summary>
         /// A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the
-        /// StandbyPool resource provider.
-        /// If zones are not enabled on the attached VMSS, the list will contain a single entry with null zone values.
-        /// Note: any updates to pool resources outside of StandbyPoolRP (i.e deleting a VM through portal) are not reflected here.
-        /// Note: any resources in the Running state may still be installing extensions / not fully provisioned.
+        /// StandbyPool resource provider. If zones are not enabled on the attached VMSS, the list will contain a single entry without
+        /// zone values. Note: any resources in the Running state may still be installing extensions / not fully provisioned.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
         public System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IVirtualMachineInstanceCountSummary> InstanceCountSummary { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).InstanceCountSummary; }
@@ -46,8 +50,23 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>Internal Acessors for Type</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IResourceInternal.Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IResourceInternal)__proxyResource).Type; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IResourceInternal)__proxyResource).Type = value; }
 
+        /// <summary>Internal Acessors for ForecastValueInstancesRequestedCount</summary>
+        System.Collections.Generic.List<long> Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.ForecastValueInstancesRequestedCount { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).ForecastValueInstancesRequestedCount; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).ForecastValueInstancesRequestedCount = value; }
+
         /// <summary>Internal Acessors for InstanceCountSummary</summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IVirtualMachineInstanceCountSummary> Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.InstanceCountSummary { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).InstanceCountSummary; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).InstanceCountSummary = value; }
+
+        /// <summary>Internal Acessors for Prediction</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPrediction Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.Prediction { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).Prediction; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).Prediction = value; }
+
+        /// <summary>Internal Acessors for PredictionForecastInfo</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.PredictionForecastInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastInfo; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastInfo = value; }
+
+        /// <summary>Internal Acessors for PredictionForecastStartTime</summary>
+        global::System.DateTime? Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.PredictionForecastStartTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastStartTime; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastStartTime = value; }
+
+        /// <summary>Internal Acessors for PredictionForecastValue</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.PredictionForecastValue { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastValue; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastValue = value; }
 
         /// <summary>Internal Acessors for Property</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceProperties Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.Property { get => (this._property = this._property ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyVirtualMachinePoolRuntimeViewResourceProperties()); set { {_property = value;} } }
@@ -55,9 +74,28 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>Internal Acessors for ProvisioningState</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).ProvisioningState = value; }
 
+        /// <summary>Internal Acessors for Status</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IPoolStatus Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.Status { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).Status; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).Status = value; }
+
+        /// <summary>Internal Acessors for StatusCode</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.StatusCode { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusCode; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusCode = value; }
+
+        /// <summary>Internal Acessors for StatusMessage</summary>
+        string Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceInternal.StatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusMessage; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusMessage = value; }
+
         /// <summary>The name of the resource</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inherited)]
         public string Name { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IResourceInternal)__proxyResource).Name; }
+
+        /// <summary>Displays additional information for the prediction of the standby pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public string PredictionForecastInfo { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastInfo; }
+
+        /// <summary>
+        /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public global::System.DateTime? PredictionForecastStartTime { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).PredictionForecastStartTime; }
 
         /// <summary>Backing field for <see cref="Property" /> property.</summary>
         private Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceProperties _property;
@@ -73,6 +111,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>Gets the resource group name</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Owned)]
         public string ResourceGroupName { get => (new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Success ? new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/resourceGroups/(?<resourceGroupName>[^/]+)/providers/", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(this.Id).Groups["resourceGroupName"].Value : null); }
+
+        /// <summary>Displays the healthy state of the StandbyPool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public string StatusCode { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusCode; }
+
+        /// <summary>Displays the StandbyPool health state details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public string StatusMessage { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourcePropertiesInternal)Property).StatusMessage; }
 
         /// <summary>
         /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
@@ -136,11 +182,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IProxyResource
     {
         /// <summary>
-        /// A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the
-        /// StandbyPool resource provider.
-        /// If zones are not enabled on the attached VMSS, the list will contain a single entry with null zone values.
-        /// Note: any updates to pool resources outside of StandbyPoolRP (i.e deleting a VM through portal) are not reflected here.
-        /// Note: any resources in the Running state may still be installing extensions / not fully provisioned.
+        /// Displays the predicted count of instances to be requested from the standby pool.
         /// </summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
         Required = false,
@@ -148,13 +190,49 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Read = true,
         Create = false,
         Update = false,
-        Description = @"A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the StandbyPool resource provider.
-        If zones are not enabled on the attached VMSS, the list will contain a single entry with null zone values.
-        Note: any updates to pool resources outside of StandbyPoolRP (i.e deleting a VM through portal) are not reflected here.
-        Note: any resources in the Running state may still be installing extensions / not fully provisioned.",
+        Description = @"Displays the predicted count of instances to be requested from the standby pool.",
+        SerializedName = @"instancesRequestedCount",
+        PossibleTypes = new [] { typeof(long) })]
+        System.Collections.Generic.List<long> ForecastValueInstancesRequestedCount { get;  }
+        /// <summary>
+        /// A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the
+        /// StandbyPool resource provider. If zones are not enabled on the attached VMSS, the list will contain a single entry without
+        /// zone values. Note: any resources in the Running state may still be installing extensions / not fully provisioned.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the StandbyPool resource provider. If zones are not enabled on the attached VMSS, the list will contain a single entry without zone values. Note: any resources in the Running state may still be installing extensions / not fully provisioned.",
         SerializedName = @"instanceCountSummary",
         PossibleTypes = new [] { typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IVirtualMachineInstanceCountSummary) })]
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IVirtualMachineInstanceCountSummary> InstanceCountSummary { get;  }
+        /// <summary>Displays additional information for the prediction of the standby pool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Displays additional information for the prediction of the standby pool.",
+        SerializedName = @"forecastInfo",
+        PossibleTypes = new [] { typeof(string) })]
+        string PredictionForecastInfo { get;  }
+        /// <summary>
+        /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Displays the UTC timestamp of when the prediction was retrieved for the standby pool.",
+        SerializedName = @"forecastStartTime",
+        PossibleTypes = new [] { typeof(global::System.DateTime) })]
+        global::System.DateTime? PredictionForecastStartTime { get;  }
         /// <summary>Displays the provisioning state of the standby pool</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
         Required = false,
@@ -167,6 +245,29 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled", "Deleting")]
         string ProvisioningState { get;  }
+        /// <summary>Displays the healthy state of the StandbyPool.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Displays the healthy state of the StandbyPool.",
+        SerializedName = @"code",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("HealthState/healthy", "HealthState/degraded")]
+        string StatusCode { get;  }
+        /// <summary>Displays the StandbyPool health state details.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = true,
+        Read = true,
+        Create = false,
+        Update = false,
+        Description = @"Displays the StandbyPool health state details.",
+        SerializedName = @"message",
+        PossibleTypes = new [] { typeof(string) })]
+        string StatusMessage { get;  }
 
     }
     /// Contains information about a standby virtual machine pool as last known by the StandbyPool resource provider.
@@ -174,18 +275,37 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IProxyResourceInternal
     {
         /// <summary>
+        /// Displays the predicted count of instances to be requested from the standby pool.
+        /// </summary>
+        System.Collections.Generic.List<long> ForecastValueInstancesRequestedCount { get; set; }
+        /// <summary>
         /// A list containing the counts of virtual machines in each possible power state for each zone if enabled, as known by the
-        /// StandbyPool resource provider.
-        /// If zones are not enabled on the attached VMSS, the list will contain a single entry with null zone values.
-        /// Note: any updates to pool resources outside of StandbyPoolRP (i.e deleting a VM through portal) are not reflected here.
-        /// Note: any resources in the Running state may still be installing extensions / not fully provisioned.
+        /// StandbyPool resource provider. If zones are not enabled on the attached VMSS, the list will contain a single entry without
+        /// zone values. Note: any resources in the Running state may still be installing extensions / not fully provisioned.
         /// </summary>
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IVirtualMachineInstanceCountSummary> InstanceCountSummary { get; set; }
+        /// <summary>Displays prediction information of the standby pool</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolPrediction Prediction { get; set; }
+        /// <summary>Displays additional information for the prediction of the standby pool.</summary>
+        string PredictionForecastInfo { get; set; }
+        /// <summary>
+        /// Displays the UTC timestamp of when the prediction was retrieved for the standby pool.
+        /// </summary>
+        global::System.DateTime? PredictionForecastStartTime { get; set; }
+        /// <summary>Displays the forecast information of the standby pool.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolForecastValues PredictionForecastValue { get; set; }
         /// <summary>The resource-specific properties for this resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachinePoolRuntimeViewResourceProperties Property { get; set; }
         /// <summary>Displays the provisioning state of the standby pool</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Succeeded", "Failed", "Canceled", "Deleting")]
         string ProvisioningState { get; set; }
+        /// <summary>Display status of the standby pool</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IPoolStatus Status { get; set; }
+        /// <summary>Displays the healthy state of the StandbyPool.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("HealthState/healthy", "HealthState/degraded")]
+        string StatusCode { get; set; }
+        /// <summary>Displays the StandbyPool health state details.</summary>
+        string StatusMessage { get; set; }
 
     }
 }

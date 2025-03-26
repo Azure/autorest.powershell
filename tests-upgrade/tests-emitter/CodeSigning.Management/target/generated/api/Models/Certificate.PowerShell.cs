@@ -82,6 +82,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SerialNumber = (string) content.GetValueForProperty("SerialNumber",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SerialNumber, global::System.Convert.ToString);
             }
+            if (content.Contains("EnhancedKeyUsage"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).EnhancedKeyUsage = (string) content.GetValueForProperty("EnhancedKeyUsage",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).EnhancedKeyUsage, global::System.Convert.ToString);
+            }
             if (content.Contains("SubjectName"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SubjectName = (string) content.GetValueForProperty("SubjectName",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SubjectName, global::System.Convert.ToString);
@@ -150,6 +154,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             if (content.Contains("SerialNumber"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SerialNumber = (string) content.GetValueForProperty("SerialNumber",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).SerialNumber, global::System.Convert.ToString);
+            }
+            if (content.Contains("EnhancedKeyUsage"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).EnhancedKeyUsage = (string) content.GetValueForProperty("EnhancedKeyUsage",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateInternal)this).EnhancedKeyUsage, global::System.Convert.ToString);
             }
             if (content.Contains("SubjectName"))
             {

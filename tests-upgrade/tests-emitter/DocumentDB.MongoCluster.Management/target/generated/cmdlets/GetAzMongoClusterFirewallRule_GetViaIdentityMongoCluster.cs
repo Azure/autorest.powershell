@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Description(@"Gets information about a mongo cluster firewall rule.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}", ApiVersion = "2024-07-01")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}", ApiVersion = "2024-10-01-preview")]
     public partial class GetAzMongoClusterFirewallRule_GetViaIdentityMongoCluster : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IContext

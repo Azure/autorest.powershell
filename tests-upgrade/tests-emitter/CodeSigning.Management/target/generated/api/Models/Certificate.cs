@@ -18,6 +18,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Owned)]
         public string CreatedDate { get => this._createdDate; set => this._createdDate = value; }
 
+        /// <summary>Backing field for <see cref="EnhancedKeyUsage" /> property.</summary>
+        private string _enhancedKeyUsage;
+
+        /// <summary>Enhanced key usage of the certificate.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Owned)]
+        public string EnhancedKeyUsage { get => this._enhancedKeyUsage; set => this._enhancedKeyUsage = value; }
+
         /// <summary>Backing field for <see cref="ExpiryDate" /> property.</summary>
         private string _expiryDate;
 
@@ -108,6 +115,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         SerializedName = @"createdDate",
         PossibleTypes = new [] { typeof(string) })]
         string CreatedDate { get; set; }
+        /// <summary>Enhanced key usage of the certificate.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Enhanced key usage of the certificate.",
+        SerializedName = @"enhancedKeyUsage",
+        PossibleTypes = new [] { typeof(string) })]
+        string EnhancedKeyUsage { get; set; }
         /// <summary>Certificate expiry date.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Info(
         Required = false,
@@ -239,6 +257,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
     {
         /// <summary>Certificate created date.</summary>
         string CreatedDate { get; set; }
+        /// <summary>Enhanced key usage of the certificate.</summary>
+        string EnhancedKeyUsage { get; set; }
         /// <summary>Certificate expiry date.</summary>
         string ExpiryDate { get; set; }
         /// <summary>Revocations history of a certificate.</summary>

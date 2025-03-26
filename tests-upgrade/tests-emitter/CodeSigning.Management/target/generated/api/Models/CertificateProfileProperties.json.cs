@@ -64,20 +64,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
                 return;
             }
             {_profileType = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("profileType"), out var __jsonProfileType) ? (string)__jsonProfileType : (string)_profileType;}
-            {_commonName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("commonName"), out var __jsonCommonName) ? (string)__jsonCommonName : (string)_commonName;}
-            {_organization = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("organization"), out var __jsonOrganization) ? (string)__jsonOrganization : (string)_organization;}
-            {_organizationUnit = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("organizationUnit"), out var __jsonOrganizationUnit) ? (string)__jsonOrganizationUnit : (string)_organizationUnit;}
-            {_streetAddress = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("streetAddress"), out var __jsonStreetAddress) ? (string)__jsonStreetAddress : (string)_streetAddress;}
             {_includeStreetAddress = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean>("includeStreetAddress"), out var __jsonIncludeStreetAddress) ? (bool?)__jsonIncludeStreetAddress : _includeStreetAddress;}
-            {_city = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("city"), out var __jsonCity) ? (string)__jsonCity : (string)_city;}
             {_includeCity = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean>("includeCity"), out var __jsonIncludeCity) ? (bool?)__jsonIncludeCity : _includeCity;}
-            {_state = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("state"), out var __jsonState) ? (string)__jsonState : (string)_state;}
             {_includeState = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean>("includeState"), out var __jsonIncludeState) ? (bool?)__jsonIncludeState : _includeState;}
-            {_country = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("country"), out var __jsonCountry) ? (string)__jsonCountry : (string)_country;}
             {_includeCountry = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean>("includeCountry"), out var __jsonIncludeCountry) ? (bool?)__jsonIncludeCountry : _includeCountry;}
-            {_postalCode = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("postalCode"), out var __jsonPostalCode) ? (string)__jsonPostalCode : (string)_postalCode;}
             {_includePostalCode = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean>("includePostalCode"), out var __jsonIncludePostalCode) ? (bool?)__jsonIncludePostalCode : _includePostalCode;}
-            {_enhancedKeyUsage = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("enhancedKeyUsage"), out var __jsonEnhancedKeyUsage) ? (string)__jsonEnhancedKeyUsage : (string)_enhancedKeyUsage;}
             {_identityValidationId = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("identityValidationId"), out var __jsonIdentityValidationId) ? (string)__jsonIdentityValidationId : (string)_identityValidationId;}
             {_provisioningState = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("provisioningState"), out var __jsonProvisioningState) ? (string)__jsonProvisioningState : (string)_provisioningState;}
             {_status = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString>("status"), out var __jsonStatus) ? (string)__jsonStatus : (string)_status;}
@@ -117,47 +108,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
                 return container;
             }
             AddIf( null != (((object)this._profileType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._profileType.ToString()) : null, "profileType" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._commonName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._commonName.ToString()) : null, "commonName" ,container.Add );
-            }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._organization)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._organization.ToString()) : null, "organization" ,container.Add );
-            }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._organizationUnit)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._organizationUnit.ToString()) : null, "organizationUnit" ,container.Add );
-            }
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._streetAddress)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._streetAddress.ToString()) : null, "streetAddress" ,container.Add );
-            }
             AddIf( null != this._includeStreetAddress ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean((bool)this._includeStreetAddress) : null, "includeStreetAddress" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._city)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._city.ToString()) : null, "city" ,container.Add );
-            }
             AddIf( null != this._includeCity ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean((bool)this._includeCity) : null, "includeCity" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._state)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._state.ToString()) : null, "state" ,container.Add );
-            }
             AddIf( null != this._includeState ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean((bool)this._includeState) : null, "includeState" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._country)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._country.ToString()) : null, "country" ,container.Add );
-            }
             AddIf( null != this._includeCountry ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean((bool)this._includeCountry) : null, "includeCountry" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._postalCode)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._postalCode.ToString()) : null, "postalCode" ,container.Add );
-            }
             AddIf( null != this._includePostalCode ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonBoolean((bool)this._includePostalCode) : null, "includePostalCode" ,container.Add );
-            if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
-            {
-                AddIf( null != (((object)this._enhancedKeyUsage)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._enhancedKeyUsage.ToString()) : null, "enhancedKeyUsage" ,container.Add );
-            }
             AddIf( null != (((object)this._identityValidationId)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonString(this._identityValidationId.ToString()) : null, "identityValidationId" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.SerializationMode.IncludeRead))
             {

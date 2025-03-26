@@ -8,13 +8,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.Cmdlets;
     using System;
 
-    /// <summary>virtualMachinesSubmitStart: submitStart for a virtual machine</summary>
+    /// <summary>
+    /// VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.
+    /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesSubmitStart=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesSubmitStart"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsLifecycle.Submit, @"AzComputeScheduleScheduledAction_Submit2", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.IStartResourceOperationResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesSubmitStart: submitStart for a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesSubmitStart: Schedule start operation for a batch of virtual machines at datetime in future.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesSubmitStart", ApiVersion = "2024-10-01")]
     public partial class SubmitAzComputeScheduleScheduledAction_Submit2 : global::System.Management.Automation.PSCmdlet,

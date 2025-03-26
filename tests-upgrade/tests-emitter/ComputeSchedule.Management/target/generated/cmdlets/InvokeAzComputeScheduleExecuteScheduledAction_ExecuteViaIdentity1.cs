@@ -8,13 +8,16 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.Cmdlets;
     using System;
 
-    /// <summary>virtualMachinesExecuteHibernate: executeHibernate for a virtual machine</summary>
+    /// <summary>
+    /// VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered
+    /// as soon as Computeschedule receives it.
+    /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesExecuteHibernate=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesExecuteHibernate"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsLifecycle.Invoke, @"AzComputeScheduleExecuteScheduledAction_ExecuteViaIdentity1", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.IHibernateResourceOperationResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesExecuteHibernate: executeHibernate for a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesExecuteHibernate: Execute hibernate operation for a batch of virtual machines, this operation is triggered as soon as Computeschedule receives it.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesExecuteHibernate", ApiVersion = "2024-10-01")]
     public partial class InvokeAzComputeScheduleExecuteScheduledAction_ExecuteViaIdentity1 : global::System.Management.Automation.PSCmdlet,

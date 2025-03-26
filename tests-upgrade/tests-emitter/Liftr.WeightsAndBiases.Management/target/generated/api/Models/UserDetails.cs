@@ -58,7 +58,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
     {
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -69,7 +69,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         string EmailAddress { get; set; }
         /// <summary>First name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -80,7 +80,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         string FirstName { get; set; }
         /// <summary>Last name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,

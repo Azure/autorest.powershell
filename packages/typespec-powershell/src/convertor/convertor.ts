@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { SdkClient, SdkContext, listOperationsInOperationGroup, listOperationGroups } from "@azure-tools/typespec-client-generator-core";
-import { HttpOperation, HttpOperationParameter, HttpOperationRequestBody, getHttpOperation } from "@typespec/http";
+import { HttpOperation, HttpOperationParameter, HttpOperationBody, getHttpOperation } from "@typespec/http";
 import { getDoc, getService, ignoreDiagnostics, Program, Model, Type } from "@typespec/compiler";
 import { getServers } from "@typespec/http";
 import { join } from "path";
@@ -263,7 +263,7 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
       // }
       newResponse.language.default.name = '';
       newResponse.language.default.description = response.description || "";
-      const statusCode = response.statusCode;
+      const statusCode = response.statusCodes.toString();
       // Add schema for response body
       if (response.responses[0].body) {
         const schema = getSchemaForType(psContext, response.responses[0].body.type);
@@ -307,16 +307,16 @@ function addResponses(psContext: SdkContext, op: HttpOperation, newOperation: Op
   }
 }
 
-function createBodyParameter(psContext: SdkContext, parameter: HttpOperationRequestBody, model: PwshModel): Parameter {
-  const paramSchema = parameter.parameter?.sourceProperty
-    ? getSchemaForType(psContext, parameter.parameter?.sourceProperty?.type)
+function createBodyParameter(psContext: SdkContext, parameter: HttpOperationBody, model: PwshModel): Parameter {
+  const paramSchema = parameter.property?.sourceProperty
+    ? getSchemaForType(psContext, parameter.property?.sourceProperty?.type)
     : getSchemaForType(psContext, parameter.type)
-  const newParameter = new Parameter(parameter.parameter?.name || "", parameter.parameter ? getDoc(psContext.program, parameter.parameter) || "" : "", paramSchema);
+  const newParameter = new Parameter(parameter.property?.name || "", parameter.property ? getDoc(psContext.program, parameter.property) || "" : "", paramSchema);
   newParameter.protocol.http = newParameter.protocol.http ?? new Protocol();
   newParameter.protocol.http.in = "body";
   // ToDo, we need to support x-ms-client is specified.
   newParameter.implementation = ImplementationLocation.Method;
-  newParameter.required = !parameter.parameter?.optional;
+  newParameter.required = !(parameter.property && parameter.property.optional);
   return newParameter;
 }
 

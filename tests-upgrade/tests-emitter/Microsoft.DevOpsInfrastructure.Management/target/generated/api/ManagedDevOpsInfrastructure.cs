@@ -25,7 +25,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task ImageVersionsListByImage(string subscriptionId, string resourceGroupName, string imageName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IImageVersionListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -67,7 +67,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task ImageVersionsListByImageViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IImageVersionListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -119,7 +119,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IImageVersionListResult> ImageVersionsListByImageViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -173,7 +173,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IImageVersionListResult> ImageVersionsListByImageWithResult(string subscriptionId, string resourceGroupName, string imageName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -349,7 +349,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsList(global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -385,7 +385,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsListViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -428,7 +428,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOperationListResult> OperationsListViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -470,7 +470,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IOperationListResult> OperationsListWithResult(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -620,6 +620,414 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
             }
         }
 
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
+        /// <param name="body">The CheckAvailability request</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
+        /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
+        /// elsewhere).</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode"/>.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task PoolsCheckNameAvailability(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailability body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + global::System.Uri.EscapeDataString(subscriptionId)
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(null != body ? body.ToJson(null, serializationMode).ToString() : @"{}", global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // make the call
+                await this.PoolsCheckNameAvailability_Call (request, onOk,onDefault,eventListener,sender);
+            }
+        }
+
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="viaIdentity"></param>
+        /// <param name="body">The CheckAvailability request</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
+        /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
+        /// elsewhere).</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode"/>.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task PoolsCheckNameAvailabilityViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailability body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // verify that Identity format is an exact match for uri
+
+                var _match = new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/providers/Microsoft.DevOpsInfrastructure$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                if (!_match.Success)
+                {
+                    throw new global::System.Exception("Invalid identity for URI '/subscriptions/{subscriptionId}/providers/Microsoft.DevOpsInfrastructure'");
+                }
+
+                // replace URI parameters with values from identity
+                var subscriptionId = _match.Groups["subscriptionId"].Value;
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + subscriptionId
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(null != body ? body.ToJson(null, serializationMode).ToString() : @"{}", global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // make the call
+                await this.PoolsCheckNameAvailability_Call (request, onOk,onDefault,eventListener,sender);
+            }
+        }
+
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="viaIdentity"></param>
+        /// <param name="body">The CheckAvailability request</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode"/>.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>"
+        /// /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult> PoolsCheckNameAvailabilityViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailability body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // verify that Identity format is an exact match for uri
+
+                var _match = new global::System.Text.RegularExpressions.Regex("^/subscriptions/(?<subscriptionId>[^/]+)/providers/Microsoft.DevOpsInfrastructure$", global::System.Text.RegularExpressions.RegexOptions.IgnoreCase).Match(viaIdentity);
+                if (!_match.Success)
+                {
+                    throw new global::System.Exception("Invalid identity for URI '/subscriptions/{subscriptionId}/providers/Microsoft.DevOpsInfrastructure'");
+                }
+
+                // replace URI parameters with values from identity
+                var subscriptionId = _match.Groups["subscriptionId"].Value;
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + subscriptionId
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(null != body ? body.ToJson(null, serializationMode).ToString() : @"{}", global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // make the call
+                return await this.PoolsCheckNameAvailabilityWithResult_Call (request, eventListener,sender);
+            }
+        }
+
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
+        /// <param name="jsonString">Json string supplied to the PoolsCheckNameAvailability operation</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
+        /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
+        /// elsewhere).</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task PoolsCheckNameAvailabilityViaJsonString(string subscriptionId, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + global::System.Uri.EscapeDataString(subscriptionId)
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return; }
+                // make the call
+                await this.PoolsCheckNameAvailability_Call (request, onOk,onDefault,eventListener,sender);
+            }
+        }
+
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
+        /// <param name="jsonString">Json string supplied to the PoolsCheckNameAvailability operation</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>"
+        /// /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult> PoolsCheckNameAvailabilityViaJsonStringWithResult(string subscriptionId, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + global::System.Uri.EscapeDataString(subscriptionId)
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(jsonString, global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // make the call
+                return await this.PoolsCheckNameAvailabilityWithResult_Call (request, eventListener,sender);
+            }
+        }
+
+        /// <summary>Checks that the pool name is valid and is not already in use.</summary>
+        /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
+        /// <param name="body">The CheckAvailability request</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <param name="serializationMode">Allows the caller to choose the depth of the serialization. See <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode"/>.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>"
+        /// /> that will be complete when handling of the response is completed.
+        /// </returns>
+        public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult> PoolsCheckNameAvailabilityWithResult(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailability body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
+        {
+            var apiVersion = @"2025-01-21";
+            // Constant Parameters
+            using( NoSynchronizationContext )
+            {
+                // construct URL
+                var pathAndQuery = global::System.Text.RegularExpressions.Regex.Replace(
+                        "/subscriptions/"
+                        + global::System.Uri.EscapeDataString(subscriptionId)
+                        + "/providers/Microsoft.DevOpsInfrastructure/checkNameAvailability"
+                        + "?"
+                        + "api-version=" + global::System.Uri.EscapeDataString(apiVersion)
+                        ,"\\?&*$|&*$|(\\?)&+|(&)&+","$1$2");
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.URLCreated, pathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                // generate request object
+                var _url = new global::System.Uri($"https://management.azure.com{pathAndQuery}");
+                var request =  new global::System.Net.Http.HttpRequestMessage(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Method.Post, _url);
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.RequestCreated, request.RequestUri.PathAndQuery); if( eventListener.Token.IsCancellationRequested ) { return null; }
+
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.HeaderParametersAdded); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // set body content
+                request.Content = new global::System.Net.Http.StringContent(null != body ? body.ToJson(null, serializationMode).ToString() : @"{}", global::System.Text.Encoding.UTF8);
+                request.Content.Headers.ContentType = global::System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BodyContentSet); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                // make the call
+                return await this.PoolsCheckNameAvailabilityWithResult_Call (request, eventListener,sender);
+            }
+        }
+
+        /// <summary>
+        /// Actual wire call for <see cref= "PoolsCheckNameAvailabilityWithResult" /> method.
+        /// </summary>
+        /// <param name="request">the prepared HttpRequestMessage to send.</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>"
+        /// /> that will be complete when handling of the response is completed.
+        /// </returns>
+        internal async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult> PoolsCheckNameAvailabilityWithResult_Call(global::System.Net.Http.HttpRequestMessage request, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
+        {
+            using( NoSynchronizationContext )
+            {
+                global::System.Net.Http.HttpResponseMessage _response = null;
+                try
+                {
+                    var sendTask = sender.SendAsync(request, eventListener);
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeCall, request); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                    _response = await sendTask;
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.ResponseCreated, _response); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.Progress, "intentional placeholder", 100); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                    var _contentType = _response.Content.Headers.ContentType?.MediaType;
+
+                    switch ( _response.StatusCode )
+                    {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                            var _result = _response.Content.ReadAsStringAsync().ContinueWith( body => Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.CheckNameAvailabilityResult.FromJson(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode.Parse(body.Result)) );
+                            return await _result;
+                        }
+                        default:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return null; }
+                            var _result = _response.Content.ReadAsStringAsync().ContinueWith( body => Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ErrorResponse.FromJson(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode.Parse(body.Result)) );
+                            // Error Response : default
+                            var code = (await _result)?.Code;
+                            var message = (await _result)?.Message;
+                            if ((null == code || null == message))
+                            {
+                                // Unrecognized Response. Create an error record based on what we have.
+                                var ex = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>(_response, await _result);
+                                throw ex;
+                            }
+                            else
+                            {
+                                throw new global::System.Exception($"[{code}] : {message}");
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    // finally statements
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.Finally, request, _response);
+                    _response?.Dispose();
+                    request?.Dispose();
+                }
+            }
+        }
+
+        /// <summary>Actual wire call for <see cref= "PoolsCheckNameAvailability" /> method.</summary>
+        /// <param name="request">the prepared HttpRequestMessage to send.</param>
+        /// <param name="onOk">a delegate that is called when the remote service returns 200 (OK).</param>
+        /// <param name="onDefault">a delegate that is called when the remote service returns default (any response code not handled
+        /// elsewhere).</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <param name="sender">an instance of an Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync pipeline to use to make the request.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
+        /// </returns>
+        internal async global::System.Threading.Tasks.Task PoolsCheckNameAvailability_Call(global::System.Net.Http.HttpRequestMessage request, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailabilityResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
+        {
+            using( NoSynchronizationContext )
+            {
+                global::System.Net.Http.HttpResponseMessage _response = null;
+                try
+                {
+                    var sendTask = sender.SendAsync(request, eventListener);
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeCall, request); if( eventListener.Token.IsCancellationRequested ) { return; }
+                    _response = await sendTask;
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.ResponseCreated, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.Progress, "intentional placeholder", 100); if( eventListener.Token.IsCancellationRequested ) { return; }
+                    var _contentType = _response.Content.Headers.ContentType?.MediaType;
+
+                    switch ( _response.StatusCode )
+                    {
+                        case global::System.Net.HttpStatusCode.OK:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onOk(_response,_response.Content.ReadAsStringAsync().ContinueWith( body => Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.CheckNameAvailabilityResult.FromJson(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode.Parse(body.Result)) ));
+                            break;
+                        }
+                        default:
+                        {
+                            await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.BeforeResponseDispatch, _response); if( eventListener.Token.IsCancellationRequested ) { return; }
+                            await onDefault(_response,_response.Content.ReadAsStringAsync().ContinueWith( body => Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ErrorResponse.FromJson(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode.Parse(body.Result)) ));
+                            break;
+                        }
+                    }
+                }
+                finally
+                {
+                    // finally statements
+                    await eventListener.Signal(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Events.Finally, request, _response);
+                    _response?.Dispose();
+                    request?.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validation method for <see cref="PoolsCheckNameAvailability" /> method. Call this like the actual call, but you will get
+        /// validation events back.
+        /// </summary>
+        /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
+        /// <param name="body">The CheckAvailability request</param>
+        /// <param name="eventListener">an <see cref="Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener" /> instance that will receive events.</param>
+        /// <returns>
+        /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the response is completed.
+        /// </returns>
+        internal async global::System.Threading.Tasks.Task PoolsCheckNameAvailability_Validate(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ICheckNameAvailability body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener)
+        {
+            using( NoSynchronizationContext )
+            {
+                await eventListener.AssertNotNull(nameof(subscriptionId),subscriptionId);
+                await eventListener.AssertNotNull(nameof(body), body);
+                await eventListener.AssertObjectIsValid(nameof(body), body);
+            }
+        }
+
         /// <summary>update a Pool</summary>
         /// <param name="subscriptionId">The ID of the target subscription. The value must be an UUID.</param>
         /// <param name="resourceGroupName">The name of the resource group. The name is case insensitive.</param>
@@ -636,7 +1044,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsCreateOrUpdate(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -683,7 +1091,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsCreateOrUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -740,7 +1148,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsCreateOrUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -800,7 +1208,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsCreateOrUpdateViaJsonString(string subscriptionId, string resourceGroupName, string poolName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -846,7 +1254,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsCreateOrUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string poolName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -893,7 +1301,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsCreateOrUpdateWithResult(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1263,7 +1671,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsDelete(string subscriptionId, string resourceGroupName, string poolName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1305,7 +1713,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1535,7 +1943,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsGet(string subscriptionId, string resourceGroupName, string poolName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1576,7 +1984,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1627,7 +2035,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1680,7 +2088,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsGetWithResult(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1857,7 +2265,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsListByResourceGroup(string subscriptionId, string resourceGroupName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1897,7 +2305,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsListByResourceGroupViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1946,7 +2354,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult> PoolsListByResourceGroupViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1996,7 +2404,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult> PoolsListByResourceGroupWithResult(string subscriptionId, string resourceGroupName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2168,7 +2576,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsListBySubscription(string subscriptionId, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2206,7 +2614,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsListBySubscriptionViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2252,7 +2660,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult> PoolsListBySubscriptionViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2298,7 +2706,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolListResult> PoolsListBySubscriptionWithResult(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2467,7 +2875,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsUpdate(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolUpdate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2514,7 +2922,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolUpdate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2571,7 +2979,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolUpdate body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2631,7 +3039,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task PoolsUpdateViaJsonString(string subscriptionId, string resourceGroupName, string poolName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2677,7 +3085,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string poolName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2724,7 +3132,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPool> PoolsUpdateWithResult(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolUpdate body, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3095,7 +3503,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task ResourceDetailsListByPool(string subscriptionId, string resourceGroupName, string poolName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceDetailsObjectListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3137,7 +3545,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task ResourceDetailsListByPoolViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceDetailsObjectListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3189,7 +3597,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceDetailsObjectListResult> ResourceDetailsListByPoolViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3243,7 +3651,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceDetailsObjectListResult> ResourceDetailsListByPoolWithResult(string subscriptionId, string resourceGroupName, string poolName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3423,7 +3831,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task SkuListByLocation(string subscriptionId, string locationName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceSkuListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3463,7 +3871,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task SkuListByLocationViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceSkuListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3512,7 +3920,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceSkuListResult> SkuListByLocationViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3562,7 +3970,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceSkuListResult> SkuListByLocationWithResult(string subscriptionId, string locationName, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3733,7 +4141,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task SubscriptionUsages(string subscriptionId, string location, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPagedQuota>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3773,7 +4181,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task SubscriptionUsagesViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPagedQuota>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3822,7 +4230,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPagedQuota> SubscriptionUsagesViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3872,7 +4280,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPagedQuota> SubscriptionUsagesWithResult(string subscriptionId, string location, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-10-19";
+            var apiVersion = @"2025-01-21";
             // Constant Parameters
             using( NoSynchronizationContext )
             {

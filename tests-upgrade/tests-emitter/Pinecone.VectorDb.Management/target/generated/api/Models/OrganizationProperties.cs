@@ -20,7 +20,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
 
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
-        public string MarketplaceSubscriptionId { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetailsInternal)Marketplace).SubscriptionId; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetailsInternal)Marketplace).SubscriptionId = value ; }
+        public string MarketplaceSubscriptionId { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetailsInternal)Marketplace).SubscriptionId; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IMarketplaceDetailsInternal)Marketplace).SubscriptionId = value ?? null; }
 
         /// <summary>Marketplace subscription status</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
@@ -125,15 +125,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
 
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
-        public string UserEmailAddress { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).EmailAddress; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).EmailAddress = value ; }
+        public string UserEmailAddress { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).EmailAddress; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).EmailAddress = value ?? null; }
 
         /// <summary>First name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
-        public string UserFirstName { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).FirstName; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).FirstName = value ; }
+        public string UserFirstName { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).FirstName; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).FirstName = value ?? null; }
 
         /// <summary>Last name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
-        public string UserLastName { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).LastName; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).LastName = value ; }
+        public string UserLastName { get => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).LastName; set => ((Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models.IUserDetailsInternal)User).LastName = value ?? null; }
 
         /// <summary>User's phone number</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Origin(Microsoft.Azure.PowerShell.Cmdlets.Pinecone.PropertyOrigin.Inlined)]
@@ -155,7 +155,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
     {
         /// <summary>Azure subscription id for the the marketplace offer is purchased from</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -324,7 +324,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         string SingleSignOnPropertyUrl { get; set; }
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -335,7 +335,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         string UserEmailAddress { get; set; }
         /// <summary>First name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -346,7 +346,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Models
         string UserFirstName { get; set; }
         /// <summary>Last name of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Pinecone.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,

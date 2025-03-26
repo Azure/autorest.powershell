@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Extensions;
@@ -17,12 +20,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// <summary>Flag to define if the user allows for crash dump collection.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Inlined)]
         public string AllowCrashDumpsCollection { get => ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeviceGroupPropertiesInternal)Property).AllowCrashDumpsCollection; set => ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeviceGroupPropertiesInternal)Property).AllowCrashDumpsCollection = value ?? null; }
-
-        /// <summary>Backing field for <see cref="AzureAsyncOperation" /> property.</summary>
-        private string _azureAsyncOperation;
-
-        [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Owned)]
-        public string AzureAsyncOperation { get => this._azureAsyncOperation; set => this._azureAsyncOperation = value; }
 
         /// <summary>Description of the device group.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Origin(Microsoft.Azure.PowerShell.Cmdlets.Sphere.PropertyOrigin.Inlined)]
@@ -141,13 +138,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// <param name="headers"></param>
         void Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
         {
-            if (headers.TryGetValues("Azure-AsyncOperation", out var __azureAsyncOperationHeader0))
+            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader0))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeviceGroupInternal)this).AzureAsyncOperation = System.Linq.Enumerable.FirstOrDefault(__azureAsyncOperationHeader0) is string __headerAzureAsyncOperationHeader0 ? __headerAzureAsyncOperationHeader0 : (string)null;
-            }
-            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader1))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeviceGroupInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader1) is string __headerRetryAfterHeader1 ? int.TryParse( __headerRetryAfterHeader1, out int __headerRetryAfterHeader1Value ) ? __headerRetryAfterHeader1Value : default(int?) : default(int?);
+                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeviceGroupInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader0) is string __headerRetryAfterHeader0 ? int.TryParse( __headerRetryAfterHeader0, out int __headerRetryAfterHeader0Value ) ? __headerRetryAfterHeader0Value : default(int?) : default(int?);
             }
         }
 
@@ -180,17 +173,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.PSArgumentCompleterAttribute("Enabled", "Disabled")]
         string AllowCrashDumpsCollection { get; set; }
-
-        [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Info(
-        Required = false,
-        ReadOnly = false,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"",
-        SerializedName = @"Azure-AsyncOperation",
-        PossibleTypes = new [] { typeof(string) })]
-        string AzureAsyncOperation { get; set; }
         /// <summary>Description of the device group.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.Info(
         Required = false,
@@ -281,8 +263,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
         /// <summary>Flag to define if the user allows for crash dump collection.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.Sphere.PSArgumentCompleterAttribute("Enabled", "Disabled")]
         string AllowCrashDumpsCollection { get; set; }
-
-        string AzureAsyncOperation { get; set; }
         /// <summary>Description of the device group.</summary>
         string Description { get; set; }
         /// <summary>Deployment status for the device group.</summary>

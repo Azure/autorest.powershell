@@ -111,6 +111,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreLocation = (string) content.GetValueForProperty("CertificateStoreLocation",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreLocation, global::System.Convert.ToString);
             }
+            if (content.Contains("CertificateStoreName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreName = (string) content.GetValueForProperty("CertificateStoreName",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreName, global::System.Convert.ToString);
+            }
             if (content.Contains("ObservedCertificate"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).ObservedCertificate = (System.Collections.Generic.List<string>) content.GetValueForProperty("ObservedCertificate",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).ObservedCertificate, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
@@ -139,6 +143,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             if (content.Contains("CertificateStoreLocation"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreLocation = (string) content.GetValueForProperty("CertificateStoreLocation",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreLocation, global::System.Convert.ToString);
+            }
+            if (content.Contains("CertificateStoreName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreName = (string) content.GetValueForProperty("CertificateStoreName",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.ISecretsManagementSettingsInternal)this).CertificateStoreName, global::System.Convert.ToString);
             }
             if (content.Contains("ObservedCertificate"))
             {

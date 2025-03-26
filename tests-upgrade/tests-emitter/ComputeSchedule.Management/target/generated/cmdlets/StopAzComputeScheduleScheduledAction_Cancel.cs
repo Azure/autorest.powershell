@@ -8,13 +8,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.Cmdlets;
     using System;
 
-    /// <summary>virtualMachinesCancelOperations: cancelOperations for a virtual machine</summary>
+    /// <summary>
+    /// VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request
+    /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesCancelOperations=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesCancelOperations"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsLifecycle.Stop, @"AzComputeScheduleScheduledAction_Cancel", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.ICancelOperationsResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesCancelOperations: cancelOperations for a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesCancelOperations: Cancel a previously submitted (start/deallocate/hibernate) request")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesCancelOperations", ApiVersion = "2024-10-01")]
     public partial class StopAzComputeScheduleScheduledAction_Cancel : global::System.Management.Automation.PSCmdlet,

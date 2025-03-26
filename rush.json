@@ -49,7 +49,7 @@
    * Specify a SemVer range to ensure developers use a NodeJS version that is appropriate
    * for your repo.
    */
-  "nodeSupportedVersionRange": ">=14.0.0 <19.0.0",
+  "nodeSupportedVersionRange": ">=14.0.0 <21.0.0",
   "ensureConsistentVersions": true,
   "projectFolderMinDepth": 1,
   "projectFolderMaxDepth": 2,
@@ -105,6 +105,12 @@
       "projectFolder": "packages/typespec-powershell",
       "reviewCategory": "production",
       "shouldPublish": true
+    },
+    {
+      "packageName": "emitter-test",
+      "projectFolder": "tests-upgrade/tests-emitter",
+      "reviewCategory": "test",
+      "skipRushCheck": true
     }
   ]
 }

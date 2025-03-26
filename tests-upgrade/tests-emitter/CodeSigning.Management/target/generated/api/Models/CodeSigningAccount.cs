@@ -22,12 +22,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Inlined)]
         public string AccountUri { get => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPropertiesInternal)Property).AccountUri; }
 
-        /// <summary>Backing field for <see cref="AzureAsyncOperation" /> property.</summary>
-        private string _azureAsyncOperation;
-
-        [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Owned)]
-        public string AzureAsyncOperation { get => this._azureAsyncOperation; set => this._azureAsyncOperation = value; }
-
         /// <summary>
         /// Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
         /// </summary>
@@ -140,13 +134,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         /// <param name="headers"></param>
         void Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
         {
-            if (headers.TryGetValues("Azure-AsyncOperation", out var __azureAsyncOperationHeader0))
+            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader0))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).AzureAsyncOperation = System.Linq.Enumerable.FirstOrDefault(__azureAsyncOperationHeader0) is string __headerAzureAsyncOperationHeader0 ? __headerAzureAsyncOperationHeader0 : (string)null;
-            }
-            if (headers.TryGetValues("Retry-After", out var __retryAfterHeader1))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader1) is string __headerRetryAfterHeader1 ? int.TryParse( __headerRetryAfterHeader1, out int __headerRetryAfterHeader1Value ) ? __headerRetryAfterHeader1Value : default(int?) : default(int?);
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).RetryAfter = System.Linq.Enumerable.FirstOrDefault(__retryAfterHeader0) is string __headerRetryAfterHeader0 ? int.TryParse( __headerRetryAfterHeader0, out int __headerRetryAfterHeader0Value ) ? __headerRetryAfterHeader0Value : default(int?) : default(int?);
             }
         }
 
@@ -178,17 +168,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
         SerializedName = @"accountUri",
         PossibleTypes = new [] { typeof(string) })]
         string AccountUri { get;  }
-
-        [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Info(
-        Required = false,
-        ReadOnly = false,
-        Read = true,
-        Create = true,
-        Update = true,
-        Description = @"",
-        SerializedName = @"Azure-AsyncOperation",
-        PossibleTypes = new [] { typeof(string) })]
-        string AzureAsyncOperation { get; set; }
         /// <summary>Status of the current operation on trusted signing account.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Info(
         Required = false,
@@ -232,8 +211,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
     {
         /// <summary>The URI of the trusted signing account which is used during signing files.</summary>
         string AccountUri { get; set; }
-
-        string AzureAsyncOperation { get; set; }
         /// <summary>The resource-specific properties for this resource.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountProperties Property { get; set; }
         /// <summary>Status of the current operation on trusted signing account.</summary>

@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IResourceDetailsObject))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Description(@"List ResourceDetailsObject resources by Pool")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DevOpsInfrastructure/pools/{poolName}/resources", ApiVersion = "2024-10-19")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DevOpsInfrastructure/pools/{poolName}/resources", ApiVersion = "2025-01-21")]
     public partial class GetAzDevOpsInfrastructureResourceDetail_List : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IContext

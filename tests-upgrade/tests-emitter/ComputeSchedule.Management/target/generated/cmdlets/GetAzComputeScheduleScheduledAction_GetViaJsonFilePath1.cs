@@ -9,14 +9,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using System;
 
     /// <summary>
-    /// virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine
+    /// VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional
+    /// logs) if they exist.
     /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesGetOperationErrors=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesGetOperationErrors"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.Get, @"AzComputeScheduleScheduledAction_GetViaJsonFilePath1", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.IGetOperationErrorsResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesGetOperationErrors: getOperationErrors associated with an operation on a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesGetOperationErrors: Get error details on operation errors (like transient errors encountered, additional logs) if they exist.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesGetOperationErrors", ApiVersion = "2024-10-01")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.NotSuggestDefaultParameterSet]

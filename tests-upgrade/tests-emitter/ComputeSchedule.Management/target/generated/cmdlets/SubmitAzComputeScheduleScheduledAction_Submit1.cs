@@ -8,13 +8,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Cmdlets
     using Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Runtime.Cmdlets;
     using System;
 
-    /// <summary>virtualMachinesSubmitHibernate: submitHibernate for a virtual machine</summary>
+    /// <summary>
+    /// VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.
+    /// </summary>
     /// <remarks>
     /// [OpenAPI] VirtualMachinesSubmitHibernate=>POST:"/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesSubmitHibernate"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsLifecycle.Submit, @"AzComputeScheduleScheduledAction_Submit1", SupportsShouldProcess = true)]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Models.IHibernateResourceOperationResponse))]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"virtualMachinesSubmitHibernate: submitHibernate for a virtual machine")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Description(@"VirtualMachinesSubmitHibernate: Schedule hibernate operation for a batch of virtual machines at datetime in future.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.Generated]
     [global::Microsoft.Azure.PowerShell.Cmdlets.ComputeSchedule.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.ComputeSchedule/locations/{locationparameter}/virtualMachinesSubmitHibernate", ApiVersion = "2024-10-01")]
     public partial class SubmitAzComputeScheduleScheduledAction_Submit1 : global::System.Management.Automation.PSCmdlet,

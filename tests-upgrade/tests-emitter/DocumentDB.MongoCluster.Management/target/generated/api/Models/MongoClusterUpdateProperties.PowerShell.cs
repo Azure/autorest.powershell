@@ -131,6 +131,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).Backup = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties) content.GetValueForProperty("Backup",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).Backup, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("DataApi"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApi = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties) content.GetValueForProperty("DataApi",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApi, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.DataApiPropertiesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("ServerVersion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ServerVersion = (string) content.GetValueForProperty("ServerVersion",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ServerVersion, global::System.Convert.ToString);
@@ -150,6 +154,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("ShardingShardCount"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ShardingShardCount = (int?) content.GetValueForProperty("ShardingShardCount",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ShardingShardCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("DataApiMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApiMode = (string) content.GetValueForProperty("DataApiMode",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApiMode, global::System.Convert.ToString);
             }
             if (content.Contains("AdministratorUserName"))
             {
@@ -212,6 +220,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).Backup = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties) content.GetValueForProperty("Backup",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).Backup, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("DataApi"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApi = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties) content.GetValueForProperty("DataApi",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApi, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.DataApiPropertiesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("ServerVersion"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ServerVersion = (string) content.GetValueForProperty("ServerVersion",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ServerVersion, global::System.Convert.ToString);
@@ -231,6 +243,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("ShardingShardCount"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ShardingShardCount = (int?) content.GetValueForProperty("ShardingShardCount",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).ShardingShardCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("DataApiMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApiMode = (string) content.GetValueForProperty("DataApiMode",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdatePropertiesInternal)this).DataApiMode, global::System.Convert.ToString);
             }
             if (content.Contains("AdministratorUserName"))
             {

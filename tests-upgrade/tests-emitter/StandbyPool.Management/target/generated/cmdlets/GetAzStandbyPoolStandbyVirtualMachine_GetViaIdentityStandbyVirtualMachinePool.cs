@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyVirtualMachineResource))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Description(@"Get a StandbyVirtualMachineResource")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyVirtualMachinePools/{standbyVirtualMachinePoolName}/standbyVirtualMachines/{standbyVirtualMachineName}", ApiVersion = "2024-03-01")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyVirtualMachinePools/{standbyVirtualMachinePoolName}/standbyVirtualMachines/{standbyVirtualMachineName}", ApiVersion = "2025-03-01")]
     public partial class GetAzStandbyPoolStandbyVirtualMachine_GetViaIdentityStandbyVirtualMachinePool : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.IContext

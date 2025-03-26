@@ -30,8 +30,6 @@
     "xmlbuilder": "10.1.1"
   },
   "devDependencies": {
-    "@typespec/compiler": ">=0.64.0 <1.0.0",
-    "@typespec/openapi": ">=0.64.0 <1.0.0",
     "@testdeck/mocha": "0.3.3",
     "@types/js-yaml": "3.12.1",
     "@types/mocha": "5.2.5",
@@ -46,12 +44,17 @@
     "vitest": "1.6.1"
   },
   "peerDependencies": {
-    "@azure-tools/typespec-azure-core": ">=0.50.0 <1.0.0",
-    "@azure-tools/typespec-client-generator-core": ">=0.50.0 <1.0.0",
-    "@typespec/compiler": ">=0.64.0 <1.0.0",
-    "@typespec/http": ">=0.64.0 <1.0.0",
-    "@typespec/rest": ">=0.64.0 <1.0.0",
-    "@typespec/versioning": ">=0.64.0 <1.0.0"
+    "@azure-tools/typespec-azure-core": ">=0.53.0 <1.0.0",
+    "@azure-tools/typespec-client-generator-core": ">=0.53.0 <1.0.0",
+    "@typespec/compiler": ">=0.67.0 <1.0.0",
+    "@typespec/http": ">=0.67.0 <1.0.0",
+    "@typespec/streams": ">=0.67.0 <1.0.0",
+    "@typespec/xml": ">=0.67.0 <1.0.0",
+    "@typespec/rest": ">=0.67.0 <1.0.0",
+    "@typespec/versioning": ">=0.67.0 <1.0.0",
+    "@typespec/openapi": ">=0.67.0 <1.0.0",
+    "@azure-tools/typespec-azure-resource-manager": ">=0.53.0 <1.0.0",
+    "@azure-tools/typespec-azure-rulesets": ">=0.53.0 <1.0.0"
   },
   "scripts": {
     "build": "tsc",

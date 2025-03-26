@@ -123,6 +123,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).Buffer = (string) content.GetValueForProperty("Buffer",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).Buffer, global::System.Convert.ToString);
             }
+            if (content.Contains("EphemeralType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).EphemeralType = (string) content.GetValueForProperty("EphemeralType",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).EphemeralType, global::System.Convert.ToString);
+            }
             AfterDeserializeDictionary(content);
         }
 
@@ -155,6 +159,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             if (content.Contains("Buffer"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).Buffer = (string) content.GetValueForProperty("Buffer",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).Buffer, global::System.Convert.ToString);
+            }
+            if (content.Contains("EphemeralType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).EphemeralType = (string) content.GetValueForProperty("EphemeralType",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IPoolImageInternal)this).EphemeralType, global::System.Convert.ToString);
             }
             AfterDeserializePSObject(content);
         }

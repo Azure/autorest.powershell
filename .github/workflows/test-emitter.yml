@@ -10,10 +10,10 @@ jobs:
      steps:
        - name: Checkout
          uses: actions/checkout@v4
-       - name: Install Node.js 18
+       - name: Install Node.js 20
          uses: actions/setup-node@v4
          with:
-           node-version: 18.x
+           node-version: 20.x
        - name: Install typespec & rush
          run: |
            npm install -g "@typespec/compiler"
@@ -27,10 +27,6 @@ jobs:
        - name: Rush Rebuild
          run: |
            rush rebuild
-       - name: Run npm install in tests-emitter
-         working-directory: tests-upgrade/tests-emitter
-         run: |
-           npm install
        - name: Verify Typespec emitter
          shell: pwsh
          working-directory: tests-upgrade/tests-emitter

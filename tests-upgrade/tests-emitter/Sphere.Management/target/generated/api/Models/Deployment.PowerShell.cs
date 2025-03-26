@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.PowerShell;
@@ -74,10 +77,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             if (content.Contains("Property"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.DeploymentPropertiesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {
@@ -159,10 +158,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             if (content.Contains("Property"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.DeploymentPropertiesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IDeploymentInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {

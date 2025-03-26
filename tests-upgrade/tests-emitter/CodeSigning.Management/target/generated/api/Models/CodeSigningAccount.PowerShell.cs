@@ -78,10 +78,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
-            }
             if (content.Contains("RetryAfter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
@@ -170,10 +166,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             if (content.Contains("Property"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CodeSigningAccountPropertiesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {
