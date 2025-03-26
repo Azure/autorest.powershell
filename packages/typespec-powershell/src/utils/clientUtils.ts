@@ -1,4 +1,4 @@
-import { SdkClient, SdkContext } from "@azure-tools/typespec-client-generator-core";
+import { SdkClient, SdkContext, listAllServiceNamespaces } from "@azure-tools/typespec-client-generator-core";
 import {
   Namespace,
   getNamespaceFullName,
@@ -6,18 +6,18 @@ import {
 } from "@typespec/compiler";
 
 export function getClients(psContext: SdkContext): SdkClient[] {
-  const services = listServices(psContext.program);
+  const services = listAllServiceNamespaces(psContext);
 
   return services.map((service) => {
-    const clientName = service.type.name + "Client";
+    const clientName = service.name + "Client";
     return {
       kind: "SdkClient",
       name: clientName,
-      service: service.type,
-      type: service.type,
-      arm: isArm(service.type),
+      service: service,
+      type: service,
+      arm: Boolean(psContext.arm),
       crossLanguageDefinitionId: `${getNamespaceFullName(
-        service.type
+        service
       )}.${clientName}`
     };
   });

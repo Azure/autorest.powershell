@@ -76,7 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             // actually deserialize
             if (content.Contains("Sku"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku) content.GetValueForProperty("Sku",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch) content.GetValueForProperty("Sku",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuPatchTypeConverter.ConvertFrom);
             }
             if (content.Contains("SkuName"))
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             // actually deserialize
             if (content.Contains("Sku"))
             {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku) content.GetValueForProperty("Sku",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuTypeConverter.ConvertFrom);
+                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch) content.GetValueForProperty("Sku",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal)this).Sku, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuPatchTypeConverter.ConvertFrom);
             }
             if (content.Contains("SkuName"))
             {

@@ -140,6 +140,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inherited)]
         public string Type { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IResourceInternal)__trackedResource).Type; }
 
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<string> Zone { get => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourcePropertiesInternal)Property).Zone; set => ((Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourcePropertiesInternal)Property).Zone = value ?? null /* arrayOf */; }
+
         /// <param name="headers"></param>
         void Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.IHeaderSerializable.ReadHeaders(global::System.Net.Http.Headers.HttpResponseHeaders headers)
         {
@@ -251,6 +255,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         SerializedName = @"Retry-After",
         PossibleTypes = new [] { typeof(int) })]
         int? RetryAfter { get; set; }
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Specifies zones of standby container group pools.",
+        SerializedName = @"zones",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> Zone { get; set; }
 
     }
     /// A StandbyContainerGroupPoolResource.
@@ -281,6 +296,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         string ProvisioningState { get; set; }
 
         int? RetryAfter { get; set; }
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        System.Collections.Generic.List<string> Zone { get; set; }
 
     }
 }

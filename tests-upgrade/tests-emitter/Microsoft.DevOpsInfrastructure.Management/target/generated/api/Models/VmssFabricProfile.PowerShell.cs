@@ -180,6 +180,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreLocation = (string) content.GetValueForProperty("SecretManagementSettingCertificateStoreLocation",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreLocation, global::System.Convert.ToString);
             }
+            if (content.Contains("SecretManagementSettingCertificateStoreName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreName = (string) content.GetValueForProperty("SecretManagementSettingCertificateStoreName",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreName, global::System.Convert.ToString);
+            }
             if (content.Contains("SecretManagementSettingKeyExportable"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable = (bool) content.GetValueForProperty("SecretManagementSettingKeyExportable",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingKeyExportable, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
@@ -256,6 +260,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             if (content.Contains("SecretManagementSettingCertificateStoreLocation"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreLocation = (string) content.GetValueForProperty("SecretManagementSettingCertificateStoreLocation",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreLocation, global::System.Convert.ToString);
+            }
+            if (content.Contains("SecretManagementSettingCertificateStoreName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreName = (string) content.GetValueForProperty("SecretManagementSettingCertificateStoreName",((Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IVmssFabricProfileInternal)this).SecretManagementSettingCertificateStoreName, global::System.Convert.ToString);
             }
             if (content.Contains("SecretManagementSettingKeyExportable"))
             {

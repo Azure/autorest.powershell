@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(bool))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Description(@"Delete a Pool")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DevOpsInfrastructure/pools/{poolName}", ApiVersion = "2024-10-19")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DevOpsInfrastructure/pools/{poolName}", ApiVersion = "2025-01-21")]
     public partial class RemoveAzDevOpsInfrastructurePool_Delete : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IContext

@@ -19,7 +19,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Description(@"update an existing mongo cluster. The request body can contain one to many of the properties present in the normal mongo cluster definition.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}", ApiVersion = "2024-07-01")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}", ApiVersion = "2024-10-01-preview")]
     public partial class UpdateAzMongoCluster_UpdateViaIdentityExpanded : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IContext
@@ -104,6 +104,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
         SerializedName = @"tier",
         PossibleTypes = new [] { typeof(string) })]
         public string ComputeTier { get => _propertiesBody.ComputeTier ?? null; set => _propertiesBody.ComputeTier = value; }
+
+        /// <summary>The mode to indicate whether the Mongo Data API is enabled for a cluster.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = false, HelpMessage = "The mode to indicate whether the Mongo Data API is enabled for a cluster.")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Category(global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.ParameterCategory.Body)]
+        [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Description = @"The mode to indicate whether the Mongo Data API is enabled for a cluster.",
+        SerializedName = @"mode",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        public string DataApiMode { get => _propertiesBody.DataApiMode ?? null; set => _propertiesBody.DataApiMode = value; }
 
         /// <summary>
         /// The DefaultProfile parameter is not functional. Use the SubscriptionId parameter when available if executing the cmdlet

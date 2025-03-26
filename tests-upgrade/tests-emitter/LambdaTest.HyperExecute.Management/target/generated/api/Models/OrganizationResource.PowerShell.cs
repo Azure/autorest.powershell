@@ -189,6 +189,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).User = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserDetails) content.GetValueForProperty("User",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).User, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserDetailsTypeConverter.ConvertFrom);
             }
+            if (content.Contains("SingleSignOnProperty"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnProperty = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ISingleSignOnPropertiesV2) content.GetValueForProperty("SingleSignOnProperty",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnProperty, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.SingleSignOnPropertiesV2TypeConverter.ConvertFrom);
+            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -208,6 +212,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("SingleSignOnPropertyUrl"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -240,6 +252,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("UserPhoneNumber"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).UserPhoneNumber = (string) content.GetValueForProperty("UserPhoneNumber",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).UserPhoneNumber, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyType = (string) content.GetValueForProperty("SingleSignOnPropertyType",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyType, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyState = (string) content.GetValueForProperty("SingleSignOnPropertyState",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyState, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
             }
             if (content.Contains("OfferDetailPublisherId"))
             {
@@ -362,6 +386,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).User = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IUserDetails) content.GetValueForProperty("User",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).User, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.UserDetailsTypeConverter.ConvertFrom);
             }
+            if (content.Contains("SingleSignOnProperty"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnProperty = (Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.ISingleSignOnPropertiesV2) content.GetValueForProperty("SingleSignOnProperty",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnProperty, Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.SingleSignOnPropertiesV2TypeConverter.ConvertFrom);
+            }
             if (content.Contains("ProvisioningState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).ProvisioningState = (string) content.GetValueForProperty("ProvisioningState",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).ProvisioningState, global::System.Convert.ToString);
@@ -381,6 +409,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("PartnerPropertyLicensesSubscribed"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed = (int) content.GetValueForProperty("PartnerPropertyLicensesSubscribed",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).PartnerPropertyLicensesSubscribed, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("SingleSignOnPropertyUrl"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl = (string) content.GetValueForProperty("SingleSignOnPropertyUrl",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyUrl, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyAadDomain"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain = (System.Collections.Generic.List<string>) content.GetValueForProperty("SingleSignOnPropertyAadDomain",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyAadDomain, __y => TypeConverterExtensions.SelectToList<string>(__y, global::System.Convert.ToString));
             }
             if (content.Contains("IdentityTenantId"))
             {
@@ -413,6 +449,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models
             if (content.Contains("UserPhoneNumber"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).UserPhoneNumber = (string) content.GetValueForProperty("UserPhoneNumber",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).UserPhoneNumber, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyType = (string) content.GetValueForProperty("SingleSignOnPropertyType",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyType, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyState"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyState = (string) content.GetValueForProperty("SingleSignOnPropertyState",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyState, global::System.Convert.ToString);
+            }
+            if (content.Contains("SingleSignOnPropertyEnterpriseAppId"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId = (string) content.GetValueForProperty("SingleSignOnPropertyEnterpriseAppId",((Microsoft.Azure.PowerShell.Cmdlets.LambdaTest.Models.IOrganizationResourceInternal)this).SingleSignOnPropertyEnterpriseAppId, global::System.Convert.ToString);
             }
             if (content.Contains("OfferDetailPublisherId"))
             {

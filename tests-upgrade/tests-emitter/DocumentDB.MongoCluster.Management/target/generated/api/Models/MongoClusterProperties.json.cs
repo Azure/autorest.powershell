@@ -81,6 +81,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {_sharding = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("sharding"), out var __jsonSharding) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ShardingProperties.FromJson(__jsonSharding) : _sharding;}
             {_compute = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("compute"), out var __jsonCompute) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ComputeProperties.FromJson(__jsonCompute) : _compute;}
             {_backup = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("backup"), out var __jsonBackup) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupProperties.FromJson(__jsonBackup) : _backup;}
+            {_dataApi = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("dataApi"), out var __jsonDataApi) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.DataApiProperties.FromJson(__jsonDataApi) : _dataApi;}
             {_replica = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonObject>("replica"), out var __jsonReplica) ? Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ReplicationProperties.FromJson(__jsonReplica) : _replica;}
             {_serverVersion = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("serverVersion"), out var __jsonServerVersion) ? (string)__jsonServerVersion : (string)_serverVersion;}
             {_connectionString = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonString>("connectionString"), out var __jsonConnectionString) ? (string)__jsonConnectionString : (string)_connectionString;}
@@ -126,6 +127,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             AddIf( null != this._sharding ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._sharding.ToJson(null,serializationMode) : null, "sharding" ,container.Add );
             AddIf( null != this._compute ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._compute.ToJson(null,serializationMode) : null, "compute" ,container.Add );
             AddIf( null != this._backup ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._backup.ToJson(null,serializationMode) : null, "backup" ,container.Add );
+            AddIf( null != this._dataApi ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._dataApi.ToJson(null,serializationMode) : null, "dataApi" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeRead))
             {
                 AddIf( null != this._replica ? (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Json.JsonNode) this._replica.ToJson(null,serializationMode) : null, "replica" ,container.Add );

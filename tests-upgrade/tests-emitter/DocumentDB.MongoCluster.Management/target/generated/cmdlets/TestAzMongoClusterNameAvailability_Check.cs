@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Description(@"Check if mongo cluster name is available for use.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/locations/{location}/checkMongoClusterNameAvailability", ApiVersion = "2024-07-01")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/locations/{location}/checkMongoClusterNameAvailability", ApiVersion = "2024-10-01-preview")]
     public partial class TestAzMongoClusterNameAvailability_Check : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IContext

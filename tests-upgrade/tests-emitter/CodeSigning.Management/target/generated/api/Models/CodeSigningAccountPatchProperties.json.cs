@@ -63,7 +63,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 return;
             }
-            {_sku = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonObject>("sku"), out var __jsonSku) ? Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSku.FromJson(__jsonSku) : _sku;}
+            {_sku = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.Json.JsonObject>("sku"), out var __jsonSku) ? Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuPatch.FromJson(__jsonSku) : _sku;}
             AfterFromJson(json);
         }
 

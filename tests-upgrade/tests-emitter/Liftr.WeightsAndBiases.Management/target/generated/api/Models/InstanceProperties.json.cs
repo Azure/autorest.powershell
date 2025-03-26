@@ -78,6 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             {_marketplace = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("marketplace"), out var __jsonMarketplace) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.MarketplaceDetails.FromJson(__jsonMarketplace) : _marketplace;}
             {_user = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("user"), out var __jsonUser) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.UserDetails.FromJson(__jsonUser) : _user;}
             {_partnerProperty = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("partnerProperties"), out var __jsonPartnerProperties) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.PartnerProperties.FromJson(__jsonPartnerProperties) : _partnerProperty;}
+            {_singleSignOnProperty = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonObject>("singleSignOnProperties"), out var __jsonSingleSignOnProperties) ? Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.SingleSignOnPropertiesV2.FromJson(__jsonSingleSignOnProperties) : _singleSignOnProperty;}
             {_provisioningState = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonString>("provisioningState"), out var __jsonProvisioningState) ? (string)__jsonProvisioningState : (string)_provisioningState;}
             AfterFromJson(json);
         }
@@ -104,6 +105,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
             AddIf( null != this._marketplace ? (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonNode) this._marketplace.ToJson(null,serializationMode) : null, "marketplace" ,container.Add );
             AddIf( null != this._user ? (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonNode) this._user.ToJson(null,serializationMode) : null, "user" ,container.Add );
             AddIf( null != this._partnerProperty ? (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonNode) this._partnerProperty.ToJson(null,serializationMode) : null, "partnerProperties" ,container.Add );
+            AddIf( null != this._singleSignOnProperty ? (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonNode) this._singleSignOnProperty.ToJson(null,serializationMode) : null, "singleSignOnProperties" ,container.Add );
             if (serializationMode.HasFlag(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.SerializationMode.IncludeRead))
             {
                 AddIf( null != (((object)this._provisioningState)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Json.JsonString(this._provisioningState.ToString()) : null, "provisioningState" ,container.Add );

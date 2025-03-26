@@ -1724,12 +1724,12 @@ export function getDefaultService(program: Program): Service | undefined {
       target: NoTarget
     });
   }
-  // if (services.length > 1) {
-  //   reportDiagnostic(program, {
-  //     code: "more-than-one-service",
-  //     target: NoTarget
-  //   });
-  // }
+  if (services.length > 1) {
+    reportDiagnostic(program, {
+      code: "more-than-one-service",
+      target: NoTarget
+    });
+  }
   return services[services.length - 1];
 }
 

@@ -12,18 +12,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
     {
 
         /// <summary>Internal Acessors for Sku</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal.Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSku()); set { {_sku = value;} } }
+        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICodeSigningAccountPatchPropertiesInternal.Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuPatch()); set { {_sku = value;} } }
 
         /// <summary>Backing field for <see cref="Sku" /> property.</summary>
-        private Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku _sku;
+        private Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch _sku;
 
         /// <summary>SKU of the trusted signing account.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Owned)]
-        internal Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSku()); set => this._sku = value; }
+        internal Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch Sku { get => (this._sku = this._sku ?? new Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.AccountSkuPatch()); set => this._sku = value; }
 
         /// <summary>Name of the SKU.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Origin(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PropertyOrigin.Inlined)]
-        public string SkuName { get => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuInternal)Sku).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuInternal)Sku).Name = value ?? null; }
+        public string SkuName { get => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatchInternal)Sku).Name; set => ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatchInternal)Sku).Name = value ?? null; }
 
         /// <summary>Creates an new <see cref="CodeSigningAccountPatchProperties" /> instance.</summary>
         public CodeSigningAccountPatchProperties()
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
 
     {
         /// <summary>SKU of the trusted signing account.</summary>
-        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSku Sku { get; set; }
+        Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IAccountSkuPatch Sku { get; set; }
         /// <summary>Name of the SKU.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.PSArgumentCompleterAttribute("Basic", "Premium")]
         string SkuName { get; set; }

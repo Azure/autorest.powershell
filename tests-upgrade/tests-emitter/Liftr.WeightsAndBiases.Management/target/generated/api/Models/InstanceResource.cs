@@ -98,6 +98,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         /// <summary>Internal Acessors for ProvisioningState</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal.ProvisioningState { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).ProvisioningState; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).ProvisioningState = value; }
 
+        /// <summary>Internal Acessors for SingleSignOnProperty</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ISingleSignOnPropertiesV2 Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal.SingleSignOnProperty { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnProperty; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnProperty = value; }
+
         /// <summary>Internal Acessors for User</summary>
         Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserDetails Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstanceResourceInternal.User { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).User; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).User = value; }
 
@@ -169,6 +172,26 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
 
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Owned)]
         public int? RetryAfter { get => this._retryAfter; set => this._retryAfter = value; }
+
+        /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
+        public System.Collections.Generic.List<string> SingleSignOnPropertyAadDomain { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyAadDomain; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyAadDomain = value ?? null /* arrayOf */; }
+
+        /// <summary>AAD enterprise application Id used to setup SSO</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
+        public string SingleSignOnPropertyEnterpriseAppId { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyEnterpriseAppId; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyEnterpriseAppId = value ?? null; }
+
+        /// <summary>State of the Single Sign On for the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
+        public string SingleSignOnPropertyState { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyState; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyState = value ?? null; }
+
+        /// <summary>Type of Single Sign-On mechanism being used</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
+        public string SingleSignOnPropertyType { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyType; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyType = value ?? null; }
+
+        /// <summary>URL for SSO to be used by the partner to redirect the user to their system</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Origin(Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PropertyOrigin.Inlined)]
+        public string SingleSignOnPropertyUrl { get => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyUrl; set => ((Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IInstancePropertiesInternal)Property).SingleSignOnPropertyUrl = value ?? null; }
 
         /// <summary>
         /// Azure Resource Manager metadata containing createdBy and modifiedBy information.
@@ -460,6 +483,63 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         SerializedName = @"Retry-After",
         PossibleTypes = new [] { typeof(int) })]
         int? RetryAfter { get; set; }
+        /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"List of AAD domains fetched from Microsoft Graph for user.",
+        SerializedName = @"aadDomains",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> SingleSignOnPropertyAadDomain { get; set; }
+        /// <summary>AAD enterprise application Id used to setup SSO</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"AAD enterprise application Id used to setup SSO",
+        SerializedName = @"enterpriseAppId",
+        PossibleTypes = new [] { typeof(string) })]
+        string SingleSignOnPropertyEnterpriseAppId { get; set; }
+        /// <summary>State of the Single Sign On for the resource</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"State of the Single Sign On for the resource",
+        SerializedName = @"state",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PSArgumentCompleterAttribute("Initial", "Enable", "Disable")]
+        string SingleSignOnPropertyState { get; set; }
+        /// <summary>Type of Single Sign-On mechanism being used</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Type of Single Sign-On mechanism being used",
+        SerializedName = @"type",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PSArgumentCompleterAttribute("Saml", "OpenId")]
+        string SingleSignOnPropertyType { get; set; }
+        /// <summary>URL for SSO to be used by the partner to redirect the user to their system</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"URL for SSO to be used by the partner to redirect the user to their system",
+        SerializedName = @"url",
+        PossibleTypes = new [] { typeof(string) })]
+        string SingleSignOnPropertyUrl { get; set; }
         /// <summary>Email address of the user</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Runtime.Info(
         Required = false,
@@ -572,6 +652,20 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models
         string ProvisioningState { get; set; }
 
         int? RetryAfter { get; set; }
+        /// <summary>Single sign-on properties</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.ISingleSignOnPropertiesV2 SingleSignOnProperty { get; set; }
+        /// <summary>List of AAD domains fetched from Microsoft Graph for user.</summary>
+        System.Collections.Generic.List<string> SingleSignOnPropertyAadDomain { get; set; }
+        /// <summary>AAD enterprise application Id used to setup SSO</summary>
+        string SingleSignOnPropertyEnterpriseAppId { get; set; }
+        /// <summary>State of the Single Sign On for the resource</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PSArgumentCompleterAttribute("Initial", "Enable", "Disable")]
+        string SingleSignOnPropertyState { get; set; }
+        /// <summary>Type of Single Sign-On mechanism being used</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.PSArgumentCompleterAttribute("Saml", "OpenId")]
+        string SingleSignOnPropertyType { get; set; }
+        /// <summary>URL for SSO to be used by the partner to redirect the user to their system</summary>
+        string SingleSignOnPropertyUrl { get; set; }
         /// <summary>Details of the user.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.WeightsBiases.Models.IUserDetails User { get; set; }
         /// <summary>Email address of the user</summary>

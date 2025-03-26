@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// Changes may cause incorrect behavior and will be lost if the code is regenerated.
 namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
 {
     using Microsoft.Azure.PowerShell.Cmdlets.Sphere.Runtime.PowerShell;
@@ -108,10 +111,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImagePropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
-            }
             if (content.Contains("RetryAfter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
@@ -212,10 +211,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models
             if (content.Contains("Property"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.ImagePropertiesTypeConverter.ConvertFrom);
-            }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.Sphere.Models.IImageInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
             }
             if (content.Contains("RetryAfter"))
             {

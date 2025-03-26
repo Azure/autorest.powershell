@@ -76,6 +76,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return;
             }
             {_certificateStoreLocation = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("certificateStoreLocation"), out var __jsonCertificateStoreLocation) ? (string)__jsonCertificateStoreLocation : (string)_certificateStoreLocation;}
+            {_certificateStoreName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("certificateStoreName"), out var __jsonCertificateStoreName) ? (string)__jsonCertificateStoreName : (string)_certificateStoreName;}
             {_observedCertificate = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray>("observedCertificates"), out var __jsonObservedCertificates) ? If( __jsonObservedCertificates as Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<string>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(string) (__u is Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString __t ? (string)(__t.ToString()) : null)) ))() : null : _observedCertificate;}
             {_keyExportable = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonBoolean>("keyExportable"), out var __jsonKeyExportable) ? (bool)__jsonKeyExportable : _keyExportable;}
             AfterFromJson(json);
@@ -101,6 +102,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 return container;
             }
             AddIf( null != (((object)this._certificateStoreLocation)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._certificateStoreLocation.ToString()) : null, "certificateStoreLocation" ,container.Add );
+            AddIf( null != (((object)this._certificateStoreName)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._certificateStoreName.ToString()) : null, "certificateStoreName" ,container.Add );
             if (null != this._observedCertificate)
             {
                 var __w = new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.XNodeArray();

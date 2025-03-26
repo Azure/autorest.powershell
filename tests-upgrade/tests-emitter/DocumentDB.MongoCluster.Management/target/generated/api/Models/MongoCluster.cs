@@ -49,6 +49,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
         public string CreateMode { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).CreateMode; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).CreateMode = value ?? null; }
 
+        /// <summary>The mode to indicate whether the Mongo Data API is enabled for a cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
+        public string DataApiMode { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).DataApiMode; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).DataApiMode = value ?? null; }
+
         /// <summary>The target high availability mode requested for the cluster.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Origin(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PropertyOrigin.Inlined)]
         public string HighAvailabilityTargetMode { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).HighAvailabilityTargetMode; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).HighAvailabilityTargetMode = value ?? null; }
@@ -84,6 +88,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
 
         /// <summary>Internal Acessors for ConnectionString</summary>
         string Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterInternal.ConnectionString { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).ConnectionString; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).ConnectionString = value; }
+
+        /// <summary>Internal Acessors for DataApi</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterInternal.DataApi { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).DataApi; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).DataApi = value; }
 
         /// <summary>Internal Acessors for HighAvailability</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IHighAvailabilityProperties Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterInternal.HighAvailability { get => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).HighAvailability; set => ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterPropertiesInternal)Property).HighAvailability = value; }
@@ -369,6 +376,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Default", "PointInTimeRestore", "GeoReplica", "Replica")]
         string CreateMode { get; set; }
+        /// <summary>The mode to indicate whether the Mongo Data API is enabled for a cluster.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The mode to indicate whether the Mongo Data API is enabled for a cluster.",
+        SerializedName = @"mode",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string DataApiMode { get; set; }
         /// <summary>The target high availability mode requested for the cluster.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.Info(
         Required = false,
@@ -595,6 +614,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
         /// <summary>The mode to create a mongo cluster.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Default", "PointInTimeRestore", "GeoReplica", "Replica")]
         string CreateMode { get; set; }
+        /// <summary>The Data API properties of the mongo cluster.</summary>
+        Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties DataApi { get; set; }
+        /// <summary>The mode to indicate whether the Mongo Data API is enabled for a cluster.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.PSArgumentCompleterAttribute("Enabled", "Disabled")]
+        string DataApiMode { get; set; }
         /// <summary>The high availability properties of the mongo cluster.</summary>
         Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IHighAvailabilityProperties HighAvailability { get; set; }
         /// <summary>The target high availability mode requested for the cluster.</summary>

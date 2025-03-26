@@ -78,6 +78,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {_url = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("url"), out var __jsonUrl) ? (string)__jsonUrl : (string)_url;}
             {_project = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray>("projects"), out var __jsonProjects) ? If( __jsonProjects as Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<string>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(string) (__u is Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString __t ? (string)(__t.ToString()) : null)) ))() : null : _project;}
             {_parallelism = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNumber>("parallelism"), out var __jsonParallelism) ? (int?)__jsonParallelism : _parallelism;}
+            {_openAccess = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonBoolean>("openAccess"), out var __jsonOpenAccess) ? (bool?)__jsonOpenAccess : _openAccess;}
             AfterFromJson(json);
         }
 
@@ -111,6 +112,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 container.Add("projects",__w);
             }
             AddIf( null != this._parallelism ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNumber((int)this._parallelism) : null, "parallelism" ,container.Add );
+            AddIf( null != this._openAccess ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode)new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonBoolean((bool)this._openAccess) : null, "openAccess" ,container.Add );
             AfterToJson(ref container);
             return container;
         }

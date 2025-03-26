@@ -54,6 +54,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>Internal Acessors for ElasticityProfile</summary>
         Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolElasticityProfile Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.IStandbyContainerGroupPoolResourceUpdatePropertiesInternal.ElasticityProfile { get => (this._elasticityProfile = this._elasticityProfile ?? new Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models.StandbyContainerGroupPoolElasticityProfile()); set { {_elasticityProfile = value;} } }
 
+        /// <summary>Backing field for <see cref="Zone" /> property.</summary>
+        private System.Collections.Generic.List<string> _zone;
+
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Origin(Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PropertyOrigin.Owned)]
+        public System.Collections.Generic.List<string> Zone { get => this._zone; set => this._zone = value; }
+
         /// <summary>
         /// Creates an new <see cref="StandbyContainerGroupPoolResourceUpdateProperties" /> instance.
         /// </summary>
@@ -122,6 +129,17 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         PossibleTypes = new [] { typeof(string) })]
         [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("always")]
         string ElasticityProfileRefillPolicy { get; set; }
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Specifies zones of standby container group pools.",
+        SerializedName = @"zones",
+        PossibleTypes = new [] { typeof(string) })]
+        System.Collections.Generic.List<string> Zone { get; set; }
 
     }
     /// The updatable properties of the StandbyContainerGroupPoolResource.
@@ -145,6 +163,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// <summary>Specifies refill policy of the pool.</summary>
         [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("always")]
         string ElasticityProfileRefillPolicy { get; set; }
+        /// <summary>Specifies zones of standby container group pools.</summary>
+        System.Collections.Generic.List<string> Zone { get; set; }
 
     }
 }

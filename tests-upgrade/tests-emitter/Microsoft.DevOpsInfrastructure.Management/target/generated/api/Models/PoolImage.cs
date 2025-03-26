@@ -25,6 +25,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
         public string Buffer { get => this._buffer; set => this._buffer = value; }
 
+        /// <summary>Backing field for <see cref="EphemeralType" /> property.</summary>
+        private string _ephemeralType;
+
+        /// <summary>The ephemeral type of the image.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
+        public string EphemeralType { get => this._ephemeralType; set => this._ephemeralType = value; }
+
         /// <summary>Backing field for <see cref="ResourceId" /> property.</summary>
         private string _resourceId;
 
@@ -71,6 +78,18 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         SerializedName = @"buffer",
         PossibleTypes = new [] { typeof(string) })]
         string Buffer { get; set; }
+        /// <summary>The ephemeral type of the image.</summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"The ephemeral type of the image.",
+        SerializedName = @"ephemeralType",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("Automatic", "CacheDisk", "ResourceDisk")]
+        string EphemeralType { get; set; }
         /// <summary>The resource id of the image.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = false,
@@ -103,6 +122,9 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         System.Collections.Generic.List<string> Alias { get; set; }
         /// <summary>The percentage of the buffer to be allocated to this image.</summary>
         string Buffer { get; set; }
+        /// <summary>The ephemeral type of the image.</summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("Automatic", "CacheDisk", "ResourceDisk")]
+        string EphemeralType { get; set; }
         /// <summary>The resource id of the image.</summary>
         string ResourceId { get; set; }
         /// <summary>The image to use from a well-known set of images made available to customers.</summary>

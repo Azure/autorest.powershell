@@ -195,6 +195,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).Backup = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties) content.GetValueForProperty("Backup",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).Backup, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("DataApi"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApi = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties) content.GetValueForProperty("DataApi",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApi, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.DataApiPropertiesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("PropertiesReplica"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PropertiesReplica = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationProperties) content.GetValueForProperty("PropertiesReplica",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PropertiesReplica, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ReplicationPropertiesTypeConverter.ConvertFrom);
@@ -230,6 +234,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("ShardingShardCount"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ShardingShardCount = (int?) content.GetValueForProperty("ShardingShardCount",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ShardingShardCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("DataApiMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApiMode = (string) content.GetValueForProperty("DataApiMode",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApiMode, global::System.Convert.ToString);
             }
             if (content.Contains("ReplicationState"))
             {
@@ -384,6 +392,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).Backup = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IBackupProperties) content.GetValueForProperty("Backup",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).Backup, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.BackupPropertiesTypeConverter.ConvertFrom);
             }
+            if (content.Contains("DataApi"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApi = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IDataApiProperties) content.GetValueForProperty("DataApi",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApi, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.DataApiPropertiesTypeConverter.ConvertFrom);
+            }
             if (content.Contains("PropertiesReplica"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PropertiesReplica = (Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicationProperties) content.GetValueForProperty("PropertiesReplica",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).PropertiesReplica, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ReplicationPropertiesTypeConverter.ConvertFrom);
@@ -419,6 +431,10 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models
             if (content.Contains("ShardingShardCount"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ShardingShardCount = (int?) content.GetValueForProperty("ShardingShardCount",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).ShardingShardCount, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
+            }
+            if (content.Contains("DataApiMode"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApiMode = (string) content.GetValueForProperty("DataApiMode",((Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaInternal)this).DataApiMode, global::System.Convert.ToString);
             }
             if (content.Contains("ReplicationState"))
             {

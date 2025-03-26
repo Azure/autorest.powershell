@@ -32,7 +32,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesCreateOrUpdate(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -83,7 +83,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesCreateOrUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -145,7 +145,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule> FirewallRulesCreateOrUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -211,7 +211,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesCreateOrUpdateViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -262,7 +262,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule> FirewallRulesCreateOrUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -314,7 +314,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule> FirewallRulesCreateOrUpdateWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -696,7 +696,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesDelete(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -740,7 +740,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -981,7 +981,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesGet(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1024,7 +1024,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1078,7 +1078,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule> FirewallRulesGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1135,7 +1135,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRule> FirewallRulesGetWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string firewallRuleName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1322,7 +1322,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesListByMongoCluster(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRuleListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1364,7 +1364,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task FirewallRulesListByMongoClusterViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRuleListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1416,7 +1416,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRuleListResult> FirewallRulesListByMongoClusterViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1470,7 +1470,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IFirewallRuleListResult> FirewallRulesListByMongoClusterWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1654,7 +1654,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCheckNameAvailability(string subscriptionId, string location, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1700,7 +1700,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCheckNameAvailabilityViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1755,7 +1755,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse> MongoClustersCheckNameAvailabilityViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityRequest body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1812,7 +1812,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCheckNameAvailabilityViaJsonString(string subscriptionId, string location, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1856,7 +1856,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse> MongoClustersCheckNameAvailabilityViaJsonStringWithResult(string subscriptionId, string location, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -1901,7 +1901,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityResponse> MongoClustersCheckNameAvailabilityWithResult(string subscriptionId, string location, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.ICheckNameAvailabilityRequest body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2087,7 +2087,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCreateOrUpdate(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2137,7 +2137,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCreateOrUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2197,7 +2197,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersCreateOrUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2260,7 +2260,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersCreateOrUpdateViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2309,7 +2309,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersCreateOrUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2359,7 +2359,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersCreateOrUpdateWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2733,7 +2733,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersDelete(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -2775,7 +2775,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3007,7 +3007,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersGet(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3048,7 +3048,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3099,7 +3099,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3152,7 +3152,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersGetWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3330,7 +3330,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersList(string subscriptionId, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3369,7 +3369,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersListByResourceGroup(string subscriptionId, string resourceGroupName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3409,7 +3409,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersListByResourceGroupViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3458,7 +3458,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult> MongoClustersListByResourceGroupViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3508,7 +3508,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult> MongoClustersListByResourceGroupWithResult(string subscriptionId, string resourceGroupName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3687,7 +3687,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersListConnectionStrings(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IListConnectionStringsResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3732,7 +3732,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersListConnectionStringsViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IListConnectionStringsResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3787,7 +3787,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IListConnectionStringsResult> MongoClustersListConnectionStringsViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -3844,7 +3844,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IListConnectionStringsResult> MongoClustersListConnectionStringsWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4025,7 +4025,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersListViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4071,7 +4071,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult> MongoClustersListViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4117,7 +4117,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterListResult> MongoClustersListWithResult(string subscriptionId, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4285,7 +4285,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersPromote(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4332,7 +4332,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersPromoteViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPromoteReplicaRequest body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4392,7 +4392,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersPromoteViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4611,7 +4611,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersUpdate(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4661,7 +4661,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersUpdateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdate body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4721,7 +4721,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersUpdateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdate body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4784,7 +4784,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task MongoClustersUpdateViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4833,7 +4833,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersUpdateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -4883,7 +4883,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoCluster> MongoClustersUpdateWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IMongoClusterUpdate body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5253,7 +5253,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsList(global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5289,7 +5289,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task OperationsListViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5332,7 +5332,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationListResult> OperationsListViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5374,7 +5374,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IOperationListResult> OperationsListWithResult(Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5541,7 +5541,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsCreate(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5590,7 +5590,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsCreateViaIdentity(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource body, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5650,7 +5650,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource> PrivateEndpointConnectionsCreateViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5714,7 +5714,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsCreateViaJsonString(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, global::System.String jsonString, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5763,7 +5763,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource> PrivateEndpointConnectionsCreateViaJsonStringWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, global::System.String jsonString, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -5813,7 +5813,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource> PrivateEndpointConnectionsCreateWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource body, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode serializationMode = Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeCreate|Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.SerializationMode.IncludeUpdate)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6192,7 +6192,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsDelete(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6236,7 +6236,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsDeleteViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onNoContent, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6474,7 +6474,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsGet(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6517,7 +6517,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsGetViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6571,7 +6571,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource> PrivateEndpointConnectionsGetViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6628,7 +6628,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResource> PrivateEndpointConnectionsGetWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, string privateEndpointConnectionName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6814,7 +6814,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsListByMongoCluster(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResourceListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6856,7 +6856,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateEndpointConnectionsListByMongoClusterViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResourceListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6908,7 +6908,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResourceListResult> PrivateEndpointConnectionsListByMongoClusterViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -6962,7 +6962,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateEndpointConnectionResourceListResult> PrivateEndpointConnectionsListByMongoClusterWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7147,7 +7147,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateLinksListByMongoCluster(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateLinkResourceListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7189,7 +7189,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task PrivateLinksListByMongoClusterViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateLinkResourceListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7241,7 +7241,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateLinkResourceListResult> PrivateLinksListByMongoClusterViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7295,7 +7295,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IPrivateLinkResourceListResult> PrivateLinksListByMongoClusterWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7478,7 +7478,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task ReplicasListByParent(string subscriptionId, string resourceGroupName, string mongoClusterName, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7520,7 +7520,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task ReplicasListByParentViaIdentity(global::System.String viaIdentity, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaListResult>, global::System.Threading.Tasks.Task> onOk, global::System.Func<global::System.Net.Http.HttpResponseMessage, global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IErrorResponse>, global::System.Threading.Tasks.Task> onDefault, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7572,7 +7572,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaListResult> ReplicasListByParentViaIdentityWithResult(global::System.String viaIdentity, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {
@@ -7626,7 +7626,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MongoCluster
         /// </returns>
         public async global::System.Threading.Tasks.Task<Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Models.IReplicaListResult> ReplicasListByParentWithResult(string subscriptionId, string resourceGroupName, string mongoClusterName, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.IEventListener eventListener, Microsoft.Azure.PowerShell.Cmdlets.MongoCluster.Runtime.ISendAsync sender)
         {
-            var apiVersion = @"2024-07-01";
+            var apiVersion = @"2024-10-01-preview";
             // Constant Parameters
             using( NoSynchronizationContext )
             {

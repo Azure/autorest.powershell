@@ -16,7 +16,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models.IQuota))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Description(@"List Quota resources by subscription ID")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.DevOpsInfrastructure/locations/{location}/usages", ApiVersion = "2024-10-19")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.HttpPath(Path = "/subscriptions/{subscriptionId}/providers/Microsoft.DevOpsInfrastructure/locations/{location}/usages", ApiVersion = "2025-01-21")]
     public partial class InvokeAzDevOpsInfrastructureUsageSubscriptionUsage_UsagesViaIdentity : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.IContext

@@ -78,10 +78,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CertificateProfilePropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
-            }
             if (content.Contains("RetryAfter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
@@ -138,61 +134,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Certificate = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificate>) content.GetValueForProperty("Certificate",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Certificate, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificate>(__y, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CertificateTypeConverter.ConvertFrom));
             }
-            if (content.Contains("CommonName"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).CommonName = (string) content.GetValueForProperty("CommonName",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).CommonName, global::System.Convert.ToString);
-            }
-            if (content.Contains("Organization"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Organization = (string) content.GetValueForProperty("Organization",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Organization, global::System.Convert.ToString);
-            }
-            if (content.Contains("OrganizationUnit"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).OrganizationUnit = (string) content.GetValueForProperty("OrganizationUnit",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).OrganizationUnit, global::System.Convert.ToString);
-            }
-            if (content.Contains("StreetAddress"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).StreetAddress = (string) content.GetValueForProperty("StreetAddress",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).StreetAddress, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludeStreetAddress"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeStreetAddress = (bool?) content.GetValueForProperty("IncludeStreetAddress",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeStreetAddress, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("City"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).City = (string) content.GetValueForProperty("City",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).City, global::System.Convert.ToString);
             }
             if (content.Contains("IncludeCity"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCity = (bool?) content.GetValueForProperty("IncludeCity",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCity, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("State"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).State = (string) content.GetValueForProperty("State",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).State, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludeState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeState = (bool?) content.GetValueForProperty("IncludeState",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeState, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("Country"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Country = (string) content.GetValueForProperty("Country",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Country, global::System.Convert.ToString);
             }
             if (content.Contains("IncludeCountry"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCountry = (bool?) content.GetValueForProperty("IncludeCountry",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCountry, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("PostalCode"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).PostalCode = (string) content.GetValueForProperty("PostalCode",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).PostalCode, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludePostalCode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludePostalCode = (bool?) content.GetValueForProperty("IncludePostalCode",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludePostalCode, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("EnhancedKeyUsage"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).EnhancedKeyUsage = (string) content.GetValueForProperty("EnhancedKeyUsage",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).EnhancedKeyUsage, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityValidationId"))
             {
@@ -223,10 +183,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Property = (Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileProperties) content.GetValueForProperty("Property",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Property, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CertificateProfilePropertiesTypeConverter.ConvertFrom);
             }
-            if (content.Contains("AzureAsyncOperation"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).AzureAsyncOperation = (string) content.GetValueForProperty("AzureAsyncOperation",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).AzureAsyncOperation, global::System.Convert.ToString);
-            }
             if (content.Contains("RetryAfter"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).RetryAfter = (int?) content.GetValueForProperty("RetryAfter",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).RetryAfter, (__y)=> (int) global::System.Convert.ChangeType(__y, typeof(int)));
@@ -283,61 +239,25 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Certificate = (System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificate>) content.GetValueForProperty("Certificate",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Certificate, __y => TypeConverterExtensions.SelectToList<Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificate>(__y, Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.CertificateTypeConverter.ConvertFrom));
             }
-            if (content.Contains("CommonName"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).CommonName = (string) content.GetValueForProperty("CommonName",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).CommonName, global::System.Convert.ToString);
-            }
-            if (content.Contains("Organization"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Organization = (string) content.GetValueForProperty("Organization",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Organization, global::System.Convert.ToString);
-            }
-            if (content.Contains("OrganizationUnit"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).OrganizationUnit = (string) content.GetValueForProperty("OrganizationUnit",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).OrganizationUnit, global::System.Convert.ToString);
-            }
-            if (content.Contains("StreetAddress"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).StreetAddress = (string) content.GetValueForProperty("StreetAddress",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).StreetAddress, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludeStreetAddress"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeStreetAddress = (bool?) content.GetValueForProperty("IncludeStreetAddress",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeStreetAddress, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("City"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).City = (string) content.GetValueForProperty("City",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).City, global::System.Convert.ToString);
             }
             if (content.Contains("IncludeCity"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCity = (bool?) content.GetValueForProperty("IncludeCity",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCity, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("State"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).State = (string) content.GetValueForProperty("State",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).State, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludeState"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeState = (bool?) content.GetValueForProperty("IncludeState",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeState, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("Country"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Country = (string) content.GetValueForProperty("Country",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).Country, global::System.Convert.ToString);
             }
             if (content.Contains("IncludeCountry"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCountry = (bool?) content.GetValueForProperty("IncludeCountry",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludeCountry, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
             }
-            if (content.Contains("PostalCode"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).PostalCode = (string) content.GetValueForProperty("PostalCode",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).PostalCode, global::System.Convert.ToString);
-            }
             if (content.Contains("IncludePostalCode"))
             {
                 ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludePostalCode = (bool?) content.GetValueForProperty("IncludePostalCode",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).IncludePostalCode, (__y)=> (bool) global::System.Convert.ChangeType(__y, typeof(bool)));
-            }
-            if (content.Contains("EnhancedKeyUsage"))
-            {
-                ((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).EnhancedKeyUsage = (string) content.GetValueForProperty("EnhancedKeyUsage",((Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.ICertificateProfileInternal)this).EnhancedKeyUsage, global::System.Convert.ToString);
             }
             if (content.Contains("IdentityValidationId"))
             {

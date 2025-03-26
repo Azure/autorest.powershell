@@ -105,6 +105,12 @@
       "projectFolder": "packages/typespec-powershell",
       "reviewCategory": "production",
       "shouldPublish": true
+    },
+    {
+      "packageName": "emitter-test",
+      "projectFolder": "tests-upgrade/tests-emitter",
+      "reviewCategory": "test",
+      "skipRushCheck": true
     }
   ]
 }

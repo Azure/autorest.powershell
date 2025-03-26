@@ -18,6 +18,15 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
         public string CertificateStoreLocation { get => this._certificateStoreLocation; set => this._certificateStoreLocation = value; }
 
+        /// <summary>Backing field for <see cref="CertificateStoreName" /> property.</summary>
+        private string _certificateStoreName;
+
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Origin(Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PropertyOrigin.Owned)]
+        public string CertificateStoreName { get => this._certificateStoreName; set => this._certificateStoreName = value; }
+
         /// <summary>Backing field for <see cref="KeyExportable" /> property.</summary>
         private bool _keyExportable;
 
@@ -53,6 +62,20 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
         SerializedName = @"certificateStoreLocation",
         PossibleTypes = new [] { typeof(string) })]
         string CertificateStoreLocation { get; set; }
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
+        Required = false,
+        ReadOnly = false,
+        Read = true,
+        Create = true,
+        Update = true,
+        Description = @"Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.",
+        SerializedName = @"certificateStoreName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("My", "Root")]
+        string CertificateStoreName { get; set; }
         /// <summary>Defines if the key of the certificates should be exportable.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Info(
         Required = true,
@@ -83,6 +106,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
     {
         /// <summary>Where to store certificates on the machine.</summary>
         string CertificateStoreLocation { get; set; }
+        /// <summary>
+        /// Name of the certificate store to use on the machine, currently 'My' and 'Root' are supported.
+        /// </summary>
+        [global::Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.PSArgumentCompleterAttribute("My", "Root")]
+        string CertificateStoreName { get; set; }
         /// <summary>Defines if the key of the certificates should be exportable.</summary>
         bool KeyExportable { get; set; }
         /// <summary>The list of certificates to install on all machines in the pool.</summary>

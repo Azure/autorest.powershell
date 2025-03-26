@@ -12,13 +12,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Cmdlets
     /// List the latest version of each index. Latest is defined by most recent created by date.
     /// </summary>
     /// <remarks>
-    /// [OpenAPI] ListLatest=>GET:"/indexes/"
+    /// [OpenAPI] ListLatest=>GET:"/indexes"
     /// </remarks>
     [global::System.Management.Automation.Cmdlet(global::System.Management.Automation.VerbsCommon.Get, @"AzMlWorkspaceIndexLatest_List")]
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Models.IIndex))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Description(@"List the latest version of each index. Latest is defined by most recent created by date.")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.HttpPath(Path = "/indexes/", ApiVersion = "2024-05-01-preview")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.HttpPath(Path = "/indexes", ApiVersion = "2024-05-01-preview")]
     public partial class GetAzMlWorkspaceIndexLatest_List : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.MachineLearningServices.Runtime.IContext

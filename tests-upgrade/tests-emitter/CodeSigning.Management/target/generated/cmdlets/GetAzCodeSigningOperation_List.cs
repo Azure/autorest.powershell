@@ -17,7 +17,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Cmdlets
     [global::System.Management.Automation.OutputType(typeof(Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Models.IOperation))]
     [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Description(@"List the operations for the provider")]
     [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Generated]
-    [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.HttpPath(Path = "/providers/Microsoft.CodeSigning/operations", ApiVersion = "2024-02-05-preview")]
+    [global::Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.HttpPath(Path = "/providers/Microsoft.CodeSigning/operations", ApiVersion = "2024-09-30-preview")]
     public partial class GetAzCodeSigningOperation_List : global::System.Management.Automation.PSCmdlet,
         Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IEventListener,
         Microsoft.Azure.PowerShell.Cmdlets.CodeSigning.Runtime.IContext

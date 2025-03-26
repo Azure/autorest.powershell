@@ -112,7 +112,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         Description = @"Specifies the desired state of virtual machines in the pool.",
         SerializedName = @"virtualMachineState",
         PossibleTypes = new [] { typeof(string) })]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Running", "Deallocated")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Running", "Deallocated", "Hibernated")]
         string VirtualMachineState { get; set; }
 
     }
@@ -136,7 +136,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.Models
         /// </summary>
         long? ElasticityProfileMinReadyCapacity { get; set; }
         /// <summary>Specifies the desired state of virtual machines in the pool.</summary>
-        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Running", "Deallocated")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.StandbyPool.PSArgumentCompleterAttribute("Running", "Deallocated", "Hibernated")]
         string VirtualMachineState { get; set; }
 
     }

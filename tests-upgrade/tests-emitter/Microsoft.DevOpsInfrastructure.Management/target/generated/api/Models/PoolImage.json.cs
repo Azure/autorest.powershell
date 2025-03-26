@@ -79,6 +79,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
             {_wellKnownImageName = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("wellKnownImageName"), out var __jsonWellKnownImageName) ? (string)__jsonWellKnownImageName : (string)_wellKnownImageName;}
             {_alias = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray>("aliases"), out var __jsonAliases) ? If( __jsonAliases as Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonArray, out var __v) ? new global::System.Func<System.Collections.Generic.List<string>>(()=> global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.Select(__v, (__u)=>(string) (__u is Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString __t ? (string)(__t.ToString()) : null)) ))() : null : _alias;}
             {_buffer = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("buffer"), out var __jsonBuffer) ? (string)__jsonBuffer : (string)_buffer;}
+            {_ephemeralType = If( json?.PropertyT<Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString>("ephemeralType"), out var __jsonEphemeralType) ? (string)__jsonEphemeralType : (string)_ephemeralType;}
             AfterFromJson(json);
         }
 
@@ -113,6 +114,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Models
                 container.Add("aliases",__w);
             }
             AddIf( null != (((object)this._buffer)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._buffer.ToString()) : null, "buffer" ,container.Add );
+            AddIf( null != (((object)this._ephemeralType)?.ToString()) ? (Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonNode) new Microsoft.Azure.PowerShell.Cmdlets.DevOpsInfrastructure.Runtime.Json.JsonString(this._ephemeralType.ToString()) : null, "ephemeralType" ,container.Add );
             AfterToJson(ref container);
             return container;
         }
