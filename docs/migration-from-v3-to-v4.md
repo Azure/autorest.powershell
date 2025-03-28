@@ -45,7 +45,7 @@ More variants will be generated in v4, like (parent pipeline input, via JSON str
 
 ```
 - where:
-    variant: ^(Create|Update)(?!.*?Expanded)
+    variant: ^(Create|Update)(?!.*?(Expanded|JsonFilePath|JsonString))
   remove: true
 ```
 
