@@ -7,7 +7,7 @@ RUN apt-get update \
     && apt-get install -y git \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . /root/.bashrc \
-    && nvm install 18.20.4 \
+    && nvm install 20.19.0 \
     && npm install -g autorest \
     && npm install -g @azure-tools/typespec-client-generator-cli@0.15.x \
     && apt-get -o Acquire::Check-Valid-Until=false install -y \
