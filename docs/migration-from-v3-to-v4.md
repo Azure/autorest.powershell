@@ -37,7 +37,7 @@ More variants will be generated in v4, like (parent pipeline input, via JSON str
 
 ```
 - where:
-    variant: ^CreateViaIdentity.*$
+    variant: ^CreateViaIdentity$
   remove: true
 ```
 
