@@ -313,7 +313,7 @@ function createVirtualProperties(schema: ObjectSchema, stack: Array<string>, thr
       update: mutability.update && !property.readOnly,
       read: mutability.read,
       readOnly: property.readOnly || (mutability.read && !mutability.create && !mutability.update),
-      required: property.required || property.language.default.required
+      required: (property.required || property.language.default.required) && mutability.read && mutability.create && mutability.update && !property.readOnly
     });
   }
 
