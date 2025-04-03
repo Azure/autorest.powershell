@@ -138,7 +138,7 @@ export class DeserializerPartialClass extends SerializationPartialClass {
       yield '// actually deserialize ';
       for (const virtualProperty of values(<Array<NewVirtualProperty>>$this.allVirtualProperties)) {
         // yield `// deserialize ${virtualProperty.name} from ${$this.serializationFormat}`;
-        const type = $this.resolver(<NewSchema>virtualProperty.property.schema, virtualProperty.property.language.default.required);
+        const type = $this.resolver(<NewSchema>virtualProperty.property.schema, virtualProperty.required);
 
         const cvt = type.convertObjectMethod;
         const t = `((${virtualProperty.originalContainingSchema.language.csharp?.fullInternalInterfaceName})this)`;
