@@ -193,7 +193,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         System.Collections.Generic.List<Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models.IErrorDefinition> Detail { get;  }
         /// <summary>Defines the environment type - Production/Non Production.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
@@ -269,7 +269,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Models
         string ProvisioningState { get;  }
         /// <summary>Defines the SAP Product type.</summary>
         [Microsoft.Azure.PowerShell.Cmdlets.SAPVirtualInstance.Runtime.Info(
-        Required = true,
+        Required = false,
         ReadOnly = false,
         Read = true,
         Create = true,
